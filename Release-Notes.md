@@ -8,159 +8,12 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-
+BEFORE RELEASE:
+  - RESOLVE MACOS BUILD ISSUE (old system - either say not supproted or fix)
+  - Doxgygen
+  - RelNotes
 
 #if 0
-
-commit 0de52a198230a04d7bf551d89e065f6d47420da4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 31 17:24:52 2026 -0400
-
-    Another minor cleanup of docs and stats captured for Frameworks/WebServer/Connection
-
-commit f5f7ab5706277cc88f0148b55427c52bc49e2cdd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 31 16:51:10 2026 -0400
-
-    Frameworks::Webserver code: slight improvements to state tracking logic - mostly for debugging purposes (hearhe issue with haproxy on AWS)
-
-commit 6e43647262fa1e205820988aece4aca1d15ac2b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 30 08:15:13 2026 -0400
-
-    WebServer framework: added 'state' (https://stroika.atlassian.net/browse/STK-1025) and messageOnConnectionNumber tracking to help debug issue with AWS/HearHE
-
-commit 50759b279ffb9db6e1a0cecc89ff7fb7302244bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 27 16:11:13 2026 -0400
-
-    experimental IValuelessCache support in LRUCache and LOSE hack I had about if KEY=VALUE type
-
-commit 7cd77b2fc36671c09e443f4ecf8f1c723b53b1ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 27 15:04:11 2026 -0400
-
-    incomplete progress on IValuelessCache support for LRUCache
-
-commit 22bebac86c6e7b747d989713e20f08df1ef1ea70
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 27 12:56:29 2026 -0400
-
-    Cache logic - support (for timedcache only so far) IValuelessCache (already basically supported, but did a bit more and added to concept/traits and used the names
-
-commit 2590e20e2a8954f354cf86d2ad94fc04457d7f27
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 27 08:56:32 2026 -0400
-
-    defined NonKeyedKeySentinalType and used to cleanup some recent Cache code (docs basically)
-
-commit fbdc5bf91d47a319cf49093ada19ab024435b155
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Mar 26 23:22:04 2026 -0400
-
-    docs, LRUCache::RemoveAll(PREDICATE), and lock tweaks
-
-commit 55c7ec0f59f34a37175bf52b36e76b3a6797ca8c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 26 21:08:26 2026 -0400
-
-    fixed typos and small regresison in traints checking in LRUCache
-
-commit 479b7c68db8403f23572c6314978974f0db68f97
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 26 19:38:11 2026 -0400
-
-    more regtest cleanups and LRUCache code cleanups and concepts
-
-commit 5b7726808c603d1522d9e095a7294bbf68223da5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 26 19:25:47 2026 -0400
-
-    LRUCache cleanups and regtests
-
-commit 3591bfd51928033fbfc69db340af7413df391375
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 26 18:42:04 2026 -0400
-
-    fixed CacheElt_COMPARE_ITEM_EQComparer_  to be ComparisonRelationType::eEquals
-
-commit 52f0d30fc4e50e79f58dc4f1e7ae3619d04d1d8b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 26 15:21:14 2026 -0400
-
-    more progres on LRUCache factory code - and regtests and deprecating older api; and more use of concepts in LRUCache code to get better messages
-
-commit ef484207a2d8e142693e47d1a1c07dfb3878415f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 26 12:53:02 2026 -0400
-
-    progress on LRUCache factory code
-
-commit c383358ea57e8a084441b5ad5c8b9dc13b1af1f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 26 11:06:37 2026 -0400
-
-    refacored Cache stuff again - new module Cache::Common, and added new concept ICache there
-
-commit 1cfcce52df448b81cff1ed542bb9f9b60cd29b5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 17:42:55 2026 -0400
-
-    cleanups, and more docs and regtests on memoizer
-
-commit 6b4f20b1783e904a639bcad9e85f5fad758d46be
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 16:03:30 2026 -0400
-
-    Deprecated SynchronizedLRUCache.h and rediud SynchronizedLRUCache in LRUCache.h using TRAITS - more cleanup toodo but testable
-
-commit 66ae074da34c5eef3b29d6ea32f005fa4ac5f979
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 15:48:39 2026 -0400
-
-    more cleanups to new MakeMemoizer code
-
-commit 26147045b8f540d413989f75c7ed39992b7bfbec
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Mar 25 15:26:19 2026 -0400
-
-    cleanup Memoryizer <qStroika_template_template_BWA BWA
-
-commit 105148fdf771ea77add2487acbe8ffb2f07ee1e3
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Mar 25 14:50:48 2026 -0400
-
-    improved <qStroika_template_template_BWA for Memoizer logic; and new experimental MakeMemoizer
-
-commit 3da13cda7158a600a482112efa91faeb498966ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 13:09:47 2026 -0400
-
-    draft beter workaround to qStroika_template_template_BWA and Memoizer and new function MakeMemoizer
-
-commit 63052d321a29841adff6d5cb3b84ae916ed3eceb
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Mar 25 13:02:31 2026 -0400
-
-    moved FunctionTraits from Concepts.h to TemplateUtilies.h
-
-commit ec9e25fe75cdfd5018e300cbb95b39cbff6eba50
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 12:01:25 2026 -0400
-
-    Simplified Common::FunctionTraits a bit - hopefully correctly - still testing - but fewer intermediate classes
-
-commit f390545b6fbe45a3f066f3644a86863edcc75476
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 11:49:59 2026 -0400
-
-    use FunctionTraits arg_t instead of arg<N>::type
-
-commit bbf452d72e8e118bb214b67ef83b2ddc33883902
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 11:49:12 2026 -0400
-
-    use FunctionTraits arg_t instead of arg<N>::type
 
 commit ff4becbfeee6755a64716d1f65498a44a0b0a0e0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -210,46 +63,11 @@ Date:   Thu Mar 19 14:30:04 2026 -0400
 
     disable boost on XCode 15 for now - cuz PITA to debug why failing
 
-commit 42455b18dfb08cd06ac72efb573859fcd8c1f949
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 18 14:51:14 2026 -0400
-
-    Frameworks/Auth/OAuth/Client cleanups
-
-commit 1dbb5f51e7484ebc4d61a875b9883a2866d2437b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 18 14:36:38 2026 -0400
-
-    cleanups to TimedCache use in Frameworks/Auth/OAuth/Client
-
-commit 5f7265860e18a91988e986276bdb7b38ec399120
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 18 11:55:11 2026 -0400
-
-    more cleanups to Frameworks/Auth/OAuth/Client fetcher caching
-
 commit a454705e287565016271d1f72e68a727a29e2ddb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 18 11:36:04 2026 -0400
 
     More fixes to make libraries top level makefile for QUICK_BUILD
-
-commit dd6ca598a2c871e47206a21fef953ead5bb7ff67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 18 10:25:39 2026 -0400
-
-    Frameworks/Auth/OAuth/Client no longer cache token request/responses - want them redone since may want updated expiration
-
-commit 21a207e7a0e30ff9f9ff38e481da09c3e222c5dc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 17 22:45:56 2026 -0400
-
-
-commit f449294eff9b7ebb58f46cc92f94a5028fd0fb58
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 17 20:54:18 2026 -0400
-
-    Frameworks/Auth/OAuth/Client using new TimedCacheSupport::TrackExpirationTraits TimedCache code
 
 #endf
 
@@ -320,10 +138,28 @@ Date:   Tue Mar 17 20:54:18 2026 -0400
   - try marking qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy broken for clang16 on macos cuz xcode 15.3 clang++ 15.0.7 now apprears to report clangMAJOR == 16?
   - another qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
 
-
 - Library
   - Foundation
     - Cache
+      - Common
+        - Moved a bunch of common cache types/concepts here
+          - IValuelessCache 
+          - defined NonKeyedKeySentinalType and used to cleanup some recent Cache code (docs basically)
+          - etc
+      - LRUCache
+        - IValuelessCache support in LRUCache and LOSE hack I had about if KEY=VALUE type
+        - docs
+        - use Concepts (e.g. new ICache, IValuelessCache, etc...)
+        - lock tweaks
+        - RemoveAll(PREDICATE)
+        - regtest cleanups
+        - fixed CacheElt_COMPARE_ITEM_EQComparer_  to be ComparisonRelationType::eEquals (respect stronger concept typing in cache code)
+        - LRUCache factory code - and regtests and deprecating older api; 
+        - Deprecated SynchronizedLRUCache.h and rediud SynchronizedLRUCache in LRUCache.h
+      - Memoizer
+        - cleanups
+        - use qStroika_template_template_BWA BWA
+        - new function MakeMemoizer
       - TimedCache
         - major cleanup using concepts/traits
         - now directly includes (optional) support for internal syncrhonization
@@ -372,6 +208,10 @@ Date:   Tue Mar 17 20:54:18 2026 -0400
         - new qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY
           use instead of [[no_unique_address]] (see qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy)
         - qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS with qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE (cuz works) and with qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY
+      - TemplateUtilities
+        - moved FunctionTraits from Concepts.h to TemplateUtilies.h
+        - Simplified Common::FunctionTraits a bit - fewer intermediate classes
+        - use FunctionTraits arg_t instead of arg<N>::type (instead of arg<N>::type)
       - TypeHints
         - message improvement in TypeHints ArgByValueType
     - Containers
@@ -512,8 +352,12 @@ Date:   Tue Mar 17 20:54:18 2026 -0400
         - Client
           - Support for caching, and options for internally/externally synchronized
           - Auth::OAuth::TokenIntrospectionResponse/tokeninfo_endpoint/introspection_endpoint support for FetchTokenIntrospection_ () - internally - so when user_info fetched - we try to get its expires_at too
+          - no longer cache token request/responses - want them redone since may want updated expiration
     - WebServer
       - ConnectionManager
+        - added 'state' (https://stroika.atlassian.net/browse/STK-1025)to 'stats' and messageOnConnectionNumber tracking to help debug issue with AWS/HearHE
+        - slight improvements to state tracking logic - mostly for debugging purposes (hearhe issue with haproxy on AWS)
+        - Another minor cleanup of docs and stats captured for Frameworks/WebServer/Connection
         - kInactiveSocketMonitorEvents2Watch4_ includes HUP and Error events - and use that for fInactiveSockSetPoller_: this probably addresses issue where we have lots of accumulating uninteresting connections in webserver sometimes (testing)
         - fixed bug in WebServer::Connection::MyMessage_::ReadHeaders () - one case I was returning eIncompleteButMoreMayBeAvailable fixed to return eIncompleteDeadEnd
           - **important cuz caused connections to hang around longer than they should**
