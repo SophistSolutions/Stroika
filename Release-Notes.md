@@ -15,59 +15,10 @@ BEFORE RELEASE:
 
 #if 0
 
-commit ff4becbfeee6755a64716d1f65498a44a0b0a0e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 10:14:48 2026 -0400
-
+X-CODE
     disabled xcode 15.4 from github actions til i can find a better way to test
-
-commit 187ef33631eaa09725953700680ab5b49e5d04e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 09:57:35 2026 -0400
-
-    see if using fmtlib fixes issues on xcode 15
-
-commit dc062dd9f04fc6a0a0fc9788d390e42d1a51b840
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 08:47:56 2026 -0400
-
     re-disabled mongocxx for xcode 15.4 cuz PITA to debug for now
-
-commit 0e940b99a66327a1d6658015cef26b74721415be
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 08:36:03 2026 -0400
-
     oldest supported xcode is now 15.4 (not 15.3)
-
-commit bbdb05db63174f9c0a47abf35fb5a1c0fba94316
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 19 16:56:24 2026 -0400
-
-    TimeStampType abstraction in TimedCache<> - like I had in CallerStalenssCache; and preps for deprecating / folding into TimedCache logic from CallerStalenessCache
-
-commit fd6b0480747e6d0b60f641ae61ddbdf3829d395b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 19 15:29:38 2026 -0400
-
-    tweak configure script help
-
-commit 5902a17f7ee3ec418f9d70feafcf2487065ee7e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 19 15:29:02 2026 -0400
-
-    --mongo-cxx-driver no for old xcode macos- cuz PITA to debug build now
-
-commit 1153a3f73819716531132dce6ddc7b6395889618
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 19 14:30:04 2026 -0400
-
-    disable boost on XCode 15 for now - cuz PITA to debug why failing
-
-commit a454705e287565016271d1f72e68a727a29e2ddb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 18 11:36:04 2026 -0400
-
-    More fixes to make libraries top level makefile for QUICK_BUILD
 
 #endf
 
@@ -116,6 +67,7 @@ Date:   Wed Mar 18 11:36:04 2026 -0400
   - Scripts
     - configure
       - fixed configure script so test for presence of python doesn't hang on latest msys under docker
+      - tweak help
     - fixed scripts FormatCode so works on macos (weaker version of expand)
     - Added mingw to path in .vscode/launch.json
   - Docker
