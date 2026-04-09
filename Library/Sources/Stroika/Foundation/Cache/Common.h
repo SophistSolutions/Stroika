@@ -33,15 +33,6 @@ namespace Stroika::Foundation::Cache {
 
     /**
      * @brief does this cache have a KEY type (overwhelming YES, but sometimes handy to have 'singleton' cache, where you cache something, but just one of them)
-     * 
-     *  \par Example Usage:
-     *      \code
-     *          using Cache::SynchronizedTimedCache;
-     *          // one cache of network interfaces - but dont recompute it periodically
-     *          static SynchronizedTimedCache<NonKeyedKeySentinalType, Collection<NetworkInterface>> sCache_;
-     *          results = sCache_.LookupValue (allowedStaleness.value_or (kDefaultItemCacheLifetime_),
-     *                                  [] () -> Collection<NetworkInterface> { return CollectAllNetworkInterfaces_ (); });
-     *      \endcode
      */
     template <typename KEY>
     static constexpr bool IKeyedCache = not same_as<KEY, NonKeyedKeySentinalType>;
