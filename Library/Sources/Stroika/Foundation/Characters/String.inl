@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Characters {
                         return mk_nocheck_ (s);
                     }
                     else if constexpr (same_as<remove_cv_t<CHAR_T>, char8_t>) {
-                        // Lat1in1 CAN fit in a single byte, but when encoded as UTF-8, it generally does NOT. So we must map to its one byte
+                        // Latin1 CAN fit in a single byte, but when encoded as UTF-8, it generally does NOT. So we must map to its one byte
                         // representation, by doing UTF decoding.
                         //
                         // EXAMPLE:
