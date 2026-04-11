@@ -110,8 +110,8 @@ especially those they need to be aware of when upgrading.
         - expose kHoldWriteLockDuringCacheFill through traits - though no change by default - just allows external testing of this 'feature'
         - fMaxAge_ now optionally removed/empty if TRAITS set to remove it (not by default)
         - simplify upgradeLock/LookupValue code cuz sporadically fails on MacOSX (not sure why - looked fine) - but test with simpler code and see if works better
-        - deprecated templates SynchronizedCallerStalenessCache and CallerStalenessCache, improved kDefaultMaxAge support, and kAutomaticPurgeFrequency supportand kPerCacheMaxAge support
-        - etter supported kAutomaticPurgeFrequency, minor cleanups, and respected kPerCacheMaxAge and kDefaultMaxAge - sometimes copying that as default and supporting default CTOR often
+        - deprecated templates SynchronizedCallerStalenessCache and CallerStalenessCache
+        - Supported kAutomaticPurgeFrequency; respected kPerCacheMaxAge and kDefaultMaxAge - sometimes copying that as default and supporting default CTOR often
         - deprecated APIs using TimeStampType maxAge - cuz were in CallerStalenssCache
         - deprecated files SynchronizedCallerStalenessCache.h CallerStalenessCache.h
         - replaced impl of CallerStalenessCache SynchronizedCallerStalenessCache with use of TimedCache
