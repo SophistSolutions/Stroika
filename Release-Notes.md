@@ -7,6 +7,21 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+### 3.0d24x - PREP
+- sCache_.LookupValue (allowedStaleness.value_or (
+  search for IKeyedCache docs - and this string and cleanup!!! - rewrite alot of docs.
+
+- BIDI Iterators
+
+- Doxygen/Docs
+
+- SSL impl on webserver
+
+---
+
+
+
 ### 3.0d23 {2026-04-11} {[diff](../../compare/3.0d22...3.0d23)}
 
 #### TLDR
