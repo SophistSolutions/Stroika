@@ -18,6 +18,8 @@ especially those they need to be aware of when upgrading.
 
 - SSL impl on webserver
 
+- hopefully final before first alpha
+
 ---
 
 
