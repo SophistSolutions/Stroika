@@ -7,23 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
-BEFORE RELEASE:
-  - RESOLVE MACOS BUILD ISSUE (old system - either say not supproted or fix)
-  - Doxgygen
-  - RelNotes
-
-#if 0
-
-X-CODE
-    disabled xcode 15.4 from github actions til i can find a better way to test
-    re-disabled mongocxx for xcode 15.4 cuz PITA to debug for now
-    oldest supported xcode is now 15.4 (not 15.3)
-#endf
-
-
-
-### 3.0d23 {2026-03-??} {[diff](../../compare/3.0d22...3.0d23)} DRAFT NOTES
+### 3.0d23 {2026-04-11} {[diff](../../compare/3.0d22...3.0d23)}
 
 #### TLDR
 
@@ -36,6 +20,7 @@ X-CODE
 - qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE use so VS how properly optimizes size in at least a few cases (most important ones).
 - OAuth fetcher caching
 - Major re-org of Caching code - more concepts - deprecated many implementations and folded their logic into TimedCache<>, and did Synchronization support via traits (instead of subclass)
+- Abandon support for MacOS 14, and XCode 15 (require MacOS15 or later and XCode 16 or later)
 
 #### Upgrade Notes (3.0d22 to 3.0d23)
 
@@ -355,8 +340,8 @@ X-CODE
 #### Release-Validation
 
 - Compilers Tested/Supported
-  - g++ { 11, 12, 13, 14. 15 }
-  - Clang++ { unix: 15, 16, 17, 18, 19, 20; XCode: 15.2, 15.4, 16.2, 16.4 }
+  - g++ { 11, 12, 13, 14, 15 }
+  - Clang++ { unix: 15, 16, 17, 18, 19, 20; XCode: 16.2, 16.4 }
   - MSVC: { 17.14.27 }
 - OS/Platforms Tested/Supported
   - Windows
