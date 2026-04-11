@@ -252,36 +252,6 @@
     },
     {
         "build_job": "MacOS",
-        "displayTargetName": "MacOS-14-XCode-15.4-Debug",
-        "runs_on": "macos-14",
-        "xcode": "15.4",
-        "config_name": "Debug",
-        "#": "no mongo-cxx-driver cuz stopped building just on xcode 15.4 and PITA for me to debug right now",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --mongo-cxx-driver no",
-        "#run_on_branch": "always",
-        "run_on_branch": "NEVER"
-    },
-    {
-        "build_job": "MacOS",
-        "displayTargetName": "MacOS-14-XCode-15.4",
-        "runs_on": "macos-14",
-        "xcode": "15.4",
-        "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "xrun_on_branch": "v3-Release",
-        "run_on_branch": "NEVER"
-    },
-    {
-        "build_job": "MacOS",
-        "displayTargetName": "MacOS-14-XCode-15.4--All3rdParty-Debug",
-        "runs_on": "macos-14",
-        "xcode": "15.4",
-        "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components",
-        "run_on_branch": "v3-Release"
-    },
-    {
-        "build_job": "MacOS",
         "displayTargetName": "MacOS-15-XCode-16.4-Debug",
         "runs_on": "macos-15",
         "xcode": "16.4",

@@ -19,7 +19,6 @@ X-CODE
     disabled xcode 15.4 from github actions til i can find a better way to test
     re-disabled mongocxx for xcode 15.4 cuz PITA to debug for now
     oldest supported xcode is now 15.4 (not 15.3)
-
 #endf
 
 
@@ -44,6 +43,10 @@ X-CODE
 - Renamed TrivialDocumentDB -> LocalDocumentDB
 - Renamed NullMutex to NullLock
 - Replace use of SynchronizedTimedCache with use of InternallySynchronized traits argument (documented in TimedCache CTOR example)
+- Cache
+  - LRUCache factory code - and regtests and deprecating older api; 
+  - deprecated files SynchronizedCallerStalenessCache.h CallerStalenessCache.h, SynchronizedLRUCache.h (just use TimedCache.h)
+- deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros: replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
 
 #### Change Details
 
@@ -89,15 +92,12 @@ X-CODE
   - qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy simpler BWAs
   - try marking qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy broken for clang16 on macos cuz xcode 15.3 clang++ 15.0.7 now apprears to report clangMAJOR == 16?
   - another qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
-
 - Library
   - Foundation
     - Cache
       - Common
         - Moved a bunch of common cache types/concepts here
-          - IValuelessCache 
-          - defined NonKeyedKeySentinalType and used to cleanup some recent Cache code (docs basically)
-          - etc
+          - IValuelessCache, NonKeyedKeySentinalType, etc.
       - LRUCache
         - IValuelessCache support in LRUCache and LOSE hack I had about if KEY=VALUE type
         - docs
