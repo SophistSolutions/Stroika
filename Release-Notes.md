@@ -24,14 +24,15 @@ especially those they need to be aware of when upgrading.
 
 #### Upgrade Notes (3.0d22 to 3.0d23)
 
-- Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
-- Renamed TrivialDocumentDB -> LocalDocumentDB
-- Renamed NullMutex to NullLock
-- Replace use of SynchronizedTimedCache with use of InternallySynchronized traits argument (documented in TimedCache CTOR example)
 - Cache
+  - Replace use of SynchronizedTimedCache with use of InternallySynchronized traits argument (documented in TimedCache CTOR example)
   - LRUCache factory code - and regtests and deprecating older api; 
   - deprecated files SynchronizedCallerStalenessCache.h CallerStalenessCache.h, SynchronizedLRUCache.h (just use TimedCache.h)
-- deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros: replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
+- FloatConversion
+  - Renamed Precision to SignificantFigures
+  - deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros: replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
+- Renamed TrivialDocumentDB -> LocalDocumentDB
+- Renamed NullMutex to NullLock
 
 #### Change Details
 
