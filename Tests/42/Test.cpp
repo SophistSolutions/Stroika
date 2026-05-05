@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Async.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
@@ -45,8 +46,38 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution, Test1_Function_)
+    GTEST_TEST (Foundation_Execution, AsyncRunAll_)
     {
+        Debug::TraceContextBumper ctx{"AsyncRunAll_"};
+        {
+            auto results = RunAll ([] () { return 1; }, [] () { return 2; }, [] () { return 3; });
+            EXPECT_EQ (results, make_tuple (1, 2, 3));
+        }
+        {
+            tuple<int> results = RunAll ([] () -> void {}, [] () { return 3; });
+            EXPECT_EQ (results, make_tuple (3));
+        }
+        {
+            int a = 0;
+            int b = 1;
+            int c = 2;
+            RunAll ([&] () { a = 3; }, [&] () { b = 4; }, [&] () { c = 5; });
+            EXPECT_EQ (a, 3);
+            EXPECT_EQ (b, 4);
+            EXPECT_EQ (c, 5);
+        }
+        {
+            static const auto kExcept_ = Execution::Exception {"Test exception"sv};
+            auto thrower = [] () { Execution::Throw (kExcept_); };
+            EXPECT_THROW (RunAll (thrower, [] () { return 3; }), Execution::Exception<>);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution, Function_)
+    {
+        Debug::TraceContextBumper ctx{"Function_"};
         // Make sure Function<> works as well as std::function
         {
             Function<int (bool)> f = [] ([[maybe_unused]] bool b) -> int { return 3; };
@@ -78,9 +109,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution, Test2_CommandLine_)
+    GTEST_TEST (Foundation_Execution, CommandLine_)
     {
-        Debug::TraceContextBumper ctx{"Test2_CommandLine_"};
+        Debug::TraceContextBumper ctx{"CommandLine_"};
         {
             String           cmdLine = "/bin/sh -c \"a b c\"";
             Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
@@ -179,8 +210,9 @@ namespace {
         }
 
     }
-    GTEST_TEST (Foundation_Execution, Test4_ConstantProperty_)
+    GTEST_TEST (Foundation_Execution, ConstantProperty_)
     {
+        Debug::TraceContextBumper ctx{"ConstantProperty_"};
         using namespace Test4_ConstantProperty_;
         Private_::T1_::DoIt ();
         Private_::T2_::DoIt ();
@@ -268,6 +300,7 @@ namespace {
     }
     GTEST_TEST (Foundation_Execution, ModuleGetterSetter_)
     {
+        Debug::TraceContextBumper ctx{"ModuleGetterSetter_"};
         using namespace Test5_ModuleGetterSetter_;
         Execution::Logger::Activator logMgrActivator; // needed for OptionsFile test
         PRIVATE_::TestUse1_ ();
@@ -289,7 +322,8 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Execution, ThrowIfNullCheck)
     {
-        auto throwFailureCalls = [] () -> void {
+        Debug::TraceContextBumper ctx{"ThrowIfNullCheck"};
+        auto                      throwFailureCalls = [] () -> void {
             {
                 void* p = nullptr;
                 ThrowIfNull (p);
@@ -308,6 +342,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Execution, kInnerOuterExceptionStackHandlingWhile)
     {
+        Debug::TraceContextBumper     ctx{"kInnerOuterExceptionStackHandlingWhile"};
         constexpr Execution::Activity kActivityOuter_{"OUTER"sv};
         Execution::DeclareActivity    declareActivity{&kActivityOuter_};
         constexpr Execution::Activity kActivityINNER_{"INNER"sv};

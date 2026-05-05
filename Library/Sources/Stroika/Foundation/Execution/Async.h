@@ -23,15 +23,51 @@ namespace Stroika::Foundation::Execution {
      *
      *  Could be implemented with std::async, or ThreadPool.
      * 
-     *  @todo describe if any of the functions throw... (probably rethrow the first, but NYI) - and then does this interrupt the rest?
-     *  Probably SHOULD but not clear always can.
+     *  If any function throws, an arbitrary one of those exceptions will be rethrown by RunAll.
      * 
-     *  @todo could enhance this to also return tuple of return results of each function;
-     *  no guarantee all run in parallel, but suggestion they are. Typically will auto-allocate threadpool of size
-     *  #virtual CPUs (hardware_parallelism). 
+     *  All functions will complete before RunAll returns (regardless of whether any throw).
+     * 
+     *  \note no guarantee all run in parallel, but suggestion they are.
+     * 
+     *  This function returns the value of all completed functions as a tuple, unless they return void, in which case they are
+     *  skipped, and for the special case of all returning void, the RunAll return type is void.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          auto results = RunAll ([] () { return 1; }, [] () { return 2; }, [] () { return 3; });
+     *          EXPECT_EQ (results, make_tuple (1, 2, 3));
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          tuple<int> results = RunAll ([] () -> void {}, [] () { return 3; });
+     *          EXPECT_EQ (results, make_tuple (3));
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          int a = 0;
+     *          int b = 1;
+     *          int c = 2;
+     *          RunAll ([&] () { a = 3; }, [&] () { b = 4; }, [&] () { c = 5; });
+     *          EXPECT_EQ (a, 3);
+     *          EXPECT_EQ (b, 4);
+     *          EXPECT_EQ (c, 5);
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          static const auto kExcept_ = Execution::Exception {"Test exception"sv};
+     *          auto thrower = [] () { Execution::Throw (kExcept_); };
+     *          EXPECT_THROW (RunAll (thrower, [] () { return 3; }), Execution::Exception<>);
+     *      \endcode
+     * 
+     *  \todo future versions of this function MAY cancel running functions if one throws.
+     * 
+     *  @todo Typically will auto-allocate threadpool of size  #virtual CPUs (hardware_parallelism). 
      */
     template <invocable<>... I>
-    void RunAll (I... functions);
+    auto RunAll (I... functions);
 
 }
 
