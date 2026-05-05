@@ -16,6 +16,8 @@ especially those they need to be aware of when upgrading.
 
 - Doxygen/Docs
 
+- new ubuntu build/test
+
 - SSL impl on webserver
 
 - hopefully final before first alpha
