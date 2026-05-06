@@ -2703,6 +2703,49 @@ In file included from /usr/include/c++/11/vector:76,
 #endif
 
 /*
+andbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/Async.inl: In instantiation of ‘Stroika::Foundation::Execution::RunAll<{anonymous}::Foundation_Execution_AsyncRunAll__Test::TestBody()::<lambda()>, {anonymous}::Foundation_Execution_AsyncRunAll__Test::TestBody()::<lambda()>, {anonymous}::Foundation_Execution_AsyncRunAll__Test::TestBody()::<lambda()> >({anonymous}::Foundation_Execution_AsyncRunAll__Test::TestBody()::<lambda()>, {anonymous}::Foundation_Execution_AsyncRunAll__Test::TestBody()::<lambda()>, {anonymous}::Foundation_Execution_AsyncRunAll__Test::TestBody()::<lambda()>)::<lambda(std::index_sequence<I ...>)> [with long unsigned int ...Idx = {0, 1, 2}; std::index_sequence<I ...> = std::integer_sequence<long unsigned int, 0, 1, 2>]’:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/Async.inl:37:14:   required from ‘auto Stroika::Foundation::Execution::RunAll(I ...) [with I = {{anonymous}::Foundation_Execution_AsyncRunAll__Test::TestBody()::<lambda()>, {anonymous}::Foundation_Execution_AsyncRunAll__Test::TestBody()::<lambda()>, {anonymous}::Foundation_Execution_AsyncRunAll__Test::TestBody()::<lambda()>}]’
+Test.cpp:53:35:   required from here
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/Async.inl:28:34: internal compiler error: in tsubst_pack_expansion, at cp/pt.c:13271
+   28 |                 return tuple_cat ([&] () {
+      |                        ~~~~~~~~~~^~~~~~~~~
+   29 |                     if constexpr (not is_void_v<invoke_result_t<tuple_element_t<Idx, tuple<I...>>>>) {
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   30 |                         return make_tuple (get<Idx> (futures).get ());
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   31 |                     }
+      |                     ~             
+   32 |                     else {
+      |                     ~~~~~~        
+   33 |                         get<Idx> (futures).get (); // wait for completion, but skip result
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   34 |                         return tuple<> ();
+      |                         ~~~~~~~~~~~~~~~~~~
+   35 |                     }
+      |                     ~             
+   36 |                 }()...);
+      |                 ~~~~~~~           
+0x7f4fbd880d8f __libc_start_call_main
+        ../sysdeps/nptl/libc_start_call_main.h:58
+0x7f4fbd880e3f __libc_start_main_impl
+        ../csu/libc-start.c:392
+Please submit a full bug report,
+with preprocessed source if appropriate.
+Please include the complete backtrace with any bug report.
+See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
+make[3]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:66: /Sandbox/Stroika-Dev/IntermediateFiles/g++-11-debug/Tests/42/Test.o] Error 1
+make[2]: *** [Makefile:163: 42] Error 2
+make[2]: *** Waiting for unfinished jobs....
+*/
+#ifndef qCompilerAndStdLib_tsubst_pack_expansion_Buggy
+#if defined(__GNUC__)
+#define qCompilerAndStdLib_tsubst_pack_expansion_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+#else
+#define qCompilerAndStdLib_tsubst_pack_expansion_Buggy 0
+#endif
+#endif
+
+/*
  - Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
    Stroika/ThirdPartyComponents/libxml2 Build 2.12.5 {g++-13-debug}:
       libxml2 2.12.5 - Checking ...  Stroika/ThirdPartyComponents/libxml2 -    [Succeeded]

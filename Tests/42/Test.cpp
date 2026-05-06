@@ -49,6 +49,7 @@ namespace {
     GTEST_TEST (Foundation_Execution, AsyncRunAll_)
     {
         Debug::TraceContextBumper ctx{"AsyncRunAll_"};
+#if !qCompilerAndStdLib_tsubst_pack_expansion_Buggy
         {
             auto results = RunAll ([] () { return 1; }, [] () { return 2; }, [] () { return 3; });
             EXPECT_EQ (results, make_tuple (1, 2, 3));
@@ -71,6 +72,7 @@ namespace {
             auto              thrower  = [] () { Execution::Throw (kExcept_); };
             EXPECT_THROW (RunAll (thrower, [] () { return 3; }), Execution::Exception<>);
         }
+#endif
     }
 }
 
