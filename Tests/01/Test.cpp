@@ -702,6 +702,16 @@ namespace {
         Test8_NewLRUCacheConstructors_Private_::T_WithHashTableCTORs1_ ();
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Caching, ValuelessSentinalType)
+    {
+        using namespace Time;
+        static Cache::TimedCache<int, Cache::ValuelessSentinalType> sFailedRecentlyCache_{Duration{5min}};
+        EXPECT_FALSE (sFailedRecentlyCache_.Lookup (3));
+        sFailedRecentlyCache_.Add (4);
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

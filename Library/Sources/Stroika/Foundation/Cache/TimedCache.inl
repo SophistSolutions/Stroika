@@ -172,8 +172,8 @@ namespace Stroika::Foundation::Cache {
         return Traversal::Iterable<KEY>{move (r)};
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <typename K>
-        requires (IKeyedCache<K>)
+    template <typename K, typename V>
+        requires (IKeyedCache<K> and not IValuelessCache<V>)
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<K> key) const
     {
         shared_lock                         critSec{fMaybeMutex_};
@@ -195,8 +195,8 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <typename K>
-        requires (IKeyedCache<K>)
+    template <typename K, typename V>
+        requires (IKeyedCache<K> and not IValuelessCache<V>)
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<K> key)
     {
         shared_lock                   critSec{fMaybeMutex_};
@@ -309,7 +309,6 @@ namespace Stroika::Foundation::Cache {
         requires (IKeyedCache<K> and IValuelessCache<V>)
     optional<KEY> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<K> key) const
     {
-        static_assert (not IKeyedCache<KEY>); // cuz cannot be both unkeyed and valueless
         shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i = fData_.find (key);
         if (i == fData_.end ()) {
@@ -317,10 +316,10 @@ namespace Stroika::Foundation::Cache {
             return nullopt;
         }
         else {
-            if (Expired_ (*i)) {
+            if (Expired_ (i->second)) {
                 /*
-                 *  Cannot update fData_ to indicate item expired const constant overload
-                 */
+                    *  Cannot update fData_ to indicate item expired const constant overload
+                    */
                 fStats_.IncrementMisses ();
                 return nullopt;
             }
@@ -473,7 +472,7 @@ namespace Stroika::Foundation::Cache {
             return nullopt;
         }
         else {
-            if (Expired_ (*i)) {
+            if (Expired_ (i->second)) {
                 /*
                  *  Cannot update fData_ to indicate item expired const constant overload
                  */

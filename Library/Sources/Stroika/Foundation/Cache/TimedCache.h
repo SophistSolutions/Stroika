@@ -696,11 +696,11 @@ namespace Stroika::Foundation::Cache {
          *  \note @todo - Lookup () - for VALUELESS collection - argument K should be not just K, but anything COMPARABLE with K!!! - that way
          *                strictly more flexible - but can fix this later, since compatible API
          */
-        template <typename K = KEY>
-            requires (IKeyedCache<K>)
+        template <typename K = KEY, typename V = VALUE>
+            requires (IKeyedCache<K> and not IValuelessCache<V>)
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key) const;
-        template <typename K = KEY>
-            requires (IKeyedCache<K>)
+        template <typename K = KEY, typename V = VALUE>
+            requires (IKeyedCache<K> and not IValuelessCache<V>)
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key);
         template <typename K = KEY>
             requires (IKeyedCache<K> and TRAITS::kTrackFreshness)
