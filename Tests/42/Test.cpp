@@ -67,8 +67,8 @@ namespace {
             EXPECT_EQ (c, 5);
         }
         {
-            static const auto kExcept_ = Execution::Exception {"Test exception"sv};
-            auto thrower = [] () { Execution::Throw (kExcept_); };
+            static const auto kExcept_ = Execution::Exception{"Test exception"sv};
+            auto              thrower  = [] () { Execution::Throw (kExcept_); };
             EXPECT_THROW (RunAll (thrower, [] () { return 3; }), Execution::Exception<>);
         }
     }
