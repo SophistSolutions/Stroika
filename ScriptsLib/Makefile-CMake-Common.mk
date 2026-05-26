@@ -83,14 +83,10 @@ CMAKE_ARGS+= -DCMAKE_C_COMPILER='$(CC)'
 CMAKE_ARGS+= -DCMAKE_CXX_COMPILER='$(CXX)'
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-ifeq ($(BuildPlatform),VisualStudio.Net-2022)
 ifeq (x86_64,$(ARCH))
 CMAKE_ARGS+= -A x64
 else
 CMAKE_ARGS+= -A Win32
-endif
-else
-$(error "unsupported version of visual studio.net")
 endif
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
@@ -119,7 +115,7 @@ CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
 #
 #	With other cmake based projects, that doesn't appear to be a problem
 #
-ifeq ($(BuildPlatform),VisualStudio.Net-2022)
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
