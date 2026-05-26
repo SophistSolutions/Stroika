@@ -75,9 +75,12 @@ sub GetDefaultToolsBuildDir ()
 {
 	local $PLATFORM = shift;
 
-	local @names = ("2022");
+	local @names = ("18");	# default to vs2k2026
 	if ($PLATFORM eq "VisualStudio.Net-2022") {
 		@names = ("2022");
+	}
+	elsif ($PLATFORM eq "VisualStudio.Net-2026") {
+		@names = ("18");
 	}
 	elsif ($PLATFORM eq "VisualStudio.Net") {
 		# keep default
