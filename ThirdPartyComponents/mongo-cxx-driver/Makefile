@@ -8,6 +8,9 @@
 #	NOTE this project/makefile DOESNT explicitly list the MongoC driver or other dependencies - these are automatically fetched
 #	by the MongoCXX build scripts.
 #
+#	NOTE: this makefile - to build - requires an internet connection, as the build process downloads files
+#	todo: nice if we could fix that to use 'Origs-Cache' mike most of our other thirdpartycomponents.
+#
 StroikaRoot	:=	$(abspath ../..)/
 
 include ${StroikaRoot}/ScriptsLib/SharedMakeVariables-Default.mk
