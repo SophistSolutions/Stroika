@@ -87,10 +87,8 @@ namespace Stroika::Foundation::Time {
 
     using chrono::year_month_day;
 
-    DISABLE_COMPILER_MSC_WARNING_START (4455)
-    using std::literals::chrono_literals::operator"" d; // day
-    using std::literals::chrono_literals::operator"" y; // year
-    DISABLE_COMPILER_MSC_WARNING_END (4455)
+    using std::literals::chrono_literals::operator""d; // day
+    using std::literals::chrono_literals::operator""y; // year
     using std::chrono::operator/; // year/month/day -> year_month_day
 
     /**
