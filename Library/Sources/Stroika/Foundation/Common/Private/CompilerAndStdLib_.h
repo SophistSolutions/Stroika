@@ -110,18 +110,26 @@
 
 #elif defined(_MSC_VER)
 
+// v143 14.3 to 14.4    1930 to 1949    Visual Studio 2022 (All updates)
 #define _MSC_VER_2k22_17Pt9_ 1939
 #define _MSC_VER_2k22_17Pt10_ 1940
 #define _MSC_VER_2k22_17Pt11_ 1941
 #define _MSC_VER_2k22_17Pt12_ 1942
 #define _MSC_VER_2k22_17Pt13_ 1943
+// "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/cl.exe" -v
+//            Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35227 for x64
 #define _MSC_VER_2k22_17Pt14_ 1944
+
+//v145  14.5    1950 and above  Visual Studio 2026
+// "C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/HostX64/x64/cl.exe" -v
+//              Microsoft (R) C/C++ Optimizing Compiler Version 19.51.36244 for x64
+#define _MSC_VER_v145_1951_ 1951
 
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #if _MSC_VER < _MSC_VER_2k22_17Pt9_
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2022 (17.9) - (use Stroika v2.1 or earlier)"
-#elif _MSC_VER <= _MSC_VER_2k22_17Pt14_
+#elif _MSC_VER <= _MSC_VER_v145_1951_
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #else
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
@@ -1025,8 +1033,9 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 // still broken in _MSC_VER_2k22_17Pt12_
 // still broken in _MSC_VER_2k22_17Pt13_
 // still broken in _MSC_VER_2k22_17Pt14_
+// still broken in _MSC_VER_v145_1951_
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy                                                                    \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy 0
 #endif
@@ -1627,6 +1636,22 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 2>Creating Builds/Debug/Stroika-Frameworks.lib ...
 
         APPEARS (not clear) to be something todo with too many calls to GetObjectOwningField getting MSVC confused.
+
+
+             Compiling Library/Sources/Stroika/Frameworks/Led/BiDiLayoutEngine.cpp ... 
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Memory\Common.inl(395): error C2999: maximum template instantiation depth of 1000 exceeded (see '/templateDepth:N')
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Memory\Common.inl(395): note: the template instantiation context (the oldest one first) is
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp(193): note: while compiling class template member function 'Stroika::Foundation::Common::Property<Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor>>::Property(G,S)'
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(94): note: while evaluating concept 'invocable<`Stroika::Frameworks::WebServer::ConnectionManager::ConnectionManager'::`1'::<lambda_208_>,Stroika::Foundation::Common::WriteOnlyProperty<Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor> > *,Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor> >'
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\include\concepts(245): note: see reference to function template instantiation 'unknown-type std::invoke(_Callable &&,_Ty1 &&,_Types2 ...) noexcept(<expr>)' being compiled
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\include\type_traits(1808): note: while compiling class template member function 'unknown-type std::_Invoker_functor::_Call(_Callable &&,_Types ...) noexcept(<expr>)'
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\include\type_traits(1707): note: see reference to function template instantiation 'void Stroika::Frameworks::WebServer::ConnectionManager::{ctor}::<lambda_208_>::operator ()<Stroika::Foundation::Common::WriteOnlyProperty<Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor>>,Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor>>(_T1 *,const _T2 &) const' being compiled
+        with
+        [
+            _T1=Stroika::Foundation::Common::WriteOnlyProperty<Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor>>,
+            _T2=Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor>
+        ]
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp(199): note: see reference to function template instantiation 'OUTER_OBJECT *Stroika::Foundation::Memory::GetObjectOwningField<_T1,Stroika::Frameworks::WebServer::ConnectionManager,Stroika::Foundation::Common::Property<Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor>>>(APPARENT_MEMBER_TYPE *,AGGREGATED_OBJECT_TYPE Stroika::Frameworks::WebServer::ConnectionManager::* )' being compiled
 */
 #ifndef qCompilerAndStdLib_function_dependency_too_complex_Buggy
 
@@ -1635,8 +1660,9 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 // first seen broken in _MSC_VER_2k22_17Pt12_
 // seen broken in _MSC_VER_2k22_17Pt13_
 // seen broken in _MSC_VER_2k22_17Pt14_
+// seen broken in _MSC_VER_v145_1951_
 #define qCompilerAndStdLib_function_dependency_too_complex_Buggy                                                                           \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_function_dependency_too_complex_Buggy 0
 #endif
@@ -2012,8 +2038,9 @@ C:\Sandbox\Stroika\DevRoot\Tests\22\Test.cpp(104): note: see reference to functi
 // still broken in _MSC_VER_2k22_17Pt12_
 // still broken in _MSC_VER_2k22_17Pt13_
 // still broken in _MSC_VER_2k22_17Pt14_
+// still broken in _MSC_VER_v145_1951_
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #elif defined(__clang__)
 #if defined(__APPLE__)
 // broken in clang++17 for Apple
@@ -2212,7 +2239,8 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 // verified still broken in _MSC_VER_2k22_17Pt12_
 // verified still broken in _MSC_VER_2k22_17Pt13_
 // verified still broken in _MSC_VER_2k22_17Pt14_
-#define qCompilerAndStdLib_StdFmtOfPath_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+// verified still broken in _MSC_VER_v145_1951_
+#define qCompilerAndStdLib_StdFmtOfPath_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_StdFmtOfPath_Buggy 0
 #endif
@@ -2432,7 +2460,8 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 // verified still broken in _MSC_VER_2k22_17Pt12_
 // verified still broken in _MSC_VER_2k22_17Pt13_
 // verified still broken in _MSC_VER_2k22_17Pt14_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+// verified still broken in _MSC_VER_v145_1951_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -3033,8 +3062,8 @@ C:\Sandbox\Stroika\DevRoot\Samples\SystemPerformanceClient\Sources\SystemPerform
 // still broken in _MSC_VER_2k22_17Pt12_
 // still broken in _MSC_VER_2k22_17Pt13_
 // still broken in _MSC_VER_2k22_17Pt14_
-#define qCompilerAndStdLib_template_template_auto_deduced_Buggy                                                                            \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+// still broken in _MSC_VER_v145_1951_
+#define qCompilerAndStdLib_template_template_auto_deduced_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_template_template_auto_deduced_Buggy 0
 #endif
@@ -3142,8 +3171,9 @@ FAILED: Assert; Not Reached;Stroika::Foundation::Execution::Private_::SystemErro
 // Verified still broken in _MSC_VER_2k22_17Pt12_
 // Verified still broken in _MSC_VER_2k22_17Pt13_
 // Verified still broken in _MSC_VER_2k22_17Pt14_
+// Verified still broken in _MSC_VER_v145_1951_
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy                                                                           \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy 0
 #endif
@@ -3349,8 +3379,9 @@ TRIED alignas to fix on the array but no luck
 // verified broken in _MSC_VER_2k22_17Pt12_
 // verified broken in _MSC_VER_2k22_17Pt13_
 // verified broken in _MSC_VER_2k22_17Pt14_
+// verified broken in _MSC_VER_v145_1951_
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
 #endif
@@ -3411,6 +3442,7 @@ TRIED alignas to fix on the array but no luck
 // verified still broken in _MSC_VER_2k22_17Pt12_
 // verified still broken in _MSC_VER_2k22_17Pt13_
 // verified still broken in _MSC_VER_2k22_17Pt14_
+// appears fixed in _MSC_VER_v145_1951_
 #define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy                                                       \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
 #else
@@ -3438,13 +3470,17 @@ TRIED alignas to fix on the array but no luck
 
 /**
  *  This controls if you must use [[msvc::no_unique_address]] or [[no_unique_address]]
+ * 
+ *      example failure in
+ *                  static_assert (sizeof (SharedByValue<int>) == sizeof (shared_ptr<int>)); // no space overhead for copier (by default)
  */
 #ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy
 
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k22_17Pt14_
+// verified still broken in _MSC_VER_v145_1951_
 #define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy                                                              \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy 0
 #endif
@@ -3453,12 +3489,17 @@ TRIED alignas to fix on the array but no luck
 
 /**
  *  This controls even [[msvc::no_unique_address]] is so broken unsafe to use in many places
+ * 
+   [12] Foundation::Containers::Bijection - Builds/Debug26-nb/Tests/Test12.exe --gtest_brief
+         unknown file: error: SEH exception with code 0xc0000005 thrown in the test body.         Stack trace:                           [  FAILED  ] Foundation_Containers_Bijection.all (30 ms)         [==========] 1 test from 1 test suite ran. (31 ms total)         [  PASSED  ] 0 tests.
+    [13] Foundation::Containers::Collection - Bui
  */
 #ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
 
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k22_17Pt14_
-#define qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+// still broken in _MSC_VER_v145_1951_
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy 0
 #endif
@@ -3499,7 +3540,8 @@ TRIED alignas to fix on the array but no luck
 // verified still broken in _MSC_VER_2k22_17Pt12_
 // verified still broken in _MSC_VER_2k22_17Pt13_
 // verified still broken in _MSC_VER_2k22_17Pt14_
-#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+// verified still broken in _MSC_VER_v145_1951_
+#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_locale_utf8_string_convert_Buggy 0
 #endif
