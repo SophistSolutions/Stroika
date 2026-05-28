@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Time {
 
     using std::literals::chrono_literals::operator""d; // day
     using std::literals::chrono_literals::operator""y; // year
-    using std::chrono::operator/; // year/month/day -> year_month_day
+    using std::chrono::operator/;                      // year/month/day -> year_month_day
 
     /**
      *  \brief Simple wrapper on std::chrono::weekday, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'weekday' in most places
