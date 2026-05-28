@@ -116,7 +116,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         /**
          */
         Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers,
-                  const optional<SSLResultInfo>& sslInfo = optional<SSLResultInfo> ());
+                  const optional<SSLResultInfo>& sslInfo = optional<SSLResultInfo>{});
 
     public:
         /**
