@@ -289,7 +289,7 @@ sub	DoSetThirdPartyComponents_
 	elsif ($x eq "fill-in-defaults") {
 		# Called late enuf that other variables have been filled in...
 		if (!defined $FEATUREFLAG_ATLMFC) {
-			if ($BuildPlatform eq "VisualStudio.Net-2022") {
+			if (($BuildPlatform eq "VisualStudio.Net-2022") or ($BuildPlatform eq "VisualStudio.Net-2026")) {
 				# in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
 				if (-e "$VSVARS_VCToolsInstallDir/atlmfc/include/afxext.h") {
 					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
@@ -456,7 +456,7 @@ sub	DoHelp_
 		print("	    --arch {ARCH}                                    /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
 		print("	    [--config-tag {TAG-NAME}]*                       /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
 		print("	    --build-by-default never|always|{uname}          /* Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT */\n");
-		print("	    --build-platform {PLATFORM}                      /* Specifies the BuildPlatform (currently supported: Unix (even on macos), VisualStudio.Net-2022) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1) */\n");
+		print("	    --build-platform {PLATFORM}                      /* Specifies the BuildPlatform (currently supported: Unix (even on macos), VisualStudio.Net-2022, VisualStudio.Net-2026) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1) */\n");
 		print("	    --target-platforms {TargetPlatforms}             /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
 		print("	    --build-tools-root {BuildToolsRoot}              /* Specifies the BuildToolsRoot (makefile variable) - initially just for visual studio - usually auto-detected */\n");
 		print("	    --assertions { enable|disable|default }          /* Enables/disable assertion feature (setting qStroika_Foundation_Debug_AssertionsChecked) */\n");
@@ -890,6 +890,9 @@ sub	SetInitialDefaults_
 	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
 		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+
+##TMPHACK SWAP ORDER TIL WE FULL SUPPORT 26
+		# Fallback to VS2k 2022
 		if ($BuildPlatform eq "") {
 			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
 			if (scalar(@files) != 0) {
@@ -898,6 +901,17 @@ sub	SetInitialDefaults_
 			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2022/*/VC'");
 			if (scalar(@files) != 0) {
 				$BuildPlatform = 'VisualStudio.Net-2022';
+			}
+		}
+		# Try vs2k26
+		if ($BuildPlatform eq "") {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/18/*/VC'");
+			if (scalar(@files) != 0) {
+				$BuildPlatform = 'VisualStudio.Net-2026';
+			}
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/18/*/VC'");
+			if (scalar(@files) != 0) {
+				$BuildPlatform = 'VisualStudio.Net-2026';
 			}
 		}
 	}
@@ -976,7 +990,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 
 		#autodetect ATLMFC (Express verison missing it)
 		if (!defined $FEATUREFLAG_ATLMFC) {
-			if ($BuildPlatform eq "VisualStudio.Net-2022") {
+			if (($BuildPlatform eq "VisualStudio.Net-2022") or ($BuildPlatform eq "VisualStudio.Net-2026")) {
 				if (!defined $VSVARS_VCToolsInstallDir) {
 					$VSVARS_VCToolsInstallDir = GetMSVCVarName_('VCToolsInstallDir');
 				}
@@ -2275,7 +2289,7 @@ sub	CHECK_OPTIONS_
 	if ($BuildPlatform eq "VisualStudio.Net-2019") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2019");
 	}
-	my @validProjectPlatfromSubDirs = ("Unix", "VisualStudio.Net-2022");
+	my @validProjectPlatfromSubDirs = ("Unix", "VisualStudio.Net-2022", "VisualStudio.Net-2026");
 	my %params = map { $_ => 1 } @validProjectPlatfromSubDirs;
 	if (not exists ($params{$BuildPlatform})) {
 		die ("Unrecognized --build-platform argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
