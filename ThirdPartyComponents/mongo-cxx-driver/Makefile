@@ -127,8 +127,9 @@ endif
 
 # @todo RETEST!, and if needed, better document why/what fails...
 # NOTE getting asan errors on windows - til we have basic function working - try disabling
-CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
-CXXFLAGS:=$(filter-out -fsanitize=address, $(CXXFLAGS))
+## LGP NEED BETTER DOCS ON THIS - AND NOW THIS MAYBE CAUSING FAILURE WITH VC2k2026-- 
+# CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
+# CXXFLAGS:=$(filter-out -fsanitize=address, $(CXXFLAGS))
 
 # [ 72%] [32mBuilding CXX object src/bsoncxx/CMakeFiles/bsoncxx_static.dir/lib/bsoncxx/v_noabi/bsoncxx/array/element.cpp.o[0m
 #... 88 |     static const strong_ordering less;
@@ -301,7 +302,6 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/zlib_obj.dir/${CMAKE_BUILD_TYPE_}/zlib_obj.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
 	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/bsoncxx/${CMAKE_BUILD_TYPE_}/bsoncxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
 	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/mongocxx/${CMAKE_BUILD_TYPE_}/mongocxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-
 endif
 
 
