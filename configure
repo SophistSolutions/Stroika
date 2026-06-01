@@ -1391,11 +1391,15 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		}
 	}
 
+	## libboost_json.lib(src.obj) : error LNK2038: mismatch detected for 'annotate_optional': value '0' doesn't match value '1' in ArchiveUtility.obj
 	## LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost...
 	## https://learn.microsoft.com/en-us/answers/questions/864574/enabling-address-sanitizer-results-in-error-lnk203
 	## https://learn.microsoft.com/en-us/cpp/sanitizers/error-container-overflow?view=msvc-170
-	if (IsMSVCCompiler_($COMPILER_DRIVER) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER) >= 192930037 && IsTargettingSanitizer_ ('address')) {
+	if (IsMSVCCompiler_($COMPILER_DRIVER) 
+		&& 192930037 <= Get_MSVC_CL_Version_ ($COMPILER_DRIVER) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER) < 195100000
+		&& IsTargettingSanitizer_ ('address')) {
 		## Workaround issue which started in 17.6 compiler
+		## But fixed and required NOT present (this workaround) in msvc 19.51
 		push @Platform_CPPFLAGS_B4Includes, '-D_DISABLE_VECTOR_ANNOTATION';
 		push @Platform_CPPFLAGS_B4Includes, '-D_DISABLE_STRING_ANNOTATION';
 	}
