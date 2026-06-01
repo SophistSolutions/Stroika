@@ -2798,6 +2798,7 @@ sub PostProcessOptions_ ()
 	}
 	if (! defined $FEATUREFLAG_WIX) {
 		if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+			# No need to install, because its checked into ThirdPartyComponents/WiX
 			$FEATUREFLAG_WIX = "use";
 		}
 		else {
