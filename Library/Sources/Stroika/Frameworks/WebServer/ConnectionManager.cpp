@@ -83,7 +83,7 @@ namespace {
 String WebServer::ConnectionManager::Statistics::ThreadPool::ToString () const
 {
     StringBuilder sb = this->ThreadPool::Statistics::ToString ().SubString (0, -1);
-    sb << ", thread-entry-cont: "sv << fThreadEntryCount;
+    sb << ", threadEntryCount: "sv << fThreadEntryCount;
     sb << "}"sv;
     return sb;
 }
@@ -97,12 +97,12 @@ String WebServer::ConnectionManager::Statistics::ConnectionStatistics::ToString 
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "n-open-connections: "sv << fNumberOfOpenConnections;
-    sb << ", n-active-connections: "sv << fNumberOfActiveConnections;
-    sb << ", duration-open-connections: "sv << fDurationOfOpenConnections;
-    sb << ", duration-active-requests: "sv << fDurationOfOpenConnectionsRequests;
-    sb << ", duration-open-requests: "sv << fDurationOfActiveConnectionsRequests;
-    sb << ", n-connections-pining-for-the-fjords: "sv << fConnectionsPiningForTheFjords;
+    sb << "nOpenConnections: "sv << fNumberOfOpenConnections;
+    sb << ", nActiveConnections: "sv << fNumberOfActiveConnections;
+    sb << ", durationOpenConnections: "sv << fDurationOfOpenConnections;
+    sb << ", durationActiveRequests: "sv << fDurationOfOpenConnectionsRequests;
+    sb << ", durationOpenRequests: "sv << fDurationOfActiveConnectionsRequests;
+    sb << ", nConnectionsPiningForTheFjords: "sv << fConnectionsPiningForTheFjords;
     sb << "}"sv;
     return sb;
 }
@@ -116,8 +116,8 @@ Characters::String WebServer::ConnectionManager::Statistics::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "ThreadPool: "sv << fThreadPool;
-    sb << ", Connections: "sv << fConnections;
+    sb << "threadPool: "sv << fThreadPool;
+    sb << ", connections: "sv << fConnections;
     sb << "}"sv;
     return sb;
 }

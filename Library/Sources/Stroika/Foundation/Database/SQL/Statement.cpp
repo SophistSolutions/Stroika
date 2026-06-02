@@ -178,9 +178,9 @@ String Statement::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
     StringBuilder                                  sb;
     sb << "{"sv;
-    sb << "Parameter-Bindings: "sv << GetParameters ();
-    sb << ", Column-Descriptions: "sv << GetColumns ();
-    sb << ", Original-SQL: "sv << GetSQL ();
+    sb << "parameterBindings: "sv << GetParameters ();
+    sb << ", columnDescriptions: "sv << GetColumns ();
+    sb << ", originalSQL: "sv << GetSQL ();
     sb << "}"sv;
     return sb;
 }

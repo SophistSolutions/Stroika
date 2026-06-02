@@ -23,10 +23,10 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
         Characters::StringBuilder sb;
         sb << "{"sv;
         if (fMaxIterations) {
-            sb << "Max-Iterations: "sv << fMaxIterations << ","sv;
+            sb << "maxIterations: "sv << fMaxIterations << ","sv;
         }
         if (fNoImprovementThreshold) {
-            sb << "No-Improvement-Threshold: "sv << fNoImprovementThreshold;
+            sb << "noImprovementThreshold: "sv << fNoImprovementThreshold;
         }
         sb << "}"sv;
         return sb;

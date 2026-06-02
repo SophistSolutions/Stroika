@@ -45,13 +45,13 @@ String Ping::Options::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMaxHops) {
-        sb << "Max-Hops: "sv << *fMaxHops;
+        sb << "maxHops: "sv << *fMaxHops;
     }
     if (fTimeout) {
-        sb << ", Timeout: "sv << *fTimeout;
+        sb << ", timeout: "sv << *fTimeout;
     }
     if (fPacketPayloadSize) {
-        sb << ", Packet-Payload-Size: "sv << *fPacketPayloadSize;
+        sb << ", packetPayloadSize: "sv << *fPacketPayloadSize;
     }
     sb << "}"sv;
     return sb;
@@ -66,8 +66,8 @@ String Pinger::ResultType::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Ping-Time: "sv << fPingTime;
-    sb << ", Hop-Count: "sv << fHopCount;
+    sb << "pingTime: "sv << fPingTime;
+    sb << ", hopCount: "sv << fHopCount;
     sb << "}"sv;
     return sb;
 }
@@ -217,8 +217,8 @@ Characters::String SampleOptions::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Interval: "sv << fInterval;
-    sb << ", Count: "sv << fSampleCount;
+    sb << "interval: "sv << fInterval;
+    sb << ", count: "sv << fSampleCount;
     sb << "}"sv;
     return sb;
 }
@@ -233,13 +233,13 @@ String SampleResults::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMedianPingTime) {
-        sb << "Median-Ping-Time: "sv << *fMedianPingTime;
+        sb << "medianPingTime: "sv << *fMedianPingTime;
     }
     if (fMedianHopCount) {
-        sb << ", Median-Hop-Count: "sv << fMedianHopCount;
+        sb << ", medianHopCount: "sv << fMedianHopCount;
     }
     if (fExceptionCount != 0) {
-        sb << ", Exception-Count: "sv << fExceptionCount; // to see exceptions - run with sample-count = 1
+        sb << ", exceptionCount: "sv << fExceptionCount; // to see exceptions - run with sample-count = 1
     }
     sb << "}"sv;
     return sb;

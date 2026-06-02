@@ -403,16 +403,16 @@ Characters::String Network::ConnectionOrientedStreamSocket::KeepAliveOptions::To
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "Enabled: "sv << fEnabled;
+    sb << "enabled: "sv << fEnabled;
 #if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
     if (fMaxProbesSentBeforeDrop) {
-        sb << ", Max-Probes-Sent-Before-Drop: "sv << fMaxProbesSentBeforeDrop;
+        sb << ", maxProbesSentBeforeDrop: "sv << fMaxProbesSentBeforeDrop;
     }
     if (fTimeIdleBeforeSendingKeepalives) {
-        sb << ", Time-Idle-Before-Sending-Keepalives: "sv << fTimeIdleBeforeSendingKeepalives;
+        sb << ", timeIdleBeforeSendingKeepalives: "sv << fTimeIdleBeforeSendingKeepalives;
     }
     if (fTimeBetweenIndividualKeepaliveProbes) {
-        sb << ", Time-Between-Individual-Keepalive-Probes: "sv << fTimeBetweenIndividualKeepaliveProbes;
+        sb << ", timeBetweenIndividualKeepaliveProbes: "sv << fTimeBetweenIndividualKeepaliveProbes;
     }
 #endif
     sb << "}"sv;

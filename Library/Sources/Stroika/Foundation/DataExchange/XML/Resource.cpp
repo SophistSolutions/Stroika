@@ -29,7 +29,7 @@ String Name::ToString () const
         sb << "namespace: "sv << *fNamespace;
     }
     if (fPublicID) {
-        sb << ", PublicID: "sv << *fPublicID;
+        sb << ", publicID: "sv << *fPublicID;
     }
     if (fSystemID) {
         sb << ", systemID: "sv << *fSystemID;

@@ -179,9 +179,9 @@ String NeighborsMonitor::Neighbor::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "InternetAddress:"sv << fInternetAddress << ","sv;
-    sb << "HardwareAddress:"sv << fHardwareAddress << ","sv;
-    sb << "InterfaceID:"sv << fInterfaceID;
+    sb << "internetAddress:"sv << fInternetAddress << ","sv;
+    sb << "hardwareAddress:"sv << fHardwareAddress << ","sv;
+    sb << "interfaceID:"sv << fInterfaceID;
     sb << "}"sv;
     return sb;
 }

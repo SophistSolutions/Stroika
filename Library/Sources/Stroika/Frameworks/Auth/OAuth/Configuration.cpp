@@ -36,28 +36,28 @@ String ProviderConfiguration::ToString () const
     sb << "{"sv;
     sb << "name: " << name;
     if (openid_configuration_uri) {
-        sb << ", openid_configuration_uri: " << *openid_configuration_uri;
+        sb << ", openidConfigurationURI: " << *openid_configuration_uri;
     }
     if (auth_uri) {
-        sb << ", auth_uri: " << *auth_uri;
+        sb << ", authURI: " << *auth_uri;
     }
     if (token_uri) {
-        sb << ", token_uri: " << *token_uri;
+        sb << ", tokenURI: " << *token_uri;
     }
     if (userinfo_endpoint) {
-        sb << ", userinfo_endpoint: " << *userinfo_endpoint;
+        sb << ", userinfoEndpoint: " << *userinfo_endpoint;
     }
     if (revocation_endpoint) {
-        sb << ", revocation_endpoint: " << *revocation_endpoint;
+        sb << ", revocationEndpoint: " << *revocation_endpoint;
     }
     if (auth_provider_x509_cert_url) {
-        sb << ", auth_provider_x509_cert_url: " << *auth_provider_x509_cert_url;
+        sb << ", authProviderX509CertURL: " << *auth_provider_x509_cert_url;
     }
     if (introspection_endpoint) {
-        sb << ", introspection_endpoint: " << *introspection_endpoint;
+        sb << ", introspectionEndpoint: " << *introspection_endpoint;
     }
     if (tokeninfo_endpoint) {
-        sb << ", tokeninfo_endpoint: " << *tokeninfo_endpoint;
+        sb << ", tokeninfoEndpoint: " << *tokeninfo_endpoint;
     }
     sb << "}"sv;
     return sb;

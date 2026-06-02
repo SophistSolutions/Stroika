@@ -24,9 +24,9 @@ String TypedBLOB::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Data: " << fData;
+    sb << "data: " << fData;
     if (fType) {
-        sb << ", Type: " << fType;
+        sb << ", type: " << fType;
     }
     sb << "}"sv;
     return sb;

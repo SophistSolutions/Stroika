@@ -154,28 +154,28 @@ String CommandLine::Option::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fSingleCharName) {
-        sb << "SingleCharName: "sv << *fSingleCharName << ","sv;
+        sb << "singleCharName: "sv << *fSingleCharName << ","sv;
     }
     if (fLongName) {
-        sb << "LongName: "sv << *fLongName << ","sv;
+        sb << "longName: "sv << *fLongName << ","sv;
     }
     if (this->IsPositionArgument ()) {
         sb << "POSITIONAL ARGUMENT,"sv;
     }
-    sb << "CaseSensitive: "sv << fLongNameCaseSensitive << ","sv;
+    sb << "caseSensitive: "sv << fLongNameCaseSensitive << ","sv;
     if (not this->IsPositionArgument ()) {
-        sb << "SupportsArgument: "sv << fSupportsArgument << ","sv;
-        sb << "IfSupportsArgumentThenRequired: "sv << fIfSupportsArgumentThenRequired << ","sv;
+        sb << "supportsArgument: "sv << fSupportsArgument << ","sv;
+        sb << "ifSupportsArgumentThenRequired: "sv << fIfSupportsArgumentThenRequired << ","sv;
     }
-    sb << "Repeatable: "sv << fRepeatable << ","sv;
+    sb << "repeatable: "sv << fRepeatable << ","sv;
     if (fSkipFirstNArguments) {
-        sb << "SkipFirstNArguments: "sv << fSkipFirstNArguments << ","sv;
+        sb << "skipFirstNArguments: "sv << fSkipFirstNArguments << ","sv;
     }
     if (fHelpArgName) {
-        sb << "HelpArgName: "sv << *fHelpArgName << ","sv;
+        sb << "helpArgName: "sv << *fHelpArgName << ","sv;
     }
     if (fHelpOptionText) {
-        sb << "HelpOptionText: "sv << *fHelpOptionText << ","sv;
+        sb << "helpOptionText: "sv << *fHelpOptionText << ","sv;
     }
     sb << "}"sv;
     return sb;

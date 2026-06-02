@@ -21,8 +21,8 @@ String Measurement::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Type: "sv << fType;
-    sb << ", Value: "sv << fValue;
+    sb << "type: "sv << fType;
+    sb << ", value: "sv << fValue;
     sb << "}"sv;
     return sb;
 }

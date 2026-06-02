@@ -125,9 +125,9 @@ String Request::ToString () const
     StringBuilder                                         sb;
     sb << "{"sv;
     sb << "HTTPVersion: "sv << fHTTPVersion_;
-    sb << ", Method: "sv << fMethod_;
+    sb << ", method: "sv << fMethod_;
     sb << ", URL: "sv << fURL_;
-    sb << ", Headers: "sv << fHeaders_;
+    sb << ", headers: "sv << fHeaders_;
     sb << "}"sv;
     return sb;
 }

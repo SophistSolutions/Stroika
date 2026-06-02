@@ -651,12 +651,12 @@ String Response::ToString () const
     sb << "Socket: "sv << fSocket_;
     sb << ", chunkedTransferMode: "sv << this->chunkedTransferMode ();
     sb << ", hasEntityBody: "sv << this->hasEntityBody ();
-    sb << ", State: "sv << fState_;
-    sb << ", CodePage: "sv << fCodePage_;
-    //sb << ", BodyRawStream_: "sv << fBodyRawStream_ ;       // @todo write seek pos, non-null etc
-    //sb << ", ProtocolOutputStream: "sv << fProtocolOutputStream_ ;       // @todo write seek pos, non-null etc
-    //sb << ", BodyCompressedStream_: "sv << fBodyCompressedStream_ ;       // @todo write seek pos, non-null etc
-    sb << ", HeadMode: "sv << fHeadMode_;
+    sb << ", state: "sv << fState_;
+    sb << ", codePage: "sv << fCodePage_;
+    //sb << ", bodyRawStream_: "sv << fBodyRawStream_ ;       // @todo write seek pos, non-null etc
+    //sb << ", protocolOutputStream: "sv << fProtocolOutputStream_ ;       // @todo write seek pos, non-null etc
+    //sb << ", bodyCompressedStream_: "sv << fBodyCompressedStream_ ;       // @todo write seek pos, non-null etc
+    sb << ", headMode: "sv << fHeadMode_;
     sb << ", ETagDigester: "sv << fETagDigester_.has_value ();
     sb << "}"sv;
     return sb;

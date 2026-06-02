@@ -50,12 +50,12 @@ String XPath::Expression::Options::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Namespaces: "sv << fNamespaces;
+    sb << "namespaces: "sv << fNamespaces;
     if (fResultTypeIndex) {
-        sb << ", ResultTypeIndex: "sv << fResultTypeIndex;
+        sb << ", resultTypeIndex: "sv << fResultTypeIndex;
     }
-    sb << ", Ordered: "sv << fOrdered;
-    sb << ", Snapshot: "sv << fSnapshot;
+    sb << ", ordered: "sv << fOrdered;
+    sb << ", snapshot: "sv << fSnapshot;
     sb << "}"sv;
     return sb;
 }

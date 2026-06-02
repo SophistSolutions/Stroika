@@ -102,17 +102,17 @@ String Interface::WirelessInfo::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     sb << "SSID: "sv << fSSID;
-    sb << ", State: "sv << fState;
-    sb << ", ConnectionMode: "sv << fConnectionMode;
-    sb << ", ProfileName: "sv << fProfileName;
+    sb << ", state: "sv << fState;
+    sb << ", connectionMode: "sv << fConnectionMode;
+    sb << ", profileName: "sv << fProfileName;
     sb << ", BSSType: "sv << fBSSType;
     sb << ", MACAddress: "sv << fMACAddress;
-    sb << ", PhysicalConnectionType: "sv << fPhysicalConnectionType;
-    sb << ", SignalQuality: "sv << fSignalQuality;
-    sb << ", SecurityEnabled: "sv << fSecurityEnabled;
+    sb << ", physicalConnectionType: "sv << fPhysicalConnectionType;
+    sb << ", signalQuality: "sv << fSignalQuality;
+    sb << ", securityEnabled: "sv << fSecurityEnabled;
     sb << ", 8021XEnabled: "sv << f8021XEnabled;
-    sb << ", AuthAlgorithm: "sv << fAuthAlgorithm;
-    sb << ", Cipher: "sv << fCipher;
+    sb << ", authAlgorithm: "sv << fAuthAlgorithm;
+    sb << ", cipher: "sv << fCipher;
     sb << "}"sv;
     return sb;
 }
@@ -126,8 +126,8 @@ String Interface::Bindings::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "BoundAddressRanges: "sv << fAddressRanges;
-    sb << ", BoundAddresses: "sv << fAddresses;
+    sb << "boundAddressRanges: "sv << fAddressRanges;
+    sb << ", boundAddresses: "sv << fAddresses;
     sb << "}"sv;
     return sb;
 }
@@ -140,38 +140,38 @@ String Interface::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Internal-Interface-ID: "sv << fInternalInterfaceID;
+    sb << "internalInterfaceID: "sv << fInternalInterfaceID;
 #if qStroika_Foundation_Common_Platform_POSIX
-    sb << ", InterfaceName: "sv << GetInterfaceName ();
+    sb << ", interfaceName: "sv << GetInterfaceName ();
 #endif
-    sb << ", Friendly-Name: "sv << fFriendlyName;
+    sb << ", friendlyName: "sv << fFriendlyName;
     if (fDescription) {
-        sb << ", Description: "sv << *fDescription;
+        sb << ", description: "sv << *fDescription;
     }
     if (fNetworkGUID) {
-        sb << ", Network-GUID: "sv << *fNetworkGUID;
+        sb << ", networkGUID: "sv << *fNetworkGUID;
     }
     if (fType) {
-        sb << ", Type: "sv << *fType;
+        sb << ", type: "sv << *fType;
     }
     if (fHardwareAddress) {
-        sb << ", Hardware-Address: "sv << *fHardwareAddress;
+        sb << ", hardwareAddress: "sv << *fHardwareAddress;
     }
     if (fTransmitSpeedBaud) {
-        sb << ", Transmit-Speed-Baud: "sv << *fTransmitSpeedBaud;
+        sb << ", transmitSpeedBaud: "sv << *fTransmitSpeedBaud;
     }
     if (fReceiveLinkSpeedBaud) {
-        sb << ", Receive-Link-Speed-Baud: "sv << *fReceiveLinkSpeedBaud;
+        sb << ", receiveLinkSpeedBaud: "sv << *fReceiveLinkSpeedBaud;
     }
     if (fWirelessInfo) {
-        sb << ", Wireless-Info: "sv << fWirelessInfo;
+        sb << ", wirelessInfo: "sv << fWirelessInfo;
     }
-    sb << ", Bindings: "sv << fBindings;
+    sb << ", bindings: "sv << fBindings;
 
-    sb << ", Gateways: "sv << fGateways;
-    sb << ", DNS-Servers: "sv << fDNSServers;
+    sb << ", gateways: "sv << fGateways;
+    sb << ", DNSServers: "sv << fDNSServers;
     if (fStatus) {
-        sb << ", Status: "sv << *fStatus;
+        sb << ", status: "sv << *fStatus;
     }
     sb << "}"sv;
     return sb;

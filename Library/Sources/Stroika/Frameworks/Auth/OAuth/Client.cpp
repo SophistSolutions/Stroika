@@ -42,23 +42,23 @@ String TokenRequest::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "client_id: "sv << client_id;
+    sb << "clientID: "sv << client_id;
     if (code) {
         sb << ", code: "sv << code;
-        sb << ", grant_type: authorization_code"sv;
+        sb << ", grantType: authorization_code"sv;
     }
     if (refresh_token) {
         sb << ", refresh_token: "sv << refresh_token;
-        sb << ", grant_type: refresh_token"sv;
+        sb << ", grantType: refresh_token"sv;
     }
     if (client_secret) {
-        sb << ", client_secret: "sv << client_secret;
+        sb << ", clientSecret: "sv << client_secret;
     }
     if (redirect_uri) {
-        sb << ", redirect_uri: "sv << redirect_uri;
+        sb << ", redirectURI: "sv << redirect_uri;
     }
     if (code_verifier) {
-        sb << ", code_verifier: "sv << code_verifier;
+        sb << ", codeVerifier: "sv << code_verifier;
     }
     sb << "}"sv;
     return sb;
@@ -348,10 +348,10 @@ String UserInfo::ToString () const
         sb << "name: "sv << name;
     }
     if (given_name) {
-        sb << ", given_name: "sv << given_name;
+        sb << ", givenName: "sv << given_name;
     }
     if (family_name) {
-        sb << ", family_name: "sv << family_name;
+        sb << ", familyName: "sv << family_name;
     }
     if (email) {
         sb << ", email: "sv << email;

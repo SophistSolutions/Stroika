@@ -77,7 +77,7 @@ Characters::String SignalHandler::ToString () const
     }
     else {
         // type only/mainly interesting if not one of the above so we're printing nullptr
-        sb << ", target-type: "sv << stdFuncTarget.target_type ();
+        sb << ", targetType: "sv << stdFuncTarget.target_type ();
     }
     sb << "}"sv;
     return sb;

@@ -52,10 +52,10 @@ String Request::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Method: "sv << fMethod << ","sv;
-    sb << "AuthorityRelativeURL: "sv << fAuthorityRelativeURL << ","sv;
-    sb << "OverrideHeaders: "sv << fOverrideHeaders << ","sv;
-    sb << "Data: "sv << fData << ","sv;
+    sb << "method: "sv << fMethod << ","sv;
+    sb << "authorityRelativeURL: "sv << fAuthorityRelativeURL << ","sv;
+    sb << "overrideHeaders: "sv << fOverrideHeaders << ","sv;
+    sb << "data: "sv << fData << ","sv;
     sb << "}"sv;
     return sb;
 }

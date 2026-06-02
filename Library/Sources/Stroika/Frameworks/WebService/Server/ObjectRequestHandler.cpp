@@ -28,9 +28,9 @@ String ObjectRequestHandler::Context::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "MatchedURLArgs: "sv << fMatchedURLArgs << ","sv;
-    sb << "Request: "sv << fRequest << ","sv;
-    sb << "Response: "sv << fResponse;
+    sb << "matchedURLArgs: "sv << fMatchedURLArgs << ","sv;
+    sb << "request: "sv << fRequest << ","sv;
+    sb << "response: "sv << fResponse;
     sb << "}"sv;
     return sb;
 }
@@ -44,11 +44,11 @@ String ObjectRequestHandler::Options::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    //sb << "ObjectMapper: "sv << fObjectMapper ;
-    sb << "DefaultResultMediaType: "sv << fDefaultResultMediaType;
-    sb << ", AllowedMethods: "sv << fAllowedMethods;
-    // sb << ", ExtractVariantValueFromRequest: "sv << fExtractVariantValueFromRequest ;
-    sb << ", TreatBodyAsListOfArguments: "sv << fTreatBodyAsListOfArguments;
+    //sb << "objectMapper: "sv << fObjectMapper ;
+    sb << "defaultResultMediaType: "sv << fDefaultResultMediaType;
+    sb << ", allowedMethods: "sv << fAllowedMethods;
+    // sb << ", extractVariantValueFromRequest: "sv << fExtractVariantValueFromRequest ;
+    sb << ", treatBodyAsListOfArguments: "sv << fTreatBodyAsListOfArguments;
     //sb << ", JSONWriterOptions: "sv << fJSONWriterOptions;
     sb << "}"sv;
     return sb;

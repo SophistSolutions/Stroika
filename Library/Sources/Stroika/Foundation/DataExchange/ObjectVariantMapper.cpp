@@ -51,7 +51,7 @@ String ObjectVariantMapper::TypeMappingDetails::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "for-type: "sv << fForType_;
+    sb << "forType: "sv << fForType_;
     // @todo maybe also print function pointers? Not sure a good reason
     sb << "}"sv;
     return sb;
@@ -66,7 +66,7 @@ String ObjectVariantMapper::TypesRegistry::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "type-mappers: "sv << fSerializers_.Keys (); // for now the values are not interesting
+    sb << "typeMappers: "sv << fSerializers_.Keys (); // for now the values are not interesting
     sb << "}"sv;
     return sb;
 }

@@ -54,7 +54,7 @@ namespace {
             nonvirtual String ToString () const
             {
                 StringBuilder sb = Element::ToString ().SubString (0, -1);
-                sb << ", ExpiresDefault: "sv << fExpiresDefault;
+                sb << ", expiresDefault: "sv << fExpiresDefault;
                 sb << "}"sv;
                 return sb;
             }
@@ -305,13 +305,13 @@ String Transfer::Cache::Element::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     sb << ", ETag: "sv << fETag;
-    sb << ", Expires: "sv << fExpires;
-    sb << ", ExpiresDueToMaxAge: "sv << fExpiresDueToMaxAge;
-    sb << ", LastModified: "sv << fLastModified;
-    sb << ", CacheControl: "sv << fCacheControl;
-    sb << ", ContentType: "sv << fContentType;
-    sb << ", OtherHeaders: "sv << fOtherHeaders;
-    sb << ", Body: "sv << fBody;
+    sb << ", expires: "sv << fExpires;
+    sb << ", expiresDueToMaxAge: "sv << fExpiresDueToMaxAge;
+    sb << ", lastModified: "sv << fLastModified;
+    sb << ", cacheControl: "sv << fCacheControl;
+    sb << ", contentType: "sv << fContentType;
+    sb << ", otherHeaders: "sv << fOtherHeaders;
+    sb << ", body: "sv << fBody;
     sb << "}"sv;
     return sb;
 }

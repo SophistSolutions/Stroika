@@ -34,10 +34,10 @@ String Response::SSLResultInfo::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Subject-Common-Name: "sv << fSubjectCommonName << ","sv;
-    sb << "Subject-Company-Name: "sv << fSubjectCompanyName << ","sv;
-    sb << "Issuer: "sv << fIssuer << ","sv;
-    sb << "Validation-Status: "sv << fValidationStatus;
+    sb << "subjectCommonName: "sv << fSubjectCommonName << ","sv;
+    sb << "subjectCompanyName: "sv << fSubjectCompanyName << ","sv;
+    sb << "issuer: "sv << fIssuer << ","sv;
+    sb << "validationStatus: "sv << fValidationStatus;
     sb << "}"sv;
     return sb;
 }
@@ -70,9 +70,9 @@ String Response::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Headers: "sv << fHeaders_ << ","sv;
-    sb << "Status: "sv << fStatus_ << ","sv;
-    sb << "ServerEndpointSSLInfo_: "sv << fServerEndpointSSLInfo_;
+    sb << "headers: "sv << fHeaders_ << ","sv;
+    sb << "status: "sv << fStatus_ << ","sv;
+    sb << "serverEndpointSSLInfo_: "sv << fServerEndpointSSLInfo_;
     sb << "}"sv;
     return sb;
 }

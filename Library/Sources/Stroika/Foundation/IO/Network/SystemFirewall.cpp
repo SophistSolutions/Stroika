@@ -53,20 +53,20 @@ String Rule::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Name: "sv << fName << ","sv;
-    sb << "Description: "sv << fDescription << ","sv;
-    sb << "Application: "sv << fApplication << ","sv;
+    sb << "name: "sv << fName << ","sv;
+    sb << "description: "sv << fDescription << ","sv;
+    sb << "application: "sv << fApplication << ","sv;
 #if qStroika_Foundation_Common_Platform_Windows
-    sb << "ProfileMask: "sv << (int)fProfileMask << ","sv;
-    sb << "Direction: "sv << (int)fDirection << ","sv;
-    sb << "Protocol: "sv << (int)fProtocol << ","sv;
+    sb << "profileMask: "sv << (int)fProfileMask << ","sv;
+    sb << "direction: "sv << (int)fDirection << ","sv;
+    sb << "protocol: "sv << (int)fProtocol << ","sv;
 #endif
-    sb << "LocalPorts: "sv << fLocalPorts << ","sv;
-    sb << "RemotePorts: "sv << fRemotePorts << ","sv;
+    sb << "localPorts: "sv << fLocalPorts << ","sv;
+    sb << "remotePorts: "sv << fRemotePorts << ","sv;
 #if qStroika_Foundation_Common_Platform_Windows
-    sb << "Action: "sv << (int)fAction << ","sv;
+    sb << "action: "sv << (int)fAction << ","sv;
 #endif
-    sb << "Enabled: "sv << fEnabled << ","sv;
+    sb << "enabled: "sv << fEnabled << ","sv;
     sb << "}"sv;
     return sb;
 }

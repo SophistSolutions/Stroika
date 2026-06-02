@@ -20,8 +20,8 @@ Characters::String StructFieldMetaInfo::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "TypeInfo:"sv << fTypeInfo_;
-    sb << ", PointerToMember:"sv << fPTR2MEM_;
+    sb << "typeInfo:"sv << fTypeInfo_;
+    sb << ", pointerToMember:"sv << fPTR2MEM_;
     sb << "}"sv;
     return sb;
 }

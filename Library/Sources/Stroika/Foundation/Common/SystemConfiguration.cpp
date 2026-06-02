@@ -70,7 +70,7 @@ String SystemConfiguration::BootInformation::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Booted-At: "sv << fBootedAt;
+    sb << "bootedAt: "sv << fBootedAt;
     sb << "}"sv;
     return sb;
 };
@@ -85,8 +85,8 @@ String SystemConfiguration::CPU::CoreDetails::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Socket-ID: "sv << fSocketID;
-    sb << ", Model-Name: "sv << fModelName;
+    sb << "socketID: "sv << fSocketID;
+    sb << ", modelName: "sv << fModelName;
     sb << "}"sv;
     return sb;
 }
@@ -100,7 +100,7 @@ String SystemConfiguration::CPU::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Cores: "sv << fCores;
+    sb << "cores: "sv << fCores;
     sb << "}"sv;
     return sb;
 };
@@ -144,15 +144,15 @@ String SystemConfiguration::OperatingSystem::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Token-Name: "sv + fTokenName;
-    sb << ", Short-Pretty-Name: "sv + fShortPrettyName;
-    sb << ", Pretty-Name-With-Major-Version: "sv + fPrettyNameWithMajorVersion;
-    sb << ", Pretty-Name-With-Details: "sv + fPrettyNameWithVersionDetails;
-    sb << ", Major-Minor-Version-String: "sv + fMajorMinorVersionString;
-    sb << ", RFC1945-Compat-Product-Token-With-Version: "sv + fRFC1945CompatProductTokenWithVersion;
-    sb << ", Bits: "sv << fBits;
+    sb << "tokenName: "sv + fTokenName;
+    sb << ", shortPrettyName: "sv + fShortPrettyName;
+    sb << ", prettyNameWithMajorVersion: "sv + fPrettyNameWithMajorVersion;
+    sb << ", prettyNameWithVersionDetails: "sv + fPrettyNameWithVersionDetails;
+    sb << ", majorMinorVersionString: "sv + fMajorMinorVersionString;
+    sb << ", rfc1945CompatProductTokenWithVersion: "sv + fRFC1945CompatProductTokenWithVersion;
+    sb << ", bits: "sv << fBits;
     if (fPreferredInstallerTechnology) {
-        sb << ", Preferred-Installer-Technology: "sv << *fPreferredInstallerTechnology;
+        sb << ", preferredInstallerTechnology: "sv << *fPreferredInstallerTechnology;
     }
     sb << "}"sv;
     return sb;
@@ -167,12 +167,12 @@ String SystemConfiguration::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Boot-Information: " << fBootInformation;
+    sb << "bootInformation: " << fBootInformation;
     sb << ", CPU: "sv << fCPU;
-    sb << ", Memory: "sv << fMemory;
-    sb << ", Actual-Operating-System: "sv << fActualOperatingSystem;
-    sb << ", Apparent-Operating-System: "sv << fApparentOperatingSystem;
-    sb << ", Computer-Names: "sv << fComputerNames;
+    sb << ", memory: "sv << fMemory;
+    sb << ", actualOperatingSystem: "sv << fActualOperatingSystem;
+    sb << ", apparentOperatingSystem: "sv << fApparentOperatingSystem;
+    sb << ", computerNames: "sv << fComputerNames;
     sb << "}"sv;
     return sb;
 };

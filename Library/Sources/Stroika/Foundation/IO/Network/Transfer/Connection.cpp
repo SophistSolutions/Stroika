@@ -56,7 +56,7 @@ String Connection::Options::Authentication::ToString () const
     sb << "{"sv;
     sb << "options: "sv << fOptions_;
     if (fExplicitAuthToken_) {
-        sb << ", Explicit-Auth-Token: "sv << *fExplicitAuthToken_;
+        sb << ", explicitAuthToken: "sv << *fExplicitAuthToken_;
     }
     else if (fUsernamePassword_) {
         sb << ", username: "sv << fUsernamePassword_->first;
