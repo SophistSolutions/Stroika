@@ -56,16 +56,18 @@
       "name": "(Windows) Launch VisualStudio",
       "type": "cppvsdbg",
       "request": "launch",
-      // "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test41.exe",
+      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test36.exe",
       // "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-WebServer/WebServer.exe",
       // "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-DocumentDB/DocumentDB.exe",
-      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-HTMLUI/Backend/HTMLUI.exe",
+      // "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-HTMLUI/Backend/HTMLUI.exe",
       "args": ["--run-directly" ],
       // "args": ["--port=8084", "--run-directly" ],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
       "environment": [
           {"name": "Path","value":"${env:Path};c:/tools/msys64/mingw64/bin;c:/tools/msys64/usr/bin"},
+          {"name": "MONGO_CONNECTION_STRING","value":"mongodb://admin:pass@medusa.lan:27017"},
+          {"name": "ASAN_OPTIONS", "value": "abort_on_error=1"}
       ],
       "console": "externalTerminal",
       "logging": {
