@@ -8,7 +8,6 @@
 #include <list>
 #include <sstream>
 #if qStroika_Foundation_Common_Platform_Windows
-#include <process.h>
 #include <windows.h>
 #endif
 
@@ -47,27 +46,6 @@ using Debug::AssertExternallySynchronizedMutex;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
-// Leave this off by default since I'm not sure its safe, and at best it uses some time. But make it
-// easy to turn on it release builds...
-//      -- LGP 2009-05-28
-// According to http://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx - its best NOT to call this RaiseException call
-// unless a debugger is present. Use IsDebuggerPresent(). Still not perfect.
-//
-//#define   qSupportSetThreadNameDebuggerCall_   0
-#ifndef qSupportSetThreadNameDebuggerCall_
-#if qStroika_Foundation_Debug_AssertionsChecked && qStroika_Foundation_Common_Platform_Windows
-#define qSupportSetThreadNameDebuggerCall_ 1
-#endif
-#endif
-#ifndef qSupportSetThreadNameDebuggerCall_
-#if qStroika_Foundation_Common_Platform_POSIX
-#define qSupportSetThreadNameDebuggerCall_ 1
-#endif
-#endif
-#ifndef qSupportSetThreadNameDebuggerCall_
-#define qSupportSetThreadNameDebuggerCall_ 0
-#endif
-
 using namespace Characters;
 using namespace Execution;
 
@@ -97,55 +75,6 @@ namespace {
         }
     };
     AllThreadsDeadDetector_ sAllThreadsDeadDetector_;
-}
-#endif
-
-#if qStroika_Foundation_Common_Platform_Windows
-namespace {
-#if (_WIN32_WINNT < 0x0502)
-    namespace XXX_ {
-        struct CLIENT_ID {
-            DWORD UniqueProcess;
-            DWORD UniqueThread;
-        };
-        using NTSTATUS = LONG;
-#define STATUS_SUCCESS ((NTSTATUS)0x00000000)
-        using KPRIORITY = LONG;
-        struct THREAD_BASIC_INFORMATION {
-            NTSTATUS  ExitStatus;
-            PVOID     TebBaseAddress;
-            CLIENT_ID ClientId;
-            KAFFINITY AffinityMask;
-            KPRIORITY Priority;
-            KPRIORITY BasePriority;
-        };
-        enum THREAD_INFORMATION_CLASS {
-            ThreadBasicInformation = 0,
-        };
-        using pfnNtQueryInformationThread = NTSTATUS (__stdcall*) (HANDLE, THREAD_INFORMATION_CLASS, PVOID, ULONG, PULONG);
-    }
-#endif
-    DWORD MyGetThreadId_ (HANDLE thread)
-    {
-#if (_WIN32_WINNT >= 0x0502)
-        return ::GetThreadId (thread);
-#else
-        // See details in http://www.codeguru.com/forum/showthread.php?t=355572 on this... - backcompat - only support
-        // GetThreadId (HANDLE) in Win 2003 Server or later
-        using namespace XXX_;
-        static DLLLoader                   ntdll (SDKSTR ("ntdll.dll"));
-        static pfnNtQueryInformationThread NtQueryInformationThread =
-            (pfnNtQueryInformationThread)ntdll.GetProcAddress ("NtQueryInformationThread");
-        if (NtQueryInformationThread == nullptr)
-            return 0; // failed to get proc address
-        THREAD_BASIC_INFORMATION tbi{};
-        THREAD_INFORMATION_CLASS tic = ThreadBasicInformation;
-        if (::NtQueryInformationThread (thread, tic, &tbi, sizeof (tbi), nullptr) != STATUS_SUCCESS) {
-            return 0;
-        }
-        return tbi.ClientId.UniqueThread;
-#endif
-    }
 }
 #endif
 
@@ -181,7 +110,7 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
      *  Would LIKE to do:
      *
      *  if (t_InterruptionSuppressDepth_ == 0 and t_Interrupting_ != InterruptFlagState_::eNone) {
-     *      DbgTrace (L"~SuppressInterruptionInContext () completing with interruption pending, so this thread will interupt at the next cancelation point");
+     *      DbgTrace ("~SuppressInterruptionInContext () completing with interruption pending, so this thread will interupt at the next cancelation point"_f);
      *  }
      *  But cannot safely/easily, because DbgTrace internally uses SuppressInterruptionInContext!
      */
@@ -337,26 +266,8 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD Characters::String Thread:
 void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()
 {
     if (GetNativeHandle () != NativeHandleType{}) {
-#if qSupportSetThreadNameDebuggerCall_
 #if qStroika_Foundation_Common_Platform_Windows
-        if (::IsDebuggerPresent ()) {
-            // This hack from http://www.codeproject.com/KB/threads/Name_threads_in_debugger.aspx
-            struct THREADNAME_INFO {
-                DWORD  dwType;     // must be 0x1000
-                LPCSTR szName;     // pointer to name (in user addr space)
-                DWORD  dwThreadID; // thread ID (-1=caller thread)
-                DWORD  dwFlags;    // reserved for future use, must be zero
-            };
-            string          useThreadName = String{fThreadName_}.AsNarrowSDKString (eIgnoreErrors);
-            THREADNAME_INFO info;
-            {
-                info.dwType     = 0x1000;
-                info.szName     = useThreadName.c_str ();
-                info.dwThreadID = MyGetThreadId_ (GetNativeHandle ());
-                info.dwFlags    = 0;
-            }
-            IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof (info) / sizeof (DWORD), (ULONG_PTR*)&info));
-        }
+        (void)::SetThreadDescription (GetNativeHandle (), fThreadName_.c_str ()); // ignore errors - just so stuff shows in debugger, but might not have permission to set
 #elif qStroika_Foundation_Common_Platform_POSIX && (__GLIBC__ > 2 or (__GLIBC__ == 2 and __GLIBC_MINOR__ >= 12))
         // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
         //
@@ -367,7 +278,6 @@ void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()
             narrowThreadName.erase (kMaxNameLen_);
         }
         ::pthread_setname_np (GetNativeHandle (), narrowThreadName.c_str ());
-#endif
 #endif
     }
 }
