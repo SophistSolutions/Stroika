@@ -29,7 +29,7 @@ String WebServiceIdentity::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fBearerToken) {
-        sb << ", bearer-token: "sv << fBearerToken;
+        sb << ", bearerToken: "sv << fBearerToken;
     }
     sb << "}"sv;
     return sb;
