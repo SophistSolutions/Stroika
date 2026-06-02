@@ -33,10 +33,9 @@ SHELL=/bin/bash
 #
 #		(NOTE WHEN CHANGING THIS - REVIEW THE PATCHES THAT DEPEND ON THIS VERSION BELOW)
 #
-MONGOCXXDRIRVER_VERSION_=r4.1.4
-#MONGOCXXDRIRVER_VERSION_=r4.1.1
-#MONGOCXXDRIRVER_VERSION_=r4.1.0
-#MONGOCXXDRIRVER_VERSION_=r4.0.0
+MONGOCXXDRIRVER_VERSION_=r4.3.0
+#MONGOCXXDRIRVER_VERSION_=r4.2.0
+#MONGOCXXDRIRVER_VERSION_=r4.1.4
 
 ZIPPED_SOURCES_FILE_=../Origs-Cache/mongo-cxx-driver-${MONGOCXXDRIRVER_VERSION_}.tar.gz
 
@@ -124,12 +123,26 @@ CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 endif
 
-
+#
+#https://jira.mongodb.org/browse/CDRIVER-6346
+#
+#==47280==ERROR: AddressSanitizer: global-buffer-overflow on address 0x7ff61bbd7fee at pc 0x7ffcd9d24ec6 bp 0x00fe51cf9d60 sp 0x00fe51cf9510
+#READ of size 16 at 0x7ff61bbd7fee thread T0
+#    #0 0x7ffcd9d24ec5 in wcslen D:\a_work\1\s\src\vctools\asan\llvm\compiler-rt\lib\sanitizer_common\sanitizer_common_interceptors.inc:7199
+#    #1 0x7ffdf99e2660 in RtlInitUnicodeStringEx+0x20 (C:\WINDOWS\SYSTEM32\ntdll.dll+0x180082660)
+#    #2 0x7ffdf6c51f90 in RegQueryValueExW+0x90 (C:\WINDOWS\System32\KERNELBASE.dll+0x180021f90)
+#    #3 0x7ff618cfefee in _mongoc_socket_setkeepalive_windows C:\Sandbox\Stroika\DevRoot\IntermediateFiles\Debug\ThirdPartyComponents\mongo-cxx-driver_deps\mongo-c-driver-src\src\libmongoc\src\mongoc\mongoc-socket.c:399
+#
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
+# CXXFLAGS:=$(filter-out -fsanitize=address, $(CXXFLAGS))
+endif
 # @todo RETEST!, and if needed, better document why/what fails...
 # NOTE getting asan errors on windows - til we have basic function working - try disabling
 ## LGP NEED BETTER DOCS ON THIS - AND NOW THIS MAYBE CAUSING FAILURE WITH VC2k2026-- 
 # CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
 # CXXFLAGS:=$(filter-out -fsanitize=address, $(CXXFLAGS))
+
 
 # [ 72%] [32mBuilding CXX object src/bsoncxx/CMakeFiles/bsoncxx_static.dir/lib/bsoncxx/v_noabi/bsoncxx/array/element.cpp.o[0m
 #... 88 |     static const strong_ordering less;
@@ -164,23 +177,11 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbsoncxx-static.pc					\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongocxx-static.pc
 
-ifeq (${MONGOCXXDRIRVER_VERSION_},r4.0.0)
-PRODUCED_OUTPUT_ARTIFACTS_+= \
-	${PER_CONFIGURATION_BUILDS_DIR_}include/libbson-1.0/								\
-	${PER_CONFIGURATION_BUILDS_DIR_}include/libbson-1.0/bson.h							\
-	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0								\
-	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0/mongoc.h  					\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}bson-static-1.0${LIB_SUFFIX}  		\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}mongoc-static-1.0${LIB_SUFFIX}		\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbson-static-1.0.pc					\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongoc-static-1.0.pc
-else
 #todo add more
 PRODUCED_OUTPUT_ARTIFACTS_+= \
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}mongoc2${LIB_SUFFIX}				\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/bson2-static.pc						\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/mongoc2-static.pc
-endif
 
 
 all:
@@ -227,48 +228,6 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 else
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . > INSTALL-OUT.txt 2>&1
 endif
-ifeq (${MONGOCXXDRIRVER_VERSION_},r4.0.0)
-ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@#The prefix= line is windows format and refers to intermediatefiles (and windows syntax on windows)- so not good - replace it with pcfiledir relative name
-	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
-	@${SED} -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbson-static-1.0.pc"
-	@${SED} -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@${SED} -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@${SED} -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@${SED} -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@${SED} -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
-	@${SED} -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
-endif
-endif
-ifeq (${MONGOCXXDRIRVER_VERSION_},r4.1.0)
-	@#enable these lines to debug Patching
-	@#cp "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/bson2-static.pc" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/bson2-static.pc".orig
-	@#cp "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc".orig
-	@#cp "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc".orig
-	@#cp "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc".orig
-	@#NOTE: these patches could easily change in the future! with new releases of mongo-cxx-driver
-	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/{libmongocxx,libbsoncxx}.pc"
-	@#libmongocxx-static.pc has Requires: libbsoncxx-static >= 3.12.9, mongoc2 >= 2.0.0, but the required mongoc2 must be mongoc2-static (BUG)
-	@${SED} -i "s/\,\ mongoc2\ /\,\ mongoc2-static\ /g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
-	@#libbsoncxx-static.pc has Requires: bson2 >= 2.0.0, but the required bson2 must be bson2-static (BUG)
-	@${SED} -i "s/\:\ bson2\ /\:\ bson2-static\ /g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
-ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/{bsonc2,mongoc2}-static.pc"
-	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
-	@${SED} -i "s/\$${libdir}\/bson2\.lib/-lbson2/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/bson2-static.pc"
-	@${SED} -i "s/\$${libdir}\/mongoc2\.lib/-lmongoc2/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
-	@${SED} -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
-	@${SED} -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
-	@${SED} -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
-	@#Copy PDB files - https://jira.mongodb.org/browse/CXX-3291 - to avoid warnings - bson2.lib(common-json.obj) : warning LNK4099: PDB 'bson2.pdb' was not found with 'bson2.lib(common-json.obj)'
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libbson/${CMAKE_BUILD_TYPE_}/bson2.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/${CMAKE_BUILD_TYPE_}/*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/utf8proc_obj.dir/Debug/utf8proc_obj.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/zlib_obj.dir/${CMAKE_BUILD_TYPE_}/zlib_obj.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/bsoncxx/${CMAKE_BUILD_TYPE_}/bsoncxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/mongocxx/${CMAKE_BUILD_TYPE_}/mongocxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-endif
-endif
 ifeq (${MONGOCXXDRIRVER_VERSION_},r4.1.4)
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@# REPORTED AS https://jira.mongodb.org/browse/CXX-3387
@@ -280,6 +239,30 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@#		Requires: bson2-static, libzstd
 	@#		Libs: ${libdir}/mongoc2.lib -lDnsapi secur32.lib crypt32.lib Bcrypt.lib ncrypt.lib
 	@#
+	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
+		${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
+		${SED} -i "s/\-l[^ ]*\/zstd\.lib//" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
+		${ECHO} '+';\
+		${SED} -i "s/Requires: .*/&, libzstd/" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
+	fi
+endif
+endif
+ifeq (${MONGOCXXDRIRVER_VERSION_},r4.2.0)
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	@# Same as 4.1.4 BWA
+	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
+		${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
+		${SED} -i "s/\-l[^ ]*\/zstd\.lib//" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
+		${ECHO} '+';\
+		${SED} -i "s/Requires: .*/&, libzstd/" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
+	fi
+endif
+endif
+ifeq (${MONGOCXXDRIRVER_VERSION_},r4.3.0)
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	@# Same as 4.1.4 BWA
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
 	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
 		${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
