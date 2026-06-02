@@ -275,8 +275,20 @@ B2_CONFIGURATION_ARGS +=	address-model=64
 endif
 endif
 
-ifeq (Unix,$(BuildPlatform))
-B2_CONFIGURATION_ARGS +=	-sBOOST_BUILD_USER_CONFIG=${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/user-config.jam
+# use the user-config.jam file
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+B2_CONFIGURATION_ARGS +=	-sBOOST_BUILD_USER_CONFIG=$(shell cygpath --mixed "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)")/user-config.jam
+else
+B2_CONFIGURATION_ARGS +=	-sBOOST_BUILD_USER_CONFIG="${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/user-config.jam"
+endif
+
+
+# libboost_json.lib(src.obj) : error LNK2038: mismatch detected for 'annotate_vector': value '0' doesn't match value '1' in ArchiveUtility.obj
+# without also setting this, as of boost 1_91_0
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifneq ($(findstring $(CXXFLAGS),fsanitize=address),)
+B2_CONFIGURATION_ARGS +=	address-sanitizer=on
+endif
 endif
 
 
@@ -304,7 +316,9 @@ endif
 	@#     If multiple of the same type of options are needed, they can be concatenated with quotes or have multiple instances of the option tag.
 	@#but note how this doesnt make clear about nested quotes as in quotes in the options themselves.
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
-	@$(ECHO) 'using ${TOOLSET_NAME} : $(ARCH) : "${CXX}" : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
+# MAYBE ADD <architecture> $ARCH? --LGP 2026-06-01
+# 	@$(ECHO) 'using ${TOOLSET_NAME} : $(ARCH) : "${CXX}" : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
+	@$(ECHO) 'using ${TOOLSET_NAME} : : "${CXX}" : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
 	@
 	@#
 	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
