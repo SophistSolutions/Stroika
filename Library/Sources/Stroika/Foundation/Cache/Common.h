@@ -26,13 +26,16 @@ namespace Stroika::Foundation::Cache {
     using NonKeyedKeySentinalType = void;
 
     /**
-     * @brief A KEY is any copyable value (or the sentinal type void - indicating a keyless - single valued - cache)
+     * @brief A Key is any copyable value (or the sentinal type void - indicating a keyless - single valued - cache)
+     * 
+     * \note the KEY type NEED NOT be equality_comparable, as cache classes (liked TimedCache) may allow specification of the comparer
+     *       through TRAITS, or  other means.
      */
     template <typename T>
     concept IKey = same_as<T, NonKeyedKeySentinalType> or copyable<T>;
 
     /**
-     * @brief does this cache have a KEY type (overwhelming YES, but sometimes handy to have 'singleton' cache, where you cache something, but just one of them)
+     * @brief Does this cache have a KEY type (overwhelming YES, but sometimes handy to have 'singleton' cache, where you cache something, but just one of them).
      */
     template <typename KEY>
     static constexpr bool IKeyedCache = not same_as<KEY, NonKeyedKeySentinalType>;
@@ -45,7 +48,7 @@ namespace Stroika::Foundation::Cache {
     using ValuelessSentinalType = void;
 
     /**
-     * @brief any copyable type can use used as the value, or the special sentinal type - ValuelessSentinalType, used to indicate we are just caching presence/absense of the KEY in the cache (and its expiration date).
+     * @brief Any copyable type can use used as the value, or the special sentinal type - ValuelessSentinalType, used to indicate we are just caching presence/absense of the KEY in the cache (and its expiration date).
      */
     template <typename T>
     concept IValue = same_as<T, ValuelessSentinalType> or copyable<T>;
