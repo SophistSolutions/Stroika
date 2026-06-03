@@ -135,6 +135,9 @@ project-files:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2022 project files..."
 	@cd Projects/VisualStudio.Net-2022 && ./BuildProjectsFiles
 	@$(ECHO) done
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2026 project files..."
+	@cd Projects/VisualStudio.Net-2026 && ./BuildProjectsFiles
+	@$(ECHO) done
 
 
 tests:
