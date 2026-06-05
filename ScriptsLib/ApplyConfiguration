@@ -561,8 +561,10 @@ sub GetMSYSPathVar2Add_
 	}
 	push @backupPaths, "c:/tools/msys64/usr/bin";
 	push @backupPaths, "c:/tools/msys32/usr/bin";
+	push @backupPaths, "c:/tools/msys64/mingw64/bin";
 	push  @backupPaths, "c:/msys/usr/bin";
 	push  @backupPaths, "c:/msys64/usr/bin";
+	push  @backupPaths, "c:/msys64/mingw64/bin";
 	for my $i (0 .. $#backupPaths)
 	{
 		push  @conditionalPaths, $backupPaths[$i];
@@ -710,7 +712,7 @@ sub WriteVS2kIntellisenseConfigFile
 
 	print (OUT "  </PropertyGroup>\n");
 
-	##EXPERIMENTAL
+	#
 	# Define configuration variables so visual studio knows how to run cygwin or msys
 	# for the make without requiring the user to add it to their user/system path
 	# by default
@@ -718,6 +720,7 @@ sub WriteVS2kIntellisenseConfigFile
 	if ("$^O" == "msys" or "$^O" == "cygwin") {
 		local $defCygwinStkBuildPath = GetCygwinPathVar2Add_();
 		local $msysStkBuildPath = GetMSYSPathVar2Add_();
+		# NOTE StroikaBuildToolsExtraPath is  used to agument ExecutablePath in the .vcproj files, so the make uses the right path
 		print (OUT "\n");
 		print (OUT "  <PropertyGroup Label=\"UserMacros\">\n");
 		print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath;$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
