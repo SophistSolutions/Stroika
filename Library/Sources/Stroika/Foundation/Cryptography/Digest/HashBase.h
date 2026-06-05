@@ -9,6 +9,8 @@
 #include <concepts>
 #include <functional>
 
+#include "Stroika/Foundation/Common/Common.h"
+
 /*
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  * 
@@ -25,9 +27,10 @@ namespace Stroika::Foundation::Cryptography::Digest {
      * https://en.cppreference.com/w/cpp/utility/hash
      */
     template <typename FUNCTION, typename HASHABLE_T>
-    concept IHashFunction = std::regular_invocable<FUNCTION, HASHABLE_T> && requires (FUNCTION f, HASHABLE_T t) {
-        { std::invoke (f, t) } -> std::convertible_to<size_t>;
+    concept IHashFunction = regular_invocable<FUNCTION, HASHABLE_T> and requires (FUNCTION f, HASHABLE_T t) {
+        { invoke (f, t) } -> convertible_to<size_t>;
     };
+
 }
 
 /*
