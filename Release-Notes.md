@@ -11,12 +11,7 @@ especially those they need to be aware of when upgrading.
 ### 3.0d24x - PREP
 
 
-- Build from inside Visual Studio.Net (2022 or 2026) - both dont work. Projects load, but build has wrong paths somehow?
-- Something todo with .props files in Workspaces/VisualStudio.Net??
-
-
 - VS2k26 status
-  - working on latest vs2k6
   - BUT must now do DOCKER CONTAINER (on github and add to actions)
   - chnage default to vs2k26
   - github actions for vs2k26
@@ -24,6 +19,7 @@ especially those they need to be aware of when upgrading.
 
 
 --- THEN DO SIMILAR FOR LATEST ubuntu 2604
+
 
 
 - BIDI Iterators

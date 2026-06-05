@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.4.33205.214
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11822.322 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\Library\Projects\VisualStudio.Net-2026\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -2526,35 +2526,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Win32", "Win32", "{D2183708
 		..\..\ThirdPartyComponents\Xerces\CURRENT\src\xercesc\util\Transcoders\Win32\Win32TransService.hpp = ..\..\ThirdPartyComponents\Xerces\CURRENT\src\xercesc\util\Transcoders\Win32\Win32TransService.hpp
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DockerBuildContainers", "DockerBuildContainers", "{4CA6CEC9-9BEB-4810-B815-00D81B06570D}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Makefile = ..\..\DockerBuildContainers\Makefile
-		..\..\DockerBuildContainers\ReadMe.md = ..\..\DockerBuildContainers\ReadMe.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1804-Small", "Ubuntu1804-Small", "{15B8B21F-E6D3-4F26-80EC-56EBF7D4372B}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Ubuntu1804-Small\Dockerfile = ..\..\DockerBuildContainers\Ubuntu1804-Small\Dockerfile
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1804-RegressionTests", "Ubuntu1804-RegressionTests", "{8C954ABB-96DF-4E69-86E5-0903F99C8052}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Ubuntu1804-RegressionTests\Dockerfile = ..\..\DockerBuildContainers\Ubuntu1804-RegressionTests\Dockerfile
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1810-Small", "Ubuntu1810-Small", "{7DE86DC3-B987-4E4B-AFDD-F71CE7637DCD}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Ubuntu1810-Small\Dockerfile = ..\..\DockerBuildContainers\Ubuntu1810-Small\Dockerfile
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1810-RegressionTests", "Ubuntu1810-RegressionTests", "{B437C347-5CB8-449D-85A4-58A7163FFDD2}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Ubuntu1810-RegressionTests\Dockerfile = ..\..\DockerBuildContainers\Ubuntu1810-RegressionTests\Dockerfile
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stroika-Dev", "Stroika-Dev", "{0AA7353D-A80F-4A2B-AE11-2D5B17ED85F1}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Stroika-Dev\Dockerfile = ..\..\DockerBuildContainers\Stroika-Dev\Dockerfile
+		..\..\Build\Docker\Stroika-Dev\Dockerfile = ..\..\Build\Docker\Stroika-Dev\Dockerfile
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bio", "bio", "{C0E368AF-43D9-4DC7-A3B7-1CC61EEBE245}"
@@ -2594,7 +2568,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WIX", "WIX", "{CCE68503-142
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared-Files", "Shared-Files", "{FAC4EA19-48C7-45B3-9B1B-3E4693AF37DF}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Shared-Files\Getting-Started-With-Stroika.md = ..\..\DockerBuildContainers\Shared-Files\Getting-Started-With-Stroika.md
+		..\..\Build\Docker\Shared-Files\Getting-Started-With-Stroika.md = ..\..\Build\Docker\Shared-Files\Getting-Started-With-Stroika.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Patches", "Patches", "{3DE81E1D-8804-4D2E-A5D6-8BAA3EDD9629}"
@@ -3346,6 +3320,57 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.1", "2.1", "{8CA69FFA-B07
 		..\..\Tests\HistoricalRegressionTestResults\2.1\REGRESSION-TESTS-Windows_VS2k19-2.1d27-OUT.txt = ..\..\Tests\HistoricalRegressionTestResults\2.1\REGRESSION-TESTS-Windows_VS2k19-2.1d27-OUT.txt
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{B0385A20-9250-49CC-AEA9-3F69C5BC3D82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{5B673415-0530-4B7F-B33B-24A2EF28D490}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Build\Docker\Makefile = ..\..\Build\Docker\Makefile
+		..\..\Build\Docker\ReadMe.md = ..\..\Build\Docker\ReadMe.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows-Cygwin", "Windows-Cygwin", "{8FCE61F2-D2E6-4D4D-9D6C-484D5E643DE3}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Build\Docker\Windows-Cygwin\.bash_profile = ..\..\Build\Docker\Windows-Cygwin\.bash_profile
+		..\..\Build\Docker\Windows-Cygwin\Dockerfile = ..\..\Build\Docker\Windows-Cygwin\Dockerfile
+		..\..\Build\Docker\Windows-Cygwin\Getting-Started-With-Stroika.md = ..\..\Build\Docker\Windows-Cygwin\Getting-Started-With-Stroika.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows-MSYS", "Windows-MSYS", "{7F202D6D-2652-43D9-9AE4-16B47AF8E8D9}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Build\Docker\Windows-MSYS\.bash_profile = ..\..\Build\Docker\Windows-MSYS\.bash_profile
+		..\..\Build\Docker\Windows-MSYS\Dockerfile = ..\..\Build\Docker\Windows-MSYS\Dockerfile
+		..\..\Build\Docker\Windows-MSYS\Getting-Started-With-Stroika.md = ..\..\Build\Docker\Windows-MSYS\Getting-Started-With-Stroika.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows-VS2k22", "Windows-VS2k22", "{34D2638F-1EB5-496C-9B62-ED3AB0651637}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Build\Docker\Windows-VS2k22\.bash_profile = ..\..\Build\Docker\Windows-VS2k22\.bash_profile
+		..\..\Build\Docker\Windows-VS2k22\Dockerfile = ..\..\Build\Docker\Windows-VS2k22\Dockerfile
+		..\..\Build\Docker\Windows-VS2k22\Getting-Started-With-Stroika.md = ..\..\Build\Docker\Windows-VS2k22\Getting-Started-With-Stroika.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu2404-Small", "Ubuntu2404-Small", "{287E769A-5820-4DBF-A517-5BF29720C154}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Build\Docker\Ubuntu2404-Small\.bash_profile = ..\..\Build\Docker\Ubuntu2404-Small\.bash_profile
+		..\..\Build\Docker\Ubuntu2404-Small\Dockerfile = ..\..\Build\Docker\Ubuntu2404-Small\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu2404-RegressionTests", "Ubuntu2404-RegressionTests", "{20C980ED-1F94-4D1A-A495-6F5738AA9FB6}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Build\Docker\Ubuntu2404-RegressionTests\Dockerfile = ..\..\Build\Docker\Ubuntu2404-RegressionTests\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu2204-Small", "Ubuntu2204-Small", "{8C581E93-89FF-4690-84C1-F1524EB72538}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Build\Docker\Ubuntu2204-Small\.bash_profile = ..\..\Build\Docker\Ubuntu2204-Small\.bash_profile
+		..\..\Build\Docker\Ubuntu2204-Small\Dockerfile = ..\..\Build\Docker\Ubuntu2204-Small\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu2204-RegressionTests", "Ubuntu2204-RegressionTests", "{7D8E1CCE-627A-4865-9C71-F893F72EC4A5}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Build\Docker\Ubuntu2204-RegressionTests\Dockerfile = ..\..\Build\Docker\Ubuntu2204-RegressionTests\Dockerfile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Unspecified = Debug|Unspecified
@@ -3490,15 +3515,10 @@ Global
 		{D6D33F98-85F2-44D3-BB90-E7CE8DC1C46F} = {3440B5D2-015D-40AE-8368-728970A6C1A8}
 		{488E8AE0-4E8A-43CE-90AB-3E9F68823E75} = {3440B5D2-015D-40AE-8368-728970A6C1A8}
 		{D2183708-D1FA-4634-AFBE-E323E9555439} = {3440B5D2-015D-40AE-8368-728970A6C1A8}
-		{4CA6CEC9-9BEB-4810-B815-00D81B06570D} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
-		{15B8B21F-E6D3-4F26-80EC-56EBF7D4372B} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
-		{8C954ABB-96DF-4E69-86E5-0903F99C8052} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
-		{7DE86DC3-B987-4E4B-AFDD-F71CE7637DCD} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
-		{B437C347-5CB8-449D-85A4-58A7163FFDD2} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
-		{0AA7353D-A80F-4A2B-AE11-2D5B17ED85F1} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
+		{0AA7353D-A80F-4A2B-AE11-2D5B17ED85F1} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
 		{C0E368AF-43D9-4DC7-A3B7-1CC61EEBE245} = {C6932FC8-94E5-44F0-A457-0146C85AE124}
 		{CCE68503-1428-481D-AAE2-F67B5724B2B8} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
-		{FAC4EA19-48C7-45B3-9B1B-3E4693AF37DF} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
+		{FAC4EA19-48C7-45B3-9B1B-3E4693AF37DF} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
 		{3DE81E1D-8804-4D2E-A5D6-8BAA3EDD9629} = {B79422CE-425A-4687-9459-A65B084D2792}
 		{F36CB2BC-7391-4809-9D6D-8E262E7F6CCF} = {E5F55F38-317D-46EE-BFE6-36B5E40C762A}
 		{FA11ED85-C40E-4388-9D6B-395FD05B9583} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
@@ -3506,6 +3526,15 @@ Global
 		{0FB33A30-CED7-4C40-B75E-435C221BC251} = {9586A222-D61A-4266-89AC-22EED6E4F833}
 		{030C1B0A-9123-42B7-B692-09C6786CDE35} = {D78808C5-D689-427E-91C7-16040237E8CE}
 		{8CA69FFA-B075-4887-9FD2-459F1A7297CD} = {D78808C5-D689-427E-91C7-16040237E8CE}
+		{B0385A20-9250-49CC-AEA9-3F69C5BC3D82} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
+		{5B673415-0530-4B7F-B33B-24A2EF28D490} = {B0385A20-9250-49CC-AEA9-3F69C5BC3D82}
+		{8FCE61F2-D2E6-4D4D-9D6C-484D5E643DE3} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
+		{7F202D6D-2652-43D9-9AE4-16B47AF8E8D9} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
+		{34D2638F-1EB5-496C-9B62-ED3AB0651637} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
+		{287E769A-5820-4DBF-A517-5BF29720C154} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
+		{20C980ED-1F94-4D1A-A495-6F5738AA9FB6} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
+		{8C581E93-89FF-4690-84C1-F1524EB72538} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
+		{7D8E1CCE-627A-4865-9C71-F893F72EC4A5} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4E14669-78F6-4BB6-AB59-88D35B712B6D}

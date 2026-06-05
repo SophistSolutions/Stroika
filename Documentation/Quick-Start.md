@@ -21,7 +21,7 @@ just use the Dockerfile as a recipe to see what you need. Or you can just instal
 ## Details
 
 Stroika provides several container images to choose from, depending on your goals, and build platform.
-- [Stroika provided containers](../DockerBuildContainers/ReadMe.md)
+- [Stroika provided containers](../Build/Docker/ReadMe.md)
 
 ### Simple Example
 
