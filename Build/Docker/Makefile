@@ -1,9 +1,9 @@
 DEFAULT_GOAL := help
 
-STROIKA_VERSION=$(shell dos2unix < ../STROIKA_VERSION | xargs echo -n)
-STROIKA_VERSION_Final=$(shell ../ScriptsLib/ExtractVersionInformation ../STROIKA_VERSION FinalBuild)
+STROIKA_VERSION=$(shell dos2unix < ../../STROIKA_VERSION | xargs echo -n)
+STROIKA_VERSION_Final=$(shell ../../ScriptsLib/ExtractVersionInformation ../../STROIKA_VERSION FinalBuild)
 
-DETECTED_HOST_OS=$(shell ../ScriptsLib/DetectedHostOS)
+DETECTED_HOST_OS=$(shell ../../ScriptsLib/DetectedHostOS)
 
 BUILD_DEV_IMAGES?=1
 
@@ -79,7 +79,7 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2504-small:
 
 sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:
 	@# Sadly docker build doesn't work with symbolic links
-	@cp ../ScriptsLib/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
+	@cp ../../ScriptsLib/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
 	docker build -f Ubuntu2204-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 	@rm -f Ubuntu2204-RegressionTests/BuildGCC
 
