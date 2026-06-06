@@ -43,5 +43,17 @@
         "displayTargetName": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22",
         "runs_on": "windows-latest",
         "container_images": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26",
+        "runs_on": "windows-latest",
+        "container_images": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26",
+        "runs_on": "windows-latest",
+        "container_images": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26"
     }
 ]
