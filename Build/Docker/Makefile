@@ -61,6 +61,8 @@ endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26
+IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26
 endif
 
 build-images:
@@ -97,11 +99,20 @@ WINDOWS_BASE_IMAGE?=mcr.microsoft.com/windows/servercore:ltsc2025
 sophistsolutionsinc/stroika-buildvm-windows-vs2k22:
 	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=${WINDOWS_BASE_IMAGE} -t $@ .
 
+sophistsolutionsinc/stroika-buildvm-windows-vs2k26:
+	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-VS2k26/Dockerfile --build-arg BASE_IMAGE=${WINDOWS_BASE_IMAGE} -t $@ .
+
 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
 	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} -t $@ .
 
 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
 	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} -t $@ .
+
+sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26:		sophistsolutionsinc/stroika-buildvm-windows-vs2k26
+	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k26 --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} -t $@ .
+
+sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26:		sophistsolutionsinc/stroika-buildvm-windows-vs2k26
+	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k26 --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} -t $@ .
 
 
 sophistsolutionsinc/stroika-dev:

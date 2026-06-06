@@ -35,13 +35,6 @@ ARG VS_17_10_5=https://download.visualstudio.microsoft.com/download/pr/11917f82-
 ARG VS_17_11_5=https://download.visualstudio.microsoft.com/download/pr/69e24482-3b48-44d3-af65-51f866a08313/471c9a89fa8ba27d356748ae0cf25eb1f362184992dc0bb6e9ccf10178c43c27/vs_BuildTools.exe
 ARG VS_17_12_3=https://download.visualstudio.microsoft.com/download/pr/f2819554-a618-400d-bced-774bb5379965/cc7231dc668ec1fb92f694c66b5d67cba1a9e21127a6e0b31c190f772bd442f2/vs_BuildTools.exe
 ARG VS_17_13_6=https://download.visualstudio.microsoft.com/download/pr/8fada5c7-8417-4239-acc3-bd499af09222/353141457abcc59eb9c38b2f30084e7271c6bcfb4e185466d98161bada905759/vs_BuildTools.exe
-ARG VS_17_14_0=https://download.visualstudio.microsoft.com/download/pr/f50ab15d-99d5-43aa-b0b4-496b6cb1e574/8e8630e8383f68b7d2110c409dc7b2df6ae3ac92254612952eeb6a1e40207105/vs_BuildTools.exe
-ARG VS_17_14_2=https://download.visualstudio.microsoft.com/download/pr/d99c7868-44a2-4254-9861-78e21c19bd34/fa923c074d0a62d965f4dac9020924afbfe452c6ee29b294e227acd1913c0452/vs_BuildTools.exe
-ARG VS_17_14_7=https://download.visualstudio.microsoft.com/download/pr/13907dbe-8bb3-4cfe-b0ae-147e70f8b2f3/8e3a678471efe31f94d708b5ae2a5f78d2fed2b95e70079b157e6f3d6231efd7/vs_BuildTools.exe
-ARG VS_17_14_8=https://download.visualstudio.microsoft.com/download/pr/f55fba7b-3f02-49b7-9aca-a075049a807d/54aaec8b9879acb7f54282f8442e81a620e4e79a2e0990572a3fab9de70c05d6/vs_BuildTools.exe
-ARG VS_17_14_19=https://download.visualstudio.microsoft.com/download/pr/5011a9cc-e8ef-42cb-ad72-87de1031accc/6af0e8ee3a77b013160cb267d23547d248adc34e30e98edb42483214b332fa51/vs_BuildTools.exe
-ARG VS_17_14_21=https://download.visualstudio.microsoft.com/download/pr/3014ff35-1082-4da0-ba77-9d3664b7c38a/52367ab60e0f223d3f1d9c3406130e07ab711d7d48f922a407ccdb45b62937dd/vs_BuildTools.exe
-ARG VS_17_14_23=https://download.visualstudio.microsoft.com/download/pr/a80deb24-6a28-4d30-b99f-13b6e89c9727/5439781a4deb7951895e041d3d0a5b409034ad56070e5fc5576dda2e0e364faa/vs_BuildTools.exe
 ARG VS_17_14_27=https://download.visualstudio.microsoft.com/download/pr/b4db4ac4-8183-4dfb-b6db-c7a289006e39/39573d66dbbc46361f85fb40165544f5fd0e6c9f76076036191109c38e2ffcc8/vs_BuildTools.exe
 
 
