@@ -334,5 +334,14 @@
         "config_name": "Debug",
         "extra_config_args": "--arch x86_64 --apply-default-debug-flags --trace2file enable --all-available-third-party-components",
         "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "xxxx-26",
+        "runs_on": "windows-2025",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26",
+        "config_name": "Debug",
+        "extra_config_args": "--arch x86_64 --apply-default-debug-flags --trace2file enable --all-available-third-party-components",
+        "run_on_branch": "always"
     }
 ]
