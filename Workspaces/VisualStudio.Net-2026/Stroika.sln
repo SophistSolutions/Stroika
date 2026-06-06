@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.6.11822.322 stable
+VisualStudioVersion = 18.6.11822.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\Library\Projects\VisualStudio.Net-2026\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -3371,6 +3371,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu2204-RegressionTests"
 		..\..\Build\Docker\Ubuntu2204-RegressionTests\Dockerfile = ..\..\Build\Docker\Ubuntu2204-RegressionTests\Dockerfile
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows-VS2k26", "Windows-VS2k26", "{F1E92E00-3B9A-4F47-821B-84740FB90B6B}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Build\Docker\Windows-VS2k26\.bash_profile = ..\..\Build\Docker\Windows-VS2k26\.bash_profile
+		..\..\Build\Docker\Windows-VS2k26\Dockerfile = ..\..\Build\Docker\Windows-VS2k26\Dockerfile
+		..\..\Build\Docker\Windows-VS2k26\Getting-Started-With-Stroika.md = ..\..\Build\Docker\Windows-VS2k26\Getting-Started-With-Stroika.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Unspecified = Debug|Unspecified
@@ -3535,6 +3542,7 @@ Global
 		{20C980ED-1F94-4D1A-A495-6F5738AA9FB6} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
 		{8C581E93-89FF-4690-84C1-F1524EB72538} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
 		{7D8E1CCE-627A-4865-9C71-F893F72EC4A5} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
+		{F1E92E00-3B9A-4F47-821B-84740FB90B6B} = {5B673415-0530-4B7F-B33B-24A2EF28D490}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4E14669-78F6-4BB6-AB59-88D35B712B6D}
