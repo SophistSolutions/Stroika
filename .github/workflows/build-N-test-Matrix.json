@@ -337,11 +337,65 @@
     },
     {
         "build_job": "Windows",
-        "displayTargetName": "xxxx-26",
+        "displayTargetName": "windows-vs2k26-cygwin-x86-Debug",
         "runs_on": "windows-2025",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26",
         "config_name": "Debug",
-        "extra_config_args": "--arch x86_64 --apply-default-debug-flags --trace2file enable --all-available-third-party-components",
+        "extra_config_args": "--arch x86 --apply-default-debug-flags --trace2file enable",
         "run_on_branch": "always"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "windows-vs2k26-cygwin-x86-Release",
+        "runs_on": "windows-2025",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26",
+        "config_name": "Release",
+        "extra_config_args": "--arch x86 --apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "windows-vs2k26-cygwin-x86_64-Release",
+        "runs_on": "windows-2025",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26",
+        "config_name": "Release",
+        "extra_config_args": "--arch x86_64 --apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "windows-vs2k26-msys-x86-Debug",
+        "runs_on": "windows-2025",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26",
+        "config_name": "Debug",
+        "extra_config_args": "--arch x86 --apply-default-debug-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "windows-vs2k26-msys-x86-Release",
+        "runs_on": "windows-2025",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26",
+        "config_name": "Release",
+        "extra_config_args": "--arch x86 --apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "windows-vs2k26-msys-x86_64-Release",
+        "runs_on": "windows-2025",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26",
+        "config_name": "Release",
+        "extra_config_args": "--arch x86_64 --apply-default-release-flags --trace2file enable",
+        "run_on_branch": "always"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "windows-vs2k26-msys-x86_64-All3rdParty-Debug",
+        "runs_on": "windows-2025",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26",
+        "config_name": "Debug",
+        "extra_config_args": "--arch x86_64 --apply-default-debug-flags --trace2file enable --all-available-third-party-components",
+        "run_on_branch": "v3-Release"
     }
 ]
