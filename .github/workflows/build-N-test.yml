@@ -487,6 +487,7 @@ jobs:
             "${COPY_TO_ROOT_}/ThirdPartyComponents/GoogleTest/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/lzma/" \
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/" \
@@ -500,6 +501,9 @@ jobs:
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/libxml2/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/lzma/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/lzma/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/CONFIGURE-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/sqlite/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/" || :
