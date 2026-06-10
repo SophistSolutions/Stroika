@@ -9,7 +9,7 @@
 #   https://hub.docker.com/_/microsoft-dotnet-framework-sdk/
 #        for list of versions
 #
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2025                            ## now works but requres runs_on: windows-2025 in github actions
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2025                            ## requres runs_on: windows-2025 in github actions
 
 FROM ${BASE_IMAGE}
 
