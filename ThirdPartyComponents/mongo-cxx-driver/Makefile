@@ -168,7 +168,7 @@ CMAKE_BUILD_TYPE_=Release
 endif
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-CMAKE_ARGS +=  --config=${CMAKE_BUILD_TYPE_}"
+CMAKE_ARGS +=  --config="${CMAKE_BUILD_TYPE_}"
 endif
 # --config=${CMAKE_BUILD_TYPE_}"
 
