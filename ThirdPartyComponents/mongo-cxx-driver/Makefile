@@ -167,6 +167,18 @@ else
 CMAKE_BUILD_TYPE_=Release
 endif
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+CMAKE_ARGS +=  --config=${CMAKE_BUILD_TYPE_}"
+endif
+# --config=${CMAKE_BUILD_TYPE_}"
+
+
+$(info CFLAGS: $(CFLAGS))
+$(info CONFIG_ARGS: $(CONFIG_ARGS))
+$(info CXXFLAGS: $(CXXFLAGS))
+### TODO ADD -DCMAKE_BUILD_TYPE=Release to CONFIG_ARGS if VS and RELEASE BUILD
+
+
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 LIBPREFIX_=lib
 endif
