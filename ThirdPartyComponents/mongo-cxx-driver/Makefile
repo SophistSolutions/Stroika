@@ -168,13 +168,14 @@ CMAKE_BUILD_TYPE_=Release
 endif
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-CMAKE_ARGS +=  --config="${CMAKE_BUILD_TYPE_}"
+# CMAKE_ARGS +=  --config="${CMAKE_BUILD_TYPE_}"
+CMAKE_ARGS +=  -DCMAKE_CONFIGURATION_TYPES="${CMAKE_BUILD_TYPE_}"
 endif
 # --config=${CMAKE_BUILD_TYPE_}"
 
 
 $(info CFLAGS: $(CFLAGS))
-$(info CONFIG_ARGS: $(CONFIG_ARGS))
+$(info CMAKE_ARGS: $(CMAKE_ARGS))
 $(info CXXFLAGS: $(CXXFLAGS))
 ### TODO ADD -DCMAKE_BUILD_TYPE=Release to CONFIG_ARGS if VS and RELEASE BUILD
 
