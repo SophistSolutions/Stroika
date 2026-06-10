@@ -21,9 +21,11 @@ QUICK_BUILD ?= 1
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
-VERSION:=3.6.1
-#VERSION:=3.6.0
-#VERSION:=3.5.4
+# VERSION:=4.0.0		## gonna need to look at why not building right - maybe built but looking for new names? --LGP 2026-06-09
+VERSION:=3.6.2
+# VERSION:=3.6.1
+# VERSION:=3.6.0
+# VERSION:=3.5.4
 
 BASENAME:=openssl-$(VERSION)
 EXTRACTED_DIRNAME:=$(BASENAME)
