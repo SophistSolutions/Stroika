@@ -890,19 +890,6 @@ sub	SetInitialDefaults_
 	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
 		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
-
-##TMPHACK SWAP ORDER TIL WE FULL SUPPORT 26
-		# Fallback to VS2k 2022
-		if ($BuildPlatform eq "") {
-			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
-			if (scalar(@files) != 0) {
-				$BuildPlatform = 'VisualStudio.Net-2022';
-			}
-			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2022/*/VC'");
-			if (scalar(@files) != 0) {
-				$BuildPlatform = 'VisualStudio.Net-2022';
-			}
-		}
 		# Try vs2k26
 		if ($BuildPlatform eq "") {
 			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/18/*/VC'");
@@ -912,6 +899,17 @@ sub	SetInitialDefaults_
 			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/18/*/VC'");
 			if (scalar(@files) != 0) {
 				$BuildPlatform = 'VisualStudio.Net-2026';
+			}
+		}
+		# Fallback/Try VS2k 2022
+		if ($BuildPlatform eq "") {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
+				$BuildPlatform = 'VisualStudio.Net-2022';
+			}
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
+				$BuildPlatform = 'VisualStudio.Net-2022';
 			}
 		}
 	}
