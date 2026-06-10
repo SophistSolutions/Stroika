@@ -42,10 +42,8 @@ CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
 
 ifeq (${AssertionsEnabled},1)
-CMAKE_BUILD_TYPE_=Debug
 MAYBED_=d
 else
-CMAKE_BUILD_TYPE_=Release
 MAYBED_=
 endif
 
@@ -111,7 +109,7 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)): CURRENT
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "fmtlib ${VERSION} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --build . --config=${CMAKE_BUILD_TYPE_} ${CMAKE_XTRA_BLD_FLAGS_} > BUILD-OUT.txt 2>&1
+	+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --build . --config=${CMAKE_BUILD_TYPE} ${CMAKE_XTRA_BLD_FLAGS_} > BUILD-OUT.txt 2>&1
 else
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --build . > BUILD-OUT.txt 2>&1
 endif

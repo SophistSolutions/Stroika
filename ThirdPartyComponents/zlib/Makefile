@@ -53,19 +53,17 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (${AssertionsEnabled},1)
-CMAKE_BUILD_TYPE_=Debug
 MAYBED_=d
 else
-CMAKE_BUILD_TYPE_=Release
 MAYBED_=
 endif
 endif
 
-#@todo dont understand why config=${CMAKE_BUILD_TYPE_} NEEDED for windows, and needs to not exist on unix
-ifeq (${CMAKE_BUILD_TYPE_},)
+#@todo dont understand why config=${CMAKE_BUILD_TYPE} NEEDED for windows, and needs to not exist on unix
+ifeq (${CMAKE_BUILD_TYPE},)
 CMAKE_BUILD_TYPE_EXTRA_ARG_=
 else
-CMAKE_BUILD_TYPE_EXTRA_ARG_= --config=${CMAKE_BUILD_TYPE_}
+CMAKE_BUILD_TYPE_EXTRA_ARG_= --config=${CMAKE_BUILD_TYPE}
 endif
 
 
@@ -152,8 +150,8 @@ endif
 	@#FIX:  zsd.lib(zutil.obj) : warning LNK4099: PDB 'zsd.pdb' was not found with 'zsd.lib(zutil.obj)' or at 'C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\zsd.pdb'; linking object as if no debug info
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (1,$(POST_132_Build_))
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE_}/zd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE_}/zsd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE}/zd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE}/zsd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
 endif
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))

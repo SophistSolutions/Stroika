@@ -162,24 +162,12 @@ CXXFLAGS:=$(filter-out -fsanitize=undefined, $(CXXFLAGS))
 endif
 endif
 
-ifeq (${AssertionsEnabled},1)
-CMAKE_BUILD_TYPE_=Debug
-else
-CMAKE_BUILD_TYPE_=Release
-endif
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-# CMAKE_ARGS +=  --config="${CMAKE_BUILD_TYPE_}"
-CMAKE_ARGS +=  -DCMAKE_CONFIGURATION_TYPES="${CMAKE_BUILD_TYPE_}"
-# CMAKE_ARGS +=  -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE_}"
+CMAKE_ARGS +=  -DCMAKE_CONFIGURATION_TYPES="${CMAKE_BUILD_TYPE}"
+# CMAKE_ARGS +=  -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
 endif
-# --config=${CMAKE_BUILD_TYPE_}"
 
-
-$(info CFLAGS: $(CFLAGS))
-$(info CMAKE_ARGS: $(CMAKE_ARGS))
-$(info CXXFLAGS: $(CXXFLAGS))
-### TODO ADD -DCMAKE_BUILD_TYPE=Release to CONFIG_ARGS if VS and RELEASE BUILD
 
 
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
@@ -231,15 +219,15 @@ endif
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && ${ECHO} "${CMAKE} --build . --config=${CMAKE_BUILD_TYPE_}" > BUILD-OUT.txt
-	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE_} >> BUILD-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && ${ECHO} "${CMAKE} --build . --config=${CMAKE_BUILD_TYPE}" > BUILD-OUT.txt
+	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE} >> BUILD-OUT.txt 2>&1
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && ${ECHO} "${CMAKE} --build ."  > BUILD-OUT.txt 2>&1
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build .  >> BUILD-OUT.txt 2>&1
 endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Install (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
+	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
 else
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . > INSTALL-OUT.txt 2>&1
 endif
@@ -306,12 +294,12 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@#		bson2.lib(common-b64.obj) : warning LNK4099: PDB 'bson2.pdb' was not found with 'bson2.lib(common-b64.obj)' or at 'C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\bson2.pdb'; linking object as if no debug info
 	@#Copy PDB files - https://jira.mongodb.org/browse/CXX-3291 - to avoid warnings - bson2.lib(common-json.obj) : warning LNK4099: PDB 'bson2.pdb' was not found with 'bson2.lib(common-json.obj)'
 	@#	(which occur after a make clean on ThirdPartyComponents)
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libbson/${CMAKE_BUILD_TYPE_}/bson2.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/${CMAKE_BUILD_TYPE_}/*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libbson/${CMAKE_BUILD_TYPE}/bson2.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/${CMAKE_BUILD_TYPE}/*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
 	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/utf8proc_obj.dir/Debug/utf8proc_obj.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/zlib_obj.dir/${CMAKE_BUILD_TYPE_}/zlib_obj.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/bsoncxx/${CMAKE_BUILD_TYPE_}/bsoncxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/mongocxx/${CMAKE_BUILD_TYPE_}/mongocxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/zlib_obj.dir/${CMAKE_BUILD_TYPE}/zlib_obj.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/bsoncxx/${CMAKE_BUILD_TYPE}/bsoncxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/mongocxx/${CMAKE_BUILD_TYPE}/mongocxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
 endif
 
 

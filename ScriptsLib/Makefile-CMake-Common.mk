@@ -92,8 +92,8 @@ endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=${VSVARS_MSVC_RUNTIME_LIBRARY}
 endif
-CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
+
+
 
 
 
@@ -115,9 +115,21 @@ CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
 #
 #	With other cmake based projects, that doesn't appear to be a problem
 #
+#	NOTE CMAKE_BUILD_TYPE only defined if BuildPlatform is VisualStudio
+#
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
+ifeq (${AssertionsEnabled},1)
+CMAKE_BUILD_TYPE=Debug
 CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
-CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
+else
+CMAKE_BUILD_TYPE=Release
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
+endif
+else
+# it appears cmake doesn't need these for windows cmake makefiles, and for mongodb-cxx-driver, it causes problems
+# https://jira.mongodb.org/browse/CXX-3505
+CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
 endif

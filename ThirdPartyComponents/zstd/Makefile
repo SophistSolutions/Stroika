@@ -35,19 +35,11 @@ OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}ScriptsLib/SubstituteBackVaria
 COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/zstd/CURRENT)/
 
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-ifeq (${AssertionsEnabled},1)
-CMAKE_BUILD_TYPE_=Debug
-else
-CMAKE_BUILD_TYPE_=Release
-endif
-endif
-
-#@todo dont understand why config=${CMAKE_BUILD_TYPE_} NEEDED for windows, and needs to not exist on unix
-ifeq (${CMAKE_BUILD_TYPE_},)
+#@todo dont understand why config=${CMAKE_BUILD_TYPE} NEEDED for windows, and needs to not exist on unix
+ifeq (${CMAKE_BUILD_TYPE},)
 CMAKE_BUILD_TYPE_EXTRA_ARG_=
 else
-CMAKE_BUILD_TYPE_EXTRA_ARG_= --config=${CMAKE_BUILD_TYPE_}
+CMAKE_BUILD_TYPE_EXTRA_ARG_= --config=${CMAKE_BUILD_TYPE}
 endif
 
 # This is NEEDED to build on Windows, as the library doesn't appear to use c++
