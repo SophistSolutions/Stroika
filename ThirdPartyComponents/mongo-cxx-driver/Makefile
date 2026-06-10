@@ -33,7 +33,8 @@ SHELL=/bin/bash
 #
 #		(NOTE WHEN CHANGING THIS - REVIEW THE PATCHES THAT DEPEND ON THIS VERSION BELOW)
 #
-MONGOCXXDRIRVER_VERSION_=r4.3.0
+MONGOCXXDRIRVER_VERSION_=r4.3.1
+# MONGOCXXDRIRVER_VERSION_=r4.3.0
 #MONGOCXXDRIRVER_VERSION_=r4.2.0
 #MONGOCXXDRIRVER_VERSION_=r4.1.4
 
@@ -170,6 +171,7 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 # CMAKE_ARGS +=  --config="${CMAKE_BUILD_TYPE_}"
 CMAKE_ARGS +=  -DCMAKE_CONFIGURATION_TYPES="${CMAKE_BUILD_TYPE_}"
+# CMAKE_ARGS +=  -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE_}"
 endif
 # --config=${CMAKE_BUILD_TYPE_}"
 
@@ -274,6 +276,18 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 endif
 endif
 ifeq (${MONGOCXXDRIRVER_VERSION_},r4.3.0)
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	@# Same as 4.1.4 BWA
+	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
+		${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
+		${SED} -i "s/\-l[^ ]*\/zstd\.lib//" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
+		${ECHO} '+';\
+		${SED} -i "s/Requires: .*/&, libzstd/" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
+	fi
+endif
+endif
+ifeq (${MONGOCXXDRIRVER_VERSION_},r4.3.1)
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@# Same as 4.1.4 BWA
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
