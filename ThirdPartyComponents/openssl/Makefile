@@ -21,8 +21,9 @@ QUICK_BUILD ?= 1
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
-# VERSION:=4.0.0		## gonna need to look at why not building right - maybe built but looking for new names? --LGP 2026-06-09
-VERSION:=3.6.2
+VERSION:=4.0.1
+# VERSION:=4.0.0
+# VERSION:=3.6.2
 # VERSION:=3.6.1
 # VERSION:=3.6.0
 # VERSION:=3.5.4
@@ -147,7 +148,7 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libcrypto.a							\
-	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libssl.a								\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libssl.a							\
 	$(PER_CONFIGURATION_BUILDS_DIR_)bin/openssl
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
@@ -155,8 +156,7 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(WIN_CRYPTO_LIB_BASENAME).lib		\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(WIN_SSL_LIB_BASENAME).lib			\
 	$(PER_CONFIGURATION_BUILDS_DIR_)bin/openssl.exe							\
-	$(PER_CONFIGURATION_BUILDS_DIR_)bin/openssl.pdb							\
-	$(PER_CONFIGURATION_BUILDS_DIR_)bin/c_rehash.pl
+	$(PER_CONFIGURATION_BUILDS_DIR_)bin/openssl.pdb
 endif
 
 
