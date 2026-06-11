@@ -324,11 +324,11 @@ namespace Stroika::Foundation::Execution {
     private:
         struct WE_ {
             mutable ConditionVariable<> fConditionVariable{};
-            bool                        fTriggered{false};
+            bool                        fTriggered{false}; // not atomic cuz always examined under a lock (except PeekIsSet for debugging)
 
             nonvirtual void       Reset ();
             nonvirtual bool       GetIsSet () const noexcept;
-            nonvirtual bool       PeekIsSet () const noexcept;
+            nonvirtual bool       PeekIsSet () const noexcept; // just for debugging
             nonvirtual void       Set ();
             nonvirtual void       WaitUntil (Time::TimePointSeconds timeoutAt);
             nonvirtual WaitStatus WaitUntilQuietly (Time::TimePointSeconds timeoutAt);
