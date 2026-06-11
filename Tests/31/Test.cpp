@@ -529,7 +529,9 @@ namespace {
                                                                 "AES-128-CBC-HMAC-SHA256"sv,
                                                                 "AES-128-CBC-HMAC-SHA1"sv,
 #endif
-
+#if OPENSSL_VERSION_MAJOR == 4
+                                                                "ChaCha20-Poly1305"sv,
+#endif
                                                                 "id-aes128-CCM"sv,
                                                                 "id-aes128-GCM"sv,
                                                                 "id-aes128-wrap"sv,
