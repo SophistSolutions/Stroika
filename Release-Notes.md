@@ -10,14 +10,7 @@ especially those they need to be aware of when upgrading.
 
 ### 3.0d24x - PREP
 
-- VS2k26 status
-  - BUT must now do DOCKER CONTAINER (on github and add to actions) - done but testing
-  - chnage default to vs2k26
-  - github actions for vs2k26 (add action configs based on new containers/compiler)
-  - UPDATE stroika docs ABOUT VS2K26
-
---- THEN DO SIMILAR FOR LATEST ubuntu 2604
-
+---  support LATEST ubuntu 2604
 
 - BIDI Iterators
 

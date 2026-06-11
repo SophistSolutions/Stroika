@@ -44,8 +44,16 @@ Or better yet, can be avoided entirely by just using the pre-built docker contai
 
 Building with Stroika requires
 
-- a C++ compiler (suggested Visual Studio.net 2022 or later)
+- a C++ compiler (suggested Visual Studio.net 2022, Visual Studio.Net 2026 or later)
 - a set of unix-like build tools (suggested MSYS OR Cygwin - no need for both)
+
+### Visual Studio.net 2026
+
+- Download and run [https://visualstudio.microsoft.com/downloads/](https://visualstudio.microsoft.com/downloads/)
+- Install the C++ related workloads
+  - Desktop Development with C++ (suggested/sufficient to get started)
+- On the Individual Components page
+  - select MFC (latest or whatever platform/toolsets you are targetting) if you want to build the LedIt, LedLineIt, and ActiveLedIt samples
 
 ### Visual Studio.net 2022
 

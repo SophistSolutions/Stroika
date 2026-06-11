@@ -42,7 +42,7 @@ If you have a relatively standard POSIX like c++ build environement, you maybe d
 ### Build with IDE
 
 Some project files are pre-checked in. For example, look in 
- [Workspaces/VisualStudio.Net-2022/](../Workspaces/VisualStudio.Net-2022/) or [Workspaces/VSCode/](../Workspaces/VSCode/). But some files/configuration/defaults maybe needed by some of these tools so perhaps run:
+ [Workspaces/VisualStudio.Net-2022/](../Workspaces/VisualStudio.Net-2022/) or [Workspaces/VisualStudio.Net-2026/](../Workspaces/VisualStudio.Net-2026/) or [Workspaces/VSCode/](../Workspaces/VSCode/). But some files/configuration/defaults maybe needed by some of these tools so perhaps run:
 
 ```bash
 make project-files
