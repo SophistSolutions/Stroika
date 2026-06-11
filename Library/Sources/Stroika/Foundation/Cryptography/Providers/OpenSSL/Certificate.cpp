@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Certificate.h"
@@ -34,6 +35,18 @@ using Memory::MakeSharedPtr;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
+
+    String asn1ToString_ (const ASN1_STRING* asn1_str)
+    {
+        unsigned char* utf8_out = NULL;
+        int            length   = ::ASN1_STRING_to_UTF8 (&utf8_out, asn1_str);
+        if (length < 0) {
+            return String{};
+        }
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { ::OPENSSL_free (utf8_out); });
+        return String::FromUTF8 ((const char*)utf8_out);
+    }
+
     struct Rep_ : OpenSSL::Certificate::IRep {
 
         OpenSSL::Certificate::LibRepType fCert_;
@@ -56,23 +69,20 @@ namespace {
         }
         virtual SubjectInfo GetSubject () const override
         {
-            SubjectInfo result;
-            X509_NAME*  subject    = ::X509_get_subject_name (fCert_.get ());
-            int         numEntries = ::X509_NAME_entry_count (subject);
+            SubjectInfo      result;
+            const X509_NAME* subject    = ::X509_get_subject_name (fCert_.get ());
+            int              numEntries = ::X509_NAME_entry_count (subject);
             for (int i = 0; i < numEntries; ++i) {
-                X509_NAME_ENTRY* entry = ::X509_NAME_get_entry (subject, i);
-                ASN1_OBJECT*     nid   = ::X509_NAME_ENTRY_get_object (entry);
+                const X509_NAME_ENTRY* entry = ::X509_NAME_get_entry (subject, i);
+                const ASN1_OBJECT*     nid   = ::X509_NAME_ENTRY_get_object (entry);
                 if (::OBJ_cmp (nid, ::OBJ_nid2obj (NID_commonName)) == 0) {
-                    unsigned char* cn  = X509_NAME_ENTRY_get_data (entry)->data;
-                    result.fCommonName = String::FromUTF8 ((const char*)cn);
+                    result.fCommonName = asn1ToString_ (::X509_NAME_ENTRY_get_data (entry));
                 }
                 else if (::OBJ_cmp (nid, ::OBJ_nid2obj (NID_countryName)) == 0) {
-                    unsigned char* cn = ::X509_NAME_ENTRY_get_data (entry)->data;
-                    result.fCountry   = String::FromUTF8 ((const char*)cn);
+                    result.fCountry = asn1ToString_ (::X509_NAME_ENTRY_get_data (entry));
                 }
                 else if (::OBJ_cmp (nid, ::OBJ_nid2obj (NID_organizationName)) == 0) {
-                    unsigned char* cn    = ::X509_NAME_ENTRY_get_data (entry)->data;
-                    result.fOrganization = String::FromUTF8 ((const char*)cn);
+                    result.fOrganization = asn1ToString_ (::X509_NAME_ENTRY_get_data (entry));
                 }
             }
             return result;
@@ -111,15 +121,18 @@ auto OpenSSL::Certificate::New (const SelfSignedCertParams& params) -> tuple<Ope
     // Set public key to be the key we generated earlier
     Exception::ThrowLastErrorIfFailed (::X509_set_pubkey (newCert.get (), pkey.get ()));
 
-    X509_NAME* name    = ::X509_get_subject_name (newCert.get ());
-    u8string   org     = params.fSubject.fOrganization.AsUTF8 ();
-    u8string   cn      = params.fSubject.fCommonName.AsUTF8 ();
-    u8string   country = params.fSubject.fCountry.AsUTF8 ();
-
-    Exception::ThrowLastErrorIfFailed (::X509_NAME_add_entry_by_txt (name, "C", MBSTRING_UTF8, (unsigned char*)country.c_str (), -1, -1, 0));
-    Exception::ThrowLastErrorIfFailed (::X509_NAME_add_entry_by_txt (name, "O", MBSTRING_UTF8, (unsigned char*)org.c_str (), -1, -1, 0));
-    Exception::ThrowLastErrorIfFailed (::X509_NAME_add_entry_by_txt (name, "CN", MBSTRING_UTF8, (unsigned char*)cn.c_str (), -1, -1, 0));
-
+    u8string                org     = params.fSubject.fOrganization.AsUTF8 ();
+    u8string                cn      = params.fSubject.fCommonName.AsUTF8 ();
+    u8string                country = params.fSubject.fCountry.AsUTF8 ();
+    X509_NAME*              name    = X509_NAME_new ();
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { ::X509_NAME_free (name); });
+    Exception::ThrowLastErrorIfFailed (
+        ::X509_NAME_add_entry_by_txt (name, "C", MBSTRING_UTF8, reinterpret_cast<const unsigned char*> (country.c_str ()), -1, -1, 0));
+    Exception::ThrowLastErrorIfFailed (
+        ::X509_NAME_add_entry_by_txt (name, "O", MBSTRING_UTF8, reinterpret_cast<const unsigned char*> (org.c_str ()), -1, -1, 0));
+    Exception::ThrowLastErrorIfFailed (
+        ::X509_NAME_add_entry_by_txt (name, "CN", MBSTRING_UTF8, reinterpret_cast<const unsigned char*> (cn.c_str ()), -1, -1, 0));
+    Exception::ThrowLastErrorIfFailed (::X509_set_subject_name (newCert.get (), name));
     // Since this is a self-signed certificate, we set the name of the issuer to the name of the subject
     Exception::ThrowLastErrorIfFailed (::X509_set_issuer_name (newCert.get (), name));
 
