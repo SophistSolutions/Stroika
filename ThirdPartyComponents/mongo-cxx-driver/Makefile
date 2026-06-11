@@ -27,6 +27,7 @@ SHELL=/bin/bash
 # have to be built before the samples etc...
 .NOTPARALLEL:
 
+# NOTE incompatible with openssl 4.x - https://jira.mongodb.org/browse/CXX-3516
 
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/mongodb/mongo-cxx-driver/tags or https://github.com/mongodb/mongo-cxx-driver/releases
