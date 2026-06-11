@@ -341,7 +341,6 @@ sub	DoSetThirdPartyComponents_
 		}
 		if (!defined $FEATUREFLAG_mongocxxdriver) {
 			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
-			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
 			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_No;
 			if (hasPython_()) {
 				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
@@ -658,7 +657,6 @@ sub getMacOSVersion_
 	return trim (`/usr/bin/sw_vers | grep ProductVersion | awk 'END {print \$2}'`);
 }
 
-
 sub getXCodeVersion_
 {
 	my $a =  trim (`pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version: | awk 'END {print \$2}' | grep -E -o '[0-9]+\.[0-9]' | head -1`) ;
@@ -669,8 +667,6 @@ sub getXCodeVersion_
 		return $a + 0;	## convert to a number
 	}
 }
-
-
 
 sub getXCodeSelect_
 {
@@ -914,12 +910,6 @@ sub	SetInitialDefaults_
 		}
 	}
 
-	# if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
-	# 	$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
-	# }
-	# if ("$^O" eq "cygwin" or "$^O" eq "msys") {
-	# 	$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
-	# }
 	if ("$^O" eq "darwin") {
 		# hacks so can do initial port/compile
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_No;
@@ -927,7 +917,6 @@ sub	SetInitialDefaults_
 		$COMPILER_DRIVER = "clang";
 		$COMPILER_DRIVER_C = "clang";
 		$COMPILER_DRIVER_CPlusPlus = "clang++";
-		#$CXXWARNING_FLAGS = $DEFAULT_CXXWARNING_FLAGS_CLANG;
 		$AR = "ar";
 		$AS = "as";
 		$RANLIB = "ranlib";
@@ -1310,7 +1299,6 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 				$LinkerArgs_ExtraPrefix		.= ' -Wno-stringop-overflow';
 			}
 
-
 			# In member function 'deallocate',
 			# inlined from 'deallocate' at /usr/arm-linux-gnueabihf/include/c++/12/bits/allocator.h:200:35,
 			# inlined from 'deallocate' at /usr/arm-linux-gnueabihf/include/c++/12/bits/alloc_traits.h:496:23,
@@ -1388,20 +1376,6 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			$STRIP = $ma . "-strip";
 		}
 	}
-
-## NOT sure why we ever need this - so revisit!!! - disable totoally and see in what specific cases it helps --LGP 2026-06-01
-	## libboost_json.lib(src.obj) : error LNK2038: mismatch detected for 'annotate_optional': value '0' doesn't match value '1' in ArchiveUtility.obj
-	## LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost...
-	## https://learn.microsoft.com/en-us/answers/questions/864574/enabling-address-sanitizer-results-in-error-lnk203
-	## https://learn.microsoft.com/en-us/cpp/sanitizers/error-container-overflow?view=msvc-170
-	# if (IsMSVCCompiler_($COMPILER_DRIVER) 
-	# 	&& 192930037 <= Get_MSVC_CL_Version_ ($COMPILER_DRIVER) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER) < 195100000
-	# 	&& IsTargettingSanitizer_ ('address')) {
-	# 	## Workaround issue which started in 17.6 compiler
-	# 	## But fixed and required NOT present (this workaround) in msvc 19.51
-	# 	push @Platform_CPPFLAGS_B4Includes, '-D_DISABLE_VECTOR_ANNOTATION';
-	# 	push @Platform_CPPFLAGS_B4Includes, '-D_DISABLE_STRING_ANNOTATION';
-	# }
 
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and (GetGCCVersion_ ($COMPILER_DRIVER) >= 11.0)) {
 		# Needed for sqlite build warning
@@ -1582,7 +1556,6 @@ sub	ParseEnvVarsToSetupInfluencedVariables_
 			push @EXTRA_ARGS, "$i";
 		}
 	}
-
 }
 
 
@@ -2481,13 +2454,6 @@ sub GetDefaultCZZFLAGS_flags_
 				}
 			}
 
-
-			## Not sure if/where to add this - was someplace wierld before 3.0d21
-			# if ($runtimeStackProtectorFlag == true) {
-			# 	unshift(@CFLAGS, '-fstack-protector-all');
-			# 	unshift(@CXXFLAGS, '-fstack-protector-all');
-			# }
-
 		}
 		if ($doCFLAGS eq 0) {
 			if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
@@ -2611,14 +2577,6 @@ sub PostProcessOptions_ ()
 			if (20.04 <= $ubuntuVersion and $ubuntuVersion <= 24.04) {
 				$LinkerArgs_ExtraPrefix = $LinkerArgs_ExtraPrefix  . " -Wno-return-local-addr";
 			}
-			# # Lots of apparently spurrious warnings, which we cannot (easily) suppress locally with #pragma warn...
-			# #	EG
-			# #		In function 'CRYPTO_cfb128_encrypt',
-    		# #		inlined from 'SEED_cfb128_encrypt' at ../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/seed/seed_cfb.c:24:5,
-			# #		../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/modes/cfb128.c:122:33: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
-			# if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
-			# 	$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-stringop-overflow';
-			# }
 		}
 	}
 
@@ -2691,7 +2649,6 @@ sub PostProcessOptions_ ()
 					if ($i < $#sanitizerFlags) {
 						$crap2Add2CZZFlags .= ",";
 					}
-					
 					push @effectiveSanitizerFlags, $sanitizerFlags[$i];
 				}
 			}
@@ -3139,7 +3096,6 @@ sub	WriteConfigFile_
 		}
 	}
 	print (OUT "</Foundation_PkgConfigNames>\n");
-
 
 	
 	print (OUT "\n    <!--Platform Settings-->\n");
