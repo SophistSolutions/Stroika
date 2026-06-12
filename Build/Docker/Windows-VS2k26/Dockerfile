@@ -19,10 +19,11 @@ FROM ${BASE_IMAGE}
 #       https://learn.microsoft.com/en-us/visualstudio/releases/2026/release-history
 #
 ARG VS_18_6_2=https://download.visualstudio.microsoft.com/download/pr/471ad3d6-cb2b-4d53-8edf-a9eeade096a5/3cfa3f8fc957f406dc35be713959a85c10b23b9ed9a865626550e8cf676d96a8/vs_BuildTools.exe
+ARG VS_18_7_0=https://download.visualstudio.microsoft.com/download/pr/105ab965-3bff-41cb-a75d-b4020a784328/245c3231b007786069606c719f6702cc41ce3d4a1d0becb13179b788a0b802bc/vs_BuildTools.exe
 
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_18_6_2" \
+RUN Invoke-WebRequest "$env:VS_18_7_0" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 #
