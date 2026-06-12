@@ -47,9 +47,11 @@ ifeq (${DETECTED_HOST_OS},Linux)
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2204-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2504-small
+IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2604-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests
+IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests
 ifeq (${BUILD_DEV_IMAGES},1)
 IMAGES+= sophistsolutionsinc/stroika-dev
 IMAGES+= sophistsolutionsinc/stroika-dev-2204
