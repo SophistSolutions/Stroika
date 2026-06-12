@@ -20,6 +20,13 @@
 namespace Stroika::Foundation::Traversal {
 
     /**
+     * @todo think out AT END vs AT BEGINNING semantics/API
+     * 
+     * probbaly ADD IsAtEnd and IsAtBeginning methods, and IsDone () then meaning
+     *  depends on if last operation was forward or backward.?? But what if never did any operation - like at
+     * start?
+     * 
+     * MAYBE have to LOSE IsDone() from iterator and replace with IsAtEnd ()?
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<bidirectional_iterator_tag, T>>
     class BidirectionalIterator : public Iterator<T, ITERATOR_TRAITS> {
@@ -69,8 +76,18 @@ namespace Stroika::Foundation::Traversal {
          *  Get a reference to the IRep owned by the iterator.
          *  This is an implementation detail, mainly intended for implementors.
          */
-        nonvirtual IRep&       GetRep ();
-        nonvirtual const IRep& GetRep () const;
+        nonvirtual IRep& GetRep ();
+
+    public:
+        /**
+         *  \brief
+         *      Get a reference to the IRep owned by the iterator. This is an implementation detail,
+         *      mainly intended for implementors.
+         *
+         *  Get a reference to the IRep owned by the iterator.
+         *  This is an implementation detail, mainly intended for implementors.
+         */
+        nonvirtual const IRep& ConstGetRep () const;
     };
 
     /**

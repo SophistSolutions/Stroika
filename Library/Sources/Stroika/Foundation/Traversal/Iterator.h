@@ -556,7 +556,9 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         unique_ptr<IRep> fRep_;
-        optional<T>      fCurrentValue_;
+
+    protected:
+        optional<T> _fCurrentValue;
 
     private:
         static unique_ptr<IRep> Clone_ (const IRep& rep);
