@@ -79,6 +79,9 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2404-small:
 sophistsolutionsinc/stroika-buildvm-ubuntu2504-small:
 	docker build -f Ubuntu2504-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2504-small .
 
+sophistsolutionsinc/stroika-buildvm-ubuntu2604-small:
+	docker build -f Ubuntu2604-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2604-small .
+
 sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:
 	@# Sadly docker build doesn't work with symbolic links
 	@cp ../../ScriptsLib/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
@@ -91,6 +94,8 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests:
 sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests:
 	docker build -f Ubuntu2504-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests .
 
+sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests:
+	docker build -f Ubuntu2604-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests .
 
 # Default to ltsc2025, but github actions override to set to ltsc2022 cuz else run out of disk space --LGP 2025-05-16
 # On Windows 10, you may need to use:

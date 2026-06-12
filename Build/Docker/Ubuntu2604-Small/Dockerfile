@@ -1,0 +1,66 @@
+FROM ubuntu:26.04
+
+# Get latest packages system, so can do installs
+RUN apt-get update
+
+# cuz you need this alot, like if something else missing; use NOPASSWD in sudoers file so this works, cuz hard
+# to get sudo/enter password working under docker; sb relatively safe cuz only for sudo group members from base os
+RUN apt-get -qq install -y sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+#
+# NO IDEA why needed, but as of 2022-11-29 this extra apt-get updated needed before installing 
+#       build-essential
+# Otherwise get stuff like:
+#    E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20230311ubuntu0.22.04.1_all.deb  404  Not Found [IP: 185.125.190.81 80]
+#    E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+#    E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/v/vim/xxd_8.2.3995-1ubuntu2.18_amd64.deb  404  Not Found [IP: 91.189.91.83 80]
+#    E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+#
+# --LGP 2024-10-16
+RUN apt-get update && apt-get -qq install -y build-essential; \
+    apt-get -qq clean -y;
+
+
+#
+# p7zip-full:                   Used to unpack sources for lzma SDK
+# unzip:                        A couple ThirdPartyLibs (e.g. sqlite, zlib) deliver library source in this form (.zip) - so get to unpack them
+# wget:                         Used to fetch third party components to build them. Not strictly needed if you don't build any of those...
+# pkg-config:                   only needed for building third-party components, like libcurl, etc, but also used in Stroika makefiles to find
+#                               appropriate components
+#cmake:                         required to build Xerces
+#automake autoconf libtool-bin: required to build libcurl
+#doxygen:                       Not required, but if you want to generate docs
+#jq:                            needed for ApplyConfiguration to update vs-code configuration files
+#git:                           Not really a Stroika dependency, but its how we download/fetch stroika
+#xxd:                           used in regression tests (and maybe more soon as good resource strategy)
+#python3:                       switching build scripts to depend on python
+#bsdextrautils:                 rev   
+#
+RUN apt-get -qq install -y p7zip-full; \
+    apt-get -qq install -y unzip; \
+    apt-get -qq install -y wget; \
+    apt-get -qq install -y pkg-config; \
+    apt-get -qq install -y cmake; \
+    apt-get -qq install -y automake autoconf libtool-bin; \
+    apt-get -qq install -y doxygen; \
+    apt-get -qq install -y jq; \
+    apt-get -qq install -y git; \
+    apt-get -qq install -y xxd; \
+    apt-get -qq install -y python3; \
+    apt-get -qq clean -y;
+    
+
+#You need some compiler, - can be clang or g++, but pick g++ as a good default
+RUN apt-get -qq install -y g++; \
+    apt-get -qq clean -y;
+
+#Only needed to use sanitizer builds
+RUN apt-get -qq install -y libasan5 libasan6 libubsan1; \
+    apt-get -qq clean -y;
+
+# echo on bash startup to read md file so more obvious how to get started
+COPY Shared-Files/Getting-Started-With-Stroika.md ./
+COPY Ubuntu2604-Small/.bash_profile /root
+
+CMD /bin/bash -l
