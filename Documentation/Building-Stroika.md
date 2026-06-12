@@ -56,21 +56,21 @@ If you are missing any components and just want a quick environment to test that
 UNIX:
 
 ```bash
-docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
+docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2604-small
 cat Getting-Started-With-Stroika.md
 ```
 
 Windows:
 
 ```bash
-docker run -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+docker run -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26
 cat Getting-Started-With-Stroika.md
 ```
 
 Or - a couple other docker run variants that may help with windows
 ```bash
-docker run --mount type=bind,source=c:/Sandbox,target=c:/Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
-docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+docker run --mount type=bind,source=c:/Sandbox,target=c:/Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26
+docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26
 ```
 
 
