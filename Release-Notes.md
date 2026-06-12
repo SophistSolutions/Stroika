@@ -10,17 +10,15 @@ especially those they need to be aware of when upgrading.
 
 ### 3.0d24x - PREP
 
----  support LATEST ubuntu 2604
+- regtests support and testig and more coverage (maybe new g++ compiler/clang compiler) for
+  - VS2k2026
+  - Ubuntu 2604
 
 - BIDI Iterators
 
 - Doxygen/Docs
 
-- new ubuntu build/test
-
 - SSL impl on webserver
-
-- VS2k2k
 
 - hopefully final before first alpha
 

@@ -48,6 +48,7 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y git; \
     apt-get -qq install -y xxd; \
     apt-get -qq install -y python3; \
+    apt-get -qq install -y bsdextrautils; \
     apt-get -qq clean -y;
     
 
