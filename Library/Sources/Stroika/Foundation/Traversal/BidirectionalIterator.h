@@ -6,11 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iterator>
-
-#include "Stroika/Foundation/Common/Common.h"
-
-#include "Iterator.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
 
 /**
  *
@@ -25,68 +21,71 @@ namespace Stroika::Foundation::Traversal {
 
     /**
      */
-    template <typename T, typename BASE_STD_ITERATOR = DefaultIteratorTraits<bidirectional_iterator_tag, T>>
-    class BidirectionalIterator : public Iterator<T, BASE_STD_ITERATOR> {
+    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<bidirectional_iterator_tag, T>>
+    class BidirectionalIterator : public Iterator<T, ITERATOR_TRAITS> {
     private:
-        using inherited = Iterator<T, BASE_STD_ITERATOR>;
+        using inherited = Iterator<T, ITERATOR_TRAITS>;
 
     public:
         class IRep;
 
     public:
-        using BidirectionalIteratorRepSharedPtr = unique_ptr<IRep>;
-
-    public:
         /**
-         *  \brief
-         *      This overload is usually not called directly. Instead, iterators are
-         *      usually created from a container (eg. Bag<T>::begin()).
-         *
-         *  Iterators are safely copyable, preserving their current position.
-         *
-         *  \pre RequireNotNull (rep.get ())
          */
-        explicit BidirectionalIterator (const BidirectionalIteratorRepSharedPtr& rep);
-        BidirectionalIterator (const BidirectionalIterator& from);
-        BidirectionalIterator () = delete;
-
-    private:
-        /**
-         *  Mostly internal type to select a constructor for the special END iterator.
-         */
-        enum ConstructionFlagForceAtEnd_ {
-            ForceAtEnd
-        };
-
-    private:
-        BidirectionalIterator (ConstructionFlagForceAtEnd_);
+        BidirectionalIterator (const unique_ptr<IRep>& rep) noexcept;
+        BidirectionalIterator (unique_ptr<IRep>&& rep) noexcept;
+        BidirectionalIterator (BidirectionalIterator&& src) noexcept = default;
+        BidirectionalIterator (const BidirectionalIterator& src)     = default;
+        constexpr BidirectionalIterator (const default_sentinel_t&) noexcept;
+        constexpr BidirectionalIterator (nullptr_t) noexcept;
+        constexpr BidirectionalIterator () noexcept;
 
     public:
         /**
          *  \brief  Iterators are safely copyable, preserving their current position.
          */
-        nonvirtual BidirectionalIterator& operator= (const BidirectionalIterator& rhs) = default;
+        nonvirtual BidirectionalIterator& operator= (BidirectionalIterator&& rhs) noexcept = default;
+        nonvirtual BidirectionalIterator& operator= (const BidirectionalIterator& rhs)     = default;
 
     public:
-        // @todo add operator--
+        /**
+         * 
+         */
+        nonvirtual BidirectionalIterator& operator-- ();
+        nonvirtual BidirectionalIterator  operator-- (int);
+
+    public:
+        /*
+         * 
+         */
+        nonvirtual BidirectionalIterator operator- (int i) const;
 
     public:
         /**
          *  \brief
-         *      Used by *somecontainer*::end ()
+         *      Get a reference to the IRep owned by the iterator. This is an implementation detail,
+         *      mainly intended for implementors.
          *
-         *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
-         *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
+         *  Get a reference to the IRep owned by the iterator.
+         *  This is an implementation detail, mainly intended for implementors.
          */
-        static BidirectionalIterator GetEmptyIterator ();
+        nonvirtual IRep&       GetRep ();
+        nonvirtual const IRep& GetRep () const;
     };
 
     /**
      */
-    template <typename T, typename BASE_STD_ITERATOR>
-    class BidirectionalIterator<T, BASE_STD_ITERATOR>::IRep : public Iterator<T, BASE_STD_ITERATOR>::IRep {
+    template <typename T, typename ITERATOR_TRAITS>
+    class BidirectionalIterator<T, ITERATOR_TRAITS>::IRep : public Iterator<T, ITERATOR_TRAITS>::IRep {
     protected:
         IRep () = default;
+
+    public:
+        virtual unique_ptr<IRep> Clone () const = 0;
+        /**
+         *  \like More () - but going backwards. Use More (..., false) to get the current value without moving.
+         */
+        virtual void Back (optional<T>* result) = 0;
     };
 
 }
