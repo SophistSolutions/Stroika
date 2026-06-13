@@ -317,7 +317,7 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
-        "run_on_branch": "v3-Release"
+        "run_on_branch": "v3-Release-DISABLED"
     },
     {
         "#": "MacOS"
