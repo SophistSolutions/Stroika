@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 if (fKeyEqualsComparer_ (it->fKey, key)) {
                     if (item != nullptr) {
                         *item = it->fValue;
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, AddReplaceMode addReplaceMode) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 if (fKeyEqualsComparer_ (it->fKey, key)) {
                     switch (addReplaceMode) {
                         case AddReplaceMode::eAddReplaces:
@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 if (fKeyEqualsComparer_ (it->fKey, key)) {
                     fData_.Remove (it);
                     fChangeCounts_.PerformedChange ();

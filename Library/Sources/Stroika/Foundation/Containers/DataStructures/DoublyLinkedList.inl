@@ -397,14 +397,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void DoublyLinkedList<T>::Remove (const ForwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         this->Invariant ();
 
         const Link_* victim = i.fCurrent_;
-        AssertNotNull (victim); // cuz not done
+        AssertNotNull (victim); // cuz not AtEnd
         /*
          * Before:
          *      |        |      |        |      |        |
@@ -453,7 +453,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void DoublyLinkedList<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
@@ -469,7 +469,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         /*
-         * NB: This code works fine, even if we are done!!!
+         * NB: This code works fine, even if we are AtEnd!!!
          */
         this->Invariant ();
         if (i.fCurrent_ == nullptr) {
@@ -477,9 +477,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
              *      NB: If I am past the last item on the list, AddBefore() is equivalent
              *  to Appending to the list.
              */
-            Assert (i.Done ());
+            Assert (i.AtEnd ());
             push_back (newValue);
-            Assert (i.Done ()); // what is done, cannot be undone!!!
+            Assert (i.AtEnd ()); // what is done, cannot be undone!!!
         }
         else {
             Link_* prev = i.fCurrent_->fPrev;
@@ -513,7 +513,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         this->Invariant ();
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         AssertNotNull (i.fCurrent_); // since not done...
         Assert (fHead_ != nullptr);
         /*
@@ -610,10 +610,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline DoublyLinkedList<T>::ForwardIterator::operator bool () const
     {
-        return not Done ();
+        return not AtEnd ();
     }
     template <typename T>
-    inline bool DoublyLinkedList<T>::ForwardIterator::Done () const noexcept
+    inline bool DoublyLinkedList<T>::ForwardIterator::AtEnd () const noexcept
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
         if (fData_ != nullptr) {
@@ -626,7 +626,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto DoublyLinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
-        Require (not Done ());
+        Require (not AtEnd ());
         Invariant ();
         Assert (fCurrent_ != nullptr);
         fCurrent_ = fCurrent_->fNext;
@@ -647,7 +647,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         RequireNotNull (fData_);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
 #endif
-        Require (not Done ());
+        Require (not AtEnd ());
         Invariant ();
         AssertNotNull (fCurrent_);
         return fCurrent_->fItem;
@@ -659,7 +659,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         RequireNotNull (fData_);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
 #endif
-        Require (not Done ());
+        Require (not AtEnd ());
         Invariant ();
         AssertNotNull (fCurrent_);
         return &fCurrent_->fItem;
@@ -667,7 +667,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     size_t DoublyLinkedList<T>::ForwardIterator::CurrentIndex (const DoublyLinkedList* data) const
     {
-        Require (not Done ());
+        Require (not AtEnd ());
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
         RequireNotNull (fData_);

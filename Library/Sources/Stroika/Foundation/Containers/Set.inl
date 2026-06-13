@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Set<T>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Remove (patchedIterator, nextI);
     }
@@ -507,7 +507,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     auto Set<T>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         Iterator<value_type> patchedIterator = i;
         element_type* writableRep = this->_fRep.rwget ([&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
@@ -555,7 +555,7 @@ namespace Stroika::Foundation::Containers {
         }
         // Note - no need to iterate over rhs because we checked sizes the same
         [[maybe_unused]] size_t rhsSize{};
-        for (auto i = rhs.MakeIterator (); not i.Done (); ++i) {
+        for (auto i = rhs.MakeIterator (); not i.AtEnd (); ++i) {
             if (not Lookup (*i, nullptr, nullptr)) {
                 return false;
             }

@@ -49,17 +49,6 @@ namespace Stroika::Foundation::Traversal {
         RandomAccessIterator (const RandomAccessIterator& from);
         RandomAccessIterator () = delete;
 
-    private:
-        /**
-         *  Mostly internal type to select a constructor for the special END iterator.
-         */
-        enum ConstructionFlagForceAtEnd_ {
-            ForceAtEnd
-        };
-
-    private:
-        RandomAccessIterator (ConstructionFlagForceAtEnd_);
-
     public:
         /**
          *  \brief  Iterators are safely copyable, preserving their current position.

@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Sequence<T>::Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI)
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Update (patchedIterator, newValue, nextI);
     }
@@ -369,7 +369,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Sequence<T>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Remove (patchedIterator, nextI);
     }
@@ -479,7 +479,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     auto Sequence<T>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         Iterator<value_type> patchedIterator = i;
         element_type* writableRep = this->_fRep.rwget ([&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {

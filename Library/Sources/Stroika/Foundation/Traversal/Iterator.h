@@ -82,10 +82,9 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
-     *  \brief
-     *      An Iterator<T> is a copyable object which allows traversing the contents of some container. It is like an std::const_iterator.
+     *  \brief An Iterator<T> is a copyable object which allows traversing the contents of some container.
      *
-     *  \@todo EXPLAIN HOW THIS IS CONNECTED TO c++20 'range' and probably make this work with ranges!!!
+     *  \@todo EXPLAIN HOW THIS IS CONNECTED TO c++20 'ranges'
      * 
      *  An Iterator<T> is typically associated with some container (that is being iterated over)
      *  and which allows traversal from start to finish.
@@ -108,6 +107,12 @@ namespace Stroika::Foundation::Traversal {
      *  but acts as an marker/indicator of what element to update. Such APIs will optionally return an updated iterator,
      *  so that you can continue with iteration (if desired).
      * 
+     *  \note in Stroika 3.0d24, we renamed Done () to AtEnd (), and the old name is deprecated.
+     *        PLUS, we HAD the rule that once at iterator was DONE, it could NEVER be UNDONE. But
+     *        that rule is no longer in place. Bidirectional iterators that reach the end, can be moved backward
+     *        to continue iterating backwards. This will still be often be true of ordinary iterators, but it may not be true
+     *        for some.
+     * 
      *  \note PRIOR to Stroika 2.1b14 it was true that
      * 
      *        "If the underlying container is modified, the iterator will be automatically
@@ -124,7 +129,7 @@ namespace Stroika::Foundation::Traversal {
      *
      *  \par Example Usage
      *      \code
-     *          for (Iterator<T> i = container.MakeIterator (); not i.Done (); i.Next ())  {
+     *          for (Iterator<T> i = container.MakeIterator (); not i.AtEnd (); i.Next ())  {
      *              f (i.Current ());
      *          }
      *      \endcode
@@ -155,11 +160,11 @@ namespace Stroika::Foundation::Traversal {
      *      1.      Stroika iterators (in debug builds) will detect if they are used after
      *              the underlying container has changed (some STL's may do this too?)
      *
-     *      2.      Stroika iterators carry around their 'done' state all in one object.
+     *      2.      Stroika iterators carry around their 'AtEnd' state all in one object.
      *              For compatibility with existing C++ idiom, and some C++11 language features
      *              Stroika iterators inherit from std::iterator<> and allow use of end(),
-     *              and i != end() to check for if an iterator is done. But internally,
-     *              Stroika just checks i.Done(), and so can users of Stroika iterators.
+     *              and i != end() to check for if an iterator is AtEnd. But internally,
+     *              Stroika just checks i.AtEnd(), and so can users of Stroika iterators.
      *
      *      3.      Stroika iterators are not 'random access'. They just go forwards, one step at a
      *              time. In STL, some kinds of iterators act more like pointers where you can do
@@ -266,19 +271,10 @@ namespace Stroika::Foundation::Traversal {
          */
         using RepSmartPtr [[deprecated ("Since Stroika v3.0d1 - just use unique_ptr<IRep> directly")]] = unique_ptr<IRep>;
 
-    private:
-        /*
-         *  Mostly internal type to select a constructor for the special END iterator.
-         */
-        enum class ConstructionFlagForceAtEnd_ {
-            ForceAtEnd
-        };
-
     public:
         /**
-         *  \brief
-         *      This overload is usually not called directly. Instead, iterators are
-         *      usually created from a container (eg. Bag<T>::begin()).
+         *  \brief This overload is usually not called directly. Instead, iterators are
+         *         usually created from a container (eg. Bag<T>::begin()).
          *
          *  Iterators are safely copyable, preserving their current position.
          *
@@ -290,6 +286,8 @@ namespace Stroika::Foundation::Traversal {
          *        which implies it must be default constructible. So interpret default construction of Iterator as meaning empty/end sentinel.
          * 
          *  \pre RequireNotNull (rep.get ())
+         * 
+         *  \note constructor with argument default_sentinel_t - creates an end iterator
          */
         Iterator (const unique_ptr<IRep>& rep) noexcept;
         Iterator (unique_ptr<IRep>&& rep) noexcept;
@@ -298,9 +296,6 @@ namespace Stroika::Foundation::Traversal {
         constexpr Iterator (const default_sentinel_t&) noexcept;
         constexpr Iterator (nullptr_t) noexcept;
         constexpr Iterator () noexcept;
-
-    private:
-        constexpr Iterator (ConstructionFlagForceAtEnd_) noexcept;
 
     public:
         /**
@@ -311,8 +306,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *      Return the Current value pointed to by the Iterator<T> (same as Current())
+         *  \brief Return the Current value pointed to by the Iterator<T> (same as Current())
          *
          *  Support for range-based-for, and STL style iteration in general (containers must also
          *  support begin, end).
@@ -331,8 +325,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *      Return a pointer to the current value pointed to by the Iterator<T> (like Current())
+         *  \brief Return a pointer to the current value pointed to by the Iterator<T> (like Current())
          *
          *  This function allows you to write i->b, where i is an iterator and b is a member of the type
          *  iterated over by i.
@@ -344,16 +337,13 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *      preincrement
-         *
-         *      Advance iterator; support for range-based-for, and STL style iteration in
-         *      general (containers must also support begin, end).
+         *  \brief Advance iterator; support for range-based-for, and STL style iteration in
+         *         general (containers must also support begin, end).
          *
          *  Advance iterator; support for range-based-for, and STL style iteration in general
          *  (containers must also support begin, end).
          *
-         *  operator++ can be called anytime as long as Done () is not true (must be called
+         *  operator++ can be called anytime as long as AtEnd () is not true (must be called
          *  prior to operator++). It then it iterates to the  item in the container (i.e. it
          *  changes the value returned by Current).
          *
@@ -370,7 +360,7 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual Iterator  operator++ (int);
 
     public:
-        /*
+        /**
          *  \pre operator++ can be called 'i' times (on a copy of this), and the result returned.
          *
          *  \note   don't use unsigned 'i' because that works less well with overloads and ambiguity.
@@ -379,8 +369,8 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual Iterator operator+ (int i) const;
 
     public:
-        /*
-         *      \brief  return not Done ()
+        /**
+         *  \brief return not AtEnd ()
          *
          *  \em Design Note:
          *      I HATE type punning - which this is. And I may want to lose this.
@@ -392,7 +382,7 @@ namespace Stroika::Foundation::Traversal {
          *          Iterator<T> n = ...;
          *          while (n) {
          *          }
-         *          not sure that's better than while (not n.Done ())???
+         *          not sure that's better than while (not n.AtEnd ())???
          */
         nonvirtual explicit operator bool () const;
 
@@ -405,8 +395,8 @@ namespace Stroika::Foundation::Traversal {
          *  \em NB: It is \pre required that the two iterators being compared must come from the same source, or from the special source nullptr.
          *
          *  Very roughly, the idea is that to be 'equal' - two iterators must be iterating over the same source,
-         *  and be up to the same position. The slight exception to this is that any two iterators that are Done()
-         *  are considered Equals (). This is mainly because we use a different representation for 'done'
+         *  and be up to the same position. The slight exception to this is that any two iterators that are AtEnd()
+         *  are considered Equals (). This is mainly because we use a different representation for 'AtEnd'
          *  iterators.
          *
          *  @TODO - NOTE - SEE TODO ABOUT ABOUT THIS GUARANTEE??? - NO - TOO STRONG - REVISE!!!
@@ -437,8 +427,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *  Returns the value of the current item visited by the Iterator<T>, and is illegal to call if Done()
+         *  \brief Returns the value of the current item visited by the Iterator<T>, and is illegal to call if AtEnd()
          *
          *  Current() returns the value of the current item visited by the Iterator<T>.
          *
@@ -448,7 +437,7 @@ namespace Stroika::Foundation::Traversal {
          *  Two subsequent calls to *it *cannot* return different values with no
          *  intervening (non-const) calls on the iterator.
          *
-         *  The value of returned is undefined (Assertion error) if called when Done().
+         *  The value of returned is undefined (Assertion error) if called when AtEnd().
          *
          *  operator*() is a common synonym for Current().
          *
@@ -464,30 +453,36 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *      Done () means there is nothing left in this iterator (a synonym for (it == container.end ()).
+         *  \brief AtEnd () means there is nothing left in this iterator (a synonym for (it == container.end ()).
          *
-         *  Done () means there is nothing left to visit in this iterator.
+         *  AtEnd () means there is nothing left to visit in this iterator.
          *
-         *  Once an iterator is Done(), it can never transition to 'not Done()'.
+         *  Once an iterator is AtEnd(), it can never transition to 'not AtEnd()'.
          *
-         *  When an iterator is Done(), it is illegal to call Current().
+         *  When an iterator is AtEnd(), it is illegal to call Current().
          *
-         *  Calling Done() *may* change (initialize) the value which would be returned by the next
+         *  Calling AtEnd() *may* change (initialize) the value which would be returned by the next
          *  call to Current().
          *
          *      NB: There are *no* modifications to an underlying container which will directly change
-         *      the value of Done(). This value only changes the next time the cursor is advanced
+         *      the value of AtEnd(). This value only changes the next time the cursor is advanced
          *      via a call to operator++();
          *
-         *      if it comes from container, then (it == container.end ()) is true iff it.Done()
+         *      if it comes from container, then (it == container.end ()) is true iff it.AtEnd()
          */
-        nonvirtual bool Done () const;
+        nonvirtual bool AtEnd () const;
+
+    public:
+        // PROBABLY DEPRECATED - use AtEnd() instead - due to distinction of AtBeginning()/AtEnd() for bidi iterators
+        [[deprecated ("Since Stroika v3.0d34 Use AtEnd() instead")]]
+        nonvirtual bool Done () const
+        {
+            return AtEnd ();
+        }
 
     public:
         /**
-         *  \brief
-         *      Set to done and disassociate with owner.
+         *  \brief Set to AtEnd and disassociate with owner.
          *
          *   Equivalent to *this = GetEmptyIterator();
          *
@@ -497,8 +492,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *      Set to done and disassociate with owner.
+         *  \brief Set to AtEnd and disassociate with owner.
          *
          *  Equivalent to *this = GetEmptyIterator();
          *
@@ -508,8 +502,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *      Used by *someContainer*::end ()
+         *  \brief Used by *someContainer*::end ()
          *
          *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
          *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
@@ -520,9 +513,8 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *      Get a reference to the IRep owned by the iterator. This is an implementation detail,
-         *      mainly intended for implementors.
+         *  \brief Get a reference to the IRep owned by the iterator. This is an implementation detail,
+         *         mainly intended for implementors.
          *
          *  Get a reference to the IRep owned by the iterator.
          *  This is an implementation detail, mainly intended for implementors.
@@ -531,17 +523,13 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *      Get a reference to the IRep owned by the iterator. This is an implementation detail,
-         *      mainly intended for implementors.
-         *
-         *  Get a reference to the IRep owned by the iterator.
-         *  This is an implementation detail, mainly intended for implementors.
+         *  \brief Get a reference to the IRep owned by the iterator. This is an implementation detail,
+         *         mainly intended for implementors.
          */
         nonvirtual const IRep& ConstGetRep () const;
 
     public:
-        /*
+        /**
          *  \brief Refresh the current iterator state based on what is in the underlying IRep
          * 
          *  Useful when you change the rep directly. This should VERY RARELY be needed - just in implementing iterator patching (say during a remove).
@@ -550,7 +538,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief, does nothing if !qStroika_Foundation_Debug_AssertionsChecked, but if qStroika_Foundation_Debug_AssertionsChecked, checks internal state and asserts in good shape
+         *  \brief Invariant does nothing if !qStroika_Foundation_Debug_AssertionsChecked, but if qStroika_Foundation_Debug_AssertionsChecked, checks internal state and asserts in good shape
          */
         nonvirtual void Invariant () const noexcept;
 
@@ -595,7 +583,7 @@ namespace Stroika::Foundation::Traversal {
      *
      *          it++ -> More (&ignoredValue, true)
      *          *it -> More (&v, false); return *v;
-     *          Done -> More (&v, false); return v.has_value();
+     *          AtEnd -> More (&v, false); return v.has_value();
      */
     template <typename T, typename ITERATOR_TRAITS>
     class Iterator<T, ITERATOR_TRAITS>::IRep {
@@ -621,7 +609,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  If advance is true, it moves the iterator to the next legal position 
          *
-         *  \note (requires not Done() before advancing) - NEW Since Stroika 2.1b14
+         *  \note (requires not AtEnd() before advancing) - NEW Since Stroika 2.1b14
          *
          *          BEFORE 2.1b14: It WAS legal to call More () with advance true even when already at the end of iteration.
          *          This design choice was made to be multi-threading friendly.
@@ -637,7 +625,7 @@ namespace Stroika::Foundation::Traversal {
          *      to assignment, but only initialization.
          *
          *  \em Design Note
-         *      Standard C++ iterators separate advancing from testing if done. That is almost strictly better.
+         *      Standard C++ iterators separate advancing from testing if AtEnd. That is almost strictly better.
          *      However, standard c++ iterators don't require a virtual call per iteration. It is to mitigate
          *      that we combine those two operations into one call (not that unnaturally).
          */

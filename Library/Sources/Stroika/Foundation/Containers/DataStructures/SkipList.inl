@@ -850,10 +850,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator bool () const
     {
-        return not Done ();
+        return not AtEnd ();
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Done () const noexcept -> bool
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AtEnd () const noexcept -> bool
     {
         return fCurrent_ == nullptr;
     }
@@ -872,7 +872,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::CurrentIndex (const SkipList* data) const -> size_t
     {
-        Require (not Done ());
+        Require (not AtEnd ());
 #if qStroika_Foundation_Debug_AssertionsChecked
         RequireNotNull (fData_);
         Require (fData_ == data);
@@ -946,7 +946,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant_ () const noexcept
     {
         // fData_ not always present - for end () iterators
-        Require (Done () or fData_ != nullptr);
+        Require (AtEnd () or fData_ != nullptr);
         if (fData_ != nullptr) {
             fData_->Invariant (); // @todo verify fCurrent_ == nullptr or somewhere inside fData_....
         }

@@ -442,10 +442,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator bool () const
     {
-        return not Done ();
+        return not AtEnd ();
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Done () const noexcept
+    bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AtEnd () const noexcept
     {
         Assert (fData_ == nullptr or fBucketIndex_ <= fData_->bucket_count ());
         return fData_ == nullptr or fBucketIndex_ == fData_->bucket_count ();
@@ -453,21 +453,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator* () const -> const value_type&
     {
-        Require (not Done ());
+        Require (not AtEnd ());
         return fData_->fBuckets_[fBucketIndex_].fElements[fIntraBucketIndex_];
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator->() const -> const value_type*
     {
-        Require (not Done ());
+        Require (not AtEnd ());
         return &fData_->fBuckets_[fBucketIndex_].fElements[fIntraBucketIndex_];
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     constexpr bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
         Require (fData_ == rhs.fData_ or fData_ == nullptr or rhs.fData_ == nullptr); // nullptr used for sentinal end else must refer to same container
-        bool done  = Done ();
-        bool rDone = rhs.Done ();
+        bool done  = this->AtEnd ();
+        bool rDone = rhs.AtEnd ();
         if (done and rDone) {
             return true;
         }
@@ -492,7 +492,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ () -> ForwardIterator&
     {
-        Require (not Done ());
+        Require (not AtEnd ());
         RequireNotNull (fData_);
         ++fIntraBucketIndex_;
         Assert (fIntraBucketIndex_ <= fData_->bucket_size (fBucketIndex_));

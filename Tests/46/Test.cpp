@@ -34,14 +34,14 @@ namespace {
         Debug::TraceContextBumper ctx{"Test1_DirectoryIterator_"};
         {
             Debug::TraceContextBumper ctx1{"simple test"};
-            for (DirectoryIterator i{WellKnownLocations::GetTemporary ()}; not i.Done (); ++i) {
+            for (DirectoryIterator i{WellKnownLocations::GetTemporary ()}; not i.AtEnd (); ++i) {
                 DbgTrace ("filename = {}"_f, *i);
             }
         }
         {
             Debug::TraceContextBumper ctx1{"t2"};
             DirectoryIterator         i{WellKnownLocations::GetTemporary ()};
-            for (DirectoryIterator i2 = i; not i2.Done (); ++i2) {
+            for (DirectoryIterator i2 = i; not i2.AtEnd (); ++i2) {
                 DbgTrace ("filename = {}"_f, *i2);
             }
         }

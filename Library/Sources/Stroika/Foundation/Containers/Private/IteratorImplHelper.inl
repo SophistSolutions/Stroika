@@ -93,10 +93,10 @@ namespace Stroika::Foundation::Containers::Private {
         ValidateChangeCount ();
         // Typically calls have advance = true
         if (advance) [[likely]] {
-            Require (not fIterator.Done ());
+            Require (not fIterator.AtEnd ());
             ++fIterator;
         }
-        if (fIterator.Done ()) [[unlikely]] {
+        if (fIterator.AtEnd ()) [[unlikely]] {
             *result = nullopt;
         }
         else {

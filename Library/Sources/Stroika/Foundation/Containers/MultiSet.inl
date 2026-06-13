@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers {
         if (this->size () != rhs.size ()) {
             return false;
         }
-        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (); not i.AtEnd (); ++i) {
             if (i->fCount != rhs.OccurrencesOf (i->fValue)) {
                 return false;
             }
@@ -296,7 +296,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Remove (patchedIterator, nextI);
     }
@@ -308,7 +308,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI)
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->UpdateCount (patchedIterator, newCount, nextI);
     }
@@ -371,7 +371,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     auto MultiSet<T, TRAITS>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         Iterator<value_type> patchedIterator = i;
         element_type* writableRep = this->_fRep.rwget ([&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {

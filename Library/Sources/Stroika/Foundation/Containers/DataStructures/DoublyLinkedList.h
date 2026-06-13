@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:
          *      Always: constant
          *
-         *  \pre not i.Done ()
+         *  \pre not i.AtEnd ()
          */
         nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
 
@@ -332,12 +332,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  return true if iterator not Done
+         *  return true if iterator not AtEnd
          */
         explicit operator bool () const;
 
     public:
-        nonvirtual bool Done () const noexcept;
+        nonvirtual bool AtEnd () const noexcept;
 
     public:
         nonvirtual const T& operator* () const;

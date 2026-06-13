@@ -154,10 +154,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             {
                 RequireNotNull (result);
                 if (advance) [[likely]] {
-                    Require (not fIterator.Done ()); // new requirement since Stroika 2.1b14
+                    Require (not fIterator.AtEnd ()); // new requirement since Stroika 2.1b14
                     ++fIterator;
                 }
-                if (fIterator.Done ()) [[unlikely]] {
+                if (fIterator.AtEnd ()) [[unlikely]] {
                     *result = nullopt;
                 }
                 else {

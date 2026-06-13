@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             else {
                 size_t index = at;
-                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                     if (--index == 0) {
                         for (auto p = copyFrom.rbegin (); p != copyFrom.rend (); ++p) {
                             fData_.AddBefore (it, *p);
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                         break;
                     }
                 }
-                //Assert (not it.Done ());      // cuz that would mean we never added
+                //Assert (not it.AtEnd ());      // cuz that would mean we never added
             }
             fChangeCounts_.PerformedChange ();
         }
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             size_t amountToRemove = to - from;
             if (amountToRemove != 0) [[likely]] {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                     if (index-- == 0) {
                         while (amountToRemove-- != 0) {
                             it = fData_.erase (it);

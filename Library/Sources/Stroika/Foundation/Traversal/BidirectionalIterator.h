@@ -58,6 +58,12 @@ namespace Stroika::Foundation::Traversal {
         /**
          * 
          */
+        nonvirtual bool AtStart () const;
+
+    public:
+        /**
+         * 
+         */
         nonvirtual BidirectionalIterator& operator-- ();
         nonvirtual BidirectionalIterator  operator-- (int);
 

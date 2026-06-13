@@ -417,7 +417,7 @@ String CommandLine::ToString () const
 StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgument> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)
 {
     RequireNotNull (argi);
-    Require (not argi->Done ());
+    Require (not argi->AtEnd ());
     using OptionalArgument    = optional<String>;
     using OptionallyHasOption = optional<OptionalArgument>;
     using RT                  = StdCompat::expected<OptionallyHasOption, InvalidCommandLineArgument>;
@@ -431,7 +431,7 @@ StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgument> Comm
     if (o.fSingleCharName and ai.length () == 2 and ai[0] == '-' and ai[1] == o.fSingleCharName) {
         if (o.fSupportsArgument) {
             ++(*argi);
-            if ((*argi).Done ()) {
+            if ((*argi).AtEnd ()) {
                 if (o.fIfSupportsArgumentThenRequired) {
                     return ERRT{InvalidCommandLineArgument{
                         "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
@@ -458,7 +458,7 @@ StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgument> Comm
                 return RT{OptionallyHasOption{restOfArgi.SubString (1)}};
             }
             ++(*argi); // Look for argument as string just after --option
-            if ((*argi).Done ()) {
+            if ((*argi).AtEnd ()) {
                 if (o.fIfSupportsArgumentThenRequired) {
                     return ERRT{InvalidCommandLineArgument{
                         "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};

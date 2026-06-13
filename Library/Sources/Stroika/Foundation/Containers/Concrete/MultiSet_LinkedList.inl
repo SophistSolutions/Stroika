@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Contains (ArgByValueType<T> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 if (fEqualsComparer_ (it->fValue, item)) {
                     Assert (it->fCount != 0);
                     return true;
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             if (count != 0) {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                     auto current = *it;
                     if (fEqualsComparer_ (current.fValue, item)) {
                         current.fCount += count;
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (count != 0);
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 auto current = *it;
                 if (fEqualsComparer_ (current.fValue, item)) {
                     qStroika_ATTRIBUTE_INDETERMINATE size_t result;
@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 auto current = *it;
                 if (fEqualsComparer_ (current.fValue, item)) {
                     Ensure (current.fCount != 0);

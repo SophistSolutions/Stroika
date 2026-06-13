@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<value_type>& i, const Iterator<value_type>* nextI)
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Remove (patchedIterator, nextI);
     }
@@ -396,7 +396,7 @@ namespace Stroika::Foundation::Containers {
     auto KeyedCollection<T, KEY_TYPE, TRAITS>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i)
         -> tuple<_IRep*, Iterator<value_type>>
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         Iterator<value_type> patchedIterator = i;
         element_type* writableRep = this->_fRep.rwget ([&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {

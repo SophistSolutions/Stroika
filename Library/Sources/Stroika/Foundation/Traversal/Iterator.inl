@@ -69,24 +69,19 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (const default_sentinel_t&) noexcept
-        : Iterator{ConstructionFlagForceAtEnd_::ForceAtEnd}
+        : fRep_{nullptr}
     {
+        Assert (AtEnd ());
     }
     template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t) noexcept
-        : Iterator{ConstructionFlagForceAtEnd_::ForceAtEnd}
+        : Iterator{default_sentinel}
     {
     }
     template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator () noexcept
-        : Iterator{ConstructionFlagForceAtEnd_::ForceAtEnd}
+        : Iterator{default_sentinel}
     {
-    }
-    template <typename T, typename ITERATOR_TRAITS>
-    constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (ConstructionFlagForceAtEnd_) noexcept
-        : fRep_{nullptr}
-    {
-        Assert (Done ());
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
@@ -144,7 +139,7 @@ namespace Stroika::Foundation::Traversal {
         return *_fCurrentValue;
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline bool Iterator<T, ITERATOR_TRAITS>::Done () const
+    inline bool Iterator<T, ITERATOR_TRAITS>::AtEnd () const
     {
         this->Invariant ();
         return not _fCurrentValue.has_value ();
@@ -162,7 +157,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline const T& Iterator<T, ITERATOR_TRAITS>::operator* () const
     {
-        Require (not Done ());
+        Require (not AtEnd ());
         RequireNotNull (fRep_);
         this->Invariant ();
         return *_fCurrentValue;
@@ -170,7 +165,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline auto Iterator<T, ITERATOR_TRAITS>::operator->() const -> const value_type*
     {
-        Require (not Done ());
+        Require (not AtEnd ());
         RequireNotNull (fRep_);
         this->Invariant ();
         return _fCurrentValue.operator->();
@@ -178,7 +173,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline auto Iterator<T, ITERATOR_TRAITS>::operator++ () -> Iterator&
     {
-        Require (not Done ());
+        Require (not AtEnd ());
         RequireNotNull (fRep_);
         fRep_->More (&_fCurrentValue, true);
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
@@ -205,21 +200,21 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::operator bool () const
     {
-        return not Done ();
+        return not AtEnd ();
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const Iterator& rhs) const
     {
         /*
-         *  Equals is checked by first checking handling the case of special 'done' iterators. If two
-         *  iterators differ on Done () - they cannot be equal. And if they are both done (this is special -
+         *  Equals is checked by first checking handling the case of special 'AtEnd' iterators. If two
+         *  iterators differ on AtEnd () - they cannot be equal. And if they are both AtEnd (this is special -
          *  even if from different sources) they are considered equal.
          *
          *  But then - we check that they are the same dynamic type, and if so, hand to one,
          *  and let it do the dynamic/concrete type specific checks for equality.
          */
-        bool lDone = Done ();
-        bool rDone = rhs.Done ();
+        bool lDone = AtEnd ();
+        bool rDone = rhs.AtEnd ();
         if (lDone != rDone) [[likely]] {
             return false;
         }
@@ -236,7 +231,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const default_sentinel_t&) const
     {
-        return this->Done ();
+        return this->AtEnd ();
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline auto Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep) -> unique_ptr<IRep>

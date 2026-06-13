@@ -493,18 +493,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  return true if iterator not Done
+         *  return true if iterator not AtEnd
          */
         explicit operator bool () const;
 
     public:
-        nonvirtual bool Done () const noexcept;
+        nonvirtual bool AtEnd () const noexcept;
 
     public:
-        nonvirtual const value_type& operator* () const; //  Error to call if Done (), otherwise OK
+        nonvirtual const value_type& operator* () const; //  Error to call if AtEnd (), otherwise OK
 
     public:
-        nonvirtual const value_type* operator->() const; //  Error to call if Done (), otherwise OK
+        nonvirtual const value_type* operator->() const; //  Error to call if AtEnd (), otherwise OK
 
 #if 0
     public:

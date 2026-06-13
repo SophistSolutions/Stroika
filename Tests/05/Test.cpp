@@ -62,7 +62,7 @@ namespace {
         EXPECT_TRUE (someLL.GetAt (55) != 56); //  EXPECT_TRUE(someArray [55] != 56);
         {
             size_t i = 1;
-            for (DataStructures::DoublyLinkedList<size_t>::ForwardIterator it{&someLL}; not it.Done (); ++it, ++i) {
+            for (DataStructures::DoublyLinkedList<size_t>::ForwardIterator it{&someLL}; not it.AtEnd (); ++it, ++i) {
                 if (i == 100) {
                     someLL.AddAfter (it, 1);
                     break;

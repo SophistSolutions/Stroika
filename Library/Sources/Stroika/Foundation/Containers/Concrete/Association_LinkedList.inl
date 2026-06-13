@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             vector<mapped_type>                                   result;
-            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.AtEnd (); ++it) {
                 if (fKeyEqualsComparer_ (it->fKey, key)) {
                     result.push_back (it->fValue);
                 }
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.AtEnd (); ++it) {
                 if (fKeyEqualsComparer_ (it->fKey, key)) {
                     fData_.Remove (it);
                     fChangeCounts_.PerformedChange ();

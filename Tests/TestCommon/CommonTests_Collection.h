@@ -305,13 +305,13 @@ namespace CommonTests {
                 {
                     EXPECT_TRUE (collection.size () == 2); // cuz we said so above
                     Iterator<typename CONCRETE_CONTAINER::value_type> i = collection.begin ();
-                    EXPECT_TRUE (not i.Done ());
+                    EXPECT_TRUE (not i.AtEnd ());
                     EXPECT_TRUE (i != collection.end ());
                     ++i;
-                    EXPECT_TRUE (not i.Done ());
+                    EXPECT_TRUE (not i.AtEnd ());
                     EXPECT_TRUE (i != collection.end ());
                     ++i;
-                    EXPECT_TRUE (i.Done ());
+                    EXPECT_TRUE (i.AtEnd ());
                     EXPECT_TRUE (i == collection.end ());
                 }
             }

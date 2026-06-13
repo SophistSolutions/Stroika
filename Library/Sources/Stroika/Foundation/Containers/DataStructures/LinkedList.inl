@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         Invariant ();
         i.Invariant ();
         return &const_cast<Link_*> (i.fCurrent_)->fItem;
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void LinkedList<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         /*
-         * NB: This code works fine, even if 'i' is Done ()
+         * NB: This code works fine, even if 'i' is AtEnd ()
          */
         Invariant ();
         i.Invariant ();
@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         /*
-         * NB: This code works fine, even if 'i' is Done ()
+         * NB: This code works fine, even if 'i' is AtEnd ()
          */
         Invariant ();
         i.Invariant ();
@@ -336,11 +336,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void LinkedList<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
-        AssertNotNull (i.fCurrent_); // since not done...
+        AssertNotNull (i.fCurrent_); // since not AtEnd...
         i.Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fNext = new Link_{newValue, i.fCurrent_->fNext};
     }
@@ -360,7 +360,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         Invariant ();
         i.Invariant ();
 
@@ -407,7 +407,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  @todo   We may want to correct that (see STL container impl -
          *  returning ptr to next node would do it).
          */
-        for (ForwardIterator it{this}; not it.Done (); ++it) {
+        for (ForwardIterator it{this}; not it.AtEnd (); ++it) {
             if (equalsComparer (*it, item)) {
                 this->Remove (it);
                 break;
@@ -546,10 +546,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline LinkedList<T>::ForwardIterator::operator bool () const
     {
-        return not Done ();
+        return not AtEnd ();
     }
     template <typename T>
-    inline bool LinkedList<T>::ForwardIterator::Done () const noexcept
+    inline bool LinkedList<T>::ForwardIterator::AtEnd () const noexcept
     {
         Invariant ();
         return fCurrent_ == nullptr;
@@ -557,7 +557,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto LinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
-        Require (not Done ());
+        Require (not AtEnd ());
         Invariant ();
         Assert (fCurrent_ != nullptr);
         fCurrent_ = fCurrent_->fNext;
@@ -574,7 +574,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T LinkedList<T>::ForwardIterator::operator* () const
     {
-        Require (not(Done ()));
+        Require (not(AtEnd ()));
         Invariant ();
         AssertNotNull (fCurrent_);
         return fCurrent_->fItem;
@@ -582,7 +582,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline const T* LinkedList<T>::ForwardIterator::operator->() const
     {
-        Require (not(Done ()));
+        Require (not(AtEnd ()));
         Invariant ();
         AssertNotNull (fCurrent_);
         return &fCurrent_->fItem;
@@ -590,7 +590,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     size_t LinkedList<T>::ForwardIterator::CurrentIndex (const LinkedList* data) const
     {
-        Require (not Done ());
+        Require (not AtEnd ());
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
         RequireNotNull (fData_);

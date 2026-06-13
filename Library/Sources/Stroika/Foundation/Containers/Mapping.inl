@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Remove (patchedIterator, nextI);
     }
@@ -312,7 +312,7 @@ namespace Stroika::Foundation::Containers {
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue,
                                                               Iterator<value_type>* nextI)
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Update (patchedIterator, newValue, nextI);
     }
@@ -507,7 +507,7 @@ namespace Stroika::Foundation::Containers {
     auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i)
         -> tuple<_IRep*, Iterator<value_type>>
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         Iterator<value_type> patchedIterator = i;
         element_type* writableRep = this->_fRep.rwget ([&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
@@ -566,8 +566,8 @@ namespace Stroika::Foundation::Containers {
         auto li                = lhsR._ConstGetRep ().MakeIterator ();
         auto ri                = rhs.MakeIterator ();
         auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
-        while (not li.Done ()) {
-            Assert (not ri.Done ()); // cuz move at same time and same size
+        while (not li.AtEnd ()) {
+            Assert (not ri.AtEnd ()); // cuz move at same time and same size
             bool keysEqual = keyEqualsComparer (li->fKey, ri->fKey);
             Require (keysEqual == rhs.GetKeyEqualsComparer () (li->fKey, ri->fKey)); // if fails, cuz rhs/lhs keys equals comparers disagree
             if (keysEqual) {
@@ -591,7 +591,7 @@ namespace Stroika::Foundation::Containers {
             ++li;
             ++ri;
         }
-        Assert (ri.Done ()); // cuz LHS done and both sides iterate at same pace, and we checked both same size
+        Assert (ri.AtEnd ()); // cuz LHS done and both sides iterate at same pace, and we checked both same size
         return true;
     }
 

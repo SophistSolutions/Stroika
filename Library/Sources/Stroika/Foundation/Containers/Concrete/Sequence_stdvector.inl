@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
-            Require (not i.Done ());
+            Require (not i.AtEnd ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             const IteratorRep_& iRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             iRep.fIterator.AssertDataMatches (&fData_);

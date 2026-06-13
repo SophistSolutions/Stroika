@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 default:
                     AssertNotReached ();
             }
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 if (fDomainEqualsComparer_ (it->first, key)) {
                     fData_.SetAt (it, value_type{key, newElt});
                     fChangeCounts_.PerformedChange ();
@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 if (fDomainEqualsComparer_ (it->first, d)) {
                     fData_.Remove (it);
                     fChangeCounts_.PerformedChange ();

@@ -535,7 +535,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::Remove (const ForwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         Require (i._fData == this); // assure iterator not stale
         this->Remove (i.CurrentIndex ());
     }
@@ -543,7 +543,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline auto Array<T>::erase (const ForwardIterator& i) -> ForwardIterator
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         Require (i._fData == this); // assure iterator not stale
         size_t idx = i.CurrentIndex ();
         this->Remove (idx);
@@ -558,7 +558,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::Remove (const BackwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         this->Remove (i.CurrentIndex ());
     }
     template <typename T>
@@ -566,14 +566,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (i._fData == this); // assure iterator not stale
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         SetAt (i.CurrentIndex (), newValue);
     }
     template <typename T>
     inline void Array<T>::SetAt (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         SetAt (i.CurrentIndex (), newValue);
     }
 
@@ -704,10 +704,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline Array<T>::ForwardIterator::operator bool () const
     {
-        return not Done ();
+        return not AtEnd ();
     }
     template <typename T>
-    inline bool Array<T>::ForwardIterator::Done () const noexcept
+    inline bool Array<T>::ForwardIterator::AtEnd () const noexcept
     {
         if (this->_fData == nullptr) {
             Assert (this->_fCurrentIdx == 0);
@@ -723,7 +723,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline auto Array<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
-        Require (not this->Done ());
+        Require (not this->AtEnd ());
         this->Invariant ();
         Assert (this->_fCurrentIdx < this->_fData->fLength_);
         ++this->_fCurrentIdx;
@@ -740,8 +740,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool Array<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
-        auto thisDone = this->Done ();
-        bool rhsDone  = rhs.Done ();
+        auto thisDone = this->AtEnd ();
+        bool rhsDone  = rhs.AtEnd ();
         if (thisDone or rhsDone) {
             return thisDone and rhsDone;
         }
@@ -768,7 +768,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
     }
     template <typename T>
-    inline bool Array<T>::BackwardIterator::Done () const noexcept
+    inline bool Array<T>::BackwardIterator::AtEnd () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
@@ -780,15 +780,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline auto Array<T>::BackwardIterator::operator++ () noexcept -> BackwardIterator&
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
-        Require (not this->Done ());
+        Require (not this->AtEnd ());
         this->Invariant ();
         if (this->_fCurrent == this->_fStart) {
             this->_fCurrent = this->_fEnd; // magic to indicate done
-            Ensure (this->Done ());
+            Ensure (this->AtEnd ());
         }
         else {
             this->_fCurrent--;
-            Ensure (not this->Done ());
+            Ensure (not this->AtEnd ());
         }
         this->Invariant ();
         return *this;
@@ -796,8 +796,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool Array<T>::BackwardIterator::operator== (const BackwardIterator& rhs) const
     {
-        auto thisDone = this->Done ();
-        bool rhsDone  = rhs.Done ();
+        auto thisDone = this->AtEnd ();
+        bool rhsDone  = rhs.AtEnd ();
         if (thisDone or rhsDone) {
             return thisDone and rhsDone;
         }

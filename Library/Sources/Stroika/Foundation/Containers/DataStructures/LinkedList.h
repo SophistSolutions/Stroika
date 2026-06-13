@@ -319,12 +319,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  return true if iterator not Done
+         *  return true if iterator not AtEnd
          */
         explicit operator bool () const;
 
     public:
-        nonvirtual bool Done () const noexcept;
+        nonvirtual bool AtEnd () const noexcept;
 
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;

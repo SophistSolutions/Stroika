@@ -364,7 +364,7 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Remove (patchedIterator, nextI);
     }
@@ -446,7 +446,7 @@ namespace Stroika::Foundation::Containers {
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i)
         -> tuple<_IRep*, Iterator<value_type>>
     {
-        Require (not i.Done ());
+        Require (not i.AtEnd ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         Iterator<value_type> patchedIterator = i;
         element_type* writableRep = this->_fRep.rwget ([&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
@@ -485,7 +485,7 @@ namespace Stroika::Foundation::Containers {
         }
         // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
         // are present, and with the same Bijection in the second.
-        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (); not i.AtEnd (); ++i) {
             optional<RangeType> tmp;
             if (not rhs.Lookup (i->first, &tmp) or not GetRangeEqualsComparer () (*tmp, i->second)) {
                 return false;

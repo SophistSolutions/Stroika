@@ -151,10 +151,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator bool () const
     {
-        return not Done ();
+        return not AtEnd ();
     }
     template <typename STL_CONTAINER_OF_T>
-    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Done () const noexcept
+    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::AtEnd () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
-        Require (not Done ());
+        Require (not AtEnd ());
         ++fStdIterator_;
         return *this;
     }
@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
         AssertNotNull (fData_);
-        Require (not Done ());
+        Require (not AtEnd ());
         return *fStdIterator_;
     }
     template <typename STL_CONTAINER_OF_T>
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
         AssertNotNull (fData_);
-        Require (not Done ());
+        Require (not AtEnd ());
         return &*fStdIterator_;
     }
     template <typename STL_CONTAINER_OF_T>

@@ -364,10 +364,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     public:
-        nonvirtual const T& operator* () const; //  Error to call if Done (), otherwise OK
+        nonvirtual const T& operator* () const; //  Error to call if AtEnd (), otherwise OK
 
     public:
-        nonvirtual const T* operator->() const; //  Error to call if Done (), otherwise OK
+        nonvirtual const T* operator->() const; //  Error to call if AtEnd (), otherwise OK
 
     public:
         nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns size() + 1.
@@ -429,12 +429,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  return true if iterator not Done
+         *  return true if iterator not AtEnd
          */
         explicit operator bool () const;
 
     public:
-        nonvirtual bool Done () const noexcept;
+        nonvirtual bool AtEnd () const noexcept;
 
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;
@@ -461,7 +461,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         BackwardIterator (const Array* data, UnderlyingIteratorRep startAt);
 
     public:
-        nonvirtual bool Done () const noexcept;
+        nonvirtual bool AtEnd () const noexcept;
 
     public:
         nonvirtual BackwardIterator& operator++ () noexcept;

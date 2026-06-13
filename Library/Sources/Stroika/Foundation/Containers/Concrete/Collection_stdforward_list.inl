@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            Require (not i.Done ());
+            Require (not i.AtEnd ());
             optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
             if (nextI != nullptr) {
                 savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
