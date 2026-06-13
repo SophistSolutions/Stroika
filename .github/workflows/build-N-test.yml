@@ -172,7 +172,7 @@ jobs:
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/curl/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/curl/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/GoogleTest/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/*-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/GoogleTest/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/lzma/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/lzma/" || :
