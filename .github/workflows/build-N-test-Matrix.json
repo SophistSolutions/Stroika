@@ -287,26 +287,26 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-26.04-clang++-18-debug-libc++",
+        "displayTargetName": "ubuntu-26.04-clang++-18-debug-libstdc++",
         "compiler": "clang++-18",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
-        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "extra_config_args": "--apply-default-debug-flags --stdlib libstdc++ --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-26.04-clang++-19-debug-libc++",
+        "displayTargetName": "ubuntu-26.04-clang++-19-debug-libstdc++",
         "compiler": "clang++-19",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
-        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "extra_config_args": "--apply-default-debug-flags --stdlib libstdc++ --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
     {
