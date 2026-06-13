@@ -365,6 +365,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   don't use unsigned 'i' because that works less well with overloads and ambiguity.
          *  \note   similar to std::advance, but allows for simpler usage (i + n)
+         *  \req    i >= 0
          */
         nonvirtual Iterator operator+ (int i) const;
 
@@ -399,8 +400,6 @@ namespace Stroika::Foundation::Traversal {
          *  are considered Equals (). This is mainly because we use a different representation for 'AtEnd'
          *  iterators.
          *
-         *  @TODO - NOTE - SEE TODO ABOUT ABOUT THIS GUARANTEE??? - NO - TOO STRONG - REVISE!!!
-         *
          *  Note - for Equals. The following assertion will succeed:
          *
          *          Iterator<T> x = getIterator();
@@ -429,7 +428,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief Returns the value of the current item visited by the Iterator<T>, and is illegal to call if AtEnd()
          *
-         *  Current() returns the value of the current item visited by the Iterator<T>.
+         *  Current () returns the value of the current item visited by the Iterator<T>.
          *
          *  Only one things can change the current value of Current():
          *      o   any non-const method of the iterator
