@@ -6,64 +6,56 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iterator>
-
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Traversal/BidirectionalIterator.h"
 
 /**
- *
  *  \file
- *              ****VERY ROUGH UNUSABLE DRAFT
  *
- *  \note Code-Status:  <a href="Code-Status.md#Draft">Draft</a>
- *
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::Traversal {
 
     /**
      */
-    template <typename T, typename BASE_STD_ITERATOR = DefaultIteratorTraits<random_access_iterator_tag, T>>
-    class RandomAccessIterator : public BidirectionalIterator<T, BASE_STD_ITERATOR> {
+    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
+    class RandomAccessIterator : public BidirectionalIterator<T, ITERATOR_TRAITS> {
     private:
-        using inherited = Iterator<T, BASE_STD_ITERATOR>;
+        using inherited = BidirectionalIterator<T, ITERATOR_TRAITS>;
 
     public:
         class IRep;
 
     public:
-        using RandomAccessIteratorRepSharedPtr = unique_ptr<IRep>;
-
-    public:
         /**
-         *  \brief
-         *      This overload is usually not called directly. Instead, iterators are
-         *      usually created from a container (eg. Bag<T>::begin()).
+         *  \brief This overload is usually not called directly. Instead, iterators are
+         *         usually created from a container (eg. Sequence<T>{}.begin()).
          *
          *  Iterators are safely copyable, preserving their current position.
          *
-         *  \pre RequireNotNull (rep.get ())
+         *  CTOR overload taking nullptr - is the same as GetEmptyIterator ()
+         *
+         *  \note default construction of RandomAccessIterator means empty (both at start and end).
+         * 
+         *  \pre RequireNotNull (rep.get ()) for rep-taking CTOR
+         * 
+         *  \note constructor with argument default_sentinel_t - creates an end iterator
          */
-        explicit RandomAccessIterator (const RandomAccessIteratorRepSharedPtr& rep);
-        RandomAccessIterator (const RandomAccessIterator& from);
-        RandomAccessIterator () = delete;
+        RandomAccessIterator (const unique_ptr<IRep>& rep) noexcept;
+        RandomAccessIterator (unique_ptr<IRep>&& rep) noexcept;
+        RandomAccessIterator (RandomAccessIterator&& src) noexcept = default;
+        RandomAccessIterator (const RandomAccessIterator& src)     = default;
+        constexpr RandomAccessIterator (const default_sentinel_t&) noexcept;
+        constexpr RandomAccessIterator (nullptr_t) noexcept;
+        constexpr RandomAccessIterator () noexcept;
 
     public:
         /**
          *  \brief  Iterators are safely copyable, preserving their current position.
          */
-        nonvirtual RandomAccessIterator& operator= (const RandomAccessIterator& rhs);
-
-    public:
-        /**
-         *  \brief
-         *      Used by *somecontainer*::end ()
-         *
-         *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
-         *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
-         */
-        static RandomAccessIterator GetEmptyIterator ();
+        nonvirtual RandomAccessIterator& operator= (RandomAccessIterator&& rhs) noexcept = default;
+        nonvirtual RandomAccessIterator& operator= (const RandomAccessIterator& rhs)     = default;
 
     public:
         // @todo add
@@ -80,15 +72,25 @@ namespace Stroika::Foundation::Traversal {
          *  Get a reference to the IRep owned by the iterator.
          *  This is an implementation detail, mainly intended for implementors.
          */
-        nonvirtual IRep&       GetRep ();
-        nonvirtual const IRep& GetRep () const;
+        nonvirtual IRep& GetRep ();
+
+    public:
+        /**
+         *  \brief
+         *      Get a reference to the IRep owned by the iterator. This is an implementation detail,
+         *      mainly intended for implementors.
+         *
+         *  Get a reference to the IRep owned by the iterator.
+         *  This is an implementation detail, mainly intended for implementors.
+         */
+        nonvirtual const IRep& ConstGetRep () const;
     };
 
     /**
      *
     */
-    template <typename T, typename BASE_STD_ITERATOR>
-    class RandomAccessIterator<T, BASE_STD_ITERATOR>::IRep : public BidirectionalIterator<T, BASE_STD_ITERATOR>::IRep {
+    template <typename T, typename ITERATOR_TRAITS>
+    class RandomAccessIterator<T, ITERATOR_TRAITS>::IRep : public BidirectionalIterator<T, ITERATOR_TRAITS>::IRep {
     protected:
         IRep () = default;
 

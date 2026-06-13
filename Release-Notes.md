@@ -10,6 +10,17 @@ especially those they need to be aware of when upgrading.
 
 ### 3.0d24x - PREP
 
+
+
+        nonvirtual _IRep&       _GetRep ();
+        nonvirtual const _IRep& _GetRep () const;
+
+VS
+_ConstGetRep ()
+NAMING - PICK A STRATEGY AND DOCUMENT WHY..
+
+
+
 - regtests support and testig and more coverage (maybe new g++ compiler/clang compiler) for
   - VS2k2026
   - Ubuntu 2604

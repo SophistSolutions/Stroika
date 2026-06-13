@@ -76,8 +76,10 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual BidirectionalIterator  operator-- (int);
 
     public:
-        /*
-         * 
+        /**
+         *  \brief Move the iterator back by the specified number of positions.
+         *
+         *  \pre i >= 0
          */
         nonvirtual BidirectionalIterator operator- (int i) const;
 
@@ -125,15 +127,12 @@ namespace Stroika::Foundation::Traversal {
 
         /**
          *  \brief
-         *      Check if the iterator is at the beginning of the range.
-         */
-         virtual bool AtStart () const = 0;
-
-        /**
-         *  \brief
          *      Check if the iterator is at the end of the range.
+         * 
+         *  \note To check AtStart, you just call More (..., false), and check if result has-value.
+         *        We COULD add an AsStart() method, to be more efficient, but there appears no need.
          */
-         virtual bool AtEnd () const = 0;
+        virtual bool AtEnd () const = 0;
 
         /**
          *  \like More () - but going backwards. Use More (..., false) to get the current value without moving.

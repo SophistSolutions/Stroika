@@ -36,6 +36,35 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename ITERATOR_TRAITS>
+    inline bool BidirectionalIterator<T, ITERATOR_TRAITS>::AtStart () const
+    {
+        return GetRep ().AtStart ();
+    }
+    template <typename T, typename ITERATOR_TRAITS>
+    inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator-- () -> BidirectionalIterator&
+    {
+        Require (not this->AtStart ());
+        GetRep ().Back (&this->_fCurrentValue);
+        return *this;
+    }
+    template <typename T, typename ITERATOR_TRAITS>
+    inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator-- (int) -> BidirectionalIterator
+    {
+        BidirectionalIterator result = *this;
+        --result;
+        return result;
+    }
+    template <typename T, typename ITERATOR_TRAITS>
+    inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator- (int i) const -> BidirectionalIterator
+    {
+        Require (i >= 0);
+        BidirectionalIterator result = *this;
+        for (int j = 0; j < i; ++j) {
+            --result;
+        }
+        return result;
+    }
+    template <typename T, typename ITERATOR_TRAITS>
     inline typename BidirectionalIterator<T, ITERATOR_TRAITS>::IRep& BidirectionalIterator<T, ITERATOR_TRAITS>::GetRep ()
     {
         return Debug::UncheckedDynamicCast<IRep&> (inherited::GetRep ());
@@ -44,13 +73,6 @@ namespace Stroika::Foundation::Traversal {
     inline const typename BidirectionalIterator<T, ITERATOR_TRAITS>::IRep& BidirectionalIterator<T, ITERATOR_TRAITS>::ConstGetRep () const
     {
         return Debug::UncheckedDynamicCast<const IRep&> (inherited::ConstGetRep ());
-    }
-    template <typename T, typename ITERATOR_TRAITS>
-    inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator-- () -> BidirectionalIterator&
-    {
-        Require (not this->AtStart ());
-        GetRep ().Back (&this->_fCurrentValue);
-        return *this;
     }
 
 }
