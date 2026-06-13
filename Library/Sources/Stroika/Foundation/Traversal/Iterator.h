@@ -19,6 +19,8 @@
  *
  *  \file
  *
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
+ *
  *  TODO
  *      @todo   http://stroika-bugs.sophists.com/browse/STK-446 - AssertExternallySynchronizedMutex
  *
@@ -161,15 +163,13 @@ namespace Stroika::Foundation::Traversal {
      *              the underlying container has changed (some STL's may do this too?)
      *
      *      2.      Stroika iterators carry around their 'AtEnd' state all in one object.
-     *              For compatibility with existing C++ idiom, and some C++11 language features
-     *              Stroika iterators inherit from std::iterator<> and allow use of end(),
-     *              and i != end() to check for if an iterator is AtEnd. But internally,
+     *              For compatibility with existing C++ idiom, and some C++11 language features,
+     *              Stroika iterators allow use of container.end() (or i == container.end())
+     *              to check for if an iterator is AtEnd. But internally,
      *              Stroika just checks i.AtEnd(), and so can users of Stroika iterators.
      *
-     *      3.      Stroika iterators are not 'random access'. They just go forwards, one step at a
-     *              time. In STL, some kinds of iterators act more like pointers where you can do
-     *              address arithmetic.
-     *              <<<< RETHINK - WE WANT BIDIITERATOR/ETC>>>>
+     *      3.      Stroika iterators are not 'random access' (see BidirectionalIterator, and RandomAccessIterator).
+     *              They just go forwards, one step at a time.
      *
      *      4.      In STL, reverse iterators are a special type, incompatible with regular iterators.
      *              In Stroika, reverse iterators are also created with rbegin(), rend (), but
@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  \brief This overload is usually not called directly. Instead, iterators are
-         *         usually created from a container (eg. Bag<T>::begin()).
+         *         usually created from a container (eg. Sequence<T>{}.begin()).
          *
          *  Iterators are safely copyable, preserving their current position.
          *
@@ -542,6 +542,7 @@ namespace Stroika::Foundation::Traversal {
         unique_ptr<IRep> fRep_;
 
     protected:
+        // note that _fCurrentValue is MISSING, iff AtEnd
         optional<T> _fCurrentValue;
 
     private:
@@ -558,7 +559,6 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
-     *
      *  \brief  Implementation detail for iterator implementors.
      *
      *  IRep is a support class used to implement the @ref Iterator<T> pattern.
