@@ -457,8 +457,6 @@ namespace Stroika::Foundation::Traversal {
          *
          *  AtEnd () means there is nothing left to visit in this iterator.
          *
-         *  Once an iterator is AtEnd(), it can never transition to 'not AtEnd()'.
-         *
          *  When an iterator is AtEnd(), it is illegal to call Current().
          *
          *  Calling AtEnd() *may* change (initialize) the value which would be returned by the next
@@ -473,7 +471,6 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual bool AtEnd () const;
 
     public:
-        // PROBABLY DEPRECATED - use AtEnd() instead - due to distinction of AtBeginning()/AtEnd() for bidi iterators
         [[deprecated ("Since Stroika v3.0d34 Use AtEnd() instead")]]
         nonvirtual bool Done () const
         {
