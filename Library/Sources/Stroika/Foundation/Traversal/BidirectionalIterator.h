@@ -11,22 +11,18 @@
 /**
  *
  *  \file
- *              ****VERY ROUGH UNUSABLE DRAFT
  *
- *  \note Code-Status:  <a href="Code-Status.md#Draft">Draft</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  */
 
 namespace Stroika::Foundation::Traversal {
 
     /**
-     * @todo think out AT END vs AT BEGINNING semantics/API
+     *  \brief A BidirectionalIterator is an Iterator that can be moved both forward and backward.
      * 
-     * probbaly ADD IsAtEnd and IsAtBeginning methods, and IsDone () then meaning
-     *  depends on if last operation was forward or backward.?? But what if never did any operation - like at
-     * start?
-     * 
-     * MAYBE have to LOSE IsDone() from iterator and replace with IsAtEnd ()?
+     * BidirectionalIterator allows backing up (if not IsAtStart), and then moving forward again
+     * (if not IsAtEnd - as a base class Iterator).
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<bidirectional_iterator_tag, T>>
     class BidirectionalIterator : public Iterator<T, ITERATOR_TRAITS> {
@@ -38,6 +34,18 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \brief This overload is usually not called directly. Instead, iterators are
+         *         usually created from a container (eg. Sequence<T>{}.begin()).
+         *
+         *  Iterators are safely copyable, preserving their current position.
+         *
+         *  CTOR overload taking nullptr - is the same as GetEmptyIterator ()
+         *
+         *  \note default construction of BidirectionalIterator means empty (both at start and end).
+         * 
+         *  \pre RequireNotNull (rep.get ()) for rep-taking CTOR
+         * 
+         *  \note constructor with argument default_sentinel_t - creates an end iterator
          */
         BidirectionalIterator (const unique_ptr<IRep>& rep) noexcept;
         BidirectionalIterator (unique_ptr<IRep>&& rep) noexcept;
@@ -62,7 +70,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         * 
+         * \pre not IsAtStart ()
          */
         nonvirtual BidirectionalIterator& operator-- ();
         nonvirtual BidirectionalIterator  operator-- (int);
@@ -100,11 +108,33 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename ITERATOR_TRAITS>
     class BidirectionalIterator<T, ITERATOR_TRAITS>::IRep : public Iterator<T, ITERATOR_TRAITS>::IRep {
+    private:
+        using inherited = typename Iterator<T, ITERATOR_TRAITS>::IRep;
+
     protected:
         IRep () = default;
 
     public:
-        virtual unique_ptr<IRep> Clone () const = 0;
+        /**
+         *  \brief
+         *      Create a copy of the IRep.
+         *
+         *  \retval unique_ptr<IRep> - A new IRep instance that is a copy of this one.
+         */
+        virtual unique_ptr<inherited> Clone () const = 0;
+
+        /**
+         *  \brief
+         *      Check if the iterator is at the beginning of the range.
+         */
+         virtual bool AtStart () const = 0;
+
+        /**
+         *  \brief
+         *      Check if the iterator is at the end of the range.
+         */
+         virtual bool AtEnd () const = 0;
+
         /**
          *  \like More () - but going backwards. Use More (..., false) to get the current value without moving.
          */
