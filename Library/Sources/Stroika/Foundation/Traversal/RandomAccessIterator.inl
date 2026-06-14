@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline bool RandomAccessIterator<T, ITERATOR_TRAITS>::AtStart () const
     {
-        return GetRep ().AtStart ();
+        return ConstGetRep ().AtStart ();
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline void RandomAccessIterator<T, ITERATOR_TRAITS>::Advance (ptrdiff_t i)
@@ -56,10 +56,10 @@ namespace Stroika::Foundation::Traversal {
         }
         else {
             if (rhs.AtEnd ()) {
-                return GetRep ().Difference (default_sentinel);
+                return ConstGetRep ().Difference (default_sentinel);
             }
             else {
-                return GetRep ().Difference (&rhs.GetRep ());
+                return ConstGetRep ().Difference (&rhs.GetRep ());
             }
         }
     }
