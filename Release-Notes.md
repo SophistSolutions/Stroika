@@ -11,6 +11,10 @@ especially those they need to be aware of when upgrading.
 ### 3.0d24x - PREP
 
 
+On Iterator stuff:
+  = maybe replace int with ptrdiff_t on operator+/- methods
+  - RandomAccessIterator replace (overload) +/- methods to call new virtual method
+
 
         nonvirtual _IRep&       _GetRep ();
         nonvirtual const _IRep& _GetRep () const;
