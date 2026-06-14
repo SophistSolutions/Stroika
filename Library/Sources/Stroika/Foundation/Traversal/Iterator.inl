@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename T, typename ITERATOR_TRAITS>
-    Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::operator+ (int i) const
+    Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::operator+ (ptrdiff_t i) const
     {
         Require (i >= 0);
         Iterator<T, ITERATOR_TRAITS> tmp{*this};

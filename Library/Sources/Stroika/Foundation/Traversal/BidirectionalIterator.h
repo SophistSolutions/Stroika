@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \pre i >= 0
          */
-        nonvirtual BidirectionalIterator operator- (int i) const;
+        nonvirtual BidirectionalIterator operator- (ptrdiff_t i) const;
 
     public:
         /**

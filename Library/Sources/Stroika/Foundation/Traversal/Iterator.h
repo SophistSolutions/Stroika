@@ -367,7 +367,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note   similar to std::advance, but allows for simpler usage (i + n)
          *  \req    i >= 0
          */
-        nonvirtual Iterator operator+ (int i) const;
+        nonvirtual Iterator operator+ (ptrdiff_t i) const;
 
     public:
         /**
@@ -470,13 +470,6 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual bool AtEnd () const;
 
     public:
-        [[deprecated ("Since Stroika v3.0d34 Use AtEnd() instead")]]
-        nonvirtual bool Done () const
-        {
-            return AtEnd ();
-        }
-
-    public:
         /**
          *  \brief Set to AtEnd and disassociate with owner.
          *
@@ -555,6 +548,11 @@ namespace Stroika::Foundation::Traversal {
         [[deprecated ("Since Stroika v3.0d1 - make_unique directly")]] static unique_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args)
         {
             return make_unique<SHARED_T> (forward<ARGS_TYPE> (args)...);
+        }
+        [[deprecated ("Since Stroika v3.0d34 Use AtEnd() instead")]]
+        nonvirtual bool Done () const
+        {
+            return AtEnd ();
         }
     };
 

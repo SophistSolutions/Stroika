@@ -58,10 +58,29 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual RandomAccessIterator& operator= (const RandomAccessIterator& rhs)     = default;
 
     public:
-        // @todo add
-        //      advance (ptrdiff_t)
-        //      difference (iterator) -> ptrdiff_t
-        //      global operator +/- calling above
+        /**
+         *  \brief
+         *      Advance the iterator by the specified number of positions (which may be negative).
+         */
+        nonvirtual void Advance (ptrdiff_t i) const;
+
+    public:
+        /**
+         *  \brief
+         */
+        nonvirtual ptrdiff_t Difference (const RandomAccessIterator& rhs) const;
+
+    public:
+        /**
+         *  \brief Produce a new iterator adjusted forward by the specified number of positions (note unlike base class i maybe negative).
+         */
+        nonvirtual RandomAccessIterator operator+ (ptrdiff_t i) const;
+
+    public:
+        /**
+         *  \brief Produce a new iterator adjusted backward by the specified number of positions (note unlike base class i maybe negative).
+         */
+        nonvirtual RandomAccessIterator operator- (ptrdiff_t i) const;
 
     public:
         /**
@@ -93,6 +112,14 @@ namespace Stroika::Foundation::Traversal {
     class RandomAccessIterator<T, ITERATOR_TRAITS>::IRep : public BidirectionalIterator<T, ITERATOR_TRAITS>::IRep {
     protected:
         IRep () = default;
+
+    public:
+        /**
+         * @brief 
+         * 
+         *      Advance the iterator by the specified number of positions (which CAN be negative).
+         */
+        virtual void Advance (ptrdiff_t i) const = 0;
 
     public:
         /**

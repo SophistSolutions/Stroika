@@ -55,11 +55,11 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator- (int i) const -> BidirectionalIterator
+    inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator- (ptrdiff_t i) const -> BidirectionalIterator
     {
         Require (i >= 0);
-        BidirectionalIterator result = *this;
-        for (int j = 0; j < i; ++j) {
+        BidirectionalIterator result{*this};
+        for (ptrdiff_t j = 0; j < i; ++j) {
             --result;
         }
         return result;
