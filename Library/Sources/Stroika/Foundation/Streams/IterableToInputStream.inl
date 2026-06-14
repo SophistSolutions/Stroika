@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
                     fOffset_  = 0;
                 }
                 while (fOffset_ < newOffset) {
-                    if (fSrcIter_.Done ()) {
+                    if (fSrcIter_.AtEnd ()) {
                         AssertNotReached (); // because we checked within maxlen above
                         //Execution::Throw (Execution::RuntimeErrorException {"Seek past end of input"sv}); // @todo clarify - docuemnt - not sure if/how to handle this
                     }
