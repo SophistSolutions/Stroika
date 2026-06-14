@@ -61,12 +61,19 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief
          *      Advance the iterator by the specified number of positions (which may be negative).
+         *      \req i is a valid offset for the iterator. This means that if its positive, it never triggers
+         *           an advance PAST the end, and if negative, it never triggers an advance before the start.
          */
-        nonvirtual void Advance (ptrdiff_t i) const;
+        nonvirtual void Advance (ptrdiff_t i);
 
     public:
         /**
          *  \brief
+         *      Calculate the difference between this iterator and another.
+         * 
+         *  \req both iterators of the same type, and one copied FROM the other at some
+         *       point (so implies from the same container), or ONE or both of them can be the special
+         *       end iterator (default_sentinel or nullptr). 
          */
         nonvirtual ptrdiff_t Difference (const RandomAccessIterator& rhs) const;
 
@@ -106,8 +113,9 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
-     *
-    */
+     *  \brief
+     *      The interface for the internal representation of a RandomAccessIterator.
+     */
     template <typename T, typename ITERATOR_TRAITS>
     class RandomAccessIterator<T, ITERATOR_TRAITS>::IRep : public BidirectionalIterator<T, ITERATOR_TRAITS>::IRep {
     protected:
@@ -115,14 +123,18 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         * @brief 
-         * 
+         *  \brief
          *      Advance the iterator by the specified number of positions (which CAN be negative).
          */
-        virtual void Advance (ptrdiff_t i) const = 0;
+        virtual void Advance (ptrdiff_t i) = 0;
 
     public:
         /**
+         *  \brief
+         *      Calculate the difference between this iterator and another.
+         *  \param rhs The other iterator to compare with.
+         *  \return The difference between the two iterators.
+         *  \note rhs maybe nullptr, and if so, implies the end of the container.
          */
         virtual ptrdiff_t Difference (const IRep* rhs) const = 0;
     };
