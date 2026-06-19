@@ -119,14 +119,6 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  \brief
-         *      Create a copy of the IRep.
-         *
-         *  \retval unique_ptr<IRep> - A new IRep instance that is a copy of this one.
-         */
-        virtual unique_ptr<inherited> Clone () const = 0;
-
-        /**
-         *  \brief
          *      Check if the iterator is at the end of the range.
          * 
          *  \note To check AtStart, you just call More (..., false), and check if result has-value.
