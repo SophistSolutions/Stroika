@@ -138,4 +138,39 @@ namespace Stroika::Foundation::Containers::Private {
 #endif
     }
 
+    /*
+     ********************************************************************************
+     ***** BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS> *****
+     ********************************************************************************
+     */
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    bool BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::AtEnd () const
+    {
+        return this->fIterator.AtEnd ();
+    }
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    void BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Back (optional<T>* result)
+    {
+        RequireNotNull (result); // API says result ptr required
+        this->ValidateChangeCount ();
+        Require (not this->fIterator.AtStart ());
+        --this->fIterator;
+    }
+
+    /*
+     ********************************************************************************
+     ***** RandomAccessIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS> ******
+     ********************************************************************************
+     */
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    void RandomAccessIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Advance (ptrdiff_t i)
+    {
+        this->fIterator.Advance (i);
+    }
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    ptrdiff_t RandomAccessIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Difference (const typename Traversal::RandomAccessIterator<T>::IRep* rhs) const
+    {
+        return this->fIterator.Difference (rhs);
+    }
+
 }

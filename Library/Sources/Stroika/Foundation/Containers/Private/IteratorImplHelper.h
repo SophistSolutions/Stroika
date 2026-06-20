@@ -8,6 +8,9 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Traversal/BidirectionalIterator.h"
+#include "Stroika/Foundation/Traversal/Iterator.h"
+#include "Stroika/Foundation/Traversal/RandomAccessIterator.h"
 
 /**
  *  Private utility to support building of Traversal::Iterator<> objects for concrete Containers.
@@ -143,6 +146,32 @@ namespace Stroika::Foundation::Containers::Private {
         const ContainerDebugChangeCounts_*           fChangeCounter{nullptr};
         ContainerDebugChangeCounts_::ChangeCountType fLastCapturedChangeCount{};
 #endif
+    };
+
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>
+    class BidirectionalIteratorImplHelper_ : public IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS> {
+    private:
+        using inherited = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>;
+
+    public:
+        using inherited;
+
+    public:
+        virtual bool AtEnd () const override;
+        virtual void Back (optional<T>* result) override;
+    };
+
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>
+    class RandomAccessIteratorImplHelper_ : public BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS> {
+    private:
+        using inherited = BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>;
+
+    public:
+        using inherited;
+
+    public:
+        virtual void      Advance (ptrdiff_t i) override;
+        virtual ptrdiff_t Difference (const typename Traversal::RandomAccessIterator<T>::IRep* rhs) const override;
     };
 
 }
