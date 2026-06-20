@@ -9,12 +9,6 @@ TODO (Foundation::Containers)
 			Not a biggie, but probably worth fixing. Issue is our existing code to do the move of running iterators
 			ALSO does copy of data.
 
-	(o)		IMPORTANT to do with Comparers - like EqualsComparer. We need to be able to pass in 
-			object (so they work with lambdas - with closures), and store no space when there is
-			no space used (what we do now).
-
-			Implement with SFINAE
-
 	(o)		Should we have a SortedBijection<> template? If not - document why not. I think
 			yes.
 
@@ -22,25 +16,6 @@ TODO (Foundation::Containers)
 
 	(o)		Mapping<> really is more like math function, and Association<> is really more
 			like math mapping.
-
-	(o)		Consider moving the LOCKING code into the Patching classes? Maybe using TRAITS???
-
-	(o)		Containers must store linked list of OwnerIDs in each rep, DEBUG ONLY - just for the
-			purpose of assertion checking. Then add that assertion checking (that all contained
-			iterators - active iterators - belong to the given reps owners - at least one of
-			them).
-
-	(o)		Reconsider the question of operator overloading for operator==, operator!=, operator+, operator-,
-			and perhaps others.
-	
-			Question is - nested inside class, or 'global'. Ignoring the issue of namespaces, global seems to
-			probably work best.
-
-			But taking into account namespaces - which we must - it appears - direct members work best.
-
-			Go with Direct memebers for now - and DOCUMENT this SOMEPLACE as an overarching design choice.
-			But reconsider possibly...
-					-- LGP 2013-05-19
 
 	(o)		Maybe enhance API for stuff like PriorityQueue<> and MultiSet<T> to have method
 			AsIterable<T> () - that returns an Iterable<T> (the undlering thing stuff is ta tallyof or
