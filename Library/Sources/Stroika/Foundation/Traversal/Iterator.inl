@@ -127,8 +127,7 @@ namespace Stroika::Foundation::Traversal {
         if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (fRep_) {
                 fRep_->Invariant ();
-                // GOOD ASSERT TO ADD BUT DEBUG WHY FAILING
-                // Assert ((not this->_fCurrentValue.has_value ()) == fRep_->AtEnd ()); // Iterator<> caches result of rep - make sure in sync
+                Assert ((not this->_fCurrentValue.has_value ()) == fRep_->AtEnd ()); // Iterator<> caches result of rep - make sure in sync
             }
         }
     }

@@ -24,17 +24,27 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename EXTRA_DATA>
     bool DelegatedIterator<T, EXTRA_DATA>::Rep::AtEnd () const
     {
-        return fDelegateTo.ConstGetRep ().AtEnd ();
+        // avoid virtual call to delegate (use cached value)
+        return fDelegateTo.AtEnd ();
     }
     template <typename T, typename EXTRA_DATA>
     optional<T> DelegatedIterator<T, EXTRA_DATA>::Rep::Current () const
     {
-        return fDelegateTo.ConstGetRep ().Current ();
+        // avoid virtual call to delegate (use cached value)
+        if (fDelegateTo.AtEnd ()) {
+            return nullopt;
+        }
+        return *fDelegateTo;
     }
     template <typename T, typename EXTRA_DATA>
     optional<T> DelegatedIterator<T, EXTRA_DATA>::Rep::More ()
     {
-        return fDelegateTo.GetRep ().More ();
+        // Still does virtual call to delegate, but caches result into fDelegate
+        ++fDelegateTo;
+        if (fDelegateTo.AtEnd ()) {
+            return nullopt;
+        }
+        return *fDelegateTo;
     }
     template <typename T, typename EXTRA_DATA>
     bool DelegatedIterator<T, EXTRA_DATA>::Rep::Equals (const IRep* rhs) const
