@@ -183,19 +183,30 @@ namespace {
 #endif
                         );
                     }
-                    virtual void More (optional<Character>* result, bool advance) override
+                    virtual bool AtEnd () const override
                     {
-                        RequireNotNull (result);
-                        if (advance) [[likely]] {
-                            Require (fIdx_ < fData_.size ());
-                            ++fIdx_;
-                        }
-                        if (fIdx_ < fData_.size ()) [[likely]] {
-                            // NOTE - this is safe because we never construct this type with surrogates
-                            *result = Character{static_cast<char32_t> (fData_[fIdx_])};
+                        Assert (fIdx_ <= fData_.size ());
+                        return fIdx_ == fData_.size ();
+                    }
+                    virtual optional<Character> Current () const override
+                    {
+                        if (fIdx_ < fData_.size ()) {
+                            return Character{static_cast<char32_t> (fData_[fIdx_])};
                         }
                         else {
-                            *result = nullopt;
+                            return nullopt;
+                        }
+                    }
+                    virtual optional<Character> More () override
+                    {
+                        Require (fIdx_ < fData_.size ());
+                        ++fIdx_;
+                        if (fIdx_ < fData_.size ()) [[likely]] {
+                            // NOTE - this is safe because we never construct this type with surrogates
+                            return Character{static_cast<char32_t> (fData_[fIdx_])};
+                        }
+                        else {
+                            return nullopt;
                         }
                     }
                     virtual bool Equals (const IRep* rhs) const override

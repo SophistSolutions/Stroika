@@ -7,15 +7,12 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
 
 /**
  *  \file
- *
- *  TODO:
- *          @todo   Review definition of DelegatedIterator<>::Rep::GetOwner(). Not sure we've selected the
- *                  the best definition.
  *
  */
 
@@ -24,33 +21,21 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  Handy helper to combine (or track) iterators
      */
-    template <typename T, typename EXTRA_DATA = void>
+    template <typename T, typename EXTRA_DATA = Common::Empty>
     class DelegatedIterator : public Iterator<T> {
     public:
         struct Rep : Iterator<T>::IRep {
-            //  using RepSmartPtr = typename Iterator<T>::RepSmartPtr;
             using IRep = typename Iterator<T>::IRep;
-            Iterator<T> fDelegateTo;
-            EXTRA_DATA  fExtraData;
-            Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
+            Iterator<T>                                             fDelegateTo;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE EXTRA_DATA fExtraData;
+            Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA{});
             virtual unique_ptr<IRep> Clone () const override;
-            virtual void             More (optional<T>* result, bool advance) override;
+            virtual bool             AtEnd () const override;
+            virtual optional<T>      Current () const override;
+            virtual optional<T>      More () override;
             virtual bool             Equals (const IRep* rhs) const override;
         };
-        DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
-    };
-    template <typename T>
-    class DelegatedIterator<T, void> : public Iterator<T> {
-    public:
-        struct Rep : Iterator<T>::IRep {
-            // using RepSmartPtr = typename Iterator<T>::RepSmartPtr;
-            using IRep = typename Iterator<T>::IRep;
-            Iterator<T> fDelegateTo;
-            Rep (const Iterator<T>& delegateTo);
-            virtual unique_ptr<IRep> Clone () const override;
-            virtual void             More (optional<T>* result, bool advance) override;
-            virtual bool             Equals (const IRep* rhs) const override;
-        };
+        DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA{});
     };
 
 }

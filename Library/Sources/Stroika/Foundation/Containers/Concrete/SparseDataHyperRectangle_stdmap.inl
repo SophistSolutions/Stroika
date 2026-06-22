@@ -99,11 +99,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
             else {
-//  fData_.insert_or_assign (tuple<INDEXES...>{indexes...}, v);        // clang++-17 libstdc++ fails on this...
-// fData_.emplace (make_pair(tuple<INDEXES...>{indexes...}, v));    // compiles but wrong semantivcs
-//fData_.insert (make_pair(tuple<INDEXES...>{indexes...}, v));// compiles but wrong semantivcs
-//fData_[tuple<INDEXES...>{indexes...}] = v;// clang++-17 libstdc++ fails on this...
-//fData_[make_tuple (indexes...)] = v;
 #if qCompilerAndStdLib_template_map_tuple_insert_Buggy
                 if (not fData_.insert (make_pair (tuple<INDEXES...>{indexes...}, v)).second) {
                     // then its there and find works...
@@ -127,9 +122,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         private:
             using inherited = typename Iterator<tuple<T, INDEXES...>>::IRep;
 
-            // public:
-            //     using RepSmartPtr = typename Iterator<tuple<T, INDEXES...>>::RepSmartPtr;
-
         public:
             MyIteratorImplHelper_ ()                             = delete;
             MyIteratorImplHelper_ (const MyIteratorImplHelper_&) = default;
@@ -138,7 +130,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                 : fIterator{data}
             {
                 RequireNotNull (data);
-                //fIterator.More (nullptr, true); //tmphack cuz current backend iterators require a first more() - fix that!
             }
 
         public:
@@ -150,19 +141,30 @@ namespace Stroika::Foundation::Containers::Concrete {
             {
                 return make_unique<MyIteratorImplHelper_> (*this);
             }
-            virtual void More (optional<tuple<T, INDEXES...>>* result, bool advance) override
+            virtual bool AtEnd () const override
             {
-                RequireNotNull (result);
-                if (advance) [[likely]] {
-                    Require (not fIterator.AtEnd ()); // new requirement since Stroika 2.1b14
-                    ++fIterator;
-                }
+                return fIterator.AtEnd ();
+            }
+            virtual optional<tuple<T, INDEXES...>> Current () const override
+            {
                 if (fIterator.AtEnd ()) [[unlikely]] {
-                    *result = nullopt;
+                    return nullopt;
                 }
                 else {
                     auto tmp = *fIterator;
-                    *result  = tuple_cat (tuple<T>{tmp.second}, tmp.first);
+                    return tuple_cat (tuple<T>{tmp.second}, tmp.first);
+                }
+            }
+            virtual optional<tuple<T, INDEXES...>> More () override
+            {
+                Require (not fIterator.AtEnd ());
+                ++fIterator;
+                if (fIterator.AtEnd ()) [[unlikely]] {
+                    return nullopt;
+                }
+                else {
+                    auto tmp = *fIterator;
+                    return tuple_cat (tuple<T>{tmp.second}, tmp.first);
                 }
             }
             virtual bool Equals (const typename Iterator<tuple<T, INDEXES...>>::IRep* rhs) const override

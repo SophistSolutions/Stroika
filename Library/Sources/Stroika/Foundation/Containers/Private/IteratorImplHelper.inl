@@ -87,20 +87,31 @@ namespace Stroika::Foundation::Containers::Private {
         return make_unique<IteratorImplHelper_> (*this);
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
-    void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::More (optional<T>* result, bool advance)
+    auto IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::AtEnd () const -> bool
     {
-        RequireNotNull (result); // API says result ptr required
-        ValidateChangeCount ();
-        // Typically calls have advance = true
-        if (advance) [[likely]] {
-            Require (not fIterator.AtEnd ());
-            ++fIterator;
-        }
-        if (fIterator.AtEnd ()) [[unlikely]] {
-            *result = nullopt;
+        return fIterator.AtEnd ();
+    }
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    optional<T> IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Current () const
+    {
+        if (fIterator.AtEnd ()) {
+            return nullopt;
         }
         else {
-            *result = TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
+            return TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
+        }
+    }
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    optional<T> IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::More ()
+    {
+        Require (not fIterator.AtEnd ());
+        ValidateChangeCount ();
+        ++fIterator;
+        if (fIterator.AtEnd ()) [[unlikely]] {
+            return nullopt;
+        }
+        else {
+            return TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
         }
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
@@ -144,17 +155,17 @@ namespace Stroika::Foundation::Containers::Private {
      ********************************************************************************
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
-    bool BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::AtEnd () const
+    bool BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::AtStart () const
     {
-        return this->fIterator.AtEnd ();
+        return this->fIterator.AtStart ();
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
-    void BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Back (optional<T>* result)
+    T BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Back ()
     {
-        RequireNotNull (result); // API says result ptr required
-        this->ValidateChangeCount ();
         Require (not this->fIterator.AtStart ());
+        this->ValidateChangeCount ();
         --this->fIterator;
+        return *this->fIterator;
     }
 
     /*

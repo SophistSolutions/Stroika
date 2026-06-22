@@ -22,16 +22,19 @@ namespace Stroika::Foundation::Traversal {
                 , fCur_{fFun_ ()}
             {
             }
-            virtual void More (optional<T>* result, bool advance) override
+            virtual bool AtEnd () const override
             {
-                RequireNotNull (result);
-                if (advance) {
-                    // Iterator<T, ITERATOR_TRAITS>::IRep::More() docs say legal to call More(advance) even if at end
-                    if (fCur_.has_value ()) {
-                        fCur_ = fFun_ ();
-                    }
-                }
-                *result = fCur_;
+                return not fCur_.has_value ();
+            }
+            virtual optional<T> Current () const override
+            {
+                return fCur_;
+            }
+            virtual optional<T> More () override
+            {
+                Require (fCur_.has_value ()); // not at end
+                fCur_ = fFun_ ();
+                return fCur_;
             }
             virtual bool Equals (const typename Iterator<T>::IRep* rhs) const override
             {

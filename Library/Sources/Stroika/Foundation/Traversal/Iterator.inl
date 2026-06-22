@@ -40,17 +40,17 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (const unique_ptr<IRep>& rep) noexcept
         : fRep_{rep}
+        , _fCurrentValue{fRep_->Current ()}
     {
         RequireNotNull (fRep_);
-        fRep_->More (&_fCurrentValue, false);
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (unique_ptr<IRep>&& rep) noexcept
         : fRep_{move (rep)}
+        , _fCurrentValue{fRep_->Current ()}
     {
         RequireNotNull (fRep_);
-        fRep_->More (&_fCurrentValue, false);
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::Refresh ()
     {
-        fRep_->More (&this->_fCurrentValue, false);
+        this->_fCurrentValue = fRep_->Current ();
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
@@ -127,6 +127,8 @@ namespace Stroika::Foundation::Traversal {
         if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (fRep_) {
                 fRep_->Invariant ();
+                // GOOD ASSERT TO ADD BUT DEBUG WHY FAILING
+                // Assert ((not this->_fCurrentValue.has_value ()) == fRep_->AtEnd ()); // Iterator<> caches result of rep - make sure in sync
             }
         }
     }
@@ -175,7 +177,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (not AtEnd ());
         RequireNotNull (fRep_);
-        fRep_->More (&_fCurrentValue, true);
+        _fCurrentValue = fRep_->More ();
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
         return *this;
     }

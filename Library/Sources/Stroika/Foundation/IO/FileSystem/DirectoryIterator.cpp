@@ -76,15 +76,13 @@ public:
         }
         if (fCur_ != nullptr and fCur_->d_name[0] == '.' and
             (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
-            optional<filesystem::path> tmphack;
-            More (&tmphack, true);
+            More ();
         }
 #elif qStroika_Foundation_Common_Platform_Windows
         fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
         while (fHandle_ != INVALID_HANDLE_VALUE and
                (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
-            optional<filesystem::path> tmphack;
-            More (&tmphack, true);
+            More ();
         }
 #endif
     }
@@ -120,8 +118,7 @@ public:
         if (name) {
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
             while (fHandle_ != INVALID_HANDLE_VALUE and String::FromSDKString (fFindFileData_.cFileName) != name) {
-                optional<filesystem::path> tmphack;
-                More (&tmphack, true);
+                More ();
             }
         }
     }
@@ -138,50 +135,71 @@ public:
         }
 #endif
     }
-    virtual void More (optional<filesystem::path>* result, bool advance) override
+    virtual bool AtEnd () const override
+    {
+#if qStroika_Foundation_Common_Platform_POSIX
+        return fCur_ == nullptr;
+#elif qStroika_Foundation_Common_Platform_Windows
+        return fHandle_ == INVALID_HANDLE_VALUE;
+#else
+        AssertNotImplemented ();
+#endif
+    }
+    virtual optional<filesystem::path> Current () const override
+    {
+#if qStroika_Foundation_Common_Platform_POSIX
+        if (fCur_ == nullptr) {
+            return nullopt;
+        }
+        return fReportPrefix_ / fCur_->d_name;
+#elif qStroika_Foundation_Common_Platform_Windows
+        if (fHandle_ == INVALID_HANDLE_VALUE) {
+            return nullopt;
+        }
+        return fReportPrefix_ / fFindFileData_.cFileName;
+#else
+        AssertNotImplemented ();
+#endif
+    }
+    virtual optional<filesystem::path> More () override
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        RequireNotNull (result);
-        *result = nullopt;
 #if qStroika_Foundation_Common_Platform_POSIX
-        if (advance) {
-        Again:
-            RequireNotNull (fCur_);
-            RequireNotNull (fDirIt_);
-            errno = 0;
-            fCur_ = ::readdir (fDirIt_);
-            if (fCur_ == nullptr) {
-                // errno can be zero here at end of directory
-                if (errno != EBADF and errno != 0) {
-                    ThrowPOSIXErrNo ();
-                }
+    Again:
+        RequireNotNull (fCur_);
+        RequireNotNull (fDirIt_);
+        errno = 0;
+        fCur_ = ::readdir (fDirIt_);
+        if (fCur_ == nullptr) {
+            // errno can be zero here at end of directory
+            if (errno != EBADF and errno != 0) {
+                ThrowPOSIXErrNo ();
             }
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and
-                (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
-                goto Again;
-            }
+        }
+        if (fCur_ != nullptr and fCur_->d_name[0] == '.' and
+            (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
+            goto Again;
         }
         if (fCur_ != nullptr) {
-            *result = fReportPrefix_ / fCur_->d_name;
+            return fReportPrefix_ / fCur_->d_name;
         }
 #elif qStroika_Foundation_Common_Platform_Windows
-        if (advance) {
-        Again:
-            Require (fHandle_ != INVALID_HANDLE_VALUE);
-            (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
-            if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
-                ::FindClose (fHandle_);
-                fHandle_ = INVALID_HANDLE_VALUE;
-            }
-            if (fHandle_ != INVALID_HANDLE_VALUE and
-                (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
-                goto Again;
-            }
+    Again:
+        Require (fHandle_ != INVALID_HANDLE_VALUE);
+        (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
+        if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
+            ::FindClose (fHandle_);
+            fHandle_ = INVALID_HANDLE_VALUE;
+        }
+        if (fHandle_ != INVALID_HANDLE_VALUE and
+            (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
+            goto Again;
         }
         if (fHandle_ != INVALID_HANDLE_VALUE) {
-            *result = fReportPrefix_ / fFindFileData_.cFileName;
+            return fReportPrefix_ / fFindFileData_.cFileName;
         }
 #endif
+        return nullopt;
     }
     virtual bool Equals (const Iterator<filesystem::path>::IRep* rhs) const override
     {

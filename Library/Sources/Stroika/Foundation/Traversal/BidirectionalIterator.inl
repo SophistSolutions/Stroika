@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Traversal {
     inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator-- () -> BidirectionalIterator&
     {
         Require (not this->AtStart ());
-        GetRep ().Back (&this->_fCurrentValue);
+        this->_fCurrentValue = GetRep ().Back ();
         return *this;
     }
     template <typename T, typename ITERATOR_TRAITS>

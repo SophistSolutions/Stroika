@@ -107,6 +107,7 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
+     * \brief An Iterator<T> that also supports going backwards.
      */
     template <typename T, typename ITERATOR_TRAITS>
     class BidirectionalIterator<T, ITERATOR_TRAITS>::IRep : public Iterator<T, ITERATOR_TRAITS>::IRep {
@@ -118,18 +119,19 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief
-         *      Check if the iterator is at the end of the range.
+         *  \brief return true iff the iterator is at the start of its range. You can only backup further if NOT AtStart ()
          * 
-         *  \note To check AtStart, you just call More (..., false), and check if result has-value.
-         *        We COULD add an AsStart() method, to be more efficient, but there appears no need.
+         *  \note - if the range is empty, its BOTH AtEnd () and AtStart ()
          */
-        virtual bool AtEnd () const = 0;
+        virtual bool AtStart () const = 0;
 
+    public:
         /**
-         *  \like More () - but going backwards. Use More (..., false) to get the current value without moving.
+         *  \brief Move iterator one position back, closer to start. Return the current value of T (which must always be valid).
+         * 
+         *  \pre not AtStart ()
          */
-        virtual void Back (optional<T>* result) = 0;
+        virtual T Back () = 0;
     };
 
 }

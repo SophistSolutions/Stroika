@@ -115,6 +115,10 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  \brief
      *      The interface for the internal representation of a RandomAccessIterator.
+     * 
+     * \note In some sense this adds no new functionality to BidirectionIterator, but the presence
+     *       of these virtual Advance and Distance methods adds to code size and is an indicator of
+     *       additional functionality.
      */
     template <typename T, typename ITERATOR_TRAITS>
     class RandomAccessIterator<T, ITERATOR_TRAITS>::IRep : public BidirectionalIterator<T, ITERATOR_TRAITS>::IRep {

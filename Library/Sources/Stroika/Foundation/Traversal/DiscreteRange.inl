@@ -29,22 +29,32 @@ namespace Stroika::Foundation::Traversal {
             , fAtEnd{false}
         {
         }
-        virtual void More (optional<T>* result, bool advance) override
+        bool AtEnd () const override
         {
-            RequireNotNull (result);
-            *result = nullopt;
-            if (advance) {
-                Require (not fAtEnd);
-                if (fCur == fEnd) {
-                    fAtEnd = true;
-                }
-                else {
-                    fCur = TRAITS::GetNext (fCur);
-                }
+            return fAtEnd;
+        }
+        optional<T> Current () const override
+        {
+            if (fAtEnd) {
+                return nullopt;
+            }
+            else {
+                return fCur;
+            }
+        }
+        virtual optional<T> More () override
+        {
+            Require (not fAtEnd);
+            if (fCur == fEnd) {
+                fAtEnd = true;
+            }
+            else {
+                fCur = TRAITS::GetNext (fCur);
             }
             if (not fAtEnd) {
-                *result = fCur;
+                return fCur;
             }
+            return nullopt;
         }
         virtual bool Equals ([[maybe_unused]] const typename Iterator<T>::IRep* rhs) const override
         {

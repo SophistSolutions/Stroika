@@ -119,7 +119,9 @@ namespace Stroika::Foundation::Containers::Private {
         // Iterator<T>::IRep
     public:
         virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override;
-        virtual void                                   More (optional<T>* result, bool advance) override;
+        virtual bool                                   AtEnd () const override;
+        virtual optional<T>                            Current () const override;
+        virtual optional<T>                            More () override;
         virtual bool                                   Equals (const typename Iterator<T>::IRep* rhs) const override;
 #if qStroika_Foundation_Debug_AssertionsChecked
         /**
@@ -157,8 +159,8 @@ namespace Stroika::Foundation::Containers::Private {
         using inherited;
 
     public:
-        virtual bool AtEnd () const override;
-        virtual void Back (optional<T>* result) override;
+        virtual bool AtStart () const override;
+        virtual T    Back () override;
     };
 
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>

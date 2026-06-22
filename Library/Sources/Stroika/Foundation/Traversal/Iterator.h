@@ -206,6 +206,10 @@ namespace Stroika::Foundation::Traversal {
      *          I DID run some simple tests to see how often we even use the Clone method. It turns out - quite rarely.
      *          And most can be eliminated by slightly better Move constructor support on the iterator class.
      *
+     *  \note Requires Concepts:
+     *      o   copyable<T>
+     *      o   constructible_from<optional<T>, T>
+     * 
      *  \note Satisfies Concepts:
      *      o   regular<Iterator<T>>
      *      o   input_iterator<Iterator<T>>
@@ -436,7 +440,7 @@ namespace Stroika::Foundation::Traversal {
          *  Two subsequent calls to *it *cannot* return different values with no
          *  intervening (non-const) calls on the iterator.
          *
-         *  The value of returned is undefined (Assertion error) if called when AtEnd().
+         *  \pre not AtEnd ()
          *
          *  operator*() is a common synonym for Current().
          *
@@ -447,6 +451,8 @@ namespace Stroika::Foundation::Traversal {
          *        perform better, but testing has not confirmed that (though this does appear to be existing practice in things like STL).
          * 
          *  \note It is illegal (but goes undetected) to hang onto (and use) the reference returned past when the iterator is next modified
+         * 
+         *  \note IRep::Current () returns optional<T>, and can be called while AtEnd
          */
         nonvirtual const T& Current () const;
 
@@ -562,22 +568,22 @@ namespace Stroika::Foundation::Traversal {
      *  IRep is a support class used to implement the @ref Iterator<T> pattern.
      *
      *  \note IRep subclasses are constructed already pointing at the first element.
-     *        So a leading call to More (&value, false); can be used to fetch the first value
+     *        So a leading call to Current () can be used to fetch the first value
      *        and value.has_value() will be false if there were no values
      *
      *  Subclassed by concrete container writers.
      * 
      *  \note Design Note:
-     *      o   More (optional<T>*, bool advance) API combines operator++ and iterator != end ()
+     *      o   More () -> optional<T> API combines operator++ and iterator != end ()
      *      o   The reason it combines the two, is because they TYPICALLY are done together at the same time,
      *          and its a virtual call, so combining the two into a single call will most frequently be a
      *          performance optimization.
      * 
-     *  typical uses:
-     *
-     *          it++ -> More (&ignoredValue, true)
-     *          *it -> More (&v, false); return *v;
-     *          AtEnd -> More (&v, false); return v.has_value();
+     *  \note Upgrade Note:
+     *      In Stroika v3.0d24, we changed the API for Iterator<T, ITERATOR_TRAITS>::IRep, adding AtEnd ()
+     *      and Current () pure virtual methods that must be overridden, and changing the API of More () to not
+     *      take an 'advance' parameter, but always assume its true, and then just return optional<T> instead
+     *      of taking it as a pointer parameter.
      */
     template <typename T, typename ITERATOR_TRAITS>
     class Iterator<T, ITERATOR_TRAITS>::IRep {
@@ -597,34 +603,40 @@ namespace Stroika::Foundation::Traversal {
          */
         virtual unique_ptr<IRep> Clone () const = 0;
 
+    public:
         /**
-         *  More () takes two required arguments - one an optional<T>* result, and the other a flag about whether or
-         *  not to advance.
+         *  \brief
+         *      Check if the iterator is at the end of the range.
+         * 
+         *  \note This value must be in agreement with the results returned by More (), and Current ().
+         */
+        virtual bool AtEnd () const = 0;
+
+    public:
+        /**
+         *  \brief
+         *      Return nullopt if it end of range, else return current value iterator points to.
+         */
+        virtual optional<T> Current () const = 0;
+
+    public:
+        /**
+         *  \brief More () advances the iterator to the next position, and returns the value there (nullopt if at end).
          *
-         *  If advance is true, it moves the iterator to the next legal position 
-         *
-         *  \note (requires not AtEnd() before advancing) - NEW Since Stroika 2.1b14
-         *
-         *          BEFORE 2.1b14: It WAS legal to call More () with advance true even when already at the end of iteration.
-         *          This design choice was made to be multi-threading friendly.
-         *
-         *  This function returns the current value in result if the iterator is positioned at a valid position,
-         *  and sets result to an nullopt if at the end - its 'at end'.
-         *
-         *  \pre result != nullptr
+         *  \pre not AtEnd()
          *
          *  \em Design Note
-         *      We chose to use a pointer parameter instead of a return value to avoid extra
-         *      initialization/copying. Note that the return value optimization rule doesn't apply
-         *      to assignment, but only initialization.
+         *      We chose to use a return value instead of reference argument to leverage RTO optimization, and allow
+         *      value to be used to initialize value instead of requiring first default initialize (differs from pre Stroika v3.0b24).
          *
          *  \em Design Note
          *      Standard C++ iterators separate advancing from testing if AtEnd. That is almost strictly better.
          *      However, standard c++ iterators don't require a virtual call per iteration. It is to mitigate
          *      that we combine those two operations into one call (not that unnaturally).
          */
-        virtual void More (optional<T>* result, bool advance) = 0;
+        virtual optional<T> More () = 0;
 
+    public:
         /**
          * \brief two iterators must be iterating over the same source, and be up to the same position.
          *
@@ -637,6 +649,7 @@ namespace Stroika::Foundation::Traversal {
         virtual bool Equals (const IRep* rhs) const = 0;
 
 #if qStroika_Foundation_Debug_AssertionsChecked
+    public:
         /**
          */
         virtual void Invariant () const noexcept;
