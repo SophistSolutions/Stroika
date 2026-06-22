@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers::Private {
         using inherited = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>;
 
     public:
-        using inherited;
+        using inherited::inherited;
 
     public:
         virtual bool AtStart () const override;
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers::Private {
         using inherited = BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>;
 
     public:
-        using inherited;
+        using inherited::inherited;
 
     public:
         virtual void      Advance (ptrdiff_t i) override;
