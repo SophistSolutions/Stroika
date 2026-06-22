@@ -150,6 +150,9 @@ namespace Stroika::Foundation::Containers::Private {
 #endif
     };
 
+    /**
+     *  \brief like IteratorImplHelper_ but for bidirectional iterators.
+     */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>
     class BidirectionalIteratorImplHelper_ : public IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS> {
     private:
@@ -163,6 +166,9 @@ namespace Stroika::Foundation::Containers::Private {
         virtual T    Back () override;
     };
 
+    /**
+     *  \brief like IteratorImplHelper_ but for random access iterators.
+     */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>
     class RandomAccessIteratorImplHelper_ : public BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS> {
     private:
