@@ -117,7 +117,11 @@
     "IntermediateFiles/**": true,
     "ThirdPartyComponents/*/CURRENT/**": true,
     "**/.git/objects/**": true,
-    "**/.git/subtree-cache/**": true
+    "**/.git/subtree-cache/**": true,
+    "**/.vscode-server/**": true
+  },
+  "search.exclude": {
+    "**/.vscode-server/**": true
   },
   "git.ignoreLimitWarning": true,
   "cmake.sourceDirectory": "/Sandbox/Stroika-Dev/.dockerstuff/.vscode-server/extensions/twxs.cmake-0.0.17/node_modules/peg-cmake/test"
