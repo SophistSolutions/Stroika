@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Time {
      *
      *  \see commentary in https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
      * 
-     *  \note - for some cases, the conversion is estimated, and may vary slightly from run run to run.
+     *  \note - for some cases, the conversion is estimated, and may vary slightly from run to run.
      *  \note - range overload is both HANDY for normal case, and CRITICAL for case where we approximate, so that valid ranges
      *          always map to valid ranges (one jitter, not two). Note also - use of template/template param for RANGE is to avoid mutual inclusion issues.
      * 
