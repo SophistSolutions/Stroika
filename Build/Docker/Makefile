@@ -1,9 +1,11 @@
+export StroikaRoot	:=	$(abspath ../../)/
+
 DEFAULT_GOAL := help
 
 STROIKA_VERSION=$(shell dos2unix < ../../STROIKA_VERSION | xargs echo -n)
-STROIKA_VERSION_Final=$(shell ../../ScriptsLib/ExtractVersionInformation ../../STROIKA_VERSION FinalBuild)
+STROIKA_VERSION_Final=$(shell ${StroikaRoot}ScriptsLib/ExtractVersionInformation ../../STROIKA_VERSION FinalBuild)
 
-DETECTED_HOST_OS=$(shell ../../ScriptsLib/DetectedHostOS)
+DETECTED_HOST_OS=$(shell ${StroikaRoot}ScriptsLib/DetectedHostOS)
 
 BUILD_DEV_IMAGES?=1
 
@@ -57,6 +59,7 @@ IMAGES+= sophistsolutionsinc/stroika-dev
 IMAGES+= sophistsolutionsinc/stroika-dev-2204
 IMAGES+= sophistsolutionsinc/stroika-dev-2404
 IMAGES+= sophistsolutionsinc/stroika-dev-2504
+IMAGES+= sophistsolutionsinc/stroika-dev-2604
 endif
 endif
 
@@ -86,7 +89,7 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2604-small:
 
 sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:
 	@# Sadly docker build doesn't work with symbolic links
-	@cp ../../ScriptsLib/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
+	@cp ${StroikaRoot}ScriptsLib/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
 	docker build -f Ubuntu2204-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 	@rm -f Ubuntu2204-RegressionTests/BuildGCC
 
@@ -134,18 +137,22 @@ sophistsolutionsinc/stroika-dev-2404:
 sophistsolutionsinc/stroika-dev-2504:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2504 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests .
 
+sophistsolutionsinc/stroika-dev-2604:
+	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2604 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests .
+
 
 stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2604 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2604 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10622:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
 endif
 
 start-stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
-	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504; do docker start $$i; done
+	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504 Stroika-Dev-2604; do docker start $$i; done
 endif
 
 
@@ -171,3 +178,14 @@ ifeq ($(STROIKA_VERSION_Final),true)
 		docker push $${image}:${STROIKA_VERSION}; \
 	done
 endif
+
+
+clean-images:
+ifeq (${DETECTED_HOST_OS},Linux)
+	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504 Stroika-Dev-2604 ; do docker stop $$i; docker rm -f $$i; done
+	for i in stroika-dev-2204 stroika-dev-2404 stroika-dev-2504 stroika-dev-2604 stroika-dev; do docker rmi -f sophistsolutionsinc/$$i; done
+endif
+	for image in ${IMAGES}; do  \
+		docker rmi -f $${image} ; \
+	done
+
