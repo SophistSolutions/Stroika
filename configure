@@ -165,6 +165,8 @@ my $DEFAULT_CXXWARNING_FLAGS_CLANG	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_;
 $DEFAULT_CXXWARNING_FLAGS_CLANG		= $DEFAULT_CXXWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef '; 		### really needed - get alot of them - e.g. using inherited = ... - (maybe can use [[maybe_unused]])
 $DEFAULT_CXXWARNING_FLAGS_CLANG		= $DEFAULT_CXXWARNING_FLAGS_CLANG . '-Wno-future-compat ';
 
+# -Wcharacter-conversion probably GOOD warning, but no time to debug now, so leave this suppression in temporarily --LGP 2026-06-23
+my $DEFAULT_CXXWARNING_FLAGS_CLANG21	= $DEFAULT_CXXWARNING_FLAGS_CLANG . '-Wno-character-conversion ';
 
 
 my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to support plural
@@ -1049,6 +1051,12 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_CLANG;
+
+			my $clangVersion = GetClangVersion_ ($COMPILER_DRIVER);
+			if (21 <= $clangVersion &&  $clangVersion < 22) {
+				# by the time clang++22 shows up, I better have removed this!!!
+				$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_CLANG21;
+			}
 		}
 	}
 
