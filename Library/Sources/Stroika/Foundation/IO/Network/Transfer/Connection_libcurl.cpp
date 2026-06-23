@@ -168,7 +168,7 @@ namespace {
         virtual Response Send (const Request& request) override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Connection_LibCurl::Rep_::Send", L"method='%s'", request.fMethod.c_str ()};
+            Debug::TraceContextBumper ctx{"Connection_LibCurl::Rep_::Send", L"method='{}'", request.fMethod};
 #endif
             Request useRequest = request;
 
