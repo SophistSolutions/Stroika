@@ -21,8 +21,8 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  \brief A BidirectionalIterator is an Iterator that can be moved both forward and backward.
      * 
-     * BidirectionalIterator allows backing up (if not IsAtStart), and then moving forward again
-     * (if not IsAtEnd - as a base class Iterator).
+     * BidirectionalIterator allows backing up (if not AtStart), and then moving forward again
+     * (if not AtEnd - as a base class Iterator).
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<bidirectional_iterator_tag, T>>
     class BidirectionalIterator : public Iterator<T, ITERATOR_TRAITS> {
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         * \pre not IsAtStart ()
+         * \pre not AtStart ()
          */
         nonvirtual BidirectionalIterator& operator-- ();
         nonvirtual BidirectionalIterator  operator-- (int);
