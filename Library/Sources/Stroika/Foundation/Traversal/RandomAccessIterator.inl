@@ -5,7 +5,7 @@ namespace Stroika::Foundation::Traversal {
 
     /*
      ********************************************************************************
-     ****************** RandomAccessIterator<T, ITERATOR_TRAITS> *******************
+     ****************** RandomAccessIterator<T, ITERATOR_TRAITS> ********************
      ********************************************************************************
      */
     template <typename T, typename ITERATOR_TRAITS>

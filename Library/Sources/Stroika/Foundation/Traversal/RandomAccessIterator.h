@@ -80,12 +80,16 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  \brief Produce a new iterator adjusted forward by the specified number of positions (note unlike base class i maybe negative).
+         * 
+         *         Note this hides the inherited operator+ from BiderectionIterator, just to be a bit faster.
          */
         nonvirtual RandomAccessIterator operator+ (ptrdiff_t i) const;
 
     public:
         /**
          *  \brief Produce a new iterator adjusted backward by the specified number of positions (note unlike base class i maybe negative).
+         * 
+         *         Note this hides the inherited operator- from BiderectionIterator, just to be a bit faster.
          */
         nonvirtual RandomAccessIterator operator- (ptrdiff_t i) const;
 
