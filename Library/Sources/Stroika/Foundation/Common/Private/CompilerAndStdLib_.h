@@ -683,7 +683,8 @@ make[4]: *** [all] Error 2
 // release only bug - (lto?)- clang++18
 // release only bug - (lto?)- clang++19
 // release only bug - (lto?)- clang++20
-#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 20))
+// release only bug - clang++21
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 21))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
 // and broken in GCC 12 with raspberrypi-g++-12-release-sanitize_address
