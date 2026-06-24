@@ -542,13 +542,13 @@ namespace Stroika::Foundation::Memory {
         resize (0);
     }
     template <typename T, size_t BUF_SIZE>
-    inline InlineBuffer<T, BUF_SIZE>::operator T*() noexcept
+    inline InlineBuffer<T, BUF_SIZE>::operator T* () noexcept
     {
         AssertNotNull (fLiveData_);
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline InlineBuffer<T, BUF_SIZE>::operator const T*() const noexcept
+    inline InlineBuffer<T, BUF_SIZE>::operator const T* () const noexcept
     {
         AssertNotNull (fLiveData_);
         return fLiveData_;
