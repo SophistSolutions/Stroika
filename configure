@@ -1192,20 +1192,15 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		# /usr/bin/ld: /usr/lib/llvm-18/bin/../lib/LLVMgold.so: error loading plugin: /usr/lib/llvm-18/bin/../lib/LLVMgold.so: cannot open shared object file: No such file or directory
 		# clang-18: error: linker command failed with exit code 1 (use -v to see invocation)
 		# gmake[3]: *** [CMakeFiles/cmTC_cbb0a.dir/build.make:100: cmTC_cbb0a] Error 1
-		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS &&  $lsb_release == "24.04" && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && GetClangVersion_ ($COMPILER_DRIVER) < 19) {
-			$ENABLE_LTO = false;
-		}
 		# Samples-SSDPClient fails, but Samples-SSDPServer builds? At least on ubuntu 25.04 and clang++-20 - figure out later better workaround
 		# /usr/bin/ld: /tmp/lto-llvm-230fd9.o: in function `_GLOBAL__sub_I_Client.cpp':
 		# ld-temp.o:(.text.startup+0x2a66): undefined reference to `Stroika::Foundation::DataExchange::ObjectVariantMapper::ObjectVariantMapper()'
 		# /usr/bin/ld: ld-temp.o:(.text.startup+0x2a73): undefined reference to `Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer<Stroika::Foundation::Characters::String>()'
 		# /usr/bin/ld: ld-temp.o:(.text.startup+0x2a8a): undefined reference to `Stroika::Foundation::DataExchange::ObjectVariantMapper::Add(Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails const&)'
 		# /usr/bin/ld: ld-temp.o:(.text.startup+0x2b06): undefined reference to `Stroika::Foundation::DataExchange::ObjectVariantMapper::Add(Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails const&)'
-		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS &&  $lsb_release == "25.04" && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && GetClangVersion_ ($COMPILER_DRIVER) < 21) {
-			$ENABLE_LTO = false;
-		}
+		# still fails with clang++-21 on Ubuntu 26.04...
 		## And another issue on clang++-15 with lto on ubuntu 22
-		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS &&  $lsb_release == "22.04" && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && GetClangVersion_ ($COMPILER_DRIVER) < 16) {
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && GetClangVersion_ ($COMPILER_DRIVER) < 22) {
 			$ENABLE_LTO = false;
 		}
 
