@@ -41,6 +41,19 @@ namespace Stroika::Foundation::Traversal {
         return GetRep ().AtStart ();
     }
     template <typename T, typename ITERATOR_TRAITS>
+    inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator++ () -> BidirectionalIterator&
+    {
+        inherited::operator++ ();
+        return *this;
+    }
+    template <typename T, typename ITERATOR_TRAITS>
+    inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator++ (int) -> BidirectionalIterator
+    {
+        auto result = *this;
+        inherited::operator++ ();
+        return result;
+    }
+    template <typename T, typename ITERATOR_TRAITS>
     inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator-- () -> BidirectionalIterator&
     {
         Require (not this->AtStart ());

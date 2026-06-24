@@ -23,6 +23,11 @@ namespace Stroika::Foundation::Traversal {
      * 
      * BidirectionalIterator allows backing up (if not AtStart), and then moving forward again
      * (if not AtEnd - as a base class Iterator).
+     * 
+     *  \note Satisfies Concepts:
+     *      o   regular<BidirectionalIterator<T>>        // implies copyable/movable/equality_comparable
+     *      o   bidirectional_iterator<BidirectionalIterator<T>>
+     *      o   sentinel_for<default_sentinel_t, BidirectionalIterator<T>>
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<bidirectional_iterator_tag, T>>
     class BidirectionalIterator : public Iterator<T, ITERATOR_TRAITS> {
@@ -67,6 +72,15 @@ namespace Stroika::Foundation::Traversal {
          * 
          */
         nonvirtual bool AtStart () const;
+
+    public:
+        /**
+         * \brief same as Iterator::operator++ () - advances iterator - but returns the subclass iterator type.
+         * 
+         * The subclass impl is functionaly identical, but hiding the base class implementation needed to satisfy the concepts for bidirectional iterators.
+         */
+        nonvirtual BidirectionalIterator& operator++ ();
+        nonvirtual BidirectionalIterator  operator++ (int);
 
     public:
         /**
@@ -133,6 +147,13 @@ namespace Stroika::Foundation::Traversal {
          */
         virtual T Back () = 0;
     };
+
+    // see Satisfies Concepts
+    //      @todo would be nice to include these tests generically as part of template declaration, but cannot figure out how
+    //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
+    static_assert (bidirectional_iterator<BidirectionalIterator<int>>);
+    static_assert (regular<BidirectionalIterator<int>>);
+    static_assert (sentinel_for<default_sentinel_t, BidirectionalIterator<int>>);
 
 }
 
