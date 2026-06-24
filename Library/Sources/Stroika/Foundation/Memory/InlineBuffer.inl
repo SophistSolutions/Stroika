@@ -6,15 +6,10 @@
 #include <ranges>
 #include <type_traits>
 
-#include "Common.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-
-namespace Stroika::Foundation::Execution {
-    // Instead of #include "Stroika/Foundation/Execution/Throw.h"
-    template <equality_comparable_with<nullptr_t> T>
-    void ThrowIfNull (const T& p);
-}
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 namespace Stroika::Foundation::Memory {
 
@@ -547,13 +542,13 @@ namespace Stroika::Foundation::Memory {
         resize (0);
     }
     template <typename T, size_t BUF_SIZE>
-    inline InlineBuffer<T, BUF_SIZE>::operator T* () noexcept
+    inline InlineBuffer<T, BUF_SIZE>::operator T*() noexcept
     {
         AssertNotNull (fLiveData_);
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline InlineBuffer<T, BUF_SIZE>::operator const T* () const noexcept
+    inline InlineBuffer<T, BUF_SIZE>::operator const T*() const noexcept
     {
         AssertNotNull (fLiveData_);
         return fLiveData_;
