@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Traversal {
      *      o   constructible_from<optional<T>, T>
      * 
      *  \note Satisfies Concepts:
-     *      o   regular<Iterator<T>>
+     *      o   regular<Iterator<T>>        // implies copyable/movable/equality_comparable
      *      o   input_iterator<Iterator<T>>
      *      o   sentinel_for<default_sentinel_t, Iterator<T>>
      * 
