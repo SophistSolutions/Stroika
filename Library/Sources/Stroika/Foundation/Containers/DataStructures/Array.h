@@ -349,10 +349,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         // stuff STL requires you to set to look like an iterator
         using iterator_category = bidirectional_iterator_tag;
-        using value_type      = Array::value_type;
-        using difference_type = ptrdiff_t;
-        using pointer         = const value_type*;
-        using reference       = const value_type&;
+        using value_type        = Array::value_type;
+        using difference_type   = ptrdiff_t;
+        using pointer           = const value_type*;
+        using reference         = const value_type&;
 
     public:
         constexpr IteratorBase () noexcept = default;
