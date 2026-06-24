@@ -79,6 +79,16 @@ checkin from one spot.
       ./ScriptsLib/RegressionTests
   ```
 
+- \$TEST_TARGET=Windows_VS2k26
+
+  (on windows bash shell run; takes about 6 HRs on medusa-windows-dev vm)
+
+  ```bash
+  USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k26 PLATFORM=VisualStudio.Net-2026 \
+    MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
+      ./ScriptsLib/RegressionTests
+  ```
+
 - \$TEST_TARGET=Ubuntu2204_x86_64
 
   (remote execute on machine medusa using docker and copy back results; takes about 5 HRs)
