@@ -91,6 +91,8 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] void ReThrow (const exception_ptr& e, const wchar_t* traceMsg);
 
     /**
+     * @brief Throws an exception if the argument is null (nullptr, or nullopt, or similar). Optionally takes specific exception to throw (defaults to bad_alloc).
+     * 
      *  If the first argument is null, throw the second argument exception (which defaults to bad_alloc)
      */
     template <equality_comparable_with<nullptr_t> T, typename E>
