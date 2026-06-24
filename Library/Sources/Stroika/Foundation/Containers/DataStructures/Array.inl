@@ -707,6 +707,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return not AtEnd ();
     }
     template <typename T>
+    inline bool Array<T>::ForwardIterator::AtStart () const noexcept
+    {
+        if (this->_fData == nullptr) {
+            Assert (this->_fCurrentIdx == 0);
+            return true;
+        }
+#if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+#endif
+        this->Invariant ();
+        return this->CurrentIndex () == 0;
+    }
+    template <typename T>
     inline bool Array<T>::ForwardIterator::AtEnd () const noexcept
     {
         if (this->_fData == nullptr) {
@@ -735,6 +748,24 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         ForwardIterator result = *this;
         this->operator++ ();
+        return result;
+    }
+    template <typename T>
+    inline auto Array<T>::ForwardIterator::operator-- () noexcept -> ForwardIterator&
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
+        Require (not this->AtStart ());
+        this->Invariant ();
+        Assert (this->_fCurrentIdx < this->_fData->fLength_);
+        --this->_fCurrentIdx;
+        this->Invariant ();
+        return *this;
+    }
+    template <typename T>
+    inline auto Array<T>::ForwardIterator::operator-- (int) noexcept -> ForwardIterator
+    {
+        ForwardIterator result = *this;
+        this->operator-- ();
         return result;
     }
     template <typename T>

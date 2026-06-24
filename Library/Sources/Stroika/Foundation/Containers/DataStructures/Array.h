@@ -348,11 +348,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     class Array<T>::IteratorBase {
     public:
         // stuff STL requires you to set to look like an iterator
-        using iterator_category = forward_iterator_tag;
-        using value_type        = Array::value_type;
-        using difference_type   = ptrdiff_t;
-        using pointer           = const value_type*;
-        using reference         = const value_type&;
+        using iterator_category = bidirectional_iterator_tag;
+        using value_type      = Array::value_type;
+        using difference_type = ptrdiff_t;
+        using pointer         = const value_type*;
+        using reference       = const value_type&;
 
     public:
         constexpr IteratorBase () noexcept = default;
@@ -407,6 +407,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      Use this iterator to iterate forwards over the array. Be careful
      *  not to add or remove things from the array while using this iterator,
      *  since it is not safe.
+     * 
+     *  \note Satisfies Concepts:
+     *      o   bidirectional_iterator<ForwardIterator<T>>
      */
     template <typename T>
     class Array<T>::ForwardIterator : public Array<T>::IteratorBase {
@@ -434,6 +437,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         explicit operator bool () const;
 
     public:
+        nonvirtual bool AtStart () const noexcept;
+
+    public:
         nonvirtual bool AtEnd () const noexcept;
 
     public:
@@ -441,8 +447,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator  operator++ (int) noexcept;
 
     public:
+        nonvirtual ForwardIterator& operator-- () noexcept;
+        nonvirtual ForwardIterator  operator-- (int) noexcept;
+
+    public:
         nonvirtual bool operator== (const ForwardIterator& rhs) const;
     };
+
+    // see Satisfies Concepts
+    static_assert (bidirectional_iterator<typename Array<int>::ForwardIterator>);
 
     /**
      *      Use this iterator to iterate backwards over the array. Be careful
