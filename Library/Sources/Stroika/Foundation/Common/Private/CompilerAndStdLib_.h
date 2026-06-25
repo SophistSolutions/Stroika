@@ -2287,6 +2287,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #else
 #define qCompilerAndStdLib_StdFmtOfPath_Buggy 0
 #endif
+
 #endif
 
 /*
