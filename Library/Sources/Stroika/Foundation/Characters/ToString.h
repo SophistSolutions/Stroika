@@ -217,7 +217,12 @@ namespace Stroika::Foundation::Characters::Private_ {
      */
     template <typename T>
     concept IStdFormatterPredefinedFor_ =
-        // clang-format off
+    // clang-format off
+
+#if __cplusplus == 202302L && _GLIBCXX_RELEASE == 15
+    not Common::IAnyOf<remove_cvref_t<T>, filesystem::path> and
+#endif
+    ( 
 
         // C++-20
         Common::IAnyOf<decay_t<T>, char, wchar_t> or Common::IAnyOf<T, char*, const char*, wchar_t*, const wchar_t*> 
@@ -296,7 +301,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
 #endif
 
-        ;
+    );
     // clang-format on
 
 // Debug hack to spot-check IStdFormatterPredefinedFor_
@@ -335,6 +340,14 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
+#if __cplusplus == 202302L && _GLIBCXX_RELEASE == 15
+    static_assert (not IStdFormatterPredefinedFor_<std::filesystem::path>);
+    static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
+    static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
+#endif
 #if defined(__APPLE__) && __clang_major__ == 15
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
@@ -345,12 +358,14 @@ namespace Stroika::Foundation::Characters::Private_ {
 
 // Debugging hacks to make sure IStdFormatterPredefinedFor_ defined properly
 //
-//      CRAZY - but cannot check (at least on visual studio) here: checking NOW causes
+//      CRAZY - but cannot check here: checking NOW causes
 //      this to FAIL later (i guess compiler caches results cuz thinks its constant).
 //      if this worked, I'd add more static_asserts to check...
 //
 // Just use briefly - to debug IStdFormatterPredefinedFor_ -  to verify we fail AFTER this point;
-// enable #if below and just look if these static_asserts fail - ignore any issues which come after (which is why this cannot be left #if 1)
+// To debug settings on IStdFormatterPredefinedFor_:
+//   -  enable #if below and just look if these static_asserts fail
+//   - ignore any issues which come after (which is why this cannot be left #if 1)
 #if 0
     static_assert (IStdFormatterPredefinedFor_<std::type_index> == Common::StdCompat::formattable<std::type_index, wchar_t>);
     static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>> == Common::StdCompat::formattable<std::pair<int, char>, wchar_t>);
