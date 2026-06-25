@@ -712,13 +712,21 @@ make[4]: *** [all] Error 2
 collect2: error: ld returned 1 exit status
                 #   https://gcc.gnu.org/pipermail/gcc-bugs/2022-May/787733.html 
                 #       says use '-lstdc++_libbacktrace' but doesn't exist on ubuntu 24.04 -LGP 24.04
+
+
+      Linking  $StroikaRoot/Builds/g++-debug++2b/bin/HTMLViewCompiler...
+/usr/bin/x86_64-linux-gnu-ld.bfd: /Sandbox/Stroika-Dev/Builds/g++-debug++2b/lib/pkgconfig/../libstroika-foundation.a(BackTrace.o): in function `std::stacktrace_entry::_M_get_info(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, int*) const':
+/usr/include/c++/15/stacktrace:167:(.text._ZNKSt16stacktrace_entry11_M_get_infoEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES6_Pi[_ZNKSt16stacktrace_entry11_M_get_infoEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES6_Pi]+0x1a7): undefined reference to `std::stacktrace_entry::_Info::_M_populate(unsigned long)'
+/usr/bin/x86_64-linux-gnu-ld.bfd: /Sandbox/Stroika-Dev/Builds/g++-debug++2b/lib/pkgconfig/../libstroika-foundation.a(BackTrace.o): in function `std::basic_stacktrace<std::allocator<std::stacktrace_entry> >::current(std::allocator<std::stacktrace_entry> const&)':
+/usr/include/c++/15/stacktrace:209:(.text._ZNSt16basic_stacktraceISaISt16stacktrace_entryEE7currentERKS1_[_ZNSt16basic_stacktraceISaISt16stacktrace_entryEE7currentERKS1_]+0x5f): undefined reference to `std::__stacktrace_impl::_S_current(int (*)(void*, unsigned long), void*, int)'
 */
 #ifndef qCompilerAndStdLib_stacktraceLinkError_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
 // Only SEEN BROKEN IN GCC 13, Ubuntu 24.04, but cannot test for that right easily... (ALSO - PRE-RELEASE UBUTNU - SO TRY AGAIN WHEN RELEASED)
 // Same issue on GCC-14 and Ubuntu 24.04
-#define qCompilerAndStdLib_stacktraceLinkError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13 || __GNUC__ == 14)
+// Same issue on GCC-15 and Ubuntu 26.04
+#define qCompilerAndStdLib_stacktraceLinkError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13 || __GNUC__ == 14 || __GNUC__ == 15)
 #else
 #define qCompilerAndStdLib_stacktraceLinkError_Buggy 0
 #endif
