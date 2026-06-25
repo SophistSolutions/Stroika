@@ -18,11 +18,21 @@
 namespace Stroika::Foundation::Traversal {
 
     /**
+     *  \note Satisfies Concepts:
+     *      o   regular<RandomAccessIterator<T>>        // implies bidirectional_iterator/totally_ordered, and several APIs available, including point at elements
+     *      o   random_access_iterator<RandomAccessIterator<T>>
+     *      o   sentinel_for<default_sentinel_t, RandomAccessIterator<T>>
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
     class RandomAccessIterator : public BidirectionalIterator<T, ITERATOR_TRAITS> {
     private:
         using inherited = BidirectionalIterator<T, ITERATOR_TRAITS>;
+
+        /*
+     *   forward type declarations so can be used more easily in this definition
+     */
+    public:
+        using difference_type = typename inherited::difference_type;
 
     public:
         class IRep;
@@ -64,7 +74,7 @@ namespace Stroika::Foundation::Traversal {
          *      \req i is a valid offset for the iterator. This means that if its positive, it never triggers
          *           an advance PAST the end, and if negative, it never triggers an advance before the start.
          */
-        nonvirtual void Advance (ptrdiff_t i);
+        nonvirtual void Advance (difference_type i);
 
     public:
         /**
@@ -75,7 +85,23 @@ namespace Stroika::Foundation::Traversal {
          *       point (so implies from the same container), or ONE or both of them can be the special
          *       end iterator (default_sentinel or nullptr). 
          */
-        nonvirtual ptrdiff_t Difference (const RandomAccessIterator& rhs) const;
+        nonvirtual difference_type Difference (const RandomAccessIterator& rhs) const;
+
+    public:
+        /**
+         * \brief same as Iterator::operator++ () - advances iterator - but returns the subclass iterator type.
+         * 
+         * The subclass impl is functionaly identical, but hiding the base class implementation needed to satisfy the concepts for random access iterators.
+         */
+        nonvirtual RandomAccessIterator& operator++ ();
+        nonvirtual RandomAccessIterator  operator++ (int);
+
+    public:
+        /**
+         * The subclass impl is functionaly identical, but hiding the base class implementation needed to satisfy the concepts for random access iterators.
+         */
+        nonvirtual RandomAccessIterator& operator-- ();
+        nonvirtual RandomAccessIterator  operator-- (int);
 
     public:
         /**
@@ -83,15 +109,52 @@ namespace Stroika::Foundation::Traversal {
          * 
          *         Note this hides the inherited operator+ from BiderectionIterator, just to be a bit faster.
          */
-        nonvirtual RandomAccessIterator operator+ (ptrdiff_t i) const;
+        nonvirtual RandomAccessIterator operator+ (difference_type i) const;
 
     public:
         /**
          *  \brief Produce a new iterator adjusted backward by the specified number of positions (note unlike base class i maybe negative).
          * 
-         *         Note this hides the inherited operator- from BiderectionIterator, just to be a bit faster.
+         *  \note this hides the inherited operator- from BiderectionIterator, and is probably a bit faster.
+         * 
+         *  \pre current offset - i is a valid position in the referenced container.
          */
-        nonvirtual RandomAccessIterator operator- (ptrdiff_t i) const;
+        nonvirtual RandomAccessIterator operator- (difference_type i) const;
+
+    public:
+        /**
+         * @brief Advance () this iterator by the specified number of positions (which may be negative, but MUST be in range)
+         * 
+         * \pre i + current offset is a valid position in the referenced container.
+         */
+        nonvirtual RandomAccessIterator& operator+= (difference_type i) const;
+
+    public:
+        /**
+         * @brief Advance (backward) this iterator by the specified number of positions (result MUST be in range)
+         * 
+         * \pre current offset - i is a valid position in the referenced container.
+         */
+        nonvirtual RandomAccessIterator& operator-= (difference_type i) const;
+
+    public:
+        /**
+         * @brief Access the element at the specified index (relative to the current position).
+         * 
+         * \req this MUST specify a valid position, or its an assertion error.
+         * 
+         * API required by random_access_iterator concept
+         * 
+         * @param i 
+         * @return const T& 
+         */
+        nonvirtual const T& operator[] (difference_type i) const;
+
+    public:
+        /**
+         * @brief compare two iterators by their position in underlying container.
+         */
+        nonvirtual strong_ordering operator<=> (const RandomAccessIterator& rhs) const;
 
     public:
         /**
@@ -115,6 +178,27 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual const IRep& ConstGetRep () const;
     };
+
+    /**
+     * @brief  addition of iterator and difference (int) is commutative.
+     */
+    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
+    RandomAccessIterator<T, ITERATOR_TRAITS> operator+ (typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type i,
+                                                        const RandomAccessIterator<T, ITERATOR_TRAITS>&                    it);
+
+    /**
+     * @brief  addition of iterator and difference (int) is anti-commutative.
+     */
+    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
+    RandomAccessIterator<T, ITERATOR_TRAITS> operator- (typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type i,
+                                                        const RandomAccessIterator<T, ITERATOR_TRAITS>&                    it);
+
+    /**
+     * @brief  
+     */
+    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
+    auto operator- (const RandomAccessIterator<T, ITERATOR_TRAITS>& lhs, const RandomAccessIterator<T, ITERATOR_TRAITS>& rhs) ->
+        typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type;
 
     /**
      *  \brief
@@ -145,7 +229,25 @@ namespace Stroika::Foundation::Traversal {
          *  \note rhs maybe nullptr, and if so, implies the end of the container.
          */
         virtual ptrdiff_t Difference (const IRep* rhs) const = 0;
+
+    public:
+        /**
+         *  \brief
+         *      Peek at the element at the specified position.
+         *  \param i The position to peek at.
+         *  \return A reference to the element at the specified position.
+         * 
+         *  \note this API is required to support the random access iterator concept (require ... { __j[__n] } -> same_as<iter_reference_t<_It>>;)...
+         */
+        virtual const T* PeekAtElement (ptrdiff_t i) const = 0;
     };
+
+    // see Satisfies Concepts
+    //      @todo would be nice to include these tests generically as part of template declaration, but cannot figure out how
+    //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
+    static_assert (random_access_iterator<RandomAccessIterator<int>>);
+    static_assert (regular<RandomAccessIterator<int>>);
+    static_assert (sentinel_for<default_sentinel_t, RandomAccessIterator<int>>);
 
 }
 
