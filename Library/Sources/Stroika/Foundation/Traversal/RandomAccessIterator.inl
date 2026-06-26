@@ -143,9 +143,9 @@ namespace Stroika::Foundation::Traversal {
     {
         return -(it - i);
     }
-    template <typename T, typename ITERATOR_TRAITS > inline auto operator- (const RandomAccessIterator<T, ITERATOR_TRAITS>& lhs,
-                                                                             const RandomAccessIterator<T, ITERATOR_TRAITS>& rhs) ->
-                              typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type
+    template <typename T, typename ITERATOR_TRAITS>
+    inline auto operator- (const RandomAccessIterator<T, ITERATOR_TRAITS>& lhs, const RandomAccessIterator<T, ITERATOR_TRAITS>& rhs) ->
+        typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type
     {
         return lhs.Distance (rhs);
     }
