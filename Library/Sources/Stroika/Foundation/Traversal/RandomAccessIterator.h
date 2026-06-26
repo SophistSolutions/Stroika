@@ -180,21 +180,21 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
-     * @brief  addition of iterator and difference (int) is commutative.
+     * @brief  addition of iterator and int is commutative.
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
     RandomAccessIterator<T, ITERATOR_TRAITS> operator+ (typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type i,
                                                         const RandomAccessIterator<T, ITERATOR_TRAITS>&                    it);
 
     /**
-     * @brief  addition of iterator and difference (int) is anti-commutative.
+     * @brief  differece of iterator and int is anti-commutative.
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
     RandomAccessIterator<T, ITERATOR_TRAITS> operator- (typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type i,
                                                         const RandomAccessIterator<T, ITERATOR_TRAITS>&                    it);
 
     /**
-     * @brief  
+     * @brief  Difference of two iterators is difference_type (number of elements between them)
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
     auto operator- (const RandomAccessIterator<T, ITERATOR_TRAITS>& lhs, const RandomAccessIterator<T, ITERATOR_TRAITS>& rhs) ->
