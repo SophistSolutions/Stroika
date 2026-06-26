@@ -257,6 +257,6 @@ namespace Stroika::Foundation::Traversal {
  ********************************************************************************
  */
 
-#include    "RandomAccessIterator.inl"
+#include "RandomAccessIterator.inl"
 
 #endif /*_Stroika_Foundation_Traversal_RandomAccessIterator_h_ */
