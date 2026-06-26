@@ -410,6 +410,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      * 
      *  \note Satisfies Concepts:
      *      o   bidirectional_iterator<ForwardIterator<T>>
+     * 
+     * // @todo next random_access_iterator
      */
     template <typename T>
     class Array<T>::ForwardIterator : public Array<T>::IteratorBase {
@@ -458,9 +460,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     static_assert (bidirectional_iterator<typename Array<int>::ForwardIterator>);
 
     /**
-     *      Use this iterator to iterate backwards over the array. Be careful
-     *  not to add or remove things from the array while using this iterator,
-     *  since it is not safe. Use BackwardIterator_Patch for those cases.
+     *      Use this iterator to iterate backwards over the array.
      * 
      *      // NOTE - I THINK NYI (fully) and not used
      */

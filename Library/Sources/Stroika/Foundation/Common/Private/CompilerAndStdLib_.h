@@ -726,7 +726,8 @@ collect2: error: ld returned 1 exit status
 // Only SEEN BROKEN IN GCC 13, Ubuntu 24.04, but cannot test for that right easily... (ALSO - PRE-RELEASE UBUTNU - SO TRY AGAIN WHEN RELEASED)
 // Same issue on GCC-14 and Ubuntu 24.04
 // Same issue on GCC-15 and Ubuntu 26.04
-#define qCompilerAndStdLib_stacktraceLinkError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13 || __GNUC__ == 14 || __GNUC__ == 15)
+#define qCompilerAndStdLib_stacktraceLinkError_Buggy                                                                                       \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13 || __GNUC__ == 14 || __GNUC__ == 15)
 #else
 #define qCompilerAndStdLib_stacktraceLinkError_Buggy 0
 #endif
