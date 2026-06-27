@@ -410,9 +410,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  since it is not safe.
      * 
      *  \note Satisfies Concepts:
-     *      o   bidirectional_iterator<ForwardIterator<T>>
-     * 
-     * // @todo next random_access_iterator
+     *      o   random_access_iterator<Array<T>::ForwardIterator>
+     *      o   regular<Array<T>::ForwardIterator>
      */
     template <typename T>
     class Array<T>::ForwardIterator : public Array<T>::IteratorBase {
