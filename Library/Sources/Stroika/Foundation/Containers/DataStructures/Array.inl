@@ -769,6 +769,41 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return result;
     }
     template <typename T>
+    inline auto Array<T>::ForwardIterator::operator+ (difference_type i) const -> ForwardIterator
+    {
+        size_t newIdx = static_cast<difference_type> (this->_fCurrentIdx) + i;
+        Require (0 >= newIdx and newIdx < this->_fData->fLength_);
+        return ForwardIterator{this->_fData, this->_fCurrentIdx + i};
+    }
+    template <typename T>
+    inline auto Array<T>::ForwardIterator::operator- (difference_type i) const -> ForwardIterator
+    {
+        size_t newIdx = static_cast<difference_type> (this->_fCurrentIdx) - i;
+        Require (0 >= newIdx and newIdx < this->_fData->fLength_);
+        return ForwardIterator{this->_fData, newIdx};
+    }
+    template <typename T>
+    inline auto Array<T>::ForwardIterator::operator+= (difference_type i) const -> ForwardIterator&
+    {
+        this->_fCurrentIdx += i;
+        Require (0 >= this->_fCurrentIdx and this->_fCurrentIdx < this->_fData->fLength_);
+        return *this;
+    }
+    template <typename T>
+    inline auto Array<T>::ForwardIterator::operator-= (difference_type i) const -> ForwardIterator&
+    {
+        this->_fCurrentIdx -= i;
+        Require (0 >= this->_fCurrentIdx and this->_fCurrentIdx < this->_fData->fLength_);
+        return *this;
+    }
+    template <typename T>
+    inline const T& Array<T>::ForwardIterator::operator[] (difference_type i) const
+    {
+        size_t newIdx = static_cast<difference_type> (this->_fCurrentIdx) - i;
+        Require (0 >= newIdx and newIdx < this->_fData->fLength_);
+        return this->_fData->fData_[this->_fCurrentIdx + i];
+    }
+    template <typename T>
     inline bool Array<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
         auto thisDone = this->AtEnd ();
@@ -778,6 +813,33 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         Require (this->_fData == rhs._fData);
         return this->_fCurrentIdx == rhs._fCurrentIdx;
+    }
+    template <typename T>
+    inline strong_ordering Array<T>::ForwardIterator::operator<=> (const ForwardIterator& rhs) const
+    {
+        auto thisDone = this->AtEnd ();
+        bool rhsDone  = rhs.AtEnd ();
+        if (thisDone) {
+            return rhsDone ? strong_ordering::equal : strong_ordering::less;
+        }
+        if (rhsDone) {
+            Assert (not thisDone);
+            return strong_ordering::greater;
+        }
+        Require (this->_fData == rhs._fData);
+        return this->_fCurrentIdx <=> rhs._fCurrentIdx;
+    }
+    template <typename T>
+    inline typename Array<T>::ForwardIterator operator+ (typename Array<T>::ForwardIterator::difference_type i,
+                                                         const typename Array<T>::ForwardIterator&           it)
+    {
+        return it + i; // commutative
+    }
+    template <typename T>
+    inline typename Array<T>::ForwardIterator operator- (typename Array<T>::ForwardIterator::difference_type i,
+                                                         const typename Array<T>::ForwardIterator&           it)
+    {
+        return -(it - i); // anti-commutative
     }
 
     /*

@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <concepts>
 #include <optional>
 
 #include "Stroika/Foundation/Common/Common.h"
@@ -348,11 +349,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     class Array<T>::IteratorBase {
     public:
         // stuff STL requires you to set to look like an iterator
-        using iterator_category = bidirectional_iterator_tag;
+        using iterator_category = random_access_iterator_tag;
         using value_type        = Array::value_type;
         using difference_type   = ptrdiff_t;
-        using pointer           = const value_type*;
-        using reference         = const value_type&;
+        using pointer           = value_type*;
+        using reference         = value_type&;
 
     public:
         constexpr IteratorBase () noexcept = default;
@@ -419,6 +420,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using inherited = IteratorBase;
 
     public:
+        // forward defs
+        using difference_type = typename inherited::difference_type;
+
+    public:
         /**
          *  overload taking only 'data' starts at beginning.
          *  note startAt = 0 for begin(), and startAt = data->size () for end
@@ -453,11 +458,85 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator  operator-- (int) noexcept;
 
     public:
-        nonvirtual bool operator== (const ForwardIterator& rhs) const;
+        /**
+         */
+        nonvirtual ForwardIterator operator+ (difference_type i) const;
+
+    public:
+        /**
+         */
+        nonvirtual ForwardIterator operator- (difference_type i) const;
+
+    public:
+        /**
+         */
+        nonvirtual ForwardIterator& operator+= (difference_type i) const;
+
+    public:
+        /**
+         */
+        nonvirtual ForwardIterator& operator-= (difference_type i) const;
+
+    public:
+        /**
+         */
+        nonvirtual const T& operator[] (difference_type i) const;
+
+    public:
+        nonvirtual bool            operator== (const ForwardIterator& rhs) const;
+        nonvirtual strong_ordering operator<=> (const ForwardIterator& rhs) const;
+
+    public:
+        /**
+         * @brief addition of iterator and int is commutative.
+         */
+        friend ForwardIterator operator+ (difference_type i, const ForwardIterator& it);
+
+    public:
+        /**
+         * @brief difference of int and iterator is anti-commutative (so - (it - i))
+         */
+        friend ForwardIterator operator- (difference_type i, const ForwardIterator& it);
+
+    public:
+        /**
+         * @brief subtraction of two iterators returns the difference between their positions (handling special cases of sentinal end iterators which are treated as at the end).
+         */
+        friend difference_type operator- (const ForwardIterator& lhs, const ForwardIterator& rhs)
+        {
+            // slightly tricky, because of 'sentinal' end cases
+            // if both at end, just return 0 diff;
+            // at least least ONE not at end, can use its 'data' field to get array length, and use that for any at-end iterators
+            // 'atend' iterators. Els just use given index (easy case).
+            // and careful to convert everything to difference_type to assure signed arithmetic.
+            [[maybe_unused]] qStroika_ATTRIBUTE_INDETERMINATE difference_type lhsIdx;
+            [[maybe_unused]] qStroika_ATTRIBUTE_INDETERMINATE difference_type rhsIdx;
+            if (lhs.AtEnd ()) {
+                if (rhs.AtEnd ()) {
+                    return 0;
+                }
+                else {
+                    lhsIdx = static_cast<difference_type> (rhs._fData->size ()); // not at end, so must have data
+                    rhsIdx = static_cast<difference_type> (rhs.CurrentIndex ());
+                }
+            }
+            else {
+                if (rhs.AtEnd ()) {
+                    lhsIdx = static_cast<difference_type> (lhs.CurrentIndex ());
+                    rhsIdx = static_cast<difference_type> (lhs._fData->size ()); // not at end, so must have data
+                }
+                else {
+                    lhsIdx = static_cast<difference_type> (lhs.CurrentIndex ());
+                    rhsIdx = static_cast<difference_type> (rhs.CurrentIndex ());
+                }
+            }
+            return lhsIdx - rhsIdx;
+        }
     };
 
     // see Satisfies Concepts
-    static_assert (bidirectional_iterator<typename Array<int>::ForwardIterator>);
+    static_assert (random_access_iterator<typename Array<int>::ForwardIterator>);
+    static_assert (regular<typename Array<int>::ForwardIterator>);
 
     /**
      *      Use this iterator to iterate backwards over the array.
