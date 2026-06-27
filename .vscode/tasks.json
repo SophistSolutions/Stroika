@@ -1,109 +1,162 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "make clean",
-      "type": "shell",
-      "command": "make",
-      "args": ["CONFIGURATION=${command:cpptools.activeConfigName}", "clean"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "clear": true,
-        "panel": "shared",
-        "showReuseMessage" : false,
-        "echo": true
-      },
-      "problemMatcher": ["$msCompile"],
-      "windows": {
-        "options": {"env": {"CHERE_INVOKING" : "1",  }},
-      }
-    },
-    {
-      "label": "edit ${workspaceFolder}/.config.json",
-      "type": "process",
-      "command": "code",
-      "args": ["-r", "${workspaceFolder}/.config.json"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-    },
-    {
-      "label": "make clobber",
-      "type": "shell",
-      "command": "make",
-      "args": ["CONFIGURATION=${command:cpptools.activeConfigName}", "clobber"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "clear": true,
-        "panel": "shared",
-        "showReuseMessage" : false,
-        "echo": true
-      },
-      "windows": {
-        "options": {"env": {"CHERE_INVOKING" : "1",  }},
-      }
-    },
-    {
-      "label": "make all",
-      "type": "shell",
-      "command": "make",
-      "args": [
-        "CONFIGURATION=${command:cpptools.activeConfigName}",
-        "all",
-        "${input:CURRENT-JOBSFLAG}"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "clear": true,
-        "panel": "shared",
-        "showReuseMessage" : false,
-        "echo": true
-      },
-      "problemMatcher": ["$msCompile", "$gcc"],
-      "windows": {
-        "options": {"env": {"CHERE_INVOKING" : "1",  }},
-      }
-    },
-    {
-      "label": "make rebuild (all but third-party clobbered)",
-      "type": "shell",
-      "command": "make CONFIGURATION=${command:cpptools.activeConfigName} library-clobber all ${input:CURRENT-JOBSFLAG}",
-      "problemMatcher": ["$msCompile", "$gcc"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "clear": true,
-        "panel": "shared",
-        "showReuseMessage" : false,
-        "echo": true
-      },
-      "windows": {
-        "options": {"env": {"CHERE_INVOKING" : "1",  }},
-      }
-    },
-  ],
-  "inputs": [
-    {
-      "id": "CURRENT-JOBSFLAG",
-      "type": "command",
-      "command": "extension.commandvariable.file.content",
-      "args": {
-        "fileName": "${workspaceFolder}/.config.json",
-        "json": "content.JOBS_FLAG",
-        "default": "-j4"
-      }
-    }
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "make clean",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "CONFIGURATION=${command:cpptools.activeConfigName}",
+                "clean"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "clear": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "echo": true
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "windows": {
+                "options": {
+                    "env": {
+                        "CHERE_INVOKING": "1"
+                    }
+                }
+            }
+        },
+        {
+            "label": "edit ${workspaceFolder}/.config.json",
+            "type": "process",
+            "command": "code",
+            "args": [
+                "-r",
+                "${workspaceFolder}/.config.json"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "make clobber",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "CONFIGURATION=${command:cpptools.activeConfigName}",
+                "clobber"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "clear": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "echo": true
+            },
+            "windows": {
+                "options": {
+                    "env": {
+                        "CHERE_INVOKING": "1"
+                    }
+                }
+            }
+        },
+        {
+            "label": "make all",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "CONFIGURATION=${command:cpptools.activeConfigName}",
+                "all",
+                "${input:CURRENT-JOBSFLAG}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "clear": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "echo": true
+            },
+            "problemMatcher": [
+                "$msCompile",
+                "$gcc"
+            ],
+            "windows": {
+                "options": {
+                    "env": {
+                        "CHERE_INVOKING": "1"
+                    }
+                }
+            }
+        },
+        {
+            "label": "make rebuild (all but third-party clobbered)",
+            "type": "shell",
+            "command": "make CONFIGURATION=${command:cpptools.activeConfigName} library-clobber all ${input:CURRENT-JOBSFLAG}",
+            "problemMatcher": [
+                "$msCompile",
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "clear": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "echo": true
+            },
+            "windows": {
+                "options": {
+                    "env": {
+                        "CHERE_INVOKING": "1"
+                    }
+                }
+            }
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: cl.exe build active file",
+            "command": "cl.exe",
+            "args": [
+                "/Zi",
+                "/EHsc",
+                "/nologo",
+                "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Task generated by Debugger."
+        }
+    ],
+    "inputs": [
+        {
+            "id": "CURRENT-JOBSFLAG",
+            "type": "command",
+            "command": "extension.commandvariable.file.content",
+            "args": {
+                "fileName": "${workspaceFolder}/.config.json",
+                "json": "content.JOBS_FLAG",
+                "default": "-j4"
+            }
+        }
+    ]
 }
