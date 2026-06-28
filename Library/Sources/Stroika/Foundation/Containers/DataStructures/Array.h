@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      * 
      *  \note Satisfies Concepts:
      *      o   random_access_iterator<Array<T>::ForwardIterator>
-     *      o   regular<Array<T>::ForwardIterator>
+     *      o   regular<Array<T>::ForwardIterator>      // implies copyable/movable/equality_comparable
      */
     template <typename T>
     class Array<T>::ForwardIterator : public Array<T>::IteratorBase {
@@ -497,39 +497,28 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         friend ForwardIterator operator- (difference_type i, const ForwardIterator& it);
 
+    private:
+        /**
+         *  \note Stroika nearly always defines implementations of functions in the .inl file, but moving friend difference_type operator- there
+         *        has been technically difficult, and there isn't a super-strong reason to move it, so - leave it for now.
+         *        And just indirect the detailed implementation to the .inl file in a BWA function.
+         * 
+         *       PROBABLY will need todo similarly for other friend functions in this iterator class.
+         *        -- LGP 2026-06-27
+         */
+        static difference_type OPERATOR_MINUS_BWA_ (const ForwardIterator& lhs, const ForwardIterator& rhs);
+
     public:
         /**
          * @brief subtraction of two iterators returns the difference between their positions (handling special cases of sentinal end iterators which are treated as at the end).
+         *
+         *  \note Stroika nearly always defines implementations of functions in the .inl file, but moving this definition there
+         *        has been technically difficult, and there isn't a super-strong reason to move it, so - leave it here for now.
+         *        -- LGP 2026-06-27
          */
         friend difference_type operator- (const ForwardIterator& lhs, const ForwardIterator& rhs)
         {
-            // slightly tricky, because of 'sentinal' end cases
-            // if both at end, just return 0 diff;
-            // at least least ONE not at end, can use its 'data' field to get array length, and use that for any at-end iterators
-            // 'atend' iterators. Els just use given index (easy case).
-            // and careful to convert everything to difference_type to assure signed arithmetic.
-            [[maybe_unused]] qStroika_ATTRIBUTE_INDETERMINATE difference_type lhsIdx;
-            [[maybe_unused]] qStroika_ATTRIBUTE_INDETERMINATE difference_type rhsIdx;
-            if (lhs.AtEnd ()) {
-                if (rhs.AtEnd ()) {
-                    return 0;
-                }
-                else {
-                    lhsIdx = static_cast<difference_type> (rhs._fData->size ()); // not at end, so must have data
-                    rhsIdx = static_cast<difference_type> (rhs.CurrentIndex ());
-                }
-            }
-            else {
-                if (rhs.AtEnd ()) {
-                    lhsIdx = static_cast<difference_type> (lhs.CurrentIndex ());
-                    rhsIdx = static_cast<difference_type> (lhs._fData->size ()); // not at end, so must have data
-                }
-                else {
-                    lhsIdx = static_cast<difference_type> (lhs.CurrentIndex ());
-                    rhsIdx = static_cast<difference_type> (rhs.CurrentIndex ());
-                }
-            }
-            return lhsIdx - rhsIdx;
+            return OPERATOR_MINUS_BWA_ (lhs, rhs);
         }
     };
 

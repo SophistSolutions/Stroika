@@ -841,6 +841,40 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         return -(it - i); // anti-commutative
     }
+    template <typename T>
+    auto Array<T>::ForwardIterator::OPERATOR_MINUS_BWA_ (const ForwardIterator& lhs, const ForwardIterator& rhs) -> difference_type
+    {
+        using difference_type = typename Array<T>::ForwardIterator::difference_type;
+        // slightly tricky, because of 'sentinal' end cases
+        // if both at end, just return 0 diff;
+        // at least least ONE not at end, can use its 'data' field to get array length, and use that for any at-end iterators
+        // 'atend' iterators. Else just use given index (easy case).
+        // and careful to convert everything to difference_type to assure signed arithmetic.
+        if (lhs.AtEnd ()) {
+            if (rhs.AtEnd ()) {
+                return 0;
+            }
+            else {
+                difference_type lhsIdx = static_cast<difference_type> (rhs._fData->size ()); // not at end, so must have data
+                difference_type rhsIdx = static_cast<difference_type> (rhs.CurrentIndex ());
+                return lhsIdx - rhsIdx;
+            }
+        }
+        else {
+            if (rhs.AtEnd ()) {
+                difference_type lhsIdx = static_cast<difference_type> (lhs.CurrentIndex ());
+                difference_type rhsIdx = static_cast<difference_type> (lhs._fData->size ()); // not at end, so must have data
+                return lhsIdx - rhsIdx;
+            }
+            else {
+                difference_type lhsIdx = static_cast<difference_type> (lhs.CurrentIndex ());
+                difference_type rhsIdx = static_cast<difference_type> (rhs.CurrentIndex ());
+                return lhsIdx - rhsIdx;
+            }
+        }
+        AssertNotReached ();
+        return 0;
+    }
 
     /*
      ********************************************************************************
