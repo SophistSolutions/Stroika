@@ -149,8 +149,6 @@ namespace Stroika::Foundation::Traversal {
     };
 
     // see Satisfies Concepts
-    //      @todo would be nice to include these tests generically as part of template declaration, but cannot figure out how
-    //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
     static_assert (bidirectional_iterator<BidirectionalIterator<int>>);
     static_assert (regular<BidirectionalIterator<int>>);
     static_assert (sentinel_for<default_sentinel_t, BidirectionalIterator<int>>);

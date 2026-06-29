@@ -158,6 +158,24 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         * @brief  addition of iterator and int is commutative.
+         */
+        friend RandomAccessIterator operator+ (difference_type i, const RandomAccessIterator& it);
+
+    public:
+        /**
+         * @brief  differece of iterator and int is anti-commutative.
+         */
+        friend RandomAccessIterator operator- (difference_type i, const RandomAccessIterator& it);
+
+    public:
+        /**
+         * @brief  Difference of two iterators is difference_type (number of elements between them)
+         */
+        friend difference_type operator- (const RandomAccessIterator& lhs, const RandomAccessIterator& rhs);
+
+    public:
+        /**
          *  \brief
          *      Get a reference to the IRep owned by the iterator. This is an implementation detail,
          *      mainly intended for implementors.
@@ -178,31 +196,6 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual const IRep& ConstGetRep () const;
     };
-
-    /**
-     * @brief &&&&&&PROBBALY NEED TO MOVE THESE TO BE FRIENDS TO WORK? RIGHT? MAYBE ONLY WORK CUZ WE IMPORT namespace Traveral so often.
-     *  But to work with ADL, they need to be friend members!!! - so do that.
-     * 
-     *
-     * @brief  addition of iterator and int is commutative.
-     */
-    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<random_access_iterator_tag, T>>
-    RandomAccessIterator<T, ITERATOR_TRAITS> operator+ (typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type i,
-                                                        const RandomAccessIterator<T, ITERATOR_TRAITS>&                    it);
-
-    /**
-     * @brief  differece of iterator and int is anti-commutative.
-     */
-    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<random_access_iterator_tag, T>>
-    RandomAccessIterator<T, ITERATOR_TRAITS> operator- (typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type i,
-                                                        const RandomAccessIterator<T, ITERATOR_TRAITS>&                    it);
-
-    /**
-     * @brief  Difference of two iterators is difference_type (number of elements between them)
-     */
-    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<random_access_iterator_tag, T>>
-    auto operator- (const RandomAccessIterator<T, ITERATOR_TRAITS>& lhs, const RandomAccessIterator<T, ITERATOR_TRAITS>& rhs) ->
-        typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type;
 
     /**
      *  \brief
@@ -247,8 +240,6 @@ namespace Stroika::Foundation::Traversal {
     };
 
     // see Satisfies Concepts
-    //      @todo would be nice to include these tests generically as part of template declaration, but cannot figure out how
-    //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
     static_assert (random_access_iterator<RandomAccessIterator<int>>);
     static_assert (regular<RandomAccessIterator<int>>);
     static_assert (sentinel_for<default_sentinel_t, RandomAccessIterator<int>>);
