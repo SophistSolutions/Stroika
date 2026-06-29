@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Traversal {
      *      o   bidirectional_iterator<BidirectionalIterator<T>>
      *      o   sentinel_for<default_sentinel_t, BidirectionalIterator<T>>
      */
-    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<bidirectional_iterator_tag, T>>
+    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<bidirectional_iterator_tag, T>>
     class BidirectionalIterator : public Iterator<T, ITERATOR_TRAITS> {
     private:
         using inherited = Iterator<T, ITERATOR_TRAITS>;

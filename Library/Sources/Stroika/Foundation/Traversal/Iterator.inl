@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
 #if qStroika_Foundation_Debug_AssertionsChecked
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::IRep::Invariant () const noexcept
     {
     }
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Traversal {
      *************************** Iterator<T, ITERATOR_TRAITS> ***********************
      ********************************************************************************
      */
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (const unique_ptr<IRep>& rep) noexcept
         : fRep_{rep}
         , _fCurrentValue{fRep_->Current ()}
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (fRep_);
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (unique_ptr<IRep>&& rep) noexcept
         : fRep_{move (rep)}
         , _fCurrentValue{fRep_->Current ()}
@@ -53,37 +53,37 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (fRep_);
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& src)
         : fRep_{src.fRep_ == nullptr ? nullptr : Clone_ (*src.fRep_)}
         , _fCurrentValue{src._fCurrentValue}
     {
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (Iterator&& src) noexcept
         : fRep_{move (src.fRep_)}
         , _fCurrentValue{move (src._fCurrentValue)}
     {
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (const default_sentinel_t&) noexcept
         : fRep_{nullptr}
     {
         Assert (AtEnd ());
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t) noexcept
         : Iterator{default_sentinel}
     {
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator () noexcept
         : Iterator{default_sentinel}
     {
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
     {
         if (&rhs != this) [[likely]] {
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Traversal {
         }
         return *this;
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (Iterator&& rhs) noexcept
     {
         if (&rhs != this) [[likely]] {
@@ -103,25 +103,25 @@ namespace Stroika::Foundation::Traversal {
         }
         return *this;
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline typename Iterator<T, ITERATOR_TRAITS>::IRep& Iterator<T, ITERATOR_TRAITS>::GetRep ()
     {
         EnsureNotNull (fRep_);
         return *fRep_;
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline const typename Iterator<T, ITERATOR_TRAITS>::IRep& Iterator<T, ITERATOR_TRAITS>::ConstGetRep () const
     {
         EnsureNotNull (fRep_);
         return *fRep_;
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::Refresh ()
     {
         this->_fCurrentValue = fRep_->Current ();
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::Invariant () const noexcept
     {
         if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Traversal {
             }
         }
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline const T& Iterator<T, ITERATOR_TRAITS>::Current () const
     {
         RequireNotNull (fRep_);
@@ -139,23 +139,23 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant ();
         return *_fCurrentValue;
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline bool Iterator<T, ITERATOR_TRAITS>::AtEnd () const
     {
         this->Invariant ();
         return not _fCurrentValue.has_value ();
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::reset ()
     {
         *this = GetEmptyIterator ();
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::clear ()
     {
         *this = GetEmptyIterator ();
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline const T& Iterator<T, ITERATOR_TRAITS>::operator* () const
     {
         Require (not AtEnd ());
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant ();
         return *_fCurrentValue;
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline auto Iterator<T, ITERATOR_TRAITS>::operator->() const -> const value_type*
     {
         Require (not AtEnd ());
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant ();
         return _fCurrentValue.operator->();
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline auto Iterator<T, ITERATOR_TRAITS>::operator++ () -> Iterator&
     {
         Require (not AtEnd ());
@@ -180,14 +180,14 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
         return *this;
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline auto Iterator<T, ITERATOR_TRAITS>::operator++ (int) -> Iterator
     {
         Iterator<T, ITERATOR_TRAITS> result = *this;
         this->operator++ ();
         return result;
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::operator+ (ptrdiff_t i) const
     {
         Require (i >= 0);
@@ -198,12 +198,12 @@ namespace Stroika::Foundation::Traversal {
         }
         return tmp;
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::operator bool () const
     {
         return not AtEnd ();
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const Iterator& rhs) const
     {
         /*
@@ -229,17 +229,17 @@ namespace Stroika::Foundation::Traversal {
         Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
         return lhsRep->Equals (rhsRep);
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const default_sentinel_t&) const
     {
         return this->AtEnd ();
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     inline auto Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep) -> unique_ptr<IRep>
     {
         return rep.Clone ();
     }
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     constexpr inline default_sentinel_t Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator () noexcept
     {
         return default_sentinel;

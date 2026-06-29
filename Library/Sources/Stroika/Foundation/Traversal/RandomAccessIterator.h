@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Traversal {
      *      o   random_access_iterator<RandomAccessIterator<T>>
      *      o   sentinel_for<default_sentinel_t, RandomAccessIterator<T>>
      */
-    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
+    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<random_access_iterator_tag, T>>
     class RandomAccessIterator : public BidirectionalIterator<T, ITERATOR_TRAITS> {
     private:
         using inherited = BidirectionalIterator<T, ITERATOR_TRAITS>;
@@ -180,23 +180,27 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
+     * @brief &&&&&&PROBBALY NEED TO MOVE THESE TO BE FRIENDS TO WORK? RIGHT? MAYBE ONLY WORK CUZ WE IMPORT namespace Traveral so often.
+     *  But to work with ADL, they need to be friend members!!! - so do that.
+     * 
+     *
      * @brief  addition of iterator and int is commutative.
      */
-    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
+    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<random_access_iterator_tag, T>>
     RandomAccessIterator<T, ITERATOR_TRAITS> operator+ (typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type i,
                                                         const RandomAccessIterator<T, ITERATOR_TRAITS>&                    it);
 
     /**
      * @brief  differece of iterator and int is anti-commutative.
      */
-    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
+    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<random_access_iterator_tag, T>>
     RandomAccessIterator<T, ITERATOR_TRAITS> operator- (typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type i,
                                                         const RandomAccessIterator<T, ITERATOR_TRAITS>&                    it);
 
     /**
      * @brief  Difference of two iterators is difference_type (number of elements between them)
      */
-    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<random_access_iterator_tag, T>>
+    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<random_access_iterator_tag, T>>
     auto operator- (const RandomAccessIterator<T, ITERATOR_TRAITS>& lhs, const RandomAccessIterator<T, ITERATOR_TRAITS>& rhs) ->
         typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type;
 

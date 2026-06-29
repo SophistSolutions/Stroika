@@ -70,18 +70,34 @@
 
 namespace Stroika::Foundation::Traversal {
 
-    /**
-     *  Identical type to std::iterator<> - but duplicated here because std::iterator<> was deprecated in C++17.
-     *  We just need a handy way to capture all the defaults/properties for our iterator class.
-     */
-    template <typename CATEGORY, typename T, typename DIFF = ptrdiff_t, typename POINTER = const T*, typename REFERENCE = const T&>
-    struct DefaultIteratorTraits {
-        using iterator_category = CATEGORY;
-        using value_type        = T;
-        using difference_type   = DIFF;
-        using pointer           = POINTER;
-        using reference         = REFERENCE;
-    };
+    namespace Support {
+
+        /**
+         *  Identical type to std::iterator<> - but duplicated here because std::iterator<> was deprecated in C++17.
+         *  We just need a handy way to capture all the defaults/properties for our iterator class.
+         */
+        template <typename CATEGORY, typename T, typename DIFF = ptrdiff_t, typename POINTER = const T*, typename REFERENCE = const T&>
+        struct DefaultIteratorTraits {
+            using iterator_category = CATEGORY;
+            using value_type        = T;
+            using difference_type   = DIFF;
+            using pointer           = POINTER;
+            using reference         = REFERENCE;
+        };
+
+        /**
+         *  A concept for iterator traits.
+         */
+        template <typename TRAITS>
+        concept IIteratorTraits = requires (TRAITS) {
+            typename TRAITS::iterator_category;
+            typename TRAITS::value_type;
+            typename TRAITS::difference_type;
+            typename TRAITS::pointer;
+            typename TRAITS::reference;
+        };
+
+    }
 
     /**
      *  \brief An Iterator<T> is a copyable object which allows traversing the contents of some container.
@@ -230,7 +246,7 @@ namespace Stroika::Foundation::Traversal {
      *
      *          <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<forward_iterator_tag, T>>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS = Support::DefaultIteratorTraits<forward_iterator_tag, T>>
     class Iterator {
     public:
         static_assert (constructible_from<optional<T>, T>,
@@ -585,7 +601,7 @@ namespace Stroika::Foundation::Traversal {
      *      take an 'advance' parameter, but always assume its true, and then just return optional<T> instead
      *      of taking it as a pointer parameter.
      */
-    template <typename T, typename ITERATOR_TRAITS>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS>
     class Iterator<T, ITERATOR_TRAITS>::IRep {
     protected:
         IRep () = default;
