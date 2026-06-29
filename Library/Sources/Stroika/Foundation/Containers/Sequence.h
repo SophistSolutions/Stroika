@@ -84,6 +84,12 @@ namespace Stroika::Foundation::Containers {
      *      SmallTalk book page 153
      *
      * TODO:
+     * 
+     *  ->  Consider how to integrate BiderectionalIterator and RandomAccessIterator?
+     *      COULD have methods that return optional<> of these? Or force adopters? Nice for SORTING
+     *      sometimes, and other operations. But Sequence_DoublyLinkedList can produce BidirectionIterator
+     *      but not RandomAccess one - efficiently - and similarly Sequence_LinkedList cannot produce even BidrectionalIterator
+     *      reasonably... --LGP 2026-06-29
      *
      *  ->  At some point in the near future we may add the ability to start at an
      *      arbitrary point in a sequence, and end at an arbitrary point. This
