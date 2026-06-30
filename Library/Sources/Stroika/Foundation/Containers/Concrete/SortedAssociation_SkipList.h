@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  AddOrExtendOrReplaceMode::eAddExtras is the most common behavior for Association, so default to that in SkipList.
          */
         template <IThreeWayComparer<KEY_TYPE> KEY_COMPARER = compare_three_way>
-        using SKIPLISTTRAITS = DataStructures::SkipList_Support::DefaultTraits<KEY_TYPE, KEY_COMPARER, AddOrExtendOrReplaceMode::eAddExtras>;
+        using SKIPLISTTRAITS = DataStructures::Support::SkipList::DefaultTraits<KEY_TYPE, KEY_COMPARER, AddOrExtendOrReplaceMode::eAddExtras>;
 
         /**
          *  \brief SKIPLIST is SkipList that can be used inside SortedMapping_SkipList

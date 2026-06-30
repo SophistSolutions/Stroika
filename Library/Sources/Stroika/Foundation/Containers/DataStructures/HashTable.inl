@@ -229,14 +229,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
             float thresholdBelowWhichWeShouldShrink = fMaxLoadFactor_ / 10;
             if (lf < thresholdBelowWhichWeShouldShrink) {
                 float targetLoadFactor = fMaxLoadFactor_ * 1.5; // NO IDEA how much to use here?
-                size_t targetBucketCount = Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
+                size_t targetBucketCount = Containers::Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
                 ReHash (targetBucketCount);
                 return;
             }
         }
         if (lf > fMaxLoadFactor_) {
             float targetLoadFactor = fMaxLoadFactor_ * 1.5f; // NO IDEA how much to use here?
-            size_t targetBucketCount = Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
+            size_t targetBucketCount = Containers::Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
             ReHash (targetBucketCount);
         }
     }
@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         size_t hashVal = Hash_ (key);
         if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
-            for (auto i : fBuckets_[hashVal].fElements) {
+            for (auto i : this->fBuckets_[hashVal].fElements) {
                 if (this->fKeyComparer_ (i.fKey, key)) {
                     return true;
                 }
@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #if __cpp_lib_execution < 201603L
                 default:
 #endif
-                    for (const auto& bi : fBuckets_) {
+                    for (const auto& bi : this->fBuckets_) {
                         for (const auto& i : bi.fElements) {
                             forward<FUNCTION> (doToElement) (i);
                         }
@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t hashVal = Hash_ (key);
         if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
             size_t idx{0};
-            for (auto i : fBuckets_[hashVal].fElements) {
+            for (auto i : this->fBuckets_[hashVal].fElements) {
                 if (this->fKeyComparer_ (i.fKey, key)) {
                     return ForwardIterator{this, make_tuple (hashVal, idx)};
                 }
@@ -403,7 +403,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant () const noexcept
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
-        Invariant_ ();
+        this->Invariant_ ();
 #endif
     }
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -436,31 +436,31 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::~ForwardIterator ()
     {
-        Invariant ();
+        this->Invariant ();
     }
 #endif
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator bool () const
     {
-        return not AtEnd ();
+        return not this->AtEnd ();
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AtEnd () const noexcept
     {
-        Assert (fData_ == nullptr or fBucketIndex_ <= fData_->bucket_count ());
-        return fData_ == nullptr or fBucketIndex_ == fData_->bucket_count ();
+        Assert (this->fData_ == nullptr or this->fBucketIndex_ <= this->fData_->bucket_count ());
+        return this->fData_ == nullptr or this->fBucketIndex_ == this->fData_->bucket_count ();
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator* () const -> const value_type&
     {
         Require (not AtEnd ());
-        return fData_->fBuckets_[fBucketIndex_].fElements[fIntraBucketIndex_];
+        return fData_->fBuckets_[this->fBucketIndex_].fElements[this->fIntraBucketIndex_];
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator->() const -> const value_type*
     {
-        Require (not AtEnd ());
-        return &fData_->fBuckets_[fBucketIndex_].fElements[fIntraBucketIndex_];
+        Require (not this->AtEnd ());
+        return &this->fData_->fBuckets_[this->fBucketIndex_].fElements[this->fIntraBucketIndex_];
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     constexpr bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator== (const ForwardIterator& rhs) const
@@ -480,25 +480,25 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     constexpr auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
-        return make_tuple (fBucketIndex_, fIntraBucketIndex_);
+        return make_tuple (this->fBucketIndex_, this->fIntraBucketIndex_);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::SetUnderlyingIteratorRep (const UnderlyingIteratorRep l)
     {
-        fBucketIndex_      = get<0> (l);
-        fIntraBucketIndex_ = get<1> (l);
+        this->fBucketIndex_      = get<0> (l);
+        this->fIntraBucketIndex_ = get<1> (l);
         // @todo assert valid in range
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ () -> ForwardIterator&
     {
-        Require (not AtEnd ());
-        RequireNotNull (fData_);
-        ++fIntraBucketIndex_;
-        Assert (fIntraBucketIndex_ <= fData_->bucket_size (fBucketIndex_));
-        if (fIntraBucketIndex_ == fData_->bucket_size (fBucketIndex_)) {
-            ++fBucketIndex_;
-            fIntraBucketIndex_ = 0;
+        Require (not this->AtEnd ());
+        RequireNotNull (this->fData_);
+        ++this->fIntraBucketIndex_;
+        Assert (this->fIntraBucketIndex_ <= this->fData_->bucket_size (this->fBucketIndex_));
+        if (this->fIntraBucketIndex_ == this->fData_->bucket_size (this->fBucketIndex_)) {
+            ++this->fBucketIndex_;
+            this->fIntraBucketIndex_ = 0;
         }
         AdvanceOverEmptyBuckets_ ();
         return *this;
@@ -513,22 +513,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AdvanceOverEmptyBuckets_ ()
     {
-        while (fBucketIndex_ < fData_->bucket_count () and fData_->bucket_size (fBucketIndex_) == 0) {
-            ++fBucketIndex_;
+        while (this->fBucketIndex_ < this->fData_->bucket_count () and this->fData_->bucket_size (this->fBucketIndex_) == 0) {
+            ++this->fBucketIndex_;
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const HashTable* data) const
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
-        Require (data == fData_);
+        Require (data == this->fData_);
 #endif
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant () const noexcept
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
-        Invariant_ ();
+        this->Invariant_ ();
 #endif
     }
 #if qStroika_Foundation_Debug_AssertionsChecked

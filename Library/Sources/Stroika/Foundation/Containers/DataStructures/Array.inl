@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
              * plausible strategies for bumping up memory in big chunks-
              * rounding up, and scaling up.
              */
-            reserve (Support::ReserveTweaks::GetScaledUpCapacity (slotsAlloced, sizeof (T)));
+            reserve (Containers::Support::ReserveTweaks::GetScaledUpCapacity (slotsAlloced, sizeof (T)));
         }
         Ensure (size () <= capacity ());
         Ensure (capacity () >= slotsAlloced);

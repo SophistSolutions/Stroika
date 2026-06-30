@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  AddOrExtendOrReplaceMode::eAddReplaces because.....
          */
         template <IThreeWayComparer<T> COMPARER = compare_three_way>
-        using SKIPLISTTRAITS = DataStructures::SkipList_Support::DefaultTraits<T, COMPARER, AddOrExtendOrReplaceMode::eAddReplaces>;
+        using SKIPLISTTRAITS = DataStructures::Support::SkipList::DefaultTraits<T, COMPARER, AddOrExtendOrReplaceMode::eAddReplaces>;
 
         /**
          *  \brief SKIPLIST is SkipList that can be used inside SortedMapping_SkipList

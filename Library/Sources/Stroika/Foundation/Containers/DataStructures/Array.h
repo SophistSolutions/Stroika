@@ -352,8 +352,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using iterator_category = random_access_iterator_tag;
         using value_type        = Array::value_type;
         using difference_type   = ptrdiff_t;
-        using pointer           = value_type*;
-        using reference         = value_type&;
+        using pointer           = const value_type*;
+        using reference         = const value_type&;
 
     public:
         constexpr IteratorBase () noexcept = default;

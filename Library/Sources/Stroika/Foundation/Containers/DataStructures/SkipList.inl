@@ -43,21 +43,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     template <typename MAPPED_TYPE2>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Link_::Link_ (ArgByValueType<key_type> key, ArgByValueType<MAPPED_TYPE2> val)
         requires (not same_as<MAPPED_TYPE2, void>)
         : fEntry{key, val}
     {
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Link_::Link_ (ArgByValueType<key_type> key)
         requires (same_as<MAPPED_TYPE, void>)
         : fEntry{key}
     {
     }
 #endif
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Link_::Link_ (ArgByValueType<value_type> v)
         : fEntry{v}
     {
@@ -68,13 +68,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ******************* SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> ********************
      ********************************************************************************
      */
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (const KeyComparerType& keyComparer)
         : fKeyThreeWayComparer_{keyComparer}
     {
         GrowHeadLinksIfNeeded_ (1, nullptr);
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (const SkipList& src)
         : fKeyThreeWayComparer_{src.fKeyThreeWayComparer_}
     {
@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fLength_ = src.fLength_;
         ReBalance (); // this will give us a proper link structure
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::SkipList (SkipList&& src) noexcept
         : fKeyThreeWayComparer_{src.fKeyThreeWayComparer_}
         , fHead_{move (src.fHead_)}
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         src.fHead_[0] = 0;
         src.fLength_  = 0;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>& SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::operator= (const SkipList& t)
     {
         clear ();
@@ -140,50 +140,50 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return *this;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::~SkipList ()
     {
         clear ();
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::key_comp () const -> KeyComparerType
     {
         return fKeyThreeWayComparer_;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetLinkHeightProbability ()
     {
         return 25;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetStats () const -> StatsType
     {
         return fStats_;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::size () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fLength_;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::empty () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fLength_ == 0;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::begin () const -> ForwardIterator
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return ForwardIterator{this};
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () const noexcept -> ForwardIterator
     {
         return ForwardIterator{};
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const SkipList* movedFrom) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         pi->fData_ = this;
 #endif
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     template <Common::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindLink_ (const KEYISH_T& key) const -> Link_*
     {
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // test if they are the same. In practice, seems to avoid 3-10% of all compares
             Link_* overShotLink = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
             while (n != overShotLink) {
-                if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
+                if constexpr (same_as<Support::SkipList::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
                 }
                 switch (ToInt (fKeyThreeWayComparer_ (n->fEntry.fKey, key))) {
@@ -248,12 +248,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return nullptr;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ArgByValueType<key_type> key) const -> ForwardIterator
     {
         return ForwardIterator{this, FindLink_ (key)};
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     template <typename ARG_T>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ARG_T key) const -> ForwardIterator
         requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>)
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return ForwardIterator{this, FindLink_ (key)};
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     template <predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type> FUNCTION>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) const -> ForwardIterator
     {
@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return end ();
     }
 #endif
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (ArgByValueType<key_type> key) const -> optional<mapped_type>
     {
         if (auto o = FindLink_ (key)) {
@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return nullopt;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (predicate<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::First (FUNCTION&& firstThat) const -> optional<mapped_type>
     {
@@ -292,13 +292,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return nullopt;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::contains (ArgByValueType<key_type> key) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return FindLink_ (key) != nullptr;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add1_ (ArgByValueType<key_type> key, ForwardIterator* oAddedI)
 #else
@@ -310,8 +310,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (key);
-        Link_*                       n           = keyLinkInfo.fLink;
+        LinkAndInfoAboutBackPointers_ keyLinkInfo = FindNearest_ (key);
+        Link_*                        n           = keyLinkInfo.fLink;
         if (n == nullptr) {
             Link_* newLink = new Link_{key};
             AddLink_ (newLink, keyLinkInfo.fLinksPointingToReturnedLink);
@@ -355,7 +355,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             return false;
         }
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename CHECK_T>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add2_ (ArgByValueType<key_type> key, ArgByValueType<CHECK_T> val, ForwardIterator* oAddedI)
@@ -369,8 +369,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (key);
-        Link_*                       n           = keyLinkInfo.fLink;
+        LinkAndInfoAboutBackPointers_ keyLinkInfo = FindNearest_ (key);
+        Link_*                        n           = keyLinkInfo.fLink;
         if (keyLinkInfo.fLink == nullptr) {
             Link_* newLink = new Link_{key, val};
             AddLink_ (newLink, keyLinkInfo.fLinksPointingToReturnedLink);
@@ -416,12 +416,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
             return false;
         }
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& v, ForwardIterator* oAddedI)
     {
         return Add (v.fKey, v.fValue, oAddedI);
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddLink_ (Link_* link, const LinkVector_& links)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
@@ -436,7 +436,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 fHead_[i] = link;
             }
             else {
-                if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
+                if constexpr (same_as<Support::SkipList::Stats_Basic, StatsType>) {
                     ++fStats_.fRotations;
                 }
                 Link_* oldLink = links[i];
@@ -449,28 +449,28 @@ namespace Stroika::Foundation::Containers::DataStructures {
         GrowHeadLinksIfNeeded_ (newLinkHeight, link);
         ++fLength_;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (ArgByValueType<key_type> key)
     {
         Verify (RemoveIf (key));
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const ForwardIterator& it)
     {
         // we need the links to reset, so have to re-find (cannot Link_* n = const_cast<Link_*> (it.fCurrent_))
-        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (it);
+        LinkAndInfoAboutBackPointers_ keyLinkInfo = FindNearest_ (it);
         RequireNotNull (keyLinkInfo.fLink);
         RemoveLink_ (keyLinkInfo.fLink, keyLinkInfo.fLinksPointingToReturnedLink);
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::erase (const ForwardIterator& i) -> ForwardIterator
     {
         // we need the links to reset, so have to re-find
         // Link_*      n = const_cast<Link_*> (it.fCurrent_);
-        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (i);
+        LinkAndInfoAboutBackPointers_ keyLinkInfo = FindNearest_ (i);
         RequireNotNull (keyLinkInfo.fLink);
         Link_* after = keyLinkInfo.fLink->fNext[0]; // result returned
         RemoveLink_ (keyLinkInfo.fLink, keyLinkInfo.fLinksPointingToReturnedLink);
@@ -479,14 +479,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return after == nullptr ? end () : ForwardIterator{this, after};
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveIf (ArgByValueType<key_type> key)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
-        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (key);
+        LinkAndInfoAboutBackPointers_ keyLinkInfo = FindNearest_ (key);
         if (keyLinkInfo.fLink != nullptr) {
             RemoveLink_ (keyLinkInfo.fLink, keyLinkInfo.fLinksPointingToReturnedLink);
             if constexpr (TRAITS::kCostlyInvariants) {
@@ -498,7 +498,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             return false;
         }
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveLink_ (Link_* n, const LinkVector_& links)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
@@ -506,7 +506,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             size_t  index     = it - links.begin ();
             Link_** patchLink = (*it == nullptr) ? &fHead_[index] : &(*it)->fNext[index];
             if (*patchLink == n) {
-                if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
+                if constexpr (same_as<Support::SkipList::Stats_Basic, StatsType>) {
                     ++fStats_.fRotations;
                 }
                 *patchLink = n->fNext[index];
@@ -521,7 +521,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         delete n;
         --fLength_;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::DetermineLinkHeight_ () const
     {
         constexpr size_t kMaxNewGrowth = 1;
@@ -532,7 +532,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return linkHeight;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GrowHeadLinksIfNeeded_ (size_t newSize, Link_* linkToPointTo)
     {
         if (newSize > fHead_.size ()) {
@@ -540,7 +540,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Assert (fHead_[newSize - 1] == linkToPointTo);
         }
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ShrinkHeadLinksIfNeeded_ ()
     {
         Require (fHead_.size () >= 1);
@@ -551,7 +551,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         Ensure (fHead_.size () >= 1);
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::clear ()
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
@@ -566,8 +566,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fLength_  = 0;
         Ensure (size () == 0);
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const variant<key_type, ForwardIterator>& keyOrI) const -> LinkAndInfoAboutBackPointers
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindNearest_ (const variant<key_type, ForwardIterator>& keyOrI) const -> LinkAndInfoAboutBackPointers_
     {
         LinkVector_ linksPointingToReturnedLink;
         key_type key = std::get_if<key_type> (&keyOrI) ? std::get<key_type> (keyOrI) : get<ForwardIterator> (keyOrI).fCurrent_->fEntry.fKey;
@@ -589,7 +589,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
             linksPointingToReturnedLink[linkIndex] = nullptr;
             while (n != overShotLink) {
-                if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
+                if constexpr (same_as<Support::SkipList::Stats_Basic, StatsType>) {
                     ++fStats_.fCompares;
                 }
                 switch (ToInt (fKeyThreeWayComparer_ (n->fEntry.fKey, key))) {
@@ -631,16 +631,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         //@todo ASK STERL - WHAT IS PROMISED HERE ABOUT linksPointingToReturnedLink. What do NULL values mean? Why do we allow them? Does this promise to return
         // ALL links pointer key, and ONLY links pointing to key?
         //      --LGP 2024-09-12
-        return LinkAndInfoAboutBackPointers{foundLink, move (linksPointingToReturnedLink)};
+        return LinkAndInfoAboutBackPointers_{foundLink, move (linksPointingToReturnedLink)};
     }
 
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetFirst_ () const -> Link_*
     {
         Require (fHead_.size () >= 1);
         return fHead_[0];
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetLast_ () const -> Link_*
     {
         Require (fHead_.size () >= 1);
@@ -662,17 +662,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return n;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (invocable<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         std::for_each (begin (), end (), forward<FUNCTION> (doToElement));
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Prioritize (ArgByValueType<key_type> key)
     {
-        LinkAndInfoAboutBackPointers keyLinkInfo = FindNearest_ (key);
+        LinkAndInfoAboutBackPointers_ keyLinkInfo = FindNearest_ (key);
         if (keyLinkInfo.fLink != nullptr and keyLinkInfo.fLink->fNext.size () <= fHead_.size ()) {
             if (keyLinkInfo.fLink->fNext.size () == fHead_.size ()) {
                 GrowHeadLinksIfNeeded_ (fHead_.size () + 1, keyLinkInfo.fLink);
@@ -690,7 +690,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     break;
                 }
                 else {
-                    if constexpr (same_as<SkipList_Support::Stats_Basic, StatsType>) {
+                    if constexpr (same_as<Support::SkipList::Stats_Basic, StatsType>) {
                         ++fStats_.fRotations;
                     }
                     Link_* oldLink = keyLinkInfo.fLinksPointingToReturnedLink[i];
@@ -703,14 +703,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     template <typename CHECKED_T>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Update (const ForwardIterator& it, ArgByValueType<CHECKED_T> newValue)
         requires (not same_as<MAPPED_TYPE, void>)
     {
         const_cast<ForwardIterator&> (it).UpdateValue (newValue);
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ReBalance ()
     {
         if (empty ()) [[unlikely]] {
@@ -770,7 +770,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Assert (index == size () + 1);
         ShrinkHeadLinksIfNeeded_ ();
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::CalcHeight (size_t* totalHeight) const
     {
         if (totalHeight != nullptr) {
@@ -786,7 +786,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return fHead_.size ();
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant () const noexcept
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -794,7 +794,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
 #if qStroika_Foundation_Debug_AssertionsChecked
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant_ () const noexcept
     {
         size_t       sz{0};
@@ -825,7 +825,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *********** SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator ***********
      ********************************************************************************
      */
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data, UnderlyingIteratorRep startAt) noexcept
         : fCurrent_{startAt}
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -835,41 +835,41 @@ namespace Stroika::Foundation::Containers::DataStructures {
         RequireNotNull (data);
         // startAt may be nullptr (end)
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const SkipList* data) noexcept
         : ForwardIterator{data, (RequireExpression (data != nullptr), data->fHead_[0])}
     {
     }
 #if qStroika_Foundation_Debug_AssertionsChecked
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::~ForwardIterator ()
     {
         Invariant ();
     }
 #endif
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator bool () const
     {
         return not AtEnd ();
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AtEnd () const noexcept -> bool
     {
         return fCurrent_ == nullptr;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator* () const -> const value_type&
     {
         RequireNotNull (fCurrent_);
         return fCurrent_->fEntry;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator->() const -> const value_type*
     {
         RequireNotNull (fCurrent_);
         return &fCurrent_->fEntry;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::CurrentIndex (const SkipList* data) const -> size_t
     {
         Require (not AtEnd ());
@@ -888,7 +888,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         AssertNotReached ();
         return i;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline constexpr bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -896,37 +896,37 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
         return fCurrent_ == rhs.fCurrent_;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
         return fCurrent_;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::SetUnderlyingIteratorRep (const UnderlyingIteratorRep l)
     {
         fCurrent_ = l;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const SkipList* data) const
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
 #endif
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ () -> ForwardIterator&
     {
         fCurrent_ = fCurrent_->fNext[0];
         return *this;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ (int) -> ForwardIterator
     {
         ForwardIterator result = *this;
         this->operator++ ();
         return result;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     template <typename CHECKED_T>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::UpdateValue (ArgByValueType<CHECKED_T> newValue)
         requires (not same_as<MAPPED_TYPE, void>)
@@ -934,7 +934,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link_* link2Update = const_cast<Link_*> (fCurrent_); // logically we could walk from the head of the list without a const_cast, but this is obviously safe and more efficient
         link2Update->fEntry.fValue = newValue;
     }
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     constexpr void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant () const noexcept
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -942,7 +942,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
 #if qStroika_Foundation_Debug_AssertionsChecked
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant_ () const noexcept
     {
         // fData_ not always present - for end () iterators

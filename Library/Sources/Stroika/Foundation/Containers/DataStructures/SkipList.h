@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     using Common::ArgByValueType;
 
-    namespace SkipList_Support {
+    namespace Support::SkipList {
 
         /**
          *  KEY_TYPE the type of the key element stored in the SkipList.
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         struct Stats_Basic {
             size_t fCompares{0};
-            // SkipLists don't really do rotations, but we treat link patching as same thing
+            // SkipLists don't really do rotations, but we treat link patching as the same thing
             // @todo rename so more appropriate - and looking at code - not clear what this is actually counting
             size_t fRotations{0};
 
@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
      *  \original Author: Sterling Wight
      */
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS = SkipList_Support::DefaultTraits<KEY_TYPE>>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS = Support::SkipList::DefaultTraits<KEY_TYPE>>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
     private:
         struct Link_;
@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  This is typically Common::Empty, but can contain real stats used to debug/tune parameters,
          *  if you construct the SkipList with TRAITS having kKeepStatistics true.
          */
-        using StatsType = SkipList_Support::StatsType<KEY_TYPE, TRAITS>;
+        using StatsType = Support::SkipList::StatsType<KEY_TYPE, TRAITS>;
 
     public:
         /**
@@ -529,7 +529,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 ///??? MAYBE NOT         *  \post all links in linksPointingToReturnedLink are non-null, and valid Link_* pointers
                 @todo CONSIDER if LinkVector sb replaced with set<Link*>
          */
-        struct LinkAndInfoAboutBackPointers {
+        struct LinkAndInfoAboutBackPointers_ {
             Link_* fLink;
             /**
              *  This is a vector, not a set, because it must reproduce the 'heights' of the linked tree structure.
@@ -537,7 +537,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
              */
             LinkVector_ fLinksPointingToReturnedLink; // @todo consider using set, and unclear what nullptr means in this vector, nor duplicates?
         };
-        nonvirtual LinkAndInfoAboutBackPointers FindNearest_ (const variant<key_type, ForwardIterator>& keyOrI) const;
+        nonvirtual LinkAndInfoAboutBackPointers_ FindNearest_ (const variant<key_type, ForwardIterator>& keyOrI) const;
 
     private:
         // @todo ASK STERL MEANING OF LinkVector_ argument? Is it links to patch, or a starter on links for 'n'
@@ -575,11 +575,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable StatsType fStats_{};
     };
 
-    /*
+    /**
      *      ForwardIterator allows you to iterate over a SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>. It is not safe to use a ForwardIterator after any
      *      update to the SkipList.
      */
-    template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     class SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator {
     public:
         // stuff STL requires you to set to look like an iterator
