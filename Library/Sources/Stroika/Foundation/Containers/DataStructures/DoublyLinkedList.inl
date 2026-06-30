@@ -359,7 +359,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         [[maybe_unused]] auto newE = nullptr;
         auto                  oldI = movedFrom->fHead_;
         [[maybe_unused]] auto oldE = nullptr;
-        while (oldI != pi->fCurrent_) {
+        while (oldI != pi->_fCurrent) {
             Assert (newI != newE);
             Assert (oldI != oldE);
             newI = newI->fNext;
@@ -367,8 +367,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Assert (newI != newE);
             Assert (oldI != oldE);
         }
-        Assert (oldI == pi->fCurrent_);
-        pi->fCurrent_ = newI;
+        Assert (oldI == pi->_fCurrent);
+        pi->_fCurrent = newI;
 #if qStroika_Foundation_Debug_AssertionsChecked
         pi->fData_ = this;
 #endif
@@ -403,7 +403,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
         this->Invariant ();
 
-        const Link_* victim = i.fCurrent_;
+        const Link_* victim = i._fCurrent;
         AssertNotNull (victim); // cuz not AtEnd
         /*
          * Before:
@@ -458,7 +458,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (i.fData_ == this); // assure iterator not stale
 #endif
         this->Invariant ();
-        const_cast<Link_*> (i.fCurrent_)->fItem = newValue;
+        const_cast<Link_*> (i._fCurrent)->fItem = newValue;
         this->Invariant ();
     }
     template <typename T>
@@ -472,7 +472,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * NB: This code works fine, even if we are AtEnd!!!
          */
         this->Invariant ();
-        if (i.fCurrent_ == nullptr) {
+        if (i._fCurrent == nullptr) {
             /*
              *      NB: If I am past the last item on the list, AddBefore() is equivalent
              *  to Appending to the list.
@@ -482,7 +482,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Assert (i.AtEnd ()); // what is done, cannot be undone!!!
         }
         else {
-            Link_* prev = i.fCurrent_->fPrev;
+            Link_* prev = i._fCurrent->fPrev;
             if (prev == nullptr) {
                 push_front (newValue);
             }
@@ -494,13 +494,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
                  *      | next-> |      | next-> |      | next-> |
                  *      |        |      |        |      |        |
                  */
-                Assert (prev->fNext == i.fCurrent_);
-                Link_* iteratorCurLink = const_cast<Link_*> (i.fCurrent_);
+                Assert (prev->fNext == i._fCurrent);
+                Link_* iteratorCurLink = const_cast<Link_*> (i._fCurrent);
                 prev->fNext            = new Link_{newValue, prev, iteratorCurLink};
                 // Since fCurrent != nullptr from above, we update its prev, and don't have
                 // to worry about fTail_.
                 iteratorCurLink->fPrev = prev->fNext;
-                Assert (i.fCurrent_->fPrev->fPrev == prev); // old prev is two back now...
+                Assert (i._fCurrent->fPrev->fPrev == prev); // old prev is two back now...
             }
         }
         this->Invariant ();
@@ -514,7 +514,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
         this->Invariant ();
         Require (not i.AtEnd ());
-        AssertNotNull (i.fCurrent_); // since not done...
+        AssertNotNull (i._fCurrent); // since not done...
         Assert (fHead_ != nullptr);
         /*
          *      |        |      |        |
@@ -523,7 +523,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      | next-> |      | next-> |
          *      |        |      |        |
          */
-        Link_* iteratorCurLink = const_cast<Link_*> (i.fCurrent_);
+        Link_* iteratorCurLink = const_cast<Link_*> (i._fCurrent);
         Link_* newLink         = new Link_{newValue, iteratorCurLink, iteratorCurLink->fNext};
         iteratorCurLink->fNext = newLink;
         if (newLink->fNext != nullptr) {
@@ -589,7 +589,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     constexpr DoublyLinkedList<T>::ForwardIterator::ForwardIterator ([[maybe_unused]] const DoublyLinkedList* data, UnderlyingIteratorRep startAt) noexcept
-        : fCurrent_{startAt}
+        : _fCurrent{startAt}
 #if qStroika_Foundation_Debug_AssertionsChecked
         , fData_{data}
 #endif
@@ -621,15 +621,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Invariant ();
         }
 #endif
-        return fCurrent_ == nullptr;
+        return _fCurrent == nullptr;
     }
     template <typename T>
     inline auto DoublyLinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
         Require (not AtEnd ());
         Invariant ();
-        Assert (fCurrent_ != nullptr);
-        fCurrent_ = fCurrent_->fNext;
+        Assert (_fCurrent != nullptr);
+        _fCurrent = _fCurrent->fNext;
         Invariant ();
         return *this;
     }
@@ -649,8 +649,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
         Require (not AtEnd ());
         Invariant ();
-        AssertNotNull (fCurrent_);
-        return fCurrent_->fItem;
+        AssertNotNull (_fCurrent);
+        return _fCurrent->fItem;
     }
     template <typename T>
     inline const T* DoublyLinkedList<T>::ForwardIterator::operator->() const
@@ -661,8 +661,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
         Require (not AtEnd ());
         Invariant ();
-        AssertNotNull (fCurrent_);
-        return &fCurrent_->fItem;
+        AssertNotNull (_fCurrent);
+        return &_fCurrent->fItem;
     }
     template <typename T>
     size_t DoublyLinkedList<T>::ForwardIterator::CurrentIndex (const DoublyLinkedList* data) const
@@ -672,11 +672,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (data == fData_);
         RequireNotNull (fData_);
 #endif
-        RequireNotNull (this->fCurrent_);
+        RequireNotNull (this->_fCurrent);
         size_t i = 0;
         for (const Link_* l = data->fHead_;; l = l->fNext, ++i) {
             AssertNotNull (l);
-            if (l == fCurrent_) [[unlikely]] {
+            if (l == _fCurrent) [[unlikely]] {
                 return i;
             }
         }
@@ -686,7 +686,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto DoublyLinkedList<T>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
-        return fCurrent_;
+        return _fCurrent;
     }
     template <typename T>
     inline void DoublyLinkedList<T>::ForwardIterator::SetUnderlyingIteratorRep (UnderlyingIteratorRep l)
@@ -694,9 +694,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #if qStroika_Foundation_Debug_AssertionsChecked
         AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_}; // read lock on data, though writing to this iterator
 #endif
-        // MUST COME FROM THIS LIST
-        // CAN be nullptr
-        fCurrent_ = l;
+        // Note - MUST come from this DoublyLinkedList - could assert walking fData_ ... begin...end, and assert we find it!
+        // unless its (allowed) nullptr, which is a sentinal for the the empty / end iterator
+        _fCurrent = l;
     }
     template <typename T>
     constexpr void DoublyLinkedList<T>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const DoublyLinkedList* data) const
@@ -708,13 +708,80 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool DoublyLinkedList<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const
     {
-        return fCurrent_ == rhs.fCurrent_;
+        return _fCurrent == rhs._fCurrent;
     }
 #if qStroika_Foundation_Debug_AssertionsChecked
     template <typename T>
     void DoublyLinkedList<T>::ForwardIterator::Invariant_ () const noexcept
     {
+        if (fData_ != nullptr) {
+            // fData_->Invariant ();    -- skip due to cost
+        }
     }
 #endif
+
+    /*
+     ********************************************************************************
+     ***************** DoublyLinkedList<T>::BidirectionalIterator *******************
+     ********************************************************************************
+     */
+    template <typename T>
+    constexpr DoublyLinkedList<T>::BidirectionalIterator::BidirectionalIterator ([[maybe_unused]] const DoublyLinkedList* data,
+                                                                                 UnderlyingIteratorRep                    startAt) noexcept
+        : inherited{data, startAt}
+        , fData_{data}
+    {
+    }
+    template <typename T>
+    constexpr DoublyLinkedList<T>::BidirectionalIterator::BidirectionalIterator (const DoublyLinkedList* data) noexcept
+        : inherited{data}
+        , fData_{data}
+    {
+    }
+    template <typename T>
+    inline bool DoublyLinkedList<T>::BidirectionalIterator::AtStart () const noexcept
+    {
+        if (this->_fCurrent == nullptr) {
+            // then at start IFF we are empty, cuz we are at the end
+            return this->fData_->empty ();
+        }
+        return this->_fCurrent->fPrev == nullptr;
+    }
+    template <typename T>
+    inline auto DoublyLinkedList<T>::BidirectionalIterator::operator-- () noexcept -> BidirectionalIterator&
+    {
+        Require (not this->AtStart ());
+        Invariant ();
+        Assert (this->_fCurrent != nullptr);
+        if (this->_fCurrent == nullptr) {
+            this->_fCurrent = this->fData_->fTail_;
+        }
+        else {
+            this->_fCurrent = this->_fCurrent->fPrev;
+        }
+        this->Invariant ();
+        return *this;
+    }
+    template <typename T>
+    inline auto DoublyLinkedList<T>::BidirectionalIterator::operator-- (int) noexcept -> BidirectionalIterator
+    {
+        BidirectionalIterator result{*this};
+        this->operator-- ();
+        return result;
+    }
+    template <typename T>
+    inline auto DoublyLinkedList<T>::BidirectionalIterator::operator- (ptrdiff_t i) const -> BidirectionalIterator
+    {
+        BidirectionalIterator result{*this};
+        while (i > 0) {
+            --result;
+            --i;
+        }
+        while (i < 0) {
+            ++result;
+            ++i;
+        }
+        return result;
+    }
 
 }

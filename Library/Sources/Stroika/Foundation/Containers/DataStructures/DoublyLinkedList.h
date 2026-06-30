@@ -37,6 +37,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     /**
      *      DoublyLinkedList<T> is a generic link (non-intrusive) list implementation.
      *  We provide no public means to access the links themselves.
+     * 
+     *  \note Satisfies Concepts:
+     *      o   static_assert (ranges::input_range<DoublyLinkedList<T>>)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -67,6 +70,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         class ForwardIterator;
+
+    public:
+        class BidirectionalIterator;
 
     public:
         /**
@@ -279,6 +285,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         friend class ForwardIterator;
+        friend class BidirectionalIterator;
     };
 
     /**
@@ -303,6 +310,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  is designed to make easy implementations of subclasses of IteratorRep<T>.
      *  It is unpatched - use DoublyLinkedListIterator_Patch<T> or DoublyLinkedListIterator_Patch<T>
      *  for that.
+     * 
+     *  \note Satisfies Concepts:
+     *      o   forward_iterator<typename DoublyLinkedList<T>::ForwardIterator>>
+     *      o   regular<typename DoublyLinkedList<T>::ForwardIterator>>        // implies copyable/movable/equality_comparable
      */
     template <typename T>
     class DoublyLinkedList<T>::ForwardIterator {
@@ -349,6 +360,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator& operator++ () noexcept;
         nonvirtual ForwardIterator  operator++ (int) noexcept;
 
+    public:
         /**
          *  \note Runtime performance/complexity:
          *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
@@ -375,8 +387,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual void Invariant () const noexcept;
 
+    protected:
+        const Link_* _fCurrent{nullptr};
+
     private:
-        const Link_* fCurrent_{nullptr};
 #if qStroika_Foundation_Debug_AssertionsChecked
         const DoublyLinkedList* fData_{nullptr};
 #endif
@@ -390,6 +404,78 @@ namespace Stroika::Foundation::Containers::DataStructures {
         friend class DoublyLinkedList;
     };
 
+    // see Satisfies Concepts
+    static_assert (forward_iterator<typename DoublyLinkedList<int>::ForwardIterator>);
+    static_assert (regular<typename DoublyLinkedList<int>::ForwardIterator>);
+
+    /**
+     * @brief Same as ForwardIterator, but adding ability to reverse direction
+     * 
+     *  \note Satisfies Concepts:
+     *      o   regular<typename DoublyLinkedList<T>::ForwardIterator>>        // implies copyable/movable/equality_comparable
+     *      o   bidirectional_iterator<typename DoublyLinkedList<T>::ForwardIterator>>
+     */
+    template <typename T>
+    class DoublyLinkedList<T>::BidirectionalIterator : public ForwardIterator {
+    private:
+        using inherited = ForwardIterator;
+
+    public:
+        // stuff STL requires you to set to look like an iterator
+        using iterator_category = bidirectional_iterator_tag;
+        using value_type        = DoublyLinkedList::value_type;
+        using difference_type   = ptrdiff_t;
+        using pointer           = const value_type*;
+        using reference         = const value_type&;
+
+    public:
+        /**
+         *  /0 overload: sets iterator to 'end' - sentinel
+         *  /1 (data) overload: sets iterator to begin
+         *  /2 (data,startAt) overload: sets iterator to startAt
+         */
+        constexpr BidirectionalIterator () noexcept = default;
+        explicit constexpr BidirectionalIterator (const DoublyLinkedList* data) noexcept;
+        explicit constexpr BidirectionalIterator (const DoublyLinkedList* data, UnderlyingIteratorRep startAt) noexcept;
+        constexpr BidirectionalIterator (const BidirectionalIterator&) noexcept = default;
+        constexpr BidirectionalIterator (BidirectionalIterator&&) noexcept      = default;
+
+    public:
+        nonvirtual BidirectionalIterator& operator= (const BidirectionalIterator&)     = default;
+        nonvirtual BidirectionalIterator& operator= (BidirectionalIterator&&) noexcept = default;
+
+    public:
+        nonvirtual bool AtStart () const noexcept;
+
+    public:
+        /**
+         * @brief  increment iterator (same as inherited version, but returning BidirectionalIterator)
+         */
+        nonvirtual BidirectionalIterator& operator++ () noexcept;
+        nonvirtual BidirectionalIterator  operator++ (int) noexcept;
+
+    public:
+        /**
+         * \pre not AtStart ()
+         */
+        nonvirtual BidirectionalIterator& operator-- () noexcept;
+        nonvirtual BidirectionalIterator  operator-- (int) noexcept;
+
+    public:
+        /**
+         *  \brief Move the iterator back by the specified number of positions (note i maybe positive or negative, but must result in a valid position).
+         */
+        nonvirtual BidirectionalIterator operator- (ptrdiff_t i) const;
+
+    private:
+        const DoublyLinkedList* fData_{nullptr}; // needed to always know length - even if null/at end
+    };
+
+    // see Satisfies Concepts
+    static_assert (bidirectional_iterator<typename DoublyLinkedList<int>::BidirectionalIterator>);
+    static_assert (regular<typename DoublyLinkedList<int>::BidirectionalIterator>);
+
+    // see Satisfies Concepts
     static_assert (ranges::input_range<DoublyLinkedList<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
 
 }
