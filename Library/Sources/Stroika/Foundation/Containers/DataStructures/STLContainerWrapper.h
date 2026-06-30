@@ -21,13 +21,14 @@
  *
  *  TODO:
  *
- *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
- *
- *      @todo   Redo Contains1 versus Contains using partial template specialization of STLContainerWrapper - easy
- *              cuz such a trivial class. I can use THAT trick to handle the case of forward_list too. And size...
+ *      @todo   Support BidirectionalIterator and RandomAccessIterator, as appropirate (if underlying container supports it)
+ *              similar to what was done for Array, and DoublyLinkedList
+ * 
+ *              AND add Satisifies Concepts usage, like I did for Array and DoublyLinkedList
  *
  *      @todo   Add special subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
  *              that uses forward_list code...
+ *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
@@ -45,7 +46,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  it for Stroika containers.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *
      */
     template <typename STL_CONTAINER_OF_T>
     class STLContainerWrapper : public STL_CONTAINER_OF_T, public Debug::AssertExternallySynchronizedMutex {
