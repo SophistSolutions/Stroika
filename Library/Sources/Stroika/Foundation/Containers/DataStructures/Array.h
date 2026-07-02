@@ -485,7 +485,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool            operator== (const ForwardIterator& rhs) const;
         nonvirtual strong_ordering operator<=> (const ForwardIterator& rhs) const;
 
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
     public:
         /**
          * @brief addition of iterator and int is commutative.
@@ -497,7 +497,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * @brief difference of int and iterator is anti-commutative (so - (it - i))
          */
         friend ForwardIterator operator- (difference_type i, const ForwardIterator& it);
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
 
     private:
         /**

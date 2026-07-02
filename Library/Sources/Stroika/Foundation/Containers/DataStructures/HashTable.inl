@@ -228,15 +228,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if constexpr (TRAITS::kAutoShrinkBucketCount) {
             float thresholdBelowWhichWeShouldShrink = fMaxLoadFactor_ / 10;
             if (lf < thresholdBelowWhichWeShouldShrink) {
-                float targetLoadFactor = fMaxLoadFactor_ * 1.5; // NO IDEA how much to use here?
-                size_t targetBucketCount = Containers::Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
+                float  targetLoadFactor = fMaxLoadFactor_ * 1.5; // NO IDEA how much to use here?
+                size_t targetBucketCount =
+                    Containers::Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
                 ReHash (targetBucketCount);
                 return;
             }
         }
         if (lf > fMaxLoadFactor_) {
-            float targetLoadFactor = fMaxLoadFactor_ * 1.5f; // NO IDEA how much to use here?
-            size_t targetBucketCount = Containers::Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
+            float  targetLoadFactor = fMaxLoadFactor_ * 1.5f; // NO IDEA how much to use here?
+            size_t targetBucketCount =
+                Containers::Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
             ReHash (targetBucketCount);
         }
     }
