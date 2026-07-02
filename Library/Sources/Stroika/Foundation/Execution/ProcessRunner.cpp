@@ -82,48 +82,6 @@ namespace {
 
 #if qStroika_Foundation_Common_Platform_POSIX
 namespace {
-    static const int kMaxFD_ = [] () -> int {
-        int            result{};
-        constexpr bool kUseSysConf_ = true;
-#if _BSD_SOURCE || _XOPEN_SOURCE >= 500
-        [[maybe_unused]] constexpr bool kUseGetDTableSize_ = true;
-#else
-        [[maybe_unused]] constexpr bool kUseGetDTableSize_ = false;
-#endif
-        constexpr bool kUseGetRLimit_ = true;
-        if constexpr (kUseSysConf_) {
-            result = ::sysconf (_SC_OPEN_MAX);
-            Assert (result > 20); // from http://man7.org/linux/man-pages/man3/sysconf.3.html - Must not be less than _POSIX_OPEN_MAX (20).
-        }
-        else if constexpr (kUseSysConf_) {
-            result = getdtablesize ();
-        }
-        else if constexpr (kUseGetRLimit_) {
-            struct rlimit fds{};
-            if (::getrlimit (RLIMIT_NOFILE, &fds) == 0) {
-                return fds.rlim_cur;
-            }
-            else {
-                return 1024; // wag
-            }
-        }
-        /*
-         *  A little crazy, but in docker containers, this max# of files can get quite large (I've seen it over 1024*1024).
-         *  Probably at that point its smart to use some other technique to close all the extra file descriptors (like look at
-         *  lsof() or read /proc/sys/fs/file-nr? Something like that
-         *
-         *  -- LGP 2018-10-08
-         */
-        Assert (result > 5);               // sanity check - no real requirement
-        Assert (result < 4 * 1024 * 1024); // ""  (if too big, looping to close all costly)
-        DbgTrace ("::sysconf (_SC_OPEN_MAX) = {}"_f, result);
-        return result;
-    }();
-}
-#endif
-
-#if qStroika_Foundation_Common_Platform_POSIX
-namespace {
     pid_t DoFork_ ()
     {
         // we may want to use vfork or some such. But for AIX, it appears best to use f_fork
@@ -811,9 +769,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
                 constexpr bool kCloseAllExtraneousFDsInChild_ = true;
                 if (kCloseAllExtraneousFDsInChild_) {
                     // close all but stdin, stdout, and stderr in child fork
-                    for (int i = 3; i < kMaxFD_; ++i) {
-                        ::close (i);
-                    }
+                    ::closefrom (3);
                 }
                 [[maybe_unused]] int r = ::execvp (thisEXEPath_cstr, thisEXECArgv);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
