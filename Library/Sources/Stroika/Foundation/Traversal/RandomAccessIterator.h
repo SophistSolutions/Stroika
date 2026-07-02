@@ -156,6 +156,7 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual strong_ordering operator<=> (const RandomAccessIterator& rhs) const;
 
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
     public:
         /**
          * @brief  addition of iterator and int is commutative.
@@ -173,6 +174,8 @@ namespace Stroika::Foundation::Traversal {
          * @brief  Difference of two iterators is difference_type (number of elements between them)
          */
         friend difference_type operator- (const RandomAccessIterator& lhs, const RandomAccessIterator& rhs);
+
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
 
     public:
         /**
