@@ -618,11 +618,11 @@ namespace {
             return;
         }
         for (struct dirent* entry; (entry = ::readdir (dir)) != nullptr;) {
-            char* endptr;
+            char* endptr = nullptr;
             long  fd = ::strtol (entry->d_name, &endptr, 10);
             // Ensure it's a valid numerical file descriptor
-            if (*endptr == '\0' && fd >= lowfd && fd != ::dirfd (dir)) {
-                close ((int)fd);
+            if (*endptr == '\0' and fd >= lowfd and fd != ::dirfd (dir)) {
+                ::close (static_cast<int> (fd));
             }
         }
         ::closedir (dir);
