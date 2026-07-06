@@ -601,7 +601,7 @@ ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOptions
     return Run (cmdStdInValue, stringOpts, timeout);
 }
 
-#if qStroika_Foundation_Common_Platform_MaxOS
+#if qStroika_Foundation_Common_Platform_MacOS
 namespace {
     void closefrom_ (int lowfd)
     {
@@ -797,7 +797,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
                 constexpr bool kCloseAllExtraneousFDsInChild_ = true;
                 if (kCloseAllExtraneousFDsInChild_) {
                     // close all but stdin, stdout, and stderr in child fork
-#if qStroika_Foundation_Common_Platform_MaxOS
+#if qStroika_Foundation_Common_Platform_MacOS
                     ::closefrom_ (3);
 #else
                     ::closefrom (3);
