@@ -601,6 +601,34 @@ ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOptions
     return Run (cmdStdInValue, stringOpts, timeout);
 }
 
+#if qStroika_Foundation_Common_Platform_MaxOS
+namespace {
+    void closefrom_ (int lowfd)
+    {
+        DIR* dir = opendir ("/dev/fd");
+        if (dir == NULL) {
+            // Fallback to a blind loop if /dev/fd isn't accessible
+            int max_fd = getdtablesize ();
+            for (int i = lowfd; i < max_fd; i++) {
+                close (i);
+            }
+            return;
+        }
+        struct dirent* entry;
+        while ((entry = readdir (dir)) != NULL) {
+            char* endptr;
+            long  fd = strtol (entry->d_name, &endptr, 10);
+
+            // Ensure it's a valid numerical file descriptor
+            if (*endptr == '\0' && fd >= lowfd && fd != dirfd (dir)) {
+                close ((int)fd);
+            }
+        }
+        closedir (dir);
+    }
+}
+#endif
+
 #if qStroika_Foundation_Common_Platform_POSIX
 // @todo Good Candidate for REWRITE - this is a MESS!
 void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_>&            runneeDetails,
@@ -770,7 +798,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
                 if (kCloseAllExtraneousFDsInChild_) {
                     // close all but stdin, stdout, and stderr in child fork
 #if qStroika_Foundation_Common_Platform_MaxOS
-                    ::closefrom_b (3, 0);
+                    ::closefrom_ (3);
 #else
                     ::closefrom (3);
 #endif
@@ -1000,7 +1028,7 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
                                              const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
                                              const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
 {
-    filesystem::path   useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
+    filesystem::path useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
     TraceContextBumper ctx{"{}::Process_Runner_Windows_", Stroika_Foundation_Debug_OptionalizeTraceArgs (
                                                               "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
                                                               String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
