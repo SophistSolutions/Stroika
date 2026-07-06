@@ -769,7 +769,11 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
                 constexpr bool kCloseAllExtraneousFDsInChild_ = true;
                 if (kCloseAllExtraneousFDsInChild_) {
                     // close all but stdin, stdout, and stderr in child fork
+#if qStroika_Foundation_Common_Platform_MaxOS
+                    ::closefrom_b (3, 0);
+#else
                     ::closefrom (3);
+#endif
                 }
                 [[maybe_unused]] int r = ::execvp (thisEXEPath_cstr, thisEXECArgv);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
