@@ -14,6 +14,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
+#if qStroika_Foundation_Common_Platform_MacOS
+#include <dirent.h>
+#endif
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
@@ -605,26 +608,24 @@ ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOptions
 namespace {
     void closefrom_ (int lowfd)
     {
-        DIR* dir = opendir ("/dev/fd");
-        if (dir == NULL) {
+        DIR* dir = ::opendir ("/dev/fd");
+        if (dir == nullptr) {
             // Fallback to a blind loop if /dev/fd isn't accessible
-            int max_fd = getdtablesize ();
-            for (int i = lowfd; i < max_fd; i++) {
-                close (i);
+            int maxFD = ::getdtablesize ();
+            for (int i = lowfd; i < maxFD; i++) {
+                ::close (i);
             }
             return;
         }
-        struct dirent* entry;
-        while ((entry = readdir (dir)) != NULL) {
+        for (struct dirent* entry; (entry = ::readdir (dir)) != nullptr;) {
             char* endptr;
-            long  fd = strtol (entry->d_name, &endptr, 10);
-
+            long  fd = ::strtol (entry->d_name, &endptr, 10);
             // Ensure it's a valid numerical file descriptor
-            if (*endptr == '\0' && fd >= lowfd && fd != dirfd (dir)) {
+            if (*endptr == '\0' && fd >= lowfd && fd != ::dirfd (dir)) {
                 close ((int)fd);
             }
         }
-        closedir (dir);
+        ::closedir (dir);
     }
 }
 #endif
