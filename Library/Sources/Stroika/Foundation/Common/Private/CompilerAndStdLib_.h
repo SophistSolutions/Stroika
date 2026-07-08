@@ -2287,6 +2287,9 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 // appears broken ONLY for clang++19 and stdc++ version 23
 // appears fixed for clang++20
 #define qCompilerAndStdLib_StdFmtOfPath_Buggy 1
+#elif defined(__GNUC__) && !defined(__clang__) && __GNUC__ == 16 && defined(__GLIBCXX__) && (__cplusplus >= 202302L || _GLIBCXX_RELEASE >= 16)
+// GCC 16's libstdc++ formatter for std::filesystem::path is not semiregular in C++23 mode, so Stroika's fallback formatter is needed.
+#define qCompilerAndStdLib_StdFmtOfPath_Buggy 1
 #elif defined(_MSC_VER)
 // verified still broken in _MSC_VER_2k22_17Pt12_
 // verified still broken in _MSC_VER_2k22_17Pt13_
