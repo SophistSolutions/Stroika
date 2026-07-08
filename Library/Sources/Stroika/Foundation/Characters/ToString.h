@@ -231,7 +231,10 @@ namespace Stroika::Foundation::Characters::Private_ {
         or requires { []<typename TRAITS> (type_identity<std::basic_string_view<char, TRAITS>>) {}(type_identity<T> ()); } 
         or requires { []<typename TRAITS> (type_identity<std::basic_string_view<wchar_t, TRAITS>>) {}(type_identity<T> ()); } 
         or requires { []<size_t N> (type_identity<wchar_t[N]>) {}(type_identity<T> ()); } 
-        or std::is_arithmetic_v<T> 
+        or std::is_arithmetic_v<T>
+#if defined(__GNUC__) && _GLIBCXX_RELEASE >= 15
+        or Common::IAnyOf<remove_cvref_t<T>, _Float32, _Float64>
+#endif
         or  Common::IAnyOf<decay_t<T>, nullptr_t, void*, const void*>
         // chrono
         or Common::IDuration<T> 
@@ -340,8 +343,32 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
+#if __cplusplus == 202002L && _GLIBCXX_RELEASE == 15
+    static_assert (not IStdFormatterPredefinedFor_<std::filesystem::path>);
+    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
+    static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
+#endif
 #if __cplusplus == 202302L && _GLIBCXX_RELEASE == 15
     static_assert (not IStdFormatterPredefinedFor_<std::filesystem::path>);
+    static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
+    static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
+#endif
+#if __cplusplus == 202002L && _GLIBCXX_RELEASE == 16
+    static_assert (not IStdFormatterPredefinedFor_<std::filesystem::path>);
+    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
+    static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
+    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
+#endif
+#if __cplusplus == 202302L && _GLIBCXX_RELEASE == 16
+    static_assert (IStdFormatterPredefinedFor_<std::filesystem::path>);
     static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
