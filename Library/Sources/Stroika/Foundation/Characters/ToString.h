@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (IStdFormatterPredefinedFor_<std::exception_ptr> == Common::StdCompat::formattable<std::exception_ptr, wchar_t>);
 #endif
 
-    /*
+    /**
      *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formattable so far'
      * 
      *  \see https://en.cppreference.com/w/cpp/utility/format/formatter
