@@ -773,7 +773,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         size_t newIdx = static_cast<difference_type> (this->_fCurrentIdx) + i;
         Require (0 >= newIdx and newIdx < this->_fData->fLength_);
-        return ForwardIterator{this->_fData, this->_fCurrentIdx + i};
+        return ForwardIterator{this->_fData, newIdx};
     }
     template <typename T>
     inline auto Array<T>::ForwardIterator::operator- (difference_type i) const -> ForwardIterator
@@ -801,7 +801,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         size_t newIdx = static_cast<difference_type> (this->_fCurrentIdx) - i;
         Require (0 >= newIdx and newIdx < this->_fData->fLength_);
-        return this->_fData->fData_[this->_fCurrentIdx + i];
+        return this->_fData->fData_[newIdx];
     }
     template <typename T>
     inline bool Array<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const
