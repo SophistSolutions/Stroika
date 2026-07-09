@@ -619,7 +619,7 @@ namespace {
         }
         for (struct dirent* entry; (entry = ::readdir (dir)) != nullptr;) {
             char* endptr = nullptr;
-            long  fd = ::strtol (entry->d_name, &endptr, 10);
+            long  fd     = ::strtol (entry->d_name, &endptr, 10);
             // Ensure it's a valid numerical file descriptor
             if (*endptr == '\0' and fd >= lowfd and fd != ::dirfd (dir)) {
                 ::close (static_cast<int> (fd));
@@ -1029,7 +1029,7 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
                                              const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
                                              const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
 {
-    filesystem::path useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
+    filesystem::path   useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
     TraceContextBumper ctx{"{}::Process_Runner_Windows_", Stroika_Foundation_Debug_OptionalizeTraceArgs (
                                                               "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
                                                               String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
