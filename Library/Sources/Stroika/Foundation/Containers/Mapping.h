@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers {
     }
 
     /**
-     * \brief A Mapping uniquely associates two elements: a key and a value (use Assocation to allow duplicate keys).
+     * \brief A Mapping uniquely associates two elements: a key and a value (use Assocation to allow multiple values associated with a given key).
      *
      *  @see    SortedMapping<Key,T>
      *
