@@ -440,13 +440,18 @@ namespace Stroika::Foundation::Containers {
     inline auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
     {
         Iterator<value_type> nextI{nullptr};
-        Remove (i, &nextI);
+        this->Remove (i, &nextI);
         return nextI;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::clear ()
     {
-        RemoveAll ();
+        this->RemoveAll ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline size_t Association<KEY_TYPE, MAPPED_VALUE_TYPE>::count (ArgByValueType<key_type> key) const
+    {
+        return this->OccurrencesOf (key);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IIterableOfTo<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>

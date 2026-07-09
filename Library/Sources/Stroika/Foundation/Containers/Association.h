@@ -56,9 +56,6 @@ namespace Stroika::Foundation::Containers {
     /**
      *  \brief An Association pairs key values with (possibly multiple or none) mapped_type values. Like Mapping<>, but allowing multiple items associated with 'key'
      * 
-     *      Association which allows for the association of two elements: a key and
-     *  a value. Unlike a Mapping<>, this association may not be unique..
-     *
      *  @see    SortedAssociation<Key,T>
      *
      *  @aliases MultiMap
@@ -567,6 +564,12 @@ namespace Stroika::Foundation::Containers {
          * \brief STL-ish alias for RemoveAll ().
          */
         nonvirtual void clear ();
+
+    public:
+        /**
+         * \brief STL-ish alias for OccurancesOf ().
+         */
+        nonvirtual size_t count (ArgByValueType<key_type> key) const;
 
     public:
         /**
