@@ -41,28 +41,31 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterable;
     using Traversal::Iterator;
 
-    /**
-     *  \brief document requirements for a Mapping key
-     * 
-     *  \note we do NOT require equality_comparable<KEY_TYPE>, but if its not, Mapping's must be created with a comparison function.
-     */
-    template <typename KEY_TYPE>
-    concept Mapping_IKey = copy_constructible<KEY_TYPE>;
+    namespace Support {
+
+        /**
+         *  \brief document requirements for a Mapping key
+         * 
+         *  \note we do NOT require equality_comparable<KEY_TYPE>, but if its not, Mapping's must be created with a comparison function.
+         */
+        template <typename KEY_TYPE>
+        concept Mapping_IKey = copy_constructible<KEY_TYPE>;
+
+        /**
+         *  \brief document requirements for a Mapping value
+         * 
+         *  \note the assignable_from is needed for
+         *      void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
+         *      We COULD remove the element and re-add there if not assignable. But that would appear to be adding a modest amount of complexity (association faces this too and many backends)
+         *      for little gain (allowing Mapping<A, const B>).
+         */
+        template <typename MAPPED_VALUE_TYPE>
+        concept Mapping_IMappedValue = copy_constructible<MAPPED_VALUE_TYPE> and assignable_from<MAPPED_VALUE_TYPE&, MAPPED_VALUE_TYPE>;
+
+    }
 
     /**
-     *  \brief document requirements for a Mapping value
-     * 
-     *  \note the assignable_from is needed for
-     *      void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
-     *      We COULD remove the element and re-add there if not assignable. But that would appear to be adding a modest amount of complexity (association faces this too and many backends)
-     *      for little gain (allowing Mapping<A, const B>).
-     */
-    template <typename MAPPED_VALUE_TYPE>
-    concept Mapping_IMappedValue = copy_constructible<MAPPED_VALUE_TYPE> and assignable_from<MAPPED_VALUE_TYPE&, MAPPED_VALUE_TYPE>;
-
-    /**
-     *      Mapping which allows for the association of two elements: a key and
-     *  a value. The key UNIQUELY specifies its associated value.
+     * \brief A Mapping uniquely associates two elements: a key and a value (use Assocation to allow duplicate keys).
      *
      *  @see    SortedMapping<Key,T>
      *
@@ -117,8 +120,8 @@ namespace Stroika::Foundation::Containers {
          *  Note - use static_assert rather than typename constraints because sometimes (like VariantValue use of Mapping<String,VariantValue>)
          *  constraint evaluation is a problem with incomplete types.
          */
-        static_assert (Mapping_IKey<KEY_TYPE>);
-        static_assert (Mapping_IMappedValue<MAPPED_VALUE_TYPE>);
+        static_assert (Support::Mapping_IKey<KEY_TYPE>);
+        static_assert (Support::Mapping_IMappedValue<MAPPED_VALUE_TYPE>);
 
     private:
         using inherited = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
