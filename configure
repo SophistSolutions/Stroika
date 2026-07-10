@@ -787,7 +787,9 @@ sub     FillDefaultLibDependencies_
 			push (@foundationPackageCfgNames, "libxml-2.0");
 		}
 		if ($FEATUREFLAG_mongocxxdriver ne $LIBFEATUREFLAG_No) {
-			push (@foundationPackageCfgNames, "libmongocxx-static");
+			# Since mongovcxx version 4.4.0
+			push (@foundationPackageCfgNames, "libmongocxx1-static");
+			# push (@foundationPackageCfgNames, "libmongocxx-static");
 		}
 		if ($FEATUREFLAG_OpenSSL ne $LIBFEATUREFLAG_No) {
 			push (@foundationPackageCfgNames, "openssl");
