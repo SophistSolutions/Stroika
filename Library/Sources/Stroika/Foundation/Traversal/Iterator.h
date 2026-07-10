@@ -75,22 +75,25 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Identical type to std::iterator<> - but duplicated here because std::iterator<> was deprecated in C++17.
          *  We just need a handy way to capture all the defaults/properties for our iterator class.
+         *  EXCEPT no iterator_category - because we want to be able to change that in subclasses (eg. Iterator<T> is a forward_iterator, but BidirectionalIterator<T> is a bidirectional_iterator, and RandomAccessIterator<T> is a random_access_iterator).
          */
-        template <typename CATEGORY, typename T, typename DIFF = ptrdiff_t, typename POINTER = const T*, typename REFERENCE = const T&>
+        template <typename T, typename DIFF = ptrdiff_t, typename POINTER = const T*, typename REFERENCE = const T&>
         struct DefaultIteratorTraits {
-            using iterator_category = CATEGORY;
-            using value_type        = T;
-            using difference_type   = DIFF;
-            using pointer           = POINTER;
-            using reference         = REFERENCE;
+            using value_type      = T;
+            using difference_type = DIFF;
+            using pointer         = POINTER;
+            using reference       = REFERENCE;
         };
 
         /**
          *  A concept for iterator traits.
+         * 
+         *  Checks all the key proprties of an Iterator TRAITS object except iterator_category, since
+         *  that is generally NOT supplied to an Iterator<> class (its intrinsic to Iterator and its subtypes what
+         *  category they provide - not a supplied trait).
          */
         template <typename TRAITS>
         concept IIteratorTraits = requires (TRAITS) {
-            typename TRAITS::iterator_category;
             typename TRAITS::value_type;
             typename TRAITS::difference_type;
             typename TRAITS::pointer;
@@ -228,7 +231,7 @@ namespace Stroika::Foundation::Traversal {
      * 
      *  \note Satisfies Concepts:
      *      o   regular<Iterator<T>>        // implies copyable/movable/equality_comparable
-     *      o   input_iterator<Iterator<T>>
+     *      o   forward_iterator<Iterator<T>>
      *      o   sentinel_for<default_sentinel_t, Iterator<T>>
      * 
      *  @see Iterable<T>
@@ -246,7 +249,7 @@ namespace Stroika::Foundation::Traversal {
      *
      *          <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS = Support::DefaultIteratorTraits<forward_iterator_tag, T>>
+    template <typename T, Support::IIteratorTraits ITERATOR_TRAITS = Support::DefaultIteratorTraits<T>>
     class Iterator {
     public:
         static_assert (constructible_from<optional<T>, T>,
@@ -279,9 +282,17 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief  iterator_category = typename ITERATOR_TRAITS::iterator_category;
+         *  \brief  iterator_category = forward_iterator_tag;
+         * 
+         *  \note The Stroika Iterator class models the forward_iterator concept. Prior to Stroika 3.0d24
+         *        this was a templated parameter, never really used.
+         * 
+         *        (note - actually something between input_iterator and forward_iterator - must consider more?s)
+         * 
+         *  \note Prior to Stroika 3.0d24 we captured the iterator_category as a template parameter, but
+         *        that caused problems with subclassing (eg. BidirectionalIterator, RandomAccessIterator) and the IRep type.
          */
-        using iterator_category = typename ITERATOR_TRAITS::iterator_category;
+        using iterator_category = forward_iterator_tag;
 
     public:
         class IRep;
@@ -698,10 +709,23 @@ namespace Stroika::Foundation::Traversal {
     static_assert (IInputIterator<Iterator<int>, long int>);
     static_assert (not IInputIterator<Iterator<string>, int>);
 
+    /**
+     *  IForwardIterator concept: std::forward_iterator and iterated over values convertible to OF_T
+     * 
+     *  \note this does not require the forward iterator is OF T objects, merely that the T objects it iterates over
+     *  can be converted to OF_T objects.
+     */
+    template <typename ITERATOR, typename OF_T>
+    concept IForwardIterator = forward_iterator<ITERATOR> and is_convertible_v<std::iter_value_t<ITERATOR>, OF_T>;
+    static_assert (IForwardIterator<Iterator<int>, int>);
+    static_assert (IForwardIterator<Iterator<long int>, int>);
+    static_assert (IForwardIterator<Iterator<int>, long int>);
+    static_assert (not IForwardIterator<Iterator<string>, int>);
+
     // see Satisfies Concepts
     //      @todo would be nice to include these tests generically as part of template declaration, but cannot figure out how
     //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
-    static_assert (input_iterator<Iterator<int>>);
+    static_assert (forward_iterator<Iterator<int>>);
     static_assert (regular<Iterator<int>>);
     static_assert (sentinel_for<default_sentinel_t, Iterator<int>>);
 

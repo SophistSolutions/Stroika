@@ -22,20 +22,36 @@ namespace Stroika::Foundation::Traversal {
      *  \brief A BidirectionalIterator is an Iterator that can be moved both forward and backward.
      * 
      * BidirectionalIterator allows backing up (if not AtStart), and then moving forward again
-     * (if not AtEnd - as a base class Iterator).
+     * (if not AtEnd - like the base class Iterator).
      * 
      *  \note Satisfies Concepts:
      *      o   regular<BidirectionalIterator<T>>        // implies copyable/movable/equality_comparable
      *      o   bidirectional_iterator<BidirectionalIterator<T>>
      *      o   sentinel_for<default_sentinel_t, BidirectionalIterator<T>>
+     *      o   constructible_from<Iterator<T>, BidirectionalIterator<T>>
      */
-    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<bidirectional_iterator_tag, T>>
+    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<T>>
     class BidirectionalIterator : public Iterator<T, ITERATOR_TRAITS> {
     private:
         using inherited = Iterator<T, ITERATOR_TRAITS>;
 
     public:
         class IRep;
+
+        /*
+     *   forward type declarations so can be used more easily in this definition.
+     */
+    public:
+        using difference_type = typename inherited::difference_type;
+        using value_type      = typename inherited::value_type;
+        using pointer         = typename inherited::pointer;
+        using reference       = typename inherited::reference;
+
+    public:
+        /**
+         *  \note this is used by the concept bidirectional_iterator.
+         */
+        using iterator_category = bidirectional_iterator_tag;
 
     public:
         /**
@@ -152,6 +168,7 @@ namespace Stroika::Foundation::Traversal {
     static_assert (bidirectional_iterator<BidirectionalIterator<int>>);
     static_assert (regular<BidirectionalIterator<int>>);
     static_assert (sentinel_for<default_sentinel_t, BidirectionalIterator<int>>);
+    static_assert (constructible_from<Iterator<int>, BidirectionalIterator<int>>);
 
 }
 

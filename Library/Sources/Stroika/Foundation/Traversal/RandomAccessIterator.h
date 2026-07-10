@@ -22,8 +22,10 @@ namespace Stroika::Foundation::Traversal {
      *      o   regular<RandomAccessIterator<T>>        // implies bidirectional_iterator/totally_ordered, and several APIs available, including point at elements
      *      o   random_access_iterator<RandomAccessIterator<T>>
      *      o   sentinel_for<default_sentinel_t, RandomAccessIterator<T>>
+     *      o   constructible_from<Iterator<T>, RandomAccessIterator<T>>);
+     *      o   constructible_from<BidirectionalIterator<T>, RandomAccessIterator<T>>);
      */
-    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<random_access_iterator_tag, T>>
+    template <typename T, typename ITERATOR_TRAITS = Support::DefaultIteratorTraits<T>>
     class RandomAccessIterator : public BidirectionalIterator<T, ITERATOR_TRAITS> {
     private:
         using inherited = BidirectionalIterator<T, ITERATOR_TRAITS>;
@@ -33,6 +35,17 @@ namespace Stroika::Foundation::Traversal {
      */
     public:
         using difference_type = typename inherited::difference_type;
+        using value_type      = typename inherited::value_type;
+        using pointer         = typename inherited::pointer;
+        using reference       = typename inherited::reference;
+
+    public:
+        /**
+         *  \brief  iterator_category = random_access_iterator_tag;
+         * 
+         *  \note this is used by the concept random_access_iterator, and is used to distinguish from bidirectional_iterator.
+         */
+        using iterator_category = random_access_iterator_tag;
 
     public:
         class IRep;
@@ -246,6 +259,8 @@ namespace Stroika::Foundation::Traversal {
     static_assert (random_access_iterator<RandomAccessIterator<int>>);
     static_assert (regular<RandomAccessIterator<int>>);
     static_assert (sentinel_for<default_sentinel_t, RandomAccessIterator<int>>);
+    static_assert (constructible_from<Iterator<int>, RandomAccessIterator<int>>);
+    static_assert (constructible_from<BidirectionalIterator<int>, RandomAccessIterator<int>>);
 
 }
 
