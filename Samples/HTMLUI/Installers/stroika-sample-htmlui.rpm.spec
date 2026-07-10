@@ -6,6 +6,18 @@
 %define          debug_package %{nil}
 %define        __os_install_post %{_dbpath}/brp-compress
 
+
+# Default to zstd compression for modern systems (tweak mostly for build speed)
+# With fallbacks for RHEL/CentOS 7 or lower and Fedora versions (prior to Fedora 28)
+%global _binary_payload w1.zstdio
+%if 0%{?rhel} && 0%{?rhel} <= 7
+    %global _binary_payload w6T.xzio
+%endif
+%if 0%{?fedora} && 0%{?fedora} < 28
+    %global _binary_payload w6T.xzio
+%endif
+
+
 Summary: Stroika Sample HTMLUI
 Name: stroika-sample-htmlui
 License: Open-Source
