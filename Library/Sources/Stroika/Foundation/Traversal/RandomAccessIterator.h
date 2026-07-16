@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Traversal {
     private:
         using inherited = BidirectionalIterator<T, ITERATOR_TRAITS>;
 
-        /*
+    /*
      *   forward type declarations so can be used more easily in this definition
      */
     public:
@@ -249,6 +249,7 @@ namespace Stroika::Foundation::Traversal {
          *      Peek at the element at the specified position.
          *  \param i The position to peek at.
          *  \return A reference to the element at the specified position.
+         *  \req i produces a valid position in the underlying container.
          * 
          *  \note this API is required to support the random access iterator concept (require ... { __j[__n] } -> same_as<iter_reference_t<_It>>;)...
          */

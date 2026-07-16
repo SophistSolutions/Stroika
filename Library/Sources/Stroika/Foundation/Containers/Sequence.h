@@ -73,10 +73,12 @@ namespace Stroika::Foundation::Containers {
 
     using Common::ArgByValueType;
     using Common::IPotentiallyComparer;
+    using Traversal::BidirectionalIterator;
     using Traversal::IInputIterator;
     using Traversal::IIterableOfTo;
     using Traversal::Iterable;
     using Traversal::Iterator;
+    using Traversal::RandomAccessIterator;
 
     /**
      *  \brief A generalization of a vector: a container whose elements are keyed by the natural numbers.
@@ -258,6 +260,19 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual Sequence& operator= (Sequence&&) noexcept = default;
         nonvirtual Sequence& operator= (const Sequence&)     = default;
+
+    public:
+        /**
+         * \brief Create a RandomAccessIterator for this sequence (note inherited Iterable<T>::MakeIterator () returns a forward iterator, not a random access iterator).
+         *
+         *  \note that though this always 'works' - the returned iterator maybe quite inefficient 
+         *        depending on the backend implementation type (like GetAt ()).
+         * 
+         *  \@todo - consider if we want to call this make bidi iterator, make random_access_iterator?
+         *         just experimenting as of 2026-07-09
+         */
+        nonvirtual BidirectionalIterator<T> MakeBidirectionalIterator () const;
+        nonvirtual RandomAccessIterator<T> MakeRandomAccessIterator () const;
 
     public:
         /**

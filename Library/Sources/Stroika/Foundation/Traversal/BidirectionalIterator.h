@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         class IRep;
 
-        /*
+    /*
      *   forward type declarations so can be used more easily in this definition.
      */
     public:

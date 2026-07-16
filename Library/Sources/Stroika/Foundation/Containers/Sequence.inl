@@ -170,6 +170,16 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
+    inline BidirectionalIterator<T> Sequence<T>::MakeBidirectionalIterator () const
+    {
+        return BidirectionalIterator<T>{}; //NYI
+    }
+    template <typename T>
+    inline RandomAccessIterator<T> Sequence<T>::MakeRandomAccessIterator () const
+    {
+        return RandomAccessIterator<T>{}; //NYI
+    }
+    template <typename T>
     template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
     nonvirtual RESULT_CONTAINER Sequence<T>::Map (ELEMENT_MAPPER&& elementMapper) const
         requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
