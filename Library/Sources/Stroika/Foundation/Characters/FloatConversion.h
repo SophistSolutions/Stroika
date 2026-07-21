@@ -229,7 +229,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *       0.0                │   0
          *       0.01               │   0.01
          *       0.00001            │   1e-05           (probably could be 0.00001)
-         *       3.12e12            │   3.12e+12
+         *       3.12e12            │   3.12e+12        (or could be 3.12000e+12 for example using libc++ >= 21)
          *       3.12               │   3.12
          *       212312345.0        │   2.12312e+08
          *       -44.2              │  -44.2

@@ -972,7 +972,7 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.01");
             EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "1e-05");
-            EXPECT_EQ (FloatConversion::ToString (3.12e12, kOptions_), "3.12e+12");
+            EXPECT_TRUE (FloatConversion::ToString (3.12e12, kOptions_) == "3.12e+12" or FloatConversion::ToString (3.12e12, kOptions_) == "3.12000e+12");
             EXPECT_EQ (FloatConversion::ToString (3.12, kOptions_), "3.12");
             EXPECT_EQ (FloatConversion::ToString (212312345.0, kOptions_), "2.12312e+08");
             EXPECT_EQ (FloatConversion::ToString (-44.2, kOptions_), "-44.2");
