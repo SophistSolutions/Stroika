@@ -101,7 +101,7 @@
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 15
+#if __GNUC__ > 16
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Info: This version of Stroika (consider newer Stroika) untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG "      \
     "DEFINES"
@@ -360,9 +360,10 @@ make[2]: *** Waiting for unfinished jobs....
 #ifndef qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
-// seen broken in GCC 14
-// seen broken in GCC 15
-#define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 15))
+// seen broken in G++ 14
+// seen broken in G++ 15
+// seen broken in G++ 16
+#define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 16))
 #else
 #define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy 0
 #endif
@@ -689,6 +690,7 @@ make[4]: *** [all] Error 2
 // FIRST SEEN BROKEN IN GCC 11
 // and broken in GCC 12 with raspberrypi-g++-12-release-sanitize_address
 // and broken in ubuntu 25.04 g++15 and configure g++-15-release-nolto --config-tag Unix --compiler-driver g++-15 --apply-default-release-flags --lto disable
+// appears fixed in g++-16
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 15)
 #else
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy 0
@@ -726,6 +728,7 @@ collect2: error: ld returned 1 exit status
 // Only SEEN BROKEN IN GCC 13, Ubuntu 24.04, but cannot test for that right easily... (ALSO - PRE-RELEASE UBUTNU - SO TRY AGAIN WHEN RELEASED)
 // Same issue on GCC-14 and Ubuntu 24.04
 // Same issue on GCC-15 and Ubuntu 26.04
+// appears fixed on g++-16 on 26.04
 #define qCompilerAndStdLib_stacktraceLinkError_Buggy                                                                                       \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13 || __GNUC__ == 14 || __GNUC__ == 15)
 #else
@@ -1100,7 +1103,8 @@ InternetMediaType.cpp:122:68: note: there are 2 candidates
 // VERIFIED BROKEN IN GCC 13
 // VERIFIED BROKEN IN GCC 14
 // VERIFIED BROKEN IN GCC 15
-#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 15)
+// VERIFIED BROKEN IN G++ 16
+#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 16)
 #else
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
 #endif
@@ -1131,8 +1135,9 @@ In file included from ../Characters/StringBuilder.h:273,
 // VERIFIED BROKEN IN GCC 13
 // VERIFIED BROKEN IN GCC 14
 // VERIFIED BROKEN IN GCC 15
+// VERIFIED BROKEN IN GCC gcc 16
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 15)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 16)
 #else
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy 0
 #endif
@@ -2022,8 +2027,9 @@ In file included from SystemConfiguration.cpp:48:
 // still broken in g++-13
 // still broken in g++-14
 // still broken in g++-15
+// still broken in g++-16
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 15)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 16)
 #elif defined(__clang__) && defined(__APPLE__)
 // First noticed in clang++-14
 // Reproduced in clang++-15
@@ -2424,6 +2430,7 @@ Objects involved in the operation:
 // unclear if this is my bug or g++ - but for now just treat it as g++ bug working around...
 // seen with g++-14
 // seen with g++-15
+// appears fixed in g++-16
 #define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 15))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy 0
@@ -2469,7 +2476,7 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 // fails with clang++18 using _GLIBCXX_RELEASE
 // fails with clang++19 using _GLIBCXX_RELEASE
 #if defined(_GLIBCXX_RELEASE)
-// TESTING 20
+// Appears fixed in clang++-20
 #define qCompilerAndStdLib_defaultconstructibleFails_Buggy                                                                                 \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE <= 12) or (__clang_major__ <= 19))
 #else
