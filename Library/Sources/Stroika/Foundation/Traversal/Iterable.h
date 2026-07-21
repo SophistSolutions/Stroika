@@ -412,8 +412,8 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  SetEquals () - very inefficiently - but with constant small memory overhead - returns true if
-         *  each element in the each iterable is contained in the other. The lengths CAN be different
-         *  and the two Iterables<> be SetEquals().
+         *  each element in the each iterable is contained in the other. The lengths may be different
+         *  and even though the two Iterables<> are SetEquals().
          *
          *  \em Performance:
          *      This algorithm is O(N) * O(M) where N and M are the length of the two respective iterables.
@@ -435,9 +435,8 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  MultiSetEquals () - very inefficiently - but with constant small memory overhead - returns true if
-         *  each element in the each iterable is contained in the other. They lengths CAN be different
-         *  and the two Iterables<> be SetEquals().
-         *
+         *  each element in the each iterable is contained in the other the same number of times.
+         * 
          *  \em Performance:
          *      This algorithm is O(N^^3)
          */
