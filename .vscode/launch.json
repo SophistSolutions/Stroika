@@ -12,7 +12,7 @@
             "name": "(gdb-UNIX) Launch EXE",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test04",
+            "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test02",
             "args": [
                 "-m"
             ],
@@ -47,6 +47,11 @@
                 {
                     "description": "break on ubsan failures",
                     "text": "-break __ubsan::ScopedReport::~ScopedReport",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Wipe debuginfod URLs to bypass extension bug",
+                    "text": "set debuginfod urls ",
                     "ignoreFailures": true
                 }
             ],
