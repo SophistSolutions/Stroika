@@ -17,5 +17,6 @@
 ## Design and Code Organization
 
 - [Design Overview](Design-Overview.md) - Design Patterns / Conventions used throughout Stroika
+- [Patterns](Patterns.md) - quick-recognition guide to Stroika's recurring architectural shapes, with real examples
 - [Code Status](Code-Status.md) - denotations used throughout Stroika moduless
 - [Thread Safety](Thread-Safety.md) - Patterns used in Stroika to assure thread-safety
