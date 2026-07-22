@@ -9,6 +9,8 @@ Each pattern below lists what to grep for, a couple of real examples, and how it
 | Pattern | Recognize by | Example |
 | --- | --- | --- |
 | [Envelope + IRep](#Envelope-IRep) | nested `class IRep` / `_IRep`, envelope holds `shared_ptr<IRep>` | `Collection<T>`, `Stream<T>`, `Iterator<T>` |
+| [Rep-accessor naming](#Rep-Accessor-Naming) | two distinctly-named accessors instead of one overloaded by const | `GetRep()`/`ConstGetRep()`, `cget()`/`rwget()` |
+| [Underscore convention](#Underscore-Access-Convention) | leading/trailing `_` on a member name | `_IRep` (protected), `FindLink_` (private) |
 | [COW via SharedByValue](#COW) | `SharedByValue<` in the rep's storage member | `Iterable<T>` (and hence all containers) |
 | [Immutable-shared value](#Immutable-Shared) | rep has no mutating virtuals; plain `shared_ptr` held | `String`, `BLOB`, `VariantValue` |
 | [Provider behind a facade](#Provider-Facade) | facade namespace + `Providers::X::` impl gated by `#if qStroika_HasComponent_X` | `SSL::`, `PKI::`, `SQL::` |
@@ -39,6 +41,28 @@ Two different **ownership strategies** show up under this same pattern, and it's
 - **Unique, clone-on-copy** — the envelope holds a `unique_ptr<IRep>`, and copying the envelope deep-clones via a virtual `Clone()`. `Iterator<T>` does this deliberately — a design note in `Iterator.h` explains it was switched *away* from `SharedByValue` because iterator clones turn out to be rare, so the COW machinery wasn't paying for itself.
 
 If you're not sure which one a given class uses, check the envelope's storage member — `SharedByValue<...>` vs `unique_ptr<...>`/`shared_ptr<...>` directly.
+
+### Rep-accessor naming: distinctly-named pairs, never overloaded by const {#Rep-Accessor-Naming}
+
+Whenever an envelope class exposes **both** mutating and read-only public methods over the same rep, the implementor-facing accessor pair is given two distinct names — never the same name overloaded by const-qualification (i.e. never `GetRep()` plus a second `GetRep() const`). The exact name varies by context, but the underlying rule is the same everywhere it appears:
+
+- `Iterator<T>` / `BidirectionalIterator<T>` / `RandomAccessIterator<T>` — `GetRep()` (non-const) / `ConstGetRep() const`.
+- `Memory::SharedByValue<T>` — `rwget()` (non-const; triggers the COW clone if `use_count () > 1`) / `cget() const noexcept` (no clone).
+- `Execution::Synchronized<T>` — `rwget()` (acquires the write lock) / `cget() const` (acquires the read lock).
+
+**Why not just overload the same name by const?** Because that makes the choice implicit — the compiler silently picks a version based on the *calling method's own constness*, not the implementor's actual intent for that specific access. For a rep reached through a `unique_ptr`/`shared_ptr` (which don't propagate const to the pointee), a `const`-qualified caller can still mutate through it if it fetches the wrong overload, so the wrong choice becomes a silent aliasing or thread-safety hazard instead of a compile error. Distinct names force the choice to be explicit and independently checkable at every call site, so a mismatch (calling the mutable accessor from what should've been read-only code, or vice versa) fails to compile instead of silently doing the wrong thing.
+
+**Naming varies by class shape, but the principle doesn't.** `cget()`/`rwget()` reads well in `SharedByValue<T>` and `Synchronized<T>` because the entire class *is* the wrapper around one resource — terse vocabulary is fine when there's only one thing it could mean. `GetRep()`/`ConstGetRep()` spells out *what* it returns because it's one implementor-only escape hatch buried among many other public methods (`operator++`, `Current()`, `AtEnd()`, ...) on a much broader-surface class — there, a descriptive name reads better at the call site than a terse one. When adding a new accessor pair, match whichever of these two shapes your class is closer to, rather than inventing a third spelling.
+
+## Underscore convention on member names: what it says about access {#Underscore-Access-Convention}
+
+A leading or trailing underscore on a member name is a visual cue for its access level — useful because Doxygen-generated docs and quick reads of a header don't always keep the `public:`/`protected:`/`private:` label in view:
+
+- **No underscore** — `public`. The normal case, and the only spelling regular callers should ever need.
+- **Leading underscore** (`_IRep`, `_GetRep()`, `_ConstGetRep()`) — `protected`. Visible to subclasses (concrete backends implementing an archetype's rep, for example) but not to ordinary callers of the envelope class.
+- **Trailing underscore** (`FindLink_`, `FindFirstLink_`) — `private`. Internal to the one class; not even subclasses should reach for it.
+
+This is a naming convention layered on top of the real access-control keyword, not a substitute for it — the `public:`/`protected:`/`private:` specifier is still what the compiler enforces; the underscore just makes that level legible from the member's name alone.
 
 ## Copy-on-write via `Memory::SharedByValue<T, TRAITS>` {#COW}
 
