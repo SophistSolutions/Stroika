@@ -43,7 +43,7 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
 
     protected:
         nonvirtual IRep&       _GetRep ();
-        nonvirtual const IRep& _GetRep () const;
+        nonvirtual const IRep& _ConstGetRep () const;
 
     private:
         shared_ptr<IRep> fRep_;

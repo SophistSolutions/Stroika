@@ -97,5 +97,5 @@ FormURLEncoded::Reader::Reader ()
 
 Association<String, String> FormURLEncoded::Reader::ReadAssociation (const InputStream::Ptr<byte>& in) const
 {
-    return Debug::UncheckedDynamicCast<const Rep_&> (_GetRep ()).ReadAssociation (in);
+    return Debug::UncheckedDynamicCast<const Rep_&> (_ConstGetRep ()).ReadAssociation (in);
 }

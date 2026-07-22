@@ -68,7 +68,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
     protected:
         nonvirtual _IRep&       _GetRep ();
-        nonvirtual const _IRep& _GetRep () const;
+        nonvirtual const _IRep& _ConstGetRep () const;
 
     protected:
         /**

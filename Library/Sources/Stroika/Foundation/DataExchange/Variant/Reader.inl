@@ -52,7 +52,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         EnsureNotNull (fRep_.rwget ());
         return *fRep_.rwget ();
     }
-    inline const Reader::_IRep& Reader::_GetRep () const
+    inline const Reader::_IRep& Reader::_ConstGetRep () const
     {
         EnsureNotNull (fRep_.cget ());
         return *fRep_.cget ();

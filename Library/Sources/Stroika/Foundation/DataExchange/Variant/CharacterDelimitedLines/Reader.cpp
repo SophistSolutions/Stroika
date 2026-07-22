@@ -96,5 +96,5 @@ Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const In
 
 Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const InputStream::Ptr<Character>& in) const
 {
-    return Debug::UncheckedDynamicCast<const Rep_&> (_GetRep ()).ReadMatrix (in);
+    return Debug::UncheckedDynamicCast<const Rep_&> (_ConstGetRep ()).ReadMatrix (in);
 }

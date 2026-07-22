@@ -22,7 +22,7 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
         EnsureNotNull (fRep_.get ());
         return *fRep_;
     }
-    inline const IRep& Ptr::_GetRep () const
+    inline const IRep& Ptr::_ConstGetRep () const
     {
         EnsureNotNull (fRep_.get ());
         return *fRep_;

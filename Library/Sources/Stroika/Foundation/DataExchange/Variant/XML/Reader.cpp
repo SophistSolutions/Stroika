@@ -88,8 +88,8 @@ Variant::XML::Reader::Rep_& Variant::XML::Reader::GetRep_ ()
 
 const Variant::XML::Reader::Rep_& Variant::XML::Reader::GetRep_ () const
 {
-    EnsureMember (&inherited::_GetRep (), Rep_);
-    return reinterpret_cast<const Rep_&> (inherited::_GetRep ());
+    EnsureMember (&inherited::_ConstGetRep (), Rep_);
+    return reinterpret_cast<const Rep_&> (inherited::_ConstGetRep ());
 }
 
 SerializationConfiguration Variant::XML::Reader::GetConfiguration () const

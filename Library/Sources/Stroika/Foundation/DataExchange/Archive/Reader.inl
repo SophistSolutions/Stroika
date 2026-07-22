@@ -22,18 +22,18 @@ namespace Stroika::Foundation::DataExchange::Archive::Reader {
         EnsureNotNull (fRep_);
         return *fRep_;
     }
-    inline const IRep& Ptr::_GetRep () const
+    inline const IRep& Ptr::_ConstGetRep () const
     {
         EnsureNotNull (fRep_);
         return *fRep_;
     }
     inline Set<String> Ptr::GetContainedFiles () const
     {
-        return _GetRep ().GetContainedFiles ();
+        return _ConstGetRep ().GetContainedFiles ();
     }
     inline Memory::BLOB Ptr::GetData (const String& fileName) const
     {
-        return _GetRep ().GetData (fileName);
+        return _ConstGetRep ().GetData (fileName);
     }
 
 }
