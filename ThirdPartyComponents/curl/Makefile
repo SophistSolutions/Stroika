@@ -76,6 +76,14 @@ CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
 ifeq (Unix,$(BuildPlatform))
+# Homebrew (and similar) commonly set CPATH globally, and gcc/clang treat CPATH as a set of implicit include dirs inserted
+# BEFORE any -isystem paths given explicitly on the command line. That can shadow our own build with a Homebrew copy of a
+# library we vendor ourselves (eg. openssl) - compiling against Homebrew's headers while linking our own libcrypto.a,
+# causing undefined symbol errors. Reinject CPATH's directories with -idirafter instead (searched after -isystem, ie. only
+# as a fallback) and unset CPATH itself for this build, so it can't jump ahead of our own headers.
+# (gcc/clang-only flag, so kept inside this Unix-only block rather than applied unconditionally.)
+CPPFLAGS 	+= 	$(addprefix -idirafter ,$(subst :, ,$(CPATH)))
+
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libcurl.a				\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/curl/curl.h
@@ -138,9 +146,11 @@ endif
 LDFLAGS:=	${Platform_LDFLAGS}
 LDFLAGS:=	$(filter-out --std=%, $(LDFLAGS))
 
+# see CPPFLAGS -idirafter comment above re: CPATH
+UNSET_LEAKY_ENV_VARS_ = unset CPATH;
+
 ENVIRONMENT_CONFIGURE_PREFIX=
-ENVIRONMENT_CONFIGURE_PREFIX=
-ENVIRONMENT_CONFIGURE_PREFIX+= export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
+ENVIRONMENT_CONFIGURE_PREFIX+= $(UNSET_LEAKY_ENV_VARS_)
 ENVIRONMENT_CONFIGURE_PREFIX+= export ARCH=$(ARCH);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CC=$(CC);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CXX=$(CXX);
@@ -273,7 +283,7 @@ ifeq (Unix,$(BuildPlatform))
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && ($(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR_) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE-OUT.txt
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt) ... "`
 	@echo $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt
-	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
+	@($(UNSET_LEAKY_ENV_VARS_) $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) --no-print-directory install CC="$(CC)") >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Build CURRENT into $(BUILDS_DIR) ... "
