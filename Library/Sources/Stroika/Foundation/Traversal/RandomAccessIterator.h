@@ -30,10 +30,10 @@ namespace Stroika::Foundation::Traversal {
     private:
         using inherited = BidirectionalIterator<T, ITERATOR_TRAITS>;
 
-        /*
-     *   forward type declarations so can be used more easily in this definition
-     */
     public:
+        /*
+         *   forward type declarations so can be used more easily in this definition
+         */
         using difference_type = typename inherited::difference_type;
         using value_type      = typename inherited::value_type;
         using pointer         = typename inherited::pointer;
@@ -173,26 +173,28 @@ namespace Stroika::Foundation::Traversal {
         /**
          * @brief  addition of iterator and int is commutative.
          *
-         *  \note defined inline (rather than out-of-line in the .inl, as is the usual Stroika convention) because
-         *        this is a hidden friend using the class's own template parameters - an out-of-line function
-         *        template of the same name does NOT bind to this friend declaration (GCC/clang correctly warn
-         *        about this if you try - "declares a non-template function").
+         *  \note this friend declares (befriends) the *whole* function template defined in the .inl, via its
+         *        own template parameter list (T2, ITERATOR_TRAITS2) - it does NOT reuse this class's own T /
+         *        ITERATOR_TRAITS. That's deliberate: this class also has a member `operator+ (difference_type)
+         *        const` of the same name, and trying to bind to one specific instantiation via explicit
+         *        `operator+<T, ITERATOR_TRAITS>` here gets confused by that member during name lookup (GCC/clang
+         *        resolve the unqualified `operator+` to the member, which isn't a template, and reject the
+         *        template-id). Befriending the whole template sidesteps that collision entirely.
          */
-        friend RandomAccessIterator operator+ (difference_type i, const RandomAccessIterator& it)
-        {
-            return it + i;
-        }
+        template <typename T2, typename ITERATOR_TRAITS2>
+        friend RandomAccessIterator<T2, ITERATOR_TRAITS2> operator+ (typename RandomAccessIterator<T2, ITERATOR_TRAITS2>::difference_type i,
+                                                                     const RandomAccessIterator<T2, ITERATOR_TRAITS2>& it);
 
     public:
         /**
          * @brief  Difference of two iterators is difference_type (number of elements between them)
          *
-         *  \note see note on operator+ above for why this is defined inline.
+         *  \note see note on operator+ above for why this befriends the whole template rather than using
+         *        explicit <T, ITERATOR_TRAITS>.
          */
-        friend difference_type operator- (const RandomAccessIterator& lhs, const RandomAccessIterator& rhs)
-        {
-            return lhs.Difference (rhs);
-        }
+        template <typename T2, typename ITERATOR_TRAITS2>
+        friend typename RandomAccessIterator<T2, ITERATOR_TRAITS2>::difference_type
+        operator- (const RandomAccessIterator<T2, ITERATOR_TRAITS2>& lhs, const RandomAccessIterator<T2, ITERATOR_TRAITS2>& rhs);
 
     public:
         /**

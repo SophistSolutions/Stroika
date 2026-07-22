@@ -133,4 +133,17 @@ namespace Stroika::Foundation::Traversal {
         return Debug::UncheckedDynamicCast<const IRep&> (inherited::ConstGetRep ());
     }
 
+    template <typename T, typename ITERATOR_TRAITS>
+    inline RandomAccessIterator<T, ITERATOR_TRAITS> operator+ (typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type i,
+                                                               const RandomAccessIterator<T, ITERATOR_TRAITS>&                    it)
+    {
+        return it + i;
+    }
+    template <typename T, typename ITERATOR_TRAITS>
+    inline typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type operator- (const RandomAccessIterator<T, ITERATOR_TRAITS>& lhs,
+                                                                                         const RandomAccessIterator<T, ITERATOR_TRAITS>& rhs)
+    {
+        return lhs.Difference (rhs);
+    }
+
 }
