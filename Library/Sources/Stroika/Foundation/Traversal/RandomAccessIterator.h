@@ -169,26 +169,30 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual strong_ordering operator<=> (const RandomAccessIterator& rhs) const;
 
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
     public:
         /**
          * @brief  addition of iterator and int is commutative.
+         *
+         *  \note defined inline (rather than out-of-line in the .inl, as is the usual Stroika convention) because
+         *        this is a hidden friend using the class's own template parameters - an out-of-line function
+         *        template of the same name does NOT bind to this friend declaration (GCC/clang correctly warn
+         *        about this if you try - "declares a non-template function").
          */
-        friend RandomAccessIterator operator+ (difference_type i, const RandomAccessIterator& it);
-
-    public:
-        /**
-         * @brief  differece of iterator and int is anti-commutative.
-         */
-        friend RandomAccessIterator operator- (difference_type i, const RandomAccessIterator& it);
+        friend RandomAccessIterator operator+ (difference_type i, const RandomAccessIterator& it)
+        {
+            return it + i;
+        }
 
     public:
         /**
          * @brief  Difference of two iterators is difference_type (number of elements between them)
+         *
+         *  \note see note on operator+ above for why this is defined inline.
          */
-        friend difference_type operator- (const RandomAccessIterator& lhs, const RandomAccessIterator& rhs);
-
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
+        friend difference_type operator- (const RandomAccessIterator& lhs, const RandomAccessIterator& rhs)
+        {
+            return lhs.Difference (rhs);
+        }
 
     public:
         /**

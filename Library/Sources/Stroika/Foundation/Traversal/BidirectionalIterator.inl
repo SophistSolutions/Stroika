@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline bool BidirectionalIterator<T, ITERATOR_TRAITS>::AtStart () const
     {
-        return GetRep ().AtStart ();
+        return ConstGetRep ().AtStart ();
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline auto BidirectionalIterator<T, ITERATOR_TRAITS>::operator++ () -> BidirectionalIterator&
