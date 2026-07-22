@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Traversal {
          * 
          * \pre i + current offset is a valid position in the referenced container.
          */
-        nonvirtual RandomAccessIterator& operator+= (difference_type i) const;
+        nonvirtual RandomAccessIterator& operator+= (difference_type i);
 
     public:
         /**
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Traversal {
          * 
          * \pre current offset - i is a valid position in the referenced container.
          */
-        nonvirtual RandomAccessIterator& operator-= (difference_type i) const;
+        nonvirtual RandomAccessIterator& operator-= (difference_type i);
 
     public:
         /**

@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Traversal {
                 return ConstGetRep ().Difference (nullptr);
             }
             else {
-                return ConstGetRep ().Difference (&rhs.GetRep ());
+                return ConstGetRep ().Difference (&rhs.ConstGetRep ());
             }
         }
     }
@@ -99,13 +99,13 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline auto RandomAccessIterator<T, ITERATOR_TRAITS>::operator+= (difference_type i) const -> RandomAccessIterator&
+    inline auto RandomAccessIterator<T, ITERATOR_TRAITS>::operator+= (difference_type i) -> RandomAccessIterator&
     {
         GetRep ().Advance (i);
         return *this;
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline auto RandomAccessIterator<T, ITERATOR_TRAITS>::operator-= (difference_type i) const -> RandomAccessIterator&
+    inline auto RandomAccessIterator<T, ITERATOR_TRAITS>::operator-= (difference_type i) -> RandomAccessIterator&
     {
         GetRep ().Advance (-i);
         return *this;
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Traversal {
     inline auto operator- (const RandomAccessIterator<T, ITERATOR_TRAITS>& lhs, const RandomAccessIterator<T, ITERATOR_TRAITS>& rhs) ->
         typename RandomAccessIterator<T, ITERATOR_TRAITS>::difference_type
     {
-        return lhs.Distance (rhs);
+        return lhs.Difference (rhs);
     }
 
 }
