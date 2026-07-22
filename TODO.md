@@ -20,7 +20,6 @@ Generally will track stuff here between releases
       See [RandomAccessIterator.h:143-151](Library/Sources/Stroika/Foundation/Traversal/RandomAccessIterator.h#L143-L151),
       [RandomAccessIterator.inl:102-112](Library/Sources/Stroika/Foundation/Traversal/RandomAccessIterator.inl#L102-L112).
 
-
 - move scriptslib to Build folder
 - Move makedefaultconfigs from makefile into script in that folder
 - add more g++16 c++23 configs

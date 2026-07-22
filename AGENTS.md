@@ -2,6 +2,8 @@
 
 This file provides guidance to agents when working with code in this repository.
 
+@TODO.md
+
 ## What this is
 
 Stroika is a modern, portable C++20+ application framework (a layer over the standard library):
