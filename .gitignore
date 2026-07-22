@@ -20,3 +20,6 @@ xcuserdata/
 # the repo so each container gets its own copy, rather than sharing/bind-mounting from ~ like
 # the other dotfiles.
 .dockerstuff/
+
+# Local Claude Code settings (per-machine permissions, etc.) - not shared across machines.
+.claude/
