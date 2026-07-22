@@ -1621,6 +1621,8 @@ namespace Stroika::Foundation::Traversal {
          *          return Find ([] (const T& lhs) { return equal_to<T>{}(lhs, v); }, seq);
          *      \endcode
          * 
+         *  \note Like Find () - if multiple matching items are found, this guarantees returning the first (in iteration order).
+         * 
          *  \see _IRep::MakeIterator for rules about lifetime of returned Iterator<T>
          */
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<T>& v, Execution::SequencePolicy seq) const;
