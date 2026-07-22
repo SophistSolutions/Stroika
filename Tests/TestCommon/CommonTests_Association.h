@@ -380,11 +380,11 @@ namespace CommonTests {
                     m.Add (1, 2);
                     EXPECT_EQ (m.size (), 2u);
                     EXPECT_TRUE ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<mapped_type>{mapped_type{2}, mapped_type{2}},
-                                                                testingSchema.fValueEqualsComparer)));
+                                                               testingSchema.fValueEqualsComparer)));
                     m.Add (1, 3);
                     EXPECT_EQ (m.size (), 3u);
                     EXPECT_TRUE ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<mapped_type>{mapped_type{2}, mapped_type{3}, mapped_type{2}},
-                                                                testingSchema.fValueEqualsComparer)));
+                                                               testingSchema.fValueEqualsComparer)));
                     m.RemoveAll ();
                     EXPECT_EQ (m.size (), 0u);
                 }

@@ -102,8 +102,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             // NOTE: must use FindFirst (), not Find () - Find () only guarantees returning AN element with an
             // equivalent key (it can shortcut via higher-level links into the middle of a run of duplicate
             // keys), so a run of duplicate keys could have some skipped/missed by the forward walk below.
-            auto                 i = fData_.FindFirst (key);
-            vector<mapped_type>  result;
+            auto                i = fData_.FindFirst (key);
+            vector<mapped_type> result;
             if (i != fData_.end ()) {
                 Assert (GetKeyEqualsComparer () (key, i->fKey));
                 result.push_back (i->fValue);
