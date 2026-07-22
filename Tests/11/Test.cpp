@@ -119,6 +119,25 @@ GTEST_TEST (Foundation_Containers_Association, SortedAssociation_SkipList)
     }
 }
 
+namespace {
+    GTEST_TEST (Foundation_Containers_Association, SortedAssociation_SkipList_DuplicateKeyLookup_RegressionSeed1)
+    {
+        // Regression test: Lookup () could silently drop values for a key added 3+ times - it started the scan
+        // from whatever (arbitrary) link SkipList::Find () landed on, instead of the FIRST link with that key,
+        // and then only walked forward. Since SkipList link heights are randomized, this only reproduces for
+        // some random number generator seeds - seed 1 (right after construction) is one of them.
+        // See CommonTests::AssociationTests::Test11_DuplicateKeyLookup for the (seed-independent) generic version
+        // of this test, run against every concrete Association backend.
+        Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList_DuplicateKeyLookup_RegressionSeed1"};
+        Containers::DataStructures::Private_::SetRandomNumberGenerator (std::mt19937{1});
+        SortedAssociation_SkipList<int, int> m;
+        m.Add (1, 2);
+        m.Add (1, 2);
+        m.Add (1, 3);
+        EXPECT_TRUE ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<int>{2, 3, 2})));
+    }
+}
+
 GTEST_TEST (Foundation_Containers_Association, SimpleBaseClassConversionTraitsConfusion_)
 {
     Debug::TraceContextBumper     ctx{"{}::SimpleBaseClassConversionTraitsConfusion_"};

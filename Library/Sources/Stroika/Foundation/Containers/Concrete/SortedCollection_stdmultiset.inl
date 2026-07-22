@@ -67,7 +67,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             // if doing a find by 'equals-to' - we already have this indexed
-            auto found = fData_.find (v);
+            // NOTE: must use lower_bound (), not find (), to get the FIRST (in iteration order) of a run of equal
+            // elements - find () only guarantees returning SOME matching element, which would violate the
+            // Find_equal_to () contract (always returns the first match) when there are duplicate elements.
+            auto found = fData_.lower_bound (v);
+            if (found != fData_.end () and (fData_.key_comp () (v, *found) or fData_.key_comp () (*found, v))) {
+                found = fData_.end ();
+            }
             Ensure ((found == fData_.end () and this->inherited::Find_equal_to (v, seq) == Iterator<value_type>{nullptr}) or
                     (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (v, seq).ConstGetRep ())
                                   .fIterator.GetUnderlyingIteratorRep ()));

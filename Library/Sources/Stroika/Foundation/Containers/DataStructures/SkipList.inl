@@ -249,9 +249,43 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
+    template <Common::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
+    auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindFirstLink_ (const KEYISH_T& key) const -> Link_*
+    {
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Assert (fHead_.size () > 0);
+        LinkVector_ const* startV    = &fHead_;
+        Link_*             candidate = nullptr;
+        for (size_t linkHeight = fHead_.size (); linkHeight > 0; --linkHeight) {
+            Link_* n            = (*startV)[linkHeight - 1];
+            Link_* overShotLink = (startV->size () <= linkHeight) ? nullptr : (*startV)[linkHeight];
+            // Unlike FindLink_ (), NEVER stop early just because we hit an 'equal' key - only stop advancing
+            // (dropping down a level instead) once the current link is NOT strictly less than key. This
+            // guarantees we land on the leftmost (first, in sorted/iteration order) link with an equal key,
+            // instead of potentially shortcutting via a higher-level link into the middle of a run of equal keys.
+            while (n != overShotLink) {
+                if constexpr (same_as<Support::SkipList::Stats_Basic, StatsType>) {
+                    ++fStats_.fCompares;
+                }
+                if (fKeyThreeWayComparer_ (n->fEntry.fKey, key) != strong_ordering::less) {
+                    break;
+                }
+                startV = &n->fNext;
+                n      = n->fNext[linkHeight - 1];
+            }
+            candidate = n;
+        }
+        return (candidate != nullptr and fKeyThreeWayComparer_ (candidate->fEntry.fKey, key) == strong_ordering::equal) ? candidate : nullptr;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ArgByValueType<key_type> key) const -> ForwardIterator
     {
         return ForwardIterator{this, FindLink_ (key)};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
+    inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindFirst (ArgByValueType<key_type> key) const -> ForwardIterator
+    {
+        return ForwardIterator{this, FindFirstLink_ (key)};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     template <typename ARG_T>

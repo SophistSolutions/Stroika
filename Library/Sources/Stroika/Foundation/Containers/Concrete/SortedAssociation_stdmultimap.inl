@@ -101,17 +101,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             // @todo consider doing custom class here, or using CreateGenerator
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.find (key);
-            vector<mapped_type>                                   result;
-            if (i != fData_.end ()) {
-                Assert (GetKeyEqualsComparer () (key, i->first));
-                result.push_back (i->second);
-                // the items in a multimap are all in order so we know the current i->key is not less
-                Assert (not fData_.key_comp () (key, i->first));
+            // NOTE: must use lower_bound (), not find (), to locate the START of the run of
+            // equal keys - find () only guarantees returning AN element with an equivalent key,
+            // not the first one, so a run of duplicate keys could have some skipped/missed.
+            auto                 i = fData_.lower_bound (key);
+            vector<mapped_type>  result;
+            for (; i != fData_.end () and not fData_.key_comp () (key, i->first); ++i) {
                 Assert (not fData_.key_comp () (i->first, key));
-                for (++i; i != fData_.end () and not fData_.key_comp () (key, i->first); ++i) {
-                    result.push_back (i->second);
-                }
+                result.push_back (i->second);
             }
             return Iterable<mapped_type>{move (result)};
         }

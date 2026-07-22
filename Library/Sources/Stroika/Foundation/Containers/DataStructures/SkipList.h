@@ -369,6 +369,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \brief like Find (), but if there are multiple elements with an equivalent key, always returns
+         *         an iterator to the FIRST such element (in the sorted iteration order of the list).
+         *
+         *  Find () makes no such guarantee (see Add () docs) because its search can shortcut through
+         *  higher-level links directly into the middle of a run of equal keys. FindFirst () is needed
+         *  anywhere all the values for a given (possibly duplicated) key must be enumerated by walking
+         *  forward from the returned iterator.
+         *
+         *  \note Runtime performance/complexity:
+         *      Average:    log(N)
+         *      Worst:      N
+         */
+        nonvirtual ForwardIterator FindFirst (ArgByValueType<key_type> key) const;
+
+    public:
+        /**
          *  \brief simple wrapper on Find() - but returning optional instead of iterators or pointers
          * 
          *  \par Example Usage:
@@ -512,10 +528,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         /*
-         * Find Link for key in SkipList, else nullptr. In cases of duplicate values, return first found.
+         * Find Link for key in SkipList, else nullptr. In cases of duplicate keys, an UNSPECIFIED
+         * matching link is returned - NOT necessarily the first one in sorted/iteration order (higher-level
+         * links can shortcut directly into the middle of a run of equal keys). See FindFirstLink_ () if you
+         * need the leftmost link of a run of equal keys (e.g. to then walk forward and enumerate them all).
          */
         template <Common::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
         nonvirtual Link_* FindLink_ (const KEYISH_T& key) const;
+
+    private:
+        /*
+         * Like FindLink_ (), but if there are multiple links with an equivalent key, always returns the
+         * FIRST such link (in sorted/iteration order), or nullptr if no link has that key.
+         */
+        template <Common::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
+        nonvirtual Link_* FindFirstLink_ (const KEYISH_T& key) const;
 
     private:
         /*

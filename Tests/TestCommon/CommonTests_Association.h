@@ -364,6 +364,31 @@ namespace CommonTests {
                     EXPECT_TRUE (headers.empty ());
                 }
             }
+
+            namespace Test11_DuplicateKeyLookup {
+                template <typename DEFAULT_TESTING_SCHEMA>
+                void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
+                {
+                    // Regression test: Lookup () could silently drop some values for a key added 3+ times,
+                    // because it started from an arbitrary matching element instead of the first one in
+                    // sorted/iteration order, and then only walked forward.
+                    Debug::TraceContextBumper ctx{"CommonTests::AssociationTests::Test11_DuplicateKeyLookup"};
+                    using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
+                    using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
+                    ConcreteContainerType m     = testingSchema.Factory ();
+                    m.Add (1, 2);
+                    m.Add (1, 2);
+                    EXPECT_EQ (m.size (), 2u);
+                    EXPECT_TRUE ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<mapped_type>{mapped_type{2}, mapped_type{2}},
+                                                                testingSchema.fValueEqualsComparer)));
+                    m.Add (1, 3);
+                    EXPECT_EQ (m.size (), 3u);
+                    EXPECT_TRUE ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<mapped_type>{mapped_type{2}, mapped_type{3}, mapped_type{2}},
+                                                                testingSchema.fValueEqualsComparer)));
+                    m.RemoveAll ();
+                    EXPECT_EQ (m.size (), 0u);
+                }
+            }
         }
         template <typename DEFAULT_TESTING_SCHEMA>
         void SimpleAssociationTest_All_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
@@ -382,6 +407,7 @@ namespace CommonTests {
             Private_::Test_8_Iteration_With_Value_Comparer::DoAllTests_ (testingSchema);
             Private_::Test4_Equals::DoAllTests_ (testingSchema);
             Private_::Test10_NewIteratorPatching::DoAllTests_ (testingSchema);
+            Private_::Test11_DuplicateKeyLookup::DoAllTests_ (testingSchema);
         }
 
         template <typename DEFAULT_TESTING_SCHEMA>
