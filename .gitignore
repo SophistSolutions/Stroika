@@ -15,3 +15,8 @@ cproject
 .DS_Store
 MiscOldNotes/
 xcuserdata/
+
+# Bind-mount target for dev-docker-container-local state (e.g. .vscode-server) - kept out of
+# the repo so each container gets its own copy, rather than sharing/bind-mounting from ~ like
+# the other dotfiles.
+.dockerstuff/
