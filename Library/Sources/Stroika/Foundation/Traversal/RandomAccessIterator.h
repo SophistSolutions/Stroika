@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Traversal {
     private:
         using inherited = BidirectionalIterator<T, ITERATOR_TRAITS>;
 
-    /*
+        /*
      *   forward type declarations so can be used more easily in this definition
      */
     public:
