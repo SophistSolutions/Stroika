@@ -226,6 +226,15 @@ endif
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"
 	@${ECHO} "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" > "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
 	@${ECHO} "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CMakeCache.txt" >> "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
+	@-cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
+	@#the FetchContent-cloned mongo-c-driver-src's own CMakeLists.txt has a malformed TRY_COMPILE CMAKE_FLAGS string (a stray "-Werror " glued onto
+	@#the next flag instead of being a separate list entry) that newer CMake's stricter -W<category> argv parsing rejects outright, failing the
+	@#configure pass above right after it clones mongo-c-driver-src. Patch the now-fetched copy and reconfigure; FetchContent reuses the already
+	@#populated source dir rather than re-cloning, so this second pass proceeds past the now-fixed check. (Gated on NOT WIN32 upstream, so this
+	@#is a no-op there; harmless no-op elsewhere too when the first pass already succeeded.)
+	@if [ -f "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-src/src/libmongoc/CMakeLists.txt" ]; then \
+		${SED} -i "s/-Werror -DCMAKE_CXX_LINK_EXECUTABLE/-DCMAKE_CXX_LINK_EXECUTABLE/" "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-src/src/libmongoc/CMakeLists.txt"; \
+	fi
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
