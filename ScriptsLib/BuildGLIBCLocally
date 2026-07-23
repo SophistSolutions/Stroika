@@ -1,3 +1,0 @@
-#!/bin/bash
-echo "ScriptsLib/BuildGLIBCLocally: this location is deprecated, use Build/ScriptsLib/BuildGLIBCLocally instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/BuildGLIBCLocally" "$@"

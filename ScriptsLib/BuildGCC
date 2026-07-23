@@ -1,3 +1,0 @@
-#!/bin/bash
-echo "ScriptsLib/BuildGCC: this location is deprecated, use Build/ScriptsLib/BuildGCC instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/BuildGCC" "$@"

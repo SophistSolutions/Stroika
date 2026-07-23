@@ -1,3 +1,0 @@
-#!/bin/bash
-echo "ScriptsLib/BuildClang: this location is deprecated, use Build/ScriptsLib/BuildClang instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/BuildClang" "$@"

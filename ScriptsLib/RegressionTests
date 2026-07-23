@@ -1,3 +1,0 @@
-#!/bin/bash
-echo "ScriptsLib/RegressionTests: this location is deprecated, use Build/ScriptsLib/RegressionTests instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/RegressionTests" "$@"
