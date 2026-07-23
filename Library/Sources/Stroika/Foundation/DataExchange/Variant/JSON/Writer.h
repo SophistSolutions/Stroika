@@ -80,8 +80,6 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
              */
             optional<bool> fPrettyPrint;
 
-            [[deprecated ("Since Stroika v3.0d23 use fPrettyPrint")]] optional<bool> fJSONPrettyPrint; //deprecated name
-
             /**
              * This defaults to off, since its costly, and rarely needed. Principally used for regression tests
              * where we want to compare we get the same results as last time.
