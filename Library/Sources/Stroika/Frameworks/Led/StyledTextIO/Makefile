@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../../../)/
 SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Frameworks/Led/StyledTextIO/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Led/StyledTextIO/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
 CXXFLAGS+=-Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibDir)stroika-frameworks.pdb)
@@ -20,7 +20,7 @@ Objs+=	$(ObjDir)StyledTextIO_MIMETextEnriched${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_PlainText${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_RTF${OBJ_SUFFIX}
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

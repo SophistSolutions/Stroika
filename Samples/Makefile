@@ -1,6 +1,6 @@
 export StroikaRoot	:=	$(shell realpath ../)/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 .PHONY:	samples all check clobber skel
@@ -58,12 +58,12 @@ all:		samples
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)Build/ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/Samples Check {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/Samples Check {$(CONFIGURATION)}:"
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --no-print-directory check || exit $$?;\
     done
@@ -72,11 +72,11 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)Build/ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/Samples $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/Samples $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --silent $@ 2> /dev/null || true;\
     done
@@ -86,12 +86,12 @@ endif
 
 samples:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)Build/ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory samples CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)) || exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Samples {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Samples {$(CONFIGURATION)}:"
 	@$(MAKE) --no-print-directory $(SUBPROJECTS) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 

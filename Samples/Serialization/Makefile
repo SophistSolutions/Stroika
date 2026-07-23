@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../)/
 SrcDir		:=	$(StroikaRoot)Samples/Serialization/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Serialization/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-Serialization/
 TARGETEXE		:=	$(TARGETDIR)Serialization${EXE_SUFFIX}
@@ -11,7 +11,7 @@ Objs	:=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	$(ObjDir)ObjectVariantMapper${OBJ_SUFFIX}\
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
 
 
 # ONLY depend on foundation library, not frameworks library
@@ -22,20 +22,20 @@ VPATH	=			$(SrcDir)Sources/
 
 
 all:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/Serialization:"
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/Serialization:"
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
 check:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/Serialization...               "
-	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/Serialization...               "
+	@$(StroikaRoot)Build/ScriptsLib/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(call DEFAULT_LINK_LINE, $@, stroika-foundation)';\
+	    $(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(call DEFAULT_LINK_LINE, $@, stroika-foundation)';\
 	fi
 	@$(call DEFAULT_LINK_LINE, $@, stroika-foundation)

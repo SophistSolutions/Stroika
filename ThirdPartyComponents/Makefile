@@ -1,12 +1,12 @@
 StroikaRoot	:=	$(abspath ../)/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 #Handy shortcut
 CONFIGURATION_TAGS?=$(TAGS)
 
 
-APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ../ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"))
+APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ../Build/ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"))
 
 
 # For clean/clobber - when we might not have a configuration
@@ -188,9 +188,9 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Build {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Build {$(CONFIGURATION)}:"
 ifeq ($(SubDirs),)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "none"
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "none"
 else
 	@$(MAKE) --silent $(SubDirs)
 endif
@@ -199,9 +199,9 @@ endif
 
 check check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@): "
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@): "
 else
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}: "
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}: "
 endif
 ifeq ($(CONFIGURATION),)
 	@for i in $(APPLY_CONFIGS) ; do\
@@ -216,9 +216,9 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) ... "
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) ... "
 else
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 endif
 	@for subdir in $(AllSubDirs_) ; do \
 		$(MAKE) --directory $$subdir --silent $@; \

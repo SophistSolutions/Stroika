@@ -1,4 +1,2 @@
-
-$(warning DEPRECATED FILE - use SharedMakeVariables-Default.mk instead of Makefile-Common since Stroika v3.0d21)
-
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+$(warning ScriptsLib/Makefile-Common.mk is deprecated -- use Build/ScriptsLib/Makefile-Common.mk instead)
+include $(dir $(lastword $(MAKEFILE_LIST)))../Build/ScriptsLib/Makefile-Common.mk

@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../../../)/
 SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Database/Document/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Database/Document/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
@@ -26,7 +26,7 @@ SubDirs	:=	\
 
 .PHONY:				$(SubDirs)
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
 
 all:	$(Objs)  $(SubDirs)
 

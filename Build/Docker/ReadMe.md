@@ -47,15 +47,15 @@ n.b. you may need to use
 
 to run debugger (ptrace/address randomization disable, or for debug builds that use sanitizers)
 
-- to create a fancier container with more options, consider using - ScriptsLib/RunInDockerEnvironment - which just sets a bunch of useful container options.
+- to create a fancier container with more options, consider using - Build/ScriptsLib/RunInDockerEnvironment - which just sets a bunch of useful container options.
   for example:
 
   ```bash
-  cd Sandbox/Stroika-Dev && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
+  cd Sandbox/Stroika-Dev && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22" ECHO_DOCKER_COMMANDS=1 Build/ScriptsLib/RunInDockerEnvironment
   ```
 
   ```bash
-  cd Sandbox/Stroika-Dev && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2004 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2004 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10122:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
+  cd Sandbox/Stroika-Dev && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2004 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2004 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10122:22" ECHO_DOCKER_COMMANDS=1 Build/ScriptsLib/RunInDockerEnvironment
   ```
 
 ### Windows
@@ -87,7 +87,7 @@ docker exec \
     --workdir c:/Stroika \
     --env USE_TEST_BASENAME=Windows_vs2k22-In-Docker \
     FRED \
-    sh -c "ScriptsLib/RegressionTests"
+    sh -c "Build/ScriptsLib/RegressionTests"
 # root around and fiddle inside the container (even while above running)
 docker exec  --interactive --tty \
     FRED \

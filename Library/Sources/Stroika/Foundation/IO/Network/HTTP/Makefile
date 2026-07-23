@@ -2,9 +2,9 @@ StroikaRoot	:=	$(abspath ../../../../../../../)/
 SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/HTTP/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/HTTP/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
 
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)

@@ -1,0 +1,87 @@
+#!/usr/bin/env perl
+
+#
+# e.g.
+#		RunArgumentsWithCommonBuildVars Debug-U-32 make -k foo
+#
+#	First arg is configuration. The remaining args all passed along to the next command
+#
+#	On windows (Visual Studio), this creates a .bat file, runs vcvarsall.bat (right arch), and then puts the arguments
+#	to this script into that .bat file, and runs the full .bat file
+#
+
+use File::Temp qw(tempfile);
+
+BEGIN{ @INC = ( "./", @INC ); }
+
+sub	GetThisScriptDir {
+	use File::Basename;
+	use Cwd 'abs_path';
+	my $p = __FILE__;
+	my $A = abs_path ($p);
+	my $dirname = dirname($A);
+	return $dirname;
+}
+my	$thisScriptDir	=	GetThisScriptDir ();
+
+my $activeConfig = $ARGV[0];
+my $l = @ARGV-1;
+my $cmd = (join " ", @ARGV[1..$l]);
+
+require "$thisScriptDir/ConfigurationReader.pl";	## @todo for GetConfigurationParameter - could replace with GetConfigurationParameter script
+
+
+
+### SEE https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2019 for docs on calling vcvarsall.bat
+
+sub GetString2InsertIntoBatchFileToInitCompiles_
+{
+	local $ARCH = GetConfigurationParameter($activeConfig, "ARCH");
+	local $VSDIR = GetConfigurationParameter($activeConfig, "BuildToolsRoot");
+	local $arg = undef;
+	if ($ARCH eq "x86") {
+		$arg ="x64_x86";
+	}
+	elsif ($ARCH eq "x86_64") {
+		$arg ="x64";
+	}
+	else {
+		die ("hardwired/to fix logic about mapping config names to 32/64")
+	}
+	local $VSDIR_VC = "$VSDIR\\VC";
+	local $result = "";
+	##pushd/popd needed cuz vcvars now changes directories (no idea why)
+	$result 	.=	"pushd %TEMP%\r\n";
+	$result 	.=	"call \"";
+	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
+	$result 	.=	"\" $arg > nul;\r\n";
+	$result 	.=	"popd\r\n";
+	return $result;
+}
+
+
+sub RunSystemWithVCVarsSetInEnvironment_
+{
+	local $cmd2Run = $_[0];
+	local $tmpFileName = "";
+	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
+	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
+	print $fh '@echo off' . "\r\n";
+	local $result = GetString2InsertIntoBatchFileToInitCompiles_();
+	print $fh $result;
+	print $fh $cmd2Run . "\r\n";
+	close $fh;
+	# https://stroika.atlassian.net/browse/STK-941 /E:ON needed for this ticket
+	local $result = system ("cmd /E:ON/C $tmpFileName");
+	unlink ($tmpFileName);
+	return $result;
+}
+
+my $result = RunSystemWithVCVarsSetInEnvironment_ ($cmd);
+# exit int ($result) doesn't work - for reasons I don't understand, but since I intend to abaondo use of perl, no point in debugging - just workaround for now --LGP 2017-10-29
+if ($result == 0) {
+	exit 0;
+}
+else {
+	exit 1;
+}

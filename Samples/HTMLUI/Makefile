@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../)/
 SrcDir		:=	$(StroikaRoot)Samples/HTMLUI/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 #not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say
@@ -14,18 +14,18 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-HTMLUI/
 
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
 
 
 all :
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/HTMLUI:"
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/HTMLUI:"
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent --directory Backend --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
 	@$(MAKE) --silent html
 	@$(MAKE) --silent installers
 
 check:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "$(call FUNCTION_CAPITALIZE_WORD,$@) Samples/HTMLUI:"
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "$(call FUNCTION_CAPITALIZE_WORD,$@) Samples/HTMLUI:"
 	@$(MAKE) --silent --directory Backend --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
 
 clobber::
@@ -39,13 +39,13 @@ clean::
 
 html:
 ifeq ($(shell which node 2>/dev/null),)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no nodejs installed:" `$(StroikaRoot)ScriptsLib/GetMessageForMissingTool node` "***"
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no nodejs installed:" `$(StroikaRoot)Build/ScriptsLib/GetMessageForMissingTool node` "***"
 	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else ifeq ($(shell if `test $(shell node -v | cut -d'.' -f1 | tr -d 'v') -ge 22`; then echo x; fi),)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no nodejs older than 22 installed:" `$(StroikaRoot)ScriptsLib/GetMessageForMissingTool quasar` "***"
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no nodejs older than 22 installed:" `$(StroikaRoot)Build/ScriptsLib/GetMessageForMissingTool quasar` "***"
 	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else ifeq ($(shell which quasar 2>/dev/null),)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed:" `$(StroikaRoot)ScriptsLib/GetMessageForMissingTool quasar` "***"
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed:" `$(StroikaRoot)Build/ScriptsLib/GetMessageForMissingTool quasar` "***"
 	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else
 	@$(MAKE) --silent --directory QuasarBasedHTMLApp --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all
@@ -53,5 +53,5 @@ endif
 
 .PHONY: installers installer-deb installer-rpm installer-wix
 installers installer-deb installer-rpm installer-wix:
-	@$(StroikaRoot)/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Samples/HTMLUI: Building Installers:"
+	@$(StroikaRoot)/Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Samples/HTMLUI: Building Installers:"
 	@$(MAKE) --no-print-directory --directory Installers --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@

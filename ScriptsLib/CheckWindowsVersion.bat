@@ -1,5 +1,3 @@
 @echo off
-setlocal
-for /f "tokens=4-5 delims=. " %%i in ('ver') do set VERSION=%%i.%%j
-echo %version%
-endlocal
+echo ScriptsLib\CheckWindowsVersion.bat: this location is deprecated, use Build\ScriptsLib\CheckWindowsVersion.bat instead 1>&2
+call "%~dp0..\Build\ScriptsLib\CheckWindowsVersion.bat" %*

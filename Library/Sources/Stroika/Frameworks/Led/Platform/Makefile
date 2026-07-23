@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../../../)/
 SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Frameworks/Led/Platform/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Led/Platform/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
 CXXFLAGS+=-Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibDir)stroika-frameworks.pdb)
@@ -31,7 +31,7 @@ CXXFLAGS += -D_WIN32_WINNT=0x0501
 CXXFLAGS += -DSTRICT
 endif
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

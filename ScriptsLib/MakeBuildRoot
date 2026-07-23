@@ -1,27 +1,3 @@
 #!/bin/bash
-ROOT=$1
-
-MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
-PREFIX=`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL`
-
-if [ ! -e $ROOT ] ; then
-	echo "$PREFIX$ROOT doesn't exist, so you cannot link to it as a build root"
-	exit 1;
-fi
-
-echo "$PREFIX""Linking Stroika output and configuration directories in $(ScriptsLib/SubstituteBackVariables $(pwd)) to $ROOT"
-
-rm -rf Builds ConfigurationFiles IntermediateFiles
-
-TARGET_INTERMEDIATEFILES=$ROOT/IntermediateFiles
-TARGET_BUILDS=$ROOT/Builds
-TARGET_CONFIGURATIONFILES=$ROOT/ConfigurationFiles
-
-mkdir -p $TARGET_INTERMEDIATEFILES
-ScriptsLib/MakeSymbolicLink $TARGET_INTERMEDIATEFILES
-
-mkdir -p $TARGET_BUILDS
-ScriptsLib/MakeSymbolicLink $TARGET_BUILDS
-
-mkdir -p $TARGET_CONFIGURATIONFILES
-ScriptsLib/MakeSymbolicLink $TARGET_CONFIGURATIONFILES
+echo "ScriptsLib/MakeBuildRoot: this location is deprecated, use Build/ScriptsLib/MakeBuildRoot instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/MakeBuildRoot" "$@"

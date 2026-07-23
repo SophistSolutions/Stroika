@@ -1,0 +1,13 @@
+#!/bin/bash
+#   Utility echo a consistent numebr of spaces as indent to stdout
+#
+# Example Usage:
+#		PrintLevelHeader 2
+#
+LEVEL=$1
+COUNTER=0
+ECHO=${ECHO:-echo}
+while [  $COUNTER -lt $LEVEL ]; do
+	$ECHO -n "   "
+	let COUNTER=COUNTER+1 
+done

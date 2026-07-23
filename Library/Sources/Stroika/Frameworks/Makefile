@@ -12,7 +12,7 @@ endif
 endif
 endif
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
@@ -73,7 +73,7 @@ else
 ifeq ($(wildcard $(CachedOBJSFile_)),)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clobber)
-$(shell $(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Computing `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(CachedOBJSFile_)`" 1>&2)
+$(shell $(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Computing `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $(CachedOBJSFile_)`" 1>&2)
 $(shell mkdir -p $(shell dirname $(CachedOBJSFile_)) )
 # REDIRECT to avoid: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.; not good solution cuz hides errors
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
@@ -91,7 +91,7 @@ endif
 
 
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
 
 
 
@@ -103,7 +103,7 @@ $(Objs): all_objs_
 
 .PHONY:	all_objs_
 all_objs_:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Frameworks Objs {$(CONFIGURATION)}:";
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Frameworks Objs {$(CONFIGURATION)}:";
 	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
@@ -112,10 +112,10 @@ all_objs_:
 # unlike normal makefiles, we dont see the dependencies in this makefile - just sub-makes (to a degree).
 $(StroikaFrameworksLib):	$(Objs)
 	@mkdir -p $(StroikaLibDir)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` ... "
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $@` ... "
 	@rm -f $@
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+2)) '$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))';\
+		$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+2)) '$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))';\
 	fi
 	@$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))
 

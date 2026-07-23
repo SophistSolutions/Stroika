@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+
+#
+# pkg-config-msvc - just like pkg-config --msvc-syntax but fixes up a few cases apparently not handled by pkg-config --msvc-syntax
+#
+
+
+import os
+import sys
+import subprocess
+
+def isWindowsSystem_() -> bool:
+    if os.name == 'nt':
+        return True
+    if sys.platform=='cygwin':
+        return True
+    return False
+
+if __name__ == "__main__":
+    args = sys.argv
+    args = ["pkg-config"] + args[1:]
+    useEnv = os.environ
+    useCWD = None
+    useLibDir = None
+    if isWindowsSystem_():
+        # useEnv['MSYS2_ENV_CONV_EXCL'] = '*'
+        # useEnv['MSYS2_PATH_CONV_EXCL'] = '*'
+        # useEnv['MSYS2_ARG_CONV_EXCL'] = '*'
+        if useEnv['PKG_CONFIG_PATH']:
+            # At least for msys, this must be unix format, cuz : treated as path separator
+            # print(f"useEnv['PKG_CONFIG_PATH']={useEnv['PKG_CONFIG_PATH']}", file=sys.stderr)
+            useEnv['PKG_CONFIG_PATH'] = subprocess.check_output(["cygpath", "-w", useEnv['PKG_CONFIG_PATH']]).decode().strip()
+            # print (f"useEnv['PKG_CONFIG_PATH']={useEnv['PKG_CONFIG_PATH']}\n")
+            useCWD = useEnv['PKG_CONFIG_PATH']
+            # print (f"useCWD={useCWD}\n")
+            # useCWD="C:\Sandbox\Stroika\DevRoot\Builds\Debug\lib\pkgconfig"
+            useLibDir = subprocess.check_output(["cygpath","--mixed", useEnv['PKG_CONFIG_PATH']]).decode().strip() + "/"
+            useEnv['PKG_CONFIG_PATH'] = "."
+    try:
+        # print(f"useEnv=${useEnv}\n")
+        if isWindowsSystem_():
+            # because --msvc-syntax appears to throw away some options (like --nologo) - must not do msvc-syntax for that
+            # part
+            if "--libs" in args:
+                tmpArgs =  ["--libs-only-other" if x == "--libs" else x for x in args]
+                # print(f"tmpArgs=${tmpArgs}\n", file=sys.stderr)
+                result = subprocess.run(tmpArgs, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
+                savedOut = result.stdout.strip()
+                # print(f"savedOut=${savedOut}\n", file=sys.stderr)
+                # args = [args[0] , "--msvc-syntax"] + args[1:] 
+                tmpArgs =  ["--libs-only-L" if x == "--libs" else x for x in args] + ["--libs-only-l", "--msvc-syntax"]
+                result = subprocess.run(tmpArgs, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
+                out = result.stdout.strip()
+                if useLibDir:
+                    out = out.replace ('/libpath:./', f'/libpath:"{useLibDir}"')
+                out = savedOut + " " + out
+            else:
+                args = [args[0] , "--msvc-syntax"] + args[1:] 
+                result = subprocess.run(args, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
+                out = result.stdout.strip()
+                if useLibDir:
+                    out = out.replace ('/libpath:./', f'/libpath:"{useLibDir}"')
+                # maybe good idea to switch to unix format (- not /) but didnt seem to help msys problems so dont bother for now...
+                # out = out.replace (" /", " -")
+                # if (out.startswith("/")):
+                #     out = "-" + out[1:]
+                # with open("my_file.txt", "w") as file:
+                #     file.write(out)
+        else:
+            result = subprocess.run(args, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
+            out = result.stdout.strip()
+        print(out)
+        if result.stderr:
+            print(result.stderr, file=sys.stderr)
+    except subprocess.CalledProcessError as e:
+        print(f"{e.stdout}")
+        print(f"{e.stderr}", file=sys.stderr)
+        sys.exit (1)
+    except FileNotFoundError:
+        print(f"Error: Command '{command[0]}' not found.", file=sys.stderr) 
+        sys.exit (1)

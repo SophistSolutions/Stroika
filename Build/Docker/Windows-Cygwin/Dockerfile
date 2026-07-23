@@ -53,4 +53,4 @@ CMD ["bash.exe", "--login"]
 ### NOTE TO RUN
 ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
-###     see ScriptsLib/RunLocalWindowsDockerRegressionTests
+###     see Build/ScriptsLib/RunLocalWindowsDockerRegressionTests

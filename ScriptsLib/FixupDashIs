@@ -1,20 +1,3 @@
 #!/bin/bash
-#   EG ./ScriptsLib/FixupDashIs -I/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/lib/pkgconfig/../../include/libxml2 -foo  -I/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/lib/pkgconfig/../../include/libxml2
-#
-
-firstTime=0
-for ARG in "$@"; do
-    if [[ $firstTime == 0 ]]; then
-        firstTime=1
-    else 
-        echo -n " "
-    fi
-    if [[ "$ARG" == "-I"* ]]; then
-        FILENAME=${ARG:2};
-        FILENAME=`cygpath --mixed $FILENAME`
-        echo -n "-I$FILENAME"
-    else
-        echo -n "$ARG"
-    fi
-done
-exit 0
+echo "ScriptsLib/FixupDashIs: this location is deprecated, use Build/ScriptsLib/FixupDashIs instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/FixupDashIs" "$@"

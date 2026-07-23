@@ -284,15 +284,15 @@ The reason this is so important, is that it allows an external build system like
 
 #### Examples
 
-- `./ScriptsLib/GetConfigurationParameter Debug CFLAGS`
+- `./Build/ScriptsLib/GetConfigurationParameter Debug CFLAGS`
 
   -I"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/ATLMFC/include" -I"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/include" -I"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/include/um" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/ucrt" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/shared" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/um" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/winrt" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/cppwinrt" -I"C:/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/include/" -I"C:/Sandbox/Stroika/DevRoot/Library/Sources/" -I"C:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/" -EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG -DqDebug=1 -DqHasFeature_LibCurl=0 -DqHasFeature_OpenSSL=1 -DqHasFeature_WinHTTP=1 -DqHasFeature_ATLMFC=1 -DqHasFeature_Xerces=1 -DqHasFeature_ZLib=1 -DqHasFeature_sqlite=1 -DqHasFeature_LZMA=1 -DqHasFeature_boost=1 -DqStroika_Foundation_Debug_Trace_TraceToFile=1 -DqStroika_Foundation_Debug_Trace_DefaultTracingOn=1  -fsanitize=address
 
-- `./ScriptsLib/GetConfigurationParameter Debug Linker`
+- `./Build/ScriptsLib/GetConfigurationParameter Debug Linker`
 
   g++
 
-- `./ScriptsLib/GetConfigurationParameter Release CXXFLAGS`
+- `./Build/ScriptsLib/GetConfigurationParameter Release CXXFLAGS`
 
   -flto --std=c++20 -O3 -I/mnt/c/Sandbox/Stroika/DevRoot/Builds/Release/ThirdPartyComponents/include/ -I/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/ -I/mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Release/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-value -Wno-strict-aliasing -Wno-comment -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-local-typedefs -g
 
@@ -563,12 +563,12 @@ To some degree, this is simple, and you can just copy/munge one of the sample ap
 a 'Skel' utility, that builds a skeleton application.
 
   ~~~bash
-  ./ScriptsLib/Skel --appRoot ../myApp
+  ./Build/ScriptsLib/Skel --appRoot ../myApp
   cd ../myApp
   make CONFIGURATION=Debug all -j10
   ~~~
 
-Use './ScriptsLib/Skel --help' to see options
+Use './Build/ScriptsLib/Skel --help' to see options
 
 ---
 
@@ -713,7 +713,7 @@ But - even with just plain make, you need some sort of configure script to estab
   `--security-opt seccomp=unconfined`
 
   - See also
-    [../ScriptsLib/RunInDockerEnvironment](../ScriptsLib/RunInDockerEnvironment)
+    [../Build/ScriptsLib/RunInDockerEnvironment](../Build/ScriptsLib/RunInDockerEnvironment)
     for more hints on developing flags with docker containers.
 
 - VSCode

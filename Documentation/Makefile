@@ -17,7 +17,7 @@ all:
 		if which doxygen 2>&1 > /dev/null; then\
 			$(MAKE) --silent doxygen;\
 		else\
-			$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo "Skipping build of documentation since Doxygen not installed";\
+			$(StroikaRoot)/Build/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo "Skipping build of documentation since Doxygen not installed";\
 		fi;\
 	fi
 
@@ -28,10 +28,10 @@ clean:
 	@rm -rf Doxygen/Stroika-Doxygen-Help.tar.gz ${INTERMEDIATE_FILES}
 
 doxygen:
-	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo -n "Building Doxygen Documentation (Builds/Stroika-Doxygen-Help.tar.gz; see IntermediateFiles/Doxygen/BUILD.txt)..."
+	@$(StroikaRoot)/Build/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo -n "Building Doxygen Documentation (Builds/Stroika-Doxygen-Help.tar.gz; see IntermediateFiles/Doxygen/BUILD.txt)..."
 	@rm -rf ${INTERMEDIATE_FILES}
 	@mkdir -p ${INTERMEDIATE_FILES}
-	@echo "PROJECT_NUMBER = \"" `$(StroikaRoot)/ScriptsLib/ExtractVersionInformation $(StroikaRoot)/STROIKA_VERSION FullVersionString`\" > Doxygen/PROJECT_NUMBER.cfg
+	@echo "PROJECT_NUMBER = \"" `$(StroikaRoot)/Build/ScriptsLib/ExtractVersionInformation $(StroikaRoot)/STROIKA_VERSION FullVersionString`\" > Doxygen/PROJECT_NUMBER.cfg
 	@cd Doxygen && ${DOXYGEN} Stroika-Library.cfg >${INTERMEDIATE_FILES}/BUILD.txt 2>&1
 	@cd ${INTERMEDIATE_FILES}; \
 		mv html Stroika-Doxygen-Help; \

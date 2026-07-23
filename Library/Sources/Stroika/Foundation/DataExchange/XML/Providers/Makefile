@@ -2,9 +2,9 @@ StroikaRoot	:=	$(abspath ../../../../../../../)/
 SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/XML/Providers/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/XML/Providers/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
 
 
 

@@ -93,8 +93,8 @@ C++ changes.
   depends on Frameworks.
 - `Samples/` — one directory per example app (Containers, Serialization, WebService, ...), each
   with its own `ReadMe.md`; good entry points for seeing idiomatic usage.
-- `ScriptsLib/` — helper shell scripts used by the Makefiles/configure (e.g. `Skel`, used to
-  scaffold a new Stroika-based application: `./ScriptsLib/Skel --appRoot ../myApp`).
+- `Build/ScriptsLib/` — helper shell scripts used by the Makefiles/configure (e.g. `Skel`, used to
+  scaffold a new Stroika-based application: `./Build/ScriptsLib/Skel --appRoot ../myApp`).
 - `Tools/`, `Workspaces/` — IDE workspace files (VSCode, Visual Studio.Net) and dev tools.
 
 ### Design conventions (see `Documentation/Design-Overview.md` and `Patterns.md` for full detail)

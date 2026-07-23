@@ -1,0 +1,530 @@
+#!/bin/bash
+
+set -E
+trap '[ "$?" -ne 77 ] || exit 77' ERR
+
+
+: ${CONTINUE:=0}
+if [ -z ${INCLUDE_VALGRIND_MEMCHECK_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ $? -eq 0 ]; then  INCLUDE_VALGRIND_MEMCHECK_TESTS=1; else  INCLUDE_VALGRIND_MEMCHECK_TESTS=0; fi; fi
+if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=0; else  CLOBBER_FIRST=1; fi; fi
+: ${PARALELLMAKEFLAG:=-j5}
+: ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=regression-test-configurations}
+: ${USE_TEST_BASENAME:=""}
+: ${DO_SKEL_TEST:=1}
+
+# Some scripts use this, especially when we invoke stuff from 'GetConfigurations'
+export StroikaRoot=`realpath .`
+
+
+if [ "$BUILD_EXTRA_COMPILERS_IF_MISSING" == "" ] ; then 
+	if [ $CONTINUE -eq 0 ]  && [ "$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" != "default-configurations" ] && [ "$DETECTED_HOST_OS" == "Linux" ]; then
+		if [ -w /private-compiler-builds/ ]; then
+			BUILD_EXTRA_COMPILERS_IF_MISSING=1
+		fi
+	fi
+fi
+if [ "$BUILD_EXTRA_COMPILERS_IF_MISSING" == "" ] ; then 
+	BUILD_EXTRA_COMPILERS_IF_MISSING=0
+fi
+
+
+: ${RASPBERRYPI_REMOTE_MACHINE:=raspberrypi.local}
+: ${RASPBERRYPI_REMOTE_WITH_LOGIN:=lewis@${RASPBERRYPI_REMOTE_MACHINE}}
+
+
+VER=`Build/ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
+
+# Set options so if sanitizer triggers, it offers more useful output by default
+# export ASAN_OPTIONS=
+export UBSAN_OPTIONS=print_stacktrace=1 
+#export TSAN_OPTIONS=
+
+mkdir -p Tests/HistoricalRegressionTestResults
+
+DETECTED_HOST_OS=`Build/ScriptsLib/DetectedHostOS`
+
+if [ "$DETECTED_HOST_OS" == "Darwin" ] ; then
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode"; fi
+    echo "USING MacOS($USE_TEST_BASENAME)..."
+fi
+if [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_${DETECTED_HOST_OS}_VS2k19"; fi
+    echo "USING Visual Studio ($USE_TEST_BASENAME)..."
+fi
+
+
+ARM_TEST_MACHINE_AVAIL=`(ping ${RASPBERRYPI_REMOTE_MACHINE} -c 4 2>/dev/null 1>/dev/null); echo $?`
+if [ $ARM_TEST_MACHINE_AVAIL -eq 0 ]; then
+	ARM_TEST_MACHINE_AVAIL=1
+else
+	ARM_TEST_MACHINE_AVAIL=0
+fi
+
+if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="$DETECTED_HOST_OS"; fi
+TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
+
+
+
+
+
+PREFIX_OUT_LABEL=")))-"
+
+STARTAT_INT=$(date +%s)
+STARTAT=`date`;
+
+
+
+if [ $CONTINUE -ne 0 ] ; then
+	echo "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT"
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+else
+	rm -f $TEST_OUT_FILE
+	echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
+	echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
+fi
+
+
+
+echo "$PREFIX_OUT_LABEL" "REGRESSION TEST CONFIGURATION VARIABLES:" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    USE_TEST_BASENAME=$USE_TEST_BASENAME" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    PARALELLMAKEFLAG=$PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_MACHINE=$RASPBERRYPI_REMOTE_MACHINE" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    MONGO_CONNECTION_STRING=$MONGO_CONNECTION_STRING" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    CONTINUE=$CONTINUE" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    BUILD_EXTRA_COMPILERS_IF_MISSING=$BUILD_EXTRA_COMPILERS_IF_MISSING" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_WITH_LOGIN=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    DETECTED_HOST_OS=$DETECTED_HOST_OS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    uname -a=`uname -a`" >>$TEST_OUT_FILE 2>&1
+GIT_COMMIT=`git describe --tags`
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    GIT COMMIT: $GIT_COMMIT" >>$TEST_OUT_FILE 2>&1
+fi
+
+PREFIX_OUT_LABEL=$PREFIX_OUT_LABEL ./Build/ScriptsLib/PrintInfoAboutOSAndInstalledBuildTools >>$TEST_OUT_FILE
+
+if [ "$LOCAL_VALGRIND_CONFIGS" != "" ]; then
+	echo "$PREFIX_OUT_LABEL" "    LOCAL_VALGRIND_CONFIGS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
+fi
+echo >>$TEST_OUT_FILE 2>&1
+
+
+
+
+if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
+	if ! [ -e /private-compiler-builds/clang-7.0.0 ]; then
+		echo -n "Building /private-compiler-builds/clang-7.0.0..."
+		VERSION=7.0.0 ./Build/ScriptsLib/BuildClang  >>$TEST_OUT_FILE 2>&1
+		rm -rf BUILDDIR-LLVM-7.0.0
+		echo "done"
+	fi
+fi
+
+
+
+### Create the actual configuration files that drive what is built
+if [ $CONTINUE -eq 0 ] ; then
+	rm -rf ConfigurationFiles
+	make $BUILD_CONFIGURATIONS_MAKEFILE_TARGET >>$TEST_OUT_FILE 2>&1
+fi
+
+
+###todo FIX CROSS_COMPILE_CONFIGS configs here
+CROSS_COMPILE_CONFIGS=`Build/ScriptsLib/GetConfigurations --quiet --cross-compiled-only`
+RASPBERRYPICONFIGS=`Build/ScriptsLib/GetConfigurations --quiet --config-tags "raspberrypi"`
+RASPBERRYPIVALGRINDCONFIGS=`Build/ScriptsLib/GetConfigurations --quiet --config-tags "raspberrypi valgrind"`
+
+
+echo $RASPBERRYPIVALGRINDCONFIGS > /tmp/raspvalconfigs.txt
+Build/ScriptsLib/GetConfigurations --quiet --config-tags "valgrind"  > /tmp/allvalgrindconfigs.txt
+if [ "$DETECTED_HOST_OS" == "Linux" ] ; then
+	LOCAL_CONFIGS=`comm -23 <(Build/ScriptsLib/GetConfigurations --quiet --all-default) <(echo $RASPBERRYPICONFIGS)`
+	LOCAL_VALGRIND_CONFIGS=`comm -23 <(sort /tmp/allvalgrindconfigs.txt) <(sort /tmp/raspvalconfigs.txt)`
+	#provide better defaults for these flags
+	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" == "" ]; then
+		if [ `echo $LOCAL_VALGRIND_CONFIGS | wc -w` -eq 0 ] ; then
+			INCLUDE_VALGRIND_MEMCHECK_TESTS=0
+		else
+			INCLUDE_VALGRIND_MEMCHECK_TESTS=1
+		fi
+	fi
+else
+	LOCAL_CONFIGS=`Build/ScriptsLib/GetConfigurations --quiet --all-default`
+	LOCAL_VALGRIND_CONFIGS=""
+fi
+rm -f /tmp/raspvalconfigs.txt /tmp/allvalgrindconfigs.txt
+
+if [ "$INCLUDE_RASPBERRYPI_TESTS" == "" ]; then
+	if [ "$RASPBERRYPICONFIGS" == "" ]; then
+		INCLUDE_RASPBERRYPI_TESTS=0
+	else
+		INCLUDE_RASPBERRYPI_TESTS=$ARM_TEST_MACHINE_AVAIL
+	fi
+fi
+
+NUM_CONFIGURATIONS=`Build/ScriptsLib/GetConfigurations --quiet --all-default | wc -w`
+NUM_CROSS_COMPILE_CONFIGURATIONS=`echo $CROSS_COMPILE_CONFIGS | wc -w`
+NUM_REMOTE_CONFIGURATIONS=`echo $RASPBERRYPICONFIGS | wc -w`
+NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
+NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=`echo $LOCAL_VALGRIND_CONFIGS | wc -w`
+NUM_REMOTE_TEST_VALGRINDCONFIGURATIONS=`echo $RASPBERRYPIVALGRINDCONFIGS | wc -w`
+
+
+if [ "$INCLUDE_LOCAL_TESTS" == "" ]; then
+	if [ $NUM_CONFIGURATIONS -eq $NUM_REMOTE_CONFIGURATIONS ]; then
+		INCLUDE_LOCAL_TESTS=0
+	else
+		INCLUDE_LOCAL_TESTS=1
+	fi
+fi
+
+if [ "$INCLUDE_PERFORMANCE_TESTS" == "" ]; then
+	#eventually fix this code so we can run remote (raspberrypi) regtest, but for now, just default perf test to iff doing local tests
+	INCLUDE_PERFORMANCE_TESTS=${INCLUDE_LOCAL_TESTS}
+fi
+
+
+NUM_PASSES_OF_REGTESTS_RUN=0
+if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
+	NUM_LOCAL_TESTS=$(($NUM_CONFIGURATIONS - $NUM_CROSS_COMPILE_CONFIGURATIONS))
+	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + $NUM_LOCAL_TESTS))
+	if [ $INCLUDE_VALGRIND_MEMCHECK_TESTS -eq 1 ]; then
+		NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS))
+	fi
+fi
+if [ $INCLUDE_RASPBERRYPI_TESTS -eq 1 ]; then
+	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + $NUM_REMOTE_CONFIGURATIONS))
+	if [ $INCLUDE_VALGRIND_MEMCHECK_TESTS -eq 1 ]; then
+		NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + $NUM_REMOTE_TEST_VALGRINDCONFIGURATIONS))
+	fi
+fi
+
+
+
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "REGRESSION TEST CONFIGURATION VARIABLES(UPDATES):" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    NUM_REGTESTS=$NUM_REGTESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    NUM_CONFIGURATIONS=$NUM_CONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    NUM_PASSES_OF_REGTESTS_RUN=$NUM_PASSES_OF_REGTESTS_RUN" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_LOCAL_TESTS=$INCLUDE_LOCAL_TESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_RASPBERRYPI_TESTS=$INCLUDE_RASPBERRYPI_TESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    RASPBERRYPICONFIGS=$RASPBERRYPICONFIGS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    RASPBERRYPIVALGRINDCONFIGS=$RASPBERRYPIVALGRINDCONFIGS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    LOCAL_CONFIGS=$LOCAL_CONFIGS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    LOCAL_VALGRIND_CONFIGS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_PERFORMANCE_TESTS=$INCLUDE_PERFORMANCE_TESTS" >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+
+
+
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+echo "Building configurations ($NUM_CONFIGURATIONS):"
+echo "$PREFIX_OUT_LABEL" "Building configurations ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
+for i in `Build/ScriptsLib/GetConfigurations --quiet --all-default`; do
+	echo "   $i";
+	echo "   $i"  >>$TEST_OUT_FILE 2>&1;
+done
+
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "Configurations DETAILS ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
+for i in `Build/ScriptsLib/GetConfigurations --quiet --all-default`; do
+	echo "   $i:"  >>$TEST_OUT_FILE 2>&1;
+	sed 's/^/      /' ConfigurationFiles/$i.xml >>$TEST_OUT_FILE
+	echo >>$TEST_OUT_FILE 2>&1
+done
+
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+if [ $CLOBBER_FIRST -ne 0 ] ; then
+  	echo "Make clobber"
+  	echo "Make clobber" >>$TEST_OUT_FILE 2>&1
+  	make clobber >>$TEST_OUT_FILE 2>&1
+else
+	echo "Skipping Clobber"
+	echo "Skipping Clobber" >>$TEST_OUT_FILE 2>&1
+fi
+
+
+
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+STAGE_STARTAT_INT=$(date +%s)
+echo "<Make libraries tools tests samples>" >>$TEST_OUT_FILE 2>&1
+echo -n "Make libraries tools tests samples ($PARALELLMAKEFLAG)..."
+echo "$PREFIX_OUT_LABEL" "Make libraries tools tests samples ($PARALELLMAKEFLAG)..."  >>$TEST_OUT_FILE 2>&1
+make libraries tools tests samples QUICK_BUILD=0 $PARALELLMAKEFLAG >>$TEST_OUT_FILE 2>&1
+STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+echo "</Make libraries tools tests samples>" >>$TEST_OUT_FILE 2>&1
+
+
+
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+STAGE_STARTAT_INT=$(date +%s)
+echo "<Run-Tests ALL-Local>" >>$TEST_OUT_FILE 2>&1
+if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
+	echo -n "Run-Tests ALL-Local..."
+	echo "$PREFIX_OUT_LABEL" "Run-Tests ALL-Local..." >>$TEST_OUT_FILE 2>&1
+	make TEST_FAILURES_CAUSE_FAILED_MAKE=0 run-tests >>$TEST_OUT_FILE 2>&1
+	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+else
+	echo  "Run-Tests ALL-Local...SKIPPED"
+	echo "$PREFIX_OUT_LABEL" "Run-Tests ALL-Local...SKIPPED" >>$TEST_OUT_FILE 2>&1
+fi
+echo "</Run-Tests ALL-Local>" >>$TEST_OUT_FILE 2>&1
+
+
+
+### @todo - cleanup so have better logical test
+# cuz arm tests done explicitly below (maybe should automatically substract 'cross-compiled tests')
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+echo "<Run-Tests-REMOTE>" >>$TEST_OUT_FILE 2>&1
+if [ $INCLUDE_RASPBERRYPI_TESTS -eq 1 ]; then
+	echo -n "Run-Tests raspberrypi remote..."
+	echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
+	STAGE_STARTAT_INT=$(date +%s)
+	for i in $RASPBERRYPICONFIGS; do 
+		echo "$PREFIX_OUT_LABEL" "make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
+		make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+	done; 
+	for i in $RASPBERRYPIVALGRINDCONFIGS; do 
+		echo "$PREFIX_OUT_LABEL" "make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN VALGRIND=memcheck" >>$TEST_OUT_FILE 2>&1
+		make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN VALGRIND=memcheck >>$TEST_OUT_FILE 2>&1
+	done; 
+	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+else
+	echo  "Run-Tests raspberrypi remote...SKIPPED"
+	echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote...SKIPPED" >>$TEST_OUT_FILE 2>&1
+fi
+echo "</Run-Tests-REMOTE>" >>$TEST_OUT_FILE 2>&1
+
+
+
+############## VALGRIND TESTS ################
+if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
+
+	RunLocalValgrind_() {
+	VALGRINDCMD2USE=$1
+	CONFIG2USE=$2
+	BEFORE_CMD=$3
+	if [[ "$LOCAL_VALGRIND_CONFIGS" =~ "$CONFIG2USE" ]]; then
+		ulimit -n 1024  ## without this valgrind frequently fails with "cannot create file" error
+		echo -n "eval \"${BEFORE_CMD}\" && make CONFIGURATION=$CONFIG2USE  VALGRIND=$VALGRINDCMD2USE run-tests ..."
+		echo "$PREFIX_OUT_LABEL" "eval \"${BEFORE_CMD}\" && make TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests ..." >>$TEST_OUT_FILE 2>&1
+		STAGE_STARTAT_INT=$(date +%s)
+		(eval "${BEFORE_CMD}" && make CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests) >>$TEST_OUT_FILE 2>&1 
+		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+	else
+		echo "skipping running valgrind cuz $CONFIG2USE not in used configurations"
+	fi
+	} 
+
+	echo >>$TEST_OUT_FILE 2>&1
+	echo >>$TEST_OUT_FILE 2>&1
+	echo "<LOCAL VALGRIND on (REGRESSION) tests>" >>$TEST_OUT_FILE 2>&1
+		#MEMCHECK:
+		if [[ ("$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0) && ($NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS -ne 0) ]] ; then
+			echo "Running valgrind MemCheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS"
+			echo "$PREFIX_OUT_LABEL" "Running valgrind memcheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
+			for o in ${LOCAL_VALGRIND_CONFIGS[@]} ; do 
+				RunLocalValgrind_ memcheck $o ""
+			done
+		else
+			echo "Skipping valgrind MemCheck regression tests because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS"
+			echo "$PREFIX_OUT_LABEL" "Skipping valgrind memcheck regression tests because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
+		fi
+	echo "</LOCAL VALGRIND on (REGRESSION) tests>" >>$TEST_OUT_FILE 2>&1
+
+
+	SAMPLE_APPS_2_TEST=()
+	SAMPLE_APPS_2_TEST+=("Samples-AppSettings/AppSettings")
+	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip")
+	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/lzma1604.7z")
+	SAMPLE_APPS_2_TEST+=("Samples-Containers/Containers")
+	SAMPLE_APPS_2_TEST+=("Samples-DocumentDB/DocumentDB")
+	SAMPLE_APPS_2_TEST+=("Samples-Serialization/Serialization")
+	SAMPLE_APPS_2_TEST+=("Samples-Service/Service --run-directly --runFor 10")
+	SAMPLE_APPS_2_TEST+=("Samples-SQL/SQL")
+	if [[ "$EUID" -eq 0 || $DETECTED_HOST_OS == "Cygwin" || $DETECTED_HOST_OS == "MSYS" ]] ; then
+		# requires root access on UNIX else fails
+		SAMPLE_APPS_2_TEST+=("Samples-SSDPClient/SSDPClient -l --quit-after 10")
+		SAMPLE_APPS_2_TEST+=("Samples-SSDPClient/SSDPClient -s 'upnp:rootdevice' --quit-after 10")
+		SAMPLE_APPS_2_TEST+=("Samples-SSDPServer/SSDPServer --quit-after 10")
+	fi
+	SAMPLE_APPS_2_TEST+=("Samples-SystemPerformanceClient/SystemPerformanceClient")
+	if [[ "$EUID" -eq 0 || $DETECTED_HOST_OS == "Cygwin" || $DETECTED_HOST_OS == "MSYS" ]] ; then
+		# requires root access on UNIX else fails
+		SAMPLE_APPS_2_TEST+=("Samples-Traceroute/Traceroute www.sophists.com")
+	fi
+	SAMPLE_APPS_2_TEST+=("Samples-WebServer/WebServer --quit-after 10")
+	SAMPLE_APPS_2_TEST+=("Samples-WebService/WebService --quit-after 10")
+
+	echo "Running SAMPLE_APP basic tests..."
+	echo >>$TEST_OUT_FILE 2>&1
+	echo >>$TEST_OUT_FILE 2>&1
+	echo "<Running SAMPLE_APP basic tests>" >>$TEST_OUT_FILE 2>&1
+		for cfg in ${LOCAL_CONFIGS} ; do
+
+			if [ `Build/ScriptsLib/GetConfigurationParameter $cfg CrossCompiling` == 'true' ]; then
+				continue;
+			fi
+
+			RunPrefix=`Build/ScriptsLib/GetConfigurationParameter $cfg RunPrefix`
+			for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
+				if [ "${RunPrefix}" = "" ] ; then
+					EXE_RUN_="Builds/${cfg}/${app}"
+				else
+					EXE_RUN_="${RunPrefix} Builds/${cfg}/${app}"
+				fi
+				#echo -n "  $EXE_RUN_ ..."
+				echo -n "  $PREFIX_OUT_LABEL" "$EXE_RUN_..." >>$TEST_OUT_FILE 2>&1
+				STAGE_STARTAT_INT=$(date +%s)
+				tmpfile=$(mktemp /tmp/stkregtst.XXXXXX)
+				if eval "($EXE_RUN_)" >$tmpfile 2>&1  ; then
+					echo -n "SUCCESS..." >>$TEST_OUT_FILE
+				else
+					echo "**FAILED**" >>$TEST_OUT_FILE
+					echo "FAILED TEST OUTPUT:" >>$TEST_OUT_FILE
+					cat $tmpfile >>$TEST_OUT_FILE
+				fi
+				rm -f $tmpfile
+				STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+				#echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+			done;
+		done; 
+	echo "</Running SAMPLE_APP basic tests>" >>$TEST_OUT_FILE 2>&1
+
+
+	echo >>$TEST_OUT_FILE 2>&1
+	echo >>$TEST_OUT_FILE 2>&1
+	echo "<VALGRIND SAMPLE_APP basic tests>" >>$TEST_OUT_FILE 2>&1
+		#Valgrind MEMCHECK ON a few sample apps
+		if [[ ("$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ) && ("$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" -ne 0 ) ]] ; then
+			for cfg in ${LOCAL_VALGRIND_CONFIGS} ; do
+				for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
+					# KISS  - include basically all the suppression files (later be smarter about which)
+					SUPPRESSION_LINES_="--suppressions=Tests/Valgrind-MemCheck-Common.supp --suppressions=Tests/Valgrind-MemCheck-BlockAllocation.supp  --suppressions=Tests/Valgrind-MemCheck-Common-x86_64.supp"
+					echo -n "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
+					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
+					STAGE_STARTAT_INT=$(date +%s)
+					valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
+					touch valgrind-log.tmp; cat valgrind-log.tmp >> $TEST_OUT_FILE
+					rm -f valgrind-log.tmp 
+					STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+					echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+					echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+				done; 
+			done; 
+		else
+			echo "Skipping memcheck SAMPLE_APPS_2_TEST because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS"
+			echo "$PREFIX_OUT_LABEL" "Skipping memcheck SAMPLE_APPS_2_TEST because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
+		fi
+	echo "</VALGRIND SAMPLE_APP basic tests>" >>$TEST_OUT_FILE 2>&1
+
+
+
+	if [ $INCLUDE_PERFORMANCE_TESTS -ne 0 ] ; then
+		echo >>$TEST_OUT_FILE 2>&1
+		echo >>$TEST_OUT_FILE 2>&1
+		echo -n "Build/ScriptsLib/RunPerformanceRegressionTests ..."
+		echo -n "$PREFIX_OUT_LABEL" "Build/ScriptsLib/RunPerformanceRegressionTests ..." >>$TEST_OUT_FILE 2>&1
+		STAGE_STARTAT_INT=$(date +%s)
+		Build/ScriptsLib/RunPerformanceRegressionTests>>$TEST_OUT_FILE 2>&1
+		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+	fi
+
+	if [ $DO_SKEL_TEST -ne 0 ]; then
+		echo >>$TEST_OUT_FILE 2>&1
+		echo >>$TEST_OUT_FILE 2>&1
+		echo -n "SKEL_TEST ... "
+		echo -n "$PREFIX_OUT_LABEL" "SKEL_TEST ... " >>$TEST_OUT_FILE 2>&1
+		STAGE_STARTAT_INT=$(date +%s)
+		echo "Build/ScriptsLib/Skel --appRoot $USE_TEST_BASENAME-skel" >>$TEST_OUT_FILE 2>&1
+		rm -rf $USE_TEST_BASENAME-skel
+		Build/ScriptsLib/Skel --appRoot $USE_TEST_BASENAME-skel >>$TEST_OUT_FILE 2>&1
+		echo -n "cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug ... " 2>&1
+		echo "cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug $PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
+		(cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1
+		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+	fi
+
+fi		# MATCHES if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
+
+
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+echo "Regression Tests Summary:"
+echo "$PREFIX_OUT_LABEL" "Regression Tests Summary:" >>$TEST_OUT_FILE 2>&1
+
+TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS))
+
+X1=`cat $TEST_OUT_FILE | grep -F "[  PASSED  ]" | wc -l`
+NTSANS=`cat $TEST_OUT_FILE | grep -F "because sudo sysctl vm.mmap_rnd_bits" | wc -l`
+### Dont count fFailConnectionIfSSLCertificateInvalid as an error or failure - its a warning
+XF=`cat $TEST_OUT_FILE | grep -i FAILED | grep -v TEST_FAILURES_CAUSE_FAILED_MAKE | grep -v fFailConnectionIfSSLCertificateInvalid | wc -l`
+XE=`cat $TEST_OUT_FILE | grep -v fFailConnectionIfSSLCertificateInvalid | grep -E -i "error[ \t]*:" | wc -l`
+XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
+VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep "^==" | wc -l`
+XW=`cat $TEST_OUT_FILE | grep -E -i "warning.*:" | wc -l`
+
+if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
+	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
+	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS">>$TEST_OUT_FILE 2>&1
+fi
+
+TOTAL_WARNINGS_EXPECTED=0
+TOTAL_WARNINGS_EXPECTED=$(expr $TOTAL_WARNINGS_EXPECTED + $(cat $TEST_OUT_FILE | grep fFailConnectionIfSSLCertificateInvalid | wc -l))
+
+if [ $X1 -eq $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
+	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
+	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
+else
+	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
+	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
+fi
+echo "   $XF items failed (expected 0)"
+echo "   $XF items failed (expected 0)">>$TEST_OUT_FILE 2>&1
+echo "   $XE items error (expected 0)"
+echo "   $XE items error (expected 0)">>$TEST_OUT_FILE 2>&1
+echo "   $XW items warned (expected $TOTAL_WARNINGS_EXPECTED)"
+echo "   $XW items warned (expected $TOTAL_WARNINGS_EXPECTED)">>$TEST_OUT_FILE 2>&1
+echo "   $XC core dumps (expected 0)"
+echo "   $XC core dumps (expected 0)">>$TEST_OUT_FILE 2>&1
+if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
+	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)"
+	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)" >>$TEST_OUT_FILE 2>&1
+fi
+if [ "$NTSANS" -ne 0 ] ; then
+	echo "   ***   WARNING: about sysctl vm.mmap_rnd_bits so TSAN disabled"
+	echo "   ***   WARNING: about sysctl vm.mmap_rnd_bits so TSAN disabled" >>$TEST_OUT_FILE 2>&1
+fi
+TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STARTAT_INT )) / 60))
+echo "Finished at `date` ($TOTAL_MINUTES_SPENT minutes)"
+echo "$PREFIX_OUT_LABEL" "Finished at `date`  ($TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1

@@ -1,0 +1,20 @@
+#!/bin/bash
+#   EG ./Build/ScriptsLib/FixupDashIs -I/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/lib/pkgconfig/../../include/libxml2 -foo  -I/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/lib/pkgconfig/../../include/libxml2
+#
+
+firstTime=0
+for ARG in "$@"; do
+    if [[ $firstTime == 0 ]]; then
+        firstTime=1
+    else 
+        echo -n " "
+    fi
+    if [[ "$ARG" == "-I"* ]]; then
+        FILENAME=${ARG:2};
+        FILENAME=`cygpath --mixed $FILENAME`
+        echo -n "-I$FILENAME"
+    else
+        echo -n "$ARG"
+    fi
+done
+exit 0

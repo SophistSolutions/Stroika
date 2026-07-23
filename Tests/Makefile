@@ -1,6 +1,6 @@
 export StroikaRoot?=$(abspath ../)/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 .PHONY:	tests all check clobber
@@ -70,14 +70,14 @@ RUNTEST_EXE_RUN=ssh $(SSH_REMOTE_WARNINGS_OFF) $(REMOTE) ${RunPrefix} "$(VALEXTR
 RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) ${RunPrefix} $(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN) ${GTEST_ARGS_}
 else ifeq (memcheck,$(VALGRIND))
 RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN) ${GTEST_ARGS_}
-RUNTEST_EXE_RUN_PRINTLINE=`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(RUNTEST_EXE_RUN)` ${GTEST_ARGS_}
+RUNTEST_EXE_RUN_PRINTLINE=`$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $(RUNTEST_EXE_RUN)` ${GTEST_ARGS_}
 else
 ifeq (${RunPrefix},)
 RUNTEST_EXE_RUN=$(EXEPATTERN) ${GTEST_ARGS_}
-RUNTEST_EXE_RUN_PRINTLINE=`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(EXEPATTERN)` ${GTEST_ARGS_}
+RUNTEST_EXE_RUN_PRINTLINE=`$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $(EXEPATTERN)` ${GTEST_ARGS_}
 else
 RUNTEST_EXE_RUN=${RunPrefix} $(EXEPATTERN) ${GTEST_ARGS_}
-RUNTEST_EXE_RUN_PRINTLINE=${RunPrefix} `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(EXEPATTERN)` ${GTEST_ARGS_}
+RUNTEST_EXE_RUN_PRINTLINE=${RunPrefix} `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $(EXEPATTERN)` ${GTEST_ARGS_}
 endif
 endif
 
@@ -103,12 +103,12 @@ all:		tests
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)Build/ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i | exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking Stroika Tests {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking Stroika Tests {$(CONFIGURATION)}:"
 	@for tst in $(TESTS) ; do\
 		$(MAKE) --directory $$tst --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
@@ -117,11 +117,11 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)Build/ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika Tests $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika Tests $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
 	@if [ "$@" = "clobber" ] ; then \
 		rm -rf ${StroikaPlatformTargetBuildDir}Tests/;\
@@ -131,30 +131,30 @@ endif
 
 
 project-files:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio Tests project files:"
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2022 project files..."
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio Tests project files:"
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2022 project files..."
 	@cd Projects/VisualStudio.Net-2022 && ./BuildProjectsFiles
 	@$(ECHO) done
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2026 project files..."
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2026 project files..."
 	@cd Projects/VisualStudio.Net-2026 && ./BuildProjectsFiles
 	@$(ECHO) done
 
 
 tests:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)Build/ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory tests CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tests {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tests {$(CONFIGURATION)}:"
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@(cd Projects/$(BuildPlatform) && ./BuildProjectsFiles)
 endif
 	@$(MAKE) --no-print-directory $(TESTS) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 
-PREFIX_:=$(shell ../ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL) + 1)))
+PREFIX_:=$(shell ../Build/ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL) + 1)))
 
 
 #### @todo make targets final EXE and don't need PHONY and can be even quicker running
@@ -167,12 +167,12 @@ endif
 
 run-tests:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations` ; do\
+	@for i in `../Build/ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
 	@#NOTE - not obvious we want the 'tr -d but makes it a bit more terse'
 ifneq (${qFeatureFlag_mongocxxdriver},no)
 	@if [ "$(MONGO_CONNECTION_STRING)" = "" ] ; then $(ECHO) "${PREFIX_} Note: MONGO_CONNECTION_STRING not set so some tests skipped"; fi

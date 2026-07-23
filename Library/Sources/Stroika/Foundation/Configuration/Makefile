@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../../)/
 SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/Configuration/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Configuration/
 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -18,7 +18,7 @@ Objs	=	\
 SubDirs	=	\
 
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
 
 
 all:	$(Objs) $(SubDirs)

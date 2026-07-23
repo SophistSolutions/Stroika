@@ -1,7 +1,3 @@
-#!/bin/sh
-ARCH=$1
-if [ "x86_64" = "$ARCH" ] ; then echo "amd64"; exit 0; fi
-if [ "x86" = "$ARCH" ] ; then echo "i386"; exit 0; fi
-#not right, but probably best we can do...for now...(did't appear to work)
-#echo "any"
-echo "$ARCH"
+#!/bin/bash
+echo "ScriptsLib/MapArch2DebFileArchitecture: this location is deprecated, use Build/ScriptsLib/MapArch2DebFileArchitecture instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/MapArch2DebFileArchitecture" "$@"

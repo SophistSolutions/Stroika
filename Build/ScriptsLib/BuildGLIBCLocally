@@ -1,0 +1,38 @@
+# SEE https://stroika.atlassian.net/browse/STK-1022
+# (SO FAR NOT FULLY FUNCTIONING) Hack to build GLIBC 2.38 for raspberrypi
+# if you build using arm...g++-13 (only one available on Ubuntu 24.04) it depends
+# on GLIBC 2.38; but the latest raspberry pi seems to only come with GLIBC 2.36
+# BEST hack I've found to be able to run there is to build a private copy on your target raspberry pi device
+# and run your code with LD_LIBRARY_PATH=....
+
+GLIBC_VERSION=2.38
+GLIBC_SRC=https://ftp.gnu.org/gnu/glibc/glibc-${GLIBC_VERSION}.tar.gz
+
+wget ${GLIBC_SRC}
+tar xvf glibc-${GLIBC_VERSION}.tar.gz
+
+cd glibc-${GLIBC_VERSION}
+mkdir build
+cd build
+export glibc_install="$(pwd)/install"
+../configure --prefix "$glibc_install"
+## if configure fails, apt-get install missing components (e.g. sudo apt-get install bison gawk && sudo apt-get install patchelf for below hack)
+
+## Make took about 25 minutes
+make -j `nproc`
+make install -j `nproc`
+
+echo "Run With LD_LIBRARY_PATH=$(pwd)/install/lib"
+## then run with
+##  LD_LIBRARY_PATH=install/lib ../../../Test53
+## produced
+# ../../../Test53: symbol lookup error: install/lib/libc.so.6: undefined symbol: __nptl_set_robust_list_avail, version GLIBC_PRIVATE
+# So clearly more DEBUGGING todo...
+##
+## AND FROM https://stackoverflow.com/questions/847179/multiple-glibc-libraries-on-a-single-host
+##  ./patchelf --set-interpreter /path/to/newglibc/ld-linux.so.2 --set-rpath /path/to/newglibc/ myapp
+##  patchelf --set-interpreter /tmp/glibc-2.38/build/install/lib/ld-linux-armhf.so.3 --set-rpath /tmp/glibc-2.38/build/install/lib Test01
+## OR could do
+# g++ main.o -o myapp ... \
+#   -Wl,--rpath=/path/to/newglibc \
+#   -Wl,--dynamic-linker=/path/to/newglibc/ld-linux.so.2
