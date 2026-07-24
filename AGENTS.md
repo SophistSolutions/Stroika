@@ -93,8 +93,24 @@ C++ changes.
   depends on Frameworks.
 - `Samples/` — one directory per example app (Containers, Serialization, WebService, ...), each
   with its own `ReadMe.md`; good entry points for seeing idiomatic usage.
-- `Build/ScriptsLib/` — helper shell scripts used by the Makefiles/configure (e.g. `Skel`, used to
-  scaffold a new Stroika-based application: `./Build/ScriptsLib/Skel --appRoot ../myApp`).
+- `Build/` — everything the build system itself needs, divided by *role* (how a file is consumed),
+  not by topic:
+  - `Build/Scripts/` — standalone programs invoked directly by the Makefiles and `configure`
+    (e.g. `Skel`, used to scaffold a new Stroika-based application:
+    `./Build/Scripts/Skel --appRoot ../myApp`). These are run as commands, not as `bash X`, so they
+    must keep their executable bit — a lost `chmod +x` breaks the build on UNIX while still
+    appearing to work on Windows (MSYS/Cygwin fake the mode).
+  - `Build/Lib/` — libraries pulled *into* other build files and never executed: `Make/` holds the
+    `.mk` fragments (`SharedMakeVariables-Default.mk` for variables, then
+    `SharedBuildRules-Default.mk` for rules — that include order is required), `Perl/` holds the
+    `.pl` files `require`d by `configure` and the scripts.
+  - `Build/Shared/` — data read at build time rather than code: `Skel-Templates/`, the app skeletons
+    `Skel` copies and substitutes into.
+  - `Build/Docker/` — build-VM container definitions (see `Documentation/Building-Stroika.md`);
+    `Build/BootstrapToolsSrc/` — source for the few tools that must exist before Stroika can build.
+  A deprecated top-level `ScriptsLib/` still exists purely to shim the pre-3.0d24 layout: each entry
+  warns and forwards to its new home. Don't add to it, and don't reference it from new code.
+- `Tests/Scripts/` — helpers specific to the regression-test harness (test naming/listing).
 - `Tools/`, `Workspaces/` — IDE workspace files (VSCode, Visual Studio.Net) and dev tools.
 
 ### Design conventions (see `Documentation/Design-Overview.md` and `Patterns.md` for full detail)

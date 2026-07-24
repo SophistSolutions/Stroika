@@ -7,7 +7,7 @@
 export TOP_ROOT:=$(abspath ../../../)/
 StroikaRoot	:=	$(TOP_ROOT)
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-HTMLUI/
 
@@ -18,7 +18,7 @@ NEED_GNU_MAKE_ := 4.0.0
 OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VERSION) $(NEED_GNU_MAKE_))))
 
 all:
-	@$(StroikaRoot)/Build/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples-HTMLUI/HTML:"
+	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples-HTMLUI/HTML:"
 ifeq ($(CONFIGURATION),)
 	@echo "Cannot complete build without a configuration" && exit 1;
 endif
@@ -46,19 +46,19 @@ ifneq ($(CONFIGURATION),)
 endif
 
 check-prerequisites:
-	@$(StroikaRoot)/Build/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking HTML prerequisites:"
-	@$(StroikaRoot)/Build/ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type quasar 2> /dev/null) || ($(StroikaRoot)/Build/ScriptsLib/GetMessageForMissingTool quasar && exit 1)"
-	@$(StroikaRoot)/Build/ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type node 2> /dev/null) || ($(StroikaRoot)/Build/ScriptsLib/GetMessageForMissingTool node && exit 1)"
-	@$(StroikaRoot)Build/ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type npm 2> /dev/null) || ($(StroikaRoot)Build/ScriptsLib/GetMessageForMissingTool npm && exit 1)"
+	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking HTML prerequisites:"
+	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type quasar 2> /dev/null) || ($(StroikaRoot)/Build/Scripts/GetMessageForMissingTool quasar && exit 1)"
+	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type node 2> /dev/null) || ($(StroikaRoot)/Build/Scripts/GetMessageForMissingTool node && exit 1)"
+	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type npm 2> /dev/null) || ($(StroikaRoot)Build/Scripts/GetMessageForMissingTool npm && exit 1)"
 
 ${PER_CONFIGURATION_BUILDS_DIR_}: $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
-	@$(StroikaRoot)/Build/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "npm install ( log2" `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}`NPM-Install.txt ") ..."
+	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "npm install ( log2" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}`NPM-Install.txt ") ..."
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && npm i > ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}/NPM-Install.txt 2>&1
 	@# note - this build ignores .env file; used only for test/dev builds (maybe overwrite .env file with one form CONFIGURATION?)
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_).env
-	@$(StroikaRoot)Build/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building ( log2" `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}`Build.txt ") ..."
+	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building ( log2" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}`Build.txt ") ..."
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && npm run build > ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}/Build.txt 2>&1
-	@$(StroikaRoot)Build/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Copying to `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables ${PER_CONFIGURATION_BUILDS_DIR_}` "..."
+	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Copying to `$(StroikaRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_BUILDS_DIR_}` "..."
 	@rm -rf ${PER_CONFIGURATION_BUILDS_DIR_} && mkdir -p ${PER_CONFIGURATION_BUILDS_DIR_} && cp -r $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/dist/spa/* ${PER_CONFIGURATION_BUILDS_DIR_}
 
 
@@ -79,7 +79,7 @@ $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/TOOLS_CHECKED:
 
 
 $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_):
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Preparing symbolic links for " `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables "$@"` "... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Preparing symbolic links for " `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "$@"` "... "
 	@rm -rf $@ && mkdir -p $@
 	@for i in ${SRC_FILES2Link_}; do cp -r `pwd`/$$i $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/$$i; done
 

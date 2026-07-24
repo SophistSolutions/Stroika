@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/GetConfigurationParameter: this location is deprecated, use Build/ScriptsLib/GetConfigurationParameter instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/GetConfigurationParameter" "$@"
+echo "ScriptsLib/GetConfigurationParameter: this location is deprecated, use Build/Scripts/GetConfigurationParameter instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/GetConfigurationParameter" "$@"

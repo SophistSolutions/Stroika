@@ -1,0 +1,26 @@
+#!/usr/bin/perl 
+
+BEGIN{ @INC = ( "./", @INC ); }
+
+sub	GetThisScriptDir {
+	use File::Basename;
+	use Cwd 'abs_path';
+	my $p = __FILE__;
+	my $A = abs_path ($p);
+	my $dirname = dirname($A);
+	return $dirname;
+}
+my	$thisScriptDir	=	GetThisScriptDir ();
+
+require "$thisScriptDir/../Lib/Perl/ConfigurationReader.pl";
+
+my $configuratioName=$ARGV[0];
+my $envVarName=$ARGV[1];
+if ($#ARGV < 1) {
+	die "Missing configuration name argument"; 
+}
+if ("$envVarName" eq "" ) {
+	die "Missing configuration parameter name argument"; 
+}
+
+print GetConfigurationParameter($configuratioName, $envVarName);

@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+#   Maps to ln -s, but to work on Windoze - must do some environment variable magic to
+#   make it really work.
+#
+# EXAMPLES:
+#       ${StroikaRoot}Build/Scripts/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+#       ${StroikaRoot}Build/Scripts/MakeSymbolicLink "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
+#
+
+TARGET=$1
+ALIASPATH=$2
+
+get_script_dir () {
+     #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
+     SOURCE="${BASH_SOURCE[0]}"
+     # While $SOURCE is a symlink, resolve it
+     while [ -h "$SOURCE" ]; do
+          DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+          SOURCE="$( readlink "$SOURCE" )"
+          # If $SOURCE was a relative symlink (so no "/" as prefix, need to resolve it relative to the symlink base directory
+          [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+     done
+     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+     echo "$DIR"
+}
+MY_PATH=$(get_script_dir)
+
+DETECTED_HOST_OS=`${MY_PATH}/DetectedHostOS`
+
+# target file must exist for MakeSymbolicLink, but we dont want to really create an empty file, so remove after
+# Comes up in Skel script
+FORCE_FILE_EXISTS_FIRST=0
+if [[ "$DETECTED_HOST_OS" == "Cygwin"  ]] ; then
+    export CYGWIN="winsymlinks:nativestrict;$CYGWIN"
+    if [ ! -e $TARGET ] ; then
+        FORCE_FILE_EXISTS_FIRST=1
+    fi
+fi
+if [[ "$DETECTED_HOST_OS" == "MSYS"  ]] ; then
+    export MSYS="winsymlinks:nativestrict;$MSYS"
+    if [ ! -e $TARGET ] ; then
+        FORCE_FILE_EXISTS_FIRST=1
+    fi
+fi
+
+if [ $FORCE_FILE_EXISTS_FIRST == 1 ] ; then
+    touch $TARGET
+fi
+if [ $# == 2 ] ; then
+    ln -s $TARGET $ALIASPATH
+else
+    ln -s $TARGET
+fi
+if [ $FORCE_FILE_EXISTS_FIRST == 1 ] ; then
+    rm $TARGET
+fi

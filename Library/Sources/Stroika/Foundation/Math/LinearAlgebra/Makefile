@@ -2,9 +2,9 @@ StroikaRoot	:=	$(abspath ../../../../../../)/
 SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Math/LinearAlgebra/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Math/LinearAlgebra/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)

@@ -2,7 +2,7 @@ StroikaRoot		:=	$(abspath ../../)/
 SrcDir			:=	$(StroikaRoot)Samples/ActiveLedIt/
 ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-ActiveLedIt/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 TARGETDIR			:=	${StroikaPlatformTargetBuildDir}Samples-ActiveLedIt/
 TARGETEXE			:=	$(TARGETDIR)SophistSolutions.ActiveLedIt.dll
@@ -35,21 +35,21 @@ CXXFLAGS += /I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 endif
 
 
-include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 #OCX ActiveX controls are DLLs. I THINK MSFT requires this to somehow get defined (but unclear where/for what)
 CXXFLAGS +=   /D_WINDLL
 
 
 all:
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/ActiveLedIt:"
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/ActiveLedIt:"
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent $(TARGETEXE) $(TARGETDIR)ActiveLedIt.cab MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
 check:
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/ActiveLedIt...              "
-	@$(StroikaRoot)Build/ScriptsLib/CheckFileExists $(TARGETEXE)
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/ActiveLedIt...              "
+	@$(StroikaRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 
 
@@ -74,9 +74,9 @@ RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 LinkerArgs_ExtraSuffix_	+= -TLBID:1
 
 $(ObjDir)ActiveLedIt.tlb:
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c)';\
+	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c)';\
 	fi
 	@$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c) > $(ObjDir)MIDL-Build.out 2>&1
 
@@ -85,9 +85,9 @@ $(ObjDir)ActiveLedIt.tlb:
 RC_FLAGS += -l 0x0409
 
 $(ObjDir)ActiveLedIt.res:
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.rc` "; see "`$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.rc` "; see "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res)';\
+	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res)';\
 	fi
 	@$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res) > $(ObjDir)RC-Build.out 2>&1
 
@@ -96,9 +96,9 @@ $(ObjDir)ActiveLedIt.res:
 LinkerArgs_ExtraSuffix_ += -DEF:Sources/ActiveLedIt.def
 
 $(TARGETEXE):	$(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $@`" "... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks, ${LinkerArgs_ExtraSuffix_})';\
+	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks, ${LinkerArgs_ExtraSuffix_})';\
 	fi
 	@$(call DEFAULT_LINK_LINE, $@, stroika-frameworks, ${LinkerArgs_ExtraSuffix_})
 
@@ -106,7 +106,7 @@ $(TARGETEXE):	$(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 
 
 $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables "$@ ; see $(ObjDir)CAB-Build.OUT"` ... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "$@ ; see $(ObjDir)CAB-Build.OUT"` ... "
 	@rm -rf $(ObjDir)CabBld
 	@mkdir $(ObjDir)CabBld
 	@rm -f $(ObjDir)CabBld/ActiveLedIt.inf
@@ -128,7 +128,7 @@ $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
 
 
 register:	$(TARGETEXE)
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Registering `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $(TARGETEXE)`" "... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Registering `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(TARGETEXE)`" "... "
 	@#NOTE - if you run into errors - this typically needs to be run as administrator (run as administrator shell that invokes this)
 	@#regsvr32 -s -c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
 	@regsvr32 -c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"

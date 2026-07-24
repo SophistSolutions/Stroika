@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/GetConfigurationTags: this location is deprecated, use Build/ScriptsLib/GetConfigurationTags instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/GetConfigurationTags" "$@"
+echo "ScriptsLib/GetConfigurationTags: this location is deprecated, use Build/Scripts/GetConfigurationTags instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/GetConfigurationTags" "$@"

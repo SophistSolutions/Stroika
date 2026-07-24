@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/FixupDashIs: this location is deprecated, use Build/ScriptsLib/FixupDashIs instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/FixupDashIs" "$@"
+echo "ScriptsLib/FixupDashIs: this location is deprecated, use Build/Scripts/FixupDashIs instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/FixupDashIs" "$@"

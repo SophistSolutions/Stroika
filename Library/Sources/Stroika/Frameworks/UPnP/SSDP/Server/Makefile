@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../../../../)/
 SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/SSDP/Server/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/SSDP/Server/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 vpath %cpp $(SrcDir)
 
@@ -17,7 +17,7 @@ Objs	:=	\
 	$(ObjDir)SearchResponder${OBJ_SUFFIX}\
 
 
-include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

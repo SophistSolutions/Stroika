@@ -1,0 +1,979 @@
+#!/usr/bin/env perl
+
+# MUST FIX TO CHECK FOR --only-if-unconfigured - for now thats all the logic we'll support
+# but should check flag...
+#TRY THESE AGAIN, but for now generate too many problems...
+#use strict;
+#use warnings;
+
+BEGIN{ @INC = ( "./", @INC ); }
+
+sub	GetThisScriptDir {
+	use File::Basename;
+	use Cwd 'abs_path';
+	my $p = __FILE__;
+	my $A = abs_path ($p);
+	my $dirname = dirname($A);
+	return $dirname;
+}
+my	$thisScriptDir	=	GetThisScriptDir ();
+
+require ("$thisScriptDir/../Lib/Perl/ConfigurationReader.pl");
+
+use constant false => 0;
+use constant true  => 1;
+use constant DEFAULT_BOOL_OPTIONS => -1;
+
+use File::Path qw(make_path);
+use File::Basename qw(dirname);
+
+
+my $MAKE_INDENT_LEVEL = $ENV{'MAKE_INDENT_LEVEL'};
+$MAKE_INDENT_LEVEL = $MAKE_INDENT_LEVEL + 1;
+
+my $intermediateFiles	=	"IntermediateFiles/";
+my $activeConfiguration	=	undef;
+
+
+my $PATH_SEPERATOR=":";
+if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+	$PATH_SEPERATOR=";";
+}
+
+
+my $BuildPlatform='';
+my $TargetPlatforms='';
+my $BuildToolsRoot=undef;
+
+
+my @useExtraMakeDefines;
+my $Foundation_PkgConfigNames;
+
+#
+# BUILD iff LIBFEATUREFLAG_BuildOnly OR LIBFEATUREFLAG_UseStaticTPP
+# HAS_FEATURE iff LIBFEATUREFLAG_UseStaticTPP OR LIBFEATUREFLAG_UseSystem
+#
+my $LIBFEATUREFLAG_BuildOnly = "build-only";
+my $LIBFEATUREFLAG_UseStaticTPP = "use";
+my $LIBFEATUREFLAG_UseSystem = "use-system";
+my $LIBFEATUREFLAG_No = "no";
+
+
+## FOR NOW ONLY USED ON Unix BUILDS (may not be true anymore - gradually changing so always used)
+my $gAssertionsEnabled = 0;
+my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
+my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_libxml2 = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_zstd = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_UseStaticTPP;
+my $STATIC_LINK_GCCRUNTIME = 1;
+my $COMPILER_DRIVER_C = "";
+my $COMPILER_DRIVER_CPlusPlus = "";
+my $AR = undef;
+my $LIBTOOL = undef;
+my $RANLIB = undef;
+my $Platform_LinkerArgs_ExtraPrefix = "";
+my $Platform_LinkerArgs_ExtraSuffix = "";
+my $PLATFORM_CPPFLAGS_NOTINCLUDES = "";
+my $PLATFORM_CPPFLAGS_INCLUDES = "";
+my $CPPFLAGS_NOTINCLUDES = "";
+my $CFLAGS = "";
+my $CXXFLAGS = "";
+
+
+
+#quite unclear why this is needed - or even if it is - but it appears to be that
+# just regular
+my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
+
+
+sub trim($)
+{
+	my $string = shift;
+	$string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+	return $string;
+}
+
+
+sub isHostMSYS_
+{
+	if ("$^O" eq "msys") {
+		return true;
+	}
+	if ("$^O" eq "cygwin") {
+		# Crazy but sometimes this returns cygwin on msys?
+		return substr(trim(`uname -s`),0,4) eq "MSYS";
+	}
+	return false;
+}
+
+sub	DoHelp_
+{
+	print("Usage:\n");
+	print("	ApplyConfiguration.pl [OPTIONS] CONFIGURATION\n");
+	print("	  where options can be:\n");
+	print("	    --help              /* print this help */\n");
+	print("	    --only-vscode       /* only update .vscode/cpp stuff */\n");
+	exit (0);
+}
+
+my $GEN_VSCODE = true;
+my $GEN_CONFIG_MAKE = true;
+my $GEN_VISUAL_STUDIO_INTELLISENSE = true;
+
+
+sub	ParseCommandLine_
+{
+	for ($i = 0; $i <= $#ARGV; $i++) {
+		my $var = $ARGV[$i];
+		if ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
+			DoHelp_ ();
+		}
+		elsif (lc ($var) eq "--only-vscode") {
+			$GEN_VSCODE = true;
+			$GEN_CONFIG_MAKE = false;
+			$GEN_VISUAL_STUDIO_INTELLISENSE = false;
+		}
+		else {
+			$activeConfiguration = $var;
+		}
+	}
+	if (! defined $activeConfiguration) {
+		die ("Missing argument configuration\n");
+	}
+}
+
+
+sub	ConfigParam2BoolInt
+{
+	my $v = shift;
+	if ($v eq "0") {
+		return 0;
+	}
+	if ($v eq "false") {
+		return 0;
+	}
+	if ($v eq "1") {
+		return 1;
+	}
+	if ($v eq "true") {
+		return 1;
+	}
+	return DEFAULT_BOOL_OPTIONS;
+}
+
+sub	ReadConfiguration_
+{
+	$BuildPlatform = GetConfigurationParameter($activeConfiguration, "BuildPlatform");
+	$TargetPlatforms = GetConfigurationParameter($activeConfiguration, "TargetPlatforms");
+	$BuildToolsRoot = GetConfigurationParameter($activeConfiguration, "BuildToolsRoot");
+	$COMPILER_DRIVER_C = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C");
+	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C++");
+	$AR = GetConfigurationParameter($activeConfiguration, "AR");
+	$LIBTOOL = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
+	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
+	$PLATFORM_CPPFLAGS_NOTINCLUDES = GetConfigurationParameter($activeConfiguration, "PLATFORM_CPPFLAGS_NOTINCLUDES");
+	$CPPFLAGS_NOTINCLUDES = $PLATFORM_CPPFLAGS_NOTINCLUDES . " " . GetConfigurationParameter($activeConfiguration, "FOUNDATION_CPPFLAGS_NOTINCLUDES");
+	$CFLAGS = GetConfigurationParameter($activeConfiguration, "PLATFORM_CFLAGS");
+	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "PLATFORM_CXXFLAGS");
+	$Platform_LinkerArgs_ExtraPrefix = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_ExtraPrefix");
+	$Platform_LinkerArgs_ExtraSuffix = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_ExtraSuffix");
+
+	$FEATUREFLAG_LIBCURL = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LibCurl");
+	$FEATUREFLAG_OpenSSL = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_OpenSSL");
+	$FEATUREFLAG_WinHTTP = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_WinHTTP");
+	$FEATUREFLAG_ATLMFC = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ATLMFC");
+	$FEATUREFLAG_libxml2 = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_libxml2");
+	$FEATUREFLAG_XERCES = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_Xerces");
+	$FEATUREFLAG_GoogleTest = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_GoogleTest");
+	$FEATUREFLAG_ZLib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ZLib");
+	$FEATUREFLAG_zstd = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_zstd");
+	$FEATUREFLAG_sqlite = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_sqlite");
+	$FEATUREFLAG_mongocxxdriver = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_mongocxxdriver");
+	$FEATUREFLAG_boost = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_boost");
+	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LZMA");
+	$FEATUREFLAG_fmtlib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_fmtlib");
+	$gAssertionsEnabled = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "AssertionsEnabled"));
+	$PLATFORM_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "PLATFORM_INCLUDES_PATH");
+	$FOUNDATION_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "FOUNDATION_INCLUDES_PATH");
+	$VSVARS_PLATFORM_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "VSVARS_PLATFORM_INCLUDES_PATH");
+	$VSVARS_MSVC_RUNTIME_LIBRARY = GetConfigurationParameter($activeConfiguration, "VSVARS_MSVC_RUNTIME_LIBRARY");
+	$Platform_LinkerArgs_LibPath = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_LibPath");
+	# $Platform_LinkerArgs_LibDependencies = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_LibDependencies");
+
+	$IncludeDebugSymbolsInExecutables = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInExecutables");
+	$IncludeDebugSymbolsInLibraries = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInLibraries");
+
+	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "STATIC_LINK_GCCRUNTIME"));
+
+	$Foundation_PkgConfigNames = GetConfigurationParameter($activeConfiguration, "Foundation_PkgConfigNames");
+
+	#print "BuildPlatform = $BuildPlatform\n";
+
+	## PostProcess some read values
+	foreach $mdef (GetConfigurationParameter($activeConfiguration, "ExtraMakeDefines")) {
+		push (@useExtraMakeDefines, $mdef);
+	}
+
+	{
+		foreach (split /$PATH_SEPERATOR/, $PLATFORM_INCLUDES_PATH) {
+			if (not ($PLATFORM_CPPFLAGS_INCLUDES eq '')) {
+				$PLATFORM_CPPFLAGS_INCLUDES .= ' ';
+			}
+			if ($BuildPlatform =~ /^VisualStudio.Net/) {
+				##
+				## From https://learn.microsoft.com/en-us/cpp/build/reference/cl-filename-syntax?view=msvc-170
+				## 		CL accepts filenames separated either by backslashes (\) or forward slashes (/). 
+				##		Filenames that contain spaces must be surrounded by double quote characters
+				##
+				my $wpath = trim (`cygpath --mixed \'$_\'`);		# c:/foo as opposed to c:\foo, and wrap in double-quotes cuz often with spaces (and cl doesnt like single quotes)
+				$PLATFORM_CPPFLAGS_INCLUDES .= "-I\"$wpath\"";
+			}
+			else {
+				$PLATFORM_CPPFLAGS_INCLUDES .= "-I$_";
+			}
+		}
+	}
+}
+
+
+ParseCommandLine_ ();
+
+ReadConfiguration_();
+
+
+
+#
+# For now KISS - just check if the file doesn't exist, and if so write a default value.
+#
+my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Configuration.mk";
+my $vs2kIntellisenseCng	=	"Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props";
+my $vsCodeCppExtensionCng	=	".vscode/c_cpp_properties.json";
+
+
+my $stkRoot	=	trim(`realpath .`);
+
+
+
+
+
+
+
+
+sub WriteStroikaConfigMakeHeader_CachedLineItem_
+{
+	local  $vn = $_[0];
+	local  $v = @_ >= 2? $_[1] : GetConfigurationParameter($activeConfiguration, $vn);
+	print (OUT '#CACHED VALUE OF: ' . $vn . '			:=	$(shell $(StroikaRoot)Build/Scripts/GetConfigurationParameter "$(CONFIGURATION)" ' . $vn . ")\n");
+	# If the variable in the XML file as a $ in it, when its written to the makefile, we must quote any $ characters so they don't look like variable expansions
+	$v =~ s/\$/\$\$/g;
+	print (OUT "$vn := $v\n");
+	print (OUT "\n");
+}
+
+sub WriteStroikaConfigMakeHeader
+{
+	mkdir ("$intermediateFiles");
+	mkdir ("$intermediateFiles$activeConfiguration");
+	mkdir ("$intermediateFiles$activeConfiguration/Library");
+	
+	open(OUT,">$configFileMakeName");
+	print (OUT "#\n");
+	print (OUT "#Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved\n");
+	print (OUT "#\n");
+	print (OUT "\n");
+	print (OUT "\n");
+	print (OUT "#WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration\n");
+	print (OUT "#WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration\n");
+	print (OUT "#WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration\n");
+	print (OUT "#WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration\n");
+	print (OUT "#WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration\n");
+	print (OUT "#WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration\n");
+	print (OUT "#WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration\n");
+	print (OUT "#WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration\n");
+	print (OUT "#\n");
+	print (OUT "#This file mainly consists of CACHES of the values that could have been retrieved WITH\n");
+	print (OUT "#      VAR :=	\$(shell \$(StroikaRoot)Build/Scripts/GetConfigurationParameter \"\$(CONFIGURATION)\" VAR)\n");
+	print (OUT "\n");
+	print (OUT "\n");
+
+	
+	print (OUT 'ifndef StroikaRoot' . "\n");
+	print (OUT '$(error, "StroikaRoot must be defined and included before this file")' . "\n");
+	print (OUT 'endif' . "\n");
+	print (OUT "\n");
+
+	WriteStroikaConfigMakeHeader_CachedLineItem_("BuildPlatform", $BuildPlatform);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("TargetPlatforms", $TargetPlatforms);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("BuildToolsRoot", $BuildToolsRoot);
+	print (OUT "\n");
+
+	print (OUT "#\n");
+	print (OUT "# PKG-CONFIG support\n");
+	print (OUT "export PKG_CONFIG_PATH :=	\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/lib/pkgconfig)\n");
+
+	print (OUT "\n");
+	print (OUT "\n");
+
+
+	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CMAKE");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("TOOLS_PATH_ADDITIONS");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CC");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CXX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("AS");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("RC");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("MIDL");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("AssertionsEnabled", $gAssertionsEnabled);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("Platform_LinkerArgs_LibPath");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkTime_CopyFilesToEXEDir");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("PLATFORM_INCLUDES_PATH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("FOUNDATION_INCLUDES_PATH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_PLATFORM_INCLUDES_PATH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_MSVC_RUNTIME_LIBRARY");
+
+	WriteStroikaConfigMakeHeader_CachedLineItem_("PLATFORM_CPPFLAGS_NOTINCLUDES");
+	
+	print (OUT "\n#Compiler include format of varaible PLATFORM_INCLUDES_PATH\n");
+	print (OUT "PLATFORM_CPPFLAGS_INCLUDES :=	$PLATFORM_CPPFLAGS_INCLUDES\n");
+
+	print (OUT "\n# Utility combination (widely used in building third party components)\n");
+	print (OUT "PLATFORM_CPPFLAGS :=	\${PLATFORM_CPPFLAGS_NOTINCLUDES} \${PLATFORM_CPPFLAGS_INCLUDES}\n");
+
+	print (OUT "\n# SB same as cached config variable but not done yet\n");
+	my $PLATFORM_CFLAGS = GetConfigurationParameter($activeConfiguration, "CFLAGS");
+	print (OUT "PLATFORM_CFLAGS :=	$CFLAGS\n");
+
+	print (OUT "\n# SB same as cached config variable but not done yet\n");
+	print (OUT "PLATFORM_CXXFLAGS :=	$CXXFLAGS\n");		## more to add
+
+	# WriteStroikaConfigMakeHeader_CachedLineItem_("CFLAGS");
+	# WriteStroikaConfigMakeHeader_CachedLineItem_("CXXFLAGS");
+
+	print (OUT "\n");
+
+	WriteStroikaConfigMakeHeader_CachedLineItem_("STRIP");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("AR");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("LIBTOOL");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("RANLIB");
+	print (OUT "\n");
+
+	WriteStroikaConfigMakeHeader_CachedLineItem_("RunPrefix");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CrossCompiling");
+	print (OUT "\n");
+
+
+	print (OUT "CONFIGURATION := $activeConfiguration\n");
+
+
+	WriteStroikaConfigMakeHeader_CachedLineItem_("HasMakefileBugWorkaround_lto_skipping_undefined_incompatible");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_HasNoMisleadingIndentation_Flag");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_ValgrindLTO_Buggy");
+
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ATLMFC");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_boost");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_fmtlib");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_GoogleTest");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LibCurl");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LZMA");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_mongocxxdriver");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL_ExtraArgs");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_sqlite");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_StrawberryPerl");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_WinHTTP");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_WIX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_Xerces");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_libxml2");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ZLib");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_zstd");
+	
+	WriteStroikaConfigMakeHeader_CachedLineItem_("ConfigTags");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("SanitizerFlags");
+
+	print (OUT "\n\n");
+	print (OUT "#Configured Command Line Arguments (-make-define)\n");
+	foreach $var (@useExtraMakeDefines)
+	{
+		print (OUT "$var\n");
+	}
+
+	print (OUT "\n\n");
+	print (OUT "#Script to map filenames to native format (for windows)\n");
+	print (OUT "##	EG USE AS:   CPPFLAGS += -I\"\$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,\${StroikaRoot})/Builds...\"\n");
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
+		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
+		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
+	}
+	else {
+		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$1\n");
+		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$1\n");
+	}
+
+	print (OUT "\n\n");
+	print (OUT "\n\n");
+	print (OUT "#Linker flags\n");
+	print (OUT "Platform_LinkerArgs_LibPath := $Platform_LinkerArgs_LibPath\n");
+	# print (OUT "Platform_LinkerArgs_LibDependencies := $Platform_LinkerArgs_LibDependencies\n");
+	print (OUT "#\n");
+	print (OUT "Platform_LinkerArgs_ExtraPrefix :=	$Platform_LinkerArgs_ExtraPrefix\n");
+	print (OUT "Platform_LinkerArgs_ExtraSuffix :=	$Platform_LinkerArgs_ExtraSuffix\n");
+
+	print (OUT "IncludeDebugSymbolsInExecutables :=	$IncludeDebugSymbolsInExecutables\n");
+	print (OUT "IncludeDebugSymbolsInLibraries :=	$IncludeDebugSymbolsInLibraries\n");
+	print (OUT "#Linker-Driver\n");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("LINKER");
+
+	print (OUT "\n\n#File Suffixes");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("LIB_SUFFIX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("OBJ_SUFFIX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("EXE_SUFFIX");
+
+	print (OUT "\n");
+	print (OUT "\n");
+
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
+		print (OUT "\n");
+		print (OUT "##\n");
+		print (OUT "##\n");
+		print (OUT "## Windows format path versions of some of these variables\n");
+		print (OUT "##\n");
+		print (OUT "##WIN_\$var = cygpath --ignore --mixed \"\$var\"                OR\n");
+		print (OUT "##WIN_\$var = cygpath --ignore --mixed --path \"\$var\"         (as appropriate)\n");
+		print (OUT "##\n");
+		print (OUT "##\n");
+
+		{
+			my $tmp = GetConfigurationParameter($activeConfiguration, "LINKER");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
+			}
+		}
+		{
+			my $tmp = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
+			}
+		}
+		{
+			my $tmp = GetConfigurationParameter($activeConfiguration, "CMAKE");
+			print (OUT "CMAKE=$tmp\n");
+		}
+		{
+			#Lib tool requires queer ARCH arguments (and probably Link) - so correct here
+			my $tmp = GetConfigurationParameter($activeConfiguration, "ARCH");
+			if ($tmp eq "x86_64") {
+				$tmp = "x64";
+			}
+			print (OUT "WIN_LIBCOMPATIBLE_ARCH=$tmp\n");
+		}
+		{
+			my $tmp = GetConfigurationParameter($activeConfiguration, "CC");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
+			}
+		}
+		{
+			my $tmp = GetConfigurationParameter($activeConfiguration, "AS");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
+			}
+		}
+		{
+			my $tmp = GetConfigurationParameter($activeConfiguration, "CXX");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
+			}
+		}
+		{
+			# Not a great way to test, but hopefully adequate for now
+			# esp since not critical always right -- LGP 2019-09-17
+			#
+			# Also note - we tend to use -Z7 - so this really doesn't get used
+			# much - may not be needed anymore. Not sure why we would use this 'feature' of the linker system on MSVCD
+			# -- LGP 2025-06-11
+			if (index($CXXFLAGS, "-Zi") != -1 || index($CXXFLAGS, "-Zl") != -1) {
+				print (OUT "WIN_USE_PROGRAM_DATABASE=1\n");
+			}
+		}
+
+		print (OUT "\n");
+		print (OUT "\n");
+	}
+
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
+		print (OUT "OUT_ARG_PREFIX_NATIVE := -OUT:\n");
+	}
+	else {
+		print (OUT "OUT_ARG_PREFIX_NATIVE := -o \n");
+	}
+
+
+	print (OUT "\n");
+
+	close(OUT);
+}
+
+
+sub MapArraysOfFiles2Path_
+{
+	my ($conditionalPaths, $backupPaths) = @_;
+	local $result = "";
+	for my $i (0 .. $#conditionalPaths)
+	{
+		my $f = $conditionalPaths[$i];
+		if (-e $f) {
+			if (not ($result eq "")) {
+				$result .= ";";
+			}
+			$result .=  trim (`cygpath --windows $f`);
+		}
+	}
+	if ($result eq "") {
+		for my $i (0 .. $#backupPaths)
+		{
+			my $f = $backupPaths[$i];
+			if (not ($result eq "")) {
+				$result .= ";";
+			}
+			$result .=  trim (`cygpath --windows $f`);
+		}
+	}
+	return $result;
+}
+
+## GUESS directory for MSYS
+sub GetMSYSPathVar2Add_
+{
+	use Config;
+	local @conditionalPaths = ();
+	local @backupPaths = ();
+	if ("$^O" == "msys") {
+		push  @conditionalPaths, dirname ($Config{perlpath});
+	}
+	push @backupPaths, "c:/tools/msys64/usr/bin";
+	push @backupPaths, "c:/tools/msys32/usr/bin";
+	push @backupPaths, "c:/tools/msys64/mingw64/bin";
+	push  @backupPaths, "c:/msys/usr/bin";
+	push  @backupPaths, "c:/msys64/usr/bin";
+	push  @backupPaths, "c:/msys64/mingw64/bin";
+	for my $i (0 .. $#backupPaths)
+	{
+		push  @conditionalPaths, $backupPaths[$i];
+	}
+	return MapArraysOfFiles2Path_(@conditionalPaths, @backupPaths);
+}
+sub GetCygwinPathVar2Add_
+{
+	use Config;
+	local @conditionalPaths = ();
+	local @backupPaths = ();
+	if ("$^O" == "cygwin") {
+		push @conditionalPaths, dirname ($Config{perlpath});
+	}
+	push @backupPaths, "c:/tools/cygwin/bin";
+	push @backupPaths, "c:/cygwin/bin";
+	push  @backupPaths, "c:/cygwin64/bin";
+	push  @backupPaths, "c:/cygwin32/bin";
+	for my $i (0 .. $#backupPaths)
+	{
+		push  @conditionalPaths, $backupPaths[$i];
+	}
+	return MapArraysOfFiles2Path_(@conditionalPaths, @backupPaths);
+}
+
+
+sub WriteVS2kIntellisenseConfigFile
+{
+	#
+	# Read in existing config info
+	local %mapOfExistingEntries;
+	{
+		make_path (dirname ($vs2kIntellisenseCng));
+		open my $in, "<:encoding(utf8)", $vs2kIntellisenseCng;
+		local $extractingConfiguration = "";
+		while (my $line = <$in>) {
+
+			if (index($line, "<PropertyGroup Condition=") == -1) {
+				## continue entry
+				if (!($extractingConfiguration eq "")) {
+					$mapOfExistingEntries{$extractingConfiguration} .= $line;
+				}
+				### mark end of entry
+				if (index($line, "</PropertyGroup>") != -1) {
+					$extractingConfiguration = "";
+				}
+			}
+			else {
+				# start entry
+				local $x = "  <PropertyGroup Condition=\"'\$(Configuration)|\$(Platform)'=='";
+				$extractingConfiguration = substr ($line, length ($x));
+				local $stripAt = index ($extractingConfiguration, "|");
+				$extractingConfiguration = substr ($extractingConfiguration, 0, $stripAt);
+				$mapOfExistingEntries{$extractingConfiguration} = $line;
+			}
+
+		}
+		close $in;
+	}
+	#print "***AFTER READ: mapOfExistingEntries = @{[ %mapOfExistingEntries ]}\n";
+
+	#
+	# then we write the new (current) section, and repeat all the others in our output
+	#
+	open(OUT,">$vs2kIntellisenseCng");		### ConfigurationBased.props file
+	print (OUT "<!--\n");
+	print (OUT " Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved\n");
+	print (OUT "-->\n");
+	print (OUT "\n");
+	print (OUT "\n");
+	print (OUT "<!--WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration-->\n");
+	print (OUT "<!--WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration-->\n");
+	print (OUT "<!--WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration-->\n");
+	print (OUT "<!--WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration-->\n");
+	print (OUT "<!--WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration-->\n");
+	print (OUT "<!--WARNING: THIS FILE WAS AUTOGENERATED WITH ApplyConfiguration-->\n");
+	print (OUT "\n");
+	print (OUT "\n");
+	
+	print (OUT "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" TreatAsLocalProperty=\"Platform\">\n");
+
+	# re-emit all entries except the current configuration
+	while ( ($k,$v) = each %mapOfExistingEntries ) {
+		if (!($k eq $activeConfiguration)) {
+			print OUT "$v";
+		}
+	}
+
+	# Emit the current configuration
+	print (OUT "  <PropertyGroup Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
+
+	#print (OUT "<!-- CPPFLAGS = $CPPFLAGS -->\n");
+	local @words = split / /, $CPPFLAGS_NOTINCLUDES;
+	local $defs2Print = "";
+	foreach my $element (@words) {
+		if (index ($element, "-D") == 0) {
+			if ($defs2Print ne "") {
+				$defs2Print .= ';'
+			}
+			$defs2Print .= substr ($element, 2);
+		}
+	}
+	if (not (trim($Foundation_PkgConfigNames) eq "")) {
+		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-other $Foundation_PkgConfigNames 2>/dev/null`) {
+			if (index ($element, "-D") == 0) {
+				if ($defs2Print ne "") {
+					$defs2Print .= ';'
+				}
+				$defs2Print .= trim (substr ($element, 2));
+			}
+		}
+	}
+	print (OUT "    <NMakePreprocessorDefinitions>$defs2Print</NMakePreprocessorDefinitions>\n");
+
+	local $paths2Print = "";
+	local $myIncludesPath = $FOUNDATION_INCLUDES_PATH . $PATH_SEPERATOR . $PLATFORM_INCLUDES_PATH;
+	foreach my $element (split /$PATH_SEPERATOR/, $myIncludesPath) {
+		if ($paths2Print ne "") {
+			$paths2Print .= ';'
+		}
+		$paths2Print .= $element;
+	}
+	if (not (trim($Foundation_PkgConfigNames) eq "")) {
+		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-I $Foundation_PkgConfigNames 2>/dev/null`) {
+			if (index ($element, "-I") == 0) {
+				local $v = trim (substr($element, 2));
+				if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+					$v = trim (`cygpath --mixed '$v'`)
+				}
+				if (index ($newCfgObj, "$v") == -1) {
+					if ($first) {
+						$first = false;
+					}
+					else {
+						if ($paths2Print ne "") {
+							$paths2Print .= ';'
+						}
+						$paths2Print .= $v;
+					}
+				}
+			}
+		}
+	}
+	print (OUT "    <NMakeIncludeSearchPath>$paths2Print</NMakeIncludeSearchPath>\n");
+
+	print (OUT "  </PropertyGroup>\n");
+
+	#
+	# Define configuration variables so visual studio knows how to run cygwin or msys
+	# for the make without requiring the user to add it to their user/system path
+	# by default
+	#
+	if ("$^O" == "msys" or "$^O" == "cygwin") {
+		local $defCygwinStkBuildPath = GetCygwinPathVar2Add_();
+		local $msysStkBuildPath = GetMSYSPathVar2Add_();
+		# NOTE StroikaBuildToolsExtraPath is  used to agument ExecutablePath in the .vcproj files, so the make uses the right path
+		print (OUT "\n");
+		print (OUT "  <PropertyGroup Label=\"UserMacros\">\n");
+		print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath;$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
+		print (OUT "    <JOBS_FLAG>-j 5</JOBS_FLAG>\n");
+		print (OUT "  </PropertyGroup>\n");
+		if ("$^O" == "msys") {
+			print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
+			print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath</StroikaBuildToolsExtraPath>\n");
+			print (OUT "  </PropertyGroup>\n");
+		}
+		elsif ("$^O" == "cygwin") {
+			print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
+			print (OUT "    <StroikaBuildToolsExtraPath>$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
+			print (OUT "  </PropertyGroup>\n");
+		}
+	}
+
+### Unclear if/why this would be needed
+	print (OUT "  <ItemGroup>\n");
+	print (OUT "  <BuildMacro Include=\"StroikaBuildToolsExtraPath\">\n");
+	print (OUT "     <Value>\$(StroikaBuildToolsExtraPath)</Value>\n");
+	print (OUT "  </BuildMacro>\n");
+	print (OUT "  <BuildMacro Include=\"JOBS_FLAG\">\n");
+	print (OUT "     <Value>\$(JOBS_FLAG)</Value>\n");
+	print (OUT "  </BuildMacro>\n");
+	print (OUT "  </ItemGroup>\n");
+
+	print (OUT "</Project>\n");
+	print (OUT "\n");
+
+	close(OUT);
+}
+
+sub ToFullPathEXE_($)
+{
+	my $exe = shift;
+	local $e = trim(`which "$exe" 2>/dev/null`);
+	if ( $? != 0 ) {
+		return $exe;
+	}
+	return $e;
+}
+
+sub WriteVSCodeCPPExtensionConfigFile
+{
+	local $jq = `which jq`;
+	if ($jq eq "") {
+		print ("SKIPPED SINCE jq not installed ... ");
+		return;
+	}
+	make_path (dirname ($vsCodeCppExtensionCng));
+	if (!(-e $vsCodeCppExtensionCng)) {
+		`echo "{\\\"configurations\\\":[]}" > $vsCodeCppExtensionCng`;
+	}
+	{
+		local $envVars = `jq ".[]" < $vsCodeCppExtensionCng`;
+		if ($envVars eq null || $envVars eq "") {
+			`echo "{\\\"configurations\\\":[]}" > $vsCodeCppExtensionCng`;
+		}
+	}
+
+	# Add myDefaultIncludePath environment-variable if missing
+	{
+		local $envVars = `jq ".env" < $vsCodeCppExtensionCng`;
+		if ($envVars eq null || $envVars eq "") {
+			local $r = ` jq ".env={}" < $vsCodeCppExtensionCng`;
+			open(FH, '>', $vsCodeCppExtensionCng) or die $!;
+			print FH $r;
+			close(FH);
+			$envVars = `jq ".env" < $vsCodeCppExtensionCng`;
+		}
+		if (trim (`jq ".env.myDefaultIncludePath" < $vsCodeCppExtensionCng`) eq "null") {
+			# myDefaultIncludePath is missing, so add default value
+			local $r = `jq ".env.myDefaultIncludePath=[\\"\\\${workspaceFolder}\\"]" < $vsCodeCppExtensionCng`;
+			open(FH, '>', $vsCodeCppExtensionCng) or die $!;
+			print FH $r;
+			close(FH);
+			$envVars = `jq ".env" < $vsCodeCppExtensionCng`;
+		}
+	}
+
+	local $nConfigs = `jq ".configurations | length" < $vsCodeCppExtensionCng`;
+	local $indexOfNewConfig = $nConfigs;
+	## would be nice to find faster way todo this
+	for my $i (0 .. $nConfigs) {
+		local $x = `jq ".configurations[$i].name | select (. == \\\"$activeConfiguration\\\")" < $vsCodeCppExtensionCng`;
+		if ($x ne "") {
+			$indexOfNewConfig = $i;
+		}
+	}
+	# print "indexOfNewConfig: $indexOfNewConfig\n";
+	local $newCfgObj = "{";
+	$newCfgObj .= " name: \\\"$activeConfiguration\\\"";
+	{
+		# print ("CXXFLAGS=$CXXFLAGS\n");
+		local $std = "c++17";
+		local $l = index($CXXFLAGS, "--std=");
+		if ($l != -1) {
+			$std = substr ($CXXFLAGS, $l + 6);
+		}
+		local $l = index($CXXFLAGS, "-std:");
+		# print ("l=$l\n");
+		if ($l != -1) {
+			$std = substr ($CXXFLAGS, $l+5);
+			# print ("111-std=$std\n");
+		}
+		local $l = index($std, " ");
+		if ($l != -1) {
+			$std = substr ($std, 0, $l);
+		}
+		if ($std eq "c++2a") {
+			$std = "c++20";
+		}
+		if ($std eq "c++latest") {
+			$std = "c++20";
+		}
+		$newCfgObj .= " ,cppStandard: \\\"$std\\\"";
+	}
+	{
+		$newCfgObj .= " ,includePath: [";
+		$newCfgObj .= "\\\"\\\${myDefaultIncludePath}\\\"";
+		local $myIncludesPath = $FOUNDATION_INCLUDES_PATH . $PATH_SEPERATOR . $PLATFORM_INCLUDES_PATH;
+		foreach my $element (split /$PATH_SEPERATOR/, $myIncludesPath) {
+			$newCfgObj .= " , ";
+			$newCfgObj .= "\\\"$element\\\"";
+		}
+		if (not (trim($Foundation_PkgConfigNames) eq "")) {
+			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-I $Foundation_PkgConfigNames 2>/dev/null`) {
+				if (index ($element, "-I") == 0) {
+					local $v = trim (substr($element, 2));
+					if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+						$v = trim (`cygpath --mixed '$v'`)
+					}
+					if (index ($newCfgObj, "$v") == -1) {
+						if ($first) {
+							$first = false;
+						}
+						else {
+							$newCfgObj .= " , ";
+						}
+						$newCfgObj .= "\\\"$v\\\"";
+					}
+				}
+			}
+		}
+		$newCfgObj .= "]";
+	}
+	{
+		$newCfgObj .= " ,defines: [";
+		local $first = true;
+		foreach my $element (split / /, $CPPFLAGS_NOTINCLUDES) {
+		 	if (index ($element, "-D") == 0) {
+				if ($first) {
+					$first = false;
+				}
+				else {
+					$newCfgObj .= " , ";
+				}
+				local $v = substr($element, 2);
+				$newCfgObj .= "\\\"$v\\\"";
+			}
+		}
+		if (not (trim($Foundation_PkgConfigNames) eq "")) {
+			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-other $Foundation_PkgConfigNames 2>/dev/null`) {
+				if (index ($element, "-D") == 0) {
+					if ($first) {
+						$first = false;
+					}
+					else {
+						$newCfgObj .= " , ";
+					}
+					local $v = trim (substr($element, 2));
+					$newCfgObj .= "\\\"$v\\\"";
+				}
+			}
+		}
+		$newCfgObj .= "]";
+	}
+	{
+		my $showPath = ToFullPathEXE_($COMPILER_DRIVER_CPlusPlus);
+		$newCfgObj .= " ,compilerPath: \\\"$showPath\\\"";
+	}
+
+	$newCfgObj .= "}";
+	local $r = `jq ".configurations[$indexOfNewConfig]=$newCfgObj" < $vsCodeCppExtensionCng`;
+
+	# print ("r: $r\n");
+	open(FH, '>', $vsCodeCppExtensionCng) or die $!;
+	print FH $r;
+	close(FH);
+
+	# Now Sort
+	 $r = `jq ".configurations = ([.configurations[]] | sort_by (.name|ascii_downcase))" < $vsCodeCppExtensionCng`;
+
+	# print ("r: $r\n");
+	open(FH, '>', $vsCodeCppExtensionCng) or die $!;
+	print FH $r;
+	close(FH);
+}
+
+
+
+#print ("OS: $^O\n");
+
+
+#
+#@ todo write to temporary file and only update if actually changed
+#
+
+if ($GEN_CONFIG_MAKE) {
+	system ("rm -f $configFileMakeName");
+
+	unless (-e $intermediateFiles) {
+		mkdir ($intermediateFiles);
+	}
+
+	#Really only for UNIX (for now) but harmless on WinDoze
+	unless (-e "$intermediateFiles/$activeConfiguration") {
+		mkdir "$intermediateFiles$activeConfiguration";
+		mkdir "$intermediateFiles$activeConfiguration/Library";
+	}
+
+	unless (-e $configFileMakeName) {
+		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\" ... ");
+		WriteStroikaConfigMakeHeader ();
+		print("done\n");
+
+		# For now, write the file iff we write the config.mk file...
+		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL`);
+
+		if (isHostMSYS_()) {
+			# Workaround MSYS compatabilty issues with microsoft visual C++ tools.
+			#$ENV{'MSYS2_ARG_CONV_EXCL'} = '';
+			system (trim(`cygpath -m $thisScriptDir`) . "/CreatePackageConfigFiles --configuration $activeConfiguration\n");
+		}
+		else {
+			system ($thisScriptDir . "/CreatePackageConfigFiles --configuration $activeConfiguration\n");
+		}
+		if ($? != 0) {
+			die ("Error running CreatePackageConfigFiles --configuration $activeConfiguration - exiting\n");
+		}
+	}
+}
+
+if ($GEN_VISUAL_STUDIO_INTELLISENSE) {
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
+		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vs2kIntellisenseCng\" ... ");
+		WriteVS2kIntellisenseConfigFile ();
+		print("done\n");
+	}
+}
+
+if ($GEN_VSCODE) {
+	print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating configuration $activeConfiguration in \"$vsCodeCppExtensionCng\" ... ");
+	WriteVSCodeCPPExtensionConfigFile ();
+	print("done\n");
+}

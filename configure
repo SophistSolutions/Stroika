@@ -585,11 +585,11 @@ sub     GetGCCVersion_
 	my $x = shift(@_);
 	my $fullString = trim(shift(@_));
 	if (defined $fullString) {
-		my $v = trim (`./Build/ScriptsLib/GetGCCVersion $x`);
+		my $v = trim (`./Build/Scripts/GetGCCVersion $x`);
 		return $v;
 	}
 	else {
-		my $v = trim (`./Build/ScriptsLib/GetGCCVersion $x -i`);
+		my $v = trim (`./Build/Scripts/GetGCCVersion $x -i`);
 		if ($v eq '') {
 			return 0;
 		}
@@ -604,11 +604,11 @@ sub     GetClangVersion_
 	my $x = trim(shift(@_));
 	my $fullString = trim(shift(@_));
 	if (defined $fullString) {
-		my $v = trim (`./Build/ScriptsLib/GetClangVersion $x`);
+		my $v = trim (`./Build/Scripts/GetClangVersion $x`);
 		return $v;
 	}
 	else {
-		my $v = trim (`./Build/ScriptsLib/GetClangVersion $x -i`);
+		my $v = trim (`./Build/Scripts/GetClangVersion $x -i`);
 		if ($v eq '') {
 			return -1;
 		}
@@ -1485,7 +1485,7 @@ sub ComputeARCHFlag_
 	}
 
 	if ($ARCH eq "") {
-		$ARCH = trim (`./Build/ScriptsLib/GetCompilerArch $COMPILER_DRIVER`);
+		$ARCH = trim (`./Build/Scripts/GetCompilerArch $COMPILER_DRIVER`);
 	}
 	
 	# Patch some old/bad names
@@ -2926,7 +2926,7 @@ sub GetMSVCVarName_
 {
 	my $envVarName= shift;
 	if ($BuildPlatform =~ /^VisualStudio.Net/) {
-		require "$thisScriptDir/Build/ScriptsLib/Configure-VisualStudio-Support.pl";
+		require "$thisScriptDir/Build/Lib/Perl/Configure-VisualStudio-Support.pl";
 	}
 	if ($ARCH eq "") {
 		die ("reorg code so this set first");
@@ -3267,7 +3267,7 @@ mkdir ($configurationFiles);
 my $generate = true;
 my $generateBecause = '';
 if ($onlyGenerateIfCompilerExists) {
-	if (trim (`./Build/ScriptsLib/HasCompiler $COMPILER_DRIVER_CPlusPlus`) eq "0") {
+	if (trim (`./Build/Scripts/HasCompiler $COMPILER_DRIVER_CPlusPlus`) eq "0") {
 		$generate = false;
 		$generateBecause = "compiler $COMPILER_DRIVER_CPlusPlus not present";
 	}
@@ -3397,11 +3397,11 @@ if ($onlyGenerateIfCompilerExists) {
 if ($generate) {
 	ValidateConfigurationAndEmitNeededWarnings_ ();
 	my $masterXMLConfigFile	=	"$configurationFiles" . "$configurationName.xml";
-	print(`Build/ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\" ... ");
+	print(`Build/Scripts/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\" ... ");
 	WriteConfigFile_ ($masterXMLConfigFile);
 	system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");
 	print("done\n");
 }
 else {
-	print(`Build/ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because $generateBecause and configuration invoked with --only-if-has-compiler\n");
+	print(`Build/Scripts/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because $generateBecause and configuration invoked with --only-if-has-compiler\n");
 }

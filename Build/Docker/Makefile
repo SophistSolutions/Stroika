@@ -3,9 +3,9 @@ export StroikaRoot	:=	$(abspath ../../)/
 DEFAULT_GOAL := help
 
 STROIKA_VERSION=$(shell dos2unix < ../../STROIKA_VERSION | xargs echo -n)
-STROIKA_VERSION_Final=$(shell ${StroikaRoot}Build/ScriptsLib/ExtractVersionInformation ../../STROIKA_VERSION FinalBuild)
+STROIKA_VERSION_Final=$(shell ${StroikaRoot}Build/Scripts/ExtractVersionInformation ../../STROIKA_VERSION FinalBuild)
 
-DETECTED_HOST_OS=$(shell ${StroikaRoot}Build/ScriptsLib/DetectedHostOS)
+DETECTED_HOST_OS=$(shell ${StroikaRoot}Build/Scripts/DetectedHostOS)
 
 BUILD_DEV_IMAGES?=1
 
@@ -89,7 +89,7 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2604-small:
 
 sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:
 	@# Sadly docker build doesn't work with symbolic links
-	@cp ${StroikaRoot}Build/ScriptsLib/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
+	@cp ${StroikaRoot}Build/Scripts/BuildGCC Ubuntu2204-RegressionTests/BuildGCC
 	docker build -f Ubuntu2204-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 	@rm -f Ubuntu2204-RegressionTests/BuildGCC
 
@@ -143,11 +143,11 @@ sophistsolutionsinc/stroika-dev-2604:
 
 stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/ScriptsLib/RunInDockerEnvironment
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/ScriptsLib/RunInDockerEnvironment
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/ScriptsLib/RunInDockerEnvironment
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/ScriptsLib/RunInDockerEnvironment
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2604 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2604 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10622:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/ScriptsLib/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/Scripts/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/Scripts/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/Scripts/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/Scripts/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2604 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2604 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10622:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" Build/Scripts/RunInDockerEnvironment
 endif
 
 start-stroika-dev-containers:

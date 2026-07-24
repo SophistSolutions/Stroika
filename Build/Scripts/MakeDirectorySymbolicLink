@@ -1,0 +1,14 @@
+#!/bin/bash
+TARGET=$1
+ALIASPATH=$2
+
+echo "MakeDirectorySymbolicLink is **DEPRECATED** - use MakeSymbolicLink"
+DETECTED_HOST_OS=`Build/Scripts/DetectedHostOS`
+
+if [[ "$DETECTED_HOST_OS" == "Cygwin"  ]] ; then
+export CYGWIN="winsymlinks:nativestrict;$CYGWIN"
+fi
+if [[ "$DETECTED_HOST_OS" == "MSYS"  ]] ; then
+export MSYS="winsymlinks:nativestrict;$MSYS"
+fi
+ln -s $TARGET $ALIASPATH

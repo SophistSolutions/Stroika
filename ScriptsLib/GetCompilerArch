@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/GetCompilerArch: this location is deprecated, use Build/ScriptsLib/GetCompilerArch instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/GetCompilerArch" "$@"
+echo "ScriptsLib/GetCompilerArch: this location is deprecated, use Build/Scripts/GetCompilerArch instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/GetCompilerArch" "$@"

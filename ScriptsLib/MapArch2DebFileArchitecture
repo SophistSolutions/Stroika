@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/MapArch2DebFileArchitecture: this location is deprecated, use Build/ScriptsLib/MapArch2DebFileArchitecture instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/MapArch2DebFileArchitecture" "$@"
+echo "ScriptsLib/MapArch2DebFileArchitecture: this location is deprecated, use Build/Scripts/MapArch2DebFileArchitecture instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/MapArch2DebFileArchitecture" "$@"

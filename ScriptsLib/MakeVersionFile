@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/MakeVersionFile: this location is deprecated, use Build/ScriptsLib/MakeVersionFile instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/MakeVersionFile" "$@"
+echo "ScriptsLib/MakeVersionFile: this location is deprecated, use Build/Scripts/MakeVersionFile instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/MakeVersionFile" "$@"

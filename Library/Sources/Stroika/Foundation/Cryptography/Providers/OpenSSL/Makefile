@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../../../../)/
 SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Cryptography/Providers/OpenSSL/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cryptography/Providers/OpenSSL/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 SubDirs	:=	\
@@ -22,7 +22,7 @@ Objs	:=	\
 	$(ObjDir)ServerContext${OBJ_SUFFIX}\
 	$(ObjDir)SocketStream${OBJ_SUFFIX}\
 
-include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 all:	$(Objs)  $(SubDirs)
 

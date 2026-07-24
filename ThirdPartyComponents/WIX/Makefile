@@ -3,7 +3,7 @@
 #
 StroikaRoot	:=	$(abspath ../..)/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 ### https://wixtoolset.org/docs/releasenotes/
 ### We are way behind here - but some work to update -  up to WIX v5 --LGP 2024-07-18
@@ -25,8 +25,8 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 
 all:	
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/WIX Build $(VERSION) {$(CONFIGURATION)}:"
-	@$(StroikaRoot)Build/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/WIX Build $(VERSION) {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --silent CURRENT
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
@@ -36,7 +36,7 @@ clobber:
 	@rm -rf CURRENT
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)Build/ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 CURRENT:	$(ZIPPEDFILE)
 	@unzip -q $(ZIPPEDFILE) -d CURRENT
@@ -44,11 +44,11 @@ CURRENT:	$(ZIPPEDFILE)
 	@/bin/find CURRENT -name \*.dll -exec chmod +x {} \;
 
 check-prerequisite-tools:
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "WIX $(VERSION) - Checking Prerequisite tools ... "
-	@{ type unzip > /dev/null; } || { $(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaRoot)Build/ScriptsLib/GetMessageForMissingTool unzip && exit 1; }
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "WIX $(VERSION) - Checking Prerequisite tools ... "
+	@{ type unzip > /dev/null; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool unzip && exit 1; }
 	@$(ECHO) "done";
 
 check:
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "WIX $(VERSION) - Checking ... "
-	@$(StroikaRoot)Build/ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "WIX $(VERSION) - Checking ... "
+	@$(StroikaRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/WIX -  [Succeeded]";

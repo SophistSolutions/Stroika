@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/RunArgumentsWithCommonBuildVars: this location is deprecated, use Build/ScriptsLib/RunArgumentsWithCommonBuildVars instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/RunArgumentsWithCommonBuildVars" "$@"
+echo "ScriptsLib/RunArgumentsWithCommonBuildVars: this location is deprecated, use Build/Scripts/RunArgumentsWithCommonBuildVars instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/RunArgumentsWithCommonBuildVars" "$@"

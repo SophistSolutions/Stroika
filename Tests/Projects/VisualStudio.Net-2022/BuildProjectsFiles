@@ -2,7 +2,7 @@
 use File::Copy;
 use File::Compare;
 
-require "../../ScriptsLib/TestsList.pl";
+require "../../Scripts/TestsList.pl";
 
 
 sub	CopyWithWithSubst {

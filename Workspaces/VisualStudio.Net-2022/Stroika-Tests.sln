@@ -310,12 +310,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests {top level}", "Tests 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{8DCF5A19-DEBC-4B81-8824-9F2E4ACF8235}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", "{15F1E993-1682-447B-9DB0-787D43E22EB5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{15F1E993-1682-447B-9DB0-787D43E22EB5}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\Tests\ScriptsLib\.gitattributes = ..\..\Tests\ScriptsLib\.gitattributes
-		..\..\Tests\ScriptsLib\PrintTestName = ..\..\Tests\ScriptsLib\PrintTestName
-		..\..\Tests\ScriptsLib\PrintTestsList = ..\..\Tests\ScriptsLib\PrintTestsList
-		..\..\Tests\ScriptsLib\TestsList.pl = ..\..\Tests\ScriptsLib\TestsList.pl
+		..\..\Tests\Scripts\.gitattributes = ..\..\Tests\Scripts\.gitattributes
+		..\..\Tests\Scripts\PrintTestName = ..\..\Tests\Scripts\PrintTestName
+		..\..\Tests\Scripts\PrintTestsList = ..\..\Tests\Scripts\PrintTestsList
+		..\..\Tests\Scripts\TestsList.pl = ..\..\Tests\Scripts\TestsList.pl
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test49", "..\..\Tests\Projects\VisualStudio.Net-2022\49\Test49.vcxproj", "{F32BB2E2-28C3-44A1-959B-C8CCFEC4A30C}"

@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../../../)/
 SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Compression/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/Compression/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 vpath %cpp $(SrcDir)
@@ -16,7 +16,7 @@ SubDirs	:=	\
 	Zip \
 
 
-include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:	$(Objs) $(SubDirs)

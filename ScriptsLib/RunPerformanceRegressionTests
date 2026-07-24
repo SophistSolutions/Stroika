@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/RunPerformanceRegressionTests: this location is deprecated, use Build/ScriptsLib/RunPerformanceRegressionTests instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/RunPerformanceRegressionTests" "$@"
+echo "ScriptsLib/RunPerformanceRegressionTests: this location is deprecated, use Build/Scripts/RunPerformanceRegressionTests instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/RunPerformanceRegressionTests" "$@"

@@ -102,4 +102,4 @@ RUN (%TEMP%\vs_buildtools.exe \
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygin-vs2k26
 # ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26
-# ###     see Build/ScriptsLib/RunLocalWindowsDockerRegressionTests
+# ###     see Build/Scripts/RunLocalWindowsDockerRegressionTests

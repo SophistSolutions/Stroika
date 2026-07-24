@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/SubstituteBackVariables: this location is deprecated, use Build/ScriptsLib/SubstituteBackVariables instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/SubstituteBackVariables" "$@"
+echo "ScriptsLib/SubstituteBackVariables: this location is deprecated, use Build/Scripts/SubstituteBackVariables instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/SubstituteBackVariables" "$@"

@@ -44,8 +44,8 @@ Next create your app:
 
 ~~~
 cd Stroika
-./Build/ScriptsLib/Skel --help
-./Build/ScriptsLib/Skel --appRoot ../myStarterApp
+./Build/Scripts/Skel --help
+./Build/Scripts/Skel --appRoot ../myStarterApp
 ~~~
 
 Now you have a folder ready to commit to git, or build:
@@ -77,7 +77,7 @@ Abbreviated instructions based on the Simple example:
 docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests  # OR USE sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 git clone https://github.com/SophistSolutions/Stroika.git
 cd Stroika
-./Build/ScriptsLib/Skel --appRoot ../myHTMLGUIApp --template HTMLUI
+./Build/Scripts/Skel --appRoot ../myHTMLGUIApp --template HTMLUI
 cd ../myHTMLGUIApp
 make CONFIGURATION=Debug samples -j10
 ~~~

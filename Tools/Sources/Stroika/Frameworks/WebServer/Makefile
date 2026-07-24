@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../..)/
 SrcDir		:=  $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/WebServer/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
@@ -11,7 +11,7 @@ SubDirs	:=				\
 	HTMLViewCompiler	\
 
 
-include $(StroikaRoot)/Build/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all check:

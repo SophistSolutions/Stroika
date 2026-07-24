@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/VersionCompare: this location is deprecated, use Build/ScriptsLib/VersionCompare instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/VersionCompare" "$@"
+echo "ScriptsLib/VersionCompare: this location is deprecated, use Build/Scripts/VersionCompare instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/VersionCompare" "$@"

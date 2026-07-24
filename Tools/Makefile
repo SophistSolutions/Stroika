@@ -1,6 +1,6 @@
 StroikaRoot	:=	$(abspath ../)/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 .PHONY:	samples all check clobber
 
@@ -22,20 +22,20 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)Build/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tools {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tools {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)Build/ScriptsLib/GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)Build/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking Stroika Tools {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking Stroika Tools {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
@@ -44,7 +44,7 @@ endif
 
 clean clobber::
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)Build/ScriptsLib/GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else

@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/SplitCFLAGS: this location is deprecated, use Build/ScriptsLib/SplitCFLAGS instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/SplitCFLAGS" "$@"
+echo "ScriptsLib/SplitCFLAGS: this location is deprecated, use Build/Scripts/SplitCFLAGS instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/SplitCFLAGS" "$@"

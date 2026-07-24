@@ -3,7 +3,7 @@ SrcDir				:=	$(StroikaRoot)Tests/$(TEST_NUM)/
 ObjDir				:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/$(TEST_NUM)/
 PackageDependencies :=  stroika-frameworks
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 ifndef TEST_NUM
 	TEST_NUM		=	_UNDEFINED_FIX_INCLUDER_OF_TEMPLATE_TO_SPECIFY_THIS_
@@ -23,14 +23,14 @@ Objs	=	\
 CPPFLAGS       +=     -I${ObjDir_ToolsSafe}
 
 
-include $(StroikaRoot)/Build/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Build/Lib/Make/SharedBuildRules-Default.mk
 
 all:	$(ObjDir) $(TARGETEXE)
 
 
 check:
-	@$(StroikaRoot)/Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Test $(TEST_NUM): $(shell $(StroikaRoot)Tests/ScriptsLib/PrintTestName $(TEST_NUM)) :  "
-	@$(StroikaRoot)Build/ScriptsLib/CheckFileExists $(TARGETEXE)
+	@$(StroikaRoot)/Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Test $(TEST_NUM): $(shell $(StroikaRoot)Tests/Scripts/PrintTestName $(TEST_NUM)) :  "
+	@$(StroikaRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 
 
@@ -41,9 +41,9 @@ endif
 
 
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking Test `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables $@` (`$(StroikaRoot)Tests/ScriptsLib/PrintTestName ${TEST_NUM}`) ... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking Test `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@` (`$(StroikaRoot)Tests/Scripts/PrintTestName ${TEST_NUM}`) ... "
 	@mkdir -p $(dir $@)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/ScriptsLib/PrintProgressLine $$((($(MAKE_INDENT_LEVEL)+2))) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)';\
+	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$((($(MAKE_INDENT_LEVEL)+2))) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)';\
 	fi
 	@$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)

@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../../)/
 SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Frameworks/Auth/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Auth/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 
@@ -21,7 +21,7 @@ SubDirs	:=	\
 
 Objs	=	\
 
-include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:	$(Objs) $(SubDirs)

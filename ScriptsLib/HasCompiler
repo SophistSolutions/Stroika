@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/HasCompiler: this location is deprecated, use Build/ScriptsLib/HasCompiler instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/HasCompiler" "$@"
+echo "ScriptsLib/HasCompiler: this location is deprecated, use Build/Scripts/HasCompiler instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/HasCompiler" "$@"

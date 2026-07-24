@@ -2,7 +2,7 @@ StroikaRoot	:=	$(abspath ../../../../../)/
 SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
 CXXFLAGS+=-Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibDir)stroika-frameworks.pdb)
@@ -21,7 +21,7 @@ Objs	=	\
 	$(ObjDir)Device${OBJ_SUFFIX}\
 	$(ObjDir)DeviceDescription${OBJ_SUFFIX}\
 
-include $(StroikaRoot)Build/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:	$(Objs) $(SubDirs)

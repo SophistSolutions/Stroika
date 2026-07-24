@@ -7,11 +7,11 @@
 #
 StroikaRoot	:=	$(abspath ../..)/
 
-include $(StroikaRoot)Build/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 ifneq ($(CONFIGURATION),)
-include $(StroikaRoot)Build/ScriptsLib/Makefile-CMake-Common.mk
+include $(StroikaRoot)Build/Lib/Make/Makefile-CMake-Common.mk
 endif
 
 .PHONY:	all clean clobber check doBuilds_
@@ -28,13 +28,13 @@ VERSION=3.3.0
 ifeq (Unix,$(BuildPlatform))
 ifeq ($(VERSION), 3.2.5)
 # This version of xerces requires more recent copy of cmake
-ifeq ($(shell $(StroikaRoot)Build/ScriptsLib/VersionCompare `cmake --version | awk '{print $$3}' | awk 'FNR == 1'` 3.12; echo $$?), 2)
+ifeq ($(shell $(StroikaRoot)Build/Scripts/VersionCompare `cmake --version | awk '{print $$3}' | awk 'FNR == 1'` 3.12; echo $$?), 2)
 VERSION=3.2.3
 endif
 endif
 ifeq ($(VERSION), 3.2.4)
 # This version of xerces requires more recent copy of cmake
-ifeq ($(shell $(StroikaRoot)Build/ScriptsLib/VersionCompare `cmake --version | awk '{print $$3}' | awk 'FNR == 1'` 3.12; echo $$?), 2)
+ifeq ($(shell $(StroikaRoot)Build/Scripts/VersionCompare `cmake --version | awk '{print $$3}' | awk 'FNR == 1'` 3.12; echo $$?), 2)
 VERSION=3.2.3
 endif
 endif
@@ -46,7 +46,7 @@ EXTRACTED_DIRNAME=$(BASENAME)
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces)/
-OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
+OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
 
 
@@ -125,7 +125,7 @@ endif
 
 
 all:
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/xerces $(VERSION) Build {$(CONFIGURATION)}:"
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/xerces $(VERSION) Build {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)GetConfigurations` ; do\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
@@ -133,7 +133,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@#make zippedfile even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(ZIPPEDFILE)
-	@$(StroikaRoot)Build/ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized BuildPlatform)
 endif
@@ -172,23 +172,23 @@ endif
 
 
 check:
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Xerces ${VERSION} - Checking ... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Xerces ${VERSION} - Checking ... "
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized BuildPlatform)
 endif
-	@$(StroikaRoot)Build/ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(StroikaRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/Xerces -  [Succeeded]";
 
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(StroikaRoot)Build/ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(StroikaRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 
 ORIGs CURRENT:	$(ZIPPEDFILE)
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables "Xerces ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "Xerces ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
@@ -199,7 +199,7 @@ else
 endif
 	# Char16Test_IOSTREAMCHANGE for compatability with Visual Studio .Net 2022 17.1.0 compiler --LGP 2022-02-16
 	@if [ "$@" != "ORIGs" ] ; then \
-		$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Xerces ${VERSION} - Patching ... ";\
+		$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Xerces ${VERSION} - Patching ... ";\
 		patch -p0 $@/src/xercesc/internal/ElemStack.cpp Patches/SilenceSanitizerWarningAboutMemcpyNullPtr.PATCH >> $@/PATCHING.OUT;\
 		patch -p0 $@/tests/src/Char16Test/Char16Test.cpp Patches/Char16Test_IOSTREAMCHANGE.PATCH >> $@/PATCHING.OUT;\
 		patch -p0 $@/src/xercesc/validators/schema/NamespaceScope.cpp Patches/SilenceSanitizerWarningAboutMemcpyNullPtr2.PATCH >> $@/PATCHING.OUT;\
@@ -236,16 +236,16 @@ endif
 doBuilds_:
 	@mkdir -p $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt && touch  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables "Xerces ${VERSION} - Configuring (See $(OUTPUT_WORKDIR_PRETTYNAME)CONFIGURE-OUT.txt)"` "... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "Xerces ${VERSION} - Configuring (See $(OUTPUT_WORKDIR_PRETTYNAME)CONFIGURE-OUT.txt)"` "... "
 	@echo CXX='$(CXX)' >>  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt
 	@echo CFLAGS='$(CFLAGS)' >>  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt
 	@echo CXXFLAGS='$(CXXFLAGS)' >>  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt
 	@echo 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) ; cmake $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR)' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt 2>&1
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) ; cmake $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt 2>&1
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables "Xerces ${VERSION} - Compiling (See $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt)"` "... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "Xerces ${VERSION} - Compiling (See $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt)"` "... "
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && $(ECHO) "cmake --build . $(CMAKE_BUILD_TARGET_SPEC_) --config $(CMAKE_CONFIGURATION)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
 	@+cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && cmake --build . $(CMAKE_BUILD_TARGET_SPEC_) --config $(CMAKE_CONFIGURATION) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/ScriptsLib/SubstituteBackVariables "Xerces ${VERSION} - Copying builds (See $(OUTPUT_WORKDIR_PRETTYNAME)INSTALL.OUT)"` "... "
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "Xerces ${VERSION} - Copying builds (See $(OUTPUT_WORKDIR_PRETTYNAME)INSTALL.OUT)"` "... "
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && $(ECHO) "cmake --build . --config $(CMAKE_CONFIGURATION) --target install" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)INSTALL.OUT
 	@+cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && cmake --build . --config $(CMAKE_CONFIGURATION) --target install >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)INSTALL.OUT 2>&1
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
@@ -263,6 +263,6 @@ endif
 
 
 check-prerequisite-tools:
-	@$(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Xerces ${VERSION} - Checking Prerequisite tools ... "
-	@{ type cmake > /dev/null 2>&1; } || { $(StroikaRoot)Build/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaRoot)Build/ScriptsLib/GetMessageForMissingTool cmake && exit 1; }
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Xerces ${VERSION} - Checking Prerequisite tools ... "
+	@{ type cmake > /dev/null 2>&1; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool cmake && exit 1; }
 	@$(ECHO) "done";

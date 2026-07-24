@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/CreatePackageConfigFiles: this location is deprecated, use Build/ScriptsLib/CreatePackageConfigFiles instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/CreatePackageConfigFiles" "$@"
+echo "ScriptsLib/CreatePackageConfigFiles: this location is deprecated, use Build/Scripts/CreatePackageConfigFiles instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/CreatePackageConfigFiles" "$@"

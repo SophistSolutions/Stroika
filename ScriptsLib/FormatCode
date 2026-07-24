@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "ScriptsLib/FormatCode: this location is deprecated, use Build/ScriptsLib/FormatCode instead" >&2
-exec "$(dirname "${BASH_SOURCE[0]}")/../Build/ScriptsLib/FormatCode" "$@"
+echo "ScriptsLib/FormatCode: this location is deprecated, use Build/Scripts/FormatCode instead" >&2
+exec "$(dirname "${BASH_SOURCE[0]}")/../Build/Scripts/FormatCode" "$@"
