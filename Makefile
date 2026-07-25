@@ -68,11 +68,9 @@ help:
 	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
 	@$(ECHO) "    library-clobber:             -    Clobber library and things that depend on it (i.e. all but configurations and third-party-components)"
-	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
+	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-vs-code"
 	@$(ECHO) "    project-files-vs-code:       -    Builds project files for visual studio code"
 	@$(ECHO) "    project-files-visual-studio: -    Builds project files for visual studio.net"
-	@$(ECHO) "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load"
-	@$(ECHO) "                                      project-files-qt-creator-save)"
 	@$(ECHO) "    tests:"
 	@$(ECHO) "    format-code:                 -    Run Scripts/FormatCode (clang-format) on source code, and update it to conform to Stroika code formatting standards"
 	@$(ECHO) "    samples:"
@@ -253,8 +251,6 @@ endif
 endif
 
 
-# As of Stroika 2.1r4, no longer automatically run project-files-qt-creator since I'm not sure its widely used
-# anymore, and we may just deprecate (I no longer update the project files)
 project-files:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating (common) default project files:"
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) project-files-visual-studio project-files-vs-code
@@ -277,20 +273,6 @@ ifeq ($(DETECTED_HOST_OS),Darwin)
 else
 	@cp --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 endif
-
-project-files-qt-creator:	project-files-qt-creator-load
-
-
-project-files-qt-creator-load:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Loading qt-creator project files ... "
-	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$$i .; done;
-	@$(ECHO) "done"
-
-project-files-qt-creator-save:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Saving qt-creator project files ... "
-	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp $$i Library/Projects/QtCreator/ ; done;
-	@$(ECHO) "done"
-
 
 ifeq ($(CONFIGURATION),)
 tools:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT

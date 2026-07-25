@@ -67,7 +67,7 @@ Runs clang-format (`.clang-format` at repo root) over the codebase — always ru
 C++ changes.
 
 ### Notes
-- `make project-files` regenerates IDE project files (Visual Studio, Qt Creator); needed after
+- `make project-files` regenerates IDE project files (Visual Studio, VS Code); needed after
   installing a new compiler/IDE version, or run `make reconfigure` if a configuration's absolute
   compiler paths go stale.
 - Docker images (`sophistsolutionsinc/stroika-buildvm-*`) are the easiest way to get a complete,

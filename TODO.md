@@ -9,9 +9,6 @@ Generally will track stuff here between releases
 ## Open
 - rename Build/ToolSrc.... stuff to match top level Tools and clearly document diff - why some stuff goes where
 
-- Library/Projects/QtCreator/StroikaDevRoot.files is rotted - 31 of its 35 Build/Tests script entries
-  name files that don't exist (stale .sh/.pl suffixes, plus scripts deleted years ago). Prune/regenerate
-  it - or just drop the QtCreator project if nobody uses it anymore
 - rename ScriptsLibPath var in ThirdPartyComponents/boost/Makefile (value is Build/Scripts now)
 - Documentation/Building-Stroika.md - describe the Build/{Scripts,Lib,Shared} split for users
   (rationale is written up in AGENTS.md now)

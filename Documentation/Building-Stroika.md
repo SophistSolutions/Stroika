@@ -235,10 +235,9 @@ Targets:
     clobber:
     reconfigure:                 -    Rebuild configuration files from the command-lines that built them before
     libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)
-    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator
+    project-files:               -    Alias for project-files-visual-studio project-files-vs-code
     project-files-visual-studio: -    Builds project files for visual studio.net
-    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load
-                                      project-files-qt-creator-save)
+    project-files-vs-code:       -    Builds project files for visual studio code
     tests:
     format-code:                 -    Run astyle on source code, and update it to conform to Stroika code formatting standards
     samples:
@@ -548,11 +547,6 @@ add to your settings.json:
   ~~~
 
   The 'defaultProfile' is the one used by the tasks.json for executing commands like make all, make clean etc from vscode's build menu (SHIFT-Cntrl-B)
-
-
-### Using QtCreator (on unix)
-
-Run Library/Projects/QtCreator/CreateQtCreatorSymbolicLinks.sh to create project files at the top level of your Stroika directory. Then you can open that .creator file in qtCreator, and build and debug Stroika-based applications.
 
 
 ---
