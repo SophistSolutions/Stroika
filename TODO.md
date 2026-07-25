@@ -7,7 +7,6 @@ tracker, or design doc. Prune entries as they're fixed; don't let this grow into
 Generally will track stuff here between releases
 
 ## Open
-- Fix Skel to generate VS2k26 project files too
 - rename Build/ToolSrc.... stuff to match top level Tools and clearly document diff - why some stuff goes where
 
 - Library/Projects/QtCreator/StroikaDevRoot.files is rotted - 31 of its 35 Build/Tests script entries
