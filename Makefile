@@ -342,7 +342,7 @@ format-code:
 	@Build/Scripts/FormatCode Samples *.h *.inl *.cpp
 	@Build/Scripts/FormatCode Tests *.h *.inl *.cpp
 	@Build/Scripts/FormatCode Tools *.h *.inl *.cpp
-	@Build/Scripts/FormatCode Build/BootstrapToolsSrc *.h *.inl *.cpp
+	@Build/Scripts/FormatCode Build/Tools/Src *.h *.inl *.cpp
 
 
 
@@ -667,4 +667,4 @@ list-configuration-tags:
 
 install-realpath:
 	mkdir -p /usr/local/bin
-	g++ --std=c++20 -O -o /usr/local/bin/realpath Build/BootstrapToolsSrc/realpath.cpp
+	g++ --std=c++20 -O -o /usr/local/bin/realpath Build/Tools/Src/realpath.cpp

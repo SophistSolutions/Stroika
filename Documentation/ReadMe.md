@@ -8,7 +8,7 @@
 
 ## Building and Debugging
 - [Building Stroika](Building-Stroika.md) - Getting started and troubleshooting builds
-- [Using Docker to Build Stroika](../DockerBuildContainers/) - Often a good way to quickstart
+- [Using Docker to Build Stroika](../Build/Docker/ReadMe.md) - Often a good way to quickstart
 - [Debugging](Debugging.md) - helpful hints
 - [Upgrading](Upgrading.md) - How to upgrade Stroika-based code from older versions
 - [Setup RaspberryPi Target](SetupRaspberryPiTarget.md)
@@ -16,6 +16,7 @@
 
 ## Design and Code Organization
 
+- [The Build folder](Building-Stroika.md#the-build-folder) - what lives where under `Build/`, and why
 - [Design Overview](Design-Overview.md) - Design Patterns / Conventions used throughout Stroika
 - [Patterns](Patterns.md) - quick-recognition guide to Stroika's recurring architectural shapes, with real examples
 - [Code Status](Code-Status.md) - denotations used throughout Stroika moduless

@@ -106,12 +106,21 @@ C++ changes.
     `.pl` files `require`d by `configure` and the scripts.
   - `Build/Shared/` — data read at build time rather than code: `Skel-Templates/`, the app skeletons
     `Skel` copies and substitutes into.
-  - `Build/Docker/` — build-VM container definitions (see `Documentation/Building-Stroika.md`);
-    `Build/BootstrapToolsSrc/` — source for the few tools that must exist before Stroika can build.
+  - `Build/Tools/Src/` — source for host utilities the build needs *before* Stroika exists, and which
+    therefore cannot use it: `realpath.cpp` (a GNU-`realpath` stand-in, for macOS) and `vswhere/`
+    (fetches Microsoft's Visual Studio locator). Compiled ad hoc by the top-level `Makefile`, not by
+    the normal build. **Not to be confused with top-level `Tools/`** — see below.
+  - `Build/Docker/` — build-VM container definitions (see `Documentation/Building-Stroika.md`).
   A deprecated top-level `ScriptsLib/` still exists purely to shim the pre-3.0d24 layout: each entry
   warns and forwards to its new home. Don't add to it, and don't reference it from new code.
+- `Tools/` — tools built *with* Stroika, by the normal build, into `Builds/{CONFIGURATION}/bin/`;
+  they depend on the Foundation/Frameworks and mirror `Library/`'s layout
+  (`Tools/Sources/Stroika/Frameworks/...`, plus per-VS-version projects under `Tools/Projects/`).
+  Currently `HTMLViewCompiler`, which `SharedBuildRules-Default.mk` invokes to compile `.swsp` files.
+  The dividing line versus `Build/Tools/Src/`: **can it use Stroika?** If yes it belongs here; if it
+  has to run before Stroika can be built, it belongs under `Build/`.
 - `Tests/Scripts/` — helpers specific to the regression-test harness (test naming/listing).
-- `Tools/`, `Workspaces/` — IDE workspace files (VSCode, Visual Studio.Net) and dev tools.
+- `Workspaces/` — IDE workspace/solution files (VSCode, Visual Studio.Net).
 
 ### Design conventions (see `Documentation/Design-Overview.md` and `Patterns.md` for full detail)
 

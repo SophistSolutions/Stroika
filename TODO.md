@@ -7,15 +7,13 @@ tracker, or design doc. Prune entries as they're fixed; don't let this grow into
 Generally will track stuff here between releases
 
 ## Open
-- rename Build/ToolSrc.... stuff to match top level Tools and clearly document diff - why some stuff goes where
-
 - rename ScriptsLibPath var in ThirdPartyComponents/boost/Makefile (value is Build/Scripts now)
-- Documentation/Building-Stroika.md - describe the Build/{Scripts,Lib,Shared} split for users
-  (rationale is written up in AGENTS.md now)
 
+- review if/why/when we desupported vs2k19
 - Move makedefaultconfigs from makefile into script in that folder
 - Finish CONTAINER SEQUNNCE BIDI ITERATOR STUFF
 - add more g++16 c++23 configs
 - test WTF 
 - test IPAM - etc...
 - test HearHE
+- deal with failed/lost bugs from JIRA
