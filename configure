@@ -145,12 +145,6 @@ my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
 my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
 
 
-## /Zi or /ZI (as opposed to using /Z7 for debug info)
-## Z7 may use more disk space but less confusing for library to
-## not have symbol information written into .pdb file
-my $WinFlag_DebugProgramDatabase = false;	# ignored except for visual studio (make -jN seems to get errors, despite adding -FS flag)
-
-
 ### @todo finish review of what warnings we still want - disable a few more... --LGP 2019-08-29
 ### FOR COMMON ONES - SEE IF THEY SHOULD REALLY BE GCC SPECIFIC
 my $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ = '-Wall ';
@@ -2449,13 +2443,18 @@ sub GetDefaultCZZFLAGS_flags_
 				}
 
 				if ($INCLUDE_SYMBOLS_LIB) {
-					if ($WinFlag_DebugProgramDatabase) {
-						push @flags, "-Zi";		#	Program Database (Debug Information)
-						push @flags, "-FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
-					}
-					else {
-						push @flags, "-Z7";		#	Use intra-obj file debug info format 
-					}
+					#	Use intra-obj file debug info format, rather than -Zi (a separate .pdb).
+					#	Reasons we do NOT use -Zi (tried, and abandoned):
+					#		o	With a static library, a separate .pdb must be shipped next to the .lib, or
+					#			every later link of it warns LNK4099 and silently drops the debug info for
+					#			those objects.
+					#		o	All the directories making up one library share a single .pdb, and parallel
+					#			builds (make -jN - which this project requires) got errors writing it, even
+					#			with -FS (Force Synchronous PDB Writes).
+					#	-Z7 costs some disk space in the .obj/.lib files, and that is the tradeoff taken.
+					#	See Build/Lib/Make/Makefile-CMake-Common.mk, which makes the cmake-built
+					#	third-party components match this choice.
+					push @flags, "-Z7";
 				}
 			}
 

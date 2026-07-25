@@ -5,11 +5,6 @@ ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/N
 include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
-ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
-CXXFLAGS+=-Fd$(StroikaLibDir)stroika-frameworks.pdb
-endif
-
-
 vpath %cpp $(SrcDir)
 
 Objs	:=	\
