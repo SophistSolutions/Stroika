@@ -59,12 +59,13 @@ elif [ $TOOL == "tr" ] ; then
 		echo -n ": try apt-get install -y coreutils" && echo && exit 0
 	fi
 elif [ $TOOL == "clang-format" ] ; then
+	# NB: as of Visual Studio 18, the bundled LLVM lives in VC/Tools/Llvm/x64/bin (VS2022 and earlier used VC/Tools/Llvm/bin)
 	if [ $DistroBasedOn == "msys" ] ; then
-	echo -n ": export PATH=\"\$PATH:/c/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/Llvm/bin\" to ~/.bashrc" 
-	echo -n "or try pacman -S clang" && echo && exit 0
+	echo -n ": add export PATH=\"\$PATH:/c/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/Llvm/x64/bin\" to ~/.bashrc"
+	echo -n " or try pacman -S clang" && echo && exit 0
 	elif [ $DistroBasedOn == "cygwin" ] ; then
-	echo -n ": export PATH=\"\$PATH:/cygdrive/c/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/Llvm/bin\" to ~/.bashrc" 
-	echo -n "or try cygwin setup clang" && echo && exit 0
+	echo -n ": add export PATH=\"\$PATH:/cygdrive/c/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/Llvm/x64/bin\" to ~/.bashrc"
+	echo -n " or try cygwin setup clang" && echo && exit 0
 	fi
 elif [ $TOOL == "unix2dos" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
