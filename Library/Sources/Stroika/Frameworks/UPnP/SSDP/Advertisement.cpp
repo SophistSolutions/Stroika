@@ -57,7 +57,7 @@ ObjectVariantMapper Advertisement::kMapperGetter_ ()
         {"USN"sv, &Advertisement::fUSN},
         {"Server"sv, &Advertisement::fServer},
         {"Target"sv, &Advertisement::fTarget},
-        {"RawHeaders"sv, &Advertisement::fRawHeaders},
+        {"Raw-Headers"sv, &Advertisement::fRawHeaders},
     });
     return mapper;
 };
