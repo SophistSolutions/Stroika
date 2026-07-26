@@ -1876,16 +1876,43 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 /usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys15CleanupOnSignalEm+0x101)[0x7f6fe74a3771]
 /usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(+0xe2767f)[0x7f6fe73c767f]
 /lib/x86_64-linux-gnu/l
+
+
+     Compiling Library/Sources/Stroika/Foundation/Debug/Assertions.cpp ... 
+      Compiling Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.cpp ... 
+In file included from Statistics.cpp:6:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:9:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.h:19:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Sequence.h:17:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:945:102: error: use of variable template 'kDefaultToStringConverter' requires template
+      arguments
+  945 |         template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT = decltype (kDefaultToStringConverter<>),
+      |                                                                                                      ^
+/usr/lib/llvm-22/bin/../include/c++/v1/__type_traits/is_nothrow_destructible.h:27:85: note: in instantiation of template class
+      'Stroika::Foundation::Traversal::Iterable<int>' requested here
+   27 | struct _LIBCPP_NO_SPECIALIZATIONS is_nothrow_destructible : integral_constant<bool, __is_nothrow_destructible(_Tp)> {};
+      |                                                                                     ^
+/usr/lib/llvm-22/bin/../include/c++/v1/__type_traits/is_nothrow_destructible.h:56:78: note: in instantiation of template class
+      'std::is_nothrow_destructible<Stroika::Foundation::Traversal::Iterable<int>>' requested here
+   56 | _LIBCPP_NO_SPECIALIZATIONS inline constexpr bool is_nothrow_destructible_v = is_nothrow_destructible<_Tp>::value;
+      |                                                                              ^
+/usr/lib/llvm-22/bin/../include/c++/v1/__concepts/destructible.h:26:24: note: in instantiation of variable template specialization
+      'std::is_nothrow_destructible_v<Stroika::Foundation::Traversal::Iterable<int>>' requested here
+   26 | concept destructible = is_nothrow_destructible_v<_Tp>;
+      |                        ^
+/usr/lib/llvm-22/bin/../include/c++/v1/__concepts/destructible.h:26:24: note: while substituting template arguments into constraint expression here
+   26 | concept destructible = is_nothrow_destructible_v<_Tp>;
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-22/bin/../include/c++/v1/__concepts/constructible.h:27:30: note: while checking the satisfaction of concept 'destructible<Iterable<int>>' requested
+      here
 */
-
-#define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy   1
-
 #ifndef qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy
 
 #if defined(__clang__)
 // fixed on clang++17
+// broken on clang++22
 #define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16 or __clang_major__ == 22)
 #else
 #define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy 0
 #endif
