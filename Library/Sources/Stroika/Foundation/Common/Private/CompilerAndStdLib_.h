@@ -2533,8 +2533,10 @@ Objects involved in the operation:
 // unclear if this is my bug or g++ - but for now just treat it as g++ bug working around...
 // seen with g++-14
 // seen with g++-15
-// appears fixed in g++-16
-#define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 15))
+// still seen with g++-16 (Ubuntu 16-20260322-1ubuntu1 trunk snapshot, __GLIBCXX__==20260322) - Ubuntu 26.04 - same
+// "attempt to copy-construct an iterator from a singular iterator" abort, in Tests/47 (Foundation::Math) Test6_Statistics_,
+// via Math::Median -> Memory::InlineBuffer(start,end) ctor -- LGP 2026-07-26
+#define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 16))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy 0
 #endif
