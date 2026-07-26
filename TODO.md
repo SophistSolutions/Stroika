@@ -31,18 +31,6 @@ Generally will track stuff here between releases
         }
     Aborted
 
-- error on ubuntu 2604
-    StroikaConfig.cpp:10:9: warning: ****COMPILER COMPATABILITY ISSUE***** [-W#pragma-messages]
-    10 | #pragma message("****COMPILER COMPATABILITY ISSUE*****")
-        |         ^
-    StroikaConfig.cpp:11:9: warning: Info: Stroika untested with this version of clang++ - (>21.x) USING PREVIOUS COMPILER VERSION BUG DEFINES [-W#pragma-messages]
-    11 | #pragma message(_STROIKA_CONFIGURATION_WARNING_)
-        |         ^
-    StroikaConfig.cpp:12:9: warning: ****COMPILER COMPATABILITY ISSUE***** [-W#pragma-messages]
-    12 | #pragma message("****COMPILER COMPATABILITY ISSUE*****")
-        |         ^
-    3 warnings generated.
-
 
 - add more g++16 c++23 configs
 - Finish CONTAINER SEQUNNCE BIDI ITERATOR STUFF
