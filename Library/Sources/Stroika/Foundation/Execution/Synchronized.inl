@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Execution {
         return *fT;
     }
     template <typename T, typename TRAITS>
-    inline Synchronized<T, TRAITS>::ReadableReference::operator const T& () const
+    inline Synchronized<T, TRAITS>::ReadableReference::operator const T&() const
     {
         EnsureNotNull (fT);
         return *fT;

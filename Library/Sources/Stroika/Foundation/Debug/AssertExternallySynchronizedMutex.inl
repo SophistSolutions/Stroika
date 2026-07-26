@@ -27,9 +27,9 @@ namespace Stroika::Foundation::Debug {
     {
         auto              tid = this_thread::get_id ();
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        size_t            thisThreadCnt = std::count (fSharedLocks_.fInitialThreads_.begin (),
-                                                      fSharedLocks_.fInitialThreads_.begin () + fSharedLocks_.fInitialThreadsSize_, tid) and
-                               std::count (fSharedLocks_.fOverflowThreads_.begin (), fSharedLocks_.fOverflowThreads_.end (), tid);
+        size_t thisThreadCnt  = std::count (fSharedLocks_.fInitialThreads_.begin (),
+                                            fSharedLocks_.fInitialThreads_.begin () + fSharedLocks_.fInitialThreadsSize_, tid) and
+                                std::count (fSharedLocks_.fOverflowThreads_.begin (), fSharedLocks_.fOverflowThreads_.end (), tid);
         size_t otherThreadCnt = fSharedLocks_.fInitialThreadsSize_ +
                                 std::distance (fSharedLocks_.fOverflowThreads_.begin (), fSharedLocks_.fOverflowThreads_.end ());
         otherThreadCnt -= thisThreadCnt;

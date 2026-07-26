@@ -1021,7 +1021,7 @@ namespace Stroika::Frameworks::Led {
         AssertNotNull (fCellEditor);
         fOwningTable.ReleaseEmbeddedTableWordProcessor (fCellEditor);
     }
-    inline WordProcessorTable::TemporarilyAllocateCellWP::operator WordProcessorTable::EmbeddedTableWordProcessor* ()
+    inline WordProcessorTable::TemporarilyAllocateCellWP::operator WordProcessorTable::EmbeddedTableWordProcessor*()
     {
         AssertNotNull (fCellEditor);
         return fCellEditor;
@@ -1050,7 +1050,7 @@ namespace Stroika::Frameworks::Led {
         , fTmpUseTablet (*fWP, fTablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall)
     {
     }
-    inline WordProcessorTable::TemporarilyAllocateCellWithTablet::operator WordProcessorTable::EmbeddedTableWordProcessor* ()
+    inline WordProcessorTable::TemporarilyAllocateCellWithTablet::operator WordProcessorTable::EmbeddedTableWordProcessor*()
     {
         return fWP;
     }

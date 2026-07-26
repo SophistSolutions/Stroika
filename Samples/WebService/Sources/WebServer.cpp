@@ -80,95 +80,93 @@ public:
     static const WebServiceMethodDescription kDivide;
 
     Rep_ (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
-        : kRoutes_{Route{""_RegEx, DefaultPage_},
+        : kRoutes_{
+              Route{""_RegEx, DefaultPage_},
 
-                   Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
+              Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
 
-                   Route{"FRED"_RegEx,
-                         [] (Request&, Response& response) {
-                             response.write ("FRED");
-                             response.contentType = InternetMediaTypes::kText_PLAIN;
-                         }},
+              Route{"FRED"_RegEx,
+                    [] (Request&, Response& response) {
+                        response.write ("FRED");
+                        response.contentType = InternetMediaTypes::kText_PLAIN;
+                    }},
 
-                   /*
+              /*
                     * the 'variable' API demonstrates a typical REST style CRUD usage - where the 'arguments' mainly come from 
                     * the URL itself.
                     */
-                   Route{"variables(/?)"_RegEx,
-                         [this] (Message& m) {
-                             WriteResponse (m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
-                         }},
-                   Route{"variables/(.+)"_RegEx,
-                         [this] (Message& m, const String& varName) {
-                             WriteResponse (m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
-                         }},
-                   Route{HTTP::MethodsRegEx::kPostOrPut, "variables/(.+)"_RegEx,
-                         [this] (Message& m, const String& varName) {
-                             optional<Number> number;
-                             // demo getting argument from the body
-                             if (not number) {
-                                 // read if content-type is text (not json)
-                                 if (m.request ().contentType () and
-                                     InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText_PLAIN, *m.request ().contentType ())) {
-                                     String argsAsString = Streams::BinaryToText::Reader::New (m.rwRequest ().GetBody ()).ReadAll ();
-                                     number              = kMapper.ToObject<Number> (DataExchange::VariantValue{argsAsString});
-                                 }
-                             }
-                             // demo getting argument from the query argument
-                             if (not number) {
-                                 static const String                         kValueParamName_ = "value"sv;
-                                 Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (m.request ());
-                                 number = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
-                             }
-                             // demo getting either query arg, or url encoded arg
-                             if (not number) {
-                                 static const String kValueParamName_ = "value"sv;
-                                 // NOTE - PickoutParamValues combines PickoutParamValuesFromURL, and PickoutParamValuesFromBody. You can use
-                                 // Either one of those instead. PickoutParamValuesFromURL assumes you know the name of the parameter, and its
-                                 // encoded in the query string. PickoutParamValuesFromBody assumes you have something equivalent you can parse ouf
-                                 // of the body, either json encoded or form-encoded (as of 2.1d23, only json encoded supported)
-                                 Mapping<String, DataExchange::VariantValue> args = PickoutParamValues (m.rwRequest ());
-                                 number = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
-                             }
-                             if (not number) {
-                                 Throw (HTTP::ClientErrorException{"Expected argument to PUT/POST variable"sv});
-                             }
-                             fWSImpl_->Variables_SET (varName, *number);
-                             WriteResponse (m.rwResponse (), kVariables_);
-                         }},
-                   Route{HTTP::MethodsRegEx::kDelete, "variables/(.+)"_RegEx,
-                         /*
+              Route{"variables(/?)"_RegEx,
+                    [this] (Message& m) { WriteResponse (m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ())); }},
+              Route{"variables/(.+)"_RegEx,
+                    [this] (Message& m, const String& varName) {
+                        WriteResponse (m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
+                    }},
+              Route{HTTP::MethodsRegEx::kPostOrPut, "variables/(.+)"_RegEx,
+                    [this] (Message& m, const String& varName) {
+                        optional<Number> number;
+                        // demo getting argument from the body
+                        if (not number) {
+                            // read if content-type is text (not json)
+                            if (m.request ().contentType () and
+                                InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText_PLAIN, *m.request ().contentType ())) {
+                                String argsAsString = Streams::BinaryToText::Reader::New (m.rwRequest ().GetBody ()).ReadAll ();
+                                number              = kMapper.ToObject<Number> (DataExchange::VariantValue{argsAsString});
+                            }
+                        }
+                        // demo getting argument from the query argument
+                        if (not number) {
+                            static const String                         kValueParamName_ = "value"sv;
+                            Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (m.request ());
+                            number = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
+                        }
+                        // demo getting either query arg, or url encoded arg
+                        if (not number) {
+                            static const String kValueParamName_ = "value"sv;
+                            // NOTE - PickoutParamValues combines PickoutParamValuesFromURL, and PickoutParamValuesFromBody. You can use
+                            // Either one of those instead. PickoutParamValuesFromURL assumes you know the name of the parameter, and its
+                            // encoded in the query string. PickoutParamValuesFromBody assumes you have something equivalent you can parse ouf
+                            // of the body, either json encoded or form-encoded (as of 2.1d23, only json encoded supported)
+                            Mapping<String, DataExchange::VariantValue> args = PickoutParamValues (m.rwRequest ());
+                            number = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
+                        }
+                        if (not number) {
+                            Throw (HTTP::ClientErrorException{"Expected argument to PUT/POST variable"sv});
+                        }
+                        fWSImpl_->Variables_SET (varName, *number);
+                        WriteResponse (m.rwResponse (), kVariables_);
+                    }},
+              Route{HTTP::MethodsRegEx::kDelete, "variables/(.+)"_RegEx,
+                    /*
                           * varName - the first string argument to the request handler - comes from the first (and only) capture in the regexp.
                           */
-                         [this] (Message& m, const String& varName) {
-                             fWSImpl_->Variables_DELETE (varName);
-                             WriteResponse (m.rwResponse (), kVariables_);
-                         }},
+                    [this] (Message& m, const String& varName) {
+                        fWSImpl_->Variables_DELETE (varName);
+                        WriteResponse (m.rwResponse (), kVariables_);
+                    }},
 
-                   /*
+              /*
                     *    plus, minus, times, and divide, test-void-return all all demonstrate passing in variables through either the POST body, or query-arguments.
                     */
-                   Route{HTTP::MethodsRegEx::kPost, "plus"_RegEx,
-                         ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
-                                                       [this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }}},
-                   Route{HTTP::MethodsRegEx::kPost, "minus"_RegEx,
-                         ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
-                                                       [this] (Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }}},
-                   Route{HTTP::MethodsRegEx::kPost, "times"_RegEx,
-                         ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
-                                                       [this] (Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }}},
-                   Route{HTTP::MethodsRegEx::kPost, "divide"_RegEx,
-                         ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
-                                                       [this] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }}},
-                   Route{HTTP::MethodsRegEx::kPost, "test-void-return"_RegEx,
-                         ObjectRequestHandler::Factory{
-                             ObjectRequestHandler::Options{.fExtractVariantValueFromRequest = ExtractArgumentsAsVariantValue::FromRequest,
-                                                           .fTreatBodyAsListOfArguments     = Iterable<String>{"err-if-more-than-10"sv}},
-                             [] (double check) {
-                                 if (check > 10) {
-                                     Throw (Exception{"more than 10"sv});
-                                 }
-                             }}}}
+              Route{HTTP::MethodsRegEx::kPost, "plus"_RegEx,
+                    ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
+                                                  [this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }}},
+              Route{HTTP::MethodsRegEx::kPost, "minus"_RegEx,
+                    ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
+                                                  [this] (Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }}},
+              Route{HTTP::MethodsRegEx::kPost, "times"_RegEx,
+                    ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
+                                                  [this] (Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }}},
+              Route{HTTP::MethodsRegEx::kPost, "divide"_RegEx,
+                    ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
+                                                  [this] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }}},
+              Route{HTTP::MethodsRegEx::kPost, "test-void-return"_RegEx,
+                    ObjectRequestHandler::Factory{ObjectRequestHandler::Options{.fExtractVariantValueFromRequest = ExtractArgumentsAsVariantValue::FromRequest,
+                                                                                .fTreatBodyAsListOfArguments = Iterable<String>{"err-if-more-than-10"sv}},
+                                                  [] (double check) {
+                                                      if (check > 10) {
+                                                          Throw (Exception{"more than 10"sv});
+                                                      }
+                                                  }}}}
         , fWSImpl_{wsImpl}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
                           ConnectionManager::Options{.fDefaultResponseHeaders = kDefaultResponseHeaders_}}

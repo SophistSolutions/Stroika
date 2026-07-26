@@ -503,7 +503,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             qStroika_ATTRIBUTE_INDETERMINATE char format[100]; // filled in with mkFmtWithPrecisionArg_
             resultStrLen            = ::snprintf (buf.data (), buf.size (),
                                                   mkFmtWithPrecisionArg_ (std::begin (format), std::end (format),
-                                                               same_as<FLOAT_TYPE, long double> ? 'L' : '\0', forceScientific),
+                                                                          same_as<FLOAT_TYPE, long double> ? 'L' : '\0', forceScientific),
                                                   (int)effectivePrecision + 1, f);
             auto actualPrecIncZeros = CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}, true);
             if (actualPrecIncZeros > effectivePrecision) {

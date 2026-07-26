@@ -857,7 +857,7 @@ namespace {
             String commonName = "localhost"sv;
             String company    = "MyCompany Inc."sv;
             auto [pk, cert]   = Certificate::New (Certificate::SelfSignedCertParams{
-                  .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = company, .fCommonName = commonName}});
+                .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = company, .fCommonName = commonName}});
 
             PEMFile::Ptr pem = PEMFile::New ({pk, cert});
             DbgTrace ("pem={}"_f, pem);

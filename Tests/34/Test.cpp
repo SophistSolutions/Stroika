@@ -126,11 +126,11 @@ namespace {
         TraceContextBumper ctx{"Test_1_SAXParser_"};
         const wstring      kNSTest   = L"Test-NAMESPACE";
         wstring            newDocXML = L"<PHRModel xmlns=\"" + wstring{kNSTest} +
-                            L"\">\n"
-                            L"      <BasicInformation id=\"id=101\">\n"
-                            L"              <ContactInfo>\n"
-                            L"                      <PersonName/>\n"
-                            L"                      <Locations>\n";
+                                       L"\">\n"
+                                       L"      <BasicInformation id=\"id=101\">\n"
+                                       L"              <ContactInfo>\n"
+                                       L"                      <PersonName/>\n"
+                                       L"                      <Locations>\n";
         newDocXML += L"                          <Location id=\"id=102\">\n"
                      L"                                  <Name>Primary Residence</Name>\n"
                      L"                                  <Address/>\n"
@@ -281,24 +281,24 @@ namespace {
             Person_            withWhom;
         };
         auto mkdata_ = [=] () {
-            wstring newDocXML = L"<Calendar xmlns=\"" + wstring (kNSTest) +
-                                L"\">\n"
-                                L"  <Appointment>\n"
-                                L"    <When>2005-06-01T13:00:00-05:00</When>"
-                                L"    <WithWhom>\n"
-                                L"            <FirstName>Jim</FirstName>"
-                                L"            <LastName>Smith</LastName>"
-                                L"            <MiddleName>Up</MiddleName>"
-                                L"    </WithWhom>\n"
-                                L"  </Appointment>\n"
-                                L"  <Appointment>\n"
-                                L"    <When>2005-08-01T13:00:00-05:00</When>"
-                                L"    <WithWhom>\n"
-                                L"            <FirstName>Fred</FirstName>"
-                                L"            <LastName>Down</LastName>"
-                                L"    </WithWhom>\n"
-                                L"  </Appointment>\n"
-                                L"</Calendar>\n";
+            wstring      newDocXML = L"<Calendar xmlns=\"" + wstring (kNSTest) +
+                                     L"\">\n"
+                                     L"  <Appointment>\n"
+                                     L"    <When>2005-06-01T13:00:00-05:00</When>"
+                                     L"    <WithWhom>\n"
+                                     L"            <FirstName>Jim</FirstName>"
+                                     L"            <LastName>Smith</LastName>"
+                                     L"            <MiddleName>Up</MiddleName>"
+                                     L"    </WithWhom>\n"
+                                     L"  </Appointment>\n"
+                                     L"  <Appointment>\n"
+                                     L"    <When>2005-08-01T13:00:00-05:00</When>"
+                                     L"    <WithWhom>\n"
+                                     L"            <FirstName>Fred</FirstName>"
+                                     L"            <LastName>Down</LastName>"
+                                     L"    </WithWhom>\n"
+                                     L"  </Appointment>\n"
+                                     L"</Calendar>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
@@ -363,22 +363,22 @@ namespace {
             }
         };
         auto mkdata_ = [] () {
-            wstring newDocXML = L"<envelope1>\n"
-                                L"  <envelope2>\n"
-                                L"        <When>2005-06-01T13:00:00-05:00</When>"
-                                L"        <WithWhom>\n"
-                                L"                <FirstName>Jim</FirstName>"
-                                L"                <LastName>Smith</LastName>"
-                                L"        </WithWhom>\n"
-                                L"  </envelope2>\n"
-                                L"  <envelope2>\n"
-                                L"        <When>2005-08-01T13:00:00-05:00</When>"
-                                L"        <WithWhom>\n"
-                                L"                <FirstName>Fred</FirstName>"
-                                L"                <LastName>Down</LastName>"
-                                L"        </WithWhom>\n"
-                                L"  </envelope2>\n"
-                                L"</envelope1>\n";
+            wstring      newDocXML = L"<envelope1>\n"
+                                     L"  <envelope2>\n"
+                                     L"        <When>2005-06-01T13:00:00-05:00</When>"
+                                     L"        <WithWhom>\n"
+                                     L"                <FirstName>Jim</FirstName>"
+                                     L"                <LastName>Smith</LastName>"
+                                     L"        </WithWhom>\n"
+                                     L"  </envelope2>\n"
+                                     L"  <envelope2>\n"
+                                     L"        <When>2005-08-01T13:00:00-05:00</When>"
+                                     L"        <WithWhom>\n"
+                                     L"                <FirstName>Fred</FirstName>"
+                                     L"                <LastName>Down</LastName>"
+                                     L"        </WithWhom>\n"
+                                     L"  </envelope2>\n"
+                                     L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
@@ -556,29 +556,29 @@ namespace {
             vector<Address_> addresses;
         };
         auto mkdata_ = [] () -> Memory::BLOB {
-            wstring newDocXML = L"<envelope1>\n"
-                                L"        <person>\n"
-                                L"                <FirstName>Jim</FirstName>"
-                                L"                <LastName>Smith</LastName>"
-                                L"                <Gender>Male</Gender>"
-                                L"        </person>\n"
-                                L"        <person>\n"
-                                L"                <FirstName>Fred</FirstName>"
-                                L"                <LastName>Down</LastName>"
-                                L"        </person>\n"
-                                L"        <address>\n"
-                                L"                <city>Boston</city>"
-                                L"                <state>MA</state>"
-                                L"        </address>\n"
-                                L"        <address>\n"
-                                L"                <city>New York</city>"
-                                L"                <state>NY</state>"
-                                L"        </address>\n"
-                                L"        <address>\n"
-                                L"                <city>Albany</city>"
-                                L"                <state>NY</state>"
-                                L"        </address>\n"
-                                L"</envelope1>\n";
+            wstring      newDocXML = L"<envelope1>\n"
+                                     L"        <person>\n"
+                                     L"                <FirstName>Jim</FirstName>"
+                                     L"                <LastName>Smith</LastName>"
+                                     L"                <Gender>Male</Gender>"
+                                     L"        </person>\n"
+                                     L"        <person>\n"
+                                     L"                <FirstName>Fred</FirstName>"
+                                     L"                <LastName>Down</LastName>"
+                                     L"        </person>\n"
+                                     L"        <address>\n"
+                                     L"                <city>Boston</city>"
+                                     L"                <state>MA</state>"
+                                     L"        </address>\n"
+                                     L"        <address>\n"
+                                     L"                <city>New York</city>"
+                                     L"                <state>NY</state>"
+                                     L"        </address>\n"
+                                     L"        <address>\n"
+                                     L"                <city>Albany</city>"
+                                     L"                <state>NY</state>"
+                                     L"        </address>\n"
+                                     L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
@@ -1049,12 +1049,12 @@ namespace {
             double valueExplicitNAN2;
         };
         auto mkdata_ = [] () {
-            wstring newDocXML = L"<Values>\n"
-                                //L"          <valueMissing></valueMissing>"
-                                L"            <valueExplicitGood>3.0</valueExplicitGood>"
-                                L"            <valueExplicitNAN1>NAN</valueExplicitNAN1>"
-                                L"            <valueExplicitNAN2>NAN</valueExplicitNAN2>"
-                                L"</Values>\n";
+            wstring      newDocXML = L"<Values>\n"
+                                     //L"          <valueMissing></valueMissing>"
+                                     L"            <valueExplicitGood>3.0</valueExplicitGood>"
+                                     L"            <valueExplicitNAN1>NAN</valueExplicitNAN1>"
+                                     L"            <valueExplicitNAN2>NAN</valueExplicitNAN2>"
+                                     L"</Values>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
@@ -1267,9 +1267,9 @@ namespace {
             MY_TEST_RANGE_ r{};
         };
         auto mkdata_ = [] () {
-            wstring newDocXML = L"<Values>\n"
-                                L"            <r LowerBound=\"3.0\" UpperBound=\"6.0\"/>"
-                                L"</Values>\n";
+            wstring      newDocXML = L"<Values>\n"
+                                     L"            <r LowerBound=\"3.0\" UpperBound=\"6.0\"/>"
+                                     L"</Values>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
@@ -1309,18 +1309,18 @@ namespace {
             vector<Person_> people;
         };
         auto mkdata_ = [] () {
-            wstring newDocXML = L"<envelope1>\n"
-                                L"        <person>\n"
-                                L"                <FirstName>Jim</FirstName>"
-                                L"                <LastName>Smith</LastName>"
-                                L"                <Gender>Male</Gender>"
-                                L"        </person>\n"
-                                L"        <person>\n"
-                                L"                <FirstName>Fred</FirstName>"
-                                L"                <LastName>Down</LastName>"
-                                L"                <Gender>Female</Gender>"
-                                L"        </person>\n"
-                                L"</envelope1>\n";
+            wstring      newDocXML = L"<envelope1>\n"
+                                     L"        <person>\n"
+                                     L"                <FirstName>Jim</FirstName>"
+                                     L"                <LastName>Smith</LastName>"
+                                     L"                <Gender>Male</Gender>"
+                                     L"        </person>\n"
+                                     L"        <person>\n"
+                                     L"                <FirstName>Fred</FirstName>"
+                                     L"                <LastName>Down</LastName>"
+                                     L"                <Gender>Female</Gender>"
+                                     L"        </person>\n"
+                                     L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
@@ -1376,18 +1376,18 @@ namespace {
             vector<Person_> people;
         };
         auto mkdata_ = [] () {
-            wstring newDocXML = L"<envelope1>\n"
-                                L"        <person>\n"
-                                L"                <FirstName>Jim</FirstName>"
-                                L"                <LastName>Smith</LastName>"
-                                L"                <Gender>Male</Gender>"
-                                L"        </person>\n"
-                                L"        <person>\n"
-                                L"                <FirstName>Fred</FirstName>"
-                                L"                <LastName>Down</LastName>"
-                                L"                <Gender>Female</Gender>"
-                                L"        </person>\n"
-                                L"</envelope1>\n";
+            wstring      newDocXML = L"<envelope1>\n"
+                                     L"        <person>\n"
+                                     L"                <FirstName>Jim</FirstName>"
+                                     L"                <LastName>Smith</LastName>"
+                                     L"                <Gender>Male</Gender>"
+                                     L"        </person>\n"
+                                     L"        <person>\n"
+                                     L"                <FirstName>Fred</FirstName>"
+                                     L"                <LastName>Down</LastName>"
+                                     L"                <Gender>Female</Gender>"
+                                     L"        </person>\n"
+                                     L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();

@@ -109,7 +109,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             EmployeesDB ([=] () {
                 cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
                 return internallySyncrhonizedConnection; // each thread using same internally syncrhonized connection
-                    // or can create a new connection each time in factory, and make them unsynchronized
+                // or can create a new connection each time in factory, and make them unsynchronized
             });
             cerr << "done." << endl;
         }
@@ -220,7 +220,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         filesystem::path p = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-trivialdb-test.json";
         auto             internallySynchronizedDBConnection = LocalDocumentDB::New (
             LocalDocumentDB::Options{.fInternallySynchronizedLetter = eInternallySynchronized,
-                                                 .fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = p, .fForceCreateNew = true}});
+                                     .fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = p, .fForceCreateNew = true}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
             return internallySynchronizedDBConnection; // re-used multiple times from different threads
@@ -237,7 +237,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         filesystem::path p = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-trivialdb-dir-test";
         auto             internallySynchronizedDBConnection = LocalDocumentDB::New (
             LocalDocumentDB::Options{.fInternallySynchronizedLetter = eInternallySynchronized,
-                                                 .fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = p, .fForceCreateNew = true}});
+                                     .fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = p, .fForceCreateNew = true}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
             return internallySynchronizedDBConnection; // re-used multiple times from different threads

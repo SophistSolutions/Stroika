@@ -160,10 +160,10 @@ namespace {
             }
             message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
             String argsAsString               = DataExchange::Variant::JSON::Reader{}
-                                      .Read (message.rwRequest ().GetBody ())
-                                      .As<Mapping<String, DataExchange::VariantValue>> ()
-                                      .LookupChecked ("AppState", RuntimeErrorException{"oops"})
-                                      .As<String> ();
+                                                    .Read (message.rwRequest ().GetBody ())
+                                                    .As<Mapping<String, DataExchange::VariantValue>> ()
+                                                    .LookupChecked ("AppState", RuntimeErrorException{"oops"})
+                                                    .As<String> ();
             message.rwResponse ().write (argsAsString);
         }
     };

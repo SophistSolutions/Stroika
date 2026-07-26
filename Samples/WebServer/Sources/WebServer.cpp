@@ -86,42 +86,45 @@ namespace {
         ConnectionManager fConnectionMgr_;
 
         MyWebServer_ (uint16_t portNumber)
-            : kRoutes_{
-                /*
+            : kRoutes_{/*
                  *  Define the 'routes' for your webserver - the dispatch of URLs to callbacks (usually lambdas).
                  *  But - sometimes the callbacks are complex objects, like the filesystem handler.
                  * 
                  *  \see the ../../../WebService, or ../../../HTMLUI samples for more complex examples of routers.
                  */
 
-                Route{""_RegEx, DefaultPage_}
-                
-                /*
+                       Route{""_RegEx, DefaultPage_}
+
+                       /*
                  *  You can put the code for a route into a separate procedure
                  */
-                , Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_}
-                
-                /*
+                       ,
+                       Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_}
+
+                       /*
                  *  Or you can put the code for a route into a lambda directly - whichever you find easier/more maintainable.
                  */
-                , Route{"FRED/?"_RegEx,
-                        [] (Request&, Response& response) {
-                            response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                            response.write ("FRED"sv);
-                        }}
-                
-                /*
+                       ,
+                       Route{"FRED/?"_RegEx,
+                             [] (Request&, Response& response) {
+                                 response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                                 response.write ("FRED"sv);
+                             }}
+
+                       /*
                  *  Or use complex, pre-built handlers that do something complicated (like feed content from filesystem).
                  */
-                , Route{"Files/.*"_RegEx, FileSystemRequestHandler{GetEXEDir () / "html", kFileSystemRouterOptions_}}
-            
-                /*
+                       ,
+                       Route{"Files/.*"_RegEx, FileSystemRequestHandler{GetEXEDir () / "html", kFileSystemRouterOptions_}}
+
+                       /*
                  * Access webserver (connection manager) statistics, and print them (health check?)
                  */
-                , Route{"stats"_RegEx,  [this] (Message& m) { PrintServerStats_ (m);} }
-                
-            }
-        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
+                       ,
+                       Route{"stats"_RegEx, [this] (Message& m) { PrintServerStats_ (m); }}
+
+              }
+            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
                               ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
             cerr << "Listening on {}..."_f(fConnectionMgr_.bindings ()) << endl;

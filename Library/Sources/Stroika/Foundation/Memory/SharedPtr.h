@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Note - this CAN return nullptr
          */
-        nonvirtual operator T* () const noexcept;
+        nonvirtual operator T*() const noexcept;
 
     public:
         /**

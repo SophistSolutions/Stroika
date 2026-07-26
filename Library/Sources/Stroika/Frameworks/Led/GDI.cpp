@@ -1967,9 +1967,9 @@ void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unuse
             fRecolorHelper->DoRecolor (hilightArea);
 #else
             static RecolorHelper* recolorHelper = nullptr;
-            recolorHelper                       = RecolorHelper::CheckCacheAndReconstructIfNeeded (recolorHelper, m_hDC,
-                                                                                                   Led_Size (hilightArea.GetHeight (), hilightArea.GetWidth ()),
-                                                                                                   hilightBackColor, hilightForeColor, oldBackColor, oldForeColor);
+            recolorHelper = RecolorHelper::CheckCacheAndReconstructIfNeeded (recolorHelper, m_hDC,
+                                                                             Led_Size (hilightArea.GetHeight (), hilightArea.GetWidth ()),
+                                                                             hilightBackColor, hilightForeColor, oldBackColor, oldForeColor);
             recolorHelper->DoRecolor (hilightArea);
 #endif
         }
@@ -3234,8 +3234,8 @@ static USHORT* GetIdRangeOffsetArray (LPBYTE pBuff)
 
 static void SwapArrays (LPCMAP4 pFormat4)
 {
-    DWORD   segCount = pFormat4->segCountX2 / 2; // Per TT Spec
-    DWORD   i;
+    DWORD segCount = pFormat4->segCountX2 / 2; // Per TT Spec
+    DWORD i;
     USHORT *pGlyphId, *pEndOfBuffer, *pstartCount = GetStartCountArray ((LPBYTE)pFormat4), *pidDelta = GetIdDeltaArray ((LPBYTE)pFormat4),
                                      *pidRangeOffset = GetIdRangeOffsetArray ((LPBYTE)pFormat4), *pendCount = GetEndCountArray ((LPBYTE)pFormat4);
 

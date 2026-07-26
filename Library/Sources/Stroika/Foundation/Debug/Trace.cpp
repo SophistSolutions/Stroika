@@ -521,8 +521,7 @@ HINT: this may be a false positive if your program uses some custom stack unwind
 #if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
 Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
-    void
-    Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
+    void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
 {
     try {
         size_t               len = e - p;
@@ -622,8 +621,8 @@ TraceContextBumper::TraceContextBumper (CHAR_ARRAY_T mainName, CHAR_ARRAY_T extr
     else {
         auto mainNameData       = mainName.data ();
         auto extraTextAtTopData = extraTextAtTop.data ();
-        fLastWriteToken_        = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (kEOL<wchar_t>), L"<{} ({})> {{"sv,
-                                                                     Common::StdCompat::make_wformat_args (mainNameData, extraTextAtTopData));
+        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage_ (3 + ::wcslen (kEOL<wchar_t>), L"<{} ({})> {{"sv,
+                                                              Common::StdCompat::make_wformat_args (mainNameData, extraTextAtTopData));
     }
     size_t len = char_traits<wchar_t>::length (mainName.data ());
     char_traits<wchar_t>::copy (fSavedContextName_.data (), mainName.data (), len);

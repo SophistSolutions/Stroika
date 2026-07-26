@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         static optional<CipherAlgorithm> GetByNameQuietly (const String& cipherName);
 
     public:
-        nonvirtual operator const ::EVP_CIPHER* () const;
+        nonvirtual operator const ::EVP_CIPHER*() const;
 
     public:
         /**

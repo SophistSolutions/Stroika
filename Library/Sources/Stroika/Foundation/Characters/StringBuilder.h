@@ -180,9 +180,9 @@ namespace Stroika::Foundation::Characters {
 #else
         ;
 #endif
-    // clang-format on
+        // clang-format on
 
-    public :
+    public:
         /**
          */
         nonvirtual void push_back (Character c);
@@ -253,10 +253,10 @@ namespace Stroika::Foundation::Characters {
          *  creating overload problems.
          */
         nonvirtual /*explicit*/ operator String () const;
-        nonvirtual explicit operator wstring () const;
-        nonvirtual explicit operator u8string () const;
-        nonvirtual explicit operator u16string () const;
-        nonvirtual explicit operator u32string () const;
+        nonvirtual explicit     operator wstring () const;
+        nonvirtual explicit     operator u8string () const;
+        nonvirtual explicit     operator u16string () const;
+        nonvirtual explicit     operator u32string () const;
 
         nonvirtual explicit operator span<const BufferElementType> () const;
 

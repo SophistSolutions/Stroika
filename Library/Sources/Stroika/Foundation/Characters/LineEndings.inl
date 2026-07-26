@@ -18,8 +18,7 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_constexpr >= 202211L
         constexpr
 #endif
-        const T*
-        GetEOL ()
+        const T* GetEOL ()
     {
         // note queer syntax for strings so works with many character types, including Characters::Character
         if constexpr (qStroika_Foundation_Common_Platform_Windows) {

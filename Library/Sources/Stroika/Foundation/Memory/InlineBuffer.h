@@ -152,8 +152,8 @@ namespace Stroika::Foundation::Memory {
          * 
          *  \note This was changed from non-explicit to explicit in Stroika v3.0d1
          */
-        nonvirtual explicit operator const T* () const noexcept;
-        nonvirtual explicit operator T* () noexcept;
+        nonvirtual explicit operator const T*() const noexcept;
+        nonvirtual explicit operator T*() noexcept;
 
     public:
         /**

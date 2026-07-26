@@ -212,11 +212,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
                 fName[0] = '\0';
             }
             ControlWordAtomName (const char* c);
-            operator char* ()
+            operator char*()
             {
                 return fName;
             }
-            operator const char* () const
+            operator const char*() const
             {
                 return fName;
             }

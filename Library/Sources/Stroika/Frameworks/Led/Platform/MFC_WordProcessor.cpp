@@ -92,10 +92,10 @@ SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyle
 }
 
 struct MyOLEStream_input : OLESTREAM {
-    OLESTREAMVTBL theVTbl;
-    const byte*   start;
-    const byte*   end;
-    const byte*   cur;
+    OLESTREAMVTBL          theVTbl;
+    const byte*            start;
+    const byte*            end;
+    const byte*            cur;
     static DWORD __stdcall MyOLE1STREAMGetter (LPOLESTREAM lpoleStr, void* data, DWORD nb)
     {
         MyOLEStream_input* myStream    = (MyOLEStream_input*)lpoleStr;
@@ -473,8 +473,8 @@ SDKString Led_MFC_ControlItem::GetObjClassName () const
 }
 
 struct MyOLEStream_output : OLESTREAM {
-    OLESTREAMVTBL theVTbl;
-    vector<char>  fData;
+    OLESTREAMVTBL          theVTbl;
+    vector<char>           fData;
     static DWORD __stdcall MyOLE1STREAMPutter (LPOLESTREAM lpoleStr, const void* data, DWORD nb)
     {
         MyOLEStream_output* myStream = (MyOLEStream_output*)lpoleStr;

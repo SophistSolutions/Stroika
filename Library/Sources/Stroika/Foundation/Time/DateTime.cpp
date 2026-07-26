@@ -198,7 +198,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
     fDate_      = Date{Year (tmTimeData->tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTimeData->tm_mon + 1),
-                  DayOfMonth (tmTimeData->tm_mday), DataExchange::ValidationStrategy::eThrow};
+                       DayOfMonth (tmTimeData->tm_mday), DataExchange::ValidationStrategy::eThrow};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min),
                             static_cast<unsigned> (tmTimeData->tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
@@ -212,7 +212,7 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
     fDate_      = Date{Year (tmTimeData.tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTimeData.tm_mon + 1),
-                  DayOfMonth (tmTimeData.tm_mday), DataExchange::ValidationStrategy::eThrow};
+                       DayOfMonth (tmTimeData.tm_mday), DataExchange::ValidationStrategy::eThrow};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min),
                             static_cast<unsigned> (tmTimeData.tm_sec), DataExchange::ValidationStrategy::eThrow};
 }

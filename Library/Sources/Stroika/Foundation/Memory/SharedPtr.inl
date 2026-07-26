@@ -356,7 +356,7 @@ namespace Stroika::Foundation::Memory {
         return GetRep ();
     }
     template <typename T>
-    inline SharedPtr<T>::operator T* () const noexcept
+    inline SharedPtr<T>::operator T*() const noexcept
     {
         return fEnvelope_.GetPtr ();
     }

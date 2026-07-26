@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
             {
                 fV.SetAt (fIndex, fValue);
             }
-            operator T& ()
+            operator T&()
             {
                 return fValue;
             }

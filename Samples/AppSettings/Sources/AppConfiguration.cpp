@@ -41,27 +41,26 @@ const ObjectVariantMapper AppConfigurationType::kMapper = [] () {
  */
 AppConfiguration_Storage_IMPL_::AppConfiguration_Storage_IMPL_ ()
     // by default fOptionsFile_ requires Execution::Logger::Activator logMgrActivator in main(), or use different Logger CTOR argument
-    : fOptionsFile_{
-          /*
+    : fOptionsFile_{/*
            * Any module name will do. This will map (by default) to a AppSettings.json file in XXX.
            * If you require a single configuration file 'Main" might be a better module name.
            * But if you have multiple modules with configuration data, pick a name that matches that module,
            * and they will all be stored under a folder for all your apps configuration.
            */
-          "AppSettings"sv, 
-          
-          /*
+                    "AppSettings"sv,
+
+                    /*
            */
-          AppConfigurationType::kMapper, 
-          
-          /*
+                    AppConfigurationType::kMapper,
+
+                    /*
            * Hooks for versioning, to manage as your application evolves and the configuration data changes
            */
-        OptionsFile::kDefaultUpgrader, 
+                    OptionsFile::kDefaultUpgrader,
 
-          /*
+                    /*
            */
-        OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here"sv)}
+                    OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here"sv)}
     , fActualCurrentConfigData_{fOptionsFile_.Read<AppConfigurationType> (AppConfigurationType{})}
 {
     Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date

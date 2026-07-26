@@ -583,13 +583,13 @@ namespace {
             using Traversal::DiscreteRange;
 
             auto runTest = [] (CIDR cidr, double runToProbOfFalsePositive, double runToFractionFull, double bitSizeFactor = 1.0) {
-                Debug::TraceContextBumper                 ctx{"runTest",
-                                              "cidr={}, runToProbOfFalsePositive={}, runToFractionFull={}, bitSizeFactor={}"_f,
-                                              Characters::ToString (cidr),
-                                              runToProbOfFalsePositive,
-                                              runToFractionFull,
-                                              bitSizeFactor};
-                Containers::Set<InternetAddress>          oracle;
+                Debug::TraceContextBumper        ctx{"runTest",
+                                                     "cidr={}, runToProbOfFalsePositive={}, runToFractionFull={}, bitSizeFactor={}"_f,
+                                                     Characters::ToString (cidr),
+                                                     runToProbOfFalsePositive,
+                                                     runToFractionFull,
+                                                     bitSizeFactor};
+                Containers::Set<InternetAddress> oracle;
                 Traversal::DiscreteRange<InternetAddress> scanAddressRange = cidr.GetRange ();
                 BloomFilter<InternetAddress>              addressesProbablyUsed{
                     BloomFilter<InternetAddress>{static_cast<size_t> (bitSizeFactor * scanAddressRange.GetNumberOfContainedPoints ())}};

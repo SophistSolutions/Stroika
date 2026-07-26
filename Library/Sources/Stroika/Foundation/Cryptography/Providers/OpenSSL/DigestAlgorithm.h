@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         static optional<DigestAlgorithm> GetByNameQuietly (const String& digestName);
 
     public:
-        nonvirtual operator const ::EVP_MD* () const;
+        nonvirtual operator const ::EVP_MD*() const;
 
     public:
         /**

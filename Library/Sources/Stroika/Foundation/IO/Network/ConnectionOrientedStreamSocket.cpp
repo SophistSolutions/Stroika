@@ -211,7 +211,7 @@ namespace {
             int  flags        = 0;
             int  nBytesToRead = static_cast<int> (min<size_t> (into.size (), numeric_limits<int>::max ()));
             auto result       = into.subspan (0, static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (
-                                               ::recv (fSD_, reinterpret_cast<char*> (into.data ()), nBytesToRead, flags))));
+                                                     ::recv (fSD_, reinterpret_cast<char*> (into.data ()), nBytesToRead, flags))));
 #else
             AssertNotImplemented ();
             span<byte> result{};

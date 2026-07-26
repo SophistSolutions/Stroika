@@ -138,8 +138,7 @@ namespace Stroika::Foundation::Characters {
 #if !qCompilerAndStdLib_vector_constexpr_Buggy
         constexpr
 #endif
-            FormatString<char>
-                                        operator""_f (const char* str, size_t len);
+            FormatString<char>          operator""_f (const char* str, size_t len);
         constexpr FormatString<wchar_t> operator""_f (const wchar_t* str, size_t len);
     }
 

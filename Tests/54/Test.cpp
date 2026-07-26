@@ -98,57 +98,64 @@ namespace {
         MyObjectWebServiceWebServer_ (uint16_t portNumber)
             : kRoutes_{
 
-                Route{"api/objs/?"_RegEx,
-                             ObjectRequestHandler::Factory{
-                                 {kMapper},
-                                 [] () -> Sequence<GUID> {
-                                     return sData_.cget ().cref ().Map<Sequence<GUID>> ([] (const ObjMapperableObj_& r) { return r.id; });
-                                 }}}
+                  Route{"api/objs/?"_RegEx, ObjectRequestHandler::Factory{{kMapper},
+                                                                          [] () -> Sequence<GUID> {
+                                                                              return sData_.cget ().cref ().Map<Sequence<GUID>> (
+                                                                                  [] (const ObjMapperableObj_& r) { return r.id; });
+                                                                          }}}
 
-                , Route{"api/objs-context/?"_RegEx, ObjectRequestHandler::Factory{{kMapper},
-                                                                        [] ([[maybe_unused]]const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
-                                                                            return sData_.cget ().cref ().Map<Sequence<GUID>> (
-                                                                                [] (const ObjMapperableObj_& r) { return r.id; });
-                                                                        }}}
+                  ,
+                  Route{"api/objs-context/?"_RegEx,
+                        ObjectRequestHandler::Factory{{kMapper},
+                                                      [] ([[maybe_unused]] const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
+                                                          return sData_.cget ().cref ().Map<Sequence<GUID>> (
+                                                              [] (const ObjMapperableObj_& r) { return r.id; });
+                                                      }}}
 
-                // PATCH could be implemented using ObjectRequestHandler::Factory, but it adds little value, and good to show
-                // mixing direct RequestHandlers with ObjectRequestHandler based ones
-                 ,  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
+                  // PATCH could be implemented using ObjectRequestHandler::Factory, but it adds little value, and good to show
+                  // mixing direct RequestHandlers with ObjectRequestHandler based ones
+                  ,
+                  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
                         [] (Message& m, const String& id) {
-                    using DataExchange::VariantValue;
+                            using DataExchange::VariantValue;
                             using JSON::Patch::OperationItemsType;
-                            OperationItemsType patch = ClientErrorException::TreatExceptionsAsClientError ([&] () {return OperationItemsType::kMapper.ToObject<OperationItemsType> (m.rwRequest ().GetBodyVariantValue()); });
+                            OperationItemsType patch = ClientErrorException::TreatExceptionsAsClientError ([&] () {
+                                return OperationItemsType::kMapper.ToObject<OperationItemsType> (m.rwRequest ().GetBodyVariantValue ());
+                            });
                             // automatic / generic patch implemented using the VariantValue representation - if that's good enuf for your purposes, easy to use
-                            ObjMapperableObj_ obj2Patch = sData_.cget ().cref ().LookupChecked (id, ClientErrorException{"obj with that ID not found"sv});
+                            ObjMapperableObj_ obj2Patch =
+                                sData_.cget ().cref ().LookupChecked (id, ClientErrorException{"obj with that ID not found"sv});
                             VariantValue obj2PatchVV = patch.Apply (kMapper.FromObject (obj2Patch));
                             obj2Patch                = kMapper.ToObject<ObjMapperableObj_> (obj2PatchVV);
                             sData_.rwget ().rwref ().Add (obj2Patch);
                             m.rwResponse ().status = IO::Network::HTTP::StatusCodes::kNoContent;
                         }}
 
-                , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
-                      // redo so can POST raw data and arguments as query-args!
-                      // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
-                      ObjectRequestHandler::Factory{{kMapper},
-                                                    [] (const ObjMapperableObj_& r) -> GUID {
-                                                        ObjMapperableObj_ rr = r;
-                                                        rr.id                = GUID::GenerateNew ();
-                                                        sData_.rwget ().rwref ().Add (rr);
-                                                        return rr.id;
-                                                    }}}
+                  ,
+                  Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
+                        // redo so can POST raw data and arguments as query-args!
+                        // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
+                        ObjectRequestHandler::Factory{{kMapper},
+                                                      [] (const ObjMapperableObj_& r) -> GUID {
+                                                          ObjMapperableObj_ rr = r;
+                                                          rr.id                = GUID::GenerateNew ();
+                                                          sData_.rwget ().rwref ().Add (rr);
+                                                          return rr.id;
+                                                      }}}
 
-                , Route{ IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
-                    ObjectRequestHandler::Factory { {kMapper},
-                        [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
-                        ObjMapperableObj_ rr = r;
-                        rr.id                = GUID::GenerateNew ();
-                        sData_.rwget ().rwref ().Add (rr);
-                        return rr.id;
-                    }}}
+                  ,
+                  Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
+                        ObjectRequestHandler::Factory{{kMapper},
+                                                      [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
+                                                          ObjMapperableObj_ rr = r;
+                                                          rr.id                = GUID::GenerateNew ();
+                                                          sData_.rwget ().rwref ().Add (rr);
+                                                          return rr.id;
+                                                      }}}
 
-        }
+              }
 
-        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
+            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
         {
         }
     };

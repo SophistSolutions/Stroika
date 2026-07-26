@@ -532,7 +532,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Network...NetworkInstrumentRep_::Capture ()"};
             MeasurementSet            results;
-            Measurement               m{kNetworkInterfacesMeasurement_,
+            Measurement m{kNetworkInterfacesMeasurement_,
                           Instruments::Network::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;

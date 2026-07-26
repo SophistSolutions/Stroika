@@ -162,77 +162,84 @@ public:
 
     Rep_ (optional<uint16_t> portNumber)
         : kRoutes_{
-            
-            Route{"api/?"_RegEx, DefaultPage_}
 
-           /**
+              Route{"api/?"_RegEx, DefaultPage_}
+
+              /**
             * /auth
             */
-            , Route{"api/(v1/)?auth/oauth/configurations/?"_RegEx, ObjectRequestHandler::Factory{
-                        {Auth::kMapper},
-                        [this] () {
-                            ActiveCallCounter_ acc{*this};
-                            return fWSImpl_->auth_oauth_configuration_GET ();
-                        }}}
-            , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?auth/oauth/tokens/?"_RegEx, ObjectRequestHandler::Factory{
-                        {Auth::kMapper},
-                        [this] (const Auth::TokenRequest& r) {
-                            ActiveCallCounter_ acc{*this};
-                            return fWSImpl_->auth_oauth_tokens_POST (r);
-                        }}}
-            , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?auth/oauth/tokens/revoke/?"_RegEx, ObjectRequestHandler::Factory{
-                        {Auth::kMapper},
-                        [this] (const Auth::TokenRevocationRequest& r) {
-                            ActiveCallCounter_ acc{*this};
-                            return fWSImpl_->auth_oauth_tokens_revoke_POST (r);
-                        }}}
-            , Route{"api/(v1/)?auth/oauth/user_info/?"_RegEx, ObjectRequestHandler::Factory{
-                        {Auth::kMapper},
-                        [this] () {
-                            ActiveCallCounter_ acc{*this};
-                            return fWSImpl_->auth_oauth_user_info_GET ();
-                        }}}
+              ,
+              Route{"api/(v1/)?auth/oauth/configurations/?"_RegEx, ObjectRequestHandler::Factory{{Auth::kMapper},
+                                                                                                 [this] () {
+                                                                                                     ActiveCallCounter_ acc{*this};
+                                                                                                     return fWSImpl_->auth_oauth_configuration_GET ();
+                                                                                                 }}},
+              Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?auth/oauth/tokens/?"_RegEx,
+                    ObjectRequestHandler::Factory{{Auth::kMapper},
+                                                  [this] (const Auth::TokenRequest& r) {
+                                                      ActiveCallCounter_ acc{*this};
+                                                      return fWSImpl_->auth_oauth_tokens_POST (r);
+                                                  }}},
+              Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?auth/oauth/tokens/revoke/?"_RegEx,
+                    ObjectRequestHandler::Factory{{Auth::kMapper},
+                                                  [this] (const Auth::TokenRevocationRequest& r) {
+                                                      ActiveCallCounter_ acc{*this};
+                                                      return fWSImpl_->auth_oauth_tokens_revoke_POST (r);
+                                                  }}},
+              Route{"api/(v1/)?auth/oauth/user_info/?"_RegEx, ObjectRequestHandler::Factory{{Auth::kMapper},
+                                                                                            [this] () {
+                                                                                                ActiveCallCounter_ acc{*this};
+                                                                                                return fWSImpl_->auth_oauth_user_info_GET ();
+                                                                                            }}}
 
-            /**
+              /**
              * /about - health check etc
              */
-            , Route{"api/about/?"_RegEx, ObjectRequestHandler::Factory{{About::kMapper}, [this] () {
-                                            ActiveCallCounter_ acc{*this};
-                                            return fWSImpl_->about_GET ();
-                                        }}}
+              ,
+              Route{"api/about/?"_RegEx, ObjectRequestHandler::Factory{{About::kMapper},
+                                                                       [this] () {
+                                                                           ActiveCallCounter_ acc{*this};
+                                                                           return fWSImpl_->about_GET ();
+                                                                       }}}
 
-            /**
+              /**
              * /healthcheck - health check etc
              */
-            , Route{"api/healthcheck/?"_RegEx, ObjectRequestHandler::Factory{{HealthStatus::kMapper}, [this] () {
-                                                    ActiveCallCounter_ acc{*this};
-                                                    return fWSImpl_->healthcheck_GET ();
-                                            }}}
+              ,
+              Route{"api/healthcheck/?"_RegEx, ObjectRequestHandler::Factory{{HealthStatus::kMapper},
+                                                                             [this] () {
+                                                                                 ActiveCallCounter_ acc{*this};
+                                                                                 return fWSImpl_->healthcheck_GET ();
+                                                                             }}}
 
-            /**
+              /**
              * /connections - just for debugging - maybe useful - probably wouldn't leave i a real product
              */
-            , Route{"api/connections/?"_RegEx, [this] (Message& m) {
+              ,
+              Route{"api/connections/?"_RegEx,
+                    [this] (Message& m) {
                         ActiveCallCounter_ acc{*this};
                         m.rwResponse ().contentType = InternetMediaTypes::kText_PLAIN;
                         m.rwResponse ().writeln ("{"sv);
-                        m.rwResponse ().writeln ("  \"tickCount\": {},"_f (Time::GetTickCount()));
+                        m.rwResponse ().writeln ("  \"tickCount\": {},"_f(Time::GetTickCount ()));
                         m.rwResponse ().writeln ("  \"connections\": ["sv);
                         // show active first
-                        for (auto i : this->fConnectionMgr_.connections ().OrderBy ([] (const Connection::Stats& l, const Connection::Stats& r) { return l.fActive > r.fActive; })) {
+                        for (auto i : this->fConnectionMgr_.connections ().OrderBy (
+                                 [] (const Connection::Stats& l, const Connection::Stats& r) { return l.fActive > r.fActive; })) {
                             m.rwResponse ().writeln ("    {},"_f(i));
                         }
                         m.rwResponse ().writeln ("  ]"sv);
                         m.rwResponse ().writeln ("}"sv);
                     }}
 
-            /**
+              /**
              * /resource
              * 
              *      \note saying HTTP::MethodsRegEx::kGet here is not needed, and just as an example - its the default and can
              *            be omitted.
              */
-            , Route{HTTP::MethodsRegEx::kGet, "api/resource/(.+)"_RegEx,
+              ,
+              Route{HTTP::MethodsRegEx::kGet, "api/resource/(.+)"_RegEx,
                     [this] (Message& m, const String& resID) {
                         ActiveCallCounter_ acc{*this};
                         auto               r        = fWSImpl_->resource_GET (resID);
@@ -240,35 +247,37 @@ public:
                         m.rwResponse ().write (r.fData);
                     }}
 
-            /*
+              /*
              * configuration data for web-gui - private - just so can communicate with /api
              */
-           , Route{"config.json"_RegEx, ObjectRequestHandler::Factory{{Config_::kMapper}, [=] () {
-                return GetConfig_ (); }}}
+              ,
+              Route{"config.json"_RegEx, ObjectRequestHandler::Factory{{Config_::kMapper}, [=] () { return GetConfig_ (); }}}
 
-            /*
+              /*
              * Serve up contents of html folder as static site
              * 
              *  Note - since this matches any URL, and is the last in the router, the above patterns match first, and anything
              *  else is assumed to come from the html folder (else if fall-through, the router will issue 404).
              */
-           , Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / "html"sv, kStaticSiteHandlerOptions_}}
-          }
-        , fWSImpl_{ MakeSharedPtr<WSImpl>(   [this](const WSImpl::WithWebServerCallbackType& f) { f (fConnectionMgr_);}  )}
-        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)))
-                         , kRoutes_
-                         , ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = kDefaultWSThreadPoolSize_,
+              ,
+              Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / "html"sv, kStaticSiteHandlerOptions_}}}
+        , fWSImpl_{MakeSharedPtr<WSImpl> ([this] (const WSImpl::WithWebServerCallbackType& f) { f (fConnectionMgr_); })}
+        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (
+                                                                         AppConfigurationType::kWebServerPort_Default))),
+                          kRoutes_,
+                          ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = kDefaultWSThreadPoolSize_,
                                                      .fDefaultResponseHeaders            = kDefaultResponseHeaders_,
                                                      .fCollectStatistics                 = true}}
-        , fStatsIntervalTimerAdder_{[this] () {
-                                   // capture stats at regular time intervals
-                                   Debug::TraceContextBumper ctx{"webserver status gather TIMER HANDLER"}; // to debug https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues/78
-                                   OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fActiveCallCnt_);
-                                   auto statistics = fConnectionMgr_.statistics ();
-                                   OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (statistics.fConnections.fNumberOfOpenConnections);
-                                   OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (statistics.fConnections.fNumberOfActiveConnections);
-                               },
-                               15s, IntervalTimer::Adder::eRunImmediately}
+        , fStatsIntervalTimerAdder_{
+              [this] () {
+                  // capture stats at regular time intervals
+                  Debug::TraceContextBumper ctx{"webserver status gather TIMER HANDLER"}; // to debug https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues/78
+                  OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fActiveCallCnt_);
+                  auto statistics = fConnectionMgr_.statistics ();
+                  OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (statistics.fConnections.fNumberOfOpenConnections);
+                  OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (statistics.fConnections.fNumberOfActiveConnections);
+              },
+              15s, IntervalTimer::Adder::eRunImmediately}
     {
         using Stroika::Frameworks::WebServer::DefaultFaultInterceptor;
         DefaultFaultInterceptor defaultHandler;

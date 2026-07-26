@@ -166,7 +166,7 @@ namespace {
     }
     void ExtractArchive_ (const filesystem::path& archiveName, const filesystem::path& toDirectory)
     {
-        Debug::TraceContextBumper          ctx{"ExtractArchive_",
+        Debug::TraceContextBumper ctx{"ExtractArchive_",
                                       Stroika_Foundation_Debug_OptionalizeTraceArgs ("(archiveName={}, toDir={})"_f, archiveName, toDirectory)};
         DataExchange::Archive::Reader::Ptr archive{OpenArchive_ (archiveName)};
         for (String i : archive.GetContainedFiles ()) {
@@ -180,7 +180,7 @@ namespace {
     }
     void CreateArchive_ (const filesystem::path& archiveName, const Sequence<String>& files2Add)
     {
-        Debug::TraceContextBumper          ctx{"CreateArchive_",
+        Debug::TraceContextBumper ctx{"CreateArchive_",
                                       Stroika_Foundation_Debug_OptionalizeTraceArgs ("(archiveName={}, files2Add={})"_f, archiveName, files2Add)};
         DataExchange::Archive::Writer::Ptr archive = CreateWritingArchive_ (archiveName);
         for (String f2a : files2Add) {

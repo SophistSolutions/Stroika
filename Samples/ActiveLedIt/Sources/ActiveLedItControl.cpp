@@ -921,7 +921,7 @@ ULONG FAR EXPORT ActiveLedItControl::XObjSafe::Release ()
     return pThis->ExternalRelease ();
 }
 
-HRESULT FAR EXPORT ActiveLedItControl::XObjSafe::QueryInterface (REFIID iid, void FAR* FAR* ppvObj)
+HRESULT FAR EXPORT ActiveLedItControl::XObjSafe::QueryInterface (REFIID iid, void FAR * FAR * ppvObj)
 {
     METHOD_PROLOGUE (ActiveLedItControl, ObjSafe)
     return (HRESULT)pThis->ExternalQueryInterface (&iid, ppvObj);

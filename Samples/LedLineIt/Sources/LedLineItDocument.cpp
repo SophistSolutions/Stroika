@@ -526,9 +526,9 @@ void LedLineItDocument::Serialize (CArchive& ar)
         }
 
         using Characters::CodeCvt;
-        CodeCvt<Led_tChar>     codeCvt{useUnicodEncoding ? CodeCvt<Led_tChar>{*useUnicodEncoding}
-                                                         : (useCodePage == kAutomaticallyGuessCodePage ? CodeCvt<Led_tChar>{locale{}}
-                                                                                                       : CodeCvt<Led_tChar>{useCodePage})};
+        CodeCvt<Led_tChar> codeCvt{useUnicodEncoding ? CodeCvt<Led_tChar>{*useUnicodEncoding}
+                                                     : (useCodePage == kAutomaticallyGuessCodePage ? CodeCvt<Led_tChar>{locale{}}
+                                                                                                   : CodeCvt<Led_tChar>{useCodePage})};
         StackBuffer<Led_tChar> result{Memory::eUninitialized,
                                       codeCvt.ComputeTargetCharacterBufferSize (span{reinterpret_cast<const byte*> (buf.data ()), nLen}) + 1};
         span<Led_tChar> n = codeCvt.Bytes2Characters (span{reinterpret_cast<const byte*> (buf.data ()), nLen}.subspan (bytesToStrip), span{result});

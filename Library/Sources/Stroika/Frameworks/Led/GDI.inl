@@ -1291,20 +1291,20 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 #if qStroika_Foundation_Common_Platform_MacOS
-    inline FontMetrics::operator const FontInfo* () const
+    inline FontMetrics::operator const FontInfo*() const
     {
         return &fPlatformSpecific;
     }
-    inline FontMetrics::operator FontInfo* ()
+    inline FontMetrics::operator FontInfo*()
     {
         return (&fPlatformSpecific);
     }
 #elif qStroika_Foundation_Common_Platform_Windows
-    inline FontMetrics::operator const TEXTMETRIC* () const
+    inline FontMetrics::operator const TEXTMETRIC*() const
     {
         return &fPlatformSpecific;
     }
-    inline FontMetrics::operator TEXTMETRIC* ()
+    inline FontMetrics::operator TEXTMETRIC*()
     {
         return &fPlatformSpecific;
     }

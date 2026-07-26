@@ -896,7 +896,7 @@ namespace Stroika::Frameworks::Led {
             AssertNotNull (fTextImager);
             fTablet = fTextImager->AcquireTablet ();
         }
-        operator Tablet* ()
+        operator Tablet*()
         {
             AssertNotNull (fTablet);
             return (fTablet);

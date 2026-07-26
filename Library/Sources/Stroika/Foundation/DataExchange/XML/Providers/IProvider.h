@@ -32,7 +32,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
     };
 
     struct ISchemaProvider : public virtual IProvider {
-        virtual ~ISchemaProvider ()                                                                  = default;
+        virtual ~ISchemaProvider ()                                                                            = default;
         virtual shared_ptr<Schema::IRep> SchemaFactory (const Streams::InputStream::Ptr<byte>& schemaData,
                                                         const Resource::ResolverPtr&           resolver) const = 0;
     };

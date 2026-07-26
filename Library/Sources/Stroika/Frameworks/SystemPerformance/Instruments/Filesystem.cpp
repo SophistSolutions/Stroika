@@ -867,7 +867,7 @@ namespace {
         {
             MeasurementSet results;
             Measurement    m{kMountedVolumeUsage_,
-                          Instruments::Filesystem::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
+                             Instruments::Filesystem::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
         }

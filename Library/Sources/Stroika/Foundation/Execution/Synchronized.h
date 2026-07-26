@@ -649,7 +649,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   OK to return const reference here because we own a lock anyhow
          */
-        nonvirtual operator const T& () const;
+        nonvirtual operator const T&() const;
 
     public:
         /**

@@ -503,7 +503,7 @@ namespace {
         {
             return p_;
         }
-        operator TYPE* () const
+        operator TYPE*() const
         {
             return p_;
         }
@@ -610,8 +610,8 @@ namespace {
         return n;
     }
     constexpr XMLCh* kXerces2XMLDBDocumentKey_ = nullptr; // just a unique key to lookup our doc object from the xerces doc object.
-        // Could use real str, then xerces does strcmp() - but this appears slightly faster
-        // so long as no conflict....
+    // Could use real str, then xerces does strcmp() - but this appears slightly faster
+    // so long as no conflict....
     String GetTextForDOMNode_ (const DOMNode* node)
     {
         RequireNotNull (node);
@@ -873,11 +873,11 @@ namespace {
             START_LIB_EXCEPTION_MAPPER_
             {
                 if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
-                    DOMElement*  elt = Debug::UncheckedDynamicCast<DOMElement*> (fNode_);
-                    const XMLCh* s   = attrName.fNamespace
-                                           ? elt->getAttributeNS (attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
-                                                                  attrName.fName.As<u16string> ().c_str ())
-                                           : elt->getAttribute (attrName.fName.As<u16string> ().c_str ());
+                    DOMElement* elt = Debug::UncheckedDynamicCast<DOMElement*> (fNode_);
+                    const XMLCh* s = attrName.fNamespace
+                                         ? elt->getAttributeNS (attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
+                                                                attrName.fName.As<u16string> ().c_str ())
+                                         : elt->getAttribute (attrName.fName.As<u16string> ().c_str ());
                     AssertNotNull (s);
                     if (*s != '\0') {
                         return s;
@@ -1329,8 +1329,7 @@ namespace {
 #if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
         Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
-            virtual void
-            Validate (const Schema::Ptr& schema) const override
+            virtual void Validate (const Schema::Ptr& schema) const override
         {
             TraceContextBumper                             ctx{"Xerces::DocRep_::Validate"};
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};

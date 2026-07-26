@@ -69,7 +69,7 @@ namespace {
 }
 
 namespace {
-    const Duration     kCaptureFrequency_ = 30s;
+    const Duration kCaptureFrequency_ = 30s;
     struct MyCapturer_ final : Capturer {
     public:
         Instruments::CPU::Instrument     fCPUInstrument{};
@@ -246,7 +246,7 @@ About WSImpl::about_GET () const
     CurrentMachine machineInfo = [this, now, &measurements] () {
         CurrentMachine    result;
         static const auto kOS_  = OperatingSystem{GetSystemConfiguration_ActualOperatingSystem ().fTokenName,
-                                                 GetSystemConfiguration_ActualOperatingSystem ().fPrettyNameWithVersionDetails};
+                                                  GetSystemConfiguration_ActualOperatingSystem ().fPrettyNameWithVersionDetails};
         result.fOperatingSystem = kOS_;
         if (auto o = GetSystemConfiguration_BootInformation ().fBootedAt) {
             result.fMachineUptime = now - *o;
@@ -281,7 +281,7 @@ About WSImpl::about_GET () const
         APIEndpoint r;
         r.fCallsCompleted = stats.fRecentAPI.fCallsCompleted;
         r.fCallTimes      = CommonStatistics<Duration>{
-                                          .fMax = stats.fRecentAPI.fMaxDuration, .fMean = stats.fRecentAPI.fMeanDuration, .fMedian = stats.fRecentAPI.fMedianDuration};
+            .fMax = stats.fRecentAPI.fMaxDuration, .fMean = stats.fRecentAPI.fMeanDuration, .fMedian = stats.fRecentAPI.fMedianDuration};
         r.fErrors                = stats.fRecentAPI.fErrors;
         r.fMedianRunningAPITasks = stats.fRecentAPI.fMedianRunningAPITasks;
         return r;

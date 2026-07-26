@@ -474,9 +474,9 @@ namespace {
             void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
             {
                 TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
-                Statement          addPaycheckStatement{conn,
+                Statement addPaycheckStatement{conn,
                                                "INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"};
-                Statement          getAllActiveEmployees{conn, "Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"};
+                Statement getAllActiveEmployees{conn, "Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"};
 
                 while (true) {
                     try {

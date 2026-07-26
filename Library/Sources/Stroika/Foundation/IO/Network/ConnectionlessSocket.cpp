@@ -117,7 +117,7 @@ namespace {
         }
         virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
         {
-            Debug::TraceContextBumper                       ctx{"IO::Network::Socket::JoinMulticastGroup",
+            Debug::TraceContextBumper ctx{"IO::Network::Socket::JoinMulticastGroup",
                                           Stroika_Foundation_Debug_OptionalizeTraceArgs ("iaddr={} onInterface={}"_f, iaddr, onInterface)};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
             Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);

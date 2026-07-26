@@ -275,7 +275,7 @@ namespace {
             }
 
             // find next
-            if (not::FindNextVolume (hVol, volumeNameBuf, static_cast<DWORD> (std::size (volumeNameBuf)))) {
+            if (not ::FindNextVolume (hVol, volumeNameBuf, static_cast<DWORD> (std::size (volumeNameBuf)))) {
                 ::FindVolumeClose (hVol);
                 hVol = INVALID_HANDLE_VALUE;
             }

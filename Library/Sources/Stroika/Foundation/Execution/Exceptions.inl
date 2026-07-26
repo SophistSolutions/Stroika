@@ -96,7 +96,9 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline NestedException::NestedException (const Characters::String& msg, const exception_ptr& basedOnException)
-        : RuntimeErrorException<>{msg, }
+        : RuntimeErrorException<>{
+              msg,
+          }
         , fBasedOnException{basedOnException}
     {
     }

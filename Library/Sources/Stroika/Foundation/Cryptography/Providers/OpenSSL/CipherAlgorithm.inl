@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         fCipher_ = src.fCipher_;
         return *this;
     }
-    inline CipherAlgorithm::operator const EVP_CIPHER* () const
+    inline CipherAlgorithm::operator const EVP_CIPHER*() const
     {
         return fCipher_;
     }

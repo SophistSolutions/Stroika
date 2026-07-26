@@ -5531,7 +5531,7 @@ size_t WordProcessor::ResetTabStopsWithMargin (DistanceType lhsMargin, size_t fr
     for (size_t i = startSoFar; i < startSoFar + nTChars; ++i) {
         if (text[i] == '\t') {
             DistanceType widthSoFar = (i == 0 ? 0 : charLocations[i - 1]);
-            tabAdjust               = widthAtStart +
+            tabAdjust = widthAtStart +
                         GetTabStopList (from).ComputeTabStopAfterPosition (Tablet_Acquirer (this), widthSoFar - widthAtStart + lhsMargin) -
                         lhsMargin - charLocations[i];
             lastTabIndex = i;

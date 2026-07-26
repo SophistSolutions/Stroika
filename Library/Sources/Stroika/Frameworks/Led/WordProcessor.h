@@ -1775,7 +1775,7 @@ namespace Stroika::Frameworks::Led {
                                    const Led_Rect& cellWindowRect, bool captureChangesForUndo = true);
         ~TemporarilyAllocateCellWP ();
 
-        nonvirtual                             operator EmbeddedTableWordProcessor* ();
+        nonvirtual                             operator EmbeddedTableWordProcessor*();
         nonvirtual EmbeddedTableWordProcessor& operator& ();
         nonvirtual EmbeddedTableWordProcessor* operator->();
 
@@ -1797,7 +1797,7 @@ namespace Stroika::Frameworks::Led {
         using TemporarilyUseTablet = EmbeddedTableWordProcessor::TemporarilyUseTablet;
 
     public:
-        nonvirtual                             operator EmbeddedTableWordProcessor* ();
+        nonvirtual                             operator EmbeddedTableWordProcessor*();
         nonvirtual EmbeddedTableWordProcessor& operator& ();
         nonvirtual EmbeddedTableWordProcessor* operator->();
 

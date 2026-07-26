@@ -34,37 +34,36 @@ namespace {
  */
 
 AppSettings::Private_::MoreOptionsData_Storage_IMPL_::MoreOptionsData_Storage_IMPL_ ()
-            : fOptionsFile_{
-                  /*
+    : fOptionsFile_{/*
                    * Any module name will do. This will map (by default) to a MyModule.json file in XXX.
                    * If you require a single configuration file 'Main" might be a better module name.
                    * But if you have multiple modules with configuration data, pick a name that matches that module,
                    * and they will all be stored under a folder for all your apps configuration.
                    */
-                  "MyModule"sv,
+                    "MyModule"sv,
 
-                  /*
+                    /*
                    * C++ doesn't have intrinsically enough metadata to effectively serialize deserialize data, but its close.
                    * You have to give it class mappings, and other non-builtin types mappings, so that it can serialize.
                    *
                    * Note - this serializing logic is VERY widely useful outside of configuration - for example it can be used
                    * to provide WebService/REST interfaces, or for debugging/logging output.
                    */
-                  [] () -> ObjectVariantMapper {
-                      ObjectVariantMapper mapper;
-                      mapper.AddClass<MoreOptionsData_> ({
-                          {"Enabled"sv, &MoreOptionsData_::fEnabled},
-                          {"Last-Synchronized-At"sv, &MoreOptionsData_::fLastSynchronizedAt},
-                      });
-                      return mapper;
-                  }(),
+                    [] () -> ObjectVariantMapper {
+                        ObjectVariantMapper mapper;
+                        mapper.AddClass<MoreOptionsData_> ({
+                            {"Enabled"sv, &MoreOptionsData_::fEnabled},
+                            {"Last-Synchronized-At"sv, &MoreOptionsData_::fLastSynchronizedAt},
+                        });
+                        return mapper;
+                    }(),
 
-                  /*
+                    /*
                    * Hooks for versioning, to manage as your application evolves and the configuration data changes
                    */
-                  OptionsFile::kDefaultUpgrader,
+                    OptionsFile::kDefaultUpgrader,
 
-                  /*
+                    /*
                    * Hook to decide the folder (and filename pattern) where the configuration data will be stored.
                    *
                    * This defaults to 
@@ -83,8 +82,8 @@ AppSettings::Private_::MoreOptionsData_Storage_IMPL_::MoreOptionsData_Storage_IM
                    *
                    *            But a better pattern is to create the folder in your application installer, typically.
                    */
-                  OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here"sv)}
-            , fActualCurrentConfigData_{fOptionsFile_.Read<MoreOptionsData_> (MoreOptionsData_{})}
+                    OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here"sv)}
+    , fActualCurrentConfigData_{fOptionsFile_.Read<MoreOptionsData_> (MoreOptionsData_{})}
 {
     Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
 }

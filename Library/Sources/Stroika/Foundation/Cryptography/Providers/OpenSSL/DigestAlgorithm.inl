@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         fDigester_ = src.fDigester_;
         return *this;
     }
-    inline DigestAlgorithm::operator const EVP_MD* () const
+    inline DigestAlgorithm::operator const EVP_MD*() const
     {
         return fDigester_;
     }

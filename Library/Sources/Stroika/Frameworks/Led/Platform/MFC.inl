@@ -65,7 +65,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         fCDC.Detach ();
     }
-    inline Led_MFC_CDCFromTablet::operator CDC* ()
+    inline Led_MFC_CDCFromTablet::operator CDC*()
     {
         return &fCDC;
     }
@@ -83,7 +83,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         fTablet.Detach ();
     }
-    inline Led_MFC_TabletFromCDC::operator Tablet* ()
+    inline Led_MFC_TabletFromCDC::operator Tablet*()
     {
         return &fTablet;
     }
@@ -1689,11 +1689,11 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         RequireNotNull (fCmdUI);
     }
-    inline Led_MFC_TmpCmdUpdater::operator Led_MFC_TmpCmdUpdater* ()
+    inline Led_MFC_TmpCmdUpdater::operator Led_MFC_TmpCmdUpdater*()
     {
         return this;
     }
-    inline Led_MFC_TmpCmdUpdater::operator CCmdUI* ()
+    inline Led_MFC_TmpCmdUpdater::operator CCmdUI*()
     {
         EnsureNotNull (fCmdUI);
         return fCmdUI;

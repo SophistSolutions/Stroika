@@ -198,8 +198,7 @@ namespace Stroika::Foundation::Common::StdCompat {
 #else
     inline
 #endif
-        bool
-        isinf (T v) noexcept
+        bool isinf (T v) noexcept
     {
 #if qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
         if constexpr (integral<T>) {
@@ -219,8 +218,7 @@ namespace Stroika::Foundation::Common::StdCompat {
 #else
     inline
 #endif
-        bool
-        isnan (T v) noexcept
+        bool isnan (T v) noexcept
     {
 #if qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
         if constexpr (integral<T>) {

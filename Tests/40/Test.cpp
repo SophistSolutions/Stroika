@@ -471,7 +471,7 @@ namespace {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
                         auto rwLock = syncData.rwget ();
-                        rwLock.store (rwLock.load () + 1); // set to a value that will cause reader thread to fail
+                        rwLock.store (rwLock.load () + 1);  // set to a value that will cause reader thread to fail
                         Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
                         EXPECT_TRUE (rwLock.load () % 2 == 1);
                         rwLock.store (rwLock.load () + 1); // set to a safe value

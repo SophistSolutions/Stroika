@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Containers {
                 return fValue_;
             }
         }
-        operator T& ()
+        operator T&()
             requires (not(kSubClass_))
         {
             RequireNotNull (fV);

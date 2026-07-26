@@ -36,11 +36,11 @@ Common::GUID Common::GUID::mk_ (const string& src)
 
     // Allow on parsing EITHER {} delimited, or not
     DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-    int nchars  = -1;
+    int nchars = -1;
     int nFields = ::sscanf (src.c_str (), "{" G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "}%n", &r.Data1, &r.Data2, &r.Data3,
                             &r.Data4[0], &r.Data4[1], &r.Data4[2], &r.Data4[3], &r.Data4[4], &r.Data4[5], &r.Data4[6], &r.Data4[7], &nchars);
     if (nFields != 11 || nchars != 38) {
-        nchars  = -1;
+        nchars = -1;
         nFields = ::sscanf (src.c_str (), G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "%n", &r.Data1, &r.Data2, &r.Data3,
                             &r.Data4[0], &r.Data4[1], &r.Data4[2], &r.Data4[3], &r.Data4[4], &r.Data4[5], &r.Data4[6], &r.Data4[7], &nchars);
     }

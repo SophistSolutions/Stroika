@@ -418,7 +418,7 @@ namespace Stroika::Foundation::Execution {
             optional<Characters::String> fName;
         };
         mutable mutex fCriticalSection_; // fCriticalSection_ protects fThreads_ and fPendingTasks_ and the fields of the MyRunnable_ members inside each thread (fThreads_).
-            // Each should be a very short critical section, except for SetPoolSize()
+        // Each should be a very short critical section, except for SetPoolSize()
         atomic<bool>                    fAborted_{false};
         optional<QMax>                  fDefaultQMax_;
         Containers::Collection<TPInfo_> fThreads_; // all threads, and a data member for thread object, and one for running task, if any

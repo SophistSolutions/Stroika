@@ -157,7 +157,7 @@ int main ([[maybe_unused]]int argc, [maybe_unused]]char** argv)
 
 #if !TARGET_CARBON
     const long kMinStack = 32l * 1024l; // reserve  32K for stack
-    ::SetApplLimit ((Ptr)((long)(::GetApplLimit ())-kMinStack));
+    ::SetApplLimit ((Ptr)((long)(::GetApplLimit ()) - kMinStack));
 #endif
 
     /*

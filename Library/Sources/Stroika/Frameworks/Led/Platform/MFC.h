@@ -132,7 +132,7 @@ namespace Stroika::Frameworks::Led::Platform {
     public:
         Led_MFC_CDCFromTablet (Tablet* t);
         ~Led_MFC_CDCFromTablet ();
-        operator CDC* ();
+        operator CDC*();
 
     private:
         CDC fCDC;
@@ -152,7 +152,7 @@ namespace Stroika::Frameworks::Led::Platform {
         ~Led_MFC_TabletFromCDC ();
 
     public:
-        operator Tablet* ();
+                operator Tablet*();
         Tablet* operator->();
 
     private:
@@ -721,8 +721,8 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual void          SetText (const SDKChar* text) override;
 
     public:
-        operator CCmdUI* ();
-        operator Led_MFC_TmpCmdUpdater* ();
+        operator CCmdUI*();
+        operator Led_MFC_TmpCmdUpdater*();
 
     private:
         CommandNumber fCmdNum;

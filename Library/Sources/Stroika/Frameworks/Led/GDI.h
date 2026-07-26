@@ -301,7 +301,7 @@ namespace Stroika::Frameworks::Led {
     private:
         bool fOwned;
 #elif qStroika_Foundation_Common_Platform_Windows
-        operator HRGN () const;
+             operator HRGN () const;
         int  CombineRgn (Region* pRgn1, Region* pRgn2, int nCombineMode);
         BOOL PtInRegion (int x, int y) const;
         BOOL PtInRegion (POINT point) const;
@@ -921,8 +921,8 @@ namespace Stroika::Frameworks::Led {
         // with something expected a system specific one - like to fill in its value!
     public:
 #if qStroika_Foundation_Common_Platform_Windows
-        operator const TEXTMETRIC* () const;
-        operator TEXTMETRIC* ();
+        operator const TEXTMETRIC*() const;
+        operator TEXTMETRIC*();
 #endif
 
     private:
@@ -1427,20 +1427,13 @@ namespace Stroika::Frameworks::Led {
 
         LRESULT (FAR PASCAL* fSendIMEMessageProc)
         (HWND, DWORD);
-        BOOL (FAR PASCAL* fIMEEnableProc)
-        (HWND, BOOL);
-        HIMC (FAR PASCAL* fImmGetContext)
-        (HWND);
-        BOOL (FAR PASCAL* fImmSetCompositionFont)
-        (HIMC, const LOGFONT*);
-        BOOL (FAR PASCAL* fImmReleaseContext)
-        (HWND, HIMC);
-        LONG (FAR PASCAL* fImmGetCompositionStringW)
-        (HIMC, DWORD, LPVOID, DWORD);
-        BOOL (FAR PASCAL* fImmSetCompositionWindow)
-        (HIMC, const void*);
-        BOOL (FAR PASCAL* fImmSetOpenStatus)
-        (HIMC, BOOL);
+        BOOL (FAR PASCAL* fIMEEnableProc) (HWND, BOOL);
+        HIMC (FAR PASCAL* fImmGetContext) (HWND);
+        BOOL (FAR PASCAL* fImmSetCompositionFont) (HIMC, const LOGFONT*);
+        BOOL (FAR PASCAL* fImmReleaseContext) (HWND, HIMC);
+        LONG (FAR PASCAL* fImmGetCompositionStringW) (HIMC, DWORD, LPVOID, DWORD);
+        BOOL (FAR PASCAL* fImmSetCompositionWindow) (HIMC, const void*);
+        BOOL (FAR PASCAL* fImmSetOpenStatus) (HIMC, BOOL);
 
         bool  fWinNlsAvailable;
         SHORT fLastX;

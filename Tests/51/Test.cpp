@@ -303,12 +303,12 @@ namespace {
             {
                 shared_ptr<int>         countSoFar = shared_ptr<int> (new int (0));
                 [[maybe_unused]] size_t answer     = FunctionalApplicationContext<int> (s)
-                                                     .Filter<int> ([countSoFar] (int) -> bool {
+                                                         .Filter<int> ([countSoFar] (int) -> bool {
                                                          ++(*countSoFar);
                                                          return (*countSoFar) & 1;
-                                                     })
-                                                     .Map<int> ([] (int s) { return s + 5; })
-                                                     .Reduce<size_t> ([] ([[maybe_unused]] int s, size_t memo) { return memo + 1; });
+                                                         })
+                                                         .Map<int> ([] (int s) { return s + 5; })
+                                                         .Reduce<size_t> ([] ([[maybe_unused]] int s, size_t memo) { return memo + 1; });
                 EXPECT_TRUE (answer == 2);
             }
             {

@@ -240,7 +240,7 @@ bool InternetAddress::IsLinkLocalAddress () const
             static constexpr InternetAddress kMinLinkLocal_{169, 254, 0, 1};
             static constexpr InternetAddress kMaxLinkLocal_{169, 254, 255, 254};
             Assert (kMinLinkLocal_ < kMaxLinkLocal_);
-            return kMinLinkLocal_ <= *this and * this <= kMaxLinkLocal_;
+            return kMinLinkLocal_ <= *this and *this <= kMaxLinkLocal_;
         } break;
         case AddressFamily::V6: {
             return fV6_.s6_addr[0] == 0xfe and fV6_.s6_addr[1] == 0x80 and fV6_.s6_addr[2] == 0x0 and fV6_.s6_addr[3] == 0x0 and

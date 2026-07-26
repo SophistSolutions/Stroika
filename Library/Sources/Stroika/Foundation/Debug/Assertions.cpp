@@ -120,7 +120,7 @@ void Stroika::Foundation::Debug::SetAssertionHandler (void (*legacyHandler) (con
 {
     sLegacyHandlerDelegate2_ = legacyHandler;
     auto wrapper             = [] (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,
-                       const wchar_t* functionName) noexcept {
+                                   const wchar_t* functionName) noexcept {
         try {
             string narrowAssertCategory = String{assertCategory}.AsNarrowSDKString ();
             string narrowAssert         = String{assertionText}.AsNarrowSDKString ();
@@ -174,7 +174,7 @@ void Stroika::Foundation::Debug::SetWeakAssertionHandler (void (*legacyHandler) 
 {
     sLegacyWeakHandlerDelegate2_ = legacyHandler;
     auto wrapper                 = [] (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,
-                       const wchar_t* functionName) noexcept {
+                                       const wchar_t* functionName) noexcept {
         try {
             string narrowAssertCategory = String{assertCategory}.AsNarrowSDKString ();
             string narrowAssert         = String{assertionText}.AsNarrowSDKString ();
