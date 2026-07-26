@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# Create the default named configurations (ConfigurationFiles/*.xml) appropriate for this host.
+#
+# Invoked by 'make default-configurations'. Kept as a script rather than inline makefile recipes
+# because the configure lines are long, host-conditional, and much easier to read/edit as shell.
+#
+# Environment:
+#	EXTRA_CONFIGURE_ARGS	added to the front of every configure command line (read by configure
+#				itself, out of the environment - nothing to pass along here)
+#	MAKE_INDENT_LEVEL	indentation level for progress output (default 0)
+#	DETECTED_HOST_OS	override host-OS detection (Cygwin|MSYS|Darwin|Linux|...)
+set -e
+
+MY_DIR_="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+StroikaRoot_="$(cd -P "${MY_DIR_}/../.." && pwd)"
+
+DETECTED_HOST_OS="${DETECTED_HOST_OS:-$("${MY_DIR_}/DetectedHostOS")}"
+MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
+
+cd "$StroikaRoot_"
+
+"${MY_DIR_}/PrintProgressLine" "${MAKE_INDENT_LEVEL}" "Making default configurations:"
+
+# the configure lines below report at one level deeper than our own heading
+export MAKE_INDENT_LEVEL=$((MAKE_INDENT_LEVEL + 1))
+
+case "$DETECTED_HOST_OS" in
+	MSYS | Cygwin)
+		./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags
+		./configure Release --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags
+		./configure Profile --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --append-extra-suffix-linker-args -PROFILE
+		./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --trace2file enable
+		./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default "$DETECTED_HOST_OS" --apply-default-debug-flags
+		./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default "$DETECTED_HOST_OS" --arch x86_64 --apply-default-debug-flags
+		./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default "$DETECTED_HOST_OS" --apply-default-release-flags
+		./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default "$DETECTED_HOST_OS" --apply-default-release-flags
+		;;
+
+	Darwin)
+		./configure Debug --build-by-default "$DETECTED_HOST_OS" --only-if-has-compiler --apply-default-debug-flags
+		./configure Release --build-by-default "$DETECTED_HOST_OS" --only-if-has-compiler --apply-default-release-flags
+		./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
+		./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default "$DETECTED_HOST_OS" --only-if-has-compiler --apply-default-release-flags
+		./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default "$DETECTED_HOST_OS" --only-if-has-compiler --apply-default-release-flags
+		;;
+
+	*)
+		./configure Debug --config-tag Unix --build-by-default "$DETECTED_HOST_OS" --only-if-has-compiler --apply-default-debug-flags
+		./configure Release --config-tag Unix --build-by-default "$DETECTED_HOST_OS" --only-if-has-compiler --apply-default-release-flags
+		./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
+		;;
+esac

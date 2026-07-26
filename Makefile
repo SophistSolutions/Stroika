@@ -497,164 +497,28 @@ endif
 	@$(MAKE) --no-print-directory --silent $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h
 
 
-# This variable (defaults to nothing) is added to all configurations built by make 'default-configurations' operation
-# Use occasionally to generate quick debug builds etc...
-export EXTRA_CONFIGURE_ARGS=
-# EXTRA_CONFIGURE_ARGS="--boost no --openssl no"
-# EXTRA_CONFIGURE_ARGS='--all-available-third-party-components'
-# EXTRA_CONFIGURE_ARGS'--no-third-party-components'
+# EXTRA_CONFIGURE_ARGS is added to the front of every configure command line. Nothing to declare here:
+# configure reads it out of the environment itself, and make passes both environment and command-line
+# variables into a recipe's environment. Use occasionally to generate quick debug builds etc, e.g.
+#	EXTRA_CONFIGURE_ARGS="--boost no --openssl no" make default-configurations
+#	EXTRA_CONFIGURE_ARGS='--all-available-third-party-components' make default-configurations
+#	EXTRA_CONFIGURE_ARGS='--no-third-party-components' make default-configurations
 
 default-configurations:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making default configurations:"
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Profile --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --append-extra-suffix-linker-args -PROFILE
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --trace2file enable
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS)  --arch x86_64 --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
-else ifneq ($(findstring $(DETECTED_HOST_OS),Darwin),)
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-else
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
-endif
+	@$(StroikaRoot)Build/Scripts/MakeDefaultConfigurations
 
 
-
-# This variable (defaults to nothing) is added to all configurations built by make 'default-configurations' operation
-# Use occasionally to generate quick debug builds etc...
-TEST_CONFIGURATIONS_ADD2ALL?=	--all-available-third-party-components
+# n.b. basic-unix-test-configurations and raspberrypi-cross-compile-test-configurations are also
+# used on their own - Build/Scripts/RegressionTests can be pointed at an individual set of
+# configurations via BUILD_CONFIGURATIONS_MAKEFILE_TARGET (see Documentation/Regression-Tests.md)
+regression-test-configurations:
+	@$(StroikaRoot)Build/Scripts/MakeRegressionTestConfigurations
 
 basic-unix-test-configurations:
-	@# Note as of 2023-12-02, it appears memory sanitizer only works with clang++ (not gcc), and even that major
-	@# PITA to use - see https://github.com/google/sanitizers/wiki/MemorySanitizerLibcxxHowTo - must rebuild own libc++ specailly.
-	@# Note they do provide a dockerfile with all this setup, but still ... Not worth the trouble... --LGP 2023-12-02
-
-	@(MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)); if [[ `lsb_release -rs 2>/dev/null` == '22.04' ]]; then \
-		#Ubuntu 22.04\
-		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
-		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system; \
-		# g++-11\
-		./configure g++-11-debug --config-tag Unix --compiler-driver g++-11 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-11-release++2b --config-tag Unix --compiler-driver g++-11 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# g++-12; \
-		./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-12-release++2b --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# g++-13; \
-		./configure g++-13-debug --config-tag Unix --compiler-driver g++-13 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# clang-15; \
-		./configure clang++-15-debug-libc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-15-release-libstdc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# - ASAN appears to work very sporadically (crashing about 1/2 the time) \
-		# 		Builds/g++-debug-sanitize_undefined_leak/Tests/Test44 --gtest_brief -- Segmentation fault (core dumped)\
-		# - LEAK sanitizer fails to build libcurl under Ubuntu 22.04, so disable that; \
-		# NO TSAN on Ubuntu 22.04 due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy \
-		./configure g++-debug-sanitize_undefined   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,undefined --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-release-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --sanitize none,undefined --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# VALGRIND - some tests fail inside valgrind code - looks like bug there - don't bother for now...LGP 2024-08-24\
-		#			verified 2024-09-17 - at least two core dumps not apparently related to my code - two modules when we run tests\
-		#       ./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-	elif [[ `lsb_release -rs 2>/dev/null` == '24.04' ]]; then \
-		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
-		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system ; \
-		# g++-12; \
-		./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-12-release++2b --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# g++-13; \
-		./configure g++-13-debug --config-tag Unix --compiler-driver g++-13 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# g++-14; \
-		./configure g++-14-debug --config-tag Unix --compiler-driver g++-14 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-14-release++23 --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# clang-16; \
-		./configure clang++-16-debug-libc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-16-release-libstdc++ --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-16-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-16-release-libc++23 --config-tag Unix --compiler-driver clang++-16 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# clang-17; \
-		./configure clang++-17-debug-libc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-17-release-libstdc++ --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-17-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-17-release-libc++23 --config-tag Unix --compiler-driver clang++-17 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# clang-18; \
-		./configure clang++-18-debug-libc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-18-release-libstdc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-18-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-18-release-libc++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23 ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		# Sanitizers\
-	 	# 	nb: TSAN and ASAN don't mix well \
-		./configure g++-debug-sanitize_address_undefined_leak   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-debug-sanitize_thread                   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL};  \
-		./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --sanitize none,address,undefined,leak --trace2file enable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-release-sanitize_thread                 --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread ${TEST_CONFIGURATIONS_ADD2ALL};  \
-		# VALGRIND\
-		./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable ${TEST_CONFIGURATIONS_ADD2ALL}; \
-	else \
-		$(MAKE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) --silent default-configurations; \
-		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
-		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system ; \
-		./configure g++-release++2b --config-tag Unix --compiler-driver g++ --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-debug --config-tag Unix --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure clang++-release --config-tag Unix --compiler-driver clang++ --apply-default-release-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-15-debug --config-tag Unix --compiler-driver g++-15 --apply-default-debug-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-15-release --config-tag Unix --compiler-driver g++-15 --apply-default-release-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-16-debug --config-tag Unix --compiler-driver g++-16 --apply-default-debug-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-		./configure g++-16-release --config-tag Unix --compiler-driver g++-16 --apply-default-release-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-	fi)
-
-# Currently not used, but maybe test occasionally
-private_compiler_versions_:
-	# ./configure my-g++-8.3-debug-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/gcc-8.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-8.3.0/lib64' --only-if-has-compiler --cppstd-version c++2a
+	@$(StroikaRoot)Build/Scripts/MakeRegressionTestConfigurations --basic-unix-only
 
 raspberrypi-cross-compile-test-configurations:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making raspberrypi-cross-compile-test-configurations:"
-	@# gcc-11 ARM raspberrypi compiler
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-11-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-11' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@#DUE TO qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy, omit raspberrypi-g++-11-release-sanitize_address since
-	@#various attempts at supressions failed, and the suppressions DO work for g++-12 (and other cases work) - and appears to just be old compiler bug with asan stuff --LGP 2023-12-16
-	@####MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-11-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-11' --sanitize none,address --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023 (no-sanitize=alignment no longer sufficient in g++-11 raspberry pi - not sure why
-	@#MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-11-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-11' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@#
-	@# gcc-12 ARM raspberrypi compiler
-	@#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-12-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-12' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-12-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-12' --sanitize none,address --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023 (no-sanitize=alignment no longer sufficient in g++-12 raspberry pi - not sure why
-	@#MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-12-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-12' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@#
-	@# gcc-13 ARM raspberrypi compiler
-	@#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
-	@#### NOTE to get this working on current raspbi/debian - see https://stroika.atlassian.net/browse/STK-1022
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-13-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-13-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-13' --sanitize none,address --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-13-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true ${TEST_CONFIGURATIONS_ADD2ALL}
-
-
-regression-test-configurations:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making regression-test-configurations:"
-	@rm -f ConfigurationFiles/*
-	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(DETECTED_HOST_OS)" = "MSYS" ]] ; then\
-		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) EXTRA_CONFIGURE_ARGS="${TEST_CONFIGURATIONS_ADD2ALL}" default-configurations;\
-	else\
-		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations;\
-		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) raspberrypi-cross-compile-test-configurations;\
-	fi
-	@# Currently not used, but maybe test occasionally
-	@#(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) private_compiler_versions_
+	@$(StroikaRoot)Build/Scripts/MakeRegressionTestConfigurations --raspberrypi-only
 
 
 list-configurations:

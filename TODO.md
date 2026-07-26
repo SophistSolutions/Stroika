@@ -8,9 +8,8 @@ Generally will track stuff here between releases
 
 ## Open
 
-- Move makedefaultconfigs from makefile into script in that folder
-- Finish CONTAINER SEQUNNCE BIDI ITERATOR STUFF
 - add more g++16 c++23 configs
+- Finish CONTAINER SEQUNNCE BIDI ITERATOR STUFF
 - test WTF 
 - test IPAM - etc...
 - test HearHE

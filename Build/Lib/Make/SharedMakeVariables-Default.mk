@@ -42,7 +42,9 @@ endif
 #			Linux
 #			Darwin
 #
-DETECTED_HOST_OS	:=	$(shell $(StroikaRoot)Build/Scripts/DetectedHostOS)
+#	exported so scripts invoked from recipes can just use it, instead of each re-running
+#	Build/Scripts/DetectedHostOS for itself (and so it can be overridden on a make command line)
+export DETECTED_HOST_OS	:=	$(shell $(StroikaRoot)Build/Scripts/DetectedHostOS)
 
 
 
