@@ -8,6 +8,42 @@ Generally will track stuff here between releases
 
 ## Open
 
+- error on ubuntu 26.04 - 
+    /usr/include/c++/16/debug/safe_iterator.h:222:
+    In function:
+        constexpr gnu_debug::_Safe_iterator<_Iterator, _Sequence, 
+        _Category>::_Safe_iterator(gnu_debug::_Safe_iterator<_Iterator, 
+        _Sequence, _Category>&&) [with _Iterator = gnu_cxx::
+        normal_iterator<const int*, std::vector<int, std::allocator<int> > >; 
+        _Sequence = std::debug::vector<int>; _Category = 
+        std::forward_iterator_tag]
+
+    Error: attempt to copy-construct an iterator from a singular iterator.
+
+    Objects involved in the operation:
+        iterator "this" @ 0x7b8e9aa614c0 {
+        type = gnu_cxx::normal_iterator<int const*, std::vector<int, std::allocator<int> > > (constant iterator);
+        state = singular (value-initialized);
+        }
+        iterator "other" @ 0x7b8e9a9ccd70 {
+        type = gnu_cxx::normal_iterator<int const*, std::vector<int, std::allocator<int> > > (constant iterator);
+        state = singular;
+        }
+    Aborted
+
+- error on ubuntu 2604
+    StroikaConfig.cpp:10:9: warning: ****COMPILER COMPATABILITY ISSUE***** [-W#pragma-messages]
+    10 | #pragma message("****COMPILER COMPATABILITY ISSUE*****")
+        |         ^
+    StroikaConfig.cpp:11:9: warning: Info: Stroika untested with this version of clang++ - (>21.x) USING PREVIOUS COMPILER VERSION BUG DEFINES [-W#pragma-messages]
+    11 | #pragma message(_STROIKA_CONFIGURATION_WARNING_)
+        |         ^
+    StroikaConfig.cpp:12:9: warning: ****COMPILER COMPATABILITY ISSUE***** [-W#pragma-messages]
+    12 | #pragma message("****COMPILER COMPATABILITY ISSUE*****")
+        |         ^
+    3 warnings generated.
+
+
 - add more g++16 c++23 configs
 - Finish CONTAINER SEQUNNCE BIDI ITERATOR STUFF
 - test WTF 
