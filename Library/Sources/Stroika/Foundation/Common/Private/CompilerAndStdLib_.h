@@ -88,9 +88,9 @@
     "Warning: Stroika v3 does not support versions prior to clang++ 15 (non-apple); note that Stroika v2.1 supports earlier clang "        \
     "versions"
 #endif
-#if (__clang_major__ > 21)
+#if (__clang_major__ > 22)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Info: Stroika untested with this version of clang++ - (>21.x) USING PREVIOUS COMPILER VERSION BUG DEFINES"
+    "Info: Stroika untested with this version of clang++ - (>22.x) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -1318,8 +1318,9 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 //  clang++19 with LIBC++
 //  clang++20 with LIBC++
 //  clang++21 with LIBC++
+//  clang++22 with LIBC++
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 21)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 22)
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
@@ -1384,7 +1385,7 @@ AddressSanitizer:DEADLYSIGNAL
 
  */
 
-#define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 21))
+#define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 22))
 #else
 #define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy 0
 #endif
@@ -1789,6 +1790,61 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../includ
 ./../Characters/../Containers/../Traversal/Iterable.h:882:135: note: in instantiation of template class 'std::optional<Stroika::Foundation::Characters::String>' requested here
         nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
         
+
+
+
+In file included from /usr/lib/llvm-22/bin/../include/c++/v1/type_traits:517:
+/usr/lib/llvm-22/bin/../include/c++/v1/__type_traits/is_trivially_destructible.h:26:31: error: incomplete type
+      'Stroika::Foundation::Characters::String' used in type trait expression
+   26 |     : integral_constant<bool, __is_trivially_destructible(_Tp)> {};
+      |                               ^
+/usr/lib/llvm-22/bin/../include/c++/v1/__type_traits/is_trivially_destructible.h:42:80: note: in instantiation of template class
+      'std::is_trivially_destructible<Stroika::Foundation::Characters::String>' requested here
+   42 | _LIBCPP_NO_SPECIALIZATIONS inline constexpr bool is_trivially_destructible_v = is_trivially_destructible<_Tp>::value;
+      |                                                                                ^
+/usr/lib/llvm-22/bin/../include/c++/v1/optional:627:19: note: in instantiation of variable template specialization
+      'std::is_trivially_destructible_v<Stroika::Foundation::Characters::String>' requested here
+  627 |           bool = (is_trivially_destructible_v<_Tp> && is_trivially_move_constructible_v<_Tp> &&
+      |                   ^
+/usr/lib/llvm-22/bin/../include/c++/v1/optional:803:15: note: in instantiation of default argument for
+      '__optional_move_assign_base<Stroika::Foundation::Characters::String>' required here
+  803 |     : private __optional_move_assign_base<_Tp>,
+      |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:962:135: note: in instantiation of template class
+      'std::optional<Stroika::Foundation::Characters::String>' requested here
+  962 |   ...Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
+      |                                                                                                      ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/CodePage.h:25:11: note: forward declaration of
+      'Stroika::Foundation::Characters::String'
+   25 |     class String;
+      |           ^
+In file included from Reader.cpp:6:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/Format.h:9:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.h:9:
+In file included from /usr/lib/llvm-22/bin/../include/c++/v1/compare:150:
+In file included from /usr/lib/llvm-22/bin/../include/c++/v1/__compare/compare_partial_order_fallback.h:13:
+In file included from /usr/lib/llvm-22/bin/../include/c++/v1/__compare/partial_order.h:14:
+In file included from /usr/lib/llvm-22/bin/../include/c++/v1/__compare/weak_order.h:14:
+In file included from /usr/lib/llvm-22/bin/../include/c++/v1/__compare/strong_order.h:24:
+In file included from /usr/lib/llvm-22/bin/../include/c++/v1/limits:524:
+In file included from /usr/lib/llvm-22/bin/../include/c++/v1/type_traits:515:
+/usr/lib/llvm-22/bin/../include/c++/v1/__type_traits/is_trivially_constructible.h:44:31: error: incomplete type
+      'Stroika::Foundation::Characters::String' used in type trait expression
+   44 |     : integral_constant<bool, __is_trivially_constructible(_Tp, __add_rvalue_reference_t<_Tp>)> {};
+      |                               ^
+/usr/lib/llvm-22/bin/../include/c++/v1/__type_traits/is_trivially_constructible.h:49:5: note: in instantiation of template class
+      'std::is_trivially_move_constructible<Stroika::Foundation::Characters::String>' requested here
+   49 |     is_trivially_move_constructible<_Tp>::value;
+      |     ^
+/usr/lib/llvm-22/bin/../include/c++/v1/optional:627:55: note: in instantiation of variable template specialization
+      'std::is_trivially_move_constructible_v<Stroika::Foundation::Characters::String>' requested here
+  627 |           bool = (is_trivially_destructible_v<_Tp> && is_trivially_move_constructible_v<_Tp> &&
+      |                                                       ^
+/usr/lib/llvm-22/bin/../include/c++/v1/optional:803:15: note: in instantiation of default argument for
+      '__optional_move_assign_base<Stroika::Foundation::Characters::String>' required here
+  803 |     : private __optional_move_assign_base<_Tp>,
+      |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroi
 */
 #ifndef qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
 
@@ -1798,7 +1854,8 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../includ
 // also broken in clang++-19
 // also broken in clang++-20
 // also broken in clang++-21
-#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 21)
+// also broken in clang++-22
+#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 22)
 #else
 #define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy 0
 #endif
@@ -1820,6 +1877,9 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 /usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(+0xe2767f)[0x7f6fe73c767f]
 /lib/x86_64-linux-gnu/l
 */
+
+#define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy   1
+
 #ifndef qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy
 
 #if defined(__clang__)
@@ -2045,8 +2105,9 @@ In file included from SystemConfiguration.cpp:48:
 // broken in clang++-19
 // broken in clang++-20
 // broken in clang++-21
+// broken in clang++-22
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 21))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 22))
 #else
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy 0
 #endif
@@ -2085,6 +2146,20 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(62): error C2187: syntax error: 'template' was unexpected here
 C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(62): note: the template instantiation context (the oldest one first) is
 C:\Sandbox\Stroika\DevRoot\Tests\22\Test.cpp(104): note: see reference to function template instantiation 'void `anonymous-namespace'::DoTestForConcreteContainer_<Stroika::Foundation::Containers::Set<Stroika::Frameworks::Test::ArchtypeClasses::OnlyCopyableMoveable>,`anonymous-namespace'::Foundation_Containers_Set_DEFAULT_SET_FACTORY_Test::TestBody::<lambda_1>>(CONCRETE_CONTAINER_FACTORY)' being compiled
+
+
+./../TestCommon/CommonTests_Iterable.h:62:49: error: a template argument list is expected after a name prefixed by the template
+      keyword [-Wmissing-template-arg-list-after-template-kw]
+   62 |             EXPECT_TRUE ((iterableCopy.template SequentialEquals (container, forward<EQUALS_COMPARER> (equalsCom...
+      |                                                 ^
+1 warning generated.
+   Linking Test Builds/clang++-22-debug/Tests/Test01 (Foundation::Caching) ... 
+In file included from Test.cpp:17:
+In file included from ./../TestCommon/CommonTests_Collection.h:14:
+./../TestCommon/CommonTests_Iterable.h:62:49: error: a template argument list is expected after a name prefixed by the template
+      keyword [-Wmissing-template-arg-list-after-template-kw]
+   62 |             EXPECT_TRUE ((iterableCopy.template SequentialEquals (container, forward<EQUALS_COMPARER> (equalsCom...
+      |                                                 ^
 25*/
 #ifndef qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy
 
@@ -2107,8 +2182,9 @@ C:\Sandbox\Stroika\DevRoot\Tests\22\Test.cpp(104): note: see reference to functi
 // first broken in clang++ 19 (linux)
 // Still broken in clang++-20
 // Still broken in clang++-21
+// Still broken in clang++-22
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((19 <= __clang_major__ and __clang_major__ <= 21))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((19 <= __clang_major__ and __clang_major__ <= 22))
 #endif
 #else
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy 0
@@ -2549,7 +2625,8 @@ In file included from Namespace.cpp:10:
 // and     {clang++-15-release-libstdc++}:
 // reproduced using clang++20 on ubuntu 25.04
 // reproduced using clang++21 on ubuntu 26.04
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ < 22)
+// reproduced using clang++22 on ubuntu 26.04
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ < 23)
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
 #endif
