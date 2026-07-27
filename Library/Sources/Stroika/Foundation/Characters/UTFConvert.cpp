@@ -62,6 +62,11 @@ namespace {
  */
 namespace {
     namespace UTFConvert_libutfxx_ {
+        // This codec deliberately mixes char8_t/char16_t/char32_t while packing/unpacking encoded bytes and
+        // code units (that's the whole point of a UTF converter) - so -Wcharacter-conversion's heuristic (a
+        // useful check in ordinary code) is just noise here.
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wcharacter-conversion\"")
+
         // static constexpr char32_t UNI_REPLACEMENT_CHAR = (char32_t)0x0000FFFD;
         static constexpr char32_t UNI_MAX_BMP         = (char32_t)0x0000FFFF;
         static constexpr char32_t UNI_MAX_UTF16       = (char32_t)0x0010FFFF;
@@ -659,6 +664,7 @@ namespace {
             return result;
         }
 
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wcharacter-conversion\"")
     }
 }
 
