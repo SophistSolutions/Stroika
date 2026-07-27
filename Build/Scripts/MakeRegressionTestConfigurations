@@ -144,12 +144,15 @@ basicUnixTestConfigurations_ ()
 		# g++-14
 		./configure g++-14-debug --config-tag Unix --compiler-driver g++-14 --apply-default-debug-flags --only-if-has-compiler
 		./configure g++-14-release --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler
+		./configure g++-14-release++23 --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
 		# g++-15
 		./configure g++-15-debug --config-tag Unix --compiler-driver g++-15 --apply-default-debug-flags --only-if-has-compiler
 		./configure g++-15-release --config-tag Unix --compiler-driver g++-15 --apply-default-release-flags --only-if-has-compiler
+		./configure g++-15-release++23 --config-tag Unix --compiler-driver g++-15 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
 		# g++-16
 		./configure g++-16-debug --config-tag Unix --compiler-driver g++-16 --apply-default-debug-flags --only-if-has-compiler
 		./configure g++-16-release --config-tag Unix --compiler-driver g++-16 --apply-default-release-flags --only-if-has-compiler
+		./configure g++-16-release++23 --config-tag Unix --compiler-driver g++-16 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
 		;;
 
 	*)
