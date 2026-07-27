@@ -11,7 +11,13 @@
 
 #if qStroika_HasComponent_googletest
 #define GTEST_DONT_DEFINE_TEST 1
+#if defined(__clang_major__) and (20 < __clang_major__)
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wcharacter-conversion\"") // gtest-printers.h:528 PrintTo(ImplicitCast_<char32_t>(c), os); mixes char8_t/char32_t - not our code to fix
+#endif
 #include <gtest/gtest.h>
+#if defined(__clang_major__) and (20 < __clang_major__)
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wcharacter-conversion\"")
+#endif
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
