@@ -1314,7 +1314,20 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			#
 			#
 			# NOTE - happens on g++-15 on Ubuntu 25.04 as well (with no armhf) - and cannot suppress with direct DISABLE_COMPILER_GCC_WARNING_START on g++15 and ubuntu 25.04
-			if ($itsVersion < 16.0 ) {
+			#
+			# NOTE - happens on g++-16 on Ubuntu 26.04 as well (g++-16-release++23), now out of std::function instead of
+			# vector - inlining _M_manager/_M_destroy, gcc cannot prove the small-object-optimized branch is the one taken,
+			# so it reports the heap branch deleting the union's pointer value - which for a [&]-capture-one-local closure
+			# is the address of that local. e.g. Tests/03 (Foundation::Common):
+			# In function '_M_destroy',
+			#	inlined from '_M_manager' at /usr/include/c++/16/bits/std_function.h:208:18,
+			#	inlined from '__dt_base ' at /usr/include/c++/16/bits/std_function.h:324:11,
+			#	inlined from 'TestBody' at Test.cpp:172:72:
+			# /usr/include/c++/16/bits/std_function.h:180:11: warning: 'operator delete' called on unallocated object 'firstEventHandlerCalled' [-Wfree-nonheap-object]
+			# 180 |           delete __victim._M_access<_Functor*>();
+			# Same as g++-15: DISABLE_COMPILER_GCC_WARNING_START at the call site does not suppress it - the diagnostic
+			# comes out of LTRANS at link time, and its location is inside std_function.h, not our source.
+			if ($itsVersion < 17.0 ) {
 				$LinkerArgs_ExtraPrefix		.=  ' -Wno-free-nonheap-object';
 			}
 
