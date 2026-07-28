@@ -721,16 +721,28 @@ collect2: error: ld returned 1 exit status
 /usr/include/c++/15/stacktrace:167:(.text._ZNKSt16stacktrace_entry11_M_get_infoEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES6_Pi[_ZNKSt16stacktrace_entry11_M_get_infoEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES6_Pi]+0x1a7): undefined reference to `std::stacktrace_entry::_Info::_M_populate(unsigned long)'
 /usr/bin/x86_64-linux-gnu-ld.bfd: /Sandbox/Stroika-Dev/Builds/g++-debug++2b/lib/pkgconfig/../libstroika-foundation.a(BackTrace.o): in function `std::basic_stacktrace<std::allocator<std::stacktrace_entry> >::current(std::allocator<std::stacktrace_entry> const&)':
 /usr/include/c++/15/stacktrace:209:(.text._ZNSt16basic_stacktraceISaISt16stacktrace_entryEE7currentERKS1_[_ZNSt16basic_stacktraceISaISt16stacktrace_entryEE7currentERKS1_]+0x5f): undefined reference to `std::__stacktrace_impl::_S_current(int (*)(void*, unsigned long), void*, int)'
+
+
+GCC 12 and GCC 13: You must link using -lstdc++_libbacktrace. The newer -lstdc++exp flag
+will not work or exist on these versions.
+
+GCC 14, GCC 15, and GCC 16: You must link using -lstdc++exp. GCC changed the library
+name starting with version 14 to consolidate all experimental C++23/C++26
+features into a single experimental archive.
+
+For any of these flags to work, your Linux distribution's package maintainers must
+have compiled GCC with the configuration option --enable-libstdcxx-backtrace.
+If they did not, the library archives will be missing from your system entirely.
 */
 #ifndef qCompilerAndStdLib_stacktraceLinkError_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
-// Only SEEN BROKEN IN GCC 13, Ubuntu 24.04, but cannot test for that right easily... (ALSO - PRE-RELEASE UBUTNU - SO TRY AGAIN WHEN RELEASED)
+// Only SEEN BROKEN IN GCC 13, Ubuntu 24.04
 // Same issue on GCC-14 and Ubuntu 24.04
 // Same issue on GCC-15 and Ubuntu 26.04
-// appears fixed on g++-16 on 26.04
+// Same issue on GCC-16 and Ubuntu 26.04 (g++-16-release++23)
 #define qCompilerAndStdLib_stacktraceLinkError_Buggy                                                                                       \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13 || __GNUC__ == 14 || __GNUC__ == 15)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (13 <= __GNUC__ and __GNUC__ <= 16)
 #else
 #define qCompilerAndStdLib_stacktraceLinkError_Buggy 0
 #endif
