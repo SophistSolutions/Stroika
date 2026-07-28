@@ -8,6 +8,5 @@ Generally will track stuff here between releases
 
 ## Open
 - Finish CONTAINER SEQUNNCE BIDI ITERATOR STUFF
-- test IPAM - etc...
 - test HearHE
 - deal with failed/lost bugs from JIRA
