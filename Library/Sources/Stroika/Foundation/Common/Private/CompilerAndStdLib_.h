@@ -741,8 +741,7 @@ If they did not, the library archives will be missing from your system entirely.
 // Same issue on GCC-14 and Ubuntu 24.04
 // Same issue on GCC-15 and Ubuntu 26.04
 // Same issue on GCC-16 and Ubuntu 26.04 (g++-16-release++23)
-#define qCompilerAndStdLib_stacktraceLinkError_Buggy                                                                                       \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (13 <= __GNUC__ and __GNUC__ <= 16)
+#define qCompilerAndStdLib_stacktraceLinkError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (13 <= __GNUC__ and __GNUC__ <= 16)
 #else
 #define qCompilerAndStdLib_stacktraceLinkError_Buggy 0
 #endif
