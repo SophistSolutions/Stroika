@@ -2590,8 +2590,13 @@ sub PostProcessOptions_ ()
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			# avoid release (FTO) warnings like this:
 			#/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2004_x86_64/IntermediateFiles/g++-12-release++2b/ThirdPartyComponents/Xerces/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
-			my $ubuntuVersion = getUbuntuVersion();
-			if (20.04 <= $ubuntuVersion and $ubuntuVersion <= 24.04) {
+			# Seen on Ubuntu 2204, 2404, and 2604 with Test Builds/g++-12-release/Tests/Test48 (Foundation::Memory) ... 
+			# 	/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2604_x86_64/ThirdPartyComponents/Xerces/CURRENT/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp: In member function 'substringData':
+			# 	/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2604_x86_64/ThirdPartyComponents/Xerces/CURRENT/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
+			# 	319 |     return retString;
+			# MAYBE only needed for g++-12?
+			my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+			if (12.0 <= $itsVersion && $itsVersion < 13) {
 				$LinkerArgs_ExtraPrefix = $LinkerArgs_ExtraPrefix  . " -Wno-return-local-addr";
 			}
 		}
