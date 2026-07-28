@@ -65,7 +65,9 @@ namespace {
         // This codec deliberately mixes char8_t/char16_t/char32_t while packing/unpacking encoded bytes and
         // code units (that's the whole point of a UTF converter) - so -Wcharacter-conversion's heuristic (a
         // useful check in ordinary code) is just noise here.
+#if defined(__clang_major__) and (20 < __clang_major__)
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wcharacter-conversion\"")
+#endif
 
         // static constexpr char32_t UNI_REPLACEMENT_CHAR = (char32_t)0x0000FFFD;
         static constexpr char32_t UNI_MAX_BMP         = (char32_t)0x0000FFFF;
@@ -664,7 +666,9 @@ namespace {
             return result;
         }
 
+#if defined(__clang_major__) and (20 < __clang_major__)
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wcharacter-conversion\"")
+#endif
     }
 }
 
