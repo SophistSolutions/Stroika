@@ -90,6 +90,22 @@ CMAKE_ARGS+= -A Win32
 endif
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
+#
+#	Build the third-party component against the same C runtime as Stroika itself (-MT/-MTd by
+#	default - see VSVARS_MSVC_RUNTIME_LIBRARY in configure); a mismatch is an LNK2038
+#	"mismatch detected for 'RuntimeLibrary'" when something later links both.
+#
+#	CMAKE_MSVC_RUNTIME_LIBRARY is only honored when CMP0091 is NEW, hence both args - exactly as
+#	with CMAKE_MSVC_DEBUG_INFORMATION_FORMAT/CMP0141 below. CMP0091 defaults to NEW only if the
+#	project being built declares cmake_minimum_required(VERSION 3.15) or later; with an older
+#	declaration cmake silently ignores CMAKE_MSVC_RUNTIME_LIBRARY and puts its own choice of
+#	runtime flag in the *default* CMAKE_<LANG>_FLAGS_<CONFIG> instead. That default is usually
+#	masked by the -DCMAKE_<LANG>_FLAGS_<CONFIG> we pass below (which carry Stroika's -MT/-MTd),
+#	so the OLD behavior often happens to work - but any project that manipulates the runtime
+#	library itself (setting CMAKE_MSVC_RUNTIME_LIBRARY, or the per-target MSVC_RUNTIME_LIBRARY
+#	property) gets that quietly dropped on the floor, and links against the wrong CRT.
+#
+CMAKE_ARGS+= -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
 CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=${VSVARS_MSVC_RUNTIME_LIBRARY}
 endif
 
