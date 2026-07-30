@@ -42,14 +42,25 @@ CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
 
 
+#
+#	The CMAKE_MSVC_RUNTIME_LIBRARY args below are redundant with Makefile-CMake-Common.mk (included
+#	above), which passes -DCMAKE_MSVC_RUNTIME_LIBRARY=${VSVARS_MSVC_RUNTIME_LIBRARY} for every cmake
+#	component - plus the CMP0091 policy default that makes cmake actually honor it.
+#	And worse than redundant: hardwiring the value from AssertionsEnabled here (and appending it
+#	after the common one, so it wins) would quietly override a configuration
+#	configured --msvc-runtime-library MultiThreadedDLL/MultiThreadedDebugDLL, building libxml2
+#	against a different CRT than the rest of Stroika.
+#	Commented out rather than deleted, pending a windows build/test cycle.
+#	-- LGP 2026-07-29
+#
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (${AssertionsEnabled},1)
 MAYBED_=d
 # https://cmake.org/cmake/help/v3.15/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
-CMAKE_ARGS+=	-DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDebug"
+#CMAKE_ARGS+=	-DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDebug"
 else
 MAYBED_=
-CMAKE_ARGS+=	-DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
+#CMAKE_ARGS+=	-DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
 endif
 endif
 
