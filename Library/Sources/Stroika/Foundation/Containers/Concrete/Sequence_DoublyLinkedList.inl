@@ -88,6 +88,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return fData_.GetAt (i);
         }
+        // @todo - DoublyLinkedList<T>::BidirectionalIterator already exists and could back GetBidirectionalIterator ()
+        // efficiently via Private::BidirectionalIteratorImplHelper_ (though not RandomAccess - no efficient native
+        // random-access iterator is possible for a doubly-linked list) - LGP 2026-08-03
+        virtual BidirectionalIterator<value_type> GetBidirectionalIterator () const override
+        {
+            return this->_MakeBidirectionalIterator_ViaGetAt ();
+        }
+        virtual RandomAccessIterator<value_type> GetRandomAccessIterator () const override
+        {
+            return this->_MakeRandomAccessIterator_ViaGetAt ();
+        }
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
             Require (i < size ());

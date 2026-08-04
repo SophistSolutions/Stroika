@@ -88,6 +88,16 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return fData_.GetAt (i);
         }
+        virtual BidirectionalIterator<value_type> GetBidirectionalIterator () const override
+        {
+            // singly-linked, so cannot produce a native BidirectionalIterator: always use the generic GetAt ()-based implementation
+            return this->_MakeBidirectionalIterator_ViaGetAt ();
+        }
+        virtual RandomAccessIterator<value_type> GetRandomAccessIterator () const override
+        {
+            // singly-linked, so cannot produce a native RandomAccessIterator: always use the generic GetAt ()-based implementation
+            return this->_MakeRandomAccessIterator_ViaGetAt ();
+        }
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
             Require (i < size ());

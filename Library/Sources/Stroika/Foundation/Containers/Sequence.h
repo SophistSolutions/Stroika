@@ -86,12 +86,20 @@ namespace Stroika::Foundation::Containers {
      *      SmallTalk book page 153
      *
      * TODO:
-     * 
-     *  ->  Consider how to integrate BiderectionalIterator and RandomAccessIterator?
-     *      COULD have methods that return optional<> of these? Or force adopters? Nice for SORTING
-     *      sometimes, and other operations. But Sequence_DoublyLinkedList can produce BidirectionIterator
-     *      but not RandomAccess one - efficiently - and similarly Sequence_LinkedList cannot produce even BidrectionalIterator
-     *      reasonably... --LGP 2026-06-29
+     *
+     *  ->  MakeBidirectionalIterator ()/MakeRandomAccessIterator () (below) are now implemented generically,
+     *      in terms of GetAt ()/size (), so they always work, for any backend - including Sequence_LinkedList,
+     *      which cannot produce a native BidirectionalIterator reasonably. This resolves the design question
+     *      raised below, but at the cost of O(GetAt ()) per step for backends without an efficient native
+     *      random-access iterator.
+     *
+     *      Sequence_Array/Sequence_stdvector (and Sequence_DoublyLinkedList, for the bidirectional case) DO
+     *      have efficient native random-access (or bidirectional) iterators available on their backend data
+     *      structures (see DataStructures::Array<T>::ForwardIterator, DoublyLinkedList<T>::BidirectionalIterator),
+     *      and Private::BidirectionalIteratorImplHelper_/RandomAccessIteratorImplHelper_ exist to wire those in -
+     *      but as of this writing no concrete Sequence_* backend uses them, so all backends currently pay the
+     *      generic GetAt ()-based cost. Consider wiring those backends up as a perf optimization.
+     *      --LGP 2026-06-29 (updated 2026-08-03)
      *
      *  ->  At some point in the near future we may add the ability to start at an
      *      arbitrary point in a sequence, and end at an arbitrary point. This
@@ -263,15 +271,20 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief Create a RandomAccessIterator for this sequence (note inherited Iterable<T>::MakeIterator () returns a forward iterator, not a random access iterator).
+         * \brief Create a BidirectionalIterator for this sequence (note inherited Iterable<T>::MakeIterator () returns a forward iterator, not a random access or bidirectional iterator).
          *
-         *  \note that though this always 'works' - the returned iterator maybe quite inefficient 
-         *        depending on the backend implementation type (like GetAt ()).
-         * 
-         *  \@todo - consider if we want to call this make bidi iterator, make random_access_iterator?
-         *         just experimenting as of 2026-07-09
+         *  \note that though this always 'works' - the returned iterator maybe quite inefficient
+         *        depending on the backend implementation type.
          */
         nonvirtual BidirectionalIterator<T> MakeBidirectionalIterator () const;
+
+    public:
+        /**
+         * \brief Create a RandomAccessIterator for this sequence (note inherited Iterable<T>::MakeIterator () returns a forward iterator, not a random access iterator).
+         *
+         *  \note that though this always 'works' - the returned iterator maybe quite inefficient
+         *        depending on the backend implementation type (like GetAt ()).
+         */
         nonvirtual RandomAccessIterator<T> MakeRandomAccessIterator () const;
 
     public:
@@ -716,6 +729,37 @@ namespace Stroika::Foundation::Containers {
         // 'at' argument to Insert MAYBE kBadSequenceIndex - indicating append
         virtual void Insert (size_t at, const span<const value_type>& copyFrom) = 0;
         virtual void Remove (size_t from, size_t to)                            = 0;
+        // implementors without a more efficient backend-specific iterator available can just return
+        // _MakeBidirectionalIterator_ViaGetAt () / _MakeRandomAccessIterator_ViaGetAt ()
+        virtual BidirectionalIterator<value_type> GetBidirectionalIterator () const = 0;
+        virtual RandomAccessIterator<value_type>  GetRandomAccessIterator () const  = 0;
+
+    protected:
+        /**
+         *  \brief Generic (backend-independent) implementations of GetBidirectionalIterator (),
+         *         implemented purely in terms of GetAt ()/size ().
+         *
+         *  Intended to be called from a concrete Sequence_* backend's GetBidirectionalIterator ()
+         *  override, for backends that don't (yet) have a more efficient backend-specific implementation available.
+         */
+        nonvirtual BidirectionalIterator<value_type> _MakeBidirectionalIterator_ViaGetAt () const;
+
+        protected:
+        /**
+         *  \brief Generic (backend-independent) implementations of GetRandomAccessIterator (),
+         *         implemented purely in terms of GetAt ()/size ().
+         *
+         *  Intended to be called from a concrete Sequence_* backend's GetRandomAccessIterator ()
+         *  override, for backends that don't (yet) have a more efficient backend-specific implementation available.
+         */
+        nonvirtual RandomAccessIterator<value_type>  _MakeRandomAccessIterator_ViaGetAt () const;
+
+    private:
+        /**
+         *  \brief Generic RandomAccessIterator<T>::IRep implementation, usable with ANY Sequence<T> backend,
+         *         implemented purely in terms of GetAt ()/size (). Backs _MakeBidirectionalIterator_ViaGetAt ()/_MakeRandomAccessIterator_ViaGetAt ().
+         */
+        class IndexBasedRandomAccessIteratorRep_;
 
     private:
         friend Sequence<T>;

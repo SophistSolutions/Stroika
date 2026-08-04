@@ -636,6 +636,73 @@ namespace {
 }
 
 namespace {
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void SimpleSequenceTest_17_BidiAndRandomAccessIterator_ ()
+    {
+        Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_17_BidiAndRandomAccessIterator_ ()"};
+        using T               = typename CONCRETE_SEQUENCE_T::value_type;
+        static const size_t K = Debug::IsRunningUnderValgrind () ? 20 : 200;
+
+        {
+            // empty sequence - AtStart () and AtEnd () are both true
+            CONCRETE_SEQUENCE_T s;
+            auto                bi = s.MakeBidirectionalIterator ();
+            auto                ri = s.MakeRandomAccessIterator ();
+            EXPECT_TRUE (bi.AtEnd () and bi.AtStart ());
+            EXPECT_TRUE (ri.AtEnd () and ri.AtStart ());
+        }
+
+        CONCRETE_SEQUENCE_T s;
+        for (size_t i = 0; i < K; ++i) {
+            s.Append (static_cast<T> (i));
+        }
+
+        {
+            // forward traversal via BidirectionalIterator matches GetAt ()
+            size_t idx = 0;
+            for (auto bi = s.MakeBidirectionalIterator (); not bi.AtEnd (); ++bi, ++idx) {
+                EXPECT_TRUE (EQUALS_COMPARER{}(*bi, s.GetAt (idx)));
+            }
+            EXPECT_TRUE (idx == K);
+        }
+
+        {
+            // walk to the end, then all the way back with operator--, checking values as we go
+            auto bi = s.MakeBidirectionalIterator ();
+            EXPECT_TRUE (bi.AtStart ());
+            for (size_t i = 0; i < K; ++i) {
+                ++bi;
+            }
+            EXPECT_TRUE (bi.AtEnd ());
+            for (size_t i = K; i > 0; --i) {
+                EXPECT_TRUE (not bi.AtStart ());
+                --bi;
+                EXPECT_TRUE (EQUALS_COMPARER{}(*bi, s.GetAt (i - 1)));
+            }
+            EXPECT_TRUE (bi.AtStart ());
+        }
+
+        {
+            // random access - operator[], operator+, difference, ordering
+            auto ri = s.MakeRandomAccessIterator ();
+            for (size_t i = 0; i < K; ++i) {
+                EXPECT_TRUE (EQUALS_COMPARER{}(ri[static_cast<ptrdiff_t> (i)], s.GetAt (i)));
+            }
+            auto rMid = ri + static_cast<ptrdiff_t> (K / 2);
+            EXPECT_TRUE (EQUALS_COMPARER{}(*rMid, s.GetAt (K / 2)));
+            EXPECT_TRUE ((rMid - ri) == static_cast<ptrdiff_t> (K / 2));
+            EXPECT_TRUE ((ri - rMid) == -static_cast<ptrdiff_t> (K / 2));
+            EXPECT_TRUE (ri < rMid);
+            EXPECT_TRUE (rMid > ri);
+
+            auto rEnd = ri + static_cast<ptrdiff_t> (K);
+            EXPECT_TRUE (rEnd.AtEnd ());
+            EXPECT_TRUE ((rEnd - ri) == static_cast<ptrdiff_t> (K));
+        }
+    }
+}
+
+namespace {
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
     void SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
@@ -646,6 +713,7 @@ namespace {
         SimpleSequenceTest_10_Remove_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_13_Initializers_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_16_IteratorOwnerRespectedOnCopy_<CONCRETE_SEQUENCE_TYPE> ();
+        SimpleSequenceTest_17_BidiAndRandomAccessIterator_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
     }
 
     template <typename CONCRETE_SEQUENCE_TYPE, Common::IEqualsComparer<typename CONCRETE_SEQUENCE_TYPE::value_type> EQUALS_COMPARER>

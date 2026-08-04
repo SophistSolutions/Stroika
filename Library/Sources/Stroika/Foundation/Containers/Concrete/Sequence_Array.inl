@@ -90,6 +90,16 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return fData_.GetAt (i);
         }
+        // @todo - Array<T>::ForwardIterator is already random-access-capable (see static_assert in Array.h) - wire that in
+        // via Private::RandomAccessIteratorImplHelper_ instead of paying the generic GetAt ()-based cost - LGP 2026-08-03
+        virtual BidirectionalIterator<value_type> GetBidirectionalIterator () const override
+        {
+            return this->_MakeBidirectionalIterator_ViaGetAt ();
+        }
+        virtual RandomAccessIterator<value_type> GetRandomAccessIterator () const override
+        {
+            return this->_MakeRandomAccessIterator_ViaGetAt ();
+        }
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
             Require (i < fData_.size ());

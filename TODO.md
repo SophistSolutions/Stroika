@@ -7,6 +7,5 @@ tracker, or design doc. Prune entries as they're fixed; don't let this grow into
 Generally will track stuff here between releases
 
 ## Open
-- Finish CONTAINER SEQUNNCE BIDI ITERATOR STUFF
 - test HearHE
 - deal with failed/lost bugs from JIRA

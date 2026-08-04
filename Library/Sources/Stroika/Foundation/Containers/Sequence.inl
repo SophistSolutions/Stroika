@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Containers/Factory/Sequence_Factory.h"
 #include "Stroika/Foundation/Containers/Private/IterableUtils.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Cast.h"
 
 namespace Stroika::Foundation::Containers {
 
@@ -122,6 +123,113 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
+     ******** Sequence<T>::_IRep::IndexBasedRandomAccessIteratorRep_ ***************
+     ********************************************************************************
+     */
+    /*
+     *  Generic RandomAccessIterator<T>::IRep, implemented purely in terms of _IRep::GetAt ()/size () -
+     *  so it works for ANY Sequence<T> backend, but at the cost of a GetAt () call per step (which could
+     *  be O(n) for a backend like Sequence_LinkedList).
+     */
+    template <typename T>
+    class Sequence<T>::_IRep::IndexBasedRandomAccessIteratorRep_ : public RandomAccessIterator<T>::IRep {
+    public:
+        IndexBasedRandomAccessIteratorRep_ (const _IRep* rep, size_t idx)
+            : fRep_{rep}
+            , fIdx_{idx}
+        {
+            RequireNotNull (rep);
+            Require (idx <= rep->size ());
+        }
+        IndexBasedRandomAccessIteratorRep_ (const IndexBasedRandomAccessIteratorRep_&) = default;
+
+    public:
+        virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override
+        {
+            return make_unique<IndexBasedRandomAccessIteratorRep_> (*this);
+        }
+        virtual bool AtEnd () const override
+        {
+            return fIdx_ >= fRep_->size ();
+        }
+        virtual optional<T> Current () const override
+        {
+            if (fIdx_ >= fRep_->size ()) {
+                return nullopt;
+            }
+            return fRep_->GetAt (fIdx_);
+        }
+        virtual optional<T> More () override
+        {
+            Require (not AtEnd ());
+            ++fIdx_;
+            return Current ();
+        }
+        virtual bool Equals (const typename Iterator<T>::IRep* rhs) const override
+        {
+            RequireNotNull (rhs);
+            const auto* r = Debug::UncheckedDynamicCast<const IndexBasedRandomAccessIteratorRep_*> (rhs);
+            return fIdx_ == r->fIdx_;
+        }
+
+    public:
+        // BidirectionalIterator<T>::IRep
+        virtual bool AtStart () const override
+        {
+            return fIdx_ == 0;
+        }
+        virtual T Back () override
+        {
+            Require (not AtStart ());
+            --fIdx_;
+            return fRep_->GetAt (fIdx_);
+        }
+
+    public:
+        // RandomAccessIterator<T>::IRep
+        virtual void Advance (ptrdiff_t i) override
+        {
+            Require (i >= 0 or static_cast<size_t> (-i) <= fIdx_);
+            fIdx_ = static_cast<size_t> (static_cast<ptrdiff_t> (fIdx_) + i);
+        }
+        virtual ptrdiff_t Difference (const typename RandomAccessIterator<T>::IRep* rhs) const override
+        {
+            if (rhs == nullptr) {
+                return static_cast<ptrdiff_t> (fIdx_) - static_cast<ptrdiff_t> (fRep_->size ());
+            }
+            const auto* r = Debug::UncheckedDynamicCast<const IndexBasedRandomAccessIteratorRep_*> (rhs);
+            return static_cast<ptrdiff_t> (fIdx_) - static_cast<ptrdiff_t> (r->fIdx_);
+        }
+        virtual const T* PeekAtElement (ptrdiff_t i) const override
+        {
+            fPeekCache_ = fRep_->GetAt (static_cast<size_t> (static_cast<ptrdiff_t> (fIdx_) + i));
+            return &*fPeekCache_;
+        }
+
+    private:
+        const _IRep*        fRep_;
+        size_t              fIdx_;
+        mutable optional<T> fPeekCache_;
+    };
+
+    /*
+     ********************************************************************************
+     **************************** Sequence<T>::_IRep ********************************
+     ********************************************************************************
+     */
+    template <typename T>
+    BidirectionalIterator<T> Sequence<T>::_IRep::_MakeBidirectionalIterator_ViaGetAt () const
+    {
+        return BidirectionalIterator<T>{make_unique<IndexBasedRandomAccessIteratorRep_> (this, 0)};
+    }
+    template <typename T>
+    RandomAccessIterator<T> Sequence<T>::_IRep::_MakeRandomAccessIterator_ViaGetAt () const
+    {
+        return RandomAccessIterator<T>{make_unique<IndexBasedRandomAccessIteratorRep_> (this, 0)};
+    }
+
+    /*
+     ********************************************************************************
      ******************************** Sequence<T> ***********************************
      ********************************************************************************
      */
@@ -172,12 +280,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline BidirectionalIterator<T> Sequence<T>::MakeBidirectionalIterator () const
     {
-        return BidirectionalIterator<T>{}; //NYI
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetBidirectionalIterator ();
     }
     template <typename T>
     inline RandomAccessIterator<T> Sequence<T>::MakeRandomAccessIterator () const
     {
-        return RandomAccessIterator<T>{}; //NYI
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetRandomAccessIterator ();
     }
     template <typename T>
     template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
