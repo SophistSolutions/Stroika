@@ -744,7 +744,7 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual BidirectionalIterator<value_type> _MakeBidirectionalIterator_ViaGetAt () const;
 
-        protected:
+    protected:
         /**
          *  \brief Generic (backend-independent) implementations of GetRandomAccessIterator (),
          *         implemented purely in terms of GetAt ()/size ().
@@ -752,7 +752,7 @@ namespace Stroika::Foundation::Containers {
          *  Intended to be called from a concrete Sequence_* backend's GetRandomAccessIterator ()
          *  override, for backends that don't (yet) have a more efficient backend-specific implementation available.
          */
-        nonvirtual RandomAccessIterator<value_type>  _MakeRandomAccessIterator_ViaGetAt () const;
+        nonvirtual RandomAccessIterator<value_type> _MakeRandomAccessIterator_ViaGetAt () const;
 
     private:
         /**
