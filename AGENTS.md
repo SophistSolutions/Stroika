@@ -70,6 +70,12 @@ C++ changes.
 - `make project-files` regenerates IDE project files (Visual Studio, VS Code); needed after
   installing a new compiler/IDE version, or run `make reconfigure` if a configuration's absolute
   compiler paths go stale.
+- `make CONFIGURATION=X libraries` defaults to `QUICK_BUILD=1`, which — if that configuration's
+  library files already exist — skips even checking whether they're stale, so header-only/template
+  changes can silently fail to get rebuilt (and `make run-tests` inherits the same shortcut). Force
+  a real check with `QUICK_BUILD=0`. If you just want a clean rebuild of Stroika itself (not
+  third-party components, which are slow to rebuild and aren't part of Stroika anyway), use
+  `make CONFIGURATION=X library-clobber` first — it deletes everything except the third-party products.
 - Docker images (`sophistsolutionsinc/stroika-buildvm-*`) are the easiest way to get a complete,
   correctly-versioned build environment; see `Documentation/Building-Stroika.md`.
 - Stroika ships as a static library only, by design (see Building-Stroika.md for rationale).
