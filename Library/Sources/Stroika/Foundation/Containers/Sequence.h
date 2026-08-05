@@ -87,20 +87,6 @@ namespace Stroika::Foundation::Containers {
      *
      * TODO:
      *
-     *  ->  MakeBidirectionalIterator ()/MakeRandomAccessIterator () (below) are now implemented generically,
-     *      in terms of GetAt ()/size (), so they always work, for any backend - including Sequence_LinkedList,
-     *      which cannot produce a native BidirectionalIterator reasonably. This resolves the design question
-     *      raised below, but at the cost of O(GetAt ()) per step for backends without an efficient native
-     *      random-access iterator.
-     *
-     *      Sequence_Array/Sequence_stdvector (and Sequence_DoublyLinkedList, for the bidirectional case) DO
-     *      have efficient native random-access (or bidirectional) iterators available on their backend data
-     *      structures (see DataStructures::Array<T>::ForwardIterator, DoublyLinkedList<T>::BidirectionalIterator),
-     *      and Private::BidirectionalIteratorImplHelper_/RandomAccessIteratorImplHelper_ exist to wire those in -
-     *      but as of this writing no concrete Sequence_* backend uses them, so all backends currently pay the
-     *      generic GetAt ()-based cost. Consider wiring those backends up as a perf optimization.
-     *      --LGP 2026-06-29 (updated 2026-08-03)
-     *
      *  ->  At some point in the near future we may add the ability to start at an
      *      arbitrary point in a sequence, and end at an arbitrary point. This
      *      requires more thought though. That functionality is probably not too
@@ -123,10 +109,6 @@ namespace Stroika::Foundation::Containers {
      *      then we only require no arg CTOR when this function called - GOOD.
      *      Cannot really do with GenClass (would need to compile in separate .o,
      *      even that wont work - need to not compile except when called).
-     *
-     *  ->  Consider patching iterators on insertions??? If not, document more
-     *      clearly why not. Document exact details of patching in SEQUENCE as
-     *      part of API!!!!
      *
      * Notes:
      *
