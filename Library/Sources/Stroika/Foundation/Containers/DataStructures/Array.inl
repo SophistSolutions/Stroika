@@ -754,7 +754,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline auto Array<T>::ForwardIterator::operator-- () noexcept -> ForwardIterator&
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
-        Require (not this->AtStart ());
+        Require (not this->AtStart ()); // checks not==0, so decrement is safe
         this->Invariant ();
         Assert (this->_fCurrentIdx < this->_fData->fLength_);
         --this->_fCurrentIdx;
