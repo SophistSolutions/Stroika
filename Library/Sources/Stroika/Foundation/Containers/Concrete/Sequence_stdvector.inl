@@ -97,15 +97,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return fData_[i];
         }
-        // @todo - the wrapped std::vector<T>::iterator is already random-access-capable - wire that in via
-        // Private::RandomAccessIteratorImplHelper_ instead of paying the generic GetAt ()-based cost - LGP 2026-08-03
         virtual BidirectionalIterator<value_type> GetBidirectionalIterator () const override
         {
-            return this->_MakeBidirectionalIterator_ViaGetAt ();
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return BidirectionalIterator<value_type>{make_unique<RandomAccessIteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual RandomAccessIterator<value_type> GetRandomAccessIterator () const override
         {
-            return this->_MakeRandomAccessIterator_ViaGetAt ();
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return RandomAccessIterator<value_type>{make_unique<RandomAccessIteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
@@ -171,6 +171,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         using DataStructureImplType_ = DataStructures::STLContainerWrapper<vector<value_type>>;
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+
+    private:
+        // same as IteratorImplHelper_DefaultTraits<value_type, DataStructureImplType_>, but pointing at
+        // DataStructureImplType_::RandomAccessIterator instead of its (forward-only) ForwardIterator
+        struct RandomAccessIteratorTraits_ : Private::IteratorImplHelper_DefaultTraits<value_type, DataStructureImplType_> {
+            using DataStructureIteratorT = typename DataStructureImplType_::RandomAccessIterator;
+        };
+        using RandomAccessIteratorRep_ = Private::RandomAccessIteratorImplHelper_<value_type, DataStructureImplType_, RandomAccessIteratorTraits_>;
 
     private:
         DataStructureImplType_                       fData_;
