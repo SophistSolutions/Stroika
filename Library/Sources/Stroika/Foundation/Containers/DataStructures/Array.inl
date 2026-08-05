@@ -756,7 +756,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
         Require (not this->AtStart ()); // checks not==0, so decrement is safe
         this->Invariant ();
-        Assert (this->_fCurrentIdx < this->_fData->fLength_);
+        Assert (this->_fCurrentIdx <= this->_fData->fLength_); // stepping back from AtEnd () (_fCurrentIdx == fLength_) is legal
         --this->_fCurrentIdx;
         this->Invariant ();
         return *this;
@@ -772,36 +772,36 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline auto Array<T>::ForwardIterator::operator+ (difference_type i) const -> ForwardIterator
     {
         size_t newIdx = static_cast<difference_type> (this->_fCurrentIdx) + i;
-        Require (0 >= newIdx and newIdx < this->_fData->fLength_);
+        Require (newIdx <= this->_fData->fLength_); // reaching exactly 'end' (== fLength_) is legal
         return ForwardIterator{this->_fData, newIdx};
     }
     template <typename T>
     inline auto Array<T>::ForwardIterator::operator- (difference_type i) const -> ForwardIterator
     {
         size_t newIdx = static_cast<difference_type> (this->_fCurrentIdx) - i;
-        Require (0 >= newIdx and newIdx < this->_fData->fLength_);
+        Require (newIdx <= this->_fData->fLength_); // reaching exactly 'end' (== fLength_) is legal
         return ForwardIterator{this->_fData, newIdx};
     }
     template <typename T>
-    inline auto Array<T>::ForwardIterator::operator+= (difference_type i) const -> ForwardIterator&
+    inline auto Array<T>::ForwardIterator::operator+= (difference_type i) -> ForwardIterator&
     {
         this->_fCurrentIdx += i;
-        Require (0 >= this->_fCurrentIdx and this->_fCurrentIdx < this->_fData->fLength_);
+        Require (this->_fCurrentIdx <= this->_fData->fLength_); // reaching exactly 'end' (== fLength_) is legal
         return *this;
     }
     template <typename T>
-    inline auto Array<T>::ForwardIterator::operator-= (difference_type i) const -> ForwardIterator&
+    inline auto Array<T>::ForwardIterator::operator-= (difference_type i) -> ForwardIterator&
     {
         this->_fCurrentIdx -= i;
-        Require (0 >= this->_fCurrentIdx and this->_fCurrentIdx < this->_fData->fLength_);
+        Require (this->_fCurrentIdx <= this->_fData->fLength_); // reaching exactly 'end' (== fLength_) is legal (and cannot check < 0 since unsigned)
         return *this;
     }
     template <typename T>
     inline const T& Array<T>::ForwardIterator::operator[] (difference_type i) const
     {
-        size_t newIdx = static_cast<difference_type> (this->_fCurrentIdx) - i;
-        Require (0 >= newIdx and newIdx < this->_fData->fLength_);
-        return this->_fData->fData_[newIdx];
+        size_t newIdx = static_cast<difference_type> (this->_fCurrentIdx) + i;
+        Require (newIdx < this->_fData->fLength_);
+        return this->_fData->fItems_[newIdx];
     }
     template <typename T>
     inline bool Array<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const

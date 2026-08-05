@@ -469,12 +469,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          */
-        nonvirtual ForwardIterator& operator+= (difference_type i) const;
+        nonvirtual ForwardIterator& operator+= (difference_type i);
 
     public:
         /**
          */
-        nonvirtual ForwardIterator& operator-= (difference_type i) const;
+        nonvirtual ForwardIterator& operator-= (difference_type i);
 
     public:
         /**
