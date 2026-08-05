@@ -76,22 +76,28 @@ namespace Stroika::Foundation::Containers::Private {
 
     /**
      *  \brief helper to wrap a low level 'DataStructure Container Iterator' into a 'Stroika' Iterator::IRep iterator.
-     * 
+     *
      *  There is no requirement that Stroika concrete containers use this class. However, it
      *  so far has appeared a handy code sharing utility.
      *
      *  Plus, its details are intimately tied to how the Stroika containers manage lifetime, so
      *  its not likely well suited for use elsewhere.
-     * 
+     *
+     *  \note   BASE_IREP defaults to Iterator<T>::IRep, but can be overridden (see BidirectionalIteratorImplHelper_/
+     *          RandomAccessIteratorImplHelper_ below) to derive from BidirectionalIterator<T>::IRep or
+     *          RandomAccessIterator<T>::IRep instead, so that subclass can legally override AtStart ()/Back ()/
+     *          Advance ()/Difference ()/PeekAtElement () (else there's nothing for those overrides to override).
+     *
      *  \todo   This class is a bit kludgy/fragile. (e.g. the cases where you have to override More needing to also override Clone). Maybe use CRTP? And not
      *          good compiler error messages - maybe use more/better concepts usage; low priority since private impl helper method;
      *          -- LGP 2024-09-05
      */
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>
-    class IteratorImplHelper_ : public Iterator<T>::IRep,
-                                public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>> {
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>,
+              typename BASE_IREP = typename Iterator<T>::IRep>
+    class IteratorImplHelper_ : public BASE_IREP,
+                                public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS, BASE_IREP>> {
     private:
-        using inherited = typename Iterator<T>::IRep;
+        using inherited = BASE_IREP;
 
         //backward compat names
     private:
@@ -152,14 +158,28 @@ namespace Stroika::Foundation::Containers::Private {
 
     /**
      *  \brief like IteratorImplHelper_ but for bidirectional iterators.
+     *
+     *  \note   BASE_IREP defaults to BidirectionalIterator<T>::IRep, but RandomAccessIteratorImplHelper_ (below)
+     *          overrides it to RandomAccessIterator<T>::IRep, so it can inherit AtStart ()/Back () from here
+     *          while still ultimately deriving from RandomAccessIterator<T>::IRep (needed so its own overrides
+     *          of Advance ()/Difference ()/PeekAtElement () have something to override).
      */
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>
-    class BidirectionalIteratorImplHelper_ : public IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS> {
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>,
+              typename BASE_IREP = typename BidirectionalIterator<T>::IRep>
+    class BidirectionalIteratorImplHelper_ : public IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS, BASE_IREP> {
     private:
-        using inherited = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>;
+        using inherited = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS, BASE_IREP>;
 
     public:
         using inherited::inherited;
+
+        // Iterator<T>::IRep
+    public:
+        // NOTE: must override Clone () again here (even though inherited::Clone () already 'works') because
+        // inherited::Clone () constructs an instance of 'inherited' (IteratorImplHelper_) - which is abstract
+        // once you factor in the AtStart ()/Back () pure virtuals added here - so Clone () must be re-overridden
+        // at each level that adds new pure virtual overrides, to construct the right (most-derived) type.
+        virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override;
 
     public:
         virtual bool AtStart () const override;
@@ -170,16 +190,23 @@ namespace Stroika::Foundation::Containers::Private {
      *  \brief like IteratorImplHelper_ but for random access iterators.
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>
-    class RandomAccessIteratorImplHelper_ : public BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS> {
+    class RandomAccessIteratorImplHelper_
+        : public BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS, typename Traversal::RandomAccessIterator<T>::IRep> {
     private:
-        using inherited = BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>;
+        using inherited = BidirectionalIteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS, typename Traversal::RandomAccessIterator<T>::IRep>;
 
     public:
         using inherited::inherited;
 
+        // Iterator<T>::IRep
+    public:
+        // see NOTE on BidirectionalIteratorImplHelper_::Clone () above - same reasoning applies here.
+        virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override;
+
     public:
         virtual void      Advance (ptrdiff_t i) override;
         virtual ptrdiff_t Difference (const typename Traversal::RandomAccessIterator<T>::IRep* rhs) const override;
+        virtual const T*  PeekAtElement (ptrdiff_t i) const override;
     };
 
 }
