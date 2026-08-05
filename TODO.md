@@ -8,13 +8,7 @@ Generally will track stuff here between releases
 
 ## Open
 
- - Sequence_stdvector still uses the generic fallback for both -
-      needs STLContainerWrapper itself to grow Bidi/RandomAccess iterator support first (it's currently
-      forward-only, unrelated pre-existing @todo in that file). Sequence_LinkedList (singly-linked)
-      always uses the generic fallback - no efficient native alternative is possible.
-      --LGP 2026-06-29 (updated 2026-08-05)
-
 - Sequence<>::OrderBy (how todo now that we have better iterator support)
-
+- ask if anything else reasonable todo on bidi iterator support or at least if this is good breaking point.
 - test HearHE
 - deal with failed/lost bugs from JIRA

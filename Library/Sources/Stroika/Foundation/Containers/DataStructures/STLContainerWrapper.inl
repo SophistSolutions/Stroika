@@ -71,9 +71,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Assert (newI != newE);
             Assert (oldI != oldE);
         }
-        Assert (oldI == pi->fStdIterator_);
-        pi->fStdIterator_ = newI;
-        pi->fData_        = this;
+        Assert (oldI == pi->_fStdIterator);
+        pi->_fStdIterator = newI;
+        pi->_fData        = this;
     }
     template <typename STL_CONTAINER_OF_T>
     template <invocable<typename STL_CONTAINER_OF_T::value_type> FUNCTION>
@@ -138,8 +138,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename STL_CONTAINER_OF_T>
     constexpr STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper* data, UnderlyingIteratorRep startAt) noexcept
-        : fData_{data}
-        , fStdIterator_{startAt}
+        : _fData{data}
+        , _fStdIterator{startAt}
     {
         RequireNotNull (data);
     }
@@ -157,65 +157,182 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::AtEnd () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
 #endif
-        AssertNotNull (fData_);
-        return fStdIterator_ == fData_->end ();
+        AssertNotNull (_fData);
+        return _fStdIterator == _fData->end ();
     }
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
         Require (not AtEnd ());
-        ++fStdIterator_;
+        ++_fStdIterator;
         return *this;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator++ (int) noexcept -> ForwardIterator
+    {
+        ForwardIterator result{*this};
+        this->operator++ ();
+        return result;
     }
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator* () const -> const value_type&
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
-        AssertNotNull (fData_);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        AssertNotNull (_fData);
         Require (not AtEnd ());
-        return *fStdIterator_;
+        return *_fStdIterator;
     }
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator->() const -> const value_type*
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
-        AssertNotNull (fData_);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        AssertNotNull (_fData);
         Require (not AtEnd ());
-        return &*fStdIterator_;
+        return &*_fStdIterator;
     }
     template <typename STL_CONTAINER_OF_T>
     inline size_t STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
-        AssertNotNull (fData_);
-        return static_cast<size_t> (std::distance (fData_->begin (), fStdIterator_));
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        AssertNotNull (_fData);
+        return static_cast<size_t> (std::distance (_fData->begin (), _fStdIterator));
     }
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
-        return fStdIterator_;
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        return _fStdIterator;
     }
     template <typename STL_CONTAINER_OF_T>
     inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetUnderlyingIteratorRep (UnderlyingIteratorRep l)
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_}; // read lock on data, though writing to this iterator
-        fStdIterator_ = l;
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData}; // read lock on data, though writing to this iterator
+        _fStdIterator = l;
     }
     template <typename STL_CONTAINER_OF_T>
     constexpr void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const STLContainerWrapper* data) const
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
-        Require (data == fData_);
+        Require (data == _fData);
 #endif
     }
     template <typename STL_CONTAINER_OF_T>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator== (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*fData_};
-        return fStdIterator_ == rhs.fStdIterator_;
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        return _fStdIterator == rhs._fStdIterator;
+    }
+
+    /*
+     ********************************************************************************
+     ******** STLContainerWrapper<STL_CONTAINER_OF_T>::BidirectionalIterator ********
+     ********************************************************************************
+     */
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::BidirectionalIterator::operator++ () noexcept -> BidirectionalIterator&
+    {
+        inherited::operator++ ();
+        return *this;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::BidirectionalIterator::operator++ (int) noexcept -> BidirectionalIterator
+    {
+        BidirectionalIterator result{*this};
+        this->operator++ ();
+        return result;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::BidirectionalIterator::AtStart () const noexcept
+    {
+        AssertNotNull (this->_fData);
+        return this->_fStdIterator == this->_fData->begin ();
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::BidirectionalIterator::operator-- () noexcept -> BidirectionalIterator&
+    {
+        Require (not this->AtStart ());
+        --this->_fStdIterator;
+        return *this;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::BidirectionalIterator::operator-- (int) noexcept -> BidirectionalIterator
+    {
+        BidirectionalIterator result{*this};
+        this->operator-- ();
+        return result;
+    }
+
+    /*
+     ********************************************************************************
+     ********* STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator ********
+     ********************************************************************************
+     */
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator++ () noexcept -> RandomAccessIterator&
+    {
+        inherited::operator++ ();
+        return *this;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator++ (int) noexcept -> RandomAccessIterator
+    {
+        RandomAccessIterator result{*this};
+        this->operator++ ();
+        return result;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator-- () noexcept -> RandomAccessIterator&
+    {
+        inherited::operator-- ();
+        return *this;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator-- (int) noexcept -> RandomAccessIterator
+    {
+        RandomAccessIterator result{*this};
+        this->operator-- ();
+        return result;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator+ (difference_type i) const -> RandomAccessIterator
+    {
+        RandomAccessIterator result{*this};
+        result += i;
+        return result;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator- (difference_type i) const -> RandomAccessIterator
+    {
+        RandomAccessIterator result{*this};
+        result -= i;
+        return result;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator+= (difference_type i) -> RandomAccessIterator&
+    {
+        AssertNotNull (this->_fData);
+        [[maybe_unused]] difference_type newIdx = static_cast<difference_type> (this->CurrentIndex ()) + i;
+        Require (newIdx >= 0 and static_cast<size_t> (newIdx) <= this->_fData->size ());
+        this->_fStdIterator += i;
+        return *this;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator-= (difference_type i) -> RandomAccessIterator&
+    {
+        return this->operator+= (-i);
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator[] (difference_type i) const -> const value_type&
+    {
+        AssertNotNull (this->_fData);
+        return *(this->_fStdIterator + i);
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline strong_ordering STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator::operator<=> (const RandomAccessIterator& rhs) const
+    {
+        return (*this - rhs) <=> 0;
     }
 
 }

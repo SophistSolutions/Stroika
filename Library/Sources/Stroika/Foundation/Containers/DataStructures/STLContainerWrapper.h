@@ -21,11 +21,6 @@
  *
  *  TODO:
  *
- *      @todo   Support BidirectionalIterator and RandomAccessIterator, as appropirate (if underlying container supports it)
- *              similar to what was done for Array, and DoublyLinkedList
- * 
- *              AND add Satisifies Concepts usage, like I did for Array and DoublyLinkedList
- *
  *      @todo   Add special subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
  *              that uses forward_list code...
  *
@@ -74,6 +69,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         class ForwardIterator;
+        class BidirectionalIterator;
+        class RandomAccessIterator;
 
     public:
         /*
@@ -192,6 +189,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;
+        nonvirtual ForwardIterator  operator++ (int) noexcept;
 
     public:
         nonvirtual const value_type& operator* () const;
@@ -219,13 +217,148 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         constexpr void AssertDataMatches (const STLContainerWrapper* data) const;
 
-    private:
-        const STLContainerWrapper* fData_{nullptr};
-        const_iterator             fStdIterator_{};
+    protected:
+        const STLContainerWrapper* _fData{nullptr};
+        const_iterator             _fStdIterator{};
 
     private:
         friend class STLContainerWrapper;
     };
+
+    // see Satisfies Concepts
+    static_assert (forward_iterator<typename STLContainerWrapper<vector<int>>::ForwardIterator>);
+    static_assert (regular<typename STLContainerWrapper<vector<int>>::ForwardIterator>);
+
+    /**
+     *  \brief like ForwardIterator, but adding the ability to reverse direction.
+     *
+     *  \note only usable if the wrapped STL container's iterator itself supports operator-- (e.g. vector, set,
+     *        multiset, multimap - but not forward_list).
+     *
+     *  \note Satisfies Concepts:
+     *      o   regular<BidirectionalIterator>
+     *      o   bidirectional_iterator<BidirectionalIterator>
+     */
+    template <typename STL_CONTAINER_OF_T>
+    class STLContainerWrapper<STL_CONTAINER_OF_T>::BidirectionalIterator : public ForwardIterator {
+    private:
+        using inherited = ForwardIterator;
+
+    public:
+        using iterator_category = bidirectional_iterator_tag;
+        using value_type        = typename inherited::value_type;
+        using difference_type   = typename inherited::difference_type;
+        using pointer           = typename inherited::pointer;
+        using reference         = typename inherited::reference;
+
+    public:
+        using inherited::inherited;
+
+    public:
+        /**
+         *  \brief same as inherited operator++ () - advances iterator - but returning the subclass iterator type.
+         */
+        nonvirtual BidirectionalIterator& operator++ () noexcept;
+        nonvirtual BidirectionalIterator  operator++ (int) noexcept;
+
+    public:
+        nonvirtual bool AtStart () const noexcept;
+
+    public:
+        /**
+         *  \pre not AtStart ()
+         */
+        nonvirtual BidirectionalIterator& operator-- () noexcept;
+        nonvirtual BidirectionalIterator  operator-- (int) noexcept;
+    };
+
+    // see Satisfies Concepts
+    static_assert (bidirectional_iterator<typename STLContainerWrapper<vector<int>>::BidirectionalIterator>);
+    static_assert (regular<typename STLContainerWrapper<vector<int>>::BidirectionalIterator>);
+
+    /**
+     *  \brief like BidirectionalIterator, but adding random access (operator+=, operator[], etc).
+     *
+     *  \note only usable if the wrapped STL container's iterator itself is random-access (e.g. vector - but not
+     *        set/multiset/multimap/forward_list).
+     *
+     *  \note Satisfies Concepts:
+     *      o   regular<RandomAccessIterator>
+     *      o   random_access_iterator<RandomAccessIterator>
+     */
+    template <typename STL_CONTAINER_OF_T>
+    class STLContainerWrapper<STL_CONTAINER_OF_T>::RandomAccessIterator : public BidirectionalIterator {
+    private:
+        using inherited = BidirectionalIterator;
+
+    public:
+        using iterator_category = random_access_iterator_tag;
+        using value_type        = typename inherited::value_type;
+        using difference_type   = ptrdiff_t;
+        using pointer           = typename inherited::pointer;
+        using reference         = typename inherited::reference;
+
+    public:
+        using inherited::inherited;
+
+    public:
+        /**
+         *  \brief same as inherited operator++ ()/operator-- () - but returning the subclass iterator type.
+         */
+        nonvirtual RandomAccessIterator& operator++ () noexcept;
+        nonvirtual RandomAccessIterator  operator++ (int) noexcept;
+        nonvirtual RandomAccessIterator& operator-- () noexcept;
+        nonvirtual RandomAccessIterator  operator-- (int) noexcept;
+
+    public:
+        nonvirtual RandomAccessIterator operator+ (difference_type i) const;
+        nonvirtual RandomAccessIterator operator- (difference_type i) const;
+        nonvirtual RandomAccessIterator& operator+= (difference_type i);
+        nonvirtual RandomAccessIterator& operator-= (difference_type i);
+
+    public:
+        /**
+         *  \brief access the element at the specified index, relative to the current position.
+         */
+        nonvirtual const value_type& operator[] (difference_type i) const;
+
+    public:
+        nonvirtual strong_ordering operator<=> (const RandomAccessIterator& rhs) const;
+
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\"");
+    public:
+        friend RandomAccessIterator operator+ (difference_type i, const RandomAccessIterator& it)
+        {
+            return it + i;
+        }
+
+    public:
+        /**
+         *  \brief difference between two iterators - handling the 'sentinel' (default-constructed, _fData ==
+         *         nullptr, meaning logically 'end') case on either side, same as
+         *         Array<T>::ForwardIterator::operator- does.
+         */
+        friend difference_type operator- (const RandomAccessIterator& lhs, const RandomAccessIterator& rhs)
+        {
+            if (lhs._fData == nullptr) {
+                if (rhs._fData == nullptr) {
+                    return 0;
+                }
+                return static_cast<difference_type> (rhs._fData->size ()) - static_cast<difference_type> (rhs.CurrentIndex ());
+            }
+            else if (rhs._fData == nullptr) {
+                return static_cast<difference_type> (lhs.CurrentIndex ()) - static_cast<difference_type> (lhs._fData->size ());
+            }
+            else {
+                return static_cast<difference_type> (lhs._fStdIterator - rhs._fStdIterator);
+            }
+        }
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wnon-template-friend\"");
+    };
+
+    // see Satisfies Concepts
+    static_assert (random_access_iterator<typename STLContainerWrapper<vector<int>>::RandomAccessIterator>);
+    static_assert (regular<typename STLContainerWrapper<vector<int>>::RandomAccessIterator>);
 
     static_assert (ranges::input_range<STLContainerWrapper<vector<int>>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
 
