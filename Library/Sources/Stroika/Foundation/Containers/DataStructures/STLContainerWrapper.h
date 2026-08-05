@@ -311,8 +311,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual RandomAccessIterator  operator-- (int) noexcept;
 
     public:
-        nonvirtual RandomAccessIterator operator+ (difference_type i) const;
-        nonvirtual RandomAccessIterator operator- (difference_type i) const;
+        nonvirtual RandomAccessIterator  operator+ (difference_type i) const;
+        nonvirtual RandomAccessIterator  operator- (difference_type i) const;
         nonvirtual RandomAccessIterator& operator+= (difference_type i);
         nonvirtual RandomAccessIterator& operator-= (difference_type i);
 
@@ -326,6 +326,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual strong_ordering operator<=> (const RandomAccessIterator& rhs) const;
 
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\"");
+
     public:
         friend RandomAccessIterator operator+ (difference_type i, const RandomAccessIterator& it)
         {
