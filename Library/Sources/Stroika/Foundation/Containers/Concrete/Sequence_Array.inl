@@ -164,8 +164,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::Array<value_type>;
-        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+        using DataStructureImplType_   = DataStructures::Array<value_type>;
+        using IteratorRep_             = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
         using RandomAccessIteratorRep_ = Private::RandomAccessIteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:

@@ -56,9 +56,9 @@ namespace Stroika::Foundation::Containers::Private {
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS, typename BASE_IREP>
     template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
-    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS, BASE_IREP>::IteratorImplHelper_ (
-        const DATASTRUCTURE_CONTAINER* data, [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter,
-        ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
+    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS, BASE_IREP>::IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data,
+                                                                                                    [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter,
+                                                                                                    ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
         requires (constructible_from<DATASTRUCTURE_CONTAINER_ITERATOR, const DATASTRUCTURE_CONTAINER*, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS...>)
         : fIterator{data, forward<ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS> (args)...}
 #if qStroika_Foundation_Debug_AssertionsChecked
