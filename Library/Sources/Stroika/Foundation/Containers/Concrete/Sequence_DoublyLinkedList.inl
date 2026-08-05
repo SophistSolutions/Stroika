@@ -88,15 +88,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return fData_.GetAt (i);
         }
-        // @todo - DoublyLinkedList<T>::BidirectionalIterator already exists and could back GetBidirectionalIterator ()
-        // efficiently via Private::BidirectionalIteratorImplHelper_ (though not RandomAccess - no efficient native
-        // random-access iterator is possible for a doubly-linked list) - LGP 2026-08-03
         virtual BidirectionalIterator<value_type> GetBidirectionalIterator () const override
         {
-            return this->_MakeBidirectionalIterator_ViaGetAt ();
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return BidirectionalIterator<value_type>{make_unique<BidirectionalIteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual RandomAccessIterator<value_type> GetRandomAccessIterator () const override
         {
+            // no efficient native random-access iterator is possible for a doubly-linked list - always use the generic
+            // GetAt ()-based implementation
             return this->_MakeRandomAccessIterator_ViaGetAt ();
         }
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
@@ -192,6 +192,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         using DataStructureImplType_ = DataStructures::DoublyLinkedList<value_type>;
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+
+    private:
+        // same as IteratorImplHelper_DefaultTraits<value_type, DataStructureImplType_>, but pointing at
+        // DoublyLinkedList<T>::BidirectionalIterator instead of its (forward-only) ForwardIterator
+        struct BidirectionalIteratorTraits_ : Private::IteratorImplHelper_DefaultTraits<value_type, DataStructureImplType_> {
+            using DataStructureIteratorT = typename DataStructureImplType_::BidirectionalIterator;
+        };
+        using BidirectionalIteratorRep_ = Private::BidirectionalIteratorImplHelper_<value_type, DataStructureImplType_, BidirectionalIteratorTraits_>;
 
     private:
         DataStructureImplType_                       fData_;
