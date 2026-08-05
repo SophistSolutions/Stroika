@@ -748,17 +748,30 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return this->_fCurrent->fPrev == nullptr;
     }
     template <typename T>
+    inline auto DoublyLinkedList<T>::BidirectionalIterator::operator++ () noexcept -> BidirectionalIterator&
+    {
+        inherited::operator++ ();
+        return *this;
+    }
+    template <typename T>
+    inline auto DoublyLinkedList<T>::BidirectionalIterator::operator++ (int) noexcept -> BidirectionalIterator
+    {
+        BidirectionalIterator result{*this};
+        this->operator++ ();
+        return result;
+    }
+    template <typename T>
     inline auto DoublyLinkedList<T>::BidirectionalIterator::operator-- () noexcept -> BidirectionalIterator&
     {
         Require (not this->AtStart ());
-        Invariant ();
-        Assert (this->_fCurrent != nullptr);
+        this->Invariant ();
         if (this->_fCurrent == nullptr) {
             this->_fCurrent = this->fData_->fTail_;
         }
         else {
             this->_fCurrent = this->_fCurrent->fPrev;
         }
+        Assert (this->_fCurrent != nullptr); // after Require (not AtStart ()), stepping back must always land on a real node
         this->Invariant ();
         return *this;
     }
