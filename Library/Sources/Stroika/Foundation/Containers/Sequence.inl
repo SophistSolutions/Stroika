@@ -405,10 +405,21 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Sequence<T>::Insert (const Iterator<value_type>& i, ArgByValueType<value_type> item)
     {
+        // an AtEnd () iterator means append. Note this must be checked BEFORE calling _IRep::IndexOf (), because the
+        // end () sentinel (Iterator{default_sentinel}) has a nullptr rep, and IndexOf () downcasts i.ConstGetRep ()
+        if (i.AtEnd ()) {
+            Append (item);
+            return;
+        }
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
         size_t                           idx = accessor._ConstGetRep ().IndexOf (i);
-        Require (idx <= accessor._ConstGetRep ().size ()); //  if equals end, we append
+        Require (idx <= accessor._ConstGetRep ().size ());
         return accessor._GetWriteableRep ().Insert (idx, span{&item, 1u});
+    }
+    template <typename T>
+    inline void Sequence<T>::insert (const Iterator<value_type>& i, ArgByValueType<value_type> item)
+    {
+        Insert (i, item);
     }
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<ITERATOR_OF_ADDABLE> ITERATOR_OF_ADDABLE2>

@@ -35,10 +35,6 @@
  *                  Most of the work for this is now done - MakeBidirectionalIterator () exists - so what remains is
  *                  deciding what rbegin ()/rend () return, and how that interacts with AtEnd ()/sentinel comparison.
  *
- *      @todo       Add lowercase STL-style insert(Iterator<T>,T) overload, forwarding to Insert (Iterator<T>,T) (which
- *                  already handles the 'i == end ()' means append case). Needed so Mapping<>::As<Sequence<...>> () works
- *                  - see the note on Mapping<>::As<> () about requiring an insert(ITERATOR,Value) method.
- *
  *      @todo       Document that though comparing an iterator with CONTAINER.end () works fine with Stroika iterators,
  *                  other comparisons do not: begin ()/end () are forward-only Iterator<T>, so 'i < s.end ()' and -
  *                  more importantly - 'i - s.begin ()' don't compile. Document that MakeRandomAccessIterator () is how
@@ -447,6 +443,10 @@ namespace Stroika::Foundation::Containers {
          *      NB: Adding an item at the CURRENT index has no effect on
          *  what the iterator says is the current item.
          *
+         *  \note for the Iterator<> overload, 'i' MAY be AtEnd () - in which case this appends. That includes the
+         *        end () sentinel (a default_sentinel_t/nullptr-rep iterator), which has no associated iterator rep
+         *        to compute an index from, so it must be special-cased rather than routed through _IRep::IndexOf ().
+         *
          *  \note mutates container
          */
         nonvirtual void Insert (size_t i, ArgByValueType<value_type> item);
@@ -598,6 +598,25 @@ namespace Stroika::Foundation::Containers {
          * @aliases RemoveAll ().
          */
         nonvirtual void clear ();
+
+    public:
+        /**
+         * @aliases Insert ().
+         *
+         *  \see https://en.cppreference.com/w/cpp/container/vector/insert
+         *
+         *  \note - we only provide a very small subset of the possible variations of insert from STL, but this is the
+         *          one needed so that Sequence<T> can be the target of Mapping<>::As<> () (and any other code doing the
+         *          idiomatic 'container.insert (container.end (), value)').
+         *
+         *  \note - unlike std::vector<>::insert (), this returns void, not an iterator to the newly inserted item
+         *          (matching Mapping<>::insert ()).
+         *
+         *  \note - 'i' MAY be AtEnd () - including the end () sentinel - in which case this appends.
+         *
+         *  \note mutates container
+         */
+        nonvirtual void insert (const Iterator<value_type>& i, ArgByValueType<value_type> item);
 
     public:
         /**

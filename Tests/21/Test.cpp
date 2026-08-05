@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/STL/Utilities.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -964,6 +965,61 @@ namespace {
         EXPECT_EQ (a.capacity (), 3u);
         a.shrink_to_fit ();
         EXPECT_EQ (a.capacity (), 0u);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, STLStyleInsertAtIterator_)
+    {
+        Debug::TraceContextBumper ctx{"{}::STLStyleInsertAtIterator_"};
+        {
+            // inserting at the end () sentinel appends. Note end () is a default_sentinel_t, so the Iterator<> it
+            // converts to has a nullptr rep - there is no iterator rep to compute an index from
+            Sequence<int> s;
+            s.insert (s.end (), 1);
+            EXPECT_EQ (s, (Sequence<int>{1}));
+            s.insert (s.end (), 2);
+            EXPECT_EQ (s, (Sequence<int>{1, 2}));
+        }
+        {
+            // inserting at begin () prepends; inserting at an interior iterator inserts before that item
+            Sequence<int> s{1, 2, 3};
+            s.insert (s.begin (), 0);
+            EXPECT_EQ (s, (Sequence<int>{0, 1, 2, 3}));
+            auto i = s.begin ();
+            ++i;
+            ++i;
+            s.insert (i, 99);
+            EXPECT_EQ (s, (Sequence<int>{0, 1, 99, 2, 3}));
+        }
+        {
+            // an iterator walked off the end also means append (unlike the end () sentinel, this one has a real rep)
+            Sequence<int> s{1, 2};
+            auto          i = s.begin ();
+            while (not i.AtEnd ()) {
+                ++i;
+            }
+            s.insert (i, 3);
+            EXPECT_EQ (s, (Sequence<int>{1, 2, 3}));
+        }
+        {
+            // the reason this overload exists: Mapping<>::As<> () does 'result.insert (result.end (), value)'
+            Mapping<int, int> m;
+            m.Add (1, 100);
+            m.Add (2, 200);
+            Sequence<pair<int, int>> s = m.As<Sequence<pair<int, int>>> ();
+            EXPECT_EQ (s.size (), 2u);
+            EXPECT_TRUE (s.Contains (pair<int, int>{1, 100}));
+            EXPECT_TRUE (s.Contains (pair<int, int>{2, 200}));
+
+            // and the KeyValuePair<> spelling, which is the example named in the Mapping<>::As<> () docs. Note this
+            // takes the other branch of As_ (), since KeyValuePair<> is not convertible *to* pair<>
+            using KVP        = Common::KeyValuePair<int, int>;
+            Sequence<KVP> s2 = m.As<Sequence<KVP>> ();
+            EXPECT_EQ (s2.size (), 2u);
+            EXPECT_TRUE (s2.Contains (KVP{1, 100}));
+            EXPECT_TRUE (s2.Contains (KVP{2, 200}));
+        }
     }
 }
 
