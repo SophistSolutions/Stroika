@@ -21,52 +21,37 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo       Add/FIX three-way-comparer support - operator<=> etc - for Sequence. I Think it can be
- *                  easily defined as operator<> on ELT, followed by operator<> on value and then as a string
- *                  of those operations.
+ *      @todo       Provide Slice () overload to mask inherited one from Iterable, but more efficient, and returning
+ *                  Sequence (not Iterable<T>). Mention alias 'SubSequence' from older todo. Now cheap to do
+ *                  efficiently, given GetAt ()/MakeRandomAccessIterator (). Consider also supporting the negative
+ *                  and optional index arguments that Iterable<T>::Slice () explicitly defers to this subclass.
  *
- *      @todo       Provide Slice () overload to mask inherited one from Iterable, but more efficient, and return
- *                  sequence. Mention alias 'SubSequence' from older todo.
+ *                  This subsumes the (much older) idea of being able to start a Sequence at an arbitrary point and
+ *                  end it at an arbitrary point.
  *
  *      @todo       Stroika v1 had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
  *                  NOTE - this is NOT a special TYPE of iterator (unlike STL). Its just iterator returned from rbegin(), rend().
  *
- *      @todo       Sequence<> must support RandomAccessIterator<>
+ *                  Most of the work for this is now done - MakeBidirectionalIterator () exists - so what remains is
+ *                  deciding what rbegin ()/rend () return, and how that interacts with AtEnd ()/sentinel comparison.
  *
- *      @todo       Where() and probably other things should use new EmptyClone() strategy - so cheaper and
- *                  returns something of same underlying data structure  type.
+ *      @todo       Add lowercase STL-style insert(Iterator<T>,T) overload, forwarding to Insert (Iterator<T>,T) (which
+ *                  already handles the 'i == end ()' means append case). Needed so Mapping<>::As<Sequence<...>> () works
+ *                  - see the note on Mapping<>::As<> () about requiring an insert(ITERATOR,Value) method.
  *
- *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
+ *      @todo       Document that though comparing an iterator with CONTAINER.end () works fine with Stroika iterators,
+ *                  other comparisons do not: begin ()/end () are forward-only Iterator<T>, so 'i < s.end ()' and -
+ *                  more importantly - 'i - s.begin ()' don't compile. Document that MakeRandomAccessIterator () is how
+ *                  you get an iterator supporting difference and ordering.
  *
- *      @todo       Must support Iterator<T>::operator-(Iterator<T>) or some-such so that SequenceIterator must work with qsort().
- *                  In other words, must act as random-access iterator so it can be used in algorithms that use STL
- *                  random-access iterators. (FOLLOW RULES OF RANDOM ACCESS ITERAOTRS)
+ *      @todo       Add backend implementation of Sequence<T> using Sequence_stdlist<>. Low priority - Sequence_LinkedList
+ *                  and Sequence_DoublyLinkedList already cover the linked-list shape.
  *
- *                  std::iterator<input_iterator_tag, T> versus ?? other iterator tag?
- *
- *      @todo       Maybe add (back) SequenceIterator - with support for operator- (difference), and UpdateCurrent, and GetIndex()
- *                  Maybe also AdvanceBy(), BackBy() methods. Though All these COULD be methods of the underlying Sequence object.
- *
- *      @todo       Implement stuff like Contains () using ApplyUntil.... and lambdas, so locking works cheaply, and
- *                  so no virtual references to operator== - so can always create Sequence<T> even if no operator== defined
- *                  for T.
- *
- *      @todo       Document and Consider that though iterator compares with CONTAINER.end () work fine with Stroika iterators,
- *                  other comparisons fail. For example, i < it.end (); and more importantly, constructs like i-s.begin() fail.
- *
- *                  Consider  if we can make this work, or document why and that we cannot. Maybe we need a concept of
- *                  SequenceIterator (like we had in Stroika 1) - which adds operator-?
- *
- *      @todo       Add Sequence_SparseArray<T> - using btree implementation
- *                  it requires there is an empty T CTOR. But then uses btree to store values when they differ from T()
- *                  (implement using redback tree or using stl map<>)
- *
- *      @todo       Add backend implementation of Sequence<T> using and Sequence_stdlist<>
- *
- *      @todo       Make sure that Sequence<T> (vector<T>) CTOR reserves the appropriate size before appending,
- *                  by using type_traits logic to figure out of legal to compare - and see length. Same for
- *                  Sequence<T> (ITER iFrom, ITER iTo) - do re-allocate size if appropriate - can do diff
- *                  iTo-iFrom.
+ *      @todo       Sequence<T> (ITERABLE_OF_ADDABLE), Sequence<T> (ITER iFrom, ITER iTo), and AppendAll () currently
+ *                  append one element at a time (a span of size 1 per _IRep::Insert () call). But _IRep::Insert () takes
+ *                  a span<const value_type>, and every backend implements the bulk case well (DataStructures::Array<T>
+ *                  does a single ReserveAtLeast (); Sequence_stdvector uses ReserveTweaks::Reserve4AddN ()) - so for
+ *                  contiguous or sized sources we should batch into one Insert () call rather than N.
  */
 
 namespace Stroika::Foundation::Containers {
@@ -87,28 +72,10 @@ namespace Stroika::Foundation::Containers {
      *
      * TODO:
      *
-     *  ->  At some point in the near future we may add the ability to start at an
-     *      arbitrary point in a sequence, and end at an arbitrary point. This
-     *      requires more thought though. That functionality is probably not too
-     *      important in light of being able to compute the current index easily
-     *      in an iteration. Also, it requires more thought how to fit in with
-     *      the sequenceDirection. Do we have a separate constructor specifying
-     *      two start and endpoints and use their relative order to decide a
-     *      direction? Do we just add the two start and end values to the end of
-     *      the param list? How hard is this todo with Sequence_DLL?? If this
-     *      functionality is subsumed by smart-iterators, does it make sense to
-     *      wait to we provide that functionality?
-     *
-     *  ->  Figure out exactly what we will do about sorting/lookup function
-     *      specification. Stroustrup like class param with somehow defaulting
-     *      to op==????
-     *
      *  ->  Add SetLength() method. Make sure it is optimally efficient, but try
      *      to avoid introducing a virtual function. Probably overload, and 1 arg
      *      version will use T default CTOR. If done non-virtually with templates
      *      then we only require no arg CTOR when this function called - GOOD.
-     *      Cannot really do with GenClass (would need to compile in separate .o,
-     *      even that wont work - need to not compile except when called).
      *
      * Notes:
      *
