@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers::Private {
      *          of Advance ()/Difference ()/PeekAtElement () have something to override).
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>,
-              typename BASE_IREP = typename BidirectionalIterator<T>::IRep>
+              typename BASE_IREP = typename Traversal::BidirectionalIterator<T>::IRep>
     class BidirectionalIteratorImplHelper_ : public IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS, BASE_IREP> {
     private:
         using inherited = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS, BASE_IREP>;
