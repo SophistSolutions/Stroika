@@ -80,6 +80,8 @@ using std::byte;
 namespace {
     constexpr char kDefaultPerfOutFile_[] = "PerformanceDump.txt";
     bool           sShowOutput_           = false;
+    // --orderby-probe: opt-in design probe, not part of the regular regression run (see Test_OrderBy_)
+    bool sRunOrderByProbe_ = false;
 }
 
 namespace {
@@ -1290,6 +1292,300 @@ namespace {
 }
 
 namespace {
+    /*
+     *  OrderBy () implementation-strategy comparison, for both Sequence<T> and Iterable<T> - see the
+     *  OrderBy entry in TODO.md.
+     *
+     *  Two things live here:
+     *      o   Permanent entries in the regular run (Sequence<int>::OrderBy () and
+     *          Iterable<int>::OrderBy () each vs std::stable_sort), so a future pessimization of
+     *          either gets noticed. They are separate entries because they are not the same
+     *          operation - see the comment on Real_IterableOrderBy_ below.
+     *      o   A multi-variant design probe, run ONLY with --orderby-probe, for choosing between the
+     *          candidate implementations. Off by default because it is slow and answers a design
+     *          question rather than guarding a regression.
+     *
+     *  IMPORTANT for fairness: every variant below performs a COMPLETE OrderBy () - including whatever
+     *  copy that strategy cannot avoid. OrderBy () is const and returns a new Sequence, so even the
+     *  "sort in place" strategies must first COW-clone the buffer they then sort. Timing only the sort
+     *  would flatter them with a copy the real implementation still has to pay for.
+     */
+    namespace Test_OrderBy_ {
+
+        constexpr size_t       kN_    = 1000;
+        constexpr unsigned int kSeed_ = 20260805;
+
+        volatile size_t sSink_ = 0;
+
+        size_t Magnitude_ (int v)
+        {
+            return static_cast<size_t> (v);
+        }
+        size_t Magnitude_ (const String& v)
+        {
+            return v.size ();
+        }
+        /*
+         *  Read a real (order-dependent) element value, so the sort cannot be optimized away.
+         *
+         *  Only the FIRST element - deliberately. It is O(1) for both an indexable container and for
+         *  Iterable<T>::First (), so the barrier costs the same in every variant. Reading the last
+         *  element too would be O(1) via Sequence's operator[] but O(n) via Iterable, which would
+         *  quietly bias any Sequence-vs-Iterable comparison.
+         */
+        template <typename CONTAINER_T>
+        void Consume_ (const CONTAINER_T& c)
+        {
+            if (not c.empty ()) {
+                sSink_ = sSink_ + c.size () + Magnitude_ (c[0]);
+            }
+        }
+        template <typename T>
+        void Consume_ (const Iterable<T>& c)
+        {
+            if (auto f = c.First ()) {
+                sSink_ = sSink_ + c.size () + Magnitude_ (*f);
+            }
+        }
+
+        const vector<int>& SourceInts_ ()
+        {
+            static const vector<int> kData_ = [] () {
+                mt19937                       gen{kSeed_};
+                uniform_int_distribution<int> dist{0, numeric_limits<int>::max ()};
+                vector<int>                   r;
+                r.reserve (kN_);
+                for (size_t i = 0; i < kN_; ++i) {
+                    r.push_back (dist (gen));
+                }
+                return r;
+            }();
+            return kData_;
+        }
+        const vector<String>& SourceStrings_ ()
+        {
+            static const vector<String> kData_ = [] () {
+                vector<String> r;
+                r.reserve (kN_);
+                for (int i : SourceInts_ ()) {
+                    r.push_back ("{}"_f(i));
+                }
+                return r;
+            }();
+            return kData_;
+        }
+
+        // ---- A: exactly what OrderBy () does today - copy out through Stroika's Iterator<T>, then sort
+        template <typename T, typename SEQUENCE_T>
+        void A_Today_ (const SEQUENCE_T& seq)
+        {
+            vector<T> tmp{seq.begin (), Iterator<T>{seq.end ()}};
+            stable_sort (tmp.begin (), tmp.end (), less<T>{});
+            Consume_ (Containers::Concrete::Sequence_stdvector<T>{move (tmp)});
+        }
+
+        // ---- B: same, but pre-size the vector and fill via a plain forward walk
+        template <typename T, typename SEQUENCE_T>
+        void B_Reserve_ (const SEQUENCE_T& seq)
+        {
+            vector<T> tmp;
+            tmp.reserve (seq.size ());
+            for (const auto& e : seq) {
+                tmp.push_back (e);
+            }
+            stable_sort (tmp.begin (), tmp.end (), less<T>{});
+            Consume_ (Containers::Concrete::Sequence_stdvector<T>{move (tmp)});
+        }
+
+        // ---- C: the "virtual exposes mutable storage (span<T>), stable_sort stays in the outer
+        //      template" strategy - comparer inlined. The vector copy models the COW clone that a const
+        //      OrderBy () must do before it may touch the rep's buffer.
+        template <typename T>
+        void C_InPlaceInlined_ (const vector<T>& src)
+        {
+            vector<T> storage = src;
+            stable_sort (storage.begin (), storage.end (), less<T>{});
+            Consume_ (storage);
+        }
+
+        // ---- D: the "virtual takes the comparer" strategy - identical to C except the comparer must be
+        //      type-erased to cross the vtable, so this isolates exactly that cost.
+        template <typename T>
+        void D_InPlaceErased_ (const vector<T>& src)
+        {
+            static const function<bool (Common::ArgByValueType<T>, Common::ArgByValueType<T>)> kErased_ = less<T>{};
+            vector<T>                                                                          storage  = src;
+            stable_sort (storage.begin (), storage.end (), kErased_);
+            Consume_ (storage);
+        }
+
+        // plain-std baseline for the permanent regression entry
+        template <typename T>
+        void Baseline_StdStableSort_ (const vector<T>& src)
+        {
+            vector<T> storage = src;
+            stable_sort (storage.begin (), storage.end (), less<T>{});
+            Consume_ (storage);
+        }
+
+        /*
+         *  ---- COPY-STRATEGY comparison, isolated from any sort.
+         *
+         *  OrderBy ()/Top ()/Repeat () all begin by materializing the Iterable into a vector<T>, so how
+         *  that copy is done matters to all three. Copy_AsVector_ tracks whatever
+         *  Iterable<T>::As<vector<T>> () currently does, so this keeps measuring the real thing if that
+         *  implementation changes again.
+         *
+         *  MEASURED (Release/MSVC, Iterable<int>, N=1000; ratios vs the iterator-pair baseline, all
+         *  within one run):
+         *      iterator-pair  vector{begin,end}            1.00x   <- distance () + copy, 2 walks
+         *      assign         assign (begin, end)          ~0.97x  <- same 2 walks, within noise of above
+         *      As<vector<T>>  (currently the generic path) ~1.00x  <- ie the same thing
+         *      reserve+walk   reserve (size ()) + push_back ~1.17x  <- consistently SLOWEST
+         *  Conclusions that fell out of this:
+         *      o   reserve () LOSES here. size () is a virtual call (O(n) for a generic rep), and
+         *          push_back pays a capacity check per element, while the range CTOR's copy loop does
+         *          not. Two attempts at a special-cased As<vector<T>> both came out worse than doing
+         *          nothing: Apply () + std::function was 1.33x, and reserve () + assign () was 1.55x
+         *          (that one pays for the length THREE times - size (), distance (), then copies).
+         *      o   So the special case was disabled; the generic range CTOR is the thing to beat.
+         *
+         *  These MUST be compared within a single run - cross-run comparison is swamped by machine
+         *  variance (measured: the plain std baseline moved 43% between two runs on this box, and this
+         *  same iterator-pair baseline has ranged 0.335-0.436s across runs).
+         */
+        template <typename T>
+        void Copy_IteratorPair_ (const Iterable<T>& it)
+        {
+            vector<T> tmp{it.begin (), Iterator<T>{it.end ()}};
+            Consume_ (tmp);
+        }
+        template <typename T>
+        void Copy_ReserveWalk_ (const Iterable<T>& it)
+        {
+            vector<T> tmp;
+            tmp.reserve (it.size ());
+            for (const auto& e : it) {
+                tmp.push_back (e);
+            }
+            Consume_ (tmp);
+        }
+        template <typename T>
+        void Copy_AsVector_ (const Iterable<T>& it)
+        {
+            vector<T> tmp = it.template As<vector<T>> ();
+            Consume_ (tmp);
+        }
+        // vector::assign with a FORWARD iterator (Iterator<T> satisfies forward_iterator) makes the
+        // library call distance () first, so this traverses the whole range twice - once to count,
+        // once to copy - paying Stroika's virtual advance on every step of both walks.
+        template <typename T>
+        void Copy_Assign_ (const Iterable<T>& it)
+        {
+            vector<T> tmp;
+            tmp.assign (it.begin (), Iterator<T>{it.end ()});
+            Consume_ (tmp);
+        }
+
+        // ---- the REAL Sequence<T>::OrderBy (), called as a user would call it
+        template <typename T, typename SEQUENCE_T>
+        void Real_SequenceOrderBy_ (const SEQUENCE_T& seq)
+        {
+            Consume_ (seq.OrderBy ());
+        }
+
+        /*
+         *  ---- the REAL Iterable<T>::OrderBy (). Worth measuring separately from Sequence's because the
+         *  two are NOT the same operation today, despite Sequence<T>::OrderBy () merely hiding this one:
+         *      o   Iterable<T>::OrderBy () takes an Execution::SequencePolicy defaulting to ePar, so by
+         *          default it sorts in PARALLEL.
+         *      o   Sequence<T>::OrderBy () drops that parameter entirely and is always sequential.
+         *  So the Sequence-vs-Iterable score below is the practical cost/benefit of that divergence -
+         *  see item 1 of the OrderBy entry in TODO.md. Both policies are measured, since the parallel
+         *  default is only a win once N is large enough to pay for the thread hand-off.
+         */
+        template <typename T>
+        void Real_IterableOrderBy_ (const Iterable<T>& it, Execution::SequencePolicy seq)
+        {
+            Consume_ (it.OrderBy (less<T>{}, seq));
+        }
+        // Calls OrderBy () with NO policy argument on purpose - the permanent regression entry must
+        // guard whatever the DEFAULT path actually is, so it keeps tracking reality if the default
+        // is changed again (it already moved from ePar to eSeq once).
+        template <typename T>
+        void Real_IterableOrderByDefault_ (const Iterable<T>& it)
+        {
+            Consume_ (it.OrderBy ());
+        }
+
+        /*
+         *  The design probe. Each Tester () call reports compareWith/baseline, so a score < 1 means the
+         *  'compareWith' strategy is the faster one. The C-vs-D score IS the type-erasure tax, and is
+         *  the number that decides whether _IRep::OrderBy () may take the comparer.
+         */
+        void RunProbe_ ()
+        {
+            constexpr unsigned int                             kRunCount_ = 30000;
+            constexpr double                                   kNoWarn_   = 1000.0; // a probe has no regression threshold
+            const Containers::Concrete::Sequence_Array<int>    kSeqInts_{SourceInts_ ()};
+            const Containers::Concrete::Sequence_Array<String> kSeqStrs_{SourceStrings_ ()};
+            const Iterable<int>                                kIterInts_{SourceInts_ ()};
+
+            GetOutStream_ () << "=== Sequence<>::OrderBy () DESIGN PROBE (--orderby-probe) ===" << endl;
+            GetOutStream_ () << "score < 1 means the second (compareWith) strategy is faster" << endl << endl;
+
+            (void)Tester (
+                "OrderBy probe int: A_today vs B_reserve", [&] () { A_Today_<int> (kSeqInts_); }, "A_today",
+                [&] () { B_Reserve_<int> (kSeqInts_); }, "B_reserve", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "OrderBy probe int: A_today vs C_inplace_inlined", [&] () { A_Today_<int> (kSeqInts_); }, "A_today",
+                [&] () { C_InPlaceInlined_<int> (SourceInts_ ()); }, "C_inplace_inlined", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "OrderBy probe int: C_inplace_inlined vs D_inplace_erased  <== THE DECISION",
+                [&] () { C_InPlaceInlined_<int> (SourceInts_ ()); }, "C_inplace_inlined",
+                [&] () { D_InPlaceErased_<int> (SourceInts_ ()); }, "D_inplace_erased", kRunCount_, kNoWarn_);
+
+            /*
+             *  COPY STRATEGY - which way should Iterable<T>::As<vector<T>> () materialize? This feeds
+             *  OrderBy ()/Top ()/Repeat (), so it matters beyond As<> itself. All four are measured in
+             *  ONE run on purpose: comparing across runs is swamped by machine variance (the plain std
+             *  baseline was observed moving 43% between two runs on this box).
+             */
+            (void)Tester (
+                "Copy strategy int: iterator-pair vs reserve+walk", [&] () { Copy_IteratorPair_<int> (kIterInts_); },
+                "vector{begin,end} (2 walks: distance+copy)", [&] () { Copy_ReserveWalk_<int> (kIterInts_); }, "reserve+range-for (1 walk)",
+                kRunCount_, kNoWarn_);
+            (void)Tester (
+                "Copy strategy int: reserve+walk vs As<vector<T>>  <== IS A SPECIAL CASE WORTH IT?",
+                [&] () { Copy_ReserveWalk_<int> (kIterInts_); }, "reserve+range-for", [&] () { Copy_AsVector_<int> (kIterInts_); },
+                "As<vector<T>> (as implemented)", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "Copy strategy int: As<vector<T>> vs assign(begin,end)", [&] () { Copy_AsVector_<int> (kIterInts_); },
+                "As<vector<T>> (as implemented)", [&] () { Copy_Assign_<int> (kIterInts_); }, "assign (2 walks)", kRunCount_, kNoWarn_);
+
+            // Sequence<T>::OrderBy () hides Iterable<T>::OrderBy () and has no SequencePolicy at all, so
+            // it is always sequential; Iterable's now defaults to eSeq too but can be asked for ePar.
+            (void)Tester (
+                "OrderBy divergence: Sequence<int>::OrderBy () vs Iterable<int>::OrderBy () [both default]",
+                [&] () { Real_SequenceOrderBy_<int> (kSeqInts_); }, "Sequence::OrderBy (no policy possible)",
+                [&] () { Real_IterableOrderByDefault_<int> (kIterInts_); }, "Iterable::OrderBy (default, now eSeq)", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "OrderBy divergence: Iterable<int>::OrderBy () eSeq vs ePar",
+                [&] () { Real_IterableOrderBy_<int> (kIterInts_, Execution::SequencePolicy::eSeq); }, "Iterable::OrderBy (eSeq)",
+                [&] () { Real_IterableOrderBy_<int> (kIterInts_, Execution::SequencePolicy::ePar); }, "Iterable::OrderBy (ePar)", kRunCount_, kNoWarn_);
+
+            (void)Tester (
+                "OrderBy probe String: A_today vs C_inplace_inlined", [&] () { A_Today_<String> (kSeqStrs_); }, "A_today",
+                [&] () { C_InPlaceInlined_<String> (SourceStrings_ ()); }, "C_inplace_inlined", kRunCount_ / 10, kNoWarn_);
+            (void)Tester (
+                "OrderBy probe String: C_inplace_inlined vs D_inplace_erased  <== THE DECISION",
+                [&] () { C_InPlaceInlined_<String> (SourceStrings_ ()); }, "C_inplace_inlined",
+                [&] () { D_InPlaceErased_<String> (SourceStrings_ ()); }, "D_inplace_erased", kRunCount_ / 10, kNoWarn_);
+        }
+    }
+}
+
+namespace {
     void RunPerformanceTests_ ()
     {
 #if 0
@@ -1473,12 +1769,44 @@ namespace {
         Tester ("Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, "Test_JSONReadWriteFile",
                 Debug::IsRunningUnderValgrind () ? 2 : 640, 0.5, &failedTests);
         Tester ("Test_Optional_", Test_Optional_::DoRunPerfTest, "Test_Optional_", 4875, 0.5, &failedTests);
+        {
+            // Guards against OrderBy () being pessimized. Baseline is what the same sort costs with plain
+            // std machinery, so the score is 'what Stroika's OrderBy () adds over stable_sort'.
+            // Threshold: measured 2.23-2.63 across runs, so 3.5 leaves ~33% headroom.
+            static const Containers::Concrete::Sequence_Array<int> kSeqInts_{Test_OrderBy_::SourceInts_ ()};
+            static const Iterable<int>                             kIterInts_{Test_OrderBy_::SourceInts_ ()};
+            Tester (
+                "Sequence<int>::OrderBy () vs std::stable_sort",
+                [] () { Test_OrderBy_::Baseline_StdStableSort_<int> (Test_OrderBy_::SourceInts_ ()); }, "std::stable_sort (vector<int>)",
+                [] () { Test_OrderBy_::Real_SequenceOrderBy_<int> (kSeqInts_); }, "Sequence<int>::OrderBy ()", 140000, 3.5, &failedTests);
+            // Separate entry because Iterable's OrderBy () is NOT the same operation as Sequence's - it
+            // takes an Execution::SequencePolicy, which Sequence<T>::OrderBy () (which hides it) does
+            // not. Deliberately exercises the DEFAULT path rather than naming a policy, so this keeps
+            // guarding whatever the default actually is - it already moved ePar -> eSeq once, which
+            // silently turned an earlier version of this entry into a guard on a non-default path.
+            // The explicit eSeq-vs-ePar measurement lives in --orderby-probe instead.
+            //
+            // Threshold: measured 3.98 here. Set to 5.0 rather than something snug, because this score
+            // has ranged 3.98-5.17 across runs on one machine (it is sensitive to load, and moved with
+            // the As<vector<T>> implementation). 4.0 gave 0.6% headroom and flapped. Per this file's
+            // convention this is a gross-change alarm, not a tight bound.
+            // It reads high next to Sequence's 2.5 partly because these are different containers -
+            // Sequence_Array<int> vs a generic Iterable<int> rep - not purely an OrderBy () difference.
+            Tester (
+                "Iterable<int>::OrderBy () vs std::stable_sort",
+                [] () { Test_OrderBy_::Baseline_StdStableSort_<int> (Test_OrderBy_::SourceInts_ ()); }, "std::stable_sort (vector<int>)",
+                [] () { Test_OrderBy_::Real_IterableOrderByDefault_<int> (kIterInts_); }, "Iterable<int>::OrderBy () [default policy]",
+                140000, 5.0, &failedTests);
+        }
         JSONTests_::Run ();
 
         GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint () << "]]]" << endl << endl;
 
         // extra tests
         {
+            if (sRunOrderByProbe_) {
+                Test_OrderBy_::RunProbe_ ();
+            }
         }
 
         if (not failedTests.empty ()) {
@@ -1522,16 +1850,33 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    const CommandLine::Option kShowO_{.fLongName = "show"sv};
-    const CommandLine::Option kTimeMultiplierO_{.fSingleCharName = 'x', .fLongName = "x"sv, .fSupportsArgument = true};
+    const CommandLine::Option kShowO_{.fLongName = "show"sv, .fHelpOptionText = "Show output of performance tests (defaults to only summary is shown)"sv};
+    const CommandLine::Option kTimeMultiplierO_{
+        .fSingleCharName = 'x', .fLongName = "x"sv, .fSupportsArgument = true, .fHelpOptionText = "Factor applied to number of iterations of each test"sv};
+    const CommandLine::Option kOrderByProbeO_{
+        .fLongName       = "orderby-probe"sv,
+        .fHelpOptionText = "Also run the OrderBy () implementation-strategy probe (slow; a design aid, not a regression test)"sv};
+
+    const CommandLine::Option kGTestBriefO_{.fLongName = "gtest_brief"sv};
+    const CommandLine::Option kGTestO_{.fLongName = "gtest"sv};
+
+    const Sequence<CommandLine::Option> kAllOptions_{
+        Execution::StandardCommandLineOptions::kHelp, kShowO_, kTimeMultiplierO_, kOrderByProbeO_, kGTestBriefO_, kGTestO_};
 
     // NOTE: run with --show or look for output in PERF-OUT.txt
+    CommandLine cmdLine{argc, argv};
     try {
-        CommandLine cmdLine{argc, argv};
-        sShowOutput_ = cmdLine.Has (kShowO_);
+        cmdLine.Validate (kAllOptions_);
+        sShowOutput_      = cmdLine.Has (kShowO_);
+        sRunOrderByProbe_ = cmdLine.Has (kOrderByProbeO_);
         if (auto o = cmdLine.GetArgument (kTimeMultiplierO_)) {
             sTimeMultiplier_ = FloatConversion::ToFloat<double> (*o);
         }
+    }
+    catch (const InvalidCommandLineArgument&) {
+        cerr << Characters::ToString (current_exception ()) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+        return EXIT_FAILURE;
     }
     catch (...) {
         auto exc = current_exception ();
