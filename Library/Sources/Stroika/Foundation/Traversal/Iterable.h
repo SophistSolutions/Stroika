@@ -1070,8 +1070,10 @@ namespace Stroika::Foundation::Traversal {
          *          EXPECT_TRUE (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
-         *  \note This defaults to using seq=Execution::SequencePolicy::ePar, parallel sort, so be careful if your compare function doesn't support this - pass in 
-         *        SequencePolicy::eSeq
+         *  \note This defaults to using seq=Execution::SequencePolicy::eSeq since testing suggested it was faster than parallel -
+         *        measured 1.5-1.8x faster (run 'Test52 --show --orderby-probe' and see the "OrderBy divergence" entries).
+         *        VERY limited testing though - N=1000, one machine, int elements - and parallel should win at some larger N,
+         *        so this default could change.
          *
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
          *        That maybe less performant than a regular (e.g. quicksort) but works better as a default, in most cases, as it allows combining multi-level sorts.
@@ -1088,7 +1090,7 @@ namespace Stroika::Foundation::Traversal {
          */
         template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
         nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&&   inorderComparer = INORDER_COMPARER_TYPE{},
-                                        Execution::SequencePolicy seq             = Execution::SequencePolicy::ePar) const;
+                                        Execution::SequencePolicy seq             = Execution::SequencePolicy::eSeq) const;
 
     public:
         /**

@@ -734,7 +734,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::Top (COMPARER&& cmp) const
     {
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
-        vector<T> tmp{this->begin (), Iterator<T>{this->end ()}};
+        vector<T> tmp = this->As<vector<T>> ();
 #if __cpp_lib_execution >= 201603L
         sort (std::execution::par, tmp.begin (), tmp.end (), forward<COMPARER> (cmp));
 #else
@@ -759,7 +759,7 @@ namespace Stroika::Foundation::Traversal {
             return Top (forward<COMPARER> (cmp));
         }
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
-        vector<T> tmp{this->begin (), Iterator<T>{this->end ()}};
+        vector<T> tmp = this->As<vector<T>> ();
 #if __cpp_lib_execution >= 201603L
         partial_sort (std::execution::par, tmp.begin (), tmp.begin () + n, tmp.end (), forward<COMPARER> (cmp));
 #else
@@ -792,8 +792,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
-        vector<T> tmp{begin (), Iterator<T>{end ()}}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
-                                                      // STILL MISSING ON CLANG++-20 Ubuntu 25.04
+        vector<T> tmp = this->As<vector<T>> ();
 #if __cpp_lib_execution >= 201603L
         if (seq == Execution::SequencePolicy::eSeq) {
             stable_sort (tmp.begin (), tmp.end (), inorderComparer);
@@ -1050,7 +1049,7 @@ namespace Stroika::Foundation::Traversal {
                 return *this;
             default: {
                 // Somewhat simplistic / inefficient implementation
-                vector<T>                origList{begin (), Iterator<T>{end ()}};
+                vector<T>                origList = this->As<vector<T>> ();
                 size_t                   repeatCountIndex{1}; // start at one, cuz we don't copy the zeroth time
                 size_t                   innerIndex{0};
                 function<optional<T> ()> getNext = [origList, repeatCountIndex, innerIndex, count] () mutable -> optional<T> {
@@ -1170,6 +1169,34 @@ namespace Stroika::Foundation::Traversal {
         // use CONTAINER_OF_T () instead of CONTAINER_OF_T{} because we do want to allow coercion here - since use explicitly called As<>
         if constexpr (derived_from<CONTAINER_OF_T, Iterable<T>>) {
             return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), end ());
+        }
+        else if constexpr (same_as<CONTAINER_OF_T, vector<T>> and false) {
+            /*
+             *  Kept because we may revisit - but it measured SLOWER than just letting the generic branch
+             *  below run, so do not re-enable without re-measuring.
+             *
+             *  Measured (Release/MSVC, Iterable<int>, N=1000; ratios vs the generic branch, all compared
+             *  within a single run - see the "Copy strategy" entries of 'Test52 --show --orderby-probe'):
+             *      generic branch below (vector range CTOR)                  1.00x
+             *      reserve (size ()) + Apply () + std::function              1.33x
+             *      reserve (size ()) + assign ()  [ie the code below]        1.55x
+             *
+             *  Why: the generic range CTOR calls distance () once, then copies with NO per-element capacity
+             *  check. reserve (size ()) does not help, because (a) size () is a virtual call that is O(n)
+             *  for a generic rep, and (b) assign () already sizes the vector itself via distance (). So the
+             *  code below pays for the length THREE times - size (), then distance (), then the copy.
+             *  Isolating just the reserve () line accounted for ~0.53x of the entire copy cost.
+             *
+             *  So reserve () is the wrong lever. What WOULD make a special case pay is eliminating the
+             *  per-element iteration altogether - a backend hook handing back contiguous storage
+             *  (span<const T>) so this could bulk-copy. See the As<optional<span<const T>>> idea in
+             *  TODO.md; that, not reserve (), is the variant worth trying next.
+             */
+            vector<T> result{forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)...};
+            result.reserve (size ());
+            //Apply ([&result] (ArgByValueType<T> arg) { result.push_back (arg); }); // the 1.33x variant above
+            result.assign (begin (), Iterator<T>{end ()});
+            return result;
         }
         else {
             return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), Iterator<T>{end ()});
