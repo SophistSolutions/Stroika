@@ -1026,31 +1026,50 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief return the top/largest (possibly just top N) values from this Iterable<T>
-         * 
-         *  Provide a function object that says how you want to compare the 'T' elements.
-         *  OPTIONALLY, provide a number N, saying to return the top N results (if N < size, just return size elements).
-         * 
+         *  \brief return the top/largest value (or the top N values) from this Iterable<T>
+         *
+         *  The overloads WITHOUT an 'n' argument return the single top element, as an optional<T> which is
+         *  nullopt iff the Iterable is empty. The overloads WITH an 'n' return the top n, as an Iterable<T>
+         *  (n is allowed to exceed size (), in which case you just get everything, ordered).
+         *
+         *  Provide a function object that says how you want to compare the 'T' elements; 'top' means the
+         *  element that would come FIRST in that order. It defaults to std::greater<T>, so by default 'top'
+         *  is the largest.
+         *
          *  \em Performance:
          *      let S = this->size();
-         *      O(S) * ln (N)  ; so S*log(S) if you get all of them, but if you just need the top three, its O(S)
+         *      o   no 'n' argument: O(S)
+         *      o   with 'n':        O(S) * ln (N)  ; so S*log(S) if you get all of them, but if you just
+         *                          need the top three, its O(S)
          *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c{ 3, 5, 9, 38, 3, 5 };
-         *          EXPECT_TRUE (c.Top ().SequentialEquals (c.OrderBy (std::greater<int>{})));
+         *          EXPECT_TRUE (c.Top () == 38);                                             // optional<int>
+         *          EXPECT_TRUE (c.Top (std::less<int>{}) == 3);                              // 'first' by the given order
+         *          EXPECT_TRUE (Iterable<int>{}.Top () == nullopt);                          // empty ==> nullopt
          *          EXPECT_TRUE (c.Top (2).SequentialEquals ({38, 9}));
-         *          EXPECT_TRUE (c.Top (2, std::greater<int>{}).SequentialEquals ({38, 9}));   // same as previous line
+         *          EXPECT_TRUE (c.Top (2, std::greater<int>{}).SequentialEquals ({38, 9}));  // same as previous line
          *          EXPECT_TRUE (c.Top (3, std::less<int>{}).SequentialEquals ({3, 3, 5}));
          *      \endcode
-         * 
+         *
+         *  \note   ***NOT BACKWARD COMPATIBLE*** - before Stroika v3.0d24, the no-'n' overloads returned an
+         *          Iterable<T> of EVERY element in order (ie they treated the missing 'n' as infinity, not as
+         *          one). To recover that behavior, pass an 'n' larger than the container - eg
+         *          Top (numeric_limits<size_t>::max ()) - or just use OrderBy ().
+         *
+         *  \note   If several elements tie for top (compare equal under 'cmp'), which one you get is
+         *          unspecified, and the no-'n' and 'n' overloads may pick differently: Top () yields the
+         *          first such element in iteration order, whereas the Top (n, ...) overloads sort and so may
+         *          yield any of them. Don't rely on Top () and Top (1) naming the same element.
+         *
          *  \note Uses IPotentiallyComparer instead of IInOrderComparer since from context, if you pass in a lambda, it
          *        should be clear about intent.
          */
-        nonvirtual Iterable<T> Top () const;
+        nonvirtual optional<T> Top () const;
         nonvirtual Iterable<T> Top (size_t n) const;
         template <Common::IPotentiallyComparer<T> COMPARER>
-        nonvirtual Iterable<T> Top (COMPARER&& cmp) const;
+        nonvirtual optional<T> Top (COMPARER&& cmp) const;
         template <Common::IPotentiallyComparer<T> COMPARER>
         nonvirtual Iterable<T> Top (size_t n, COMPARER&& cmp) const;
 

@@ -78,13 +78,21 @@ namespace {
     {
         {
             MultiSet<int> test{1, 1, 5, 1, 6, 5};
-            EXPECT_TRUE (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
+            // the no-'n' overload returns the SINGLE most common element as an optional (changed in v3.0d24)
+            EXPECT_EQ (test.Top (), (CountedValue<int>{1, 3}));
+            EXPECT_EQ (MultiSet<int>{}.Top (), nullopt);
+            // the 'n' overload is unchanged, and still returns an Iterable
             EXPECT_TRUE (test.Top (1).SequentialEquals ({{1, 3}}));
+            EXPECT_TRUE (test.Top (3).SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
+            // documented way to recover the old no-'n' behavior (everything, most-frequent first)
+            EXPECT_TRUE (test.Top (numeric_limits<size_t>::max ()).SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
         }
         {
             MultiSet<int> test{1, 1, 5, 1, 6, 5};
-            EXPECT_TRUE (test.TopElements ().SequentialEquals ({1, 5, 6}));
+            EXPECT_EQ (test.TopElements (), 1);
+            EXPECT_EQ (MultiSet<int>{}.TopElements (), nullopt);
             EXPECT_TRUE (test.TopElements (1).SequentialEquals ({1}));
+            EXPECT_TRUE (test.TopElements (3).SequentialEquals ({1, 5, 6}));
         }
     }
 }

@@ -1102,10 +1102,19 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::Test22_Top_"};
         {
             Iterable<int> c{3, 5, 9, 38, 3, 5};
-            EXPECT_TRUE (c.Top ().SequentialEquals (c.OrderBy (std::greater<int>{})));
+            // the no-'n' overloads return the SINGLE top element as optional<T> (changed in v3.0d24)
+            EXPECT_EQ (c.Top (), 38);
+            EXPECT_EQ (c.Top (std::greater<int>{}), 38); // same as the line above - greater<T> is the default
+            EXPECT_EQ (c.Top (std::less<int>{}), 3);     // 'top' means first under the given order
+            EXPECT_EQ (Iterable<int>{}.Top (), nullopt); // empty ==> nullopt, rather than an empty Iterable
+            // the 'n' overloads are unchanged, and still return an Iterable<T>
             EXPECT_TRUE (c.Top (2).SequentialEquals ({38, 9}));
             EXPECT_TRUE (c.Top (2, std::greater<int>{}).SequentialEquals ({38, 9}));
             EXPECT_TRUE (c.Top (3, std::less<int>{}).SequentialEquals ({3, 3, 5}));
+            // documented way to recover the old no-'n' behavior (everything, ordered)
+            EXPECT_TRUE (c.Top (numeric_limits<size_t>::max ()).SequentialEquals (c.OrderBy (std::greater<int>{})));
+            // n larger than the container is legal, and just yields everything
+            EXPECT_TRUE (c.Top (100).SequentialEquals (c.Top (numeric_limits<size_t>::max ())));
         }
     }
 }

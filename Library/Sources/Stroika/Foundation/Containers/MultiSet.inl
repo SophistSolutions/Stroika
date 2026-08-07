@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Containers {
         return this->template Map<Iterable<T>> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
-    Iterable<typename TRAITS::CountedValueType> MultiSet<T, TRAITS>::Top () const
+    optional<typename TRAITS::CountedValueType> MultiSet<T, TRAITS>::Top () const
     {
         return this->inherited::Top ([] (const typename TRAITS::CountedValueType& lhs, const typename TRAITS::CountedValueType& rhs) {
             return lhs.fCount > rhs.fCount;
@@ -212,9 +212,12 @@ namespace Stroika::Foundation::Containers {
         });
     }
     template <typename T, typename TRAITS>
-    Iterable<T> MultiSet<T, TRAITS>::TopElements () const
+    optional<T> MultiSet<T, TRAITS>::TopElements () const
     {
-        return Top ().template Map<Iterable<T>> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
+        if (auto t = Top ()) {
+            return t->fValue;
+        }
+        return nullopt;
     }
     template <typename T, typename TRAITS>
     Iterable<T> MultiSet<T, TRAITS>::TopElements (size_t n) const

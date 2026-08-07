@@ -70,18 +70,6 @@ Generally will track stuff here between releases
       True for Sequence_Array/Sequence_stdvector. Must be false (nullopt) for anything whose storage
       order differs from its iteration order.
 
-- REDO Iterable<T>::Top () - the overloads WITHOUT an 'n' argument should return optional<T>, not
-  Iterable<T>. Returning a whole Iterable for "the single top element" is the wrong shape, and it
-  forces the current implementation to do a full O(n log n) sort to answer an O(n) question.
-  Reimplement in terms of max_element (), and consider giving it an Execution::SequencePolicy
-  argument the way Iterable<T>::OrderBy () has (and Sequence<T>::OrderBy () is getting).
-    - Note the current state: NONE of the four Top () overloads takes a SequencePolicy, and
-      Iterable.inl hardcodes 'sort (std::execution::par, ...)' / 'partial_sort (std::execution::par,
-      ...)'. So Top () unconditionally pays for parallelism that OrderBy () just measured as a
-      1.70x LOSS at N=1000 - with no way for a caller to opt out. Fixing the return type and the
-      policy argument together makes sense.
-    - Top (n, ...) keeps returning Iterable<T> - only the no-'n' overloads change.
-
 - ask if anything else reasonable todo on bidi iterator support or at least if this is good breaking point.
 - test HearHE
 - deal with failed/lost bugs from JIRA

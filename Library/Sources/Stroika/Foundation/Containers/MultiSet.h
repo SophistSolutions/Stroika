@@ -385,40 +385,59 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief Find the most commonly occurring elements of the multiset (list with count ordered most to last)
-         * 
+         *  \brief Find the most commonly occurring element of the multiset - or the top n of them, ordered most to least
+         *
+         *  The overload WITHOUT an 'n' argument returns the single most common element (with its count), as an
+         *  optional which is nullopt iff the MultiSet is empty. The overload WITH an 'n' returns the top n, in
+         *  order, as an Iterable.
+         *
          *  \par Example Usage
          *      \code
          *          MultiSet<int> test{1, 1, 5, 1, 6, 5};
-         *          EXPECT_TRUE (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
+         *          EXPECT_TRUE (test.Top () == CountedValue<int>{1, 3});
+         *          EXPECT_TRUE (MultiSet<int>{}.Top () == nullopt);
          *          EXPECT_TRUE (test.Top (1).SequentialEquals ({{1, 3}}));
+         *          EXPECT_TRUE (test.Top (3).SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
          *      \endcode
-         * 
+         *
          *  \note n is allowed to exceed the size of the MultiSet, and the result of Top (n) maybe fewer than n values
+         *
+         *  \note   ***NOT BACKWARD COMPATIBLE*** - before Stroika v3.0d24, the no-'n' overload returned an
+         *          Iterable of EVERY element ordered most-frequent-first (ie it treated the missing 'n' as
+         *          infinity, not as one). To recover that, pass an 'n' larger than the container - eg
+         *          Top (numeric_limits<size_t>::max ()). This mirrors the same change to Iterable<T>::Top ().
          *
          *  \See Iterable<T>::Top
          *  \See TopElements
          */
-        nonvirtual Iterable<typename TRAITS::CountedValueType> Top () const;
+        nonvirtual optional<typename TRAITS::CountedValueType> Top () const;
         nonvirtual Iterable<typename TRAITS::CountedValueType> Top (size_t n) const;
 
     public:
         /**
-         *  \brief Find the most commonly occurring elements of the multiset (list of elements - without count - ordered most to last)
-         * 
+         *  \brief Same as Top (), but yielding just the element(s) - without the count
+         *
+         *  The overload WITHOUT an 'n' argument returns the single most common element, as an optional<T> which
+         *  is nullopt iff the MultiSet is empty. The overload WITH an 'n' returns the top n, in order, as an
+         *  Iterable<T>.
+         *
          *  \par Example Usage
          *      \code
          *          MultiSet<int> test{1, 1, 5, 1, 6, 5};
-         *          EXPECT_TRUE (test.TopElements ().SequentialEquals ({1, 5, 6}));
+         *          EXPECT_TRUE (test.TopElements () == 1);
+         *          EXPECT_TRUE (MultiSet<int>{}.TopElements () == nullopt);
          *          EXPECT_TRUE (test.TopElements (1).SequentialEquals ({1}));
+         *          EXPECT_TRUE (test.TopElements (3).SequentialEquals ({1, 5, 6}));
          *      \endcode
-         * 
+         *
          *  \note n is allowed to exceed the size of the MultiSet, and the result of Top (n) maybe fewer than n values
+         *
+         *  \note   ***NOT BACKWARD COMPATIBLE*** - see the corresponding note on Top ().
          *
          *  \See Iterable<T>::Top
          *  \See Top
          */
-        nonvirtual Iterable<T> TopElements () const;
+        nonvirtual optional<T> TopElements () const;
         nonvirtual Iterable<T> TopElements (size_t n) const;
 
     public:

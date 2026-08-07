@@ -731,40 +731,41 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> COMPARER>
-    Iterable<T> Iterable<T>::Top (COMPARER&& cmp) const
+    optional<T> Iterable<T>::Top (COMPARER&& cmp) const
     {
-        // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
-        vector<T> tmp = this->As<vector<T>> ();
-#if __cpp_lib_execution >= 201603L
-        sort (std::execution::par, tmp.begin (), tmp.end (), forward<COMPARER> (cmp));
-#else
-        sort (tmp.begin (), tmp.end (), forward<COMPARER> (cmp));
-#endif
-        size_t                   idx{0};
-        function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
-            if (idx < tmp.size ()) {
-                return tmp[idx++];
-            }
-            else {
-                return nullopt;
-            }
-        };
-        return CreateGenerator (getNext);
+        /*
+         *  'cmp' defines a sort ORDER, and 'top' is whichever element would come first in that order - ie the
+         *  minimum under cmp, which is what min_element computes. With the default greater<T>, that is the
+         *  largest element.
+         *
+         *  Runs directly off the Iterable's own iterators (Iterator<T> models forward_iterator, which is all
+         *  min_element requires), so unlike the Top (n, ...) overloads there is no copy of the container and
+         *  no sort: O(S), a single traversal.
+         *
+         *  @todo   min_element () copy-assigns its running 'smallest' ITERATOR each time it sees a better
+         *          element, and copy-assigning an Iterator<T> clones the rep - a heap allocation. So this
+         *          allocates once per new-best element: fine on average, but O(S) allocations in the worst
+         *          case, which is an already-ordered input (with the default greater<T>, every element is a
+         *          new best). Tracking the best VALUE in an optional<T> and looping by hand avoids that
+         *          entirely. Purely a performance nit - no API or correctness impact - so not urgent.
+         */
+        auto endI = Iterator<T>{end ()};
+        auto i    = min_element (begin (), endI, forward<COMPARER> (cmp));
+        if (i == endI) {
+            return nullopt; // empty Iterable
+        }
+        return *i;
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> COMPARER>
     Iterable<T> Iterable<T>::Top (size_t n, COMPARER&& cmp) const
     {
-        if (n >= size ()) {
-            return Top (forward<COMPARER> (cmp));
-        }
-        // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
+        // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sorted?
         vector<T> tmp = this->As<vector<T>> ();
-#if __cpp_lib_execution >= 201603L
-        partial_sort (std::execution::par, tmp.begin (), tmp.begin () + n, tmp.end (), forward<COMPARER> (cmp));
-#else
+        // Clamp rather than special-casing 'n >= size ()': partial_sort with middle == end IS a full sort, so
+        // the n-too-large case needs no separate path (and this avoids a second, virtual, size () call).
+        n = min (n, tmp.size ());
         partial_sort (tmp.begin (), tmp.begin () + n, tmp.end (), forward<COMPARER> (cmp));
-#endif
         size_t idx{0};
         tmp.erase (tmp.begin () + n, tmp.end ());
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
@@ -778,14 +779,14 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    inline Iterable<T> Iterable<T>::Top () const
+    inline optional<T> Iterable<T>::Top () const
     {
         return Top (std::greater<T>{});
     }
     template <typename T>
     inline Iterable<T> Iterable<T>::Top (size_t n) const
     {
-        return Top (n, std::greater<int>{});
+        return Top (n, std::greater<T>{});
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
