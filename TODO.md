@@ -36,10 +36,28 @@ Generally will track stuff here between releases
       (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes
       O(n^2) there. Also: reserve () turned out to LOSE for this - see the comment on the disabled
       branch in Iterable<T>::As<> () for the measurements and why.
-- IDEA (LGP): add a virtual to Iterable<T>::_IRep that hands back the backend's contiguous storage as
-  a span - nullopt when the backend has none - so algorithms can take a fast path with a slow
-  fallback. Generalizes the storage-exposing virtual proposed for OrderBy (see above) to everything.
-  Worth doing. Notes before implementing:
+- PeekContiguousStorage - STAGE 1 DONE (read-only side). Iterable<T>::_IRep::PeekContiguousStorage ()
+  exists (defaults to nullopt), Sequence_Array and Sequence_stdvector override it, and
+  Iterable<T>::As<vector<T>> () uses it. Measured (Release, N=1000, 'Test52 --show'):
+  As<vector<int>> on a contiguous backend went 170 -> 1.07 vs a plain vector copy, and
+  Sequence<int>::OrderBy () fell 2.58 -> 1.02 vs std::stable_sort as a consequence.
+  Remaining, roughly in priority order:
+    1. Measure a NON-TRIVIAL T (eg Sequence_Array<String>::As<vector<String>>) before spreading this.
+       The 170x was memcpy-vs-virtual-iteration on a 4-byte type; where the per-element copy dominates
+       the win should shrink a lot (cf the OrderBy probe, where type erasure cost 3.4x for int but
+       ~1.0x for String). That number decides whether item 2 is worth doing at all.
+    2. The other 8 contiguous backends: Set_Array, Collection_Array, Mapping_Array, Association_Array,
+       KeyedCollection_Array, MultiSet_Array, Queue_Array, DenseDataHyperRectangle_Vector. Overrides are
+       ~5 lines and mechanical, BUT: check DenseDataHyperRectangle_Vector's cell iteration order against
+       its linear storage order, and confirm span<const KeyValuePair<K,V>> is what callers of the keyed
+       ones actually want. Sequence_ChunkedArray must stay nullopt. Nothing else hides As () - Sequence
+       was the only one - so these get the fast path as soon as their reps override.
+    3. STAGE 2 - the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is what
+       lets OrderBy () sort backend storage in place (measured 1.85x for int, 1.13x for String - see
+       DESIGN DIRECTION above). Note OrderBy () is now at ~1.02 vs raw stable_sort, so the remaining
+       headroom is smaller than when that was measured; re-measure before building it.
+    4. Other consumers named below (Contains/Find/IndexOf, SequentialEquals, Min/Max/Sum/Median, Top).
+  Original notes, still relevant:
     - SPLIT const from mutable. span<const T> belongs on Iterable<T>::_IRep. span<T> does NOT:
       Iterable is conceptually read-only, and handing out mutable storage from a const object
       reintroduces the COW hazard documented on Sequence<T>::operator[] (another thread copies the

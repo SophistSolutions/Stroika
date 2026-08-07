@@ -558,17 +558,25 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
-        /*
-         *  Convert Sequence<T> losslessly into a standard supported C++ type.
-         *  Supported types include:
-         *      o   vector<T>
-         *      o   list<T>
-         *      (maybe any container that takes CTOR (IT BEGIN, IT END) - but don't count on that yet...
+        /**
+         *  \brief Convert Sequence<T> losslessly into a standard supported C++ type - vector<T>, list<T>, ...
+         *
+         *  @see Iterable<T>::As
+         *
+         *  \note **DEPRECATED TOO - JUST USE INHERITED - BUT CANNOT LOSE TIL WE REMOVE THE OTHER DEPRECATED OVERLOAD**
+         */
+        using inherited::As;
+
+    public:
+        /**
+         *  \brief write this Sequence into an existing container
+         *
+         *  \deprecated Since Stroika v3.0d24. Offers nothing over '*into = As<CONTAINER_OF_ADDABLE> ()',
+         *              which is what it now does, and it is the only reason Sequence<T> declares an As ()
+         *              at all (see the note on the using-declaration above).
          */
         template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual CONTAINER_OF_ADDABLE As () const;
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual void As (CONTAINER_OF_ADDABLE* into) const;
+        [[deprecated ("Since Stroika v3.0d24 - use *into = As<CONTAINER_OF_ADDABLE> () instead")]] nonvirtual void As (CONTAINER_OF_ADDABLE* into) const;
 
     public:
         /**

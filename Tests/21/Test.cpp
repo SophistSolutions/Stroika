@@ -463,27 +463,10 @@ namespace {
                 s.Append (i);
             }
             {
-                vector<T> vs;
-                s.As (&vs);
-                EXPECT_TRUE (vs.size () == 100);
-                for (auto i = vs.begin (); i != vs.end (); ++i) {
-                    EXPECT_TRUE (EQUALS_COMPARER{}(T (i - vs.begin ()), *i));
-                }
-            }
-            {
                 vector<T> vs = s.template As<vector<T>> ();
                 EXPECT_TRUE (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
                     EXPECT_TRUE (EQUALS_COMPARER{}(T (i - vs.begin ()), *i));
-                }
-            }
-            {
-                list<T> vs;
-                s.As (&vs);
-                EXPECT_TRUE (vs.size () == 100);
-                int idx = 0;
-                for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
-                    EXPECT_TRUE (EQUALS_COMPARER{}(T (idx), *i));
                 }
             }
             {

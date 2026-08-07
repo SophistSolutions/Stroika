@@ -528,29 +528,10 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE>
-    inline CONTAINER_OF_ADDABLE Sequence<T>::As () const
-    {
-        // some containers require two iterators as arguments, but Stroika ones work with default_sentinel_t or iterator
-        if constexpr (derived_from<CONTAINER_OF_ADDABLE, Iterable<T>>) {
-            return CONTAINER_OF_ADDABLE{this->begin (), this->end ()};
-        }
-        else {
-            return CONTAINER_OF_ADDABLE{this->begin (), Iterator<T>{this->end ()}};
-        }
-    }
-    template <typename T>
-    template <typename CONTAINER_OF_ADDABLE>
     inline void Sequence<T>::As (CONTAINER_OF_ADDABLE* into) const
     {
         RequireNotNull (into);
-        // @todo change this to constructible_from....
-        if constexpr (derived_from<CONTAINER_OF_ADDABLE, Iterable<T>>) {
-            *into = CONTAINER_OF_ADDABLE{this->begin (), this->end ()};
-        }
-        else {
-            // STL containers may require the two iterator arguments to be of the same type
-            *into = CONTAINER_OF_ADDABLE{this->begin (), Iterator<T>{this->end ()}};
-        }
+        *into = this->template As<CONTAINER_OF_ADDABLE> (); // ie Iterable<T>::As, so this gets its fast paths too
     }
     template <typename T>
     inline auto Sequence<T>::First () const -> optional<value_type>

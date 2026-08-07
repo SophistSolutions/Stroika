@@ -1484,6 +1484,18 @@ namespace {
             }
             Consume_ (tmp);
         }
+        /*
+         *  Takes the CONCRETE container type, not const Iterable<T>&, on purpose - the static type decides
+         *  which As () is called, and that has bitten once already: Sequence<T> used to declare its own
+         *  As () hiding Iterable<T>::As (), so a version of this measured through an Iterable<T>& scored
+         *  1.1 while the same call written the way a user writes it scored 113.
+         */
+        template <typename T, typename CONCRETE_T>
+        void Copy_AsVector_Concrete_ (const CONCRETE_T& it)
+        {
+            vector<T> tmp = it.template As<vector<T>> ();
+            Consume_ (tmp);
+        }
         template <typename T>
         void Copy_AsVector_ (const Iterable<T>& it)
         {
@@ -1813,14 +1825,17 @@ namespace {
         {
             // Guards against OrderBy () being pessimized. Baseline is what the same sort costs with plain
             // std machinery, so the score is 'what Stroika's OrderBy () adds over stable_sort'.
-            // Threshold: measured 2.23-2.63 across runs, so 3.5 leaves ~33% headroom.
+            // Threshold: measured 0.94-1.02 across runs - ie Sequence<T>::OrderBy () now costs about what a
+            // raw std::stable_sort does, and sometimes less (the baseline copies too, and Sequence_stdvector
+            // adopts its vector by move). It scored 2.23-2.63 until _IRep::PeekContiguousStorage () removed
+            // the copy, so 1.5 both leaves flap room and catches a fall back to that regime.
             static const Containers::Concrete::Sequence_Array<int> kSeqInts_{Test_IterableAlgorithms_::SourceInts_ ()};
             static const Iterable<int>                             kIterInts_{Test_IterableAlgorithms_::SourceInts_ ()};
             Tester (
                 "Sequence<int>::OrderBy () vs std::stable_sort",
                 [] () { Test_IterableAlgorithms_::Baseline_StdStableSort_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
                 "std::stable_sort (vector<int>)", [] () { Test_IterableAlgorithms_::Real_SequenceOrderByDefault_<int> (kSeqInts_); },
-                "Sequence<int>::OrderBy ()", 140000, 3.5, &failedTests);
+                "Sequence<int>::OrderBy ()", 140000, 1.5, &failedTests);
             // Separate entry because these are different reps, not because they are different operations
             // (the APIs match now). Both deliberately exercise the DEFAULT path rather than naming a
             // policy, so they keep guarding whatever the default actually is - Iterable's already moved
@@ -1845,26 +1860,26 @@ namespace {
              *  contiguous storage to expose, so they cannot see such a change at all.
              *
              *  Baseline is a plain vector<int> copy of the same data, so the score is what Stroika's
-             *  per-element virtual iteration costs over a bulk copy. That is the number the hook is
-             *  meant to drive toward 1.0 - so tighten this threshold when it does.
+             *  As<vector<T>> () costs over a bulk copy - ie ~1.0 means it IS a bulk copy.
              *
-             *  The score is LARGE (~170) and that is not a bug: memcpy moves an int in ~0.06ns while
-             *  iterating one through Iterable<T>'s virtuals costs ~11ns. Two consequences:
-             *      o   runCount deliberately breaks this file's baseline-should-take-about-1-second
-             *          convention. The two sides differ by >100x, so no single count suits both; a
-             *          1-second baseline would make the comparison side run for minutes. Chosen to keep
-             *          the SLOW side near 2 seconds instead.
-             *      o   The threshold is a gross-change alarm, as elsewhere in this file. Do not read it
-             *          as a claim that ~170 is acceptable - it is the cost this work exists to remove.
+             *  This entry earns its keep: it scored ~170 before _IRep::PeekContiguousStorage () existed
+             *  (memcpy moves an int in ~0.06ns; iterating one through Iterable<T>'s virtuals costs ~11ns),
+             *  and ~113 after, while Sequence<T>::As () still hid Iterable<T>::As () and so never reached
+             *  the fast path. Both regressions are silent and neither is visible in any other entry.
              *
-             *  Threshold: measured 147-188 over 7 Release runs. 250 leaves ~33% headroom over the worst
-             *  observed, matching the headroom convention used above.
+             *  runCount deliberately breaks this file's baseline-should-take-about-1-second convention.
+             *  It was chosen when the two sides differed by >100x, where no single count suited both; kept
+             *  as-is so the pre/post numbers above stay comparable.
+             *
+             *  Threshold: measured 0.97-1.07 over 4 Release runs (occasionally BELOW 1.0 - the baseline
+             *  copies too, and Sequence_stdvector adopts its vector by move). 1.5 is loose enough not to
+             *  flap, and still catches a fall back to either the ~113 or ~170 regime.
              */
             Tester (
                 "Sequence_Array<int>::As<vector<int>> () vs plain vector copy",
                 [] () { Test_IterableAlgorithms_::Baseline_VectorCopy_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
-                "vector<int> copy CTOR", [] () { Test_IterableAlgorithms_::Copy_AsVector_<int> (kSeqInts_); },
-                "Sequence_Array<int>::As<vector<int>> ()", 200000, 250.0, &failedTests);
+                "vector<int> copy CTOR", [] () { Test_IterableAlgorithms_::Copy_AsVector_Concrete_<int> (kSeqInts_); },
+                "Sequence_Array<int>::As<vector<int>> ()", 200000, 1.5, &failedTests);
         }
         JSONTests_::Run ();
 
