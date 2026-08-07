@@ -373,13 +373,29 @@ namespace Stroika::Foundation::Containers {
          *        expensive or inexpensive version (depends on constness of this pointer).
          * 
          *        Also considered having this return T&, the way you would with std c++ vector (etc). This would avoid a lot
-         *        of issues. BUT - it would BREAK the COW (copy-on-write) semantics. Consider if we had a single
-         *        reference to a sequence. And we grab the value_type& (to update it; this doesn't increase refCnt for container). Then in another thread,
-         *        we access the sequence (incrementing its reps ref count). We could be updating through that saved
-         *        reference to T while the other thread is looking at the sequence - a dangerous race.
-         * 
+         *        of issues. BUT - it would BREAK the COW (copy-on-write) semantics. Note this is NOT merely a
+         *        thread-safety question; it goes wrong in a single thread, with no rule broken:
+         *      \code
+         *          Sequence<int> s{1, 2, 3};
+         *          int&          r  = s[0];    // hypothetical T& overload: refcount is 1, so nothing is cloned
+         *          Sequence<int> s2 = s;       // an ordinary const copy - but now s and s2 SHARE one rep
+         *          r = 99;                     // a write aimed at s ...
+         *          // ... and s2[0] is now 99 as well, though s2 was copied before the write
+         *      \endcode
+         *        COW is correct only because every write to the rep is preceded by a clone-if-shared check
+         *        (_GetWriteableRep ()). Handing out a T& moves that check from WRITE time to REFERENCE-ACQUISITION
+         *        time, and the reference count is free to rise in between. Unlike a non-COW container - where
+         *        copying never introduces aliasing - copying a Sequence makes a previously exclusive reference
+         *        shared, without anything touching the reference itself.
+         *
+         *        (Pre-C++11 COW std::string had exactly this problem, and could only keep operator[] returning a
+         *        reference by marking the buffer permanently un-shareable once one escaped - a cost which is part
+         *        of why C++11 outlawed COW for std::string.)
+         *
          *        So because all of this, use the syntax a(3) instead of a[3] if you want a modifiable reference
-         *        (to call non-const methods on or to assign to).
+         *        (to call non-const methods on or to assign to). That returns TemporaryElementReference_, which
+         *        deliberately holds a Sequence*, an index, and a COPY of the value - never a pointer into the rep -
+         *        and writes back through SetAt (), so the clone-if-shared check happens at the right moment.
          */
         nonvirtual const value_type operator[] (size_t i) const;
 
