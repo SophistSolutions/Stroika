@@ -80,7 +80,7 @@ using std::byte;
 namespace {
     constexpr char kDefaultPerfOutFile_[] = "PerformanceDump.txt";
     bool           sShowOutput_           = false;
-    // --orderby-probe: opt-in design probe, not part of the regular regression run (see Test_OrderBy_)
+    // --orderby-probe: opt-in design probe, not part of the regular regression run (see Test_IterableAlgorithms_)
     bool sRunOrderByProbe_ = false;
 }
 
@@ -1293,30 +1293,44 @@ namespace {
 
 namespace {
     /*
-     *  OrderBy () implementation-strategy comparison, for both Sequence<T> and Iterable<T> - see the
-     *  OrderBy entry in TODO.md.
+     *  Implementation-strategy comparisons for Iterable<T>/Sequence<T> algorithms - see the OrderBy
+     *  and _PeekContiguousStorage entries in TODO.md. Two subjects share these fixtures:
+     *      o   OrderBy () - which sorting strategy the reps should use.
+     *      o   Materializing an Iterable into a vector<T> (As<vector<T>> ()) - which feeds OrderBy (),
+     *          Top () and Repeat (), so it matters well beyond As<> itself.
      *
-     *  Two things live here:
-     *      o   Permanent entries in the regular run (Sequence<int>::OrderBy () and
-     *          Iterable<int>::OrderBy () each vs std::stable_sort), so a future pessimization of
-     *          either gets noticed. They are separate entries because they exercise different reps -
-     *          see the comment on Real_SequenceOrderBy_ below.
-     *      o   A multi-variant design probe, run ONLY with --orderby-probe, for choosing between the
+     *  Two KINDS of entry live here:
+     *      o   Permanent entries in the regular run, so a future pessimization gets noticed. Where two
+     *          exist for one operation they exercise different reps - see the comment on
+     *          Real_SequenceOrderBy_ below.
+     *      o   A multi-variant design probe, run ONLY with --orderby-probe, for choosing between
      *          candidate implementations. Off by default because it is slow and answers a design
      *          question rather than guarding a regression.
      *
-     *  IMPORTANT for fairness: every variant below performs a COMPLETE OrderBy () - including whatever
-     *  copy that strategy cannot avoid. OrderBy () is const and returns a new Sequence, so even the
-     *  "sort in place" strategies must first COW-clone the buffer they then sort. Timing only the sort
-     *  would flatter them with a copy the real implementation still has to pay for.
+     *  IMPORTANT for fairness: every OrderBy variant below performs a COMPLETE OrderBy () - including
+     *  whatever copy that strategy cannot avoid. OrderBy () is const and returns a new Sequence, so even
+     *  the "sort in place" strategies must first COW-clone the buffer they then sort. Timing only the
+     *  sort would flatter them with a copy the real implementation still has to pay for.
      */
-    namespace Test_OrderBy_ {
+    namespace Test_IterableAlgorithms_ {
 
         constexpr size_t       kN_    = 1000;
         constexpr unsigned int kSeed_ = 20260805;
 
-        volatile size_t sSink_ = 0;
+        /*
+         *  Optimizer barrier. Every variant below funnels a value derived from its result into this
+         *  volatile, because a store to a volatile is an observable side effect the compiler may not
+         *  remove - which in turn keeps it from deleting the work that produced the value. Without a
+         *  sink, a benchmark whose result is never read is dead code, and an optimizing Release build
+         *  is entitled to delete the whole thing and report a time near zero.
+         *
+         *  Accumulated into (rather than assigned) so that no single iteration's value can be dropped
+         *  as overwritten-before-read.
+         */
+        volatile size_t sOptimizerSink_ = 0;
 
+        // Reduce one element to a size_t so Consume_ can fold any element type into sOptimizerSink_ - overloaded
+        // per T because there is no common spelling for "some cheap value that depends on this element".
         size_t Magnitude_ (int v)
         {
             return static_cast<size_t> (v);
@@ -1337,14 +1351,14 @@ namespace {
         void Consume_ (const CONTAINER_T& c)
         {
             if (not c.empty ()) {
-                sSink_ = sSink_ + c.size () + Magnitude_ (c[0]);
+                sOptimizerSink_ = sOptimizerSink_ + c.size () + Magnitude_ (c[0]);
             }
         }
         template <typename T>
         void Consume_ (const Iterable<T>& c)
         {
             if (auto f = c.First ()) {
-                sSink_ = sSink_ + c.size () + Magnitude_ (*f);
+                sOptimizerSink_ = sOptimizerSink_ + c.size () + Magnitude_ (*f);
             }
         }
 
@@ -1484,6 +1498,25 @@ namespace {
         {
             vector<T> tmp;
             tmp.assign (it.begin (), Iterator<T>{it.end ()});
+            Consume_ (tmp);
+        }
+        /*
+         *  Baseline for the permanent As<vector<T>> () entry below: what this same data costs to copy
+         *  with no Stroika machinery at all. That makes the entry's score 'what per-element virtual
+         *  iteration costs over a bulk copy' - ie the gap a contiguous-storage hook on _IRep would
+         *  close, which is why it is worth guarding permanently rather than only in the probe.
+         *
+         *  The extra sink of tmp.data () guards against a specific way this baseline could go wrong:
+         *  Consume_ observes only size () and element [0], so an optimizer that proves tmp is a copy of
+         *  src could rewrite both reads to hit src and delete the copy entirely, leaving this timing
+         *  nothing. Escaping the buffer ADDRESS stops that. Verified on MSVC/Release that it makes no
+         *  measurable difference today (ie no elision is happening) - it is insurance, not a fix.
+         */
+        template <typename T>
+        void Baseline_VectorCopy_ (const vector<T>& src)
+        {
+            vector<T> tmp   = src;
+            sOptimizerSink_ = sOptimizerSink_ + reinterpret_cast<size_t> (tmp.data ());
             Consume_ (tmp);
         }
 
@@ -1781,12 +1814,13 @@ namespace {
             // Guards against OrderBy () being pessimized. Baseline is what the same sort costs with plain
             // std machinery, so the score is 'what Stroika's OrderBy () adds over stable_sort'.
             // Threshold: measured 2.23-2.63 across runs, so 3.5 leaves ~33% headroom.
-            static const Containers::Concrete::Sequence_Array<int> kSeqInts_{Test_OrderBy_::SourceInts_ ()};
-            static const Iterable<int>                             kIterInts_{Test_OrderBy_::SourceInts_ ()};
+            static const Containers::Concrete::Sequence_Array<int> kSeqInts_{Test_IterableAlgorithms_::SourceInts_ ()};
+            static const Iterable<int>                             kIterInts_{Test_IterableAlgorithms_::SourceInts_ ()};
             Tester (
                 "Sequence<int>::OrderBy () vs std::stable_sort",
-                [] () { Test_OrderBy_::Baseline_StdStableSort_<int> (Test_OrderBy_::SourceInts_ ()); }, "std::stable_sort (vector<int>)",
-                [] () { Test_OrderBy_::Real_SequenceOrderByDefault_<int> (kSeqInts_); }, "Sequence<int>::OrderBy ()", 140000, 3.5, &failedTests);
+                [] () { Test_IterableAlgorithms_::Baseline_StdStableSort_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
+                "std::stable_sort (vector<int>)", [] () { Test_IterableAlgorithms_::Real_SequenceOrderByDefault_<int> (kSeqInts_); },
+                "Sequence<int>::OrderBy ()", 140000, 3.5, &failedTests);
             // Separate entry because these are different reps, not because they are different operations
             // (the APIs match now). Both deliberately exercise the DEFAULT path rather than naming a
             // policy, so they keep guarding whatever the default actually is - Iterable's already moved
@@ -1801,9 +1835,36 @@ namespace {
             // Sequence_Array<int> vs a generic Iterable<int> rep - not purely an OrderBy () difference.
             Tester (
                 "Iterable<int>::OrderBy () vs std::stable_sort",
-                [] () { Test_OrderBy_::Baseline_StdStableSort_<int> (Test_OrderBy_::SourceInts_ ()); }, "std::stable_sort (vector<int>)",
-                [] () { Test_OrderBy_::Real_IterableOrderByDefault_<int> (kIterInts_); }, "Iterable<int>::OrderBy () [default policy]",
-                140000, 5.0, &failedTests);
+                [] () { Test_IterableAlgorithms_::Baseline_StdStableSort_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
+                "std::stable_sort (vector<int>)", [] () { Test_IterableAlgorithms_::Real_IterableOrderByDefault_<int> (kIterInts_); },
+                "Iterable<int>::OrderBy () [default policy]", 140000, 5.0, &failedTests);
+            /*
+             *  Guards As<vector<T>> () over a CONTIGUOUS backend - the case a contiguous-storage hook on
+             *  _IRep would accelerate (see TODO.md), and the one no entry covered before: the probe's
+             *  "Copy strategy" entries all run against a generic Iterable<int> rep, which has no
+             *  contiguous storage to expose, so they cannot see such a change at all.
+             *
+             *  Baseline is a plain vector<int> copy of the same data, so the score is what Stroika's
+             *  per-element virtual iteration costs over a bulk copy. That is the number the hook is
+             *  meant to drive toward 1.0 - so tighten this threshold when it does.
+             *
+             *  The score is LARGE (~170) and that is not a bug: memcpy moves an int in ~0.06ns while
+             *  iterating one through Iterable<T>'s virtuals costs ~11ns. Two consequences:
+             *      o   runCount deliberately breaks this file's baseline-should-take-about-1-second
+             *          convention. The two sides differ by >100x, so no single count suits both; a
+             *          1-second baseline would make the comparison side run for minutes. Chosen to keep
+             *          the SLOW side near 2 seconds instead.
+             *      o   The threshold is a gross-change alarm, as elsewhere in this file. Do not read it
+             *          as a claim that ~170 is acceptable - it is the cost this work exists to remove.
+             *
+             *  Threshold: measured 147-188 over 7 Release runs. 250 leaves ~33% headroom over the worst
+             *  observed, matching the headroom convention used above.
+             */
+            Tester (
+                "Sequence_Array<int>::As<vector<int>> () vs plain vector copy",
+                [] () { Test_IterableAlgorithms_::Baseline_VectorCopy_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
+                "vector<int> copy CTOR", [] () { Test_IterableAlgorithms_::Copy_AsVector_<int> (kSeqInts_); },
+                "Sequence_Array<int>::As<vector<int>> ()", 200000, 250.0, &failedTests);
         }
         JSONTests_::Run ();
 
@@ -1812,7 +1873,7 @@ namespace {
         // extra tests
         {
             if (sRunOrderByProbe_) {
-                Test_OrderBy_::RunProbe_ ();
+                Test_IterableAlgorithms_::RunProbe_ ();
             }
         }
 
