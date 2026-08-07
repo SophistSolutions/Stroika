@@ -33,6 +33,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
+        // Safe despite this being a queue: RemoveHead () shifts (GetAt (0) then Remove (0u)) rather than
+        // advancing a head index, so element 0 is always the front and there is no wrap. A circular-buffer
+        // rewrite of this rep would have to drop this override (or return only the pre-wrap run).
+        virtual optional<span<const value_type>> PeekContiguousStorage () const override
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return span<const value_type>{fData_.data (), fData_.size ()};
+        }
         virtual size_t size () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};

@@ -38,6 +38,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
+        // MakeIterator () walks fData_ from 0, so storage order IS iteration order.
+        virtual optional<span<const value_type>> PeekContiguousStorage () const override
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return span<const value_type>{fData_.data (), fData_.size ()};
+        }
         virtual size_t size () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};

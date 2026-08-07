@@ -59,6 +59,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
+        // MakeIterator () walks fData_ from 0, so storage order IS iteration order. NB the span is of
+        // value_type - ie CountedValue<T>, the {value,count} pairs - not of bare T.
+        virtual optional<span<const value_type>> PeekContiguousStorage () const override
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return span<const value_type>{fData_.data (), fData_.size ()};
+        }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
