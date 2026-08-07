@@ -942,6 +942,15 @@ namespace {
             EXPECT_EQ (c.OrderBy (cmp), (Sequence<int>{3, 3, 5, 5, 9, 38}));
             EXPECT_TRUE (c.OrderBy (cmp).IsOrderedBy (cmp));
         }
+        {
+            // Sequence<T>::OrderBy () takes the same Execution::SequencePolicy as Iterable<T>::OrderBy ().
+            // Both policies must produce the same answer - it is a stable sort either way.
+            Sequence<int> c{3, 5, 9, 38, 3, 5};
+            auto          cmp = [] (int lhs, int rhs) -> bool { return lhs < rhs; };
+            EXPECT_EQ (c.OrderBy (cmp, Execution::SequencePolicy::eSeq), (Sequence<int>{3, 3, 5, 5, 9, 38}));
+            EXPECT_EQ (c.OrderBy (cmp, Execution::SequencePolicy::ePar), (Sequence<int>{3, 3, 5, 5, 9, 38}));
+            EXPECT_EQ (c.OrderBy (less<int>{}, Execution::SequencePolicy::ePar), c.OrderBy ());
+        }
     }
 }
 

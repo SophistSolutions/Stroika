@@ -2,6 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 
+#include <execution>
+
 #include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
 #include "Stroika/Foundation/Containers/Factory/Sequence_Factory.h"
@@ -317,10 +319,32 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
-    auto Sequence<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer) const -> Sequence
+    auto Sequence<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, [[maybe_unused]] Execution::SequencePolicy seq) const -> Sequence
     {
-        vector<T> tmp{this->begin (), Iterator<T>{this->end ()}}; // due to Sequence_stdvector move constructor, a not very expensive implementation (but @todo must implement random-access-iterators for Sequence to avoid)
-        stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
+        /*
+         *  The copy into a vector<T> is unavoidable, not merely unoptimized. Sorting has to relocate elements,
+         *  so it must be able to WRITE through the iterators: std::stable_sort requires them to be
+         *  Cpp17ValueSwappable with a MoveAssignable value type (the equivalent for std::ranges::stable_sort
+         *  is the std::sortable / std::permutable concept). Stroika's iterators are deliberately read-only -
+         *  Iterator<T>::operator* and RandomAccessIterator<T>::operator[] both hand back a const T& - because
+         *  exposing T& would break the copy-on-write sharing (see the note on Sequence<T>::operator[]).
+         *
+         *  So this is about the CONSTNESS of the iterators, not their category: giving Sequence better (eg
+         *  random-access) iterators does not help, and an earlier @todo here claiming otherwise was wrong.
+         *
+         *  The copy is cheap-ish in the end, because Sequence_stdvector adopts the vector by move.
+         */
+        vector<T> tmp = this->As<vector<T>> ();
+#if __cpp_lib_execution >= 201603L
+        if (seq == Execution::SequencePolicy::eSeq) {
+            stable_sort (tmp.begin (), tmp.end (), inorderComparer);
+        }
+        else {
+            stable_sort (std::execution::par, tmp.begin (), tmp.end (), inorderComparer);
+        }
+#else
+        stable_sort (tmp.begin (), tmp.end (), inorderComparer);
+#endif
         return Concrete::Sequence_stdvector<T>{move (tmp)};
     }
     template <typename T>

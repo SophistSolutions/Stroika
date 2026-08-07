@@ -1299,8 +1299,8 @@ namespace {
      *  Two things live here:
      *      o   Permanent entries in the regular run (Sequence<int>::OrderBy () and
      *          Iterable<int>::OrderBy () each vs std::stable_sort), so a future pessimization of
-     *          either gets noticed. They are separate entries because they are not the same
-     *          operation - see the comment on Real_IterableOrderBy_ below.
+     *          either gets noticed. They are separate entries because they exercise different reps -
+     *          see the comment on Real_SequenceOrderBy_ below.
      *      o   A multi-variant design probe, run ONLY with --orderby-probe, for choosing between the
      *          candidate implementations. Off by default because it is slow and answers a design
      *          question rather than guarding a regression.
@@ -1487,31 +1487,32 @@ namespace {
             Consume_ (tmp);
         }
 
-        // ---- the REAL Sequence<T>::OrderBy (), called as a user would call it
+        /*
+         *  ---- the REAL OrderBy (), called as a user would call it. Sequence<T>::OrderBy () and the
+         *  Iterable<T>::OrderBy () it hides now take the same arguments (comparer + Execution::SequencePolicy,
+         *  both defaulting to eSeq) and differ only in return type, so the Sequence-vs-Iterable score below
+         *  is the cost of the two reps rather than of an API divergence. eSeq-vs-ePar is measured for each,
+         *  since parallel only wins once N is large enough to pay for the thread hand-off and the crossover
+         *  is unmeasured - see the OrderBy entry in TODO.md.
+         */
         template <typename T, typename SEQUENCE_T>
-        void Real_SequenceOrderBy_ (const SEQUENCE_T& seq)
+        void Real_SequenceOrderBy_ (const SEQUENCE_T& seq, Execution::SequencePolicy policy)
+        {
+            Consume_ (seq.OrderBy (less<T>{}, policy));
+        }
+        template <typename T>
+        void Real_IterableOrderBy_ (const Iterable<T>& it, Execution::SequencePolicy policy)
+        {
+            Consume_ (it.OrderBy (less<T>{}, policy));
+        }
+        // The ...Default_ variants call OrderBy () with NO policy argument on purpose - the permanent
+        // regression entries must guard whatever the DEFAULT path actually is, so they keep tracking
+        // reality if the default is changed again (Iterable's already moved from ePar to eSeq once).
+        template <typename T, typename SEQUENCE_T>
+        void Real_SequenceOrderByDefault_ (const SEQUENCE_T& seq)
         {
             Consume_ (seq.OrderBy ());
         }
-
-        /*
-         *  ---- the REAL Iterable<T>::OrderBy (). Worth measuring separately from Sequence's because the
-         *  two are NOT the same operation today, despite Sequence<T>::OrderBy () merely hiding this one:
-         *      o   Iterable<T>::OrderBy () takes an Execution::SequencePolicy defaulting to ePar, so by
-         *          default it sorts in PARALLEL.
-         *      o   Sequence<T>::OrderBy () drops that parameter entirely and is always sequential.
-         *  So the Sequence-vs-Iterable score below is the practical cost/benefit of that divergence -
-         *  see item 1 of the OrderBy entry in TODO.md. Both policies are measured, since the parallel
-         *  default is only a win once N is large enough to pay for the thread hand-off.
-         */
-        template <typename T>
-        void Real_IterableOrderBy_ (const Iterable<T>& it, Execution::SequencePolicy seq)
-        {
-            Consume_ (it.OrderBy (less<T>{}, seq));
-        }
-        // Calls OrderBy () with NO policy argument on purpose - the permanent regression entry must
-        // guard whatever the DEFAULT path actually is, so it keeps tracking reality if the default
-        // is changed again (it already moved from ePar to eSeq once).
         template <typename T>
         void Real_IterableOrderByDefault_ (const Iterable<T>& it)
         {
@@ -1563,14 +1564,21 @@ namespace {
                 "Copy strategy int: As<vector<T>> vs assign(begin,end)", [&] () { Copy_AsVector_<int> (kIterInts_); },
                 "As<vector<T>> (as implemented)", [&] () { Copy_Assign_<int> (kIterInts_); }, "assign (2 walks)", kRunCount_, kNoWarn_);
 
-            // Sequence<T>::OrderBy () hides Iterable<T>::OrderBy () and has no SequencePolicy at all, so
-            // it is always sequential; Iterable's now defaults to eSeq too but can be asked for ePar.
+            // Rep cost only - the two OrderBy ()s now take the same arguments and the same eSeq default.
             (void)Tester (
                 "OrderBy divergence: Sequence<int>::OrderBy () vs Iterable<int>::OrderBy () [both default]",
-                [&] () { Real_SequenceOrderBy_<int> (kSeqInts_); }, "Sequence::OrderBy (no policy possible)",
-                [&] () { Real_IterableOrderByDefault_<int> (kIterInts_); }, "Iterable::OrderBy (default, now eSeq)", kRunCount_, kNoWarn_);
+                [&] () { Real_SequenceOrderByDefault_<int> (kSeqInts_); }, "Sequence::OrderBy (default)",
+                [&] () { Real_IterableOrderByDefault_<int> (kIterInts_); }, "Iterable::OrderBy (default)", kRunCount_, kNoWarn_);
+            // The two entries that say whether eSeq is the right default. Measured separately for each
+            // because they materialize their vector<T> differently, so the sort is a different share of
+            // the total - and it shows: ePar costs 2.08x on Sequence but 1.81x on Iterable, whose larger
+            // copy dilutes it. Both still say eSeq at N=1000; the crossover where ePar wins is unmeasured.
             (void)Tester (
-                "OrderBy divergence: Iterable<int>::OrderBy () eSeq vs ePar",
+                "OrderBy policy: Sequence<int>::OrderBy () eSeq vs ePar",
+                [&] () { Real_SequenceOrderBy_<int> (kSeqInts_, Execution::SequencePolicy::eSeq); }, "Sequence::OrderBy (eSeq)",
+                [&] () { Real_SequenceOrderBy_<int> (kSeqInts_, Execution::SequencePolicy::ePar); }, "Sequence::OrderBy (ePar)", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "OrderBy policy: Iterable<int>::OrderBy () eSeq vs ePar",
                 [&] () { Real_IterableOrderBy_<int> (kIterInts_, Execution::SequencePolicy::eSeq); }, "Iterable::OrderBy (eSeq)",
                 [&] () { Real_IterableOrderBy_<int> (kIterInts_, Execution::SequencePolicy::ePar); }, "Iterable::OrderBy (ePar)", kRunCount_, kNoWarn_);
 
@@ -1778,13 +1786,12 @@ namespace {
             Tester (
                 "Sequence<int>::OrderBy () vs std::stable_sort",
                 [] () { Test_OrderBy_::Baseline_StdStableSort_<int> (Test_OrderBy_::SourceInts_ ()); }, "std::stable_sort (vector<int>)",
-                [] () { Test_OrderBy_::Real_SequenceOrderBy_<int> (kSeqInts_); }, "Sequence<int>::OrderBy ()", 140000, 3.5, &failedTests);
-            // Separate entry because Iterable's OrderBy () is NOT the same operation as Sequence's - it
-            // takes an Execution::SequencePolicy, which Sequence<T>::OrderBy () (which hides it) does
-            // not. Deliberately exercises the DEFAULT path rather than naming a policy, so this keeps
-            // guarding whatever the default actually is - it already moved ePar -> eSeq once, which
-            // silently turned an earlier version of this entry into a guard on a non-default path.
-            // The explicit eSeq-vs-ePar measurement lives in --orderby-probe instead.
+                [] () { Test_OrderBy_::Real_SequenceOrderByDefault_<int> (kSeqInts_); }, "Sequence<int>::OrderBy ()", 140000, 3.5, &failedTests);
+            // Separate entry because these are different reps, not because they are different operations
+            // (the APIs match now). Both deliberately exercise the DEFAULT path rather than naming a
+            // policy, so they keep guarding whatever the default actually is - Iterable's already moved
+            // ePar -> eSeq once, which silently turned an earlier version of this entry into a guard on a
+            // non-default path. The explicit eSeq-vs-ePar measurements live in --orderby-probe instead.
             //
             // Threshold: measured 3.98 here. Set to 5.0 rather than something snug, because this score
             // has ranged 3.98-5.17 across runs on one machine (it is sensitive to load, and moved with

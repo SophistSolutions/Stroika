@@ -10,19 +10,10 @@ Generally will track stuff here between releases
 
 - OrderBy () - remaining work. Measurements: run 'Test52 --show --orderby-probe' (Release, N=1000).
 
-    1. Sequence<T>::OrderBy () has no SequencePolicy parameter, and since it HIDES
-       Iterable<T>::OrderBy () (no 'using inherited::OrderBy') a policy cannot be requested on a
-       Sequence at all. LGP: planned. Decide the default deliberately when adding it - Iterable's is
-       now eSeq, and matching that keeps the two consistent.
-    2. OrderBy () always returns a Sequence_stdvector<T>-backed result, unlike Where ()/Map () which
+    1. OrderBy () always returns a Sequence_stdvector<T>-backed result, unlike Where ()/Map () which
        CloneEmpty () to retain the rep type. Probably fine/desirable for a sort, but undocumented.
-    3. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
+    2. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
        Iterable<T>::OrderBy ().
-    - NOTE the in-line @todo at the top of Sequence<T>::OrderBy () is misleading: better iterators
-      cannot avoid the copy. stable_sort needs std::sortable/permutable, and Stroika iterators are
-      read-only by design (Iterator::operator* and RandomAccessIterator::operator[] both return
-      const T&) - deliberately, since handing out T& would break COW (see the operator[] note in
-      Sequence.h). --LGP still to double-check this claim.
     - DESIGN DIRECTION (LGP): make OrderBy a virtual on Sequence<T>::_IRep so Sequence_Array /
       Sequence_stdvector can sort their own storage in place. The blocking question was whether the
       comparer's type erasure (virtuals can't be templates) costs more than the copy it saves.
@@ -37,8 +28,9 @@ Generally will track stuff here between releases
       virtual is still defensible as a *fallback* hook for backends with a genuinely different
       strategy (eg DoublyLinkedList merge sort by relinking) - just not on the array-backed path.
       CAVEAT: N=1000 on one machine. The ePar-vs-eSeq crossover is unmeasured - parallel should win at
-      some larger N, so 'eSeq always' may be the wrong default for big sequences. A size sweep would
-      settle it.
+      some larger N, so the eSeq default (now on both Sequence and Iterable) may be wrong for big
+      sequences. A size sweep would settle it. At N=1000 ePar costs 2.08x on Sequence, 1.81x on
+      Iterable, whose larger copy dilutes the sort's share.
     - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
       Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access
       (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes

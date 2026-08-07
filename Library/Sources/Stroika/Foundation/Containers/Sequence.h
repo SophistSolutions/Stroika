@@ -265,17 +265,28 @@ namespace Stroika::Foundation::Containers {
          *          EXPECT_TRUE (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }) == Sequence<int> { 3, 3, 5, 5, 9, 38 });
          *      \endcode
          *
-         *  \note hides Iterable<T>::OrderBy since provides more specific types
+         *  \note hides Iterable<T>::OrderBy since provides more specific types - but takes the same arguments,
+         *        so the only difference is the (more specific) return type
          *
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
          *        That maybe less performant than a regular (e.g. quicksort) but works better as a default, in most cases, as it allows combining multi-level sorts.
+         *
+         *  \note 'seq' defaults to Execution::SequencePolicy::eSeq, matching Iterable<T>::OrderBy (). That
+         *        default is genuinely arguable, and could reasonably be either: sequential measured 1.5-1.8x
+         *        faster than parallel in the only testing done so far ('Test52 --show --orderby-probe'), but
+         *        that was at N=1000 on one machine, and parallel should win at some larger N - the crossover
+         *        is unmeasured. Pass SequencePolicy::ePar explicitly if you are sorting something big. Note
+         *        also that ePar requires your comparison function to be safe for parallel execution.
+         * 
+         *  \note This may return a different concrete type than the original Sequence<T> started with.
          *
          *  @aliases Sort ()
          *
          *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
          */
         template <IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
-        nonvirtual Sequence OrderBy (INORDER_COMPARER_TYPE&& inorderComparer = INORDER_COMPARER_TYPE{}) const;
+        nonvirtual Sequence OrderBy (INORDER_COMPARER_TYPE&&   inorderComparer = INORDER_COMPARER_TYPE{},
+                                     Execution::SequencePolicy seq             = Execution::SequencePolicy::eSeq) const;
 
     public:
         /**
@@ -373,8 +384,7 @@ namespace Stroika::Foundation::Containers {
          *        expensive or inexpensive version (depends on constness of this pointer).
          * 
          *        Also considered having this return T&, the way you would with std c++ vector (etc). This would avoid a lot
-         *        of issues. BUT - it would BREAK the COW (copy-on-write) semantics. Note this is NOT merely a
-         *        thread-safety question; it goes wrong in a single thread, with no rule broken:
+         *        of issues. BUT - it would BREAK the COW (copy-on-write) semantics.
          *      \code
          *          Sequence<int> s{1, 2, 3};
          *          int&          r  = s[0];    // hypothetical T& overload: refcount is 1, so nothing is cloned
@@ -387,10 +397,6 @@ namespace Stroika::Foundation::Containers {
          *        time, and the reference count is free to rise in between. Unlike a non-COW container - where
          *        copying never introduces aliasing - copying a Sequence makes a previously exclusive reference
          *        shared, without anything touching the reference itself.
-         *
-         *        (Pre-C++11 COW std::string had exactly this problem, and could only keep operator[] returning a
-         *        reference by marking the buffer permanently un-shareable once one escaped - a cost which is part
-         *        of why C++11 outlawed COW for std::string.)
          *
          *        So because all of this, use the syntax a(3) instead of a[3] if you want a modifiable reference
          *        (to call non-const methods on or to assign to). That returns TemporaryElementReference_, which
