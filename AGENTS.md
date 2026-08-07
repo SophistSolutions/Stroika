@@ -33,19 +33,19 @@ components like boost/openssl/sqlite/mongocxx/etc). List them with `make list-co
 
 ### Building
 ```bash
-make all -j10                                   # build everything, all configurations
-make CONFIGURATION=Debug all -j10                # build just one configuration
-make CONFIGURATION=Debug libraries -j10          # just the Stroika libraries
-make CONFIGURATION=Debug samples -j10            # sample apps
-make TAGS=Unix all -j10                          # build all configs tagged "Unix"
+make all -j8                            # build everything, all configurations
+make CONFIGURATION=Debug all -j8        # build just one configuration
+make CONFIGURATION=Debug libraries -j8  # just the Stroika libraries
+make CONFIGURATION=Debug samples -j8    # sample apps
+make TAGS=Unix all -j8                  # build all configs tagged "Unix"
 ```
 Intermediate objects go to `IntermediateFiles/{CONFIGURATION}/`; final libs/executables to
 `Builds/{CONFIGURATION}/`.
 
 ### Testing
 ```bash
-make CONFIGURATION=Debug run-tests -j10          # build + run all regression tests for one config
-make run-tests                                   # all configurations
+make CONFIGURATION=Debug run-tests -j8                 # build + run all regression tests for one config
+make run-tests                                         # all configurations
 VALGRIND=memcheck make CONFIGURATION=Debug run-tests   # under valgrind
 ```
 Regression tests live under `Tests/<NN>/` (numbered directories, each a single `Test.cpp` +
@@ -53,7 +53,7 @@ thin `Makefile` including `Tests/Makefile-Test-Template.mk`). Each test file's p
 in a `//  TEST    <Namespace::Path>` comment near the top (e.g. `Tests/01/Test.cpp` is
 `Foundation::Caching`). To build/run **one test in isolation**:
 ```bash
-make CONFIGURATION=Debug -C Tests/07 all -j10
+make CONFIGURATION=Debug -C Tests/07 all -j8
 ./Builds/Debug/Tests/Test07
 ```
 (substitute the test number). `TEST_FAILURES_CAUSE_FAILED_MAKE=0` lets `run-tests` continue past
