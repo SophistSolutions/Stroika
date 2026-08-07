@@ -67,6 +67,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
         }
+        // fData_ IS a vector<value_type> (via STLContainerWrapper), so iteration order is storage order.
+        virtual optional<span<const value_type>> PeekContiguousStorage () const override
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return span<const value_type>{fData_.data (), fData_.size ()};
+        }
 
         // Sequence<T>::_IRep overrides
     public:

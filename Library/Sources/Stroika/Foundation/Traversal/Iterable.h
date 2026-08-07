@@ -10,6 +10,7 @@
 #include <concepts>
 #include <functional>
 #include <ranges>
+#include <span>
 #include <vector>
 
 #include "Stroika/Foundation/Common/Common.h"
@@ -1647,6 +1648,34 @@ namespace Stroika::Foundation::Traversal {
          *  \see _IRep::MakeIterator for rules about lifetime of returned Iterator<T>
          */
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<T>& v, Execution::SequencePolicy seq) const;
+
+    public:
+        /**
+         *  \brief Hand back this backend's elements as one contiguous, in-iteration-order block - or nullopt if it has none.
+         *
+         *  Lets an algorithm take a bulk-memory fast path (memcpy, std::ranges over a span, ...) instead of
+         *  walking the Iterable one element at a time through virtual calls. That difference is not small:
+         *  measured at ~0.06ns/element to copy an int through a span versus ~11ns/element through
+         *  Iterable<T>'s iterators ('Test52 --show', the As<vector<int>> entry).
+         *
+         *  Defaults to nullopt, so this is purely additive - a backend that does not override it keeps
+         *  working, just without the fast path. Every caller must therefore have a working slow path.
+         *
+         *  \note   The span is a BORROWED VIEW, not a copy. It is invalidated by the next mutation of this
+         *          rep, and must never outlive the _SafeReadRepAccessor the caller obtained it through.
+         *          Deliberately NOT spelled As<...>, which means "materialize an owning copy you can keep".
+         *
+         *  \pre    Caller holds a _SafeReadRepAccessor (or _SafeReadWriteRepAccessor) on the envelope for as
+         *          long as it uses the result. That accessor holds the envelope's read context for its
+         *          lifetime, so a concurrent mutation through the same envelope is still caught in debug
+         *          builds; one through a DIFFERENT envelope must COW-clone before mutating and so cannot
+         *          touch this buffer. Without that, the span outlives its race detection.
+         *
+         *  \note   Overriders must return elements in ITERATION order. A backend whose storage order differs
+         *          from the order MakeIterator () yields (or which is not contiguous at all) must return
+         *          nullopt - silently returning storage order would corrupt every caller.
+         */
+        virtual optional<span<const value_type>> PeekContiguousStorage () const;
     };
 
     /**

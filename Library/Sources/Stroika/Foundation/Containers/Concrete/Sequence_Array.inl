@@ -64,6 +64,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return nullptr;
         }
+        // Array<T> stores elements contiguously in iteration order, so this is just its buffer.
+        virtual optional<span<const value_type>> PeekContiguousStorage () const override
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return span<const value_type>{fData_.data (), fData_.size ()};
+        }
 
         // Sequence<T>::_IRep overrides
     public:

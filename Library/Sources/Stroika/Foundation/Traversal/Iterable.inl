@@ -105,6 +105,11 @@ namespace Stroika::Foundation::Traversal {
             return Iterator<T>::GetEmptyIterator ();
         }
     }
+    template <typename T>
+    inline auto Iterable<T>::_IRep::PeekContiguousStorage () const -> optional<span<const value_type>>
+    {
+        return nullopt; // ie no contiguous storage to offer; callers fall back to iterating
+    }
 
     /*
      ********************************************************************************
@@ -1171,33 +1176,28 @@ namespace Stroika::Foundation::Traversal {
         if constexpr (derived_from<CONTAINER_OF_T, Iterable<T>>) {
             return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), end ());
         }
-        else if constexpr (same_as<CONTAINER_OF_T, vector<T>> and false) {
+        else if constexpr (same_as<CONTAINER_OF_T, vector<T>>) {
             /*
-             *  Kept because we may revisit - but it measured SLOWER than just letting the generic branch
-             *  below run, so do not re-enable without re-measuring.
+             *  Bulk-copy straight out of the backend's own storage when it has any, since that turns a
+             *  per-element walk through Iterable<T>'s virtuals into (for trivial T) a memcpy. Measured at
+             *  ~11ns/element versus ~0.06ns/element - see the As<vector<int>> entry in 'Test52 --show'.
              *
-             *  Measured (Release/MSVC, Iterable<int>, N=1000; ratios vs the generic branch, all compared
-             *  within a single run - see the "Copy strategy" entries of 'Test52 --show --orderby-probe'):
-             *      generic branch below (vector range CTOR)                  1.00x
-             *      reserve (size ()) + Apply () + std::function              1.33x
-             *      reserve (size ()) + assign ()  [ie the code below]        1.55x
+             *  The accessor must outlive the span, which is why it is a named local rather than a temporary
+             *  - see the precondition on _IRep::PeekContiguousStorage ().
              *
-             *  Why: the generic range CTOR calls distance () once, then copies with NO per-element capacity
-             *  check. reserve (size ()) does not help, because (a) size () is a virtual call that is O(n)
-             *  for a generic rep, and (b) assign () already sizes the vector itself via distance (). So the
-             *  code below pays for the length THREE times - size (), then distance (), then the copy.
-             *  Isolating just the reserve () line accounted for ~0.53x of the entire copy cost.
+             *  Backends with no contiguous storage (linked lists, hash tables, skip lists, and notably the
+             *  generator rep that Iterable<T> wraps a plain STL container in) return nullopt and fall
+             *  through to the generic branch below.
              *
-             *  So reserve () is the wrong lever. What WOULD make a special case pay is eliminating the
-             *  per-element iteration altogether - a backend hook handing back contiguous storage
-             *  (span<const T>) so this could bulk-copy. See the As<optional<span<const T>>> idea in
-             *  TODO.md; that, not reserve (), is the variant worth trying next.
+             *  NB: reserve () was tried here and is the WRONG lever - it measured 1.33x-1.55x SLOWER than
+             *  the generic branch, because size () is a virtual O(n) call on a generic rep and the range
+             *  CTOR already sizes the vector itself via distance (). Do not reintroduce it.
              */
-            vector<T> result{forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)...};
-            result.reserve (size ());
-            //Apply ([&result] (ArgByValueType<T> arg) { result.push_back (arg); }); // the 1.33x variant above
-            result.assign (begin (), Iterator<T>{end ()});
-            return result;
+            _SafeReadRepAccessor<> accessor{this};
+            if (auto s = accessor._ConstGetRep ().PeekContiguousStorage ()) {
+                return vector<T>{forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., s->begin (), s->end ()};
+            }
+            return vector<T>{forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), Iterator<T>{end ()}};
         }
         else {
             return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), Iterator<T>{end ()});
