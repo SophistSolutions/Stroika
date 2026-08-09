@@ -34,8 +34,10 @@ Generally will track stuff here between releases
     - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
       Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access
       (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes
-      O(n^2) there. Also: reserve () turned out to LOSE for this - see the comment on the disabled
-      branch in Iterable<T>::As<> () for the measurements and why.
+      O(n^2) there. Also: reserve () measured 1.33x-1.55x SLOWER than just letting the range CTOR
+      size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
+      - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
+      without new evidence; the size () item below is the thing that would change the picture.
 - PeekContiguousStorage - STAGE 1 DONE (read-only side). Iterable<T>::_IRep::PeekContiguousStorage ()
   exists (defaults to nullopt), Sequence_Array and Sequence_stdvector override it, and
   Iterable<T>::As<vector<T>> () uses it. Measured (Release, N=1000, 'Test52 --show'):
@@ -46,12 +48,15 @@ Generally will track stuff here between releases
        The 170x was memcpy-vs-virtual-iteration on a 4-byte type; where the per-element copy dominates
        the win should shrink a lot (cf the OrderBy probe, where type erasure cost 3.4x for int but
        ~1.0x for String). That number decides whether item 2 is worth doing at all.
-    2. The other 8 contiguous backends: Set_Array, Collection_Array, Mapping_Array, Association_Array,
-       KeyedCollection_Array, MultiSet_Array, Queue_Array, DenseDataHyperRectangle_Vector. Overrides are
-       ~5 lines and mechanical, BUT: check DenseDataHyperRectangle_Vector's cell iteration order against
-       its linear storage order, and confirm span<const KeyValuePair<K,V>> is what callers of the keyed
-       ones actually want. Sequence_ChunkedArray must stay nullopt. Nothing else hides As () - Sequence
-       was the only one - so these get the fast path as soon as their reps override.
+    2. DONE (c6438b404d) - Set_Array, Collection_Array, Mapping_Array, Association_Array,
+       KeyedCollection_Array, MultiSet_Array and Queue_Array now override it too (9 backends total).
+       DenseDataHyperRectangle_Vector was deliberately left out: its cell iteration order still needs
+       checking against its linear storage order. Sequence_ChunkedArray stays nullopt by design.
+    2b. The As<> fast path is no longer gated on vector<T> - it is tried for ANY target constructible
+       from a pointer pair, so all 9 backends now also speed up As<list<T>>, As<Sequence<T>>, etc.
+       (uncommitted as of this writing). Measured: As<list<int>> 1.12, As<Sequence<int>> 1.93 - but
+       that probe varies the SOURCE rep, so ~1.5 of the latter is the generator-rep gap, not the fast
+       path itself. The clean number is still the As<vector<int>> entry at ~1.0 vs a raw copy.
     3. STAGE 2 - the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is what
        lets OrderBy () sort backend storage in place (measured 1.85x for int, 1.13x for String - see
        DESIGN DIRECTION above). Note OrderBy () is now at ~1.02 vs raw stable_sort, so the remaining
@@ -80,6 +85,21 @@ Generally will track stuff here between releases
       True for Sequence_Array/Sequence_stdvector. Must be false (nullopt) for anything whose storage
       order differs from its iteration order.
 
+- LinkedList::size () / DoublyLinkedList::size () are O(n) - cache the length instead. Both walk from
+  fHead_ counting. Every other DataStructure in the stack is already O(1): Array and SkipList keep
+  fLength_, HashTable keeps fCachedSize_, STLContainerWrapper inherits the wrapped container's. And
+  Sequence_DoublyLinkedList.inl:40 already says so - "// NOTE: O(N), but could easily be made faster
+  caching the length".
+    - Cost is one size_t per list OBJECT (not per node), plus an increment/decrement in the mutators.
+    - The tradeoff that made std::list's O(1) size () contentious - ranged splice degrading to O(n) -
+      does NOT apply here: neither class has any splice/steal/relink-from-another-list operation.
+      (For reference, the standard requires O(1) size () on every container that has one, including
+      set/map and the unordered_* family; forward_list is the lone holdout and resolves the tension
+      by having no size () at all rather than a slow one.)
+    - Worth more than tidiness: size () is what Nth (), Top (n), Median () and any prospective
+      pre-sizing path consult. Making it O(1) is the precondition that would make the reserve ()
+      question noted under OrderBy () above worth re-testing for linked-list backends - ie it is what
+      would generate the evidence we currently do not have.
 - ask if anything else reasonable todo on bidi iterator support or at least if this is good breaking point.
 - test HearHE
 - deal with failed/lost bugs from JIRA

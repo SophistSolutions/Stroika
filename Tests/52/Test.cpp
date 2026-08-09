@@ -1457,11 +1457,15 @@ namespace {
          *      As<vector<T>>  (currently the generic path) ~1.00x  <- ie the same thing
          *      reserve+walk   reserve (size ()) + push_back ~1.17x  <- consistently SLOWEST
          *  Conclusions that fell out of this:
-         *      o   reserve () LOSES here. size () is a virtual call (O(n) for a generic rep), and
-         *          push_back pays a capacity check per element, while the range CTOR's copy loop does
-         *          not. Two attempts at a special-cased As<vector<T>> both came out worse than doing
-         *          nothing: Apply () + std::function was 1.33x, and reserve () + assign () was 1.55x
-         *          (that one pays for the length THREE times - size (), distance (), then copies).
+         *      o   reserve () LOSES here. push_back pays a capacity check per element where the range
+         *          CTOR's copy loop does not, and the size () call was itself O(n) for the rep measured
+         *          (a generator over a type-erased function<>, whose length genuinely cannot be known
+         *          without running it). Do NOT read that as "size () is O(n) on any non-array rep" - the
+         *          linked-list reps are O(n) today only by choice, and say so themselves (see the note on
+         *          Sequence_DoublyLinkedList's size ()). Two attempts at a special-cased As<vector<T>>
+         *          both came out worse than doing nothing: Apply () + std::function was 1.33x, and
+         *          reserve () + assign () was 1.55x (paying for the length THREE times - size (),
+         *          distance (), then the copy).
          *      o   So the special case was disabled; the generic range CTOR is the thing to beat.
          *
          *  These MUST be compared within a single run - cross-run comparison is swamped by machine
@@ -1495,6 +1499,19 @@ namespace {
         {
             vector<T> tmp = it.template As<vector<T>> ();
             Consume_ (tmp);
+        }
+        /*
+         *  As<CONTAINER> () for a NON-vector target. Pairing this against the same call on a source
+         *  without contiguous storage isolates the fast path: same operation, same target type, the only
+         *  difference being whether PeekContiguousStorage () has anything to offer.
+         */
+        template <typename CONTAINER_T, typename SOURCE_T>
+        void Copy_As_ (const SOURCE_T& it)
+        {
+            CONTAINER_T tmp = it.template As<CONTAINER_T> ();
+            if (not tmp.empty ()) {
+                sOptimizerSink_ = sOptimizerSink_ + tmp.size () + Magnitude_ (*tmp.begin ());
+            }
         }
         template <typename T>
         void Copy_AsVector_ (const Iterable<T>& it)
@@ -1608,6 +1625,30 @@ namespace {
             (void)Tester (
                 "Copy strategy int: As<vector<T>> vs assign(begin,end)", [&] () { Copy_AsVector_<int> (kIterInts_); },
                 "As<vector<T>> (as implemented)", [&] () { Copy_Assign_<int> (kIterInts_); }, "assign (2 walks)", kRunCount_, kNoWarn_);
+
+            /*
+             *  Does the As<> fast path help NON-vector targets? Both sides make the identical call on the
+             *  identical data; only the source rep differs.
+             *
+             *  CAVEAT - this does NOT isolate the fast path. The slow side is a generic Iterable<int>,
+             *  which is a generator rep, and that is slower than Sequence_Array for reasons that have
+             *  nothing to do with contiguous storage - the "OrderBy divergence" entry below measures the
+             *  same rep gap at ~1.5 with no fast path involved. So read these as "what a user gains by
+             *  holding a contiguous container", not as the fast path's own contribution. The clean
+             *  measurement of the fast path itself is the As<vector<int>> permanent entry, which sits at
+             *  ~1.0 against a raw memcpy.
+             *
+             *  Even so the ordering is informative: a std::list allocates a node per element, so the
+             *  target's own cost swamps any source-iteration saving, while a Stroika target does not.
+             */
+            (void)Tester (
+                "As<> fast path, non-vector target: list<int> from Sequence_Array vs from generic Iterable",
+                [&] () { Copy_As_<list<int>> (kSeqInts_); }, "As<list<int>> (contiguous source)",
+                [&] () { Copy_As_<list<int>> (kIterInts_); }, "As<list<int>> (no contiguous storage)", kRunCount_ / 10, kNoWarn_);
+            (void)Tester (
+                "As<> fast path, Stroika target: Sequence<int> from Sequence_Array vs from generic Iterable",
+                [&] () { Copy_As_<Sequence<int>> (kSeqInts_); }, "As<Sequence<int>> (contiguous source)",
+                [&] () { Copy_As_<Sequence<int>> (kIterInts_); }, "As<Sequence<int>> (no contiguous storage)", kRunCount_ / 10, kNoWarn_);
 
             // Rep cost only - the two OrderBy ()s now take the same arguments and the same eSeq default.
             (void)Tester (

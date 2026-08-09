@@ -1171,33 +1171,37 @@ namespace Stroika::Foundation::Traversal {
     template <IIterableOfFrom<T> CONTAINER_OF_T, typename... CONTAINER_OF_T_CONSTRUCTOR_ARGS>
     inline CONTAINER_OF_T Iterable<T>::As (CONTAINER_OF_T_CONSTRUCTOR_ARGS... args) const
     {
+        /*
+         *  FAST PATH - when this backend keeps its elements contiguously, construct the target directly
+         *  from that buffer. A span's iterators are (effectively) pointers, so the target's range CTOR
+         *  can bulk-copy - for trivial T, a memcpy - rather than walking this Iterable one element at a
+         *  time through virtual calls.
+         *
+         *  Applies to EVERY target type. Nothing about it is vector-specific, and the same saving is
+         *  available to As<list<T>> (), As<Sequence<T>> (), ... - though where the target's own insertion
+         *  cost dominates (a node per element) the saving is a much smaller share of the total.
+         *
+         *  Guarded by constructible_from so this stays purely additive: a CONTAINER_OF_T that accepts
+         *  Stroika's iterators but not a plain pointer pair simply keeps the slow path below.
+         *
+         *  The accessor must outlive the span, which is why it is a named local rather than a temporary
+         *  - see the precondition on _IRep::PeekContiguousStorage ().
+         *
+         *  Backends with no contiguous storage (linked lists, hash tables, skip lists, and notably the
+         *  generator rep that Iterable<T> wraps a plain STL container in) return nullopt and fall through
+         *  to a generic implementation.
+         */
+        using ContiguousIterator_ = typename span<const T>::iterator; // NB: not necessarily const T* (eg checked iterators)
+        if constexpr (constructible_from<CONTAINER_OF_T, CONTAINER_OF_T_CONSTRUCTOR_ARGS..., ContiguousIterator_, ContiguousIterator_>) {
+            _SafeReadRepAccessor<> accessor{this};
+            if (auto s = accessor._ConstGetRep ().PeekContiguousStorage ()) {
+                return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., s->begin (), s->end ());
+            }
+        }
         // some containers require two iterators as arguments, but Stroika ones work with default_sentinel_t or iterator
         // use CONTAINER_OF_T () instead of CONTAINER_OF_T{} because we do want to allow coercion here - since use explicitly called As<>
         if constexpr (derived_from<CONTAINER_OF_T, Iterable<T>>) {
             return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), end ());
-        }
-        else if constexpr (same_as<CONTAINER_OF_T, vector<T>>) {
-            /*
-             *  Bulk-copy straight out of the backend's own storage when it has any, since that turns a
-             *  per-element walk through Iterable<T>'s virtuals into (for trivial T) a memcpy. Measured at
-             *  ~11ns/element versus ~0.06ns/element - see the As<vector<int>> entry in 'Test52 --show'.
-             *
-             *  The accessor must outlive the span, which is why it is a named local rather than a temporary
-             *  - see the precondition on _IRep::PeekContiguousStorage ().
-             *
-             *  Backends with no contiguous storage (linked lists, hash tables, skip lists, and notably the
-             *  generator rep that Iterable<T> wraps a plain STL container in) return nullopt and fall
-             *  through to the generic branch below.
-             *
-             *  NB: reserve () was tried here and is the WRONG lever - it measured 1.33x-1.55x SLOWER than
-             *  the generic branch, because size () is a virtual O(n) call on a generic rep and the range
-             *  CTOR already sizes the vector itself via distance (). Do not reintroduce it.
-             */
-            _SafeReadRepAccessor<> accessor{this};
-            if (auto s = accessor._ConstGetRep ().PeekContiguousStorage ()) {
-                return vector<T>{forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., s->begin (), s->end ()};
-            }
-            return vector<T>{forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), Iterator<T>{end ()}};
         }
         else {
             return CONTAINER_OF_T (forward<CONTAINER_OF_T_CONSTRUCTOR_ARGS> (args)..., begin (), Iterator<T>{end ()});
