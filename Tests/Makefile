@@ -104,7 +104,7 @@ all:		tests
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i | exit $$?;\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i || exit $$?;\
 	done
 else
 	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
@@ -168,7 +168,7 @@ endif
 run-tests:
 ifeq ($(CONFIGURATION),)
 	@for i in `../Build/Scripts/GetConfigurations` ; do\
-		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i || exit $$?;\
 	done
 else
 	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
