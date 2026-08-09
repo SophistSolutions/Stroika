@@ -38,52 +38,33 @@ Generally will track stuff here between releases
       size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
       - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
       without new evidence; the size () item below is the thing that would change the picture.
-- PeekContiguousStorage - STAGE 1 DONE (read-only side). Iterable<T>::_IRep::PeekContiguousStorage ()
-  exists (defaults to nullopt), Sequence_Array and Sequence_stdvector override it, and
-  Iterable<T>::As<vector<T>> () uses it. Measured (Release, N=1000, 'Test52 --show'):
-  As<vector<int>> on a contiguous backend went 170 -> 1.07 vs a plain vector copy, and
-  Sequence<int>::OrderBy () fell 2.58 -> 1.02 vs std::stable_sort as a consequence.
-  Remaining, roughly in priority order:
-    1. Measure a NON-TRIVIAL T (eg Sequence_Array<String>::As<vector<String>>) before spreading this.
+- PeekContiguousStorage - the READ-ONLY side is done and committed (f3f2ad7d1b, c6438b404d,
+  5324d0eff0): the hook exists on Iterable<T>::_IRep defaulting to nullopt, 9 Array-backed reps
+  override it, and Iterable<T>::As<> () takes the fast path for ANY target constructible from a
+  pointer pair. Measured (Release, N=1000, 'Test52 --show'): As<vector<int>> over a contiguous backend
+  went 170 -> ~1.1 vs a plain vector copy, and Sequence<int>::OrderBy () fell 2.58 -> ~0.95 vs
+  std::stable_sort as a consequence. Still open, in priority order:
+    1. Measure a NON-TRIVIAL T (eg Sequence_Array<String>::As<vector<String>>) BEFORE doing item 2.
        The 170x was memcpy-vs-virtual-iteration on a 4-byte type; where the per-element copy dominates
        the win should shrink a lot (cf the OrderBy probe, where type erasure cost 3.4x for int but
-       ~1.0x for String). That number decides whether item 2 is worth doing at all.
-    2. DONE (c6438b404d) - Set_Array, Collection_Array, Mapping_Array, Association_Array,
-       KeyedCollection_Array, MultiSet_Array and Queue_Array now override it too (9 backends total).
-       DenseDataHyperRectangle_Vector was deliberately left out: its cell iteration order still needs
-       checking against its linear storage order. Sequence_ChunkedArray stays nullopt by design.
-    2b. The As<> fast path is no longer gated on vector<T> - it is tried for ANY target constructible
-       from a pointer pair, so all 9 backends now also speed up As<list<T>>, As<Sequence<T>>, etc.
-       (uncommitted as of this writing). Measured: As<list<int>> 1.12, As<Sequence<int>> 1.93 - but
-       that probe varies the SOURCE rep, so ~1.5 of the latter is the generator-rep gap, not the fast
-       path itself. The clean number is still the As<vector<int>> entry at ~1.0 vs a raw copy.
-    3. STAGE 2 - the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is what
+       ~1.0x for String). That number decides how much of item 2 is worth doing at all.
+    2. The remaining consumers: SequentialEquals () first (memcmp-able for trivial T, the biggest one
+       left), then Contains ()/Find ()/IndexOf (), then Min ()/Max ()/Sum ()/Median ().
+    3. DenseDataHyperRectangle_Vector - the one contiguous backend still not overriding. Blocked on
+       checking its cell iteration order against its linear storage order: an overrider MUST hand back
+       elements in ITERATION order, so anything whose storage order differs has to stay nullopt (as
+       Sequence_ChunkedArray does).
+    4. STAGE 2 - the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is what
        lets OrderBy () sort backend storage in place (measured 1.85x for int, 1.13x for String - see
-       DESIGN DIRECTION above). Note OrderBy () is now at ~1.02 vs raw stable_sort, so the remaining
-       headroom is smaller than when that was measured; re-measure before building it.
-    4. Other consumers named below (Contains/Find/IndexOf, SequentialEquals, Min/Max/Sum/Median, Top).
-  Original notes, still relevant:
-    - SPLIT const from mutable. span<const T> belongs on Iterable<T>::_IRep. span<T> does NOT:
-      Iterable is conceptually read-only, and handing out mutable storage from a const object
-      reintroduces the COW hazard documented on Sequence<T>::operator[] (another thread copies the
-      container, bumping the refcount, while you write through the span). The mutable variant belongs
-      on Sequence<T>::_IRep, reachable only via _GetWriteableRep () where sole ownership is assured.
-    - DON'T spell it As<optional<span<T>>>. As<CONTAINER_OF_T> today means "materialize an owning
-      copy you can keep"; a span is a borrowed view invalidated by the next mutation. Same spelling,
-      opposite ownership semantics. Prefer a Peek-style name (eg _PeekContiguousStorage ()), and keep
-      it protected/_-prefixed - the span must never escape the algorithm that asked for it.
-    - Give it a default implementation returning nullopt so it is purely additive (does not break
-      out-of-tree backends).
-    - Payoff, roughly in order: As<vector<T>> (biggest, and now feeds OrderBy ()/Top ()/Repeat ()),
-      Contains ()/Find ()/IndexOf (), SequentialEquals () (memcmp-able for trivial T),
-      Min ()/Max ()/Sum ()/Median (), OrderBy ()/Top (). Supported by Sequence_Array and
-      Sequence_stdvector; nullopt for tree/hash/linked-list backends.
-    - This supersedes Apply () for contiguous backends - see the note at Iterable.h ~547 explaining
-      that Apply () exists to avoid per-element virtual iteration. Apply () still pays a
-      std::function call per element; a span pays nothing per element.
-    - OPEN QUESTION: is "contiguous AND in iteration order" always true where we would return a span?
-      True for Sequence_Array/Sequence_stdvector. Must be false (nullopt) for anything whose storage
-      order differs from its iteration order.
+       DESIGN DIRECTION above). RE-MEASURE FIRST: OrderBy () sits at ~0.95 vs raw stable_sort now, so
+       the headroom is far smaller than when that 1.85x was taken.
+       span<T> must NOT go on Iterable<T>::_IRep. Iterable is conceptually read-only, and handing out
+       mutable storage from a const object reintroduces the COW hazard documented on
+       Sequence<T>::operator[] (another thread copies the container, bumping the refcount, while you
+       write through the span). _GetWriteableRep () is where sole ownership is assured.
+    5. This supersedes Apply () for contiguous backends - see the note at Iterable.h ~547 explaining
+       that Apply () exists to avoid per-element virtual iteration. Apply () still pays a
+       std::function call per element; a span pays nothing per element.
 
 - LinkedList::size () / DoublyLinkedList::size () are O(n) - cache the length instead. Both walk from
   fHead_ counting. Every other DataStructure in the stack is already O(1): Array and SkipList keep
@@ -100,6 +81,20 @@ Generally will track stuff here between releases
       pre-sizing path consult. Making it O(1) is the precondition that would make the reserve ()
       question noted under OrderBy () above worth re-testing for linked-list backends - ie it is what
       would generate the evidence we currently do not have.
+- Build system error handling. One fix landed (c02ebaa1c6 - Tests/Makefile's all-configurations
+  check/run-tests loops swallowed output and returned 0 on failure). Same class, still open, each
+  needing a decision rather than just a fix:
+    - Build/Shared/Skel-Templates/{Basic,HTMLUI}/Makefile: the generated app's all: loop over
+      configurations has no '|| exit $$?', so a new Stroika app's 'make all' walks past a
+      configuration that failed to BUILD and still exits 0. The root Makefile does it correctly for
+      the same target, which suggests oversight - but fixing it changes behaviour for every
+      Skel-generated app, so LGP's call.
+    - Tests/Makefile ~191: 'tr -d "\r\n"' collapses each test's whole output onto ONE line, which is
+      what makes run-tests logs so hard to read and grep. The comment there already says it is "not
+      obvious we want the tr -d".
+    - Tests/Makefile: [ "$$TEST_FAILURES_CAUSE_FAILED_MAKE" -ne 0 ] errors and then silently takes
+      the suppress-failures branch if that variable is set but EMPTY. AGENTS.md documents setting it
+      to 0, so empty is a plausible slip.
 - ask if anything else reasonable todo on bidi iterator support or at least if this is good breaking point.
 - test HearHE
 - deal with failed/lost bugs from JIRA
