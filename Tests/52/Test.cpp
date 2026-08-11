@@ -1530,6 +1530,30 @@ namespace {
             Consume_ (tmp);
         }
         /*
+         *  The shape of a NON-COPYING consumer - Contains ()/Find ()/IndexOf ()/Min ()/Max ()/Sum ()/
+         *  SequentialEquals () all touch every element but copy none of them. Walk_Iterators_ is how they
+         *  read the container today; Walk_Contiguous_ is what they would do given a span. Neither calls
+         *  As<> - this isolates per-element ITERATION cost with no copy diluting it.
+         */
+        template <typename SOURCE_T>
+        void Walk_Iterators_ (const SOURCE_T& it)
+        {
+            size_t acc = 0;
+            for (const auto& e : it) {
+                acc += Magnitude_ (e);
+            }
+            sOptimizerSink_ = sOptimizerSink_ + acc;
+        }
+        template <typename T>
+        void Walk_Contiguous_ (const vector<T>& src)
+        {
+            size_t acc = 0;
+            for (const auto& e : src) {
+                acc += Magnitude_ (e);
+            }
+            sOptimizerSink_ = sOptimizerSink_ + acc;
+        }
+        /*
          *  Baseline for the permanent As<vector<T>> () entry below: what this same data costs to copy
          *  with no Stroika machinery at all. That makes the entry's score 'what per-element virtual
          *  iteration costs over a bulk copy' - ie the gap a contiguous-storage hook on _IRep would
@@ -1649,6 +1673,57 @@ namespace {
                 "As<> fast path, Stroika target: Sequence<int> from Sequence_Array vs from generic Iterable",
                 [&] () { Copy_As_<Sequence<int>> (kSeqInts_); }, "As<Sequence<int>> (contiguous source)",
                 [&] () { Copy_As_<Sequence<int>> (kIterInts_); }, "As<Sequence<int>> (no contiguous storage)", kRunCount_ / 10, kNoWarn_);
+
+            /*
+             *  DOES PeekContiguousStorage () STILL PAY FOR A NON-TRIVIAL T?
+             *
+             *  Everything the hook has been justified with so far was measured on int, where the fast path
+             *  replaces per-element virtual iteration with a memcpy AND the per-element copy is free. For a
+             *  T whose copy costs something, the fast path still removes the ITERATION but not the COPY, so
+             *  its share of the total has to fall. How far it falls decides how much the remaining
+             *  consumers (SequentialEquals (), Contains ()/Find ()/IndexOf (), Min ()/Max ()/Sum ()) are
+             *  worth building.
+             *
+             *  The first two entries pair TODAY's As<vector<T>> () against what As<vector<T>> () DID before
+             *  the fast path existed - the range CTOR over Stroika's iterators - on the same contiguous
+             *  source. Only the copy mechanism differs, so the score is the fast path's own contribution,
+             *  and the int and String numbers are comparable because they are taken in one run.
+             *  score << 1 = big win for that T; score ~1 = the hook bought nothing.
+             *
+             *  NB Stroika's String is refcounted, so copying one is an atomic increment, not a deep copy -
+             *  cheap, but not free the way an int's memcpy is. So this is the interesting MIDDLE case, not
+             *  the worst case. A T with a genuinely expensive copy would score closer to 1 still.
+             */
+            (void)Tester (
+                "Non-trivial T: the fast path's own contribution, int (old As<> vs new As<>)",
+                [&] () { Copy_IteratorPair_<int> (kSeqInts_); }, "range CTOR over Stroika iterators (the old As<>)",
+                [&] () { Copy_AsVector_Concrete_<int> (kSeqInts_); }, "As<vector<int>> (fast path)", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "Non-trivial T: the fast path's own contribution, String  <== THE DECISION",
+                [&] () { Copy_IteratorPair_<String> (kSeqStrs_); }, "range CTOR over Stroika iterators (the old As<>)",
+                [&] () { Copy_AsVector_Concrete_<String> (kSeqStrs_); }, "As<vector<String>> (fast path)", kRunCount_ / 10, kNoWarn_);
+            // And how close to the floor String now sits - the String analogue of the permanent
+            // As<vector<int>> entry, whose score against a raw copy is ~1.0.
+            (void)Tester (
+                "Non-trivial T: As<vector<String>> () vs plain vector<String> copy",
+                [&] () { Baseline_VectorCopy_<String> (SourceStrings_ ()); }, "vector<String> copy CTOR",
+                [&] () { Copy_AsVector_Concrete_<String> (kSeqStrs_); }, "Sequence_Array<String>::As<vector<String>> ()", kRunCount_ / 10, kNoWarn_);
+
+            /*
+             *  ...and what a NON-COPYING consumer would gain, which is the number that actually decides
+             *  whether SequentialEquals ()/Contains ()/Find ()/IndexOf ()/Min ()/Max ()/Sum () are worth
+             *  building on the hook. Those touch every element but copy none, so the fast path's saving is
+             *  not diluted by a per-element copy the way As<vector<T>> ()'s is. If the String score here
+             *  lands well below the score As<vector<String>> () gets above, then the COPY - not the
+             *  iteration - is what caps that number, and these consumers are worth more than it suggests.
+             */
+            (void)Tester (
+                "Non-copying consumer shape, int: Stroika iteration vs contiguous walk", [&] () { Walk_Iterators_ (kSeqInts_); },
+                "walk via Iterator<int>", [&] () { Walk_Contiguous_<int> (SourceInts_ ()); }, "walk contiguous storage", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "Non-copying consumer shape, String: Stroika iteration vs contiguous walk", [&] () { Walk_Iterators_ (kSeqStrs_); },
+                "walk via Iterator<String>", [&] () { Walk_Contiguous_<String> (SourceStrings_ ()); }, "walk contiguous storage",
+                kRunCount_ / 10, kNoWarn_);
 
             // Rep cost only - the two OrderBy ()s now take the same arguments and the same eSeq default.
             (void)Tester (

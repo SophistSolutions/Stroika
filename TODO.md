@@ -44,12 +44,21 @@ Generally will track stuff here between releases
   pointer pair. Measured (Release, N=1000, 'Test52 --show'): As<vector<int>> over a contiguous backend
   went 170 -> ~1.1 vs a plain vector copy, and Sequence<int>::OrderBy () fell 2.58 -> ~0.95 vs
   std::stable_sort as a consequence. Still open, in priority order:
-    1. Measure a NON-TRIVIAL T (eg Sequence_Array<String>::As<vector<String>>) BEFORE doing item 2.
-       The 170x was memcpy-vs-virtual-iteration on a 4-byte type; where the per-element copy dominates
-       the win should shrink a lot (cf the OrderBy probe, where type erasure cost 3.4x for int but
-       ~1.0x for String). That number decides how much of item 2 is worth doing at all.
-    2. The remaining consumers: SequentialEquals () first (memcmp-able for trivial T, the biggest one
-       left), then Contains ()/Find ()/IndexOf (), then Min ()/Max ()/Sum ()/Median ().
+    1. DONE - the non-trivial-T question is answered, and the worry behind it was WRONG. Measured
+       ('Test52 --show --orderby-probe', Release, N=1000), fast path vs what As<> did before it, same
+       contiguous source, so the score is the hook's own contribution:
+         * As<vector<T>> (copy-dominated):     int 186x faster,  String 3.1x faster
+         * non-copying consumer shape:         int  46x faster,  String  13x faster
+       The saving is a roughly FIXED per-element cost - the virtual iteration, ~6ns/element for int and
+       ~12ns/element for String - so what varies is not the saving but what it is compared against. In
+       As<vector<String>> the per-element copy (~13ns, a refcount bump plus the vector's own growth)
+       dilutes it, which is why that case looks weakest at 3.1x. That was the case worth worrying about
+       and it is the one that does NOT generalize: the consumers in item 2 copy nothing.
+       (Old As<> paid TWO virtual walks - distance () then copy - which is why 2*12+13 ~ the 40ns/element
+       measured for the String range CTOR. The model is consistent.)
+    2. The remaining consumers - JUSTIFIED by item 1 at 13x even for String, so build them:
+       SequentialEquals () first (memcmp-able for trivial T, the biggest one left), then
+       Contains ()/Find ()/IndexOf (), then Min ()/Max ()/Sum ()/Median ().
     3. DenseDataHyperRectangle_Vector - the one contiguous backend still not overriding. Blocked on
        checking its cell iteration order against its linear storage order: an overrider MUST hand back
        elements in ITERATION order, so anything whose storage order differs has to stay nullopt (as
@@ -65,6 +74,11 @@ Generally will track stuff here between releases
     5. This supersedes Apply () for contiguous backends - see the note at Iterable.h ~547 explaining
        that Apply () exists to avoid per-element virtual iteration. Apply () still pays a
        std::function call per element; a span pays nothing per element.
+    6. The permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry is noisier
+       than its own comment claims. That comment says 0.97-1.07 over 4 runs and calls 1.5 "loose enough
+       not to flap"; on an idle machine it has since been observed at 1.09/1.11/1.19/1.25/1.40, and at
+       1.77 on a loaded one. Both sides are ~15-25ms, which is small enough for scheduling jitter to
+       show. Either raise the run count or widen the threshold - as it stands it will eventually flap.
 
 - LinkedList::size () / DoublyLinkedList::size () are O(n) - cache the length instead. Both walk from
   fHead_ counting. Every other DataStructure in the stack is already O(1): Array and SkipList keep
