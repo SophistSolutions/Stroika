@@ -70,12 +70,21 @@ C++ changes.
 - `make project-files` regenerates IDE project files (Visual Studio, VS Code); needed after
   installing a new compiler/IDE version, or run `make reconfigure` if a configuration's absolute
   compiler paths go stale.
-- `make CONFIGURATION=X libraries` defaults to `QUICK_BUILD=1`, which — if that configuration's
-  library files already exist — skips even checking whether they're stale, so header-only/template
-  changes can silently fail to get rebuilt (and `make run-tests` inherits the same shortcut). Force
-  a real check with `QUICK_BUILD=0`. If you just want a clean rebuild of Stroika itself (not
-  third-party components, which are slow to rebuild and aren't part of Stroika anyway), use
-  `make CONFIGURATION=X library-clobber` first — it deletes everything except the third-party products.
+- **A HEADER CHANGE NEVER TRIGGERS A REBUILD. After editing any `.h`/`.inl`, you must
+  `make CONFIGURATION=X library-clobber` before the build means anything.** There is no header
+  dependency tracking: the build generates no `.d` files, and the compile rule is
+  `$(ObjDir)%.obj : %.cpp` — an object depends on its source and nothing else. So editing a header
+  leaves every library object looking up-to-date, `make libraries` returns 0 in seconds having
+  rebuilt nothing, and the tests then link fresh test objects against a library built from the OLD
+  headers. That passes, and proves nothing. Since Stroika is mostly header templates, this affects
+  most changes to it.
+  `QUICK_BUILD=0` does NOT help here, despite sounding like it should: it forces make to *check*
+  staleness rather than skip the check, but staleness is computed only against the `.cpp`, so a
+  header edit is invisible either way. (`QUICK_BUILD=1` is the default for
+  `make CONFIGURATION=X libraries`, and skips even that check when the library files already exist;
+  `make run-tests` inherits the same shortcut.)
+  `library-clobber` deletes everything except the third-party products, which are slow to rebuild
+  and aren't part of Stroika anyway — so it is the cheap way to get a *trustworthy* rebuild.
 - Docker images (`sophistsolutionsinc/stroika-buildvm-*`) are the easiest way to get a complete,
   correctly-versioned build environment; see `Documentation/Building-Stroika.md`.
 - Stroika ships as a static library only, by design (see Building-Stroika.md for rationale).
