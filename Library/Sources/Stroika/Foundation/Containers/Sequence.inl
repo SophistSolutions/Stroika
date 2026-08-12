@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 
+#include <algorithm>
 #include <execution>
 
 #include "Stroika/Foundation/Common/Empty.h"
@@ -405,6 +406,37 @@ namespace Stroika::Foundation::Containers {
     template <Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline optional<size_t> Sequence<T>::IndexOf (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer) const
     {
+        /*
+         *  FAST PATH - an index is exactly what a contiguous buffer yields for free (pointer difference),
+         *  where the general path below asks Find () to carry a counting side effect in its predicate
+         *  (see Private::IndexOf_ ()) - so it pays type erasure into std::function, per-element virtual
+         *  iteration, and an Iterator<T> construction, all to produce a number.
+         *
+         *  Deliberately duplicated rather than shared with Iterable<T>::Contains (): a common helper
+         *  would have to distinguish "backend has no contiguous storage" from "searched and not found",
+         *  ie return a nested optional, which reads far worse than these few lines do twice.
+         *
+         *  The index is the FIRST match in iteration order, as this method requires - overriders of
+         *  PeekContiguousStorage () must hand back storage in iteration order, which is the same
+         *  precondition As<> () and SequentialEquals () rely on.
+         */
+        {
+            _SafeReadRepAccessor<_IRep> accessor{this};
+            if (auto s = accessor._ConstGetRep ().PeekContiguousStorage ()) {
+                auto i = [&] () {
+                    if constexpr (same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> or same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<>>) {
+                        return std::find (s->begin (), s->end (), item);
+                    }
+                    else {
+                        return std::find_if (s->begin (), s->end (), [&] (const T& e) { return equalsComparer (e, item); });
+                    }
+                }();
+                if (i == s->end ()) {
+                    return optional<size_t>{};
+                }
+                return static_cast<size_t> (i - s->begin ());
+            }
+        }
         return Private::IndexOf_<T, EQUALS_COMPARER> (*this, item, forward<EQUALS_COMPARER> (equalsComparer));
     }
     template <typename T>

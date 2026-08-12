@@ -1176,6 +1176,42 @@ namespace {
         }
     }
 }
+namespace {
+    /*
+     *  Iterable<T>::Contains () and Sequence<T>::IndexOf () take a contiguous-storage fast path when the
+     *  backend can offer a span, so which code runs is invisible at the call site. Check both agree with
+     *  a naive scan over the cases most likely to separate them: match at the FIRST position (where an
+     *  off-by-one in the index arithmetic hides), at the LAST, absent entirely, an empty container, and
+     *  duplicates (IndexOf must return the FIRST match, not any match).
+     */
+    GTEST_TEST (Foundation_Traversal, Test25_Contains_IndexOf_ContiguousFastPath_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test25_Contains_IndexOf_ContiguousFastPath_"};
+        using Containers::Concrete::Sequence_Array;
+        using Containers::Concrete::Sequence_LinkedList;
+        const vector<vector<int>> kData_{{}, {5}, {1, 2, 3}, {7, 7, 7}, {4, 9, 4, 9}};
+        for (const auto& d : kData_) {
+            for (int probe : {0, 1, 2, 3, 4, 5, 7, 9}) {
+                auto                     ref     = std::find (d.begin (), d.end (), probe);
+                const bool               kFound_ = ref != d.end ();
+                optional<size_t>         kIndex_ = kFound_ ? optional<size_t>{static_cast<size_t> (ref - d.begin ())} : optional<size_t>{};
+                Sequence_Array<int>      arr{d}; // contiguous - takes the fast path
+                Sequence_LinkedList<int> ll{d};  // NOT contiguous - forces the general path
+                EXPECT_EQ (kFound_, arr.Contains (probe));
+                EXPECT_EQ (kFound_, ll.Contains (probe));
+                EXPECT_EQ (kIndex_, arr.IndexOf (probe));
+                EXPECT_EQ (kIndex_, ll.IndexOf (probe));
+                // A non-default comparer must be CONSULTED, not shortcut. One that always says 'equal'
+                // makes any non-empty container contain anything, at index 0.
+                auto kAlwaysEq_ = Common::DeclareEqualsComparer ([] (int, int) { return true; });
+                EXPECT_EQ (not d.empty (), arr.Contains (probe, kAlwaysEq_));
+                EXPECT_EQ (not d.empty (), ll.Contains (probe, kAlwaysEq_));
+                EXPECT_EQ (d.empty () ? optional<size_t>{} : optional<size_t>{0}, arr.IndexOf (probe, kAlwaysEq_));
+                EXPECT_EQ (d.empty () ? optional<size_t>{} : optional<size_t>{0}, ll.IndexOf (probe, kAlwaysEq_));
+            }
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

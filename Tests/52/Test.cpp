@@ -1560,6 +1560,40 @@ namespace {
             sOptimizerSink_ = sOptimizerSink_ + ((eq and ai == ae and bi == be) ? 1 : 0);
         }
         /*
+         *  Contains () / IndexOf () - the second real consumer built on PeekContiguousStorage ().
+         *  The _Old_ helpers are hand copies of what each did BEFORE the fast path: Contains () asked
+         *  Find () for an iterator and threw it away, and IndexOf () asked Find () to carry a counting
+         *  side effect in its predicate. Both therefore paid type erasure into std::function, per-element
+         *  virtual iteration, and an Iterator<T> construction. Keeping the old shape here rather than
+         *  calling the real method means these stay valid 'before' baselines afterwards.
+         *
+         *  Searching for an ABSENT value on purpose - that is the worst case and the only one that
+         *  measures the whole scan; a match short-circuits both sides at wherever it happens to sit.
+         */
+        template <typename T, typename CONTAINER_T>
+        void Contains_Old_ (const CONTAINER_T& it, ArgByValueType<T> v)
+        {
+            sOptimizerSink_ = sOptimizerSink_ + (static_cast<bool> (it.Find ([&v] (T i) -> bool { return equal_to<T>{}(i, v); })) ? 1 : 0);
+        }
+        template <typename T, typename CONTAINER_T>
+        void Contains_Fast_ (const CONTAINER_T& it, ArgByValueType<T> v)
+        {
+            sOptimizerSink_ = sOptimizerSink_ + (it.Contains (v) ? 1 : 0);
+        }
+        template <typename T, typename CONTAINER_T>
+        void IndexOf_Old_ (const CONTAINER_T& it, ArgByValueType<T> v)
+        {
+            size_t n = 0;
+            auto r = it.Find ([&n, &v] (ArgByValueType<T> ii) { return equal_to<T>{}(ii, v) ? true : (n++, false); }) ? optional<size_t>{n}
+                                                                                                                      : optional<size_t>{};
+            sOptimizerSink_ = sOptimizerSink_ + r.value_or (0);
+        }
+        template <typename T, typename CONTAINER_T>
+        void IndexOf_Fast_ (const CONTAINER_T& it, ArgByValueType<T> v)
+        {
+            sOptimizerSink_ = sOptimizerSink_ + it.IndexOf (v).value_or (0);
+        }
+        /*
          *  The shape of a NON-COPYING consumer - Contains ()/Find ()/IndexOf ()/Min ()/Max ()/Sum ()/
          *  SequentialEquals () all touch every element but copy none of them. Walk_Iterators_ is how they
          *  read the container today; Walk_Contiguous_ is what they would do given a span. Neither calls
@@ -1773,6 +1807,31 @@ namespace {
                 "SequentialEquals String: lockstep Stroika iterators vs contiguous fast path",
                 [&] () { SeqEquals_Iterating_<String> (kSeqStrs_, kSeqStrsCopy_); }, "lockstep Iterator<String>",
                 [&] () { SeqEquals_Fast_ (kSeqStrs_, kSeqStrsCopy_); }, "SequentialEquals (fast path)", kRunCount_ / 10, kNoWarn_);
+
+            /*
+             *  Contains () / IndexOf (). Predicted from THE MODEL (see TODO.md): the saving is the fixed
+             *  per-element iteration (~6ns int, ~12ns String), and what remains is the comparison itself.
+             *  int equality is ~free, so this should look like SequentialEquals's int case; String
+             *  equality dominates, so expect ~2x there.
+             */
+            constexpr int kAbsentInt_ = -1; // SourceInts_ () is drawn from [0, INT_MAX], so never present
+            const String  kAbsentStr_ = "no-such-element"sv;
+            (void)Tester (
+                "Contains int: old Find ()-based vs contiguous fast path", [&] () { Contains_Old_<int> (kSeqInts_, kAbsentInt_); },
+                "Contains via Find () (the old way)", [&] () { Contains_Fast_<int> (kSeqInts_, kAbsentInt_); }, "Contains (fast path)",
+                kRunCount_, kNoWarn_);
+            (void)Tester (
+                "Contains String: old Find ()-based vs contiguous fast path", [&] () { Contains_Old_<String> (kSeqStrs_, kAbsentStr_); },
+                "Contains via Find () (the old way)", [&] () { Contains_Fast_<String> (kSeqStrs_, kAbsentStr_); }, "Contains (fast path)",
+                kRunCount_ / 10, kNoWarn_);
+            (void)Tester (
+                "IndexOf int: old Find ()-with-counter vs contiguous fast path", [&] () { IndexOf_Old_<int> (kSeqInts_, kAbsentInt_); },
+                "IndexOf via Find () (the old way)", [&] () { IndexOf_Fast_<int> (kSeqInts_, kAbsentInt_); }, "IndexOf (fast path)",
+                kRunCount_, kNoWarn_);
+            (void)Tester (
+                "IndexOf String: old Find ()-with-counter vs contiguous fast path",
+                [&] () { IndexOf_Old_<String> (kSeqStrs_, kAbsentStr_); }, "IndexOf via Find () (the old way)",
+                [&] () { IndexOf_Fast_<String> (kSeqStrs_, kAbsentStr_); }, "IndexOf (fast path)", kRunCount_ / 10, kNoWarn_);
 
             // Rep cost only - the two OrderBy ()s now take the same arguments and the same eSeq default.
             (void)Tester (

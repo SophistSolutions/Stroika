@@ -321,6 +321,34 @@ namespace Stroika::Foundation::Traversal {
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     bool Iterable<T>::Contains (ArgByValueType<T> element, EQUALS_COMPARER&& equalsComparer) const
     {
+        /*
+         *  FAST PATH - when this backend keeps its elements contiguously, scan that buffer directly.
+         *
+         *  This is worth more here than the span alone suggests, because the general path below is
+         *  unusually expensive for what it computes: it wraps the comparison in a lambda, hands that to
+         *  Find (), which type-erases it into a std::function, walks the container through Iterable<T>'s
+         *  virtuals calling through that function per element, CONSTRUCTS an Iterator<T> at the match,
+         *  and then throws the iterator away to yield a bool. The fast path does none of those.
+         *
+         *  Dropping the comparer where it is the default one lets the standard library pick its
+         *  vectorized find for the types it can (the same reason SequentialEquals () does it).
+         *
+         *  \note   This does NOT displace a better algorithm anywhere. Set, MultiSet, SortedCollection,
+         *          KeyedCollection and Collection all declare their own Contains () routing to their
+         *          backend's keyed lookup, so they never reach this. What is left - Sequence<T> and a
+         *          plain Iterable<T> - is linear either way, so a span is a pure win.
+         */
+        {
+            _SafeReadRepAccessor<> accessor{this};
+            if (auto s = accessor._ConstGetRep ().PeekContiguousStorage ()) {
+                if constexpr (same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> or same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<>>) {
+                    return std::find (s->begin (), s->end (), element) != s->end ();
+                }
+                else {
+                    return std::find_if (s->begin (), s->end (), [&] (const T& i) { return equalsComparer (i, element); }) != s->end ();
+                }
+            }
+        }
         // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
         return static_cast<bool> (this->Find ([&element, &equalsComparer] (T i) -> bool { return equalsComparer (i, element); }));
     }
@@ -1203,6 +1231,18 @@ namespace Stroika::Foundation::Traversal {
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     inline Iterator<T> Iterable<T>::Find (Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const
     {
+        /*
+         *  NB: deliberately NO _IRep::PeekContiguousStorage () fast path here, unlike Contains () and
+         *  Sequence<T>::IndexOf (). Find () must return a live Iterator<T> positioned at the match, and a
+         *  span can only give a POSITION - there is no way to synthesize a Stroika iterator from a
+         *  pointer, and _IRep offers only MakeIterator (), never an 'iterator at index N'. So a span
+         *  would locate the element quickly and then have to walk to it anyway, for no net gain.
+         *
+         *  The hook that DOES fit a contiguous backend here is _IRep::Find_equal_to () just below, which
+         *  a backend can override to use its own storage AND its own iterator construction - which is how
+         *  the tree/hash backends already accelerate this. That is per-backend work, not a generic span
+         *  path.
+         */
         if constexpr (same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Common::IEqualToOptimizable<T>) {
             // This CAN be much faster than the default implementation for this special (but common) case (often a tree structure will have been maintained making this find faster)
             _SafeReadRepAccessor<> accessor{this};
