@@ -4,6 +4,7 @@
 //  TEST    Foundation::Traversal
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <algorithm>
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/Format.h"
