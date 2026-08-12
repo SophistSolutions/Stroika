@@ -266,13 +266,17 @@ DEFAULT_CC_LINE=\
 		-c $1 \
 		-o $2
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
+# See the note on DEFAULT_CXX_LINE below: filtering cl.exe's filename echo must NOT be done by piping
+# the compiler into sed, or the compiler's exit status is lost and compile errors return 0.
 DEFAULT_CC_LINE=\
-	"$(CC)" \
+	ccOut_=$$("$(CC)" \
 		$(CPPFLAGS) \
 		$(CFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
-		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
-		| sed -n '1!p'
+		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2)); \
+	ccRC_=$$?; \
+	printf '%s\n' "$$ccOut_" | sed -n '1!p'; \
+	exit $$ccRC_
 endif
 
 
@@ -299,20 +303,29 @@ DEFAULT_CXX_LINE=\
 		-c $1 \
 		-o $2
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
+# NB: cl.exe echoes the source file name as its first line of output, which these filter out with
+# 'sed -n 1!p'. Do NOT do that by piping the compiler into sed: a pipeline's exit status is its LAST
+# element's, so sed's success masks the compiler's failure and EVERY compile error silently returns 0
+# (the build then limps on and dies later at link time with a confusing 'LNK1181: cannot open input
+# file ...obj', the missing .obj being the consequence rather than the cause).
+# So capture stdout first, keep the compiler's own status, and filter afterwards. stderr is left
+# alone so diagnostics written there still stream straight through.
 DEFAULT_CPP_LINE=\
 	"$(CXX)" \
 		$(CPPFLAGS) \
 		$(CXXFLAGS) \
 		-E $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		> $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(shell dirname $2)/$(shell basename $2 .obj)).i \
-		2>&1 | sed -n '1!p'
+		2>&1
 DEFAULT_CXX_LINE=\
-	"$(CXX)" \
+	cxxOut_=$$("$(CXX)" \
 		$(CPPFLAGS) \
 		$(CXXFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
-		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
-		| sed -n '1!p'
+		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2)); \
+	cxxRC_=$$?; \
+	printf '%s\n' "$$cxxOut_" | sed -n '1!p'; \
+	exit $$cxxRC_
 endif
 
 
