@@ -13,6 +13,8 @@
 #include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -1134,6 +1136,44 @@ namespace {
             EXPECT_TRUE (t.SequentialEquals (r4));
             auto r5 = t.Map ([] (int i) -> optional<int> { return i == 1 ? optional<int>{} : i; });
             EXPECT_TRUE (r5.SequentialEquals ({2, 3}));
+        }
+    }
+}
+namespace {
+    /*
+     *  Iterable<T>::SequentialEquals () takes a contiguous-storage fast path when BOTH operands can be
+     *  seen as a span, so WHICH code runs depends on each operand's backend and on the comparer - all of
+     *  it invisible at the call site. This checks every combination agrees with a naive elementwise
+     *  comparison over the cases most likely to separate them: unequal lengths, empty containers, and a
+     *  non-default comparer (which must never be shortcut to a memcmp).
+     */
+    GTEST_TEST (Foundation_Traversal, Test24_Iterable_SequentialEquals_ContiguousFastPath_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test24_Iterable_SequentialEquals_ContiguousFastPath_"};
+        using Containers::Concrete::Sequence_Array;
+        using Containers::Concrete::Sequence_LinkedList;
+        const vector<vector<int>> kCases_{{}, {1}, {1, 2, 3}, {1, 2, 4}, {1, 2, 3, 4}, {9, 9, 9}};
+        for (const auto& l : kCases_) {
+            for (const auto& r : kCases_) {
+                const bool               kExpected_ = l.size () == r.size () and std::equal (l.begin (), l.end (), r.begin ());
+                Sequence_Array<int>      lArr{l}; // contiguous - offers a span
+                Sequence_Array<int>      rArr{r};
+                Sequence_LinkedList<int> lLL{l}; // NOT contiguous - forces the general path
+                Sequence_LinkedList<int> rLL{r};
+                EXPECT_EQ (kExpected_, lArr.SequentialEquals (rArr)); // fast path: span vs span
+                EXPECT_EQ (kExpected_, lArr.SequentialEquals (rLL));  // mixed - general path
+                EXPECT_EQ (kExpected_, lLL.SequentialEquals (rArr));  // mixed - general path
+                EXPECT_EQ (kExpected_, lLL.SequentialEquals (rLL));   // general path both sides
+                EXPECT_EQ (kExpected_, lArr.SequentialEquals (r));    // vector<int> RHS - fast path
+                EXPECT_EQ (kExpected_, lLL.SequentialEquals (r));     // vector<int> RHS - general path
+                // useIterableSize is ignored by the fast path, so it must still agree with the default
+                EXPECT_EQ (kExpected_, lArr.SequentialEquals (rArr, equal_to<int>{}, true));
+                // A non-default comparer must actually be CONSULTED rather than shortcut. One that
+                // always says 'equal' reduces equality to same-length - if this ever returns kExpected_
+                // for differing lengths' sake alone, the comparer was skipped.
+                EXPECT_EQ (l.size () == r.size (), lArr.SequentialEquals (rArr, Common::DeclareEqualsComparer ([] (int, int) { return true; })));
+                EXPECT_EQ (kExpected_, lArr.SequentialEquals (rArr, Common::DeclareEqualsComparer ([] (int a, int b) { return a == b; })));
+            }
         }
     }
 }

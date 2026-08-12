@@ -44,21 +44,49 @@ Generally will track stuff here between releases
   pointer pair. Measured (Release, N=1000, 'Test52 --show'): As<vector<int>> over a contiguous backend
   went 170 -> ~1.1 vs a plain vector copy, and Sequence<int>::OrderBy () fell 2.58 -> ~0.95 vs
   std::stable_sort as a consequence. Still open, in priority order:
-    1. DONE - the non-trivial-T question is answered, and the worry behind it was WRONG. Measured
-       ('Test52 --show --orderby-probe', Release, N=1000), fast path vs what As<> did before it, same
-       contiguous source, so the score is the hook's own contribution:
-         * As<vector<T>> (copy-dominated):     int 186x faster,  String 3.1x faster
-         * non-copying consumer shape:         int  46x faster,  String  13x faster
-       The saving is a roughly FIXED per-element cost - the virtual iteration, ~6ns/element for int and
-       ~12ns/element for String - so what varies is not the saving but what it is compared against. In
-       As<vector<String>> the per-element copy (~13ns, a refcount bump plus the vector's own growth)
-       dilutes it, which is why that case looks weakest at 3.1x. That was the case worth worrying about
-       and it is the one that does NOT generalize: the consumers in item 2 copy nothing.
-       (Old As<> paid TWO virtual walks - distance () then copy - which is why 2*12+13 ~ the 40ns/element
-       measured for the String range CTOR. The model is consistent.)
-    2. The remaining consumers - JUSTIFIED by item 1 at 13x even for String, so build them:
-       SequentialEquals () first (memcmp-able for trivial T, the biggest one left), then
-       Contains ()/Find ()/IndexOf (), then Min ()/Max ()/Sum ()/Median ().
+    1. DONE - the non-trivial-T question is answered. Per-element cost BEFORE the hook vs AFTER
+       ('Test52 --show --orderby-probe', Release, N=1000, same contiguous source both sides):
+                                        int                 String
+           As<vector<T>>          11.7 -> 0.06 ns      40.0 -> 13.0 ns
+           plain walk, no copy     6.2 -> 0.13 ns      12.1 ->  0.9 ns
+       The hook removes a roughly FIXED per-element cost - the virtual iteration, ~6ns/element for int
+       and ~12ns for String. What is left afterwards is whatever the operation actually does per
+       element: for As<vector<String>> that is the ~13ns copy (a refcount bump plus the vector's own
+       growth), which is why that row improves least in RELATIVE terms while still saving the same ~27ns
+       in absolute terms.
+       (The old As<> paid TWO virtual walks - distance () then copy - which is why 2*12+13 ~ the 40ns
+       measured. The model is consistent.)
+    2. Consumers. SequentialEquals () DONE - engages when BOTH sides are contiguous, where "contiguous"
+       means either an Iterable<T> whose rep offers a span OR any other contiguous_range of T (so a
+       vector<T> or initializer_list<T> RHS qualifies). Per-element cost BEFORE vs AFTER, comparing two
+       equal 1000-element Sequence_Arrays:
+           int      13.6 -> 0.13 ns    (memcmp - the comparer is DROPPED when it is the default one,
+                                        which is what licenses the library's memcmp specialization)
+           String   42.4 -> 22.1 ns    (still a String compare per element either way)
+       SIZING THE NEXT CONSUMER: do not predict from the "plain walk" row in item 1. Its per-element
+       work was Magnitude_ (a size () call), far cheaper than a real comparison, so it flatters any
+       consumer that does actual work. Predict instead from
+           saved     = the iteration removed, ~6ns/element/side for int and ~12ns for String
+           remaining = what the operation itself costs per element
+       String equality costs ~22ns, which swamps the ~20ns saved across two sides - hence 1.9x. So
+       expect ~2x, not 13x, for a non-trivial T on: Contains ()/Find ()/IndexOf (), then
+       Min ()/Max ()/Sum (). Median () sorts, so it is dominated by the sort - probably not worth doing.
+    2b. DROP SequentialEquals ()'s useIterableSize parameter (LGP's call - do not build a mechanism to
+       make it automatic). Comparing sizes first only saves work when the lengths DIFFER and the shorter
+       is a PREFIX of the longer; any other mismatch is already found at the first differing element in
+       O(1), and when the lengths are equal - the common case - the size check can never pay off. So the
+       entire prize is prefix-vs-longer comparisons on NON-contiguous backends (contiguous ones get it
+       free from the span), which is mostly a test-suite shape, not a hot path.
+       Not worth a PeekSize () virtual plus an override on every backend, which was the earlier idea.
+       Supporting evidence for removing rather than just leaving it: repo-wide - Library/, Samples/,
+       Tests/ - NOTHING passes true. That is structural: the bool asks the CALLER whether size () is
+       cheap on both operands, which means knowing both backends, which is what Iterable exists to hide.
+       It also carries a precondition the caller can silently violate (size () must not change during
+       the comparison; debug builds assert it) in exchange for an optimization that usually does nothing.
+       And "just always use it" is not an option either: _IRep::size () defaults to Apply ()-ing over
+       every element and counting (Iterable.inl:37) with no generator rep overriding it, so every
+       Where ()/Map ()/Select ()/Repeat () pipeline has O(n) size () no matter what LinkedList does -
+       and on a lazy pipeline that runs the generator once, then SequentialEquals runs it AGAIN.
     3. DenseDataHyperRectangle_Vector - the one contiguous backend still not overriding. Blocked on
        checking its cell iteration order against its linear storage order: an overrider MUST hand back
        elements in ITERATION order, so anything whose storage order differs has to stay nullopt (as
@@ -74,11 +102,17 @@ Generally will track stuff here between releases
     5. This supersedes Apply () for contiguous backends - see the note at Iterable.h ~547 explaining
        that Apply () exists to avoid per-element virtual iteration. Apply () still pays a
        std::function call per element; a span pays nothing per element.
-    6. The permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry is noisier
-       than its own comment claims. That comment says 0.97-1.07 over 4 runs and calls 1.5 "loose enough
-       not to flap"; on an idle machine it has since been observed at 1.09/1.11/1.19/1.25/1.40, and at
-       1.77 on a loaded one. Both sides are ~15-25ms, which is small enough for scheduling jitter to
-       show. Either raise the run count or widen the threshold - as it stands it will eventually flap.
+    6. The permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap, and
+       the reason is measurement CONTEXT, not machine load:
+           run standalone ('Test52 --show'):   0.76, 1.06, 1.09, 1.11, 1.19, 1.25, 1.40
+           run in-suite ('make run-tests'):    1.69, 1.77
+       ie ~2x higher in the run that actually gates. Test52 runs after 30+ other test binaries in one
+       make run-tests invocation, so heap/cache state is nothing like a fresh process. Its threshold
+       (1.5) was tuned from standalone numbers - the code comment claims 0.97-1.07 over 4 runs and calls
+       1.5 "loose enough not to flap" - so it is calibrated against the wrong distribution. Both sides
+       are only ~15-25ms, which makes it that much easier to move.
+       Fix by raising the run count until in-suite readings stabilize, or by widening the threshold to
+       cover the in-suite range. Do NOT re-tune it from a standalone run.
 
 - LinkedList::size () / DoublyLinkedList::size () are O(n) - cache the length instead. Both walk from
   fHead_ counting. Every other DataStructure in the stack is already O(1): Array and SkipList keep
@@ -112,3 +146,4 @@ Generally will track stuff here between releases
 - ask if anything else reasonable todo on bidi iterator support or at least if this is good breaking point.
 - test HearHE
 - deal with failed/lost bugs from JIRA
+- should SequentialEquals() take 'use size' parameter? probbaly not

@@ -1530,6 +1530,35 @@ namespace {
             Consume_ (tmp);
         }
         /*
+         *  SequentialEquals () - the first real consumer built on PeekContiguousStorage (). Both sides
+         *  compare the SAME two contiguous containers; only the mechanism differs, so the score is the
+         *  fast path's own contribution. SeqEquals_Iterating_ is a hand copy of what the general path does
+         *  (advance two Stroika iterators in lockstep), so it stays a valid 'before' even after the real
+         *  implementation stops doing that. Equal sequences on purpose - that is the worst case, since a
+         *  mismatch short-circuits.
+         */
+        template <typename CONTAINER_T>
+        void SeqEquals_Fast_ (const CONTAINER_T& a, const CONTAINER_T& b)
+        {
+            sOptimizerSink_ = sOptimizerSink_ + (a.SequentialEquals (b) ? 1 : 0);
+        }
+        template <typename T, typename CONTAINER_T>
+        void SeqEquals_Iterating_ (const CONTAINER_T& a, const CONTAINER_T& b)
+        {
+            auto ai = a.begin ();
+            auto bi = b.begin ();
+            auto ae = Iterator<T>{a.end ()};
+            auto be = Iterator<T>{b.end ()};
+            bool eq = true;
+            for (; ai != ae and bi != be; ++ai, ++bi) {
+                if (not(*ai == *bi)) {
+                    eq = false;
+                    break;
+                }
+            }
+            sOptimizerSink_ = sOptimizerSink_ + ((eq and ai == ae and bi == be) ? 1 : 0);
+        }
+        /*
          *  The shape of a NON-COPYING consumer - Contains ()/Find ()/IndexOf ()/Min ()/Max ()/Sum ()/
          *  SequentialEquals () all touch every element but copy none of them. Walk_Iterators_ is how they
          *  read the container today; Walk_Contiguous_ is what they would do given a span. Neither calls
@@ -1616,6 +1645,10 @@ namespace {
             constexpr double                                   kNoWarn_   = 1000.0; // a probe has no regression threshold
             const Containers::Concrete::Sequence_Array<int>    kSeqInts_{SourceInts_ ()};
             const Containers::Concrete::Sequence_Array<String> kSeqStrs_{SourceStrings_ ()};
+            // Distinct objects, equal contents - so SequentialEquals () must actually traverse, and cannot
+            // short-circuit on identity or on a shared rep.
+            const Containers::Concrete::Sequence_Array<int>    kSeqIntsCopy_{SourceInts_ ()};
+            const Containers::Concrete::Sequence_Array<String> kSeqStrsCopy_{SourceStrings_ ()};
             const Iterable<int>                                kIterInts_{SourceInts_ ()};
 
             GetOutStream_ () << "=== Sequence<>::OrderBy () DESIGN PROBE (--orderby-probe) ===" << endl;
@@ -1724,6 +1757,21 @@ namespace {
                 "Non-copying consumer shape, String: Stroika iteration vs contiguous walk", [&] () { Walk_Iterators_ (kSeqStrs_); },
                 "walk via Iterator<String>", [&] () { Walk_Contiguous_<String> (SourceStrings_ ()); }, "walk contiguous storage",
                 kRunCount_ / 10, kNoWarn_);
+
+            /*
+             *  SequentialEquals () - the prediction the "non-copying consumer shape" entries above make,
+             *  now measured on the real thing. int should beat the 46x that shape scored, because dropping
+             *  the predicate lets the library collapse equal spans to a memcmp; String should land near
+             *  its 13x, since it still pays a String compare per element either way.
+             */
+            (void)Tester (
+                "SequentialEquals int: lockstep Stroika iterators vs contiguous fast path",
+                [&] () { SeqEquals_Iterating_<int> (kSeqInts_, kSeqIntsCopy_); }, "lockstep Iterator<int>",
+                [&] () { SeqEquals_Fast_ (kSeqInts_, kSeqIntsCopy_); }, "SequentialEquals (fast path)", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "SequentialEquals String: lockstep Stroika iterators vs contiguous fast path",
+                [&] () { SeqEquals_Iterating_<String> (kSeqStrs_, kSeqStrsCopy_); }, "lockstep Iterator<String>",
+                [&] () { SeqEquals_Fast_ (kSeqStrs_, kSeqStrsCopy_); }, "SequentialEquals (fast path)", kRunCount_ / 10, kNoWarn_);
 
             // Rep cost only - the two OrderBy ()s now take the same arguments and the same eSeq default.
             (void)Tester (
@@ -1947,6 +1995,9 @@ namespace {
             // the copy, so 1.5 both leaves flap room and catches a fall back to that regime.
             static const Containers::Concrete::Sequence_Array<int> kSeqInts_{Test_IterableAlgorithms_::SourceInts_ ()};
             static const Iterable<int>                             kIterInts_{Test_IterableAlgorithms_::SourceInts_ ()};
+            // A DISTINCT object with equal contents, so SequentialEquals () below must traverse the whole
+            // sequence rather than short-circuit on identity or on a shared rep.
+            static const Containers::Concrete::Sequence_Array<int> kSeqIntsCopy_{Test_IterableAlgorithms_::SourceInts_ ()};
             Tester (
                 "Sequence<int>::OrderBy () vs std::stable_sort",
                 [] () { Test_IterableAlgorithms_::Baseline_StdStableSort_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
@@ -1996,6 +2047,31 @@ namespace {
                 [] () { Test_IterableAlgorithms_::Baseline_VectorCopy_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
                 "vector<int> copy CTOR", [] () { Test_IterableAlgorithms_::Copy_AsVector_Concrete_<int> (kSeqInts_); },
                 "Sequence_Array<int>::As<vector<int>> ()", 200000, 1.5, &failedTests);
+            /*
+             *  Guards SequentialEquals () over two CONTIGUOUS backends. The baseline advances two Stroika
+             *  iterators in lockstep - literally what the general path does, and what this cost before
+             *  _IRep::PeekContiguousStorage () - so the score is the fast path's own contribution:
+             *  13.6ns/element -> 0.13ns/element, ie the comparer is dropped where it is the default one
+             *  and the whole thing becomes a memcmp.
+             *
+             *  What this catches, and nothing else does: the fast path SILENTLY not engaging. It is gated
+             *  on both operands offering a span, so a backend that stops overriding PeekContiguousStorage (),
+             *  a change that makes the constructible_from guard stop matching, or a subclass that hides
+             *  SequentialEquals () (which is exactly what Sequence<T> once did to As ()) all fall back to
+             *  iteration with no other symptom.
+             *
+             *  Threshold: measured ~0.0099. 0.1 is a 10x margin, and a fall back to iteration scores ~1.0,
+             *  ie 10x the OTHER side of the threshold - so this cannot flap the way the two 1.5-threshold
+             *  entries above can. That is the general point: an entry whose two sides differ by orders of
+             *  magnitude makes a robust gate; one whose sides are nearly equal does not (see TODO.md).
+             *  It does not catch losing JUST the memcmp while keeping the span walk - that would score
+             *  ~0.05 and pass. Guarding the big, silent regression robustly beats guarding both flakily.
+             */
+            Tester (
+                "Sequence_Array<int>::SequentialEquals () vs lockstep Stroika iterators",
+                [] () { Test_IterableAlgorithms_::SeqEquals_Iterating_<int> (kSeqInts_, kSeqIntsCopy_); }, "lockstep Iterator<int>",
+                [] () { Test_IterableAlgorithms_::SeqEquals_Fast_ (kSeqInts_, kSeqIntsCopy_); }, "Sequence_Array<int>::SequentialEquals ()",
+                75000, 0.1, &failedTests);
         }
         JSONTests_::Run ();
 

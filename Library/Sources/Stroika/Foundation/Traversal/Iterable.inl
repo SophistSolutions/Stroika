@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include <algorithm>
 #include <execution>
 #include <set>
 
@@ -403,6 +404,79 @@ namespace Stroika::Foundation::Traversal {
     template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     bool Iterable<T>::SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize)
     {
+        /*
+         *  FAST PATH - when BOTH sides can be seen as contiguous runs of T, compare them as spans instead of
+         *  advancing two Stroika iterators in lockstep. Per-element virtual iteration measures ~6ns for int
+         *  and ~12ns for String ('Test52 --show --orderby-probe', the "non-copying consumer shape" entries);
+         *  a span walk pays none of it, which is a 46x/13x saving on a comparison that copies nothing. And
+         *  where T is trivially comparable, dropping the predicate lets the standard library collapse the
+         *  whole thing to a memcmp.
+         *
+         *  A side qualifies two ways, and they are not the same mechanism:
+         *      o   an Iterable<T> (or subclass) whose backend offers _IRep::PeekContiguousStorage ()
+         *      o   any OTHER contiguous_range of T - vector<T>, array<T,N>, span<T>, and notably
+         *          initializer_list<T>, which is the default RHS_CONTAINER_TYPE, so
+         *          'c.SequentialEquals ({1, 2, 3})' takes this path
+         *  Only the first needs a _SafeReadRepAccessor; a plain range's data () is not COW-managed. Each
+         *  accessor is a named local in the scope that uses the span, per PeekContiguousStorage ()'s
+         *  precondition - which is also why this cannot be factored into a helper returning just the span.
+         *
+         *  useIterableSize is irrelevant here: comparing span sizes is O(1) either way, and "same length and
+         *  same elements" is exactly what the general path below computes. So this deliberately does NOT
+         *  call size () on either container, which is what that flag exists to let callers avoid.
+         */
+        {
+            using LHS_                     = remove_cvref_t<LHS_CONTAINER_TYPE>;
+            using RHS_                     = remove_cvref_t<RHS_CONTAINER_TYPE>;
+            constexpr bool kLHSIsIterable_ = derived_from<LHS_, Iterable<T>>;
+            constexpr bool kRHSIsIterable_ = derived_from<RHS_, Iterable<T>>;
+            constexpr bool kLHSIsContiguous_ =
+                not kLHSIsIterable_ and ranges::contiguous_range<LHS_> and same_as<remove_cvref_t<ranges::range_value_t<LHS_>>, T>;
+            constexpr bool kRHSIsContiguous_ =
+                not kRHSIsIterable_ and ranges::contiguous_range<RHS_> and same_as<remove_cvref_t<ranges::range_value_t<RHS_>>, T>;
+            if constexpr ((kLHSIsIterable_ or kLHSIsContiguous_) and (kRHSIsIterable_ or kRHSIsContiguous_)) {
+                auto spansEqual_ = [&] (span<const T> l, span<const T> r) -> bool {
+                    if (l.size () != r.size ()) {
+                        return false;
+                    }
+                    // Passing NO predicate where the comparer is the default one is what licenses the
+                    // library's memcmp specialization; equal_to<T> and operator== agree by definition.
+                    if constexpr (same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> or same_as<remove_cvref_t<EQUALS_COMPARER>, equal_to<>>) {
+                        return std::equal (l.begin (), l.end (), r.begin ());
+                    }
+                    else {
+                        return std::equal (l.begin (), l.end (), r.begin (), equalsComparer);
+                    }
+                };
+                // Completes the comparison once the LHS span is in hand; nullopt = RHS had no storage to
+                // offer, so fall through to the general path below.
+                auto withLHSSpan_ = [&] (span<const T> l) -> optional<bool> {
+                    if constexpr (kRHSIsIterable_) {
+                        _SafeReadRepAccessor<> rhsAccessor{&rhs};
+                        if (auto rs = rhsAccessor._ConstGetRep ().PeekContiguousStorage ()) {
+                            return spansEqual_ (l, *rs);
+                        }
+                        return nullopt;
+                    }
+                    else {
+                        return spansEqual_ (l, span<const T>{ranges::data (rhs), ranges::size (rhs)});
+                    }
+                };
+                if constexpr (kLHSIsIterable_) {
+                    _SafeReadRepAccessor<> lhsAccessor{&lhs};
+                    if (auto ls = lhsAccessor._ConstGetRep ().PeekContiguousStorage ()) {
+                        if (auto result = withLHSSpan_ (*ls)) {
+                            return *result;
+                        }
+                    }
+                }
+                else {
+                    if (auto result = withLHSSpan_ (span<const T>{ranges::data (lhs), ranges::size (lhs)})) {
+                        return *result;
+                    }
+                }
+            }
+        }
         if (useIterableSize) {
             if (lhs.size () != rhs.size ()) {
                 return false;
