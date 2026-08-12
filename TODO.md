@@ -54,13 +54,14 @@ Generally will track stuff here between releases
   because the comparer is dropped when it is the default one); String equality costs ~22ns and swamps
   the ~20ns saved across two sides (1.9x). Expect ~2x, not 10x+, for a non-trivial T.
   Still open, in priority order:
-    1. The remaining consumers: Contains ()/Find ()/IndexOf (), then Min ()/Max ()/Sum (). Median ()
-       sorts, so it is dominated by the sort - probably not worth doing at all.
-    2. DenseDataHyperRectangle_Vector - the one contiguous backend still not overriding. Blocked on
-       checking its cell iteration order against its linear storage order: an overrider MUST hand back
-       elements in ITERATION order, so anything whose storage order differs has to stay nullopt (as
-       Sequence_ChunkedArray does).
-    3. STAGE 2 - the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is what
+    1. The remaining consumers: Min ()/Max ()/Sum (). Contains () and Sequence<T>::IndexOf () are DONE
+       (7b0d6bb9e3). Find () is deliberately NOT done and should stay that way - it must return a live
+       Iterator<T>, a span yields only a POSITION, and _IRep has no 'iterator at index N', so it would
+       locate fast and then have to walk there anyway. The hook that does fit a contiguous backend is
+       _IRep::Find_equal_to (), which is per-backend work rather than a generic span path; there is a
+       comment saying so at the Find () implementation. Median () sorts, so it is dominated by the
+       sort - probably not worth doing at all.
+    2. STAGE 2 - the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is what
        lets OrderBy () sort backend storage in place (measured 1.85x for int, 1.13x for String - see
        DESIGN DIRECTION above). RE-MEASURE FIRST: OrderBy () sits at ~0.95 vs raw stable_sort now, so
        the headroom is far smaller than when that 1.85x was taken.
@@ -68,10 +69,10 @@ Generally will track stuff here between releases
        mutable storage from a const object reintroduces the COW hazard documented on
        Sequence<T>::operator[] (another thread copies the container, bumping the refcount, while you
        write through the span). _GetWriteableRep () is where sole ownership is assured.
-    4. This supersedes Apply () for contiguous backends - see the note at Iterable.h ~547 explaining
+    3. This supersedes Apply () for contiguous backends - see the note at Iterable.h ~547 explaining
        that Apply () exists to avoid per-element virtual iteration. Apply () still pays a
        std::function call per element; a span pays nothing per element.
-    5. The permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap, and
+    4. The permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap, and
        the reason is measurement CONTEXT, not machine load:
            run standalone ('Test52 --show'):   0.76, 1.06, 1.09, 1.11, 1.19, 1.25, 1.40
            run in-suite ('make run-tests'):    1.69, 1.77
