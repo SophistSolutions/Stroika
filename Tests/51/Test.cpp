@@ -1166,8 +1166,6 @@ namespace {
                 EXPECT_EQ (kExpected_, lLL.SequentialEquals (rLL));   // general path both sides
                 EXPECT_EQ (kExpected_, lArr.SequentialEquals (r));    // vector<int> RHS - fast path
                 EXPECT_EQ (kExpected_, lLL.SequentialEquals (r));     // vector<int> RHS - general path
-                // useIterableSize is ignored by the fast path, so it must still agree with the default
-                EXPECT_EQ (kExpected_, lArr.SequentialEquals (rArr, equal_to<int>{}, true));
                 // A non-default comparer must actually be CONSULTED rather than shortcut. One that
                 // always says 'equal' reduces equality to same-length - if this ever returns kExpected_
                 // for differing lengths' sake alone, the comparer was skipped.

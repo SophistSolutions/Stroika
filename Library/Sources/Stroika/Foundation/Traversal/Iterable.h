@@ -449,21 +449,29 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  SequentialEquals () - measures if iteration over the two containers produces identical sequences
-         *  of elements (identical by compare with EQUALS_COMPARER). It does not call 'size' - by default - but just iterates (unless the paraemter useIterableSize)
+         *  of elements (identical by compare with EQUALS_COMPARER). It does not call 'size', but just iterates.
          *
          *  \note - RHS_CONTAINER_TYPE can be any iterable, including an STL container like vector or initializer_list
          *
-         *  \note If useIterableSize == true (Defaults false), size() method must be quick, and unchanged during the lifetime of the the comparison.
-         *
          *  \em Performance:
-         *      This algorithm is O(N)
+         *      This algorithm is O(N).
+         *
+         *      Where BOTH arguments are contiguous runs of T - an Iterable<T> whose backend offers
+         *      _IRep::PeekContiguousStorage (), or any other contiguous_range of T such as vector<T> or
+         *      initializer_list<T> - they are compared as spans rather than by advancing two Iterator<T>s,
+         *      and where EQUALS_COMPARER is the default the comparison degenerates to a memcmp.
          */
         template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs,
-                                      EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false);
+                                      EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
         template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{},
-                                          bool useIterableSize = false) const;
+        nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
+        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER>
+        [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the overload without it")]] static bool
+        SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize);
+        template <ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER>
+        [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the overload without it")]] nonvirtual bool
+        SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize) const;
 
     public:
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER = equal_to<T>>
@@ -1684,8 +1692,6 @@ namespace Stroika::Foundation::Traversal {
      *  And if one ends before the other, if the LHS ends first, treat that as less (like with alphabetizing) and
      *  if the right ends first, treat that as >.
      *
-     *  \note If useIterableSize == true (Defaults false), size() method must be quick, and unchanged during the lifetime of the the comparison.
-     *
      *  SequentialEqualsComparer is commutative().
      *
      *  Computational Complexity: O(N)
@@ -1693,10 +1699,11 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
     struct Iterable<T>::SequentialEqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-        constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {}, bool useIterableSize = false);
+        constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {});
+        [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the CTOR without it")]] constexpr SequentialEqualsComparer (
+            const T_EQUALS_COMPARER& elementComparer, bool useIterableSize);
         nonvirtual bool                                                operator() (const Iterable& lhs, const Iterable& rhs) const;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE T_EQUALS_COMPARER fElementComparer;
-        bool                                                           fUseIterableSize;
     };
 
     /**

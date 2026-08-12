@@ -130,8 +130,19 @@ Generally will track stuff here between releases
       question noted under OrderBy () above worth re-testing for linked-list backends - ie it is what
       would generate the evidence we currently do not have.
 - Build system error handling. One fix landed (c02ebaa1c6 - Tests/Makefile's all-configurations
-  check/run-tests loops swallowed output and returned 0 on failure). Same class, still open, each
-  needing a decision rather than just a fix:
+  check/run-tests loops swallowed output and returned 0 on failure). Same class, still open:
+    - **MSVC COMPILE FAILURES ARE SILENTLY IGNORED.** Build/Lib/Make/SharedMakeVariables-Default.mk:309
+      ends DEFAULT_CXX_LINE with '| sed -n '1!p'' (to strip MSVC's filename echo). A pipeline's exit
+      status is the LAST element's, so cl.exe's failure is discarded and every compile error returns 0.
+      REPRODUCED: append '#error X' to Tests/04/Test.cpp, then 'make CONFIGURATION=Debug -C Tests/04
+      all' prints the error and exits 0. Windows-only - the non-MSVC DEFAULT_CXX_LINE (line 295) has no
+      pipe.
+      This is why a broken build limps on and dies later at link time with a confusing
+      'LNK1181: cannot open input file ...obj' instead of stopping at the actual compile error - the
+      missing .obj is the CONSEQUENCE of the swallowed failure.
+      Fix needs care: make's default SHELL is sh, so 'set -o pipefail' only works if SHELL is bash (or
+      set .SHELLFLAGS). Alternative: capture the compiler output to a temp file, sed it afterwards, and
+      exit with the compiler's own status.
     - Build/Shared/Skel-Templates/{Basic,HTMLUI}/Makefile: the generated app's all: loop over
       configurations has no '|| exit $$?', so a new Stroika app's 'make all' walks past a
       configuration that failed to BUILD and still exits 0. The root Makefile does it correctly for

@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
-    bool Iterable<T>::SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize)
+    bool Iterable<T>::SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer)
     {
         /*
          *  FAST PATH - when BOTH sides can be seen as contiguous runs of T, compare them as spans instead of
@@ -477,53 +477,47 @@ namespace Stroika::Foundation::Traversal {
                 }
             }
         }
-        if (useIterableSize) {
-            if (lhs.size () != rhs.size ()) {
-                return false;
-            }
-        }
         auto li{lhs.begin ()};
         auto ri{rhs.begin ()};
         auto le{lhs.end ()};
-        if (useIterableSize) {
-#if qStroika_Foundation_Debug_AssertionsChecked
-            auto re{rhs.end ()};
-            Assert ((li != le) == (ri != re)); // cuz same length, and this requires size cannot change during call
-#endif
-            while (li != le) {
-                if (not equalsComparer (*li, *ri)) {
-                    return false;
-                }
-                ++li;
-                ++ri;
-#if qStroika_Foundation_Debug_AssertionsChecked
-                Assert ((li != le) == (ri != re)); // cuz same length, and this requires size cannot change during call
-#endif
+        auto re{rhs.end ()};
+        for (; li != le and ri != re; ++ri, ++li) {
+            if (not equalsComparer (*li, *ri)) {
+                return false;
             }
-#if qStroika_Foundation_Debug_AssertionsChecked
-            Assert (li == le and ri == re);
-#endif
-            return true;
         }
-        else {
-            auto re{rhs.end ()};
-            for (; li != le and ri != re; ++ri, ++li) {
-                if (not equalsComparer (*li, *ri)) {
-                    return false;
-                }
-            }
-            // one caused us to end (or more likely both)
-            Assert (li == le or ri == re);
-            // only true if we get to end at the same time
-            return li == le and ri == re;
-        }
+        // one caused us to end (or more likely both)
+        Assert (li == le or ri == re);
+        // only true if we get to end at the same time
+        return li == le and ri == re;
     }
     template <typename T>
     template <ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
-    inline bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize) const
+    inline bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer) const
     {
-        return SequentialEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer), useIterableSize);
+        return SequentialEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer));
     }
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    template <typename T>
+    template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
+    inline bool Iterable<T>::SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs,
+                                               EQUALS_COMPARER&& equalsComparer, [[maybe_unused]] bool useIterableSize)
+    {
+        // useIterableSize deliberately ignored - it never changed the ANSWER, only the strategy, and the
+        // strategy it selected is not worth having (see the \deprecated note in Iterable.h).
+        return SequentialEquals (lhs, rhs, forward<EQUALS_COMPARER> (equalsComparer));
+    }
+    template <typename T>
+    template <ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
+    inline bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, [[maybe_unused]] bool useIterableSize) const
+    {
+        return SequentialEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer));
+    }
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
     template <typename T>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
@@ -1318,17 +1312,28 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
-    constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer,
-                                                                                                  bool useIterableSize)
+    constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer)
         : fElementComparer{elementEqualsComparer}
-        , fUseIterableSize{useIterableSize}
     {
     }
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    template <typename T>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
+    constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer,
+                                                                                                  [[maybe_unused]] bool useIterableSize)
+        : fElementComparer{elementEqualsComparer}
+    {
+    }
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
     template <typename T>
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
     inline bool Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
     {
-        return SequentialEquals (lhs, rhs, fElementComparer, fUseIterableSize);
+        return SequentialEquals (lhs, rhs, fElementComparer);
     }
 
     /*
