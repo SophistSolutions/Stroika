@@ -27,22 +27,59 @@ Generally will track stuff here between releases
       size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
       - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
       without new evidence; the size () item below is the thing that would change the picture.
-- LinkedList::size () / DoublyLinkedList::size () are O(n) - cache the length instead. Both walk from
-  fHead_ counting. Every other DataStructure in the stack is already O(1): Array and SkipList keep
-  fLength_, HashTable keeps fCachedSize_, STLContainerWrapper inherits the wrapped container's. And
-  Sequence_DoublyLinkedList.inl:40 already says so - "// NOTE: O(N), but could easily be made faster
-  caching the length".
-    - Cost is one size_t per list OBJECT (not per node), plus an increment/decrement in the mutators.
-    - The tradeoff that made std::list's O(1) size () contentious - ranged splice degrading to O(n) -
-      does NOT apply here: neither class has any splice/steal/relink-from-another-list operation.
-      (For reference, the standard requires O(1) size () on every container that has one, including
-      set/map and the unordered_* family; forward_list is the lone holdout and resolves the tension
-      by having no size () at all rather than a slow one.)
-    - Worth more than tidiness: size () is what Nth (), Top (n), Median () and any prospective
-      pre-sizing path consult. Making it O(1) is the precondition that would make the reserve ()
-      question noted under OrderBy () above worth re-testing for linked-list backends - ie it is what
-      would generate the evidence we currently do not have.
-      (document/mentioned above - use this in various optimizations - like ePar)
+- BUGS in DoublyLinkedList<T> - back-links not maintained on two paths. Found while adding the
+  length caching (2026-08-14); NOT fixed there, deliberately kept separate. Neither is caught by the
+  new length invariant, which walks fNext only.
+    1. operator= (DoublyLinkedList.inl ~L242) builds the copy with 'new Link_{item, nullptr}' and only
+       ever assigns newPrev->fNext. So fPrev is null on every link, and fTail_ is left as clear ()
+       left it (nullptr) while fHead_ is not. That breaks BidirectionalIterator, RemoveLast (), and
+       GetLast (). The existing Invariant_ () end-checks (fHead_->fNext->fPrev == fHead_) should fire
+       on any multi-element assignment - which strongly suggests operator= is simply never called.
+       The copy CTOR is correct; it delegates to push_back (). Fix, or = delete it if truly unused.
+    2. Remove (item, equalsComparer) (~L255) unlinks with 'prev->fNext = link->fNext' and never fixes
+       link->fNext->fPrev, nor fTail_ when the removed element was last.
+       Cleanest fix: have it find the element and delegate to Remove (const ForwardIterator&), which
+       already handles all four cases correctly - that is what LinkedList<T> does.
+    3. LEAK on throw in the COPY CONSTRUCTOR of both LinkedList<T> and DoublyLinkedList<T>. If a
+       'new Link_' throws partway (the allocation, or T's copy CTOR - Link_ holds a T by value), the
+       object never finishes constructing, so its destructor never runs, and every link built so far
+       leaks. Pre-existing; noticed 2026-08-14 while checking the exception safety of the length
+       caching. operator= does NOT have this problem (the object survives, so the next clear ()/dtor
+       frees them) - and its fLength_ is now counted incrementally so it stays consistent on throw.
+       Fix would be a try/catch around the copy loop that clear ()s and rethrows.
+  Worth adding a Test05 case that removes a middle element and then iterates BACKWARD / calls
+  RemoveLast (), since forward-only iteration is why this survived.
+
+- Iterable<T>::PeekSize () -> optional<size_t> - a way to ask "do you know your size cheaply?".
+  Not built. Discussed at length 2026-08-13/14; recording the conclusions so it is not re-derived.
+    - The DataStructure/container half of this IS done: both linked lists now cache their length, so
+      every DataStructures class and therefore every Stroika container has O(1) size (). Documented in
+      Containers/DataStructures/ReadMe.md, and the counterpart note on Iterable<T>::size () says why
+      the guarantee stops there.
+    - It CANNOT be pushed up to Iterable<T>::size (). An Iterable may be a generator, or a lazy
+      pipeline - Where () returning Iterable<T> is lazy (Iterable.inl ~L556), so its count is not
+      knowable without running the predicate over every element, and running it may not be repeatable
+      (socket, file). Not an implementation gap; caching cannot cache what was never computed.
+    - REJECTED: returning numeric_limits<size_t>::max () for "unknown". It makes an unknown look like
+      a number, and every existing caller does arithmetic on size (): Median () computes size ()/2,
+      reserve (size ()) throws, size () - 1 wraps, 'i < size ()' becomes an infinite loop. Fails
+      silently and late. It also collapses three different states - known-and-cheap, knowable-but-
+      expensive, unbounded - into one value.
+    - REJECTED: overloading the existing virtual (size (SizeQuery) with a sentinel) to avoid adding a
+      second one. There are 41 in-tree overrides of 'size () const override' plus out-of-tree backends,
+      all of which would have to change, to save one vtable slot. Also default args on virtuals bind to
+      the STATIC type, which is a trap.
+    - THE SHAPE TO BUILD, if it is ever wanted: NOT a virtual at all. "Is my size () cheap?" is a
+      per-TYPE constant, so it needs no dynamic dispatch - put a protected bool on Iterable<T>::_IRep
+      (default false = "I make no promise"), set by backends that guarantee it, and make PeekSize ()
+      a NON-virtual on Iterable<T> that reads it. Zero vtable slots (which was LGP's objection to a
+      PeekSize () virtual - a virtual's body cannot be stripped by the linker, and _IRep is a template
+      so it multiplies by every T), one bool per rep object, and none of the 41 overriders touched.
+      Weakness: an unchecked promise - a backend could set it and lie.
+    - WHAT WOULD JUSTIFY BUILDING IT: the eSeq/ePar overload idea below. Choosing a policy by size
+      needs a CHEAP size, and nullopt has an obvious right answer there (use eSeq). Until something
+      concrete needs it, do not add it.
+
 - Test52's permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap,
   and the reason is measurement CONTEXT, not machine load:
       run standalone ('Test52 --show'):   0.76, 1.06, 1.09, 1.11, 1.19, 1.25, 1.40, 1.64

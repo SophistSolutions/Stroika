@@ -37,8 +37,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline LinkedList<T>::LinkedList (LinkedList&& src) noexcept
         : fHead_{src.fHead_}
+        , fLength_{src.fLength_}
     {
-        src.fHead_ = nullptr;
+        src.fHead_   = nullptr;
+        src.fLength_ = 0;
         Invariant ();
         src.Invariant ();
     }
@@ -52,13 +54,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
          *  case is handled outside, before the loop.
          */
+        // NB: fLength_ is bumped as each link is attached, NOT assigned from src at the end. A
+        // 'new Link_' can throw - the allocation, or T's copy CTOR, since Link_ holds a T by value -
+        // and counting incrementally keeps fLength_ equal to the links actually present if it does.
         if (src.fHead_ != nullptr) {
             fHead_        = new Link_{src.fHead_->fItem, nullptr};
+            ++fLength_;
             Link_* newCur = fHead_;
             for (const Link_* cur = src.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
                 Link_* newPrev = newCur;
                 newCur         = new Link_{cur->fItem, nullptr};
                 newPrev->fNext = newCur;
+                ++fLength_;
             }
         }
         Invariant ();
@@ -93,13 +100,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
              *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
              *  case is handled outside, before the loop.
              */
+            // count as we link (see the note in the copy CTOR): if a 'new Link_' throws partway, this
+            // object SURVIVES the failed assignment, so fLength_ must still match the links built so far
             if (rhs.fHead_ != nullptr) {
                 fHead_        = new Link_{rhs.fHead_->fItem, nullptr};
+                ++fLength_;
                 Link_* newCur = fHead_;
                 for (const Link_* cur = rhs.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
                     Link_* newPrev = newCur;
                     newCur         = new Link_{cur->fItem, nullptr};
                     newPrev->fNext = newCur;
+                    ++fLength_;
                 }
             }
         }
@@ -164,11 +175,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline size_t LinkedList<T>::size () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        size_t                                         n = 0;
-        for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            ++n;
-        }
-        return n;
+        return fLength_;
     }
     template <typename T>
     inline optional<T> LinkedList<T>::GetFirst () const
@@ -182,6 +189,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
         fHead_ = new Link_{item, fHead_};
+        ++fLength_;
         Invariant ();
     }
     template <typename T>
@@ -207,6 +215,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Assert (last != nullptr);
             Assert (last->fNext == nullptr);
             last->fNext = new Link_{item, nullptr};
+            ++fLength_;
         }
     }
     template <typename T>
@@ -226,7 +235,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
             else {
                 Assert (last->fNext == nullptr); // really we are last
                 last->fNext = new Link_{i, nullptr};
-                last        = last->fNext; // for next item in span
+                ++fLength_;
+                last = last->fNext; // for next item in span
             }
         }
     }
@@ -240,6 +250,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link_* victim = fHead_;
         fHead_        = victim->fNext;
         delete victim;
+        --fLength_;
         Invariant ();
     }
     template <typename T>
@@ -295,6 +306,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Assert (prev->fNext == i.fCurrent_);
             prev->fNext = new Link_{item, prev->fNext};
         }
+        ++fLength_;
 
         Invariant ();
     }
@@ -329,6 +341,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             prev->fNext       = new Link_{item, prev->fNext};
             *newLinkCreatedAt = ForwardIterator{this, prev->fNext};
         }
+        ++fLength_;
 
         Invariant ();
     }
@@ -343,6 +356,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         AssertNotNull (i.fCurrent_); // since not AtEnd...
         i.Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fNext = new Link_{newValue, i.fCurrent_->fNext};
+        ++fLength_;
     }
     template <typename T>
     inline auto LinkedList<T>::erase (const ForwardIterator& i) -> ForwardIterator
@@ -392,6 +406,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
 
         delete victim;
+        --fLength_;
         Invariant ();
     }
     template <typename T>
@@ -470,7 +485,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
             i               = i->fNext;
             delete deleteMe;
         }
-        fHead_ = nullptr;
+        fHead_   = nullptr;
+        fLength_ = 0;
         Invariant ();
         Ensure (empty ());
     }
@@ -510,9 +526,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          * Check we are properly linked together.
          */
+        size_t n = 0;
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
             // at least make sure no corrupted links and no infinite loops
+            ++n;
         }
+        // the cached length must agree with the links, or some mutator failed to maintain it
+        Assert (n == fLength_);
     }
 #endif
 

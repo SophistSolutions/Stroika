@@ -84,7 +84,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note Runtime performance/complexity:
-         *      Always: O(N)
+         *      Always: constant
+         *
+         *  \note   The length is cached (one size_t per list), not counted - see the ReadMe on why
+         *          the DataStructures classes keep size () constant-time: the Stroika containers built
+         *          on them guarantee that to their callers, and can only do so if the backend does.
          */
         nonvirtual size_t size () const;
 
@@ -277,6 +281,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     private:
         Link_* fHead_{};
         Link_* fTail_{};
+        // Cached so size () is O(1) - see the note on size (). One size_t per LIST, not per link.
+        // Invariant_ () validates fLength_.
+        size_t fLength_{0};
 
 #if qStroika_Foundation_Debug_AssertionsChecked
     private:

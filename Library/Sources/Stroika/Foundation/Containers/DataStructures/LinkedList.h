@@ -96,7 +96,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note Runtime performance/complexity:
-         *      Always: O(N)
+         *      Always: constant
+         *
+         *  \note   The length is cached (one size_t per list), not counted - see the ReadMe on why
+         *          the DataStructures classes keep size () constant-time: the Stroika containers built
+         *          on them guarantee that to their callers, and can only do so if the backend does.
          */
         nonvirtual size_t size () const;
 
@@ -226,7 +230,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: O(N)
          *
-         *      Not a lot of point in having this method, as is terribly slow, but the could be convenient.
+         *      Not a lot of point in having this method, as is terribly slow, but it could be convenient.
          *
          *  \note for push_back(span) - this puts the span elements in back in the same order in
          *        which they appears in the span.
@@ -242,7 +246,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: O(N)
          *
-         *      Not a lot of point in having this method, as is terribly slow, but the could be convenient.
+         *      Not a lot of point in having this method, as is terribly slow, but it could be convenient.
          */
         nonvirtual T GetAt (size_t i) const;
 
@@ -251,7 +255,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Complexity:
          *      Always: O(i)
          *
-         *      Not a lot of point in having this method, as is terribly slow, but the could be convenient.
+         *      Not a lot of point in having this method, as is terribly slow, but it could be convenient.
          */
         nonvirtual void SetAt (T item, size_t i);
 
@@ -262,6 +266,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         Link_* fHead_{nullptr};
+        // Cached so size () is O(1) - see the note on size (). One size_t per LIST, not per link.
+        // Invariant_ () validates fLength_.
+        size_t fLength_{0};
 
 #if qStroika_Foundation_Debug_AssertionsChecked
     private:

@@ -45,10 +45,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     DoublyLinkedList<T>::DoublyLinkedList (DoublyLinkedList&& src) noexcept
         : fHead_{src.fHead_}
         , fTail_{src.fTail_}
+        , fLength_{src.fLength_}
     {
         Invariant ();
-        src.fHead_ = nullptr;
-        src.fTail_ = nullptr;
+        src.fHead_   = nullptr;
+        src.fTail_   = nullptr;
+        src.fLength_ = 0;
         src.Invariant ();
     }
     template <typename T>
@@ -86,11 +88,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline size_t DoublyLinkedList<T>::size () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        size_t                                         n = 0;
-        for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            ++n;
-        }
-        return n;
+        return fLength_;
     }
     template <typename T>
     inline optional<T> DoublyLinkedList<T>::GetFirst () const
@@ -118,6 +116,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // if last is null, list was empty, so first==last now
             fTail_ = fHead_;
         }
+        ++fLength_;
         Invariant ();
     }
     template <typename T>
@@ -144,6 +143,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // if head is null, list was empty, so first==last now
             fHead_ = fTail_;
         }
+        ++fLength_;
         Invariant ();
     }
     template <typename T>
@@ -188,6 +188,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             fHead_->fPrev = nullptr; // B's prev is Nil since it is new first
         }
         delete victim;
+        --fLength_;
         Invariant ();
     }
     template <typename T>
@@ -223,6 +224,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             fTail_->fNext = nullptr; // B's fNext is Nil since it is new last
         }
         delete victim;
+        --fLength_;
         Invariant ();
     }
     template <typename T>
@@ -238,13 +240,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
          *  case is handled outside, before the loop.
          */
+        // count as we link, not from rhs at the end: a 'new Link_' can throw (allocation, or T's copy
+        // CTOR - Link_ holds a T by value) and this object survives the failed assignment, so fLength_
+        // must still match the links actually built
         if (rhs.fHead_ != nullptr) {
             fHead_        = new Link_{rhs.fHead_->fItem, nullptr};
+            ++fLength_;
             Link_* newCur = fHead_;
             for (const Link_* cur = rhs.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
                 Link_* newPrev = newCur;
                 newCur         = new Link_{cur->fItem, nullptr};
                 newPrev->fNext = newCur;
+                ++fLength_;
             }
         }
         Invariant ();
@@ -266,6 +273,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     AssertNotNull (prev); // cuz otherwise we would have hit it in first case!
                     prev->fNext = link->fNext;
                     delete (link);
+                    --fLength_;
                     break;
                 }
             }
@@ -314,8 +322,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
             i               = i->fNext;
             delete deleteMe;
         }
-        fHead_ = nullptr;
-        fTail_ = nullptr;
+        fHead_   = nullptr;
+        fTail_   = nullptr;
+        fLength_ = 0;
     }
     template <typename T>
     T DoublyLinkedList<T>::GetAt (size_t i) const
@@ -447,6 +456,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         delete victim;
+        --fLength_;
         this->Invariant ();
     }
     template <typename T>
@@ -500,6 +510,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 // Since fCurrent != nullptr from above, we update its prev, and don't have
                 // to worry about fTail_.
                 iteratorCurLink->fPrev = prev->fNext;
+                ++fLength_;
                 Assert (i._fCurrent->fPrev->fPrev == prev); // old prev is two back now...
             }
         }
@@ -535,6 +546,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         else {
             Assert (newLink->fNext->fPrev == newLink); // cuz of params to new Link_...
         }
+        ++fLength_;
         this->Invariant ();
     }
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -561,6 +573,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
             else {
                 Assert (fTail_->fPrev->fNext == fTail_);
             }
+        }
+        {
+            // the cached length must agree with the links, or some mutator failed to maintain it
+            size_t n = 0;
+            for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
+                ++n;
+            }
+            Assert (n == fLength_);
         }
         Assert (fHead_ == nullptr or fHead_->fPrev == nullptr);
         Assert (fTail_ == nullptr or fTail_->fNext == nullptr);
