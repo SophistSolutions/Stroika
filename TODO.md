@@ -10,11 +10,9 @@ Generally will track stuff here between releases
 
 - OrderBy () - remaining work. Measurements: run 'Test52 --show --orderby-probe' (Release, N=1000).
 
-    1. OrderBy () always returns a Sequence_stdvector<T>-backed result, unlike Where ()/Map () which
-       CloneEmpty () to retain the rep type. Probably fine/desirable for a sort, but undocumented.
-    2. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
+    1. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
        Iterable<T>::OrderBy ().
-    3. The ePar-vs-eSeq crossover is unmeasured. Parallel should win at some larger N, so the eSeq
+    2. The ePar-vs-eSeq crossover is unmeasured. Parallel should win at some larger N, so the eSeq
        default (now on both Sequence and Iterable) may be wrong for big sequences - a size sweep would
        settle it. At N=1000 ePar costs 2.08x on Sequence and 1.81x on Iterable, whose larger copy
        dilutes the sort's share.
@@ -101,3 +99,25 @@ Generally will track stuff here between releases
 - deal with failed/lost bugs from JIRA
 - do a performance compare with checked in data
 
+
+- functinal _movable_function etc  winging on internet
+
+- issue of LOST JIRA TICKETS
+
+- Iterable<T>::OrderBy () should return a CONTIGUOUS-backed result rather than a generator
+  (Iterable.inl ~L909). It sorts into a vector<T> and then wraps it in a generator:
+      function<optional<T> ()> getNext = [tmp, idx = size_t{0}] () mutable -> optional<T> {...}
+  Two separate costs, both removed by the same change:
+    1. That lambda captures tmp BY VALUE - a whole extra copy of the just-sorted data, per OrderBy ()
+       call. Capturing by move fixes just this one.
+    2. The result's rep offers no PeekContiguousStorage (), so everything done to the sorted result
+       AFTERWARDS - As<> (), Contains (), IndexOf (), Min ()/Max ()/Sum (), SequentialEquals () - is
+       back on the slow per-element virtual path. Returning a Sequence_stdvector<T>-backed Iterable
+       instead (adopting the vector by move, which is what Sequence<T>::OrderBy () already does) hands
+       the fast path to all of them. This is the bigger of the two.
+  Suggestive evidence, worth confirming rather than assuming: the two permanent Test52 entries against
+  raw std::stable_sort are Sequence<int>::OrderBy () ~1.0 versus Iterable<int>::OrderBy () ~4.1. Same
+  sort, same data - so the gap is the generator rep and that copy. The "OrderBy divergence" probe entry
+  measures the same gap directly (~1.5 with no fast path involved at all), so the two together should
+  say how much is the copy and how much is the rep.
+  Free to change: Iterable<T>::OrderBy ()'s docs now say the result's concrete backend is unspecified.

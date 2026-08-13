@@ -1115,6 +1115,11 @@ namespace Stroika::Foundation::Traversal {
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
          *        That maybe less performant than a regular (e.g. quicksort) but works better as a default, in most cases, as it allows combining multi-level sorts.
          *
+         *  \note The concrete backend of the RESULT is unspecified, and will generally not be the receiver's -
+         *        unlike Where ()/Map (), which CloneEmpty () so the result keeps the receiver's rep type.
+         *        Sorting has to materialize a contiguous buffer regardless, so there is nothing to preserve.
+         *        Do not depend on which; construct the backend you want from the result if it matters.
+         *
          *  @aliases Sort ()
          *
          *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
