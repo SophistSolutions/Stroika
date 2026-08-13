@@ -906,15 +906,52 @@ namespace Stroika::Foundation::Traversal {
 #else
         stable_sort (tmp.begin (), tmp.end (), inorderComparer);
 #endif
-        function<optional<T> ()> getNext = [tmp, idx = size_t{0}] () mutable -> optional<T> {
-            if (idx < tmp.size ()) {
-                return tmp[idx++];
+        /*
+         *  Hand back a rep that OWNS the sorted vector and exposes it as contiguous storage, rather than
+         *  a generator reading out of a captured copy of it. Two things follow, and the second is the
+         *  reason to bother:
+         *
+         *      o   the sorted data is moved in once and then shared. The generator this replaced captured
+         *          the vector BY VALUE, so every copy of the returned Iterable duplicated it.
+         *      o   the RESULT offers _IRep::PeekContiguousStorage (), so whatever is done to it AFTERWARDS
+         *          - As<> (), Contains (), IndexOf (), Min ()/Max ()/Sum (), SequentialEquals () - takes
+         *          the bulk fast path. A generator can offer no storage, so sorting used to throw away
+         *          the contiguity that everything downstream now depends on.
+         *
+         *  Sharing rather than copying is safe because nothing can mutate it: the vector is local, moved
+         *  in here, and never handed out except as span<const T>.
+         */
+        struct SortedRep_ : Iterable<T>::_IRep, Memory::UseBlockAllocationIfAppropriate<SortedRep_> {
+            shared_ptr<const vector<T>> fData_; // const pointee: sharing is only safe because nothing can mutate it
+            SortedRep_ (vector<T>&& data)
+                : fData_{Memory::MakeSharedPtr<vector<T>> (move (data))}
+            {
             }
-            else {
-                return nullopt;
+            virtual Iterator<T> MakeIterator () const override
+            {
+                // a fresh independent cursor per call, so no iterator tracking is needed
+                return CreateGeneratorIterator<T> ([data = fData_, idx = size_t{0}] () mutable -> optional<T> {
+                    return idx < data->size () ? optional<T>{(*data)[idx++]} : nullopt;
+                });
+            }
+            virtual size_t size () const override
+            {
+                return fData_->size ();
+            }
+            virtual bool empty () const override
+            {
+                return fData_->empty ();
+            }
+            virtual optional<span<const T>> PeekContiguousStorage () const override
+            {
+                return span<const T>{*fData_};
+            }
+            virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override
+            {
+                return Memory::MakeSharedPtr<SortedRep_> (*this); // shares fData_, does not copy it
             }
         };
-        return CreateGenerator (getNext);
+        return Iterable<T>{Memory::MakeSharedPtr<SortedRep_> (move (tmp))};
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE>

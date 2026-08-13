@@ -18,6 +18,8 @@ Generally will track stuff here between releases
        dilutes the sort's share.
        (The in-place-sort design direction that used to be recorded here is decided and closed - see
        the DESIGN NOTE on Sequence<T>::_IRep in Sequence.h for the measurements and the reasoning.)
+
+       Change default to NOT be a value, but algorithm (overload) that picks. Say which you want. Or get the best default (ask Claude if makes sense? Probaly yes once we gaurnatee size() is O(1) - and DOCUMENT that ratioale - WHY we guarnatee size O(1))
     - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
       Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access
       (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes
@@ -40,6 +42,7 @@ Generally will track stuff here between releases
       pre-sizing path consult. Making it O(1) is the precondition that would make the reserve ()
       question noted under OrderBy () above worth re-testing for linked-list backends - ie it is what
       would generate the evidence we currently do not have.
+      (document/mentioned above - use this in various optimizations - like ePar)
 - Test52's permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap,
   and the reason is measurement CONTEXT, not machine load:
       run standalone ('Test52 --show'):   0.76, 1.06, 1.09, 1.11, 1.19, 1.25, 1.40, 1.64
@@ -99,25 +102,13 @@ Generally will track stuff here between releases
 - deal with failed/lost bugs from JIRA
 - do a performance compare with checked in data
 
-
 - functinal _movable_function etc  winging on internet
 
 - issue of LOST JIRA TICKETS
 
-- Iterable<T>::OrderBy () should return a CONTIGUOUS-backed result rather than a generator
-  (Iterable.inl ~L909). It sorts into a vector<T> and then wraps it in a generator:
-      function<optional<T> ()> getNext = [tmp, idx = size_t{0}] () mutable -> optional<T> {...}
-  Two separate costs, both removed by the same change:
-    1. That lambda captures tmp BY VALUE - a whole extra copy of the just-sorted data, per OrderBy ()
-       call. Capturing by move fixes just this one.
-    2. The result's rep offers no PeekContiguousStorage (), so everything done to the sorted result
-       AFTERWARDS - As<> (), Contains (), IndexOf (), Min ()/Max ()/Sum (), SequentialEquals () - is
-       back on the slow per-element virtual path. Returning a Sequence_stdvector<T>-backed Iterable
-       instead (adopting the vector by move, which is what Sequence<T>::OrderBy () already does) hands
-       the fast path to all of them. This is the bigger of the two.
-  Suggestive evidence, worth confirming rather than assuming: the two permanent Test52 entries against
-  raw std::stable_sort are Sequence<int>::OrderBy () ~1.0 versus Iterable<int>::OrderBy () ~4.1. Same
-  sort, same data - so the gap is the generator rep and that copy. The "OrderBy divergence" probe entry
-  measures the same gap directly (~1.5 with no fast path involved at all), so the two together should
-  say how much is the copy and how much is the rep.
-  Free to change: Iterable<T>::OrderBy ()'s docs now say the result's concrete backend is unspecified.
+  - for items where we have a default paraemter of eSeq or ePar, instead OVERLOAD and have
+    unspecified version documented to make a good guess which to use, and leave ambiguous. Be specific if
+    you care. Overload will probably generally look at s.size() - NOT fully considered but trial balloon plan.
+
+
+  + Consider adding Mapping_stdflatmap? Is there such a thing? Maybe fast for small sizes?
