@@ -12,7 +12,7 @@ Generally will track stuff here between releases
 
     1. OrderBy () always returns a Sequence_stdvector<T>-backed result, unlike Where ()/Map () which
        CloneEmpty () to retain the rep type. Probably fine/desirable for a sort, but undocumented.
-    1. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
+    2. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
        Iterable<T>::OrderBy ().
     - DESIGN DIRECTION (LGP): make OrderBy a virtual on Sequence<T>::_IRep so Sequence_Array /
       Sequence_stdvector can sort their own storage in place. The blocking question was whether the
@@ -38,58 +38,26 @@ Generally will track stuff here between releases
       size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
       - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
       without new evidence; the size () item below is the thing that would change the picture.
-- PeekContiguousStorage - the READ-ONLY side is DONE and CLOSED OUT (f3f2ad7d1b, c6438b404d,
-  5324d0eff0, b7ea919adb, 543316151e, 7b0d6bb9e3, + the Min/Max/Sum commit): the hook exists on
-  Iterable<T>::_IRep defaulting to nullopt, 9 Array-backed reps override it, and every consumer worth
-  doing now uses it - As<> () for ANY target constructible from a pointer pair, SequentialEquals (),
-  Contains (), Sequence<T>::IndexOf (), Min (), Max () and Sum ().
+- PeekContiguousStorage - the read-only side is DONE and closed out (f3f2ad7d1b, c6438b404d,
+  5324d0eff0, b7ea919adb, 543316151e, 7b0d6bb9e3, dd98dbcecf). The hook is on Iterable<T>::_IRep
+  defaulting to nullopt, 9 Array-backed reps override it, and every consumer worth doing uses it:
+  As<> () for any target constructible from a pointer pair, SequentialEquals (), Contains (),
+  Sequence<T>::IndexOf (), Min (), Max (), Sum (). The before/after per-element numbers live in the
+  'Test52 --show --orderby-probe' entries themselves, which is where to look rather than here.
   Deliberately NOT done, do not re-propose without new reasons: Find () (must return a live Iterator<T>
   and a span yields only a position - see the comment at its implementation), Median () (dominated by
   the sort it does), DenseDataHyperRectangle_Vector (LGP's call).
-  Per-element cost measured BEFORE the hook vs AFTER ('Test52 --show --orderby-probe', Release, N=1000):
-                                    int                 String
-      As<vector<T>>          11.7 -> 0.06 ns      40.0 -> 13.0 ns
-      SequentialEquals ()    13.6 -> 0.13 ns      42.4 -> 22.1 ns
-      Contains ()             1.08 -> 0.12 ns     18.1 -> 6.2 ns
-      IndexOf ()              2.47 -> 0.09 ns      7.5 -> 5.0 ns
-      Min ()                  8.1 -> 0.085 ns     61.6 -> 15.7 ns
-      Sum ()                  8.0 -> 0.37 ns          (not measured - see below)
-  THE MODEL, for sizing anything else built on this hook: it removes a roughly FIXED per-element cost -
-  the virtual iteration, ~6ns/element/side for int and ~12ns for String. What remains is whatever the
-  operation itself does per element, so the payoff is set by how expensive THAT work is, not by T's
-  size: int equality is ~free so removing iteration is everything (100x, and it degenerates to memcmp
-  because the comparer is dropped when it is the default one); String equality costs ~22ns and swamps
-  the ~20ns saved across two sides (1.9x). Expect ~2x, not 10x+, for a non-trivial T.
-  Min ()/Max ()/Sum () beat that model because they had a SECOND cost: they went through Reduce (),
-  which takes a std::function<>, so they paid an indirect call per element too - and for String the old
-  lambda took both arguments BY VALUE, ie two String copies per element as well (hence 61.6ns). They
-  bypass Reduce () rather than accelerate it; a fast path inside Reduce () would still leave every
-  caller paying the std::function call, which is a separate and smaller question.
-  Sum () over String is not measured on purpose: it concatenates 1000 strings, so the timing is
-  dominated by reallocation rather than iteration and measures nothing useful.
-  Still open, in priority order:
-    1. STAGE 2 - the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is what
-       lets OrderBy () sort backend storage in place (measured 1.85x for int, 1.13x for String - see
-       DESIGN DIRECTION above). RE-MEASURE FIRST: OrderBy () sits at ~0.95 vs raw stable_sort now, so
-       the headroom is far smaller than when that 1.85x was taken.
-       span<T> must NOT go on Iterable<T>::_IRep. Iterable is conceptually read-only, and handing out
-       mutable storage from a const object reintroduces the COW hazard documented on
-       Sequence<T>::operator[] (another thread copies the container, bumping the refcount, while you
-       write through the span). _GetWriteableRep () is where sole ownership is assured.
-    2. This supersedes Apply () for contiguous backends - see the note at Iterable.h ~547 explaining
-       that Apply () exists to avoid per-element virtual iteration. Apply () still pays a
-       std::function call per element; a span pays nothing per element.
-    3. The permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap, and
-       the reason is measurement CONTEXT, not machine load:
-           run standalone ('Test52 --show'):   0.76, 1.06, 1.09, 1.11, 1.19, 1.25, 1.40
-           run in-suite ('make run-tests'):    1.69, 1.77
-       ie ~2x higher in the run that actually gates. Test52 runs after 30+ other test binaries in one
-       make run-tests invocation, so heap/cache state is nothing like a fresh process. Its threshold
-       (1.5) was tuned from standalone numbers - the code comment claims 0.97-1.07 over 4 runs and calls
-       1.5 "loose enough not to flap" - so it is calibrated against the wrong distribution. Both sides
-       are only ~15-25ms, which makes it that much easier to move.
-       Fix by raising the run count until in-suite readings stabilize, or by widening the threshold to
-       cover the in-suite range. Do NOT re-tune it from a standalone run.
+  STILL OPEN - STAGE 2: the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is
+  what would let OrderBy () sort backend storage in place (measured 1.85x for int, 1.13x for String -
+  see DESIGN DIRECTION above). RE-MEASURE FIRST: OrderBy () sits at ~0.95 vs raw stable_sort now, so the
+  headroom is far smaller than when that 1.85x was taken.
+    - span<T> must NOT go on Iterable<T>::_IRep. Iterable is conceptually read-only, and handing out
+      mutable storage from a const object reintroduces the COW hazard documented on
+      Sequence<T>::operator[] (another thread copies the container, bumping the refcount, while you
+      write through the span). _GetWriteableRep () is where sole ownership is assured.
+    - It would also supersede Apply () for contiguous backends - see the note at Iterable.h ~547
+      explaining that Apply () exists to avoid per-element virtual iteration. Apply () still pays a
+      std::function call per element; a span pays nothing per element.
 
 - LinkedList::size () / DoublyLinkedList::size () are O(n) - cache the length instead. Both walk from
   fHead_ counting. Every other DataStructure in the stack is already O(1): Array and SkipList keep
@@ -106,9 +74,19 @@ Generally will track stuff here between releases
       pre-sizing path consult. Making it O(1) is the precondition that would make the reserve ()
       question noted under OrderBy () above worth re-testing for linked-list backends - ie it is what
       would generate the evidence we currently do not have.
-- Build system error handling. Two fixes landed: c02ebaa1c6 (Tests/Makefile's all-configurations
-  check/run-tests loops swallowed output and returned 0 on failure) and the MSVC compile lines, which
-  piped cl.exe into sed and so discarded its exit status - every compile error returned 0. Same class,
+- Test52's permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap,
+  and the reason is measurement CONTEXT, not machine load:
+      run standalone ('Test52 --show'):   0.76, 1.06, 1.09, 1.11, 1.19, 1.25, 1.40, 1.64
+      run in-suite ('make run-tests'):    1.69, 1.77
+  ie ~2x higher in the run that actually gates. Test52 runs after 30+ other test binaries in one
+  'make run-tests' invocation, so heap/cache state is nothing like a fresh process. Its threshold (1.5)
+  was tuned from standalone numbers - the code comment claims 0.97-1.07 over 4 runs and calls 1.5
+  "loose enough not to flap" - so it is calibrated against the wrong distribution. Both sides are only
+  ~15-25ms, which makes it that much easier to move.
+  Fix by raising the run count until in-suite readings stabilize, or by widening the threshold to cover
+  the in-suite range. Do NOT re-tune it from a standalone run.
+
+- Build system error handling - same class as the two fixes that landed (c02ebaa1c6, 9caa6f69f9),
   still open:
     - Build/Shared/Skel-Templates/{Basic,HTMLUI}/Makefile: the generated app's all: loop over
       configurations has no '|| exit $$?', so a new Stroika app's 'make all' walks past a
@@ -126,7 +104,7 @@ Generally will track stuff here between releases
   find_package/FetchContent/vcpkg/Conan, ie the normal ways a C++ project takes a dependency. Today,
   using Stroika means adopting Stroika's build system, and no amount of patching the hand-rolled make
   changes that. Decide this on THAT basis, not on any individual build bug.
-  Secondary wins: header dependency tracking for free (see below), native MSVC builds with no
+  Secondary wins: header dependency tracking for free (see the DECIDED note below), native MSVC builds with no
   MSYS/Cygwin involved, IDE project generation and CTest, and the removal of a whole class of
   hand-rolled-build bug - the swallowed exit statuses and missing failure propagation fixed in
   c02ebaa1c6 / 9caa6f69f9 exist BECAUSE the build is bespoke.
