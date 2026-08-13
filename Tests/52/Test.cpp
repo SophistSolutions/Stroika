@@ -1594,6 +1594,39 @@ namespace {
             sOptimizerSink_ = sOptimizerSink_ + it.IndexOf (v).value_or (0);
         }
         /*
+         *  Min () / Sum (). The _Old_ helpers call Reduce () with the very lambda the old
+         *  implementations passed it, so they stay valid 'before' baselines. Reduce () takes its
+         *  operation as a std::function<>, so these pay an indirect call PER ELEMENT on top of the
+         *  virtual iteration - which is why the fast paths bypass Reduce () rather than accelerate it.
+         *
+         *  Sum () is measured for int only: over String it concatenates 1000 strings and the timing
+         *  becomes dominated by reallocation rather than by iteration, which measures nothing useful.
+         */
+        template <typename T, typename CONTAINER_T>
+        void Min_Old_ (const CONTAINER_T& it)
+        {
+            auto r          = it.template Reduce<T> ([] (T lhs, T rhs) -> T { return min (lhs, rhs); });
+            sOptimizerSink_ = sOptimizerSink_ + (r ? Magnitude_ (*r) : 0);
+        }
+        template <typename CONTAINER_T>
+        void Min_Fast_ (const CONTAINER_T& it)
+        {
+            auto r          = it.Min ();
+            sOptimizerSink_ = sOptimizerSink_ + (r ? Magnitude_ (*r) : 0);
+        }
+        template <typename T, typename CONTAINER_T>
+        void Sum_Old_ (const CONTAINER_T& it)
+        {
+            auto r          = it.template Reduce<T> ([] (T lhs, T rhs) { return lhs + rhs; });
+            sOptimizerSink_ = sOptimizerSink_ + (r ? Magnitude_ (*r) : 0);
+        }
+        template <typename T, typename CONTAINER_T>
+        void Sum_Fast_ (const CONTAINER_T& it)
+        {
+            auto r          = it.template Sum<T> ();
+            sOptimizerSink_ = sOptimizerSink_ + (r ? Magnitude_ (*r) : 0);
+        }
+        /*
          *  The shape of a NON-COPYING consumer - Contains ()/Find ()/IndexOf ()/Min ()/Max ()/Sum ()/
          *  SequentialEquals () all touch every element but copy none of them. Walk_Iterators_ is how they
          *  read the container today; Walk_Contiguous_ is what they would do given a span. Neither calls
@@ -1832,6 +1865,21 @@ namespace {
                 "IndexOf String: old Find ()-with-counter vs contiguous fast path",
                 [&] () { IndexOf_Old_<String> (kSeqStrs_, kAbsentStr_); }, "IndexOf via Find () (the old way)",
                 [&] () { IndexOf_Fast_<String> (kSeqStrs_, kAbsentStr_); }, "IndexOf (fast path)", kRunCount_ / 10, kNoWarn_);
+
+            /*
+             *  Min () / Sum (). These should beat the other consumers by MORE than the model predicts,
+             *  because the old path paid the std::function indirect call per element on top of the
+             *  virtual iteration - two costs removed rather than one.
+             */
+            (void)Tester (
+                "Min int: old Reduce ()-based vs contiguous fast path", [&] () { Min_Old_<int> (kSeqInts_); },
+                "Min via Reduce () (the old way)", [&] () { Min_Fast_ (kSeqInts_); }, "Min (fast path)", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "Min String: old Reduce ()-based vs contiguous fast path", [&] () { Min_Old_<String> (kSeqStrs_); },
+                "Min via Reduce () (the old way)", [&] () { Min_Fast_ (kSeqStrs_); }, "Min (fast path)", kRunCount_ / 10, kNoWarn_);
+            (void)Tester (
+                "Sum int: old Reduce ()-based vs contiguous fast path", [&] () { Sum_Old_<int> (kSeqInts_); },
+                "Sum via Reduce () (the old way)", [&] () { Sum_Fast_<int> (kSeqInts_); }, "Sum (fast path)", kRunCount_, kNoWarn_);
 
             // Rep cost only - the two OrderBy ()s now take the same arguments and the same eSeq default.
             (void)Tester (

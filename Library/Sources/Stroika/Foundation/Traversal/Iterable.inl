@@ -724,7 +724,7 @@ namespace Stroika::Foundation::Traversal {
             if constexpr (not kOptionalExtractor_ and requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
                 c.reserve (this->size ());
             }
-            this->Apply ([&c, &elementMapper] (Common::ArgByValueType<T> arg) {
+            this->Apply ([&c, &elementMapper] (ArgByValueType<T> arg) {
                 if constexpr (kOptionalExtractor_) {
                     if (auto oarg = elementMapper (arg)) {
                         Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&c, *oarg);
@@ -1082,6 +1082,19 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline optional<T> Iterable<T>::Min () const
     {
+        /*
+         *  FAST PATH - see the note on Max () below; Min ()/Max ()/Sum () all bypass Reduce () rather
+         *  than accelerate it, because Reduce () takes a std::function.
+         */
+        {
+            _SafeReadRepAccessor<> accessor{this};
+            if (auto s = accessor._ConstGetRep ().PeekContiguousStorage ()) {
+                if (s->empty ()) [[unlikely]] {
+                    return nullopt;
+                }
+                return *std::min_element (s->begin (), s->end ());
+            }
+        }
         return Reduce<T> ([] (ArgByValueType<T> lhs, ArgByValueType<T> rhs) -> T { return min (lhs, rhs); });
     }
     template <typename T>
@@ -1093,6 +1106,26 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline optional<T> Iterable<T>::Max () const
     {
+        /*
+         *  FAST PATH - when the backend keeps its elements contiguously.
+         *
+         *  Note this BYPASSES Reduce () rather than adding a fast path to it. Reduce () takes its
+         *  operation as a std::function<>, so it pays an indirect call PER ELEMENT on top of the
+         *  per-element virtual iteration - and for a cheap T that type-erasure tax is the larger of the
+         *  two (the OrderBy design probe measured it at 3.4x for int; see TODO.md). Going through
+         *  min_element/max_element here keeps the comparison inlined, so both costs go away rather than
+         *  just the iteration. A fast path inside Reduce () would still leave every caller paying the
+         *  std::function call, so it is a separate (smaller) question.
+         */
+        {
+            _SafeReadRepAccessor<> accessor{this};
+            if (auto s = accessor._ConstGetRep ().PeekContiguousStorage ()) {
+                if (s->empty ()) [[unlikely]] {
+                    return nullopt;
+                }
+                return *std::max_element (s->begin (), s->end ());
+            }
+        }
         return Reduce<T> ([] (ArgByValueType<T> lhs, ArgByValueType<T> rhs) -> T { return max (lhs, rhs); });
     }
     template <typename T>
@@ -1121,6 +1154,27 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     inline optional<RESULT_TYPE> Iterable<T>::Sum () const
     {
+        /*
+         *  FAST PATH - see the note on Max (); this bypasses Reduce () for the same reason.
+         *
+         *  Gated on RESULT_TYPE being T: when they differ, the general path passes the running
+         *  RESULT_TYPE total back through an op declared to take two T, so the accumulation is
+         *  converted to T on every step (ie Sum<double> () over an Iterable<int> truncates each partial
+         *  sum). That quirk is not replicated here; such calls simply keep the general path.
+         */
+        if constexpr (same_as<RESULT_TYPE, T>) {
+            _SafeReadRepAccessor<> accessor{this};
+            if (auto s = accessor._ConstGetRep ().PeekContiguousStorage ()) {
+                if (s->empty ()) [[unlikely]] {
+                    return nullopt;
+                }
+                T total = *s->begin ();
+                for (auto i = s->begin () + 1; i != s->end (); ++i) {
+                    total = total + *i; // accumulator first, matching Reduce ()
+                }
+                return total;
+            }
+        }
         return Reduce<RESULT_TYPE> ([] (ArgByValueType<T> lhs, ArgByValueType<T> rhs) { return lhs + rhs; });
     }
     template <typename T>
@@ -1233,7 +1287,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
-    inline Iterator<T> Iterable<T>::Find (Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const
+    inline Iterator<T> Iterable<T>::Find (ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const
     {
         /*
          *  NB: deliberately NO _IRep::PeekContiguousStorage () fast path here, unlike Contains () and
@@ -1253,7 +1307,7 @@ namespace Stroika::Foundation::Traversal {
             return accessor._ConstGetRep ().Find_equal_to (v, seq);
         }
         else {
-            return Find ([v, equalsComparer] (Common::ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);
+            return Find ([v, equalsComparer] (ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);
         }
     }
     template <typename T>
@@ -1269,7 +1323,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
-    Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer,
+    Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer,
                                    [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {

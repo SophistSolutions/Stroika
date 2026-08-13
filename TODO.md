@@ -12,7 +12,7 @@ Generally will track stuff here between releases
 
     1. OrderBy () always returns a Sequence_stdvector<T>-backed result, unlike Where ()/Map () which
        CloneEmpty () to retain the rep type. Probably fine/desirable for a sort, but undocumented.
-    2. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
+    1. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
        Iterable<T>::OrderBy ().
     - DESIGN DIRECTION (LGP): make OrderBy a virtual on Sequence<T>::_IRep so Sequence_Array /
       Sequence_stdvector can sort their own storage in place. The blocking question was whether the
@@ -38,30 +38,37 @@ Generally will track stuff here between releases
       size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
       - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
       without new evidence; the size () item below is the thing that would change the picture.
-- PeekContiguousStorage - the READ-ONLY side is DONE (f3f2ad7d1b, c6438b404d, 5324d0eff0, b7ea919adb,
-  543316151e): the hook exists on Iterable<T>::_IRep defaulting to nullopt, 9 Array-backed reps override
-  it, Iterable<T>::As<> () takes the fast path for ANY target constructible from a pointer pair, and
-  SequentialEquals () compares two contiguous operands as spans (either side may be an Iterable<T> whose
-  rep offers a span, or any other contiguous_range of T - so a vector<T>/initializer_list<T> qualifies).
+- PeekContiguousStorage - the READ-ONLY side is DONE and CLOSED OUT (f3f2ad7d1b, c6438b404d,
+  5324d0eff0, b7ea919adb, 543316151e, 7b0d6bb9e3, + the Min/Max/Sum commit): the hook exists on
+  Iterable<T>::_IRep defaulting to nullopt, 9 Array-backed reps override it, and every consumer worth
+  doing now uses it - As<> () for ANY target constructible from a pointer pair, SequentialEquals (),
+  Contains (), Sequence<T>::IndexOf (), Min (), Max () and Sum ().
+  Deliberately NOT done, do not re-propose without new reasons: Find () (must return a live Iterator<T>
+  and a span yields only a position - see the comment at its implementation), Median () (dominated by
+  the sort it does), DenseDataHyperRectangle_Vector (LGP's call).
   Per-element cost measured BEFORE the hook vs AFTER ('Test52 --show --orderby-probe', Release, N=1000):
                                     int                 String
       As<vector<T>>          11.7 -> 0.06 ns      40.0 -> 13.0 ns
       SequentialEquals ()    13.6 -> 0.13 ns      42.4 -> 22.1 ns
+      Contains ()             1.08 -> 0.12 ns     18.1 -> 6.2 ns
+      IndexOf ()              2.47 -> 0.09 ns      7.5 -> 5.0 ns
+      Min ()                  8.1 -> 0.085 ns     61.6 -> 15.7 ns
+      Sum ()                  8.0 -> 0.37 ns          (not measured - see below)
   THE MODEL, for sizing anything else built on this hook: it removes a roughly FIXED per-element cost -
   the virtual iteration, ~6ns/element/side for int and ~12ns for String. What remains is whatever the
-  operation itself does per element. So the payoff is set by how expensive THAT work is, not by T's
-  size: int equality is ~free, so removing iteration is everything (100x, and it degenerates to memcmp
+  operation itself does per element, so the payoff is set by how expensive THAT work is, not by T's
+  size: int equality is ~free so removing iteration is everything (100x, and it degenerates to memcmp
   because the comparer is dropped when it is the default one); String equality costs ~22ns and swamps
   the ~20ns saved across two sides (1.9x). Expect ~2x, not 10x+, for a non-trivial T.
+  Min ()/Max ()/Sum () beat that model because they had a SECOND cost: they went through Reduce (),
+  which takes a std::function<>, so they paid an indirect call per element too - and for String the old
+  lambda took both arguments BY VALUE, ie two String copies per element as well (hence 61.6ns). They
+  bypass Reduce () rather than accelerate it; a fast path inside Reduce () would still leave every
+  caller paying the std::function call, which is a separate and smaller question.
+  Sum () over String is not measured on purpose: it concatenates 1000 strings, so the timing is
+  dominated by reallocation rather than iteration and measures nothing useful.
   Still open, in priority order:
-    1. The remaining consumers: Min ()/Max ()/Sum (). Contains () and Sequence<T>::IndexOf () are DONE
-       (7b0d6bb9e3). Find () is deliberately NOT done and should stay that way - it must return a live
-       Iterator<T>, a span yields only a POSITION, and _IRep has no 'iterator at index N', so it would
-       locate fast and then have to walk there anyway. The hook that does fit a contiguous backend is
-       _IRep::Find_equal_to (), which is per-backend work rather than a generic span path; there is a
-       comment saying so at the Find () implementation. Median () sorts, so it is dominated by the
-       sort - probably not worth doing at all.
-    2. STAGE 2 - the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is what
+    1. STAGE 2 - the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is what
        lets OrderBy () sort backend storage in place (measured 1.85x for int, 1.13x for String - see
        DESIGN DIRECTION above). RE-MEASURE FIRST: OrderBy () sits at ~0.95 vs raw stable_sort now, so
        the headroom is far smaller than when that 1.85x was taken.
@@ -69,10 +76,10 @@ Generally will track stuff here between releases
        mutable storage from a const object reintroduces the COW hazard documented on
        Sequence<T>::operator[] (another thread copies the container, bumping the refcount, while you
        write through the span). _GetWriteableRep () is where sole ownership is assured.
-    3. This supersedes Apply () for contiguous backends - see the note at Iterable.h ~547 explaining
+    2. This supersedes Apply () for contiguous backends - see the note at Iterable.h ~547 explaining
        that Apply () exists to avoid per-element virtual iteration. Apply () still pays a
        std::function call per element; a span pays nothing per element.
-    4. The permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap, and
+    3. The permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap, and
        the reason is measurement CONTEXT, not machine load:
            run standalone ('Test52 --show'):   0.76, 1.06, 1.09, 1.11, 1.19, 1.25, 1.40
            run in-suite ('make run-tests'):    1.69, 1.77

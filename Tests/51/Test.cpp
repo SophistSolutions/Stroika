@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <numeric>
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
@@ -1209,6 +1210,53 @@ namespace {
                 EXPECT_EQ (d.empty () ? optional<size_t>{} : optional<size_t>{0}, arr.IndexOf (probe, kAlwaysEq_));
                 EXPECT_EQ (d.empty () ? optional<size_t>{} : optional<size_t>{0}, ll.IndexOf (probe, kAlwaysEq_));
             }
+        }
+    }
+}
+namespace {
+    /*
+     *  Min ()/Max ()/Sum () take a contiguous-storage fast path that BYPASSES Reduce () rather than
+     *  going through it, so the two paths are genuinely different code and must be checked to agree.
+     *
+     *  The String case is the one that matters most: operator+ is not commutative there, so it pins the
+     *  FOLD ORDER. Reduce () folds accumulator-first (as std::accumulate and Join () do), so {A,B,C}
+     *  sums to "ABC". Before v3.0d24 it folded op (element, accumulator) and this returned "CBA" - so
+     *  this assertion is what stops that regressing, on either path.
+     */
+    GTEST_TEST (Foundation_Traversal, Test26_MinMaxSum_ContiguousFastPath_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test26_MinMaxSum_ContiguousFastPath_"};
+        using Containers::Concrete::Sequence_Array;
+        using Containers::Concrete::Sequence_LinkedList;
+        for (const vector<int>& d : vector<vector<int>>{{}, {5}, {3, 1, 2}, {2, 2, 2}, {-4, 7, 0, 7}}) {
+            Sequence_Array<int>      arr{d}; // contiguous - fast path
+            Sequence_LinkedList<int> ll{d};  // not contiguous - general path
+            EXPECT_EQ (ll.Min (), arr.Min ());
+            EXPECT_EQ (ll.Max (), arr.Max ());
+            EXPECT_EQ (ll.Sum (), arr.Sum ());
+            if (not d.empty ()) { // and against the std answer, not just against each other
+                EXPECT_EQ (*std::min_element (d.begin (), d.end ()), *arr.Min ());
+                EXPECT_EQ (*std::max_element (d.begin (), d.end ()), *arr.Max ());
+                EXPECT_EQ (std::accumulate (d.begin (), d.end (), 0), *arr.Sum ());
+            }
+            else {
+                EXPECT_FALSE (arr.Min ().has_value ());
+                EXPECT_FALSE (arr.Max ().has_value ());
+                EXPECT_FALSE (arr.Sum ().has_value ());
+            }
+        }
+        {
+            // non-commutative operator+ : both paths must agree, reversed fold and all
+            using Characters::String;
+            const vector<String>        kStrs_{"A"_k, "B"_k, "C"_k};
+            Sequence_Array<String>      arr{kStrs_};
+            Sequence_LinkedList<String> ll{kStrs_};
+            EXPECT_EQ (ll.Sum (), arr.Sum ()); // both paths agree ...
+            EXPECT_EQ ("ABC"_k, *arr.Sum ());  // ... AND fold accumulator-first, not "CBA"
+            EXPECT_EQ ("ABC"_k, *ll.Sum ());
+            EXPECT_EQ ("ABC"_k, *Iterable<String>{kStrs_}.Reduce<String> ([] (String l, String r) { return l + r; }));
+            EXPECT_EQ (ll.Min (), arr.Min ());
+            EXPECT_EQ (ll.Max (), arr.Max ());
         }
     }
 }
