@@ -350,7 +350,8 @@ namespace Stroika::Foundation::Traversal {
             }
         }
         // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
-        return static_cast<bool> (this->Find ([&element, &equalsComparer] (T i) -> bool { return equalsComparer (i, element); }));
+        return static_cast<bool> (
+            this->Find ([&element, &equalsComparer] (ArgByValueType<T> i) -> bool { return equalsComparer (i, element); }));
     }
     template <typename T>
     template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
@@ -397,7 +398,7 @@ namespace Stroika::Foundation::Traversal {
     template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     bool Iterable<T>::MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer)
     {
-        auto tallyOf = [&equalsComparer] (const auto& c, Common::ArgByValueType<T> item) -> size_t {
+        auto tallyOf = [&equalsComparer] (const auto& c, ArgByValueType<T> item) -> size_t {
             size_t total = 0;
             for (const auto& ti : c) {
                 if (equalsComparer (ti, item)) {
@@ -594,7 +595,7 @@ namespace Stroika::Foundation::Traversal {
         else {
             Require (emptyResult.empty ());
             RESULT_CONTAINER result = forward<RESULT_CONTAINER> (emptyResult);
-            this->Apply ([&result, &includeIfTrue] (Common::ArgByValueType<T> arg) {
+            this->Apply ([&result, &includeIfTrue] (ArgByValueType<T> arg) {
                 if (includeIfTrue (arg)) {
                     Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&result, arg);
                 }
@@ -1078,7 +1079,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline optional<T> Iterable<T>::Min () const
     {
-        return Reduce<T> ([] (T lhs, T rhs) -> T { return min (lhs, rhs); });
+        return Reduce<T> ([] (ArgByValueType<T> lhs, ArgByValueType<T> rhs) -> T { return min (lhs, rhs); });
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -1089,7 +1090,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline optional<T> Iterable<T>::Max () const
     {
-        return Reduce<T> ([] (T lhs, T rhs) -> T { return max (lhs, rhs); });
+        return Reduce<T> ([] (ArgByValueType<T> lhs, ArgByValueType<T> rhs) -> T { return max (lhs, rhs); });
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -1117,7 +1118,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     inline optional<RESULT_TYPE> Iterable<T>::Sum () const
     {
-        return Reduce<RESULT_TYPE> ([] (T lhs, T rhs) { return lhs + rhs; });
+        return Reduce<RESULT_TYPE> ([] (ArgByValueType<T> lhs, ArgByValueType<T> rhs) { return lhs + rhs; });
     }
     template <typename T>
     template <typename RESULT_TYPE>
