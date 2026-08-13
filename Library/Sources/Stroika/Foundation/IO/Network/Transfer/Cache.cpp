@@ -266,7 +266,14 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
     }
     if (fCacheControl) {
         function<String (const String& lhs, const String& rhs)> a = [] (const String& lhs, const String& rhs) -> String {
-            return lhs.empty () ? rhs : (lhs + ","sv + rhs);
+            if (lhs.empty ()) {
+                return rhs;
+            }
+            StringBuilder sb;
+            sb << lhs;
+            sb << ","sv;
+            sb << rhs;
+            return sb;
         };
         result.Add (HTTP::HeaderName::kCacheControl, fCacheControl->Reduce (a).value_or (String{}));
     }

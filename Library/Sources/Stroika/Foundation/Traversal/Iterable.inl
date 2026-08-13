@@ -1061,7 +1061,10 @@ namespace Stroika::Foundation::Traversal {
         optional<REDUCED_TYPE> result;
         for (const auto& i : *this) {
             if (result) {
-                result = op (i, *result);
+                // NB: ACCUMULATOR FIRST, element second - as std::accumulate and Join () do. Until
+                // Stroika v3.0d24 this was op (i, *result), which silently REVERSED any non-commutative
+                // operation (Sum () over String returned "CBA" for {A,B,C}).
+                result = op (*result, i);
             }
             else {
                 result = i;

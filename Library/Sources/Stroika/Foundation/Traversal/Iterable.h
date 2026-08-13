@@ -850,13 +850,22 @@ namespace Stroika::Foundation::Traversal {
          *          optional<RESULT_TYPE> result;
          *          for (const auto& i : *this) {
          *              if (result) {
-         *                  result = op (i, *result);
+         *                  result = op (*result, i);
          *              }
          *              else {
          *                  result = i;
          *              }
          *          }
          *      \endcode
+         *
+         *  \note   op () is called with the ACCUMULATOR as its first argument and the next element as
+         *          its second - the same way round as std::accumulate and as Join ()'s combiner. This
+         *          only matters for a non-commutative op, but then it matters entirely.
+         *
+         *  \note   Changed in Stroika v3.0d24: op () used to be called as op (element, accumulator),
+         *          which silently reversed non-commutative operations - Sum () over an Iterable<String>
+         *          of {A, B, C} returned "CBA". Code that passes a commutative op (the overwhelmingly
+         *          common case - anything arithmetic, min, max) is unaffected.
          *
          *  \note   returns nullopt if empty list
          *
