@@ -14,23 +14,12 @@ Generally will track stuff here between releases
        CloneEmpty () to retain the rep type. Probably fine/desirable for a sort, but undocumented.
     2. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
        Iterable<T>::OrderBy ().
-    - DESIGN DIRECTION (LGP): make OrderBy a virtual on Sequence<T>::_IRep so Sequence_Array /
-      Sequence_stdvector can sort their own storage in place. The blocking question was whether the
-      comparer's type erasure (virtuals can't be templates) costs more than the copy it saves.
-      MEASURED - and it does, decisively:
-        * Virtual taking a type-erased function<> comparer: type-erasure tax 3.4x for int, making it
-          ~1.8x SLOWER than today. Only affordable where comparison is expensive relative to the
-          indirect call - for String the tax was ~1.0x (free).
-        * Virtual exposing mutable storage (span<T>) with stable_sort left in the outer template
-          (comparer stays inlined): 1.85x faster than today for int, 1.13x for String. Never
-          regressed in any case measured. => this is the shape to build.
-      So: storage-exposing virtual + inlined comparer, NOT a comparer-taking virtual. A type-erased
-      virtual is still defensible as a *fallback* hook for backends with a genuinely different
-      strategy (eg DoublyLinkedList merge sort by relinking) - just not on the array-backed path.
-      CAVEAT: N=1000 on one machine. The ePar-vs-eSeq crossover is unmeasured - parallel should win at
-      some larger N, so the eSeq default (now on both Sequence and Iterable) may be wrong for big
-      sequences. A size sweep would settle it. At N=1000 ePar costs 2.08x on Sequence, 1.81x on
-      Iterable, whose larger copy dilutes the sort's share.
+    3. The ePar-vs-eSeq crossover is unmeasured. Parallel should win at some larger N, so the eSeq
+       default (now on both Sequence and Iterable) may be wrong for big sequences - a size sweep would
+       settle it. At N=1000 ePar costs 2.08x on Sequence and 1.81x on Iterable, whose larger copy
+       dilutes the sort's share.
+       (The in-place-sort design direction that used to be recorded here is decided and closed - see
+       the DESIGN NOTE on Sequence<T>::_IRep in Sequence.h for the measurements and the reasoning.)
     - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
       Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access
       (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes
@@ -38,27 +27,6 @@ Generally will track stuff here between releases
       size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
       - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
       without new evidence; the size () item below is the thing that would change the picture.
-- PeekContiguousStorage - the read-only side is DONE and closed out (f3f2ad7d1b, c6438b404d,
-  5324d0eff0, b7ea919adb, 543316151e, 7b0d6bb9e3, dd98dbcecf). The hook is on Iterable<T>::_IRep
-  defaulting to nullopt, 9 Array-backed reps override it, and every consumer worth doing uses it:
-  As<> () for any target constructible from a pointer pair, SequentialEquals (), Contains (),
-  Sequence<T>::IndexOf (), Min (), Max (), Sum (). The before/after per-element numbers live in the
-  'Test52 --show --orderby-probe' entries themselves, which is where to look rather than here.
-  Deliberately NOT done, do not re-propose without new reasons: Find () (must return a live Iterator<T>
-  and a span yields only a position - see the comment at its implementation), Median () (dominated by
-  the sort it does), DenseDataHyperRectangle_Vector (LGP's call).
-  STILL OPEN - STAGE 2: the mutable span<T> on Sequence<T>::_IRep behind _GetWriteableRep (), which is
-  what would let OrderBy () sort backend storage in place (measured 1.85x for int, 1.13x for String -
-  see DESIGN DIRECTION above). RE-MEASURE FIRST: OrderBy () sits at ~0.95 vs raw stable_sort now, so the
-  headroom is far smaller than when that 1.85x was taken.
-    - span<T> must NOT go on Iterable<T>::_IRep. Iterable is conceptually read-only, and handing out
-      mutable storage from a const object reintroduces the COW hazard documented on
-      Sequence<T>::operator[] (another thread copies the container, bumping the refcount, while you
-      write through the span). _GetWriteableRep () is where sole ownership is assured.
-    - It would also supersede Apply () for contiguous backends - see the note at Iterable.h ~547
-      explaining that Apply () exists to avoid per-element virtual iteration. Apply () still pays a
-      std::function call per element; a span pays nothing per element.
-
 - LinkedList::size () / DoublyLinkedList::size () are O(n) - cache the length instead. Both walk from
   fHead_ counting. Every other DataStructure in the stack is already O(1): Array and SkipList keep
   fLength_, HashTable keeps fCachedSize_, STLContainerWrapper inherits the wrapped container's. And

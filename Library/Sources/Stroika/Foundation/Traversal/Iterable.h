@@ -1691,6 +1691,15 @@ namespace Stroika::Foundation::Traversal {
          *  \note   Overriders must return elements in ITERATION order. A backend whose storage order differs
          *          from the order MakeIterator () yields (or which is not contiguous at all) must return
          *          nullopt - silently returning storage order would corrupt every caller.
+         *
+         *  \note   Overriders must return storage that is WRITABLE when this rep is reached through
+         *          _GetWriteableRep () - ie the span must view the backend's own mutable buffer, never
+         *          genuinely immutable memory (a read-only memory mapping, a shared constant pool, ...).
+         *          The return type is span<const value_type> because reading is all this hook promises;
+         *          but an in-place algorithm that has already established sole ownership through
+         *          _GetWriteableRep () is entitled to const_cast and write through it, and that is the
+         *          intended way to get an in-place fast path WITHOUT adding a second (mutable) virtual
+         *          here. See the design note on Sequence<T>::_IRep for why that matters.
          */
         virtual optional<span<const value_type>> PeekContiguousStorage () const;
     };

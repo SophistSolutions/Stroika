@@ -700,6 +700,45 @@ namespace Stroika::Foundation::Containers {
      *
      *  Protected abstract interface to support concrete implementations of
      *  the Sequence<T> container API.
+     *
+     *  \note   DESIGN NOTE - why there is no mutable span<T> virtual here.
+     *
+     *          It has been proposed (and measured) to add a writable counterpart to
+     *          Iterable<T>::_IRep::PeekContiguousStorage (), so that OrderBy () could sort an
+     *          array-backed rep's own storage in place instead of materializing a vector<T> first. It
+     *          was should not be revisited without re-measuring, because:
+     *
+     *          o   OrderBy () MUST copy - it returns a new sorted Sequence and does not touch the
+     *              receiver - so an in-place hook can only remove the INTERMEDIATE vector, never the
+     *              copy itself. Measured (Test52, Release, N=1000): OrderBy () costs 10.78us against a
+     *              floor of 10.31us for 'memcpy the vector + std::stable_sort', ie it is already within
+     *              4.6% of the best achievable, and the intermediate copy specifically is 1.1% of it.
+     *              The old 1.85x was real when that copy walked Iterable<T>'s virtuals at ~11.7ns per
+     *              element; PeekContiguousStorage () made it a memcpy at ~0.12ns, which removed the
+     *              premise rather than the opportunity.
+     *
+     *          o   A virtual costs code SIZE that cannot be recovered. Its address is in the vtable, so
+     *              the linker cannot strip the body (/OPT:REF, --gc-sections all see it as live) even
+     *              where nothing dispatches to it; only whole-program devirtualization can, and Stroika
+     *              ships as a static library, so that is the consumer's build setting and not ours.
+     *              _IRep is a template and there are six Sequence backends, so the cost is a vtable slot
+     *              in every backend - including those that never override - plus a body per overriding
+     *              backend, all multiplied by every T in the program.
+     *
+     *          If an in-place fast path IS wanted later, the way to get it WITHOUT a new virtual is to
+     *          reuse the existing const hook: _GetWriteableRep () has already cloned-if-shared, so sole
+     *          ownership is assured, and the algorithm may const_cast the span it returns and write
+     *          through it (see the writability precondition documented on PeekContiguousStorage ()).
+     *
+     *          The thing that WOULD justify the virtual is not OrderBy () but genuinely in-place
+     *          mutation - a Sort ()/Reverse ()/Shuffle () that sorts the receiver and returns void.
+     *          Those have no copy to amortize at all, so the span is their whole implementation rather
+     *          than a 1% saving. Sequence<T> has no such API today.
+     *
+     *          Note also that a mutable span does NOT enable operator[] returning T&: handing a
+     *          writable view to a CALLER moves the clone-if-shared check from write time to
+     *          reference-acquisition time, which is exactly the COW hazard documented on
+     *          Sequence<T>::operator[]. Any such span must not escape the algorithm that obtained it.
      */
     template <typename T>
     class Sequence<T>::_IRep : public Iterable<T>::_IRep {

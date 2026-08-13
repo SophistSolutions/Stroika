@@ -1390,31 +1390,21 @@ namespace {
             return kData_;
         }
 
-        // ---- A: exactly what OrderBy () does today - copy out through Stroika's Iterator<T>, then sort
-        template <typename T, typename SEQUENCE_T>
-        void A_Today_ (const SEQUENCE_T& seq)
-        {
-            vector<T> tmp{seq.begin (), Iterator<T>{seq.end ()}};
-            stable_sort (tmp.begin (), tmp.end (), less<T>{});
-            Consume_ (Containers::Concrete::Sequence_stdvector<T>{move (tmp)});
-        }
-
-        // ---- B: same, but pre-size the vector and fill via a plain forward walk
-        template <typename T, typename SEQUENCE_T>
-        void B_Reserve_ (const SEQUENCE_T& seq)
-        {
-            vector<T> tmp;
-            tmp.reserve (seq.size ());
-            for (const auto& e : seq) {
-                tmp.push_back (e);
-            }
-            stable_sort (tmp.begin (), tmp.end (), less<T>{});
-            Consume_ (Containers::Concrete::Sequence_stdvector<T>{move (tmp)});
-        }
-
-        // ---- C: the "virtual exposes mutable storage (span<T>), stable_sort stays in the outer
-        //      template" strategy - comparer inlined. The vector copy models the COW clone that a const
-        //      OrderBy () must do before it may touch the rep's buffer.
+        /*
+         *  THE TYPE-ERASURE TAX. These two are identical except that D's comparer must cross a vtable
+         *  and so is wrapped in a std::function<>, which isolates exactly that cost.
+         *
+         *  This pair started life as part of an OrderBy () design probe (should _IRep expose mutable
+         *  storage, or take the comparer?) and has outlived that question - the in-place OrderBy () idea
+         *  is decided and closed, see the DESIGN NOTE on Sequence<T>::_IRep. What survives is the
+         *  general fact these measure: passing a comparer through a std::function<> costs ~3.4x for int
+         *  and ~1.0x for String, ie type erasure is only affordable when the operation itself is
+         *  expensive relative to an indirect call. That is why Min ()/Max ()/Sum () bypass Reduce ()
+         *  rather than accelerate it, and it should govern any future erased-callback design.
+         *
+         *  The vector copy in both models the COW clone a const method must do before it may touch a
+         *  rep's buffer; it is common to both sides, so it cancels out of the ratio.
+         */
         template <typename T>
         void C_InPlaceInlined_ (const vector<T>& src)
         {
@@ -1723,15 +1713,8 @@ namespace {
             GetOutStream_ () << "score < 1 means the second (compareWith) strategy is faster" << endl << endl;
 
             (void)Tester (
-                "OrderBy probe int: A_today vs B_reserve", [&] () { A_Today_<int> (kSeqInts_); }, "A_today",
-                [&] () { B_Reserve_<int> (kSeqInts_); }, "B_reserve", kRunCount_, kNoWarn_);
-            (void)Tester (
-                "OrderBy probe int: A_today vs C_inplace_inlined", [&] () { A_Today_<int> (kSeqInts_); }, "A_today",
-                [&] () { C_InPlaceInlined_<int> (SourceInts_ ()); }, "C_inplace_inlined", kRunCount_, kNoWarn_);
-            (void)Tester (
-                "OrderBy probe int: C_inplace_inlined vs D_inplace_erased  <== THE DECISION",
-                [&] () { C_InPlaceInlined_<int> (SourceInts_ ()); }, "C_inplace_inlined",
-                [&] () { D_InPlaceErased_<int> (SourceInts_ ()); }, "D_inplace_erased", kRunCount_, kNoWarn_);
+                "Type-erasure tax int: inlined comparer vs std::function comparer", [&] () { C_InPlaceInlined_<int> (SourceInts_ ()); },
+                "comparer inlined", [&] () { D_InPlaceErased_<int> (SourceInts_ ()); }, "comparer via std::function", kRunCount_, kNoWarn_);
 
             /*
              *  COPY STRATEGY - which way should Iterable<T>::As<vector<T>> () materialize? This feeds
@@ -1899,13 +1882,12 @@ namespace {
                 [&] () { Real_IterableOrderBy_<int> (kIterInts_, Execution::SequencePolicy::eSeq); }, "Iterable::OrderBy (eSeq)",
                 [&] () { Real_IterableOrderBy_<int> (kIterInts_, Execution::SequencePolicy::ePar); }, "Iterable::OrderBy (ePar)", kRunCount_, kNoWarn_);
 
+            // String as well as int, because the tax is only affordable where the operation itself is
+            // expensive relative to an indirect call - and String is exactly that case (~1.0x, ie free).
             (void)Tester (
-                "OrderBy probe String: A_today vs C_inplace_inlined", [&] () { A_Today_<String> (kSeqStrs_); }, "A_today",
-                [&] () { C_InPlaceInlined_<String> (SourceStrings_ ()); }, "C_inplace_inlined", kRunCount_ / 10, kNoWarn_);
-            (void)Tester (
-                "OrderBy probe String: C_inplace_inlined vs D_inplace_erased  <== THE DECISION",
-                [&] () { C_InPlaceInlined_<String> (SourceStrings_ ()); }, "C_inplace_inlined",
-                [&] () { D_InPlaceErased_<String> (SourceStrings_ ()); }, "D_inplace_erased", kRunCount_ / 10, kNoWarn_);
+                "Type-erasure tax String: inlined comparer vs std::function comparer",
+                [&] () { C_InPlaceInlined_<String> (SourceStrings_ ()); }, "comparer inlined",
+                [&] () { D_InPlaceErased_<String> (SourceStrings_ ()); }, "comparer via std::function", kRunCount_ / 10, kNoWarn_);
         }
     }
 }
