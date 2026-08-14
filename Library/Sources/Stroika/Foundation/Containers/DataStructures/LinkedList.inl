@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         // 'new Link_' can throw - the allocation, or T's copy CTOR, since Link_ holds a T by value -
         // and counting incrementally keeps fLength_ equal to the links actually present if it does.
         if (src.fHead_ != nullptr) {
-            fHead_        = new Link_{src.fHead_->fItem, nullptr};
+            fHead_ = new Link_{src.fHead_->fItem, nullptr};
             ++fLength_;
             Link_* newCur = fHead_;
             for (const Link_* cur = src.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // count as we link (see the note in the copy CTOR): if a 'new Link_' throws partway, this
             // object SURVIVES the failed assignment, so fLength_ must still match the links built so far
             if (rhs.fHead_ != nullptr) {
-                fHead_        = new Link_{rhs.fHead_->fItem, nullptr};
+                fHead_ = new Link_{rhs.fHead_->fItem, nullptr};
                 ++fLength_;
                 Link_* newCur = fHead_;
                 for (const Link_* cur = rhs.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
@@ -230,7 +230,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         for (const auto& i : copyFrom) {
             if (last == nullptr) [[unlikely]] {
+                // list was empty, so the element we just prepended is also the LAST one - track it, or
+                // every subsequent element takes this branch too and the span comes out REVERSED
                 push_front (i);
+                last = fHead_;
             }
             else {
                 Assert (last->fNext == nullptr); // really we are last

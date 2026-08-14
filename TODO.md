@@ -8,6 +8,13 @@ Generally will track stuff here between releases
 
 ## Open
 
+- ROTATE the personal access token stored in plaintext in a local (NOT in-repo) git config on the
+  Windows dev box - github.com/settings/tokens, revoke and reissue. Noticed 2026-08-14. It is in a
+  world-readable file, and it was read into an AI session transcript, which is enough on its own -
+  a token that has left the machine should be treated as compromised whether or not it was misused.
+  Prefer a credential helper (Git Credential Manager) over a config entry when reissuing, so the
+  replacement is not sitting in cleartext too.
+
 - OrderBy () - remaining work. Measurements: run 'Test52 --show --orderby-probe' (Release, N=1000).
 
     1. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
@@ -16,8 +23,7 @@ Generally will track stuff here between releases
        default (now on both Sequence and Iterable) may be wrong for big sequences - a size sweep would
        settle it. At N=1000 ePar costs 2.08x on Sequence and 1.81x on Iterable, whose larger copy
        dilutes the sort's share.
-       (The in-place-sort design direction that used to be recorded here is decided and closed - see
-       the DESIGN NOTE on Sequence<T>::_IRep in Sequence.h for the measurements and the reasoning.)
+       (In-place sort is decided and closed - see the DESIGN NOTE on Sequence<T>::_IRep in Sequence.h.)
 
        Change default to NOT be a value, but algorithm (overload) that picks. Say which you want. Or get the best default (ask Claude if makes sense? Probaly yes once we gaurnatee size() is O(1) - and DOCUMENT that ratioale - WHY we guarnatee size O(1))
     - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
@@ -27,28 +33,12 @@ Generally will track stuff here between releases
       size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
       - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
       without new evidence; the size () item below is the thing that would change the picture.
-- BUGS in DoublyLinkedList<T> - back-links not maintained on two paths. Found while adding the
-  length caching (2026-08-14); NOT fixed there, deliberately kept separate. Neither is caught by the
-  new length invariant, which walks fNext only.
-    1. operator= (DoublyLinkedList.inl ~L242) builds the copy with 'new Link_{item, nullptr}' and only
-       ever assigns newPrev->fNext. So fPrev is null on every link, and fTail_ is left as clear ()
-       left it (nullptr) while fHead_ is not. That breaks BidirectionalIterator, RemoveLast (), and
-       GetLast (). The existing Invariant_ () end-checks (fHead_->fNext->fPrev == fHead_) should fire
-       on any multi-element assignment - which strongly suggests operator= is simply never called.
-       The copy CTOR is correct; it delegates to push_back (). Fix, or = delete it if truly unused.
-    2. Remove (item, equalsComparer) (~L255) unlinks with 'prev->fNext = link->fNext' and never fixes
-       link->fNext->fPrev, nor fTail_ when the removed element was last.
-       Cleanest fix: have it find the element and delegate to Remove (const ForwardIterator&), which
-       already handles all four cases correctly - that is what LinkedList<T> does.
-    3. LEAK on throw in the COPY CONSTRUCTOR of both LinkedList<T> and DoublyLinkedList<T>. If a
-       'new Link_' throws partway (the allocation, or T's copy CTOR - Link_ holds a T by value), the
-       object never finishes constructing, so its destructor never runs, and every link built so far
-       leaks. Pre-existing; noticed 2026-08-14 while checking the exception safety of the length
-       caching. operator= does NOT have this problem (the object survives, so the next clear ()/dtor
-       frees them) - and its fLength_ is now counted incrementally so it stays consistent on throw.
-       Fix would be a try/catch around the copy loop that clear ()s and rethrows.
-  Worth adding a Test05 case that removes a middle element and then iterates BACKWARD / calls
-  RemoveLast (), since forward-only iteration is why this survived.
+- LEAK on throw in the COPY CONSTRUCTOR of both LinkedList<T> and DoublyLinkedList<T>. If a
+  'new Link_' throws partway (the allocation, or T's copy CTOR - Link_ holds a T by value), the object
+  never finishes constructing, so its destructor never runs, and every link built so far leaks.
+  Pre-existing; noticed 2026-08-14 while checking the exception safety of the length caching.
+  operator= does NOT have this problem - the object survives, so the next clear ()/dtor frees them.
+  Fix is a try/catch around the copy loop that clear ()s and rethrows.
 
 - Iterable<T>::PeekSize () -> optional<size_t> - a way to ask "do you know your size cheaply?".
   Not built. Discussed at length 2026-08-13/14; recording the conclusions so it is not re-derived.
@@ -143,9 +133,16 @@ Generally will track stuff here between releases
 
 - issue of LOST JIRA TICKETS
 
-  - for items where we have a default paraemter of eSeq or ePar, instead OVERLOAD and have
-    unspecified version documented to make a good guess which to use, and leave ambiguous. Be specific if
-    you care. Overload will probably generally look at s.size() - NOT fully considered but trial balloon plan.
+- for items where we have a default paraemter of eSeq or ePar, instead OVERLOAD and have
+  unspecified version documented to make a good guess which to use, and leave ambiguous. Be specific if
+  you care. Overload will probably generally look at s.size() - NOT fully considered but trial balloon plan.
 
++ Consider adding Mapping_stdflatmap? Is there such a thing? Maybe fast for small sizes?
 
-  + Consider adding Mapping_stdflatmap? Is there such a thing? Maybe fast for small sizes?
++ add docs and static assert that Debug::AssertExternallySyncrhonizedmutex is movable and copyable
+  unlike real mutexes. This is cuz of how its used. Its NOT a real mutex just embedded in objects
+  to help test them for re-entrancy. Those objects need to be copyable ad movable so the helper
+  mutexlike things must be too!
+
+  Ask Claude if it has a better than than Debug::AssertExternallySyncrhonizedmutex - as its 
+  sometimes confusing and definitely can be misleading.

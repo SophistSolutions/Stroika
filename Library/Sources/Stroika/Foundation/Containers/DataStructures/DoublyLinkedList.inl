@@ -232,26 +232,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
-        clear ();
-        /*
-         *      Copy the linked list by keeping a point to the new current and new
-         *  previous, and sliding them along in parallel as we construct the
-         *  new list. Only do this if we have at least one element - then we
-         *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
-         *  case is handled outside, before the loop.
-         */
-        // count as we link, not from rhs at the end: a 'new Link_' can throw (allocation, or T's copy
-        // CTOR - Link_ holds a T by value) and this object survives the failed assignment, so fLength_
-        // must still match the links actually built
-        if (rhs.fHead_ != nullptr) {
-            fHead_        = new Link_{rhs.fHead_->fItem, nullptr};
-            ++fLength_;
-            Link_* newCur = fHead_;
-            for (const Link_* cur = rhs.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
-                Link_* newPrev = newCur;
-                newCur         = new Link_{cur->fItem, nullptr};
-                newPrev->fNext = newCur;
-                ++fLength_;
+        if (this != &rhs) [[likely]] {
+            clear ();
+            /*
+             *  Built with push_back () rather than by hand-linking, which is what the copy CTOR does.
+             *  The hand-rolled loop that used to be here linked only fNext - so fPrev was left null on
+             *  every element and fTail_ was left as clear () left it - and it did not even compile
+             *  (Link_ has a single 3-argument CTOR; that code passed two). It was never instantiated,
+             *  because nothing in Stroika assigns a DoublyLinkedList, which is why none of that showed
+             *  up. push_back () maintains fPrev, fTail_ and fLength_ correctly, and keeps fLength_
+             *  consistent with the links if a T copy CTOR throws partway.
+             */
+            for (const Link_* cur = rhs.fHead_; cur != nullptr; cur = cur->fNext) {
+                push_back (cur->fItem);
             }
         }
         Invariant ();
@@ -263,19 +256,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
-        if (equalsComparer (item, fHead_->fItem)) {
-            RemoveFirst ();
-        }
-        else {
-            Link_* prev = nullptr;
-            for (Link_* link = fHead_; link != nullptr; prev = link, link = link->fNext) {
-                if (equalsComparer (link->fItem, item)) {
-                    AssertNotNull (prev); // cuz otherwise we would have hit it in first case!
-                    prev->fNext = link->fNext;
-                    delete (link);
-                    --fLength_;
-                    break;
-                }
+        /*
+         *  Find, then delegate to Remove (ForwardIterator) - which already handles first/middle/last
+         *  and the fPrev, fTail_ and fLength_ bookkeeping. This is what LinkedList<T> does.
+         *
+         *  The hand-rolled unlink that used to be here got three things wrong: it dereferenced
+         *  fHead_->fItem with no null check (so Remove () on an EMPTY list was a null dereference),
+         *  it never fixed link->fNext->fPrev, and it never updated fTail_ when the removed element
+         *  was the last - so a doubly-linked list stopped being doubly linked.
+         */
+        for (ForwardIterator it{this}; not it.AtEnd (); ++it) {
+            if (equalsComparer (*it, item)) {
+                this->Remove (it);
+                break;
             }
         }
         Invariant ();

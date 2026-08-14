@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          * 
-         *  *  Complexity EQUALS_COMPARER OVERLOAD:
+         *    Complexity EQUALS_COMPARER OVERLOAD:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          *

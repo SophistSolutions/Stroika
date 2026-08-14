@@ -5,6 +5,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
+#include <span>
+#include <vector>
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/DataStructures/LinkedList.h"
@@ -128,6 +130,38 @@ namespace {
         for (size_t i = kBigSize; i >= 1; --i) {
             //cerr << "i, getat(i-1) = " << i << ", " << someLL.GetAt (i-1).GetValue () << endl;
             EXPECT_EQ (someLL.GetAt (i - 1), i);
+        }
+    }
+}
+
+namespace {
+    /*
+     *  push_back (span) / push_front (span) must both leave the elements in SPAN order - that is what
+     *  their doc-notes promise. Only the single-item push_back () was covered before.
+     */
+    GTEST_TEST (Foundation_Containers_DataStructures_LinkedList, push_span_preserves_order)
+    {
+        Debug::TraceContextBumper ctx{"push_span_preserves_order"};
+        using LL           = DataStructures::LinkedList<int>;
+        const int kData_[] = {1, 2, 3};
+        auto      contents = [] (const LL& l) { return vector<int>{l.begin (), l.end ()}; };
+        { // push_back (span) onto an EMPTY list
+            LL l;
+            l.push_back (span<const int>{kData_});
+            EXPECT_EQ ((vector<int>{1, 2, 3}), contents (l));
+        }
+        { // push_back (span) onto a NON-empty list
+            LL l;
+            l.push_back (0);
+            l.push_back (span<const int>{kData_});
+            EXPECT_EQ ((vector<int>{0, 1, 2, 3}), contents (l));
+        }
+        { // push_front (span) onto an empty and a non-empty list
+            LL l;
+            l.push_front (span<const int>{kData_});
+            EXPECT_EQ ((vector<int>{1, 2, 3}), contents (l));
+            l.push_front (span<const int>{kData_});
+            EXPECT_EQ ((vector<int>{1, 2, 3, 1, 2, 3}), contents (l));
         }
     }
 }

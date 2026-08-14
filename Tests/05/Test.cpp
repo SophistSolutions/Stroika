@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/DataStructures/DoublyLinkedList.h"
@@ -141,6 +142,104 @@ namespace {
             //cerr << "i, getat(i-1) = " << i << ", " << someLL.GetAt (i-1).GetValue () << endl;
             EXPECT_TRUE (someLL.GetAt (i - 1) == i);
         }
+    }
+}
+
+namespace {
+    // walk the list BACKWARD, which is what exercises fPrev - forward-only iteration cannot see
+    // corrupt back-links, which is how the Remove ()/operator= defects survived
+    template <typename T>
+    vector<T> ReverseContents_ (const DataStructures::DoublyLinkedList<T>& l)
+    {
+        vector<T> r;
+        if (not l.empty ()) {
+            typename DataStructures::DoublyLinkedList<T>::BidirectionalIterator i{&l};
+            while (not i.AtEnd ()) { // walk to the last element
+                auto next = i;
+                ++next;
+                if (next.AtEnd ()) {
+                    break;
+                }
+                i = next;
+            }
+            for (;; --i) {
+                r.push_back (*i);
+                if (i.AtStart ()) {
+                    break;
+                }
+            }
+        }
+        return r;
+    }
+    template <typename T>
+    vector<T> ForwardContents_ (const DataStructures::DoublyLinkedList<T>& l)
+    {
+        return vector<T>{l.begin (), l.end ()};
+    }
+    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList, Remove_by_value_maintains_backlinks_and_tail)
+    {
+        Debug::TraceContextBumper ctx{"Remove_by_value_maintains_backlinks_and_tail"};
+        using LL = DataStructures::DoublyLinkedList<int>;
+        auto mk  = [] () {
+            LL l;
+            for (int i : {1, 2, 3, 4, 5}) {
+                l.push_back (i);
+            }
+            return l;
+        };
+        { // remove a MIDDLE element
+            LL l = mk ();
+            l.Remove (3);
+            EXPECT_EQ (4u, l.size ());
+            EXPECT_EQ ((vector<int>{1, 2, 4, 5}), ForwardContents_ (l));
+            EXPECT_EQ ((vector<int>{5, 4, 2, 1}), ReverseContents_ (l)); // fPrev must still be sound
+            EXPECT_EQ (5, *l.GetLast ());
+            l.RemoveLast (); // needs fTail_ and fTail_->fPrev
+            EXPECT_EQ ((vector<int>{1, 2, 4}), ForwardContents_ (l));
+        }
+        { // remove the LAST element - fTail_ must be updated
+            LL l = mk ();
+            l.Remove (5);
+            EXPECT_EQ (4u, l.size ());
+            EXPECT_EQ (4, *l.GetLast ());
+            EXPECT_EQ ((vector<int>{4, 3, 2, 1}), ReverseContents_ (l));
+        }
+        { // remove the FIRST element
+            LL l = mk ();
+            l.Remove (1);
+            EXPECT_EQ ((vector<int>{2, 3, 4, 5}), ForwardContents_ (l));
+            EXPECT_EQ ((vector<int>{5, 4, 3, 2}), ReverseContents_ (l));
+        }
+        { // absent element - no change; and on an EMPTY list - must not dereference a null head
+            LL l = mk ();
+            l.Remove (99);
+            EXPECT_EQ (5u, l.size ());
+            LL e;
+            e.Remove (42);
+            EXPECT_EQ (0u, e.size ());
+        }
+    }
+    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList, operator_assign)
+    {
+        Debug::TraceContextBumper ctx{"operator_assign"};
+        using LL = DataStructures::DoublyLinkedList<int>;
+        LL src;
+        for (int i : {1, 2, 3, 4}) {
+            src.push_back (i);
+        }
+        LL dest;
+        dest.push_back (99); // non-empty target, so operator= must clear first
+        dest = src;
+        EXPECT_EQ (4u, dest.size ());
+        EXPECT_EQ ((vector<int>{1, 2, 3, 4}), ForwardContents_ (dest));
+        EXPECT_EQ ((vector<int>{4, 3, 2, 1}), ReverseContents_ (dest)); // fPrev
+        EXPECT_EQ (4, *dest.GetLast ());                                // fTail_
+        dest.RemoveLast ();
+        EXPECT_EQ ((vector<int>{1, 2, 3}), ForwardContents_ (dest));
+        LL empty;
+        dest = empty;
+        EXPECT_EQ (0u, dest.size ());
+        EXPECT_TRUE (dest.empty ());
     }
 }
 
