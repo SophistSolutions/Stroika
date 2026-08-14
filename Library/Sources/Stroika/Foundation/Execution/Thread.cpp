@@ -512,6 +512,7 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
     // and https://github.com/SophistSolutions/Stroika/actions/runs/15288729158/job/43004184991 MACOS ONLY - 2025-05-28
     // and https://github.com/SophistSolutions/Stroika/actions/runs/21410430792/job/61645759448 MACOS ONLY - 2026-01-27
     // AND https://github.com/SophistSolutions/Stroika/actions/runs/27315495550/job/80699126534 - windows-vs2k22-msys-x86-Debug, windows-2025 - 2026-06-11
+    // AND https://github.com/SophistSolutions/Stroika/actions/runs/31757601642/job/94636758814 - ubuntu-25.04-g++-15-debug-smaller-container, g++-15, ubuntu-latest
     //maybe make fTriggered atomic in WaitableEvent::WE?
     Require (not IsDone_ ());
 
