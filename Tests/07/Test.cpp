@@ -24,6 +24,9 @@ using namespace Stroika::Foundation::Containers::DataStructures;
 
 using namespace Stroika::Frameworks;
 
+// NB: these MUST be declared out here, not inside a GTEST_TEST body - in there, 'Test' names gtest's
+// own ::testing::Test base class, so 'Test::ArchtypeClasses::X' does not compile
+using Test::ArchtypeClasses::CopyableWithThrowingCopyCTOR;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 #if qStroika_HasComponent_googletest
@@ -163,6 +166,29 @@ namespace {
             l.push_front (span<const int>{kData_});
             EXPECT_EQ ((vector<int>{1, 2, 3, 1, 2, 3}), contents (l));
         }
+    }
+}
+
+namespace {
+    /*
+     *  Link_ holds a T BY VALUE, so a Link_ that leaked is a T that was never destroyed - which is what
+     *  CopyableWithThrowingCopyCTOR::sLiveCount sees.
+     */
+    GTEST_TEST (Foundation_Containers_DataStructures_LinkedList, copy_CTOR_does_not_leak_when_element_copy_throws)
+    {
+        Debug::TraceContextBumper ctx{"copy_CTOR_does_not_leak_when_element_copy_throws"};
+        using T  = CopyableWithThrowingCopyCTOR;
+        using LL = DataStructures::LinkedList<T>;
+        LL src;
+        for (int i = 5; i >= 1; --i) {
+            src.push_front (T{i});
+        }
+        const int kLiveBefore = T::sLiveCount;
+        T::sCopiesUntilThrow  = 3; // so the 4th element's copy CTOR throws, 3 links already built
+        EXPECT_THROW (LL{src}, runtime_error);
+        T::sCopiesUntilThrow = -1;
+        // a partly-built object never runs its destructor, so those 3 links have to be freed by the CTOR itself
+        EXPECT_EQ (kLiveBefore, T::sLiveCount);
     }
 }
 

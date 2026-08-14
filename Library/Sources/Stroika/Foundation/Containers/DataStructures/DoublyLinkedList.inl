@@ -36,8 +36,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList& src)
     {
-        for (const Link_* cur = src.fHead_; cur != nullptr; cur = cur->fNext) {
-            push_back (cur->fItem);
+        // The try/catch is REQUIRED, and is not the same case as operator=: a CTOR that throws leaves an
+        // object that never finished constructing, so ~DoublyLinkedList () is never run for it, so nothing
+        // else will ever free the links built so far. push_back () leaves the list fully linked after each
+        // element, so clear () can always walk it at the throw point.
+        try {
+            for (const Link_* cur = src.fHead_; cur != nullptr; cur = cur->fNext) {
+                push_back (cur->fItem);
+            }
+        }
+        catch (...) {
+            clear ();
+            throw;
         }
         Invariant ();
     }

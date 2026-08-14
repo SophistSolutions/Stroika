@@ -137,6 +137,71 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     using SimpleClassWithoutComparisonOperators [[deprecated ("Since Stroika v3.0d10 use OnlyCopyableMoveable")]] = OnlyCopyableMoveable;
 
     /**
+     *  \brief Copyable, but its copy CTOR throws on demand, and it counts its live instances - for testing the exception safety of containers
+     *
+     *  Set sCopiesUntilThrow to N to let the next N copies succeed and make the one after that throw;
+     *  -1 (the default) never throws. Restore it to -1 when done, since it is a plain static.
+     *
+     *  sLiveCount is what makes a LEAK observable, without any allocator instrumentation: a container
+     *  node that was never destroyed holds a T that was never destroyed, so a live count that fails to
+     *  return to its starting value IS the leak. Sample it before the operation and compare after:
+     *
+     *      \code
+     *          const int kLiveBefore = CopyableWithThrowingCopyCTOR::sLiveCount;
+     *          CopyableWithThrowingCopyCTOR::sCopiesUntilThrow = 3;   // 4th copy throws
+     *          EXPECT_THROW (SomeContainer{src}, runtime_error);
+     *          CopyableWithThrowingCopyCTOR::sCopiesUntilThrow = -1;
+     *          EXPECT_EQ (kLiveBefore, CopyableWithThrowingCopyCTOR::sLiveCount);
+     *      \endcode
+     *
+     *  \note NOT thread safe - the counters are plain statics, so use from one thread at a time.
+     */
+    class CopyableWithThrowingCopyCTOR {
+    public:
+        static inline int sLiveCount        = 0;
+        static inline int sCopiesUntilThrow = -1; // -1 => never throw
+
+    public:
+        CopyableWithThrowingCopyCTOR (int value = 0)
+            : fValue_{value}
+        {
+            ++sLiveCount;
+        }
+        CopyableWithThrowingCopyCTOR (const CopyableWithThrowingCopyCTOR& src)
+            : fValue_{src.fValue_}
+        {
+            if (sCopiesUntilThrow == 0) {
+                throw runtime_error{"CopyableWithThrowingCopyCTOR"};
+            }
+            if (sCopiesUntilThrow > 0) {
+                --sCopiesUntilThrow;
+            }
+            ++sLiveCount;
+        }
+        ~CopyableWithThrowingCopyCTOR ()
+        {
+            --sLiveCount;
+        }
+        CopyableWithThrowingCopyCTOR& operator= (const CopyableWithThrowingCopyCTOR& rhs) = default;
+
+    public:
+        nonvirtual int GetValue () const
+        {
+            return fValue_;
+        }
+        nonvirtual bool operator== (const CopyableWithThrowingCopyCTOR& rhs) const
+        {
+            return fValue_ == rhs.fValue_;
+        }
+
+    private:
+        int fValue_;
+    };
+    static_assert (default_initializable<CopyableWithThrowingCopyCTOR>);
+    static_assert (copyable<CopyableWithThrowingCopyCTOR>);
+    static_assert (equality_comparable<CopyableWithThrowingCopyCTOR>);
+
+    /**
      * \brief alias for 'regular' type (copyable, default constructible, equality_comparable, etc)
      *      @todo maybe do explicit class cuz Regular should NOT be totally_ordered, but int is...
      */

@@ -57,16 +57,28 @@ namespace Stroika::Foundation::Containers::DataStructures {
         // NB: fLength_ is bumped as each link is attached, NOT assigned from src at the end. A
         // 'new Link_' can throw - the allocation, or T's copy CTOR, since Link_ holds a T by value -
         // and counting incrementally keeps fLength_ equal to the links actually present if it does.
-        if (src.fHead_ != nullptr) {
-            fHead_ = new Link_{src.fHead_->fItem, nullptr};
-            ++fLength_;
-            Link_* newCur = fHead_;
-            for (const Link_* cur = src.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
-                Link_* newPrev = newCur;
-                newCur         = new Link_{cur->fItem, nullptr};
-                newPrev->fNext = newCur;
+        //
+        // The try/catch is REQUIRED, and is not the same case as operator=: a CTOR that throws leaves an
+        // object that never finished constructing, so ~LinkedList () is never run for it, so nothing else
+        // will ever free the links built so far. Each new Link_ is created with a null fNext and only
+        // linked in afterwards, so the chain is always well formed at the throw point and clear () can
+        // walk it.
+        try {
+            if (src.fHead_ != nullptr) {
+                fHead_ = new Link_{src.fHead_->fItem, nullptr};
                 ++fLength_;
+                Link_* newCur = fHead_;
+                for (const Link_* cur = src.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
+                    Link_* newPrev = newCur;
+                    newCur         = new Link_{cur->fItem, nullptr};
+                    newPrev->fNext = newCur;
+                    ++fLength_;
+                }
             }
+        }
+        catch (...) {
+            clear ();
+            throw;
         }
         Invariant ();
     }

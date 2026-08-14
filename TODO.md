@@ -33,13 +33,6 @@ Generally will track stuff here between releases
       size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
       - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
       without new evidence; the size () item below is the thing that would change the picture.
-- LEAK on throw in the COPY CONSTRUCTOR of both LinkedList<T> and DoublyLinkedList<T>. If a
-  'new Link_' throws partway (the allocation, or T's copy CTOR - Link_ holds a T by value), the object
-  never finishes constructing, so its destructor never runs, and every link built so far leaks.
-  Pre-existing; noticed 2026-08-14 while checking the exception safety of the length caching.
-  operator= does NOT have this problem - the object survives, so the next clear ()/dtor frees them.
-  Fix is a try/catch around the copy loop that clear ()s and rethrows.
-
 - Iterable<T>::PeekSize () -> optional<size_t> - a way to ask "do you know your size cheaply?".
   Not built. Discussed at length 2026-08-13/14; recording the conclusions so it is not re-derived.
     - The DataStructure/container half of this IS done: both linked lists now cache their length, so
