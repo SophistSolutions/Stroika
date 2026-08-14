@@ -173,7 +173,14 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
-	@#NOTE - not obvious we want the 'tr -d but makes it a bit more terse'
+	@#NOTE - 'tr -d "\r"' strips CRs only (Windows test exes emit them). It used to be 'tr -d "\r\n"', which
+	@#also ate the NEWLINES, collapsing each test's entire output onto one line - terser, but it made the
+	@#run-tests logs very hard to read and impossible to grep line-wise.
+	@#NOTE - TEST_FAILURES_CAUSE_FAILED_MAKE is read below as $${VAR:-1}, ie an EMPTY value means the
+	@#documented default (1=fail the make), NOT the suppress branch. Plain "$$VAR" -ne 0 on an empty
+	@#string is a [ ] error, and its non-zero status silently selects 'else' - so 'TEST_FAILURES_CAUSE_
+	@#FAILED_MAKE= make run-tests' used to suppress failures while looking like it asked for the default.
+	@#The '?=1' above does not cover this: make treats a set-but-empty environment variable as set.
 ifneq (${qFeatureFlag_mongocxxdriver},no)
 	@if [ "$(MONGO_CONNECTION_STRING)" = "" ] ; then $(ECHO) "${PREFIX_} Note: MONGO_CONNECTION_STRING not set so some tests skipped"; fi
 endif
@@ -188,7 +195,7 @@ endif
 			$(ECHO) "${PREFIX_} [$$i] $$TESTNAME - $(RUNTEST_EXE_RUN_PRINTLINE)";\
 			EXEOUTPUT=`$(RUNTEST_EXE_RUN)`;\
 			EXERESULT=$$?; \
-			$(ECHO) "$$EXEOUTPUT" | sed -e 's/^/${PREFIX_}      /g' | tr -d "\r\n"; $(ECHO); \
+			$(ECHO) "$$EXEOUTPUT" | sed -e 's/^/${PREFIX_}      /g' | tr -d "\r"; \
 			if [ "$$EXERESULT" -ne 0 ]; then\
 			    FAILED=1;\
 			fi;\
@@ -197,7 +204,7 @@ endif
 			fi;\
 		done;\
 		if [ "$$FAILED" -ne 0 ]; then\
-			if [ "$$TEST_FAILURES_CAUSE_FAILED_MAKE" -ne 0 ]; then\
+			if [ "$${TEST_FAILURES_CAUSE_FAILED_MAKE:-1}" -ne 0 ]; then\
 				$(ECHO) "${PREFIX_}   ***SOME TESTS FAILED***";\
 				exit 1;\
 			else\

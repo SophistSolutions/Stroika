@@ -75,19 +75,6 @@ Generally will track stuff here between releases
   Fix by raising the run count until in-suite readings stabilize, or by widening the threshold to cover
   the in-suite range. Do NOT re-tune it from a standalone run.
 
-- Build system error handling - same class as the two fixes that landed (c02ebaa1c6, 9caa6f69f9),
-  still open:
-    - Build/Shared/Skel-Templates/{Basic,HTMLUI}/Makefile: the generated app's all: loop over
-      configurations has no '|| exit $$?', so a new Stroika app's 'make all' walks past a
-      configuration that failed to BUILD and still exits 0. The root Makefile does it correctly for
-      the same target, which suggests oversight - but fixing it changes behaviour for every
-      Skel-generated app, so LGP's call.
-    - Tests/Makefile ~191: 'tr -d "\r\n"' collapses each test's whole output onto ONE line, which is
-      what makes run-tests logs so hard to read and grep. The comment there already says it is "not
-      obvious we want the tr -d".
-    - Tests/Makefile: [ "$$TEST_FAILURES_CAUSE_FAILED_MAKE" -ne 0 ] errors and then silently takes
-      the suppress-failures branch if that variable is set but EMPTY. AGENTS.md documents setting it
-      to 0, so empty is a plausible slip.
 - CMAKE CONVERSION - scheduled for NEXT release (~Sept 2026), still tentative.
   DRIVER: LGP wants Stroika to be cheap for OTHER PEOPLE to consume. That is the whole argument -
   find_package/FetchContent/vcpkg/Conan, ie the normal ways a C++ project takes a dependency. Today,
