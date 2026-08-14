@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Database/Document/Document.h"
 #include "Stroika/Foundation/Database/Document/Filter.h"
 #include "Stroika/Foundation/Database/Document/Projection.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 
 /**
  *  \file
@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
         nonvirtual bool operator== (nullptr_t) const noexcept;
 
     public:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronizedChecker;
     };
 
     /**

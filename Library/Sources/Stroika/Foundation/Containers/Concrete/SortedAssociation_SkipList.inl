@@ -42,34 +42,34 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual shared_ptr<typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep> Clone () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t size () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Invariant ();
             return fData_.size ();
         }
         virtual bool empty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Invariant ();
             return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return this->inherited::Find (that, seq); // @todo rewrite to use fData
         }
 
@@ -77,18 +77,18 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Common::EqualsComparerAdapter<KEY_TYPE, KEY_COMPARER>{fData_.key_comp ()};
         }
         virtual shared_ptr<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> CloneEmpty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (fData_.key_comp ()); // keep comparer, but lose data in clone
         }
         virtual shared_ptr<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterable<mapped_type> Lookup (ArgByValueType<KEY_TYPE> key) const override
         {
             // @todo consider doing custom class here, or using CreateGenerator
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             // NOTE: must use FindFirst (), not Find () - Find () only guarantees returning AN element with an
             // equivalent key (it can shortcut via higher-level links into the middle of a run of duplicate
             // keys), so a run of duplicate keys could have some skipped/missed by the forward walk below.
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             fData_.Invariant ();
             (void)fData_.Add (key, newElt);
             fChangeCounts_.PerformedChange ();
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             fData_.Invariant ();
             auto i = fData_.Find (key);
             if (i != fData_.end ()) {
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             auto newI = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareWriteContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareWriteContext{fData_};
             optional<Iterator<value_type>>                         savedNextI;
             if (nextI != nullptr) {
                 *nextI = i;
@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual KeyThreeWayComparerType GetKeyThreeWayComparer () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.key_comp ();
         }
 

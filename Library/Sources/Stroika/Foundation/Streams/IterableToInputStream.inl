@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Streams::IterableToInputStream {
@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
     template <typename ELEMENT_TYPE>
     inline auto New (const Traversal::Iterable<ELEMENT_TYPE>& it) -> Ptr<ELEMENT_TYPE>
     {
-        using Debug::AssertExternallySynchronizedMutex;
+        using Debug::AssertExternallySynchronizedChecker;
         using Traversal::Iterable;
         using Traversal::Iterator;
         // Simply iterate over the 'iterable' of characters, but allow seekability (by saving original iteration start)
@@ -46,13 +46,13 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             virtual optional<size_t> AvailableToRead () override
             {
                 Require (IsOpenRead ());
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 // usually just want to know 0 or >= 1, so don't bother computing full length
                 return fSrcIter_.AtEnd () ? 0 : 1;
             }
             virtual optional<SeekOffsetType> RemainingLength () override
             {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 AssertNotImplemented ();
                 return nullopt; // pretty easy, but @todo
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 ELEMENT_TYPE* outI = intoBuffer.data ();
                 if (fPutBack_) {
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
-                AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (fPutBack_) {
                     Assert (fOffset_ >= 1);
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             {
                 Require (IsOpenRead ());
                 static const auto                               kException_ = range_error{"seek"};
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 size_t                                          sourceLen = fSource_.size ();
                 SeekOffsetType                                  newOffset{};
                 switch (whence) {
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             size_t                 fOffset_{};
             optional<ELEMENT_TYPE> fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
             optional<ELEMENT_TYPE>                       fPutBack_{};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
         return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<IterableAdapterStreamRep_> (it)};
     }

@@ -22,7 +22,7 @@
 #include "Stroika/Foundation/Database/Document/Connection.h"
 #include "Stroika/Foundation/Database/Document/EngineProperties.h"
 #include "Stroika/Foundation/Database/Document/Transaction.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
              *      \note this refers to in-process synchronization. Future flags/fields/options will be needed
              *            in other impls to assure cross-process synchronization (not sure if even appropriate for this impl but maybe something simple with flock).
              * 
-             *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedMutex
+             *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedChecker
              *            to check for unsafe thread usage.
              */
             Execution::InternallySynchronized fInternallySynchronizedLetter{Execution::eNotKnownInternallySynchronized};
@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
                 /**
                  *  SQLITE_OPEN_NOMUTEX
                  *  In this mode, SQLite can be safely used by multiple threads provided that no single database connection is used simultaneously in two or more threads.
-                 *  (Stroika Debug::AssertExternallySynchronizedMutex enforces this)
+                 *  (Stroika Debug::AssertExternallySynchronizedChecker enforces this)
                  * 
                  * This may not always be available depending on how SQLite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
                  * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
                 /**
                  *  SQLITE_OPEN_FULLMUTEX
                  *  In serialized mode, SQLite can be safely used by multiple threads with no restriction.
-                 *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedMutex)
+                 *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedChecker)
                  * 
                  * This may not always be available depending on how SQLite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
                  * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
@@ -339,7 +339,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
          *          @see https://www.sqlite.org/threadsafe.html
          *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
          * 
-         *          NOTE ALSO - its POSSIBLE we could lift this Debug::AssertExternallySynchronizedMutex code / restriction.
+         *          NOTE ALSO - its POSSIBLE we could lift this Debug::AssertExternallySynchronizedChecker code / restriction.
          *          But sqlite docs not super clear. Maybe I need to use their locking APIs myself internally to use
          *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
          */
@@ -372,7 +372,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
             virtual void Exec (const String& sql) = 0;
 
         public:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronizedChecker;
 
         private:
             friend class Ptr;

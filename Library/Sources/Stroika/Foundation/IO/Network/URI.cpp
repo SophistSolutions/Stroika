@@ -23,7 +23,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
-using Debug::AssertExternallySynchronizedMutex;
+using Debug::AssertExternallySynchronizedChecker;
 
 /*
  ********************************************************************************
@@ -182,7 +182,7 @@ String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
 {
     // http://stroika-bugs.sophists.com/browse/STK-1000 -- issue about maybe needed more nuanced approach
     StringPCTEncodedFlag                           usingPCTEncodeFlag = pctEncode.value_or (eDecoded);
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                  result;
     if (fScheme_) {
         // From https://tools.ietf.org/html/rfc3986#appendix-A
@@ -236,7 +236,7 @@ String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
 
 URI::operator bool () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     if (fScheme_) {
         return true;
     }
@@ -257,7 +257,7 @@ URI::operator bool () const
 
 String URI::GetAuthorityRelativeResourceDir () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     static const RegularExpression                 kSelectDir_ = "(.*\\/)[^\\/]*"_RegEx;
     optional<String>                               baseDir;
     (void)fPath_.Matches (kSelectDir_, &baseDir);
@@ -266,7 +266,7 @@ String URI::GetAuthorityRelativeResourceDir () const
 
 URI URI::Normalize (NormalizationStyle normalization) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     optional<SchemeType>                           scheme = fScheme_;
     if (scheme) {
         scheme = scheme->Normalize ();
@@ -282,7 +282,7 @@ URI URI::Normalize (NormalizationStyle normalization) const
 String URI::ToString () const
 {
     // dont use As<String> () because this can throw if bad string - and no need to pct-encode here
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                  result;
     if (fScheme_) {
         result << *fScheme_ << ":"sv;
@@ -315,7 +315,7 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
 
 URI URI::Combine (const URI& overridingURI) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
 
     /*
      *  This is not strictly according to Hoyle, but it avoids a common inconvenience with the Scheme check below. And avoids having to write a lot of

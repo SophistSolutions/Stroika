@@ -37,34 +37,34 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t size () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Invariant ();
             return fData_.size ();
         }
         virtual bool empty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Invariant ();
             return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Apply ([&] (const auto& k) { doToElement (k.fKey); });
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return this->inherited::Find (that, seq); // @todo rewrite to use fData
         }
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v, [[maybe_unused]] Execution::SequencePolicy seq) const override
@@ -83,18 +83,18 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Common::EqualsComparerAdapter<T, COMPARER>{fData_.key_comp ()};
         }
         virtual shared_ptr<typename Set<T>::_IRep> CloneEmpty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (fData_.key_comp ()); // keep comparer, but lose data in clone
         }
         virtual shared_ptr<typename Set<T>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
@@ -103,12 +103,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Equals (const typename Iterable<value_type>::_IRep& rhs) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return this->_Equals_Reference_Implementation (rhs);
         }
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             auto                                                  i       = fData_.Find (item);
             bool                                                  notDone = i != fData_.end ();
             if (oResult != nullptr and notDone) {
@@ -121,13 +121,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Add (ArgByValueType<value_type> item) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             fData_.Add (item);
             fChangeCounts_.PerformedChange ();
         }
         virtual bool RemoveIf (ArgByValueType<value_type> item) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             fData_.Invariant ();
             auto i = fData_.Find (item);
             if (i != fData_.end ()) [[likely]] {
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual ElementThreeWayComparerType GetElementThreeWayComparer () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.key_comp ();
         }
 

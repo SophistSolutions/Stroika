@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/Socket.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::TimePointSeconds timeoutAt = Time::TimePointSeconds{Time::kInfinity});
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         const Traversal::Iterable<pair<T, TypeOfMonitorSet>>                                  fPollData_;
         const optional<pair<SDKPollableType, TypeOfMonitorSet>>                               fPollable2Wakeup_;
     };

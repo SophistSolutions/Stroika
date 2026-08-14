@@ -18,7 +18,7 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
-using Debug::AssertExternallySynchronizedMutex;
+using Debug::AssertExternallySynchronizedChecker;
 
 namespace {
     constexpr string_view kKeepAlive_ = "Keep-Alive"sv;
@@ -33,28 +33,28 @@ namespace {
 Headers::Headers ()
     : acceptEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<ContentEncodings> {
                          const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::acceptEncoding);
-                         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                         AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                          return thisObj->fAcceptEncodings_;
                      },
                      [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newAcceptEncodings) {
                          Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::acceptEncoding);
-                         AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                         AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                          thisObj->fAcceptEncodings_ = newAcceptEncodings;
                      }}
     , accessControlAllowOrigin{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
               const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::accessControlAllowOrigin);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+              AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
               return thisObj->LookupOne (HeaderName::kAccessControlAllowOrigin);
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& accessControlAllowOrigin) {
               Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::accessControlAllowOrigin);
-              AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+              AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
               thisObj->SetExtras_ (HeaderName::kAccessControlAllowOrigin, accessControlAllowOrigin);
           }}
     , allow{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Containers::Set<String>> {
                 const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::allow);
-                AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                 if (auto hdr = thisObj->LookupOne (HeaderName::kAllow)) {
                     return Containers::Set<String>{hdr->Tokenize ({','})};
                 }
@@ -62,32 +62,32 @@ Headers::Headers ()
             },
             [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& allowed) {
                 Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::allow);
-                AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                 thisObj->SetExtras_ (HeaderName::kAllow, allowed ? String::Join (*allowed) : optional<String>{});
             }}
     , authorization{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
                         const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::authorization);
-                        AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                        AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                         return thisObj->fAuthorization_;
                     },
                     [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newAuth) {
                         Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::authorization);
-                        AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                        AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                         thisObj->fAuthorization_ = newAuth;
                     }}
     , cacheControl{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<CacheControl> {
                        const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cacheControl);
-                       AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                       AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                        return thisObj->fCacheControl_;
                    },
                    [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& cacheControl) {
                        Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cacheControl);
-                       AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                       AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                        thisObj->fCacheControl_ = cacheControl;
                    }}
     , connection{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<ConnectionValue> {
                      const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::connection);
-                     AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                     AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                      if (auto connectionHdr = thisObj->LookupOne (HeaderName::kConnection)) {
                          if (kHeaderNameEqualsComparer (*connectionHdr, kKeepAlive_)) {
                              return eKeepAlive;
@@ -100,7 +100,7 @@ Headers::Headers ()
                  },
                  [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& connectionValue) {
                      Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::connection);
-                     AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                     AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                      optional<String>                                v;
                      if (connectionValue) {
                          switch (*connectionValue) {
@@ -116,97 +116,97 @@ Headers::Headers ()
                  }}
     , contentEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<ContentEncodings> {
                           const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentEncoding);
-                          AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                          AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                           return thisObj->fContentEncoding_;
                       },
                       [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto newContentEncoding) {
                           Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentEncoding);
-                          AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                          AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                           thisObj->fContentEncoding_ = newContentEncoding;
                       }}
     , contentLength{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<uint64_t> {
                         const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength);
-                        AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                        AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                         return thisObj->fContentLength_;
                     },
                     [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto contentLength) {
                         Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength);
-                        AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                        AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                         thisObj->fContentLength_ = contentLength;
                     }}
     , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                       const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentType);
-                      AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                      AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                       return thisObj->fContentType_;
                   },
                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& contentType) {
                       Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentType);
-                      AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                      AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                       thisObj->fContentType_ = contentType;
                   }}
     , contentDisposition{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
                              const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentDisposition);
-                             AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                             AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                              return thisObj->LookupOne (HeaderName::kContentDisposition);
                          },
                          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& hdrVal) {
                              Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentDisposition);
-                             AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                             AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                              thisObj->SetExtras_ (HeaderName::kContentDisposition, hdrVal);
                          }}
     , date{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::date);
-               AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+               AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                return thisObj->fDate_;
            },
            [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& d) {
                Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::date);
-               AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+               AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                thisObj->fDate_ = d ? d->AsUTC () : d;
            }}
     , cookie{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                  const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cookie);
-                 AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                 AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                  return Memory::NullCoalesce (thisObj->fCookieList_);
              },
              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& cookies) {
                  Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cookie);
-                 AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                 AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                  thisObj->fCookieList_ = cookies.cookieDetails ().empty () ? optional<CookieList>{} : cookies;
              }}
     , ETag{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ETag);
-               AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+               AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                return thisObj->fETag_;
            },
            [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& etag) {
                Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ETag);
-               AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+               AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                thisObj->fETag_ = etag;
            }}
     , host{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::host);
-               AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+               AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                return thisObj->fHost_;
            },
            [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& host) {
                Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::host);
-               AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+               AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                thisObj->fHost_ = host;
            }}
     , ifNoneMatch{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                       const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ifNoneMatch);
-                      AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                      AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                       return thisObj->fIfNoneMatch_;
                   },
                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& ifNoneMatch) {
                       Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ifNoneMatch);
-                      AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                      AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                       thisObj->fIfNoneMatch_ = ifNoneMatch;
                   }}
     , keepAlive{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
                     const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::keepAlive);
-                    AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                    AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                     if (auto hdrValue = thisObj->LookupOne (HeaderName::kKeepAlive)) {
                         return HTTP::KeepAlive::Parse (*hdrValue);
                     }
@@ -222,7 +222,7 @@ Headers::Headers ()
                 }}
     , location{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<URI> {
                    const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::location);
-                   AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                   AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                    if (auto hdr = thisObj->LookupOne (HeaderName::kLocation)) {
                        return URI::Parse (*hdr);
                    }
@@ -234,7 +234,7 @@ Headers::Headers ()
                }}
     , origin{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<URI> {
                  const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::origin);
-                 AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                 AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                  if (auto hdr = thisObj->LookupOne (HeaderName::kOrigin)) {
                      return URI::Parse (*hdr);
                  }
@@ -246,32 +246,32 @@ Headers::Headers ()
              }}
     , server{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
                  const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
-                 AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                 AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                  return thisObj->LookupOne (HeaderName::kServer);
              },
              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const optional<String>& server) {
                  Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
-                 AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                 AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                  thisObj->SetExtras_ (HeaderName::kServer, server);
              }}
     , setCookie{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                     const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::setCookie);
-                    AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                    AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                     return Memory::NullCoalesce (thisObj->fSetCookieList_);
                 },
                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& cookies) {
                     Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::setCookie);
-                    AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                    AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                     thisObj->fSetCookieList_ = cookies.cookieDetails ().empty () ? optional<CookieList>{} : cookies;
                 }}
     , transferEncoding{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                            const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
-                           AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                           AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                            return thisObj->fTransferEncoding_;
                        },
                        [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newTransferEncodings) {
                            Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
-                           AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                           AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                            if (newTransferEncodings && newTransferEncodings->length () == 1 &&
                                newTransferEncodings->Contains (TransferEncoding::kIdentity)) {
                                thisObj->fTransferEncoding_ = nullopt;
@@ -282,12 +282,12 @@ Headers::Headers ()
                        }}
     , vary{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Containers::Set<String>> {
                const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
-               AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+               AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                return thisObj->fVary_;
            },
            [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const optional<Containers::Set<String>>& vary) {
                Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
-               AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+               AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                thisObj->fVary_ = vary;
            }}
 {
@@ -296,7 +296,7 @@ Headers::Headers ()
 Headers::Headers (const Headers& src)
     : Headers{}
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{src.fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{src.fThisAssertExternallySynchronized_};
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficient way to avoid duplicative code
     fExtraHeaders_     = src.fExtraHeaders_;
@@ -320,7 +320,7 @@ Headers::Headers (const Headers& src)
 Headers::Headers (Headers&& src)
     : Headers{}
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{src.fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{src.fThisAssertExternallySynchronized_};
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
     fExtraHeaders_     = move (src.fExtraHeaders_);
@@ -359,8 +359,8 @@ Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
 
 Headers& Headers::operator= (const Headers& rhs)
 {
-    AssertExternallySynchronizedMutex::ReadContext  critSec1{rhs.fThisAssertExternallySynchronized_};
-    AssertExternallySynchronizedMutex::WriteContext critSec2{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext  critSec1{rhs.fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext critSec2{fThisAssertExternallySynchronized_};
     if (this != &rhs) {
         fExtraHeaders_     = rhs.fExtraHeaders_;
         fAcceptEncodings_  = rhs.fAcceptEncodings_;
@@ -383,8 +383,8 @@ Headers& Headers::operator= (const Headers& rhs)
 
 Headers& Headers::operator= (Headers&& rhs) noexcept
 {
-    AssertExternallySynchronizedMutex::WriteContext critSec1{rhs.fThisAssertExternallySynchronized_};
-    AssertExternallySynchronizedMutex::WriteContext critSec2{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext critSec1{rhs.fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext critSec2{fThisAssertExternallySynchronized_};
     if (this != &rhs) {
         fExtraHeaders_     = move (rhs.fExtraHeaders_);
         fAcceptEncodings_  = move (rhs.fAcceptEncodings_);
@@ -405,16 +405,16 @@ Headers& Headers::operator= (Headers&& rhs) noexcept
     return *this;
 }
 
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-void Headers::SetAssertExternallySynchronizedMutexContext (const shared_ptr<AssertExternallySynchronizedMutex::SharedContext>& sharedContext)
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
+void Headers::SetAssertExternallySynchronizedCheckerContext (const shared_ptr<AssertExternallySynchronizedChecker::SharedContext>& sharedContext)
 {
-    fThisAssertExternallySynchronized_.SetAssertExternallySynchronizedMutexContext (sharedContext);
+    fThisAssertExternallySynchronized_.SetAssertExternallySynchronizedCheckerContext (sharedContext);
 }
 #endif
 
 optional<String> Headers::LookupOne (const String& name) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     if (kHeaderNameEqualsComparer (name, HeaderName::kAcceptEncoding)) {
         return fAcceptEncodings_ ? fAcceptEncodings_->As<String> () : optional<String>{};
     }
@@ -477,7 +477,7 @@ optional<String> Headers::LookupOne (const String& name) const
 
 Collection<String> Headers::LookupAll (const String& name) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl) or kHeaderNameEqualsComparer (name, HeaderName::kContentLength) or
         kHeaderNameEqualsComparer (name, HeaderName::kContentType) or kHeaderNameEqualsComparer (name, HeaderName::kCookie) or
         kHeaderNameEqualsComparer (name, HeaderName::kETag) or kHeaderNameEqualsComparer (name, HeaderName::kHost) or
@@ -505,7 +505,7 @@ Collection<String> Headers::LookupAll (const String& name) const
 
 size_t Headers::Remove (const String& headerName)
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
     size_t                                          nRemovals{};
     if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, nullopt, &nRemovals)) {
         return nRemovals; // could be zero if its builtin, but this doesn't change anything
@@ -516,7 +516,7 @@ size_t Headers::Remove (const String& headerName)
 
 size_t Headers::Remove (const String& headerName, const String& value)
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
     size_t                                          nRemovals{};
     if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, value, &nRemovals)) {
         return nRemovals;
@@ -527,7 +527,7 @@ size_t Headers::Remove (const String& headerName, const String& value)
 
 void Headers::Add (const String& headerName, const String& value)
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
     if (UpdateBuiltin_ (AddOrSet::eAdd, headerName, value)) {
         return;
     }
@@ -581,7 +581,7 @@ void Headers::AddAll (const Headers& headers)
 
 bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemovals)
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
     if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         if (value == nullopt) {
             Require (flag == AddOrSet::eRemove or flag == AddOrSet::eSet);
@@ -733,7 +733,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
 
 void Headers::SetExtras_ (const String& headerName, const optional<String>& value)
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
     fExtraHeaders_.RemoveIf ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
     if (value) {
         fExtraHeaders_.Add ({headerName, *value});
@@ -764,7 +764,7 @@ Mapping<String, String> Headers::As () const
 template <>
 Collection<KeyValuePair<String, String>> Headers::As () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Collection<KeyValuePair<String, String>>       results = fExtraHeaders_;
     if (fAcceptEncodings_) {
         results.Add ({HeaderName::kAcceptEncoding, fAcceptEncodings_->As<String> ()});

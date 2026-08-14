@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Process.h"
 #include "Stroika/Foundation/Execution/Signals.h"
@@ -427,7 +427,7 @@ namespace Stroika::Foundation::Execution {
         Streams::InputStream::Ptr<byte>              fStdIn_;  // just while we support deprecated API
         Streams::OutputStream::Ptr<byte>             fStdOut_; // ""
         Streams::OutputStream::Ptr<byte>             fStdErr_; // ""
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
     public:
         [[deprecated ("Since Stroika v3.0d12 - pass stdin/stdout/stderr to ProcessRunner Run() method (if needed)")]] ProcessRunner (
@@ -635,7 +635,7 @@ namespace Stroika::Foundation::Execution {
             shared_ptr<DetailedRunnableRep_> fDetailedRunnableRep_;
         };
         shared_ptr<Rep_>                             fRep_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
     private:
         friend class ProcessRunner;

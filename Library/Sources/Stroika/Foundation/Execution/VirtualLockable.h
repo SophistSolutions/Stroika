@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Execution {
      * 
      *          // in constructor, based on config parameter passed in
      *          , fMaybeLock_{options.fInternallySyncrhonized == eInternallySynchronized ? VirtualLockable::Make<recursive_mutex> ()
-     *                                                                                  : VirtualLockable::Make<Debug::AssertExternallySynchronizedMutex> ()}
+     *                                                                                  : VirtualLockable::Make<Debug::AssertExternallySynchronizedChecker> ()}
      *          // then use as regular mutex
      *          scoped_lock critSec{fMaybeLock_};
      *      \endcode

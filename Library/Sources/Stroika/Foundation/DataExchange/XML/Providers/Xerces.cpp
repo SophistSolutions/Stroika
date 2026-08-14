@@ -1263,7 +1263,7 @@ namespace {
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotNull (fXMLDoc);
             START_LIB_EXCEPTION_MAPPER_
             return Traversal::CreateGenerator<Node::Ptr> (
@@ -1318,7 +1318,7 @@ namespace {
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
             TraceContextBumper                             ctx{"Xerces::DocRep_::Write"};
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotNull (fXMLDoc);
             START_LIB_EXCEPTION_MAPPER_
             {
@@ -1332,7 +1332,7 @@ namespace {
             virtual void Validate (const Schema::Ptr& schema) const override
         {
             TraceContextBumper                             ctx{"Xerces::DocRep_::Validate"};
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             RequireNotNull (schema);
             START_LIB_EXCEPTION_MAPPER_
             {
@@ -1420,7 +1420,7 @@ namespace {
             END_LIB_EXCEPTION_MAPPER_
         }
         shared_ptr<xercesc::DOMDocument>             fXMLDoc;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 }
 

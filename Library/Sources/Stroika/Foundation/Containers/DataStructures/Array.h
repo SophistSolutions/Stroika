@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Containers/Common.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  To save even this space, you can call shrink_to_fit().
      */
     template <typename T>
-    class Array : public Debug::AssertExternallySynchronizedMutex {
+    class Array : public Debug::AssertExternallySynchronizedChecker {
     public:
         using value_type = T;
 

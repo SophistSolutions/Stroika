@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
              * 
              *      \note The remote database is always 'synchronized' / threadsafe.
              * 
-             *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedMutex
+             *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedChecker
              *            to check for unsafe thread usage.
              */
             Execution::InternallySynchronized fInternallySynchronizedLetter{Execution::eNotKnownInternallySynchronized};
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
              * 
              *      \note The remote database is always 'synchronized' / threadsafe.
              * 
-             *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedMutex
+             *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedChecker
              *            to check for unsafe thread usage.
              */
             Execution::InternallySynchronized fInternallySynchronizedLetter{Execution::eNotKnownInternallySynchronized};

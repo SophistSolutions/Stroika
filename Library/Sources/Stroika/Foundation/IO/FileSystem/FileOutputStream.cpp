@@ -15,7 +15,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
@@ -120,7 +120,7 @@ namespace {
         virtual void Write (span<const byte> elts) override
         {
             Require (not elts.empty ());
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             auto            activity = LazyEvalActivity ([&] () -> String { return "writing to {}"_f(fFileName_); });
             DeclareActivity currentActivity{&activity};
             const byte*     i   = elts.data ();
@@ -139,7 +139,7 @@ namespace {
         {
             // normally nothing todo - write 'writes thru' (except if fFlushFlag)
             if (fFlushFlag == FlushFlag::eToDisk) {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 auto            activity = LazyEvalActivity{[&] () -> String { return "flushing data to {}"_f(fFileName_); }};
                 DeclareActivity currentActivity{&activity};
 #if qStroika_Foundation_Common_Platform_POSIX
@@ -153,7 +153,7 @@ namespace {
         }
         virtual Streams::SeekOffsetType GetWriteOffset () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
 #if qStroika_Foundation_Common_Platform_Linux
             return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
 #elif qStroika_Foundation_Common_Platform_Windows
@@ -167,7 +167,7 @@ namespace {
             Require (fSeekable_);
             using namespace Streams;
             static const auto                               kException_ = range_error{"seek"};
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             switch (whence) {
                 case eFromStart: {
                     if (offset < 0) [[unlikely]] {
@@ -210,7 +210,7 @@ namespace {
         AdoptFDPolicy                                                                  fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
         bool                                                                           fSeekable_{true};
         optional<filesystem::path>                                                     fFileName_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 }
 

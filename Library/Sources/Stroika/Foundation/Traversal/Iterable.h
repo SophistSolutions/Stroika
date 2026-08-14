@@ -18,7 +18,7 @@
 #include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
@@ -1473,7 +1473,7 @@ namespace Stroika::Foundation::Traversal {
         _SharedByValueRepType _fRep;
 
     protected:
-        Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
+        Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized;
 
     public:
         template <typename SHARED_T>
@@ -1500,7 +1500,7 @@ namespace Stroika::Foundation::Traversal {
      *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure thread safety. It takes the
      *  'this' object, and captures a const reference to the internal 'REP'.
      *
-     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
+     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedChecker,
      *  so that IF this object is accessed illegally by other threads while in use (this use), it will
      *  be caught.
      *
@@ -1538,7 +1538,7 @@ namespace Stroika::Foundation::Traversal {
         const Iterable<T>*  fIterableEnvelope_;
 
 #if qStroika_Foundation_Debug_AssertionsChecked
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex::ReadContext fAssertReadLock_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker::ReadContext fAssertReadLock_;
 #endif
     };
     //static_assert (movable<Iterable<int>::_SafeReadRepAccessor<REP_SUB_TYPE>> and not copyable<Iterable<int>::_SafeReadRepAccessor<REP_SUB_TYPE>>);
@@ -1547,7 +1547,7 @@ namespace Stroika::Foundation::Traversal {
      *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure thread-safety. It takes the
      *  'this' object, and captures a writable to the internal 'REP'.
      *
-     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
+     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedChecker,
      *  so that IF this object is accessed illegally by other threads while in use (this use), it will
      *  be caught.
      *
@@ -1576,7 +1576,7 @@ namespace Stroika::Foundation::Traversal {
     private:
         REP_SUB_TYPE* fRepReference_;
 #if qStroika_Foundation_Debug_AssertionsChecked
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex::WriteContext fAssertWriteLock_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker::WriteContext fAssertWriteLock_;
         Iterable<T>* fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qStroika_Foundation_Debug_AssertionsChecked this field (as we do for read accessor)
 #endif
     };

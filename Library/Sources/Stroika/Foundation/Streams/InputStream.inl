@@ -74,14 +74,14 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline void InputStream::Ptr<ELEMENT_TYPE>::Close () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         GetRepRWRef ().CloseRead ();
         Ensure (not IsOpen ());
     }
     template <typename ELEMENT_TYPE>
     inline void InputStream::Ptr<ELEMENT_TYPE>::Close (bool reset)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
         GetRepRWRef ().CloseRead ();
         if (reset) {
             this->reset ();
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline bool InputStream::Ptr<ELEMENT_TYPE>::IsOpen () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         return GetRepConstRef ().IsOpenRead ();
     }
     template <typename ELEMENT_TYPE>
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType InputStream::Ptr<ELEMENT_TYPE>::GetOffset () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
         return GetRepConstRef ().GetReadOffset ();
     }
@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     inline SeekOffsetType InputStream::Ptr<ELEMENT_TYPE>::Seek (SeekOffsetType offset) const
     {
         Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
         Require (this->IsSeekable ());
         return GetRepRWRef ().SeekRead (eFromStart, static_cast<SignedSeekOffsetType> (offset));
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType InputStream::Ptr<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
         Require (this->IsSeekable ());
         return GetRepRWRef ().SeekRead (whence, offset);
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const
         -> optional<span<ElementType>>
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         Require (not intoBuffer.empty ());
         return GetRepRWRef ().Read (intoBuffer, blockFlag);
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline auto InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking (span<ElementType> intoBuffer) const -> optional<span<ElementType>>
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         Require (not intoBuffer.empty ());
         return GetRepRWRef ().Read (intoBuffer, NoDataAvailableHandling::eDontBlock);
@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline auto InputStream::Ptr<ELEMENT_TYPE>::PeekBlocking () const -> optional<ElementType>
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (this->IsSeekable ());
         Require (IsOpen ());
         SeekOffsetType saved  = GetOffset ();
@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     span<POD_TYPE> InputStream::Ptr<ELEMENT_TYPE>::ReadRaw (span<POD_TYPE> intoBuffer) const
         requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
         Require (intoBuffer.size () == 1 or this->IsSeekable ());
         auto   byteSpan = as_writable_bytes (intoBuffer);
@@ -452,7 +452,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     auto InputStream::Ptr<ELEMENT_TYPE>::ReadAll (span<ELEMENT_TYPE2, EXTENT2_T> intoBuffer) const -> span<ElementType>
         requires (same_as<ELEMENT_TYPE, ELEMENT_TYPE2>)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (not intoBuffer.empty ());
         Require (IsOpen ());
         /*

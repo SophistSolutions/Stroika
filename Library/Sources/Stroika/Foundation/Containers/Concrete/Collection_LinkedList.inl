@@ -26,33 +26,33 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t size () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.size ();
         }
         virtual bool empty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
                                            [[maybe_unused]] Execution::SequencePolicy              seq) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             if (auto iLink = fData_.Find (that)) {
                 return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
             }
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual shared_ptr<typename Collection<T>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             shared_ptr<Rep_>                                      result = Memory::MakeSharedPtr<Rep_> (*this);
             const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&iteratorRep.fIterator, &fData_);
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             fData_.push_front (item); // order meaningless for collection, and prepend cheaper on linked list
             fChangeCounts_.PerformedChange ();
             if (oAddedI != nullptr) [[unlikely]] {
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext           declareWriteContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext           declareWriteContext{fData_};
             optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
             const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (nextI != nullptr) {
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (nextI == nullptr) {
                 fData_.Remove (iteratorRep.fIterator);

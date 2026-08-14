@@ -6,7 +6,7 @@
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/TextConvert.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
@@ -25,7 +25,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::BinaryToText;
 
-using Debug::AssertExternallySynchronizedMutex;
+using Debug::AssertExternallySynchronizedChecker;
 using Memory::InlineBuffer;
 using Memory::StackBuffer;
 
@@ -82,7 +82,7 @@ namespace {
         virtual optional<size_t> AvailableToRead () override
         {
             Require (IsOpenRead ());
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             // Tricky todo. Must grab ENUF bytes (non-blocking) to assure we can create at least one character.
             // Note we cannot SEEK the _fSource stream, which is what makes it hard...
             // Just means read ahead a bit, and store whatever we needed into _fReadAheadCache
@@ -120,7 +120,7 @@ namespace {
         {
             Require (not intoBuffer.empty ());
             Require (IsOpenRead ());
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             /*
              *  Try to minimize # of calls to underlying fSource binary stream per call this this Read () - efficiency.
              *
@@ -258,7 +258,7 @@ namespace {
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return _fOffset;
         }
@@ -267,7 +267,7 @@ namespace {
         InputStream::Ptr<byte>                       _fSource;
         const Characters::CodeCvt<Character>         _fCharConverter;
         SeekOffsetType                               _fOffset{0};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 
     class UnseekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
@@ -305,7 +305,7 @@ namespace {
         virtual optional<span<Character>> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
 
             // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
@@ -380,7 +380,7 @@ namespace {
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
             static const auto                               kException_ = range_error{"seek"};
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             switch (whence) {
                 case eFromStart: {

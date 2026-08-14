@@ -14,8 +14,8 @@ namespace Stroika::Foundation::Database::Document {
     inline Transaction::Transaction (unique_ptr<IRep>&& rep)
         : _fRep{move (rep)}
     {
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-        this->_fThisAssertExternallySynchronized.SetAssertExternallySynchronizedMutexContext (_fRep->_fThisAssertExternallySynchronized.GetSharedContext ());
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
+        this->_fThisAssertExternallySynchronized.SetAssertExternallySynchronizedCheckerContext (_fRep->_fThisAssertExternallySynchronized.GetSharedContext ());
 #endif
     }
     inline Transaction::~Transaction ()
@@ -36,19 +36,19 @@ namespace Stroika::Foundation::Database::Document {
     }
     inline void Transaction::Rollback ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
         RequireNotNull (_fRep);
         _fRep->Rollback ();
     }
     inline void Transaction::Commit ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
         RequireNotNull (_fRep);
         _fRep->Commit ();
     }
     inline String Transaction::ToString () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         RequireNotNull (_fRep);
         Characters::StringBuilder sb;
         sb << "{"sv;

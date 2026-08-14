@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/IO/Network/UniformResourceIdentification.h"
 
@@ -400,7 +400,7 @@ namespace Stroika::Foundation::IO::Network {
         String               fPath_;      // Can be empty string, but documented as always 'present' even as empty so model that way
         optional<String>     fQuery_;     // ditto
         optional<String>     fFragment_;  // ditto
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
     static_assert (totally_ordered<URI>);
 

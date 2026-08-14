@@ -10,7 +10,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
 /**
@@ -243,7 +243,7 @@ namespace Stroika::Foundation::Streams {
 
     protected:
         // qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY because else: Tests/Test53.exe crashes release
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized; // refers to PTR not REP
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized; // refers to PTR not REP
 
     private:
         shared_ptr<IRep<ELEMENT_TYPE>> fRep_;

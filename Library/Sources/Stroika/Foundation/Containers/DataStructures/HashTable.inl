@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const HashTable* movedFrom) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
 #if qStroika_Foundation_Debug_AssertionsChecked

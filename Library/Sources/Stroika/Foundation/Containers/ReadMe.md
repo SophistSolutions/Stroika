@@ -91,7 +91,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>. Unlike std c++ container 
 
 - Block-Allocation by default - even for STL-based containers. This helps make use of SortedSet_stdset\<T> often faster than std::set\<T>, for example.
 
-- Internal thread safety checks, (generally) assure threadsafe access (see [Debug::AssertExternallySynchronizedMutex](../Debug/AssertExternallySynchronizedMutex.h))
+- Internal thread safety checks, (generally) assure threadsafe access (see [Debug::AssertExternallySynchronizedChecker](../Debug/AssertExternallySynchronizedChecker.h))
 
 ## Supported Containers Archetypes
 ---

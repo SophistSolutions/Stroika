@@ -842,7 +842,7 @@ namespace {
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return Traversal::CreateGenerator<Node::Ptr> ([curChild = fLibRep_->children] () mutable -> optional<Node::Ptr> {
                 if (curChild == nullptr) {
                     return optional<Node::Ptr>{};
@@ -901,7 +901,7 @@ namespace {
         xmlDoc* fLibRep_{nullptr};
         xmlNs* fXmlnsNamespace2Use{nullptr}; // some APIs require this existing, but not sure where to put it??? and dont want to create a bunch of them... --LGP 2024-02-04
         list<xmlNsPtr> fNSs2Free_; // There probably is a better way with limxml2, but I cannot see how to avoid leaking these namespaces without this
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
     DocRep_* GetWrapperDoc_ (xmlDoc* d)
     {

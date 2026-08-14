@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::ReadNonBlocking (span<ElementType> intoBuffer) -> optional<span<ElementType>>
     {
-        // Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        // Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         //        Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         Require (not intoBuffer.empty ());
         return Read (intoBuffer, NoDataAvailableHandling::eDontBlock);

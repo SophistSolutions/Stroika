@@ -164,7 +164,7 @@ namespace {
 
 namespace {
     using Connection::Options;
-    struct Rep_ final : Database::SQL::SQLite::Connection::IRep, private Debug::AssertExternallySynchronizedMutex {
+    struct Rep_ final : Database::SQL::SQLite::Connection::IRep, private Debug::AssertExternallySynchronizedChecker {
         Rep_ (const Options& options)
         {
             TraceContextBumper ctx{"SQLite::Connection::Rep_::Rep_"};
@@ -314,7 +314,7 @@ namespace {
         }
         virtual void Exec (const String& sql) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
             int e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), nullptr, nullptr, nullptr);
             if (e != SQLITE_OK) [[unlikely]] {
                 ThrowSQLiteErrorIfNotOK_ (e, fDB_);
@@ -322,12 +322,12 @@ namespace {
         }
         virtual ::sqlite3* Peek () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
             return fDB_;
         }
         virtual Duration GetBusyTimeout () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
             optional<int>                                         d;
             auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                 Assert (argc == 1);
@@ -343,7 +343,7 @@ namespace {
         }
         virtual void SetBusyTimeout (const Duration& timeout) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_busy_timeout (fDB_, (int)(timeout.As<float> () * 1000)), fDB_);
         }
         virtual JournalModeType GetJournalMode () const override
@@ -383,7 +383,7 @@ namespace {
         }
         virtual void SetJournalMode (JournalModeType journalMode) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
             switch (journalMode) {
                 case JournalModeType::eDelete:
                     ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, nullptr), fDB_);
@@ -444,9 +444,9 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
                       thisObj->operator->()->SetJournalMode (journalMode);
                   }}
 {
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
     if (src != nullptr) {
-        fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->fAssertExternallySynchronizedMutex.GetSharedContext ());
+        fAssertExternallySynchronizedChecker.SetAssertExternallySynchronizedCheckerContext (src->fAssertExternallySynchronizedChecker.GetSharedContext ());
     }
 #endif
 }
@@ -476,12 +476,12 @@ struct Statement::MyRep_ : IRep {
 #endif
         RequireNotNull (db);
         RequireNotNull (db->Peek ());
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-        _fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (
-            fConnectionPtr_.fAssertExternallySynchronizedMutex.GetSharedContext ());
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
+        _fAssertExternallySynchronizedChecker.SetAssertExternallySynchronizedCheckerContext (
+            fConnectionPtr_.fAssertExternallySynchronizedChecker.GetSharedContext ());
 #endif
         string                                          queryUTF8 = query.AsUTF8<string> ();
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         const char*                                     pzTail = nullptr;
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), queryUTF8.c_str (), -1, &fStatementObj_, &pzTail), db->Peek ());
         Assert (pzTail != nullptr);
@@ -511,13 +511,13 @@ struct Statement::MyRep_ : IRep {
     }
     ~MyRep_ ()
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         AssertNotNull (fStatementObj_);
         (void)::sqlite3_finalize (fStatementObj_); // ignore result - errors indicate error on last evaluation of prepared statement, not on deletion of it
     }
     virtual String GetSQL (WhichSQLFlag whichSQL) const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{_fAssertExternallySynchronizedChecker};
         switch (whichSQL) {
             case WhichSQLFlag::eOriginal:
                 return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
@@ -547,22 +547,22 @@ struct Statement::MyRep_ : IRep {
     }
     virtual Sequence<ColumnDescription> GetColumns () const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{_fAssertExternallySynchronizedChecker};
         return Sequence<ColumnDescription>{fColumns_};
     };
     virtual Sequence<ParameterDescription> GetParameters () const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{_fAssertExternallySynchronizedChecker};
         return fParameters_;
     };
     virtual void Bind () override
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_clear_bindings (fStatementObj_), fConnectionPtr_->Peek ());
     }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         fParameters_ (parameterIndex).fValue = v;
         switch (v.GetType ()) {
             case VariantValue::eDate:
@@ -595,7 +595,7 @@ struct Statement::MyRep_ : IRep {
     virtual void Bind (const String& parameterName, const VariantValue& v) override
     {
         Require (not parameterName.empty ());
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         String                                          pn = parameterName;
         if (pn[0] != ':') {
             pn = ":"_k + pn;
@@ -615,7 +615,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::Reset"};
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         AssertNotNull (fStatementObj_);
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
     }
@@ -624,7 +624,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::GetNextRow"};
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
         AssertNotNull (fStatementObj_);
         int rc = ::sqlite3_step (fStatementObj_);

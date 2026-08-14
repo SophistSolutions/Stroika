@@ -13,7 +13,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Concepts.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Streams/InputStream.h" // maybe bad - leads to circularity problems but hard to pre-declare InputStream
 
@@ -420,7 +420,7 @@ namespace Stroika::Foundation::Memory {
         struct AdoptAndDeleteRep_; // for user allocated new byte[]....
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         shared_ptr<_IRep>                                                                     fRep_;
     };
     static_assert (totally_ordered<BLOB>);

@@ -524,7 +524,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         [[deprecated ("Since Stroika v3.0d14 Consider PeekBlocking")]] optional<ElementType>
         Peek (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eBlockIfNoDataAvailable) const
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
             Require (this->IsSeekable ());
             Require (IsOpen ());
             SeekOffsetType saved  = GetOffset ();
@@ -535,7 +535,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         [[deprecated ("Since Stroika v3.0d14 maybe")]] span<ElementType>
         Peek (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eBlockIfNoDataAvailable) const
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
             Require (this->IsSeekable ());
             Require (IsOpen ());
             SeekOffsetType saved  = GetOffset ();
@@ -550,7 +550,7 @@ namespace Stroika::Foundation::Streams::InputStream {
                       "apis")]] SeekOffsetType
         GetOffsetToEndOfStream () const
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
             Require (IsOpen ());
             SeekOffsetType savedReadFrom = GetOffset ();
             SeekOffsetType size          = Seek (eFromEnd, 0);

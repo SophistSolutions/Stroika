@@ -98,9 +98,9 @@ In the several families of classes, such as Threads, Streams (InputStream, Outpu
 
 The envelope typically follows C++-Standard-Thread-Safety, but the thread safety rules applying to the letter (shared rep object) – depend on how that object was created. So see its Object::New () method for documentation on this.
 
-### Debug::AssertExternallySynchronizedMutex\<T>
+### Debug::AssertExternallySynchronizedChecker\<T>
 
-To document, and to help ensure that Stroika classes are used in a thread safe manner, the helper class Debug::AssertExternallySynchronizedMutex\<T> is used fairly consistently throughout Stroika to &#39;wrap&#39; objects in a thread-safety-checking envelope. This has no performance cost (space or runtime) in release builds, but has a significant (roughly 2x slowdown) in debug builds.
+To document, and to help ensure that Stroika classes are used in a thread safe manner, the helper class Debug::AssertExternallySynchronizedChecker\<T> is used fairly consistently throughout Stroika to &#39;wrap&#39; objects in a thread-safety-checking envelope. This has no performance cost (space or runtime) in release builds, but has a significant (roughly 2x slowdown) in debug builds.
 
 But it means that if your code runs correctly (without assertion errors) in Debug builds, it&#39;s probably thread safe.
 

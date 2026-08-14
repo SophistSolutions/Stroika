@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -25,30 +25,30 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
         protected:
             virtual bool IsSeekable () const override
             {
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 return true;
             }
             virtual void CloseWrite () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 fOpen_ = false;
                 Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
             {
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 return fOpen_;
             }
             virtual SeekOffsetType GetWriteOffset () const override
             {
                 // instead of tellg () - avoids issue with EOF where fail bit set???
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 return fOriginalStreamRef_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
             }
             virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 switch (whence) {
                     case eFromStart:
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
             {
                 Require (not elts.empty ());
                 Require (IsOpenWrite ());
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
 
                 using StreamElementType = BASIC_OSTREAM_ELEMENT_TYPE;
                 fOriginalStreamRef_.write (reinterpret_cast<const StreamElementType*> (elts.data ()), elts.size ());
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
             }
             virtual void Flush () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 fOriginalStreamRef_.flush ();
                 if (fOriginalStreamRef_.fail ()) [[unlikely]] {
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
 
         private:
             basic_ostream<BASIC_OSTREAM_ELEMENT_TYPE, BASIC_OSTREAM_TRAITS_TYPE>& fOriginalStreamRef_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
 

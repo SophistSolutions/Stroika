@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     void SkipListBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::ReBalance ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_.ReBalance ();
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fChangeCounts_.PerformedChange ();
     }

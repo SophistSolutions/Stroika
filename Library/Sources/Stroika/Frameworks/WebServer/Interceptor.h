@@ -6,7 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 
 #include "Stroika/Frameworks/WebServer/Message.h"
 
@@ -89,7 +89,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         shared_ptr<_IRep>                            fRep_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
     private:
         class MyRep_;

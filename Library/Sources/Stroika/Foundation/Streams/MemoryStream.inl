@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             }
             virtual void CloseWrite () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 fOpenWrite_ = false;
                 Ensure (not IsOpenWrite ());
             }
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             }
             virtual void CloseRead () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 fOpenRead_ = false;
                 Ensure (not IsOpenRead ());
             }
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 Require (IsOpenRead ());
                 Require (not intoBuffer.empty ());
                 size_t                                                 nRequested = intoBuffer.size ();
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
                 size_t nAvail  = fData_.end () - fReadCursor_;
                 size_t nCopied = min (nAvail, nRequested);
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 Require (not elts.empty ());
                 Require (IsOpenWrite ());
                 // @todo - rewrite so does in one copy - no idea why this code does multiple copies! IF it makes sense DOCUMENT why...--LGP 2023-12-18
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 size_t                                                 roomLeft     = fData_.end () - fWriteCursor_;
                 size_t                                                 roomRequired = elts.size ();
                 if (roomLeft < roomRequired) {
@@ -106,13 +106,13 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 return fReadCursor_ - fData_.begin ();
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 switch (whence) {
                     case eFromStart: {
@@ -154,13 +154,13 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             }
             virtual SeekOffsetType GetWriteOffset () const override
             {
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 return fWriteCursor_ - fData_.begin ();
             }
             virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 switch (whence) {
                     case eFromStart: {
@@ -199,12 +199,12 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             }
             vector<ElementType> AsVector () const
             {
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 return fData_;
             }
             string AsString () const
             {
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 return string{reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_))};
             }
 
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             vector<ElementType>      fData_; // subtle, but important data declared before cursors for initialization CTOR sake
             typename vector<ElementType>::iterator       fReadCursor_;
             typename vector<ElementType>::iterator       fWriteCursor_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
     namespace Private_ {

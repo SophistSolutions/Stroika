@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedInputStream.h"
 #include "Stroika/Foundation/Streams/StreamReader.h"
@@ -45,19 +45,19 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
             virtual optional<size_t> AvailableToRead () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 return fReader_.AvailableToRead (); // since no actual buffering here yet
             }
             virtual optional<SeekOffsetType> RemainingLength () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 return fReader_.RemainingLength ();
             }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 return fReader_.Read (intoBuffer, blockFlag);
             }
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
         private:
             typename InputStream::Ptr<ELEMENT_TYPE>      fRealIn_;
             StreamReader<ELEMENT_TYPE>                   fReader_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
 
         // read the source into one big buffer. Keep it all around, so seekable
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
             virtual optional<size_t> AvailableToRead () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) [[likely]] {
                     return fBufferOfAllReadDataSoFar_.size () - static_cast<size_t> (fSeekOffset_); // don't include what we might get upstream cuz more costly to compute
@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
             virtual optional<SeekOffsetType> RemainingLength () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (auto rl = fRealIn_.RemainingLength ()) {
                     return MapOffsetFromReal2Mine_ (*rl);
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
             virtual auto SeekRead (Whence whence, SignedSeekOffsetType offset) -> SeekOffsetType override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 // @todo - allow seek forward past fBufferOfAllReadDataSoFar_?
                 switch (whence) {
@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 Assert (fSeekOffset_ <= fBufferOfAllReadDataSoFar_.size ());
                 if (fSeekOffset_ == fBufferOfAllReadDataSoFar_.size ()) [[unlikely]] {
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             typename InputStream::Ptr<ELEMENT_TYPE>             fRealIn_;
             Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE> fBufferOfAllReadDataSoFar_;
             SeekOffsetType                                      fSeekOffset_{0}; // always inside fBufferOfAllReadDataSoFar_
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
 
         // pretty easy/efficient case cuz we can throw away data as we go, and since not seekable, not many cases to analyze
@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
             virtual optional<size_t> AvailableToRead () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 size_t n = GetNEltsAlreadyBufferedFromUpstream_ ();
                 if (auto o = fRealIn_.AvailableToRead ()) {
@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
             virtual optional<SeekOffsetType> RemainingLength () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (auto o = fRealIn_.RemainingLength ()) {
                     return *o + GetNEltsAlreadyBufferedFromUpstream_ ();
@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 auto n = GetNEltsAlreadyBufferedFromUpstream_ ();
                 if (n == 0) [[unlikely]] {
@@ -269,7 +269,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             typename InputStream::Ptr<ELEMENT_TYPE>             fRealIn_;
             Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE> fIntermediateBuffer_;
             size_t                                              fReadOffsetIntoIntermediateBuf_{0};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
 

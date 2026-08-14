@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Containers/Common.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 /**
@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
-    class LinkedList : public Debug::AssertExternallySynchronizedMutex {
+    class LinkedList : public Debug::AssertExternallySynchronizedChecker {
     public:
         using value_type = T;
 

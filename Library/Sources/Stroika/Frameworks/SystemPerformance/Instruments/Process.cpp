@@ -23,7 +23,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/MultiSet.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
@@ -1712,7 +1712,7 @@ namespace {
         }
         ProcessMapType _InternalCapture ()
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::ProcessDetails _InternalCapture"};
 #endif

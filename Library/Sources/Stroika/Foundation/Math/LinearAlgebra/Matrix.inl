@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Math::LinearAlgebra {
@@ -25,14 +25,14 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
 
         T GetAt (size_t row, size_t col) const
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (row < fDimensions_.fRows);
             Require (col < fDimensions_.fColumns);
             return fData_[row * fDimensions_.fColumns + col];
         }
         void SetAt (size_t row, size_t col, T value)
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (row < fDimensions_.fRows);
             Require (col < fDimensions_.fColumns);
             //fData_.SetAt (row * fDimensions_.fColumns + col, value);
@@ -40,13 +40,13 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         }
         void push_back (Common::ArgByValueType<T> fillValue)
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fData_.push_back (fillValue);
         }
 
         DimensionType GetDimensions () const
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fDimensions_;
         }
 
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         // nb: use vector<> because for debug builds - big difference in speed  - and hidden anyhow
         // row*nCols + col is addressing scheme
         vector<T>                                    fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 
     /*

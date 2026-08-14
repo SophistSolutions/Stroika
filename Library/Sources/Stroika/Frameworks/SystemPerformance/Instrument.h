@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/Atom.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Frameworks/SystemPerformance/Measurement.h"
 #include "Stroika/Frameworks/SystemPerformance/MeasurementSet.h"
@@ -192,7 +192,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         Set<MeasurementType>                         fCapturedMeasurementTypes_;
         DataExchange::ObjectVariantMapper            fObjectVariantMapper_;
         unique_ptr<IRep>                             fCaptureRep_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 
 }

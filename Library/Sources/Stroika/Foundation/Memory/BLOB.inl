@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Memory {
     // clang-format on
 #endif
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (same_as<T, span<const byte>>) {
             return fRep_->GetBounds ();
         }
@@ -243,49 +243,49 @@ namespace Stroika::Foundation::Memory {
     }
     inline byte BLOB::operator[] (const size_t i) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (i < tmp.size ());
         return tmp[i];
     }
     inline bool BLOB::empty () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         return tmp.empty ();
     }
     inline const byte* BLOB::begin () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return fRep_->GetBounds ().data ();
     }
     inline const byte* BLOB::end () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         auto                                                  b = fRep_->GetBounds ();
         return b.data () + b.size ();
     }
     inline size_t BLOB::GetSize () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         return tmp.size ();
     }
     inline size_t BLOB::length () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return GetSize ();
     }
     inline const byte* BLOB::data () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return begin ();
     }
     inline size_t BLOB::size () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return GetSize ();
     }
     inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const
@@ -294,8 +294,8 @@ namespace Stroika::Foundation::Memory {
     }
     inline bool BLOB::operator== (const BLOB& rhs) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext readLockL{fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
-        Debug::AssertExternallySynchronizedMutex::ReadContext readLockR{rhs.fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext readLockL{fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
+        Debug::AssertExternallySynchronizedChecker::ReadContext readLockR{rhs.fThisAssertExternallySynchronized_};
         if (fRep_ == rhs.fRep_) {
             return true; // cheap optimization for not super uncommon case
         }
@@ -310,13 +310,13 @@ namespace Stroika::Foundation::Memory {
     }
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return BLOB ({*this, rhs});
     }
     inline strong_ordering BLOB::TWC_ (const BLOB& lhs, const BLOB& rhs)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext readLockL{lhs.fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
-        Debug::AssertExternallySynchronizedMutex::ReadContext readLockR{rhs.fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext readLockL{lhs.fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
+        Debug::AssertExternallySynchronizedChecker::ReadContext readLockR{rhs.fThisAssertExternallySynchronized_};
         span<const byte>                                      l            = lhs.fRep_->GetBounds ();
         span<const byte>                                      r            = rhs.fRep_->GetBounds ();
         size_t                                                lSize        = l.size ();

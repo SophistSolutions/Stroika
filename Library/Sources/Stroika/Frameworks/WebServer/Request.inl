@@ -24,7 +24,7 @@ namespace Stroika::Frameworks::WebServer {
     }
     inline Streams::InputStream::Ptr<byte> Request::GetInputStream ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
         return fInputStream_;
     }
 

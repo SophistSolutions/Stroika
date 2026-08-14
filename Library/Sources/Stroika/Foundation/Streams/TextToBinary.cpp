@@ -6,7 +6,7 @@
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/TextConvert.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::TextToBinary;
 
 using Characters::String;
-using Debug::AssertExternallySynchronizedMutex;
+using Debug::AssertExternallySynchronizedChecker;
 using Memory::InlineBuffer;
 using Memory::StackBuffer;
 
@@ -104,7 +104,7 @@ namespace {
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return _fOffset;
         }
@@ -114,7 +114,7 @@ namespace {
         byte                                         fSrcBufferedRawBytes_[4]; // not used directly, but always through fSrcBufferedSpan_
         span<byte>                                   fSrcBufferedSpan_;
         SeekOffsetType                               _fOffset{0};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 }
 

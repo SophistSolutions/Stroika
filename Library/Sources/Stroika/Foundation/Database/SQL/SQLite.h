@@ -21,7 +21,7 @@
 #include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Database/SQL/Statement.h"
 #include "Stroika/Foundation/Database/SQL/Transaction.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
                 /**
                  *  SQLITE_OPEN_NOMUTEX
                  *  In this mode, SQLite can be safely used by multiple threads provided that no single database connection is used simultaneously in two or more threads.
-                 *  (Stroika Debug::AssertExternallySynchronizedMutex enforces this)
+                 *  (Stroika Debug::AssertExternallySynchronizedChecker enforces this)
                  * 
                  * This may not always be available depending on how SQLite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
                  * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
                 /**
                  *  SQLITE_OPEN_FULLMUTEX
                  *  In serialized mode, SQLite can be safely used by multiple threads with no restriction.
-                 *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedMutex)
+                 *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedChecker)
                  * 
                  * This may not always be available depending on how SQLite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
                  * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
@@ -332,7 +332,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *          @see https://www.sqlite.org/threadsafe.html
          *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
          * 
-         *          NOTE ALSO - its POSSIBLE we could lift this Debug::AssertExternallySynchronizedMutex code / restriction.
+         *          NOTE ALSO - its POSSIBLE we could lift this Debug::AssertExternallySynchronizedChecker code / restriction.
          *          But SQLite docs not super clear. Maybe I need to use their locking APIs myself internally to use
          *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
          */
@@ -366,7 +366,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             virtual void SetJournalMode (JournalModeType journalMode) = 0;
 
         public:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronizedChecker;
 
         private:
             friend class Ptr;

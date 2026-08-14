@@ -31,7 +31,7 @@ namespace Stroika::Frameworks::WebServer {
     }
     inline void Response::writeln (const String& e)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{_fThisAssertExternallySynchronized};
         constexpr wchar_t                                      kEOL[] = L"\r\n";
         write (e);
         write (span{std::begin (kEOL), std::end (kEOL) - 1});

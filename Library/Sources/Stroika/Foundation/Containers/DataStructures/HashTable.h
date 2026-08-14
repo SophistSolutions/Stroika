@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Cryptography/Digest/HashBase.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *         traits to describe various choices about hashtable layout (separate chaining vs linear probing) etc
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE = void, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS = HashTable_Support::DefaultTraits<KEY_TYPE, MAPPED_TYPE>>
-    class HashTable : public Debug::AssertExternallySynchronizedMutex {
+    class HashTable : public Debug::AssertExternallySynchronizedChecker {
     public:
         /**
          */

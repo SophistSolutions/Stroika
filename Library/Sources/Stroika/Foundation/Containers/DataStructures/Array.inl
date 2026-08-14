@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     nonvirtual void Array<T>::Insert_BWA (size_t index, ArgByValueType<T> item)
     {
         // workaround crash in gcc optimized output
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (index >= 0);
         Require (index <= fLength_);
         Invariant ();
@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <Memory::ISpanOfT<T> SPAN_T>
     void Array<T>::Insert (size_t at, const SPAN_T& copyFrom)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (at >= 0);
         Require (at <= fLength_);
         Invariant ();
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::Insert (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (i._fData == this); // assure iterator not stale
         // i CAN BE DONE OR NOT
         Insert (i.CurrentIndex (), newValue);
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::Insert (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (i._fData == this); // assure iterator not stale
         // i CAN BE DONE OR NOT
         Insert (i.CurrentIndex (), newValue);
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void Array<T>::Remove (size_t index) noexcept
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (index >= 0);
         Require (index < fLength_);
         Invariant ();
@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void Array<T>::Remove (size_t from, size_t to) noexcept
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Invariant ();
         fLength_ = Memory::Remove (span{this->data (), size ()}, span{this->data (), capacity ()}, from, to).size ();
         Invariant ();
@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void Array<T>::clear ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Invariant ();
         T* p = &fItems_[0];
         for (size_t i = fLength_; i > 0; --i, ++p) {
@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <invocable<T> FUNCTION>
     inline void Array<T>::Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         const T*                                              start = &fItems_[0];
         const T*                                              end   = &fItems_[fLength_];
         switch (seq) {
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <predicate<T> FUNCTION>
     auto Array<T>::Find (FUNCTION&& firstThat) const -> ForwardIterator
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         const T*                                              start = &fItems_[0];
         const T*                                              i     = start;
         const T*                                              last  = &fItems_[fLength_];
@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         /*
          */
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (size () <= slotsAlloced);
         Invariant ();
         if (fSlotsAllocated_ != slotsAlloced) {
@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     auto Array<T>::operator= (const Array& list) -> Array&
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Invariant ();
         size_t newLength = list.size ();
 
@@ -388,7 +388,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void Array<T>::SetLength (size_t newLength, ArgByValueType<T> fillValue)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Invariant ();
 
         /*
@@ -418,7 +418,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void Array<T>::Invariant_ () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
 #endif
         Assert ((fSlotsAllocated_ == 0) == (fItems_ == nullptr)); // always free iff slots alloced = 0
         Assert (fLength_ <= fSlotsAllocated_);
@@ -440,7 +440,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::MoveIteratorHereAfterClone (IteratorBase* pi, [[maybe_unused]] const Array<T>* movedFrom) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
         Require (pi->CurrentIndex () <= this->size ());
@@ -450,19 +450,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T* Array<T>::data () noexcept
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fItems_;
     }
     template <typename T>
     inline const T* Array<T>::data () const noexcept
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fItems_;
     }
     template <typename T>
     inline T Array<T>::GetAt (size_t i) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         Require (i >= 0);
         Require (i < fLength_);
         return fItems_[i];
@@ -470,7 +470,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T* Array<T>::PeekAt (size_t i)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (i >= 0);
         Require (i < fLength_);
         return &fItems_[i];
@@ -478,7 +478,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline const T* Array<T>::PeekAt (size_t i) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         Require (i >= 0);
         Require (i < fLength_);
         return &fItems_[i];
@@ -486,7 +486,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::SetAt (size_t i, ArgByValueType<T> item)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (i >= 0);
         Require (i < fLength_);
         fItems_[i] = item;
@@ -494,7 +494,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T& Array<T>::operator[] (size_t i)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (i >= 0);
         Require (i < fLength_);
         return fItems_[i];
@@ -502,7 +502,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T Array<T>::operator[] (size_t i) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         Require (i >= 0);
         Require (i < fLength_);
         return fItems_[i];
@@ -510,31 +510,31 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline size_t Array<T>::size () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fLength_;
     }
     template <typename T>
     inline bool Array<T>::empty () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fLength_ == 0;
     }
     template <typename T>
     inline size_t Array<T>::capacity () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fSlotsAllocated_;
     }
     template <typename T>
     inline void Array<T>::shrink_to_fit ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         reserve (size ());
     }
     template <typename T>
     inline void Array<T>::Remove (const ForwardIterator& i)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (not i.AtEnd ());
         Require (i._fData == this); // assure iterator not stale
         this->Remove (i.CurrentIndex ());
@@ -542,7 +542,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto Array<T>::erase (const ForwardIterator& i) -> ForwardIterator
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (not i.AtEnd ());
         Require (i._fData == this); // assure iterator not stale
         size_t idx = i.CurrentIndex ();
@@ -557,14 +557,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::Remove (const BackwardIterator& i)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (not i.AtEnd ());
         this->Remove (i.CurrentIndex ());
     }
     template <typename T>
     inline void Array<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (i._fData == this); // assure iterator not stale
         Require (not i.AtEnd ());
         SetAt (i.CurrentIndex (), newValue);
@@ -572,7 +572,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::SetAt (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (not i.AtEnd ());
         SetAt (i.CurrentIndex (), newValue);
     }
@@ -602,7 +602,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline size_t Array<T>::IteratorBase::CurrentIndex () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
         /*
          * NB: This can be called if we are done - if so, it returns size().
          */
@@ -612,7 +612,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline const T& Array<T>::IteratorBase::operator* () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
         Invariant ();
         RequireNotNull (_fData);
         Require (0 <= _fCurrentIdx and _fCurrentIdx < _fData->fLength_);
@@ -621,7 +621,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline const T* Array<T>::IteratorBase::operator->() const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
         Invariant ();
         RequireNotNull (_fData);
         Require (0 <= _fCurrentIdx and _fCurrentIdx < _fData->fLength_);
@@ -630,7 +630,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::IteratorBase::SetIndex (size_t i)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*_fData};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*_fData};
         RequireNotNull (_fData);
         Require (i <= _fData->fLength_);
         _fCurrentIdx = i;
@@ -638,7 +638,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto Array<T>::IteratorBase::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
         /*
          * NB: This can be called if we are done - if so, it returns size().
          */
@@ -648,7 +648,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::IteratorBase::SetUnderlyingIteratorRep (UnderlyingIteratorRep i)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*_fData};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*_fData};
         RequireNotNull (_fData);
         Require (i <= _fData->fLength_);
         _fCurrentIdx = i;
@@ -674,7 +674,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Assert (0 <= _fCurrentIdx);
         if (_fData != nullptr) {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
 #endif
             Assert (_fCurrentIdx <= _fData->fLength_);
         }
@@ -690,7 +690,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline Array<T>::ForwardIterator::ForwardIterator (const Array* data, UnderlyingIteratorRep startAt)
         : inherited{data}
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this->_fData};
         this->_fCurrentIdx = startAt;
         this->Invariant ();
     }
@@ -714,7 +714,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             return true;
         }
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
 #endif
         this->Invariant ();
         return this->CurrentIndex () == 0;
@@ -727,7 +727,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             return true;
         }
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
 #endif
         this->Invariant ();
         return this->CurrentIndex () == this->_fData->fLength_;
@@ -735,7 +735,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto Array<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this->_fData};
         Require (not this->AtEnd ());
         this->Invariant ();
         Assert (this->_fCurrentIdx < this->_fData->fLength_);
@@ -753,7 +753,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto Array<T>::ForwardIterator::operator-- () noexcept -> ForwardIterator&
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this->_fData};
         Require (not this->AtStart ()); // checks not==0, so decrement is safe
         this->Invariant ();
         Assert (this->_fCurrentIdx <= this->_fData->fLength_); // stepping back from AtEnd () (_fCurrentIdx == fLength_) is legal
@@ -885,7 +885,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline Array<T>::BackwardIterator::BackwardIterator (const Array* data, UnderlyingIteratorRep startAt)
         : inherited{data}
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this->_fData};
         this->_fCurrent = startAt;
         this->Invariant ();
     }
@@ -898,7 +898,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool Array<T>::BackwardIterator::AtEnd () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
 #endif
         this->Invariant ();
         return bool (this->CurrentIndex () == this->_fData->fLength_); // a little queer/confusing, but in C++ only legal extra address is past end, one before start not legal
@@ -906,7 +906,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto Array<T>::BackwardIterator::operator++ () noexcept -> BackwardIterator&
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this->_fData};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this->_fData};
         Require (not this->AtEnd ());
         this->Invariant ();
         if (this->_fCurrent == this->_fStart) {

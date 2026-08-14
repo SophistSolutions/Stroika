@@ -208,27 +208,27 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
 Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Options& options)
     : socket{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*thisObj};
         return thisObj->fSocket_;
     }}
     , request{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*thisObj};
         return thisObj->fMessage_->request ();
     }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Response& {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*thisObj};
         return thisObj->fMessage_->response ();
     }}
     , rwResponse{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
         Connection* thisObj = const_cast<Connection*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::rwResponse));
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{*thisObj};
         return thisObj->fMessage_->rwResponse ();
     }}
     , stats{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Stats {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::stats);
-        // NO - INTERNALLY SYNCHRONIZED!!! AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        // NO - INTERNALLY SYNCHRONIZED!!! AssertExternallySynchronizedChecker::ReadContext declareContext{*thisObj};
         // typically called from thread OTHER than the one filling in these variables
         auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without synchronization
         TimePointSeconds createdAt{thisObj->fConnectionStartedAt_}; // also similar logic - const
@@ -289,12 +289,12 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     , remainingConnectionLimits{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
               const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+              AssertExternallySynchronizedChecker::ReadContext declareContext{*thisObj};
               return thisObj->fRemaining_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& remainingConnectionLimits) {
               Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
-              AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+              AssertExternallySynchronizedChecker::WriteContext declareContext{*thisObj};
               thisObj->fRemaining_ = remainingConnectionLimits;
           }}
     , fInterceptorChain_{options.fInterceptorChain}
@@ -329,7 +329,7 @@ Connection::~Connection ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("Destroying connection for socket {}, message={}"_f, fSocket_, static_cast<const void*> (fMessage_.get ()));
 #endif
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     WriteLogConnectionMsg_ (L"DestroyingConnection");
 #endif
@@ -356,14 +356,14 @@ Connection::~Connection ()
 
 Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
     try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Connection::ReadAndProcessMessage", "this->socket={}"_f, fSocket_};
 #endif
         fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-        fMessage_->SetAssertExternallySynchronizedMutexContext (GetSharedContext ());
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
+        fMessage_->SetAssertExternallySynchronizedCheckerContext (GetSharedContext ());
 #endif
 
         // readHeaders returns nullopt if it completed successfully (usually the case)
@@ -632,7 +632,7 @@ void Connection::WriteLogConnectionMsg_ (const String& msg) const
 
 String Connection::ToString (bool abbreviatedOutput) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
     StringBuilder                                  sb;
     sb << "{"sv;
     sb << "socket: "sv << fSocket_;

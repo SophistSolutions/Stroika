@@ -10,7 +10,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 
 #include "Stroika/Foundation/Database/SQL/EngineProperties.h"
 
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Database::SQL {
             nonvirtual bool operator== (nullptr_t) const noexcept;
 
         public:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronizedChecker;
 
         protected:
             shared_ptr<IRep> _fRep;

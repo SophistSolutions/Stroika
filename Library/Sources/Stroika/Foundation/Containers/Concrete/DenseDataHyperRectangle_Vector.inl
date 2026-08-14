@@ -34,12 +34,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual shared_ptr<typename Iterable<tuple<T, INDEXES...>>::_IRep> Clone () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
 /// NYI
 #if 0
             return Iterator<value_type>{Memory::MakeSharedPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -49,18 +49,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t size () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.size ();
         }
         virtual bool empty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.empty ();
         }
         virtual void Apply ([[maybe_unused]] const function<void (ArgByValueType<value_type> item)>& doToElement,
                             [[maybe_unused]] Execution::SequencePolicy                               seq) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             AssertNotImplemented ();
 #if 0
             fData_.Apply (doToElement);
@@ -69,13 +69,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement,
                                                      [[maybe_unused]] Execution::SequencePolicy se) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
 #if 1
             /// NYI
             return RESULT_TYPE::GetEmptyIterator ();
 #else
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             auto                                                  iLink = const_cast<DataStructureImplType_&> (fData_).Find (doToElement);
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual shared_ptr<typename DataHyperRectangle<T, INDEXES...>::_IRep> CloneEmpty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             // @todo - fix so using differnt CTOR - with no data to remove
             auto r = Memory::MakeSharedPtr<Rep_> (*this);
             return r;
@@ -98,13 +98,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         DISABLE_COMPILER_MSC_WARNING_START (4100)
         virtual T GetAt (INDEXES... indexes) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             /// NYI
             return T{};
         }
         virtual void SetAt ([[maybe_unused]] INDEXES... indexes, [[maybe_unused]] Common::ArgByValueType<T> v) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             fChangeCounts_.PerformedChange ();
             /// NYI
             AssertNotImplemented ();

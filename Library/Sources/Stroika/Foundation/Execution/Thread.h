@@ -12,7 +12,7 @@
 #include <thread>
 
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Signals.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -757,7 +757,7 @@ namespace Stroika::Foundation::Execution {
 
         private:
             shared_ptr<Rep_>                             fRep_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 #if qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
             static weak_ptr<Rep_>& sCurrentThreadRep_BWA_ ()
             {

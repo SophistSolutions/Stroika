@@ -132,10 +132,3 @@ Generally will track stuff here between releases
 
 + Consider adding Mapping_stdflatmap? Is there such a thing? Maybe fast for small sizes?
 
-+ add docs and static assert that Debug::AssertExternallySyncrhonizedmutex is movable and copyable
-  unlike real mutexes. This is cuz of how its used. Its NOT a real mutex just embedded in objects
-  to help test them for re-entrancy. Those objects need to be copyable ad movable so the helper
-  mutexlike things must be too!
-
-  Ask Claude if it has a better than than Debug::AssertExternallySyncrhonizedmutex - as its 
-  sometimes confusing and definitely can be misleading.

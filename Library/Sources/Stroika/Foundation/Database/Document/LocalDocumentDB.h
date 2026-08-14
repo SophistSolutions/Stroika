@@ -19,7 +19,7 @@
 #include "Stroika/Foundation/Database/Document/Connection.h"
 #include "Stroika/Foundation/Database/Document/EngineProperties.h"
 #include "Stroika/Foundation/Database/Document/Transaction.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 
 /**
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
          *      \note this refers to in-process synchronization. Future flags/fields/options will be needed
          *            in other impls to assure cross-process synchronization (not sure if even appropriate for this impl but maybe something simple with flock).
          * 
-         *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedMutex
+         *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedChecker
          *            to check for unsafe thread usage.
          */
         Execution::InternallySynchronized fInternallySynchronizedLetter{Execution::eNotKnownInternallySynchronized};

@@ -9,19 +9,19 @@
 #include "Sanitizer.h"
 #include "Trace.h"
 
-#include "AssertExternallySynchronizedMutex.h"
+#include "AssertExternallySynchronizedChecker.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Debug;
 
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
 /*
  ********************************************************************************
- ****************** Debug::AssertExternallySynchronizedMutex ********************
+ ****************** Debug::AssertExternallySynchronizedChecker ********************
  ********************************************************************************
  */
-void AssertExternallySynchronizedMutex::lock_ () noexcept
+void AssertExternallySynchronizedChecker::lock_ () noexcept
 {
     try {
         SharedContext* sharedContext = fSharedContext_.get ();
@@ -56,7 +56,7 @@ void AssertExternallySynchronizedMutex::lock_ () noexcept
     }
 }
 
-bool AssertExternallySynchronizedMutex::try_lock_ () noexcept
+bool AssertExternallySynchronizedChecker::try_lock_ () noexcept
 {
     // Note - not critical if there are races in this, as its just a diagnostic for debugging, and false-negatives OK
     bool lockedSuccessfully = true;
@@ -86,7 +86,7 @@ bool AssertExternallySynchronizedMutex::try_lock_ () noexcept
     return lockedSuccessfully;
 }
 
-void AssertExternallySynchronizedMutex::unlock_ () noexcept
+void AssertExternallySynchronizedChecker::unlock_ () noexcept
 {
     SharedContext* sharedContext = fSharedContext_.get ();
     Require (sharedContext->fThreadWithFullLock_ == this_thread::get_id ());
@@ -96,7 +96,7 @@ void AssertExternallySynchronizedMutex::unlock_ () noexcept
     // else could lock just as we are unlocking...
 }
 
-void AssertExternallySynchronizedMutex::lock_shared_ () const noexcept
+void AssertExternallySynchronizedChecker::lock_shared_ () const noexcept
 {
     try {
         SharedContext* sharedContext = fSharedContext_.get ();
@@ -122,7 +122,7 @@ void AssertExternallySynchronizedMutex::lock_shared_ () const noexcept
     }
 }
 
-void AssertExternallySynchronizedMutex::unlock_shared_ () const noexcept
+void AssertExternallySynchronizedChecker::unlock_shared_ () const noexcept
 {
     try {
         SharedContext* sharedContext = fSharedContext_.get ();
@@ -133,10 +133,10 @@ void AssertExternallySynchronizedMutex::unlock_shared_ () const noexcept
     }
 }
 
-mutex& AssertExternallySynchronizedMutex::GetSharedLockMutexThreads_ ()
+mutex& AssertExternallySynchronizedChecker::GetSharedLockMutexThreads_ ()
 {
     static mutex sMutex_; // must be out-of-line so we can have just one mutex object. Could use static member, but then trouble using
-                          // AssertExternallySynchronizedMutex before main
+                          // AssertExternallySynchronizedChecker before main
     return sMutex_;
 }
 #endif

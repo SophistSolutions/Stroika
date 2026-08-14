@@ -30,17 +30,17 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline bool URI::IsRelativeReference () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return fScheme_.has_value ();
     }
     inline optional<URI::SchemeType> URI::GetScheme () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return fScheme_;
     }
     inline void URI::SetScheme (const optional<SchemeType>& scheme)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         if (scheme) {
             scheme->Validate ();
         }
@@ -48,24 +48,24 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void URI::SetScheme (const SchemeType& scheme)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         scheme.Validate ();
         fScheme_ = scheme;
     }
     inline optional<URI::Authority> URI::GetAuthority () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return fAuthority_;
     }
     inline void URI::SetAuthority (const optional<Authority>& authority)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         CheckValidPathForAuthority_ (authority, fPath_);
         fAuthority_ = authority;
     }
     inline PortType URI::GetPortValue () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         optional<PortType>                                    op = fAuthority_ ? fAuthority_->GetPort () : optional<PortType>{};
         if (op) {
             return *op;
@@ -78,12 +78,12 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline String URI::GetPath () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return fPath_;
     }
     inline void URI::SetPath (const String& path)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         CheckValidPathForAuthority_ (fAuthority_, path);
         fPath_ = path;
     }
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::IO::Network {
     template <Common::IAnyOf<String, string, URI> RETURN_TYPE>
     RETURN_TYPE URI::GetAuthorityRelativeResource () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (same_as<RETURN_TYPE, String>) {
             static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{
                 .allowSubDelims = false, .allowGenDelims = false, .allowPChar = true, .allowFragOrQueryChars = false, .allowPathCharacters = true};
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::IO::Network {
     template <Common::IAnyOf<String, optional<String>> RETURN_VALUE>
     RETURN_VALUE URI::GetAbsPath () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (same_as<RETURN_VALUE, String>) {
             if (auto op = GetAbsPath<optional<String>> ()) {
                 return *op;
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::IO::Network {
     template <Common::IAnyOf<String, URI::Query> RETURN_TYPE>
     inline optional<RETURN_TYPE> URI::GetQuery () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (same_as<RETURN_TYPE, String>) {
             return fQuery_;
         }
@@ -150,12 +150,12 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void URI::SetQuery (const optional<String>& query)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         fQuery_ = query;
     }
     inline void URI::SetQuery (const optional<Query>& query)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         fQuery_ = query ? query->ComputeQueryString () : optional<String>{};
     }
     inline optional<String> URI::LookupQueryArg (const String& arg) const
@@ -168,12 +168,12 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline optional<String> URI::GetFragment () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return fFragment_;
     }
     inline void URI::SetFragment (const optional<String>& fragment)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         fFragment_ = fragment;
     }
     inline strong_ordering URI::operator<=> (const URI& rhs) const

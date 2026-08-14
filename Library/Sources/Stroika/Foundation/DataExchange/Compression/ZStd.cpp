@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/FeatureNotSupportedException.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/StreamReader.h"
@@ -78,24 +78,24 @@ namespace {
         }
         virtual void CloseRead () override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fInStreamReader_ = nullptr;
             Ensure (not IsOpenRead ());
         }
         virtual bool IsOpenRead () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fInStreamReader_ != nullptr;
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
             Require (IsOpenRead ());
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fSeekOffset_;
         }
         virtual optional<size_t> AvailableToRead () override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             // at most twice through loop
             while (true) {
                 if (fOutputBufCache_.size () != 0) {
@@ -118,7 +118,7 @@ namespace {
         {
             Require (not intoBuffer.empty ()); // API rule for streams
 
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
 
             /*
              * First try output cache, and then fill if needed. If second time around, and still empty, must be EOF or dont know (cuz not blocking)
@@ -155,7 +155,7 @@ namespace {
         };
         Stage_                                       fStage_{Stage_::eReadingInput};
         SeekOffsetType                               fSeekOffset_{};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
     private:
         struct CompressResult_ {
@@ -255,7 +255,7 @@ namespace {
         span<byte>                                   fOutputBufCache_{}; // empty or subspan of fOutBuf_
         ZSTD_DCtx*                                   fCtx_{nullptr};
         SeekOffsetType                               fSeekOffset_{};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
     public:
         DecompressingByteStreamRep_ ()                                   = delete;
@@ -278,24 +278,24 @@ namespace {
         }
         virtual void CloseRead () override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fInStreamReader_ = nullptr;
             Ensure (not IsOpenRead ());
         }
         virtual bool IsOpenRead () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fInStreamReader_ != nullptr;
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
             Require (IsOpenRead ());
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fSeekOffset_;
         }
         virtual optional<size_t> AvailableToRead () override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             // at most twice through loop
             while (true) {
                 if (fOutputBufCache_.size () != 0) {
@@ -318,7 +318,7 @@ namespace {
         {
             Require (not intoBuffer.empty ()); // API rule for streams
 
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
 
             /*
              * First try output cache, and then fill if needed. If second time around, and still empty, must be EOF or dont know (cuz not blocking)

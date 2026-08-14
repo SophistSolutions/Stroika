@@ -16,7 +16,7 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
-using Debug::AssertExternallySynchronizedMutex;
+using Debug::AssertExternallySynchronizedChecker;
 
 /*
  ********************************************************************************
@@ -29,52 +29,52 @@ static_assert (movable<Message>);
 Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<IO::Network::SocketAddress>& peerAddress)
     : peerAddress{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<IO::Network::SocketAddress> {
         const Message* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::peerAddress);
-        AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedChecker::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fPeerAddress_;
     }}
     , request{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
         const Message* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::request);
-        AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedChecker::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fRequest_;
     }}
     , rwRequest{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Request& {
         Message* thisObj = const_cast<Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwRequest));
-        AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fRequest_;
     }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Response& {
         const Message* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::response);
-        AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedChecker::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fResponse_;
     }}
     , rwResponse{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
         Message* thisObj = const_cast<Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwResponse));
-        AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fResponse_;
     }}
     , fPeerAddress_{peerAddress}
     , fRequest_{move (srcRequest)}
     , fResponse_{move (srcResponse)}
 {
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-    fRequest_.SetAssertExternallySynchronizedMutexContext (fThisAssertExternallySynchronized_.GetSharedContext ());
-    fResponse_.SetAssertExternallySynchronizedMutexContext (fThisAssertExternallySynchronized_.GetSharedContext ());
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
+    fRequest_.SetAssertExternallySynchronizedCheckerContext (fThisAssertExternallySynchronized_.GetSharedContext ());
+    fResponse_.SetAssertExternallySynchronizedCheckerContext (fThisAssertExternallySynchronized_.GetSharedContext ());
 #endif
 }
 
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-void Message::SetAssertExternallySynchronizedMutexContext (const shared_ptr<AssertExternallySynchronizedMutex::SharedContext>& sharedContext)
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
+void Message::SetAssertExternallySynchronizedCheckerContext (const shared_ptr<AssertExternallySynchronizedChecker::SharedContext>& sharedContext)
 {
-    fThisAssertExternallySynchronized_.SetAssertExternallySynchronizedMutexContext (sharedContext);
+    fThisAssertExternallySynchronized_.SetAssertExternallySynchronizedCheckerContext (sharedContext);
     Assert (fThisAssertExternallySynchronized_.GetSharedContext () == sharedContext);
-    fRequest_.SetAssertExternallySynchronizedMutexContext (sharedContext);
-    fResponse_.SetAssertExternallySynchronizedMutexContext (sharedContext);
+    fRequest_.SetAssertExternallySynchronizedCheckerContext (sharedContext);
+    fResponse_.SetAssertExternallySynchronizedCheckerContext (sharedContext);
 }
 #endif
 
 String Message::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext readLock{fThisAssertExternallySynchronized_};
     StringBuilder                                  sb;
     sb << "{"sv;
     sb << "peerAddress: "sv << fPeerAddress_;

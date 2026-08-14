@@ -16,7 +16,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Common.h"
@@ -144,7 +144,7 @@ namespace {
         }
         virtual optional<SeekOffsetType> RemainingLength () override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             if (fSeekable_ == eSeekable) {
                 auto saved = GetReadOffset ();
                 auto eof   = SeekRead (Whence::eFromEnd, 0);
@@ -163,7 +163,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
 #endif
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             auto            readingFromFileActivity = LazyEvalActivity{[&] () -> String { return "reading from {}"_f(fFileName_); }};
             DeclareActivity currentActivity{&readingFromFileActivity};
 
@@ -211,7 +211,7 @@ namespace {
         }
         virtual Streams::SeekOffsetType GetReadOffset () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
 #if qStroika_Foundation_Common_Platform_Windows
             return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
 #elif qStroika_Foundation_Common_Platform_Linux
@@ -227,7 +227,7 @@ namespace {
             Debug::TraceContextBumper ctx{"FileInputStream::Rep_::SeekRead", "whence: {}, offset: {}", whence, offset};
 #endif
             static const auto                               kException_ = range_error{"seek"};
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             switch (whence) {
                 case eFromStart: {
                     if (offset < 0) [[unlikely]] {
@@ -269,7 +269,7 @@ namespace {
         SeekableFlag                                                                   fSeekable_;
         AdoptFDPolicy                                                                  fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
         optional<filesystem::path>                                                     fFileName_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 }
 

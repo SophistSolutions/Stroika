@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #include "InternallySynchronizedInputStream.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
             }
             virtual void CloseRead () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 if (IsOpenRead ()) {
                     fRealIn_.Close ();
                 }
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
             }
             virtual optional<size_t> AvailableToRead () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 SeekOffsetType myOffset = fRealIn_.GetOffset ();
                 if (fForcedEndInReal_ and myOffset >= *fForcedEndInReal_) { // could be past end if through another non-substream Ptr we read past
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (fForcedEndInReal_) {
                     // @todo clean this code up for switch to spans - simplify!
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
             typename InputStream::Ptr<ELEMENT_TYPE>      fRealIn_;
             SeekOffsetType                               fOffsetMine2Real_; // subtract from real offset to get our offset
             optional<SeekOffsetType>                     fForcedEndInReal_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
 

@@ -303,7 +303,7 @@ ProcessRunner::BackgroundProcess::BackgroundProcess ()
 
 void ProcessRunner::BackgroundProcess::PropagateIfException () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Thread::Ptr                                    t{fRep_->fProcessRunner};
     t.ThrowIfDoneWithException ();
     if (auto o = GetProcessResult ()) {
@@ -330,14 +330,14 @@ void ProcessRunner::BackgroundProcess::WaitForStarted (Time::DurationSeconds tim
 
 void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSeconds timeout) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Thread::Ptr                                    t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
 }
 
 void ProcessRunner::BackgroundProcess::Join (Time::DurationSeconds timeout) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Thread::Ptr                                    t{fRep_->fProcessRunner};
     t.Join (timeout);
     // if he asserts in PropagateIfException () are wrong, I may need to call that here!
@@ -345,7 +345,7 @@ void ProcessRunner::BackgroundProcess::Join (Time::DurationSeconds timeout) cons
 
 void ProcessRunner::BackgroundProcess::JoinUntil (Time::TimePointSeconds timeoutAt) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Thread::Ptr                                    t{fRep_->fProcessRunner};
     t.JoinUntil (timeoutAt);
     // if he asserts in PropagateIfException () are wrong, I may need to call that here!
@@ -354,7 +354,7 @@ void ProcessRunner::BackgroundProcess::JoinUntil (Time::TimePointSeconds timeout
 void ProcessRunner::BackgroundProcess::Terminate ()
 {
     TraceContextBumper                             ctx{"ProcessRunner::BackgroundProcess::Terminate"};
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     // @todo? set thread to null when done -
     //
     // @todo - Note - UNTESTED, and probably not 100% right (esp error checking!!!
@@ -495,7 +495,7 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
 
 auto ProcessRunner::Run (const String& cmdStdInValue, const StringOptions& stringOpts, Time::DurationSeconds timeout) -> tuple<String, String>
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
     MemoryStream::Ptr<byte>                         useStdIn  = MemoryStream::New<byte> ();
     MemoryStream::Ptr<byte>                         useStdOut = MemoryStream::New<byte> ();
     MemoryStream::Ptr<byte>                         useStdErr = MemoryStream::New<byte> ();
@@ -1363,7 +1363,7 @@ tuple<function<void ()>, shared_ptr<ProcessRunner::DetailedRunnableRep_>> Proces
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"ProcessRunner::CreateDetailedRunnable_"};
 #endif
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     auto                                           resultDetails = MakeSharedPtr<DetailedRunnableRep_> ();
     return make_tuple (
         [resultDetails, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_, out = fStdOut_, err = fStdErr_] () {
@@ -1385,7 +1385,7 @@ function<void ()> ProcessRunner::CreateSimpleRunnable_ ()
 {
     TraceContextBumper ctx{"ProcessRunner::CreateSimpleRunnable_"};
     Assert (not fOptions_.fDetached); // for now at least, assume detached case handled in details create runner
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return [exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_, out = fStdOut_, err = fStdErr_] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"ProcessRunner::CreateSimpleRunnable_::{}::Runner..."};

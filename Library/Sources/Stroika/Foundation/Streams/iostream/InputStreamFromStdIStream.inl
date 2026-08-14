@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             }
             virtual optional<size_t> AvailableToRead () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 streamsize                                             sz = fOriginalStreamRef_.rdbuf ()->in_avail ();
                 // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
                 if (sz == 0) {
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             }
             virtual optional<SeekOffsetType> RemainingLength () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 AssertNotImplemented ();
                 return nullopt; // pretty easy, but @todo
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (fOriginalStreamRef_.eof ()) {
                     return span<ELEMENT_TYPE>{};
@@ -86,13 +86,13 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             virtual SeekOffsetType GetReadOffset () const override
             {
                 // instead of tellg () - avoids issue with EOF where fail bit set???
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 return fOriginalStreamRef_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 fOriginalStreamRef_.clear (); // in case we hit eof (causing fail) - eof gets cleared by seeking, but not failbit - it appears...--LGP 2024-02-11
                 switch (whence) {
@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
         private:
             basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& fOriginalStreamRef_;
             SeekableFlag                                                          fSeekable_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
 

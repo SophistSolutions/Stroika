@@ -164,9 +164,9 @@ namespace {
 SQL::ODBC::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
     : inherited{src}
 {
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
     if (src != nullptr) {
-        fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->fAssertExternallySynchronizedMutex.GetSharedContext ());
+        fAssertExternallySynchronizedChecker.SetAssertExternallySynchronizedCheckerContext (src->fAssertExternallySynchronizedChecker.GetSharedContext ());
     }
 #endif
 }
@@ -195,38 +195,38 @@ struct Statement::MyRep_ : IRep {
                                Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.As<wstring> ().c_str ())};
 #endif
         RequireNotNull (db);
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-        _fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (
-            fConnectionPtr_.fAssertExternallySynchronizedMutex.GetSharedContext ());
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
+        _fAssertExternallySynchronizedChecker.SetAssertExternallySynchronizedCheckerContext (
+            fConnectionPtr_.fAssertExternallySynchronizedChecker.GetSharedContext ());
 #endif
         u8string                                        queryUTF8 = query.AsUTF8 ();
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         AssertNotImplemented ();
     }
     ~MyRep_ ()
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
     }
     virtual String GetSQL ([[maybe_unused]] WhichSQLFlag whichSQL) const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{_fAssertExternallySynchronizedChecker};
         AssertNotImplemented ();
         return String{};
     }
     virtual Sequence<ColumnDescription> GetColumns () const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{_fAssertExternallySynchronizedChecker};
         AssertNotImplemented ();
         return Sequence<ColumnDescription>{};
     };
     virtual Sequence<ParameterDescription> GetParameters () const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{_fAssertExternallySynchronizedChecker};
         return fParameters_;
     };
     virtual void Bind () override
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         for (auto i = fParameters_.begin (); i != fParameters_.end (); ++i) {
             auto p   = *i;
             p.fValue = VariantValue{};
@@ -236,14 +236,14 @@ struct Statement::MyRep_ : IRep {
     }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         fParameters_ (parameterIndex).fValue = v;
         AssertNotImplemented ();
     }
     virtual void Bind (const String& parameterName, const VariantValue& v) override
     {
         Require (not parameterName.empty ());
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         AssertNotImplemented ();
         String pn = parameterName;
         if (pn[0] != ':') {
@@ -264,7 +264,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::Reset"};
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         AssertNotImplemented ();
     }
     virtual optional<Row> GetNextRow () override
@@ -272,7 +272,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::GetNextRow"};
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         AssertNotImplemented ();
         return nullopt;
     }

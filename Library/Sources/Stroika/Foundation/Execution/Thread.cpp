@@ -41,7 +41,7 @@
 using namespace Stroika::Foundation;
 
 using Containers::Set;
-using Debug::AssertExternallySynchronizedMutex;
+using Debug::AssertExternallySynchronizedChecker;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -608,7 +608,7 @@ namespace {
 void Thread::Ptr::SetThreadPriority (Priority priority) const
 {
     RequireNotNull (fRep_);
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
     NativeHandleType nh = GetNativeHandle ();
     if (nh == NativeHandleType{}) {
         // This can happen if you set the thread priority before starting the thread (actually probably a common sequence of events)
@@ -622,14 +622,14 @@ void Thread::Ptr::SetThreadPriority (Priority priority) const
 
 String Thread::Ptr::GetThreadName () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return fRep_ == nullptr ? String{} : fRep_->fThreadName_;
 }
 
 void Thread::Ptr::SetThreadName (const String& threadName) const
 {
     RequireNotNull (fRep_);
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"Thread::SetThreadName", "thisThreadID={}, threadName = '{}'"_f, GetID (), threadName};
 #endif
@@ -641,13 +641,13 @@ void Thread::Ptr::SetThreadName (const String& threadName) const
 
 Characters::String Thread::Ptr::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return fRep_ == nullptr ? "nullptr"sv : fRep_->ToString ();
 }
 
 void Thread::Ptr::Start () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
     Debug::TraceContextBumper ctx{"Thread::Start", "*this={}"_f, ToString ()};
     RequireNotNull (fRep_);
     Require (not fRep_->fStartEverInitiated_);
@@ -729,7 +729,7 @@ void Thread::Ptr::Abort () const
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::Abort", "*this={}"_f, ToString ())};
     Require (*this != nullptr);
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 
 #if __cpp_lib_jthread >= 201911
     bool wasAborted = fRep_->fAbortRequested_;
@@ -769,7 +769,7 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) co
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::AbortAndWaitForDoneUntil",
                                                                                  "*this={}, timeoutAt={}"_f, ToString (), timeoutAt)};
     RequireNotNull (*this);
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
 
     Abort ();
     WaitForDoneUntil (timeoutAt);
@@ -780,7 +780,7 @@ void Thread::Ptr::ThrowIfDoneWithException () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Thread::ThrowIfDoneWithException", "*this={}"_f, *this};
 #endif
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     if (fRep_ and fRep_->IsDone_ () and fRep_->fSavedException_.load () != nullptr) {
         // safe not holding lock cuz code simpler, and cannot transition from savedExcept to none - never cleared
         ReThrow (fRep_->fSavedException_.load (), "Rethrowing exception across threads");
@@ -802,7 +802,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) con
                                                                                  "*this={}, timeoutAt={}"_f, ToString (), timeoutAt)};
 #endif
     Require (*this != nullptr);
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     CheckForInterruption (); // always a cancelation point
     if (fRep_->fThreadDoneAndCanJoin_.WaitUntilQuietly (timeoutAt) == WaitableEvent::WaitStatus::eTriggered) {
         /*
@@ -828,7 +828,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) con
 #if qStroika_Foundation_Common_Platform_Windows
 void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSeconds timeout) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Require (*this != nullptr);
     CheckForInterruption ();
     HANDLE thread = fRep_->GetNativeHandle ();

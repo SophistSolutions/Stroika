@@ -194,7 +194,7 @@ auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family
  */
 Socket::PlatformNativeHandle Socket::Ptr::Detach ()
 {
-    Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
+    Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
     PlatformNativeHandle                                   h = kINVALID_NATIVE_HANDLE_;
     if (fRep_ != nullptr) {
         h = fRep_->Detach ();
@@ -205,14 +205,14 @@ Socket::PlatformNativeHandle Socket::Ptr::Detach ()
 
 Socket::Type Socket::Ptr::GetType () const
 {
-    Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+    Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
     return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
 }
 
 void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
     Debug::TraceContextBumper ctx{"IO::Network::Socket::Bind", "sockAddr={} bindFlags.fReUseAddr={}"_f, sockAddr, bindFlags.fSO_REUSEADDR};
-    Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
+    Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
     auto bindingActivity =
@@ -255,7 +255,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 
 bool Socket::Ptr::IsOpen () const
 {
-    Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+    Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
     if (fRep_ != nullptr) {
         return fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_;
     }
@@ -264,7 +264,7 @@ bool Socket::Ptr::IsOpen () const
 
 String Socket::Ptr::ToString () const
 {
-    Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+    Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
     StringBuilder                                         sb;
     if (fRep_ == nullptr) {
         sb << "nullptr"sv;

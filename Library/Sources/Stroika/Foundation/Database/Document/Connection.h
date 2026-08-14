@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Database/Document/Collection.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 
 /**
  *  \file
@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     protected:
         // note this protects the LETTER (smart_ptr) not the envelope
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker _fAssertExternallySynchronizedChecker;
     };
 
     /**

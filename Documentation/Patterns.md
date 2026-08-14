@@ -15,7 +15,7 @@ Each pattern below lists what to grep for, a couple of real examples, and how it
 | [Immutable-shared value](#Immutable-Shared) | rep has no mutating virtuals; plain `shared_ptr` held | `String`, `BLOB`, `VariantValue` |
 | [Provider behind a facade](#Provider-Facade) | facade namespace + `Providers::X::` impl gated by `#if qStroika_HasComponent_X` | `SSL::`, `PKI::`, `SQL::` |
 | [Archetype vs Concrete](#Archetype-Concrete) | abstract container archetype + swappable `Concrete::X_Y` backends | `Sequence<T>` vs `Concrete::Sequence_Array<T>` |
-| [Debug-only race detection](#Debug-Race-Detection) | `Debug::AssertExternallySynchronizedMutex::ReadContext`/`WriteContext` locals | almost every rep method |
+| [Debug-only race detection](#Debug-Race-Detection) | `Debug::AssertExternallySynchronizedChecker::ReadContext`/`WriteContext` locals | almost every rep method |
 | [Real thread-safety wrapper](#Synchronized) | a member of type `Synchronized<T>`, accessed via `.cget()`/`.rwget()` | `ConnectionManager`, `Thread::Ptr`'s rep |
 | [Compile-time contracts](#Compile-Time-Contracts) | `static_assert (some_concept<T>)` right after a class/template | Iterator category conformance |
 
@@ -111,13 +111,13 @@ s = Concrete::SortedSet_SkipList<int>{s};  // same archetype, different backend,
 
 Look for a `Concrete::` subnamespace with several `X_Array`, `X_LinkedList`, `X_stdvector`-style classes all implementing the same archetype's `_IRep` (e.g. `Concrete::Collection_Array<T>` implementing `Collection<T>::_IRep`). The default backend is chosen by a `Factory` at construction time, not hardcoded into the archetype.
 
-## Debug-only race detection: `Debug::AssertExternallySynchronizedMutex` {#Debug-Race-Detection}
+## Debug-only race detection: `Debug::AssertExternallySynchronizedChecker` {#Debug-Race-Detection}
 
-Not a real mutex — a zero-cost-in-release, assertion-based misuse detector, used pervasively inside rep methods:
+A zero-cost-in-release, assertion-based misuse detector, used pervasively inside rep methods:
 
 ```c++
 virtual void Add (...) override {
-    Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+    Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
     ...
 }
 ```
@@ -133,7 +133,7 @@ auto lockedConfigData = fConfig_.rwget ();   // lock held for this object's life
 lockedConfigData->SomeValueChanged = 1;
 ```
 
-Used for things like `ConnectionManager`'s active-connections list, or a `Thread::Ptr` rep's saved exception. If a class needs to be safe to call from multiple threads without the caller doing external locking, look for a `Synchronized<T>` member — that's the real synchronization; `AssertExternallySynchronizedMutex` above is documentation-and-detection, not enforcement.
+Used for things like `ConnectionManager`'s active-connections list, or a `Thread::Ptr` rep's saved exception. If a class needs to be safe to call from multiple threads without the caller doing external locking, look for a `Synchronized<T>` member — that's the real synchronization; `AssertExternallySynchronizedChecker` above is documentation-and-detection, not enforcement.
 
 ## Compile-time contracts via concepts + `static_assert` {#Compile-Time-Contracts}
 

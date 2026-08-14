@@ -29,7 +29,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
@@ -881,7 +881,7 @@ namespace {
         }
         nonvirtual Info _InternalCapture ()
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
             Debug::TraceContextBumper                       ctx{"Instruments::Filesystem _InternalCapture"};
 #if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
             Info result = inherited::_InternalCapture ();

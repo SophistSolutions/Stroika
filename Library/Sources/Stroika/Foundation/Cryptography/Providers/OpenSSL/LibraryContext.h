@@ -18,7 +18,7 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/Association.h"
 #include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/CipherAlgorithm.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/DigestAlgorithm.h"
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE LibraryInit_ fLibraryInit_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
 #if OPENSSL_VERSION_MAJOR >= 3
         Containers::Association<String, ::OSSL_PROVIDER*> fLoadedProviders_; // providers maybe listed multiple times here, if loaded multiple times by callers

@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/Statement.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 
 /**
  *  \file
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         Statement                                    fAddNew_Statement_;
         Statement                                    fUpdate_Statement_;
         Statement                                    fDeleteByID_Statement_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
     private:
         template <typename FUN>

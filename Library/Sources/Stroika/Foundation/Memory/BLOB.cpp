@@ -21,7 +21,7 @@ using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
-using Debug::AssertExternallySynchronizedMutex;
+using Debug::AssertExternallySynchronizedChecker;
 using Memory::BLOB;
 
 #if qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
@@ -210,7 +210,7 @@ namespace {
         }
         struct REP : InputStream::IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<REP> {
             bool                                                                           fIsOpenForRead_{true};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
             BLOB fSavedBLOB_; // save ref to BLOB in case it goes out of scope before stream
             REP (const BLOB& b)
                 : fSavedBLOB_{b}
@@ -235,19 +235,19 @@ namespace {
             virtual optional<size_t> AvailableToRead () override
             {
                 Require (IsOpenRead ());
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 return fEnd - fCur;
             }
             virtual optional<SeekOffsetType> RemainingLength () override
             {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 return fEnd - fCur;
             }
             virtual optional<span<byte>> Read (span<byte> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 size_t                                          bytesToRead = intoBuffer.size ();
                 size_t                                          bytesLeft   = fEnd - fCur;
                 bytesToRead                                                 = min (bytesLeft, bytesToRead);
@@ -258,13 +258,13 @@ namespace {
             virtual SeekOffsetType GetReadOffset () const override
             {
                 Require (IsOpenRead ());
-                AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 return fCur - fStart;
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
                 static const auto                               kException_ = range_error{"seek"};
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 switch (whence) {
                     case eFromStart: {
@@ -311,7 +311,7 @@ namespace {
 template <>
 Streams::InputStream::Ptr<byte> BLOB::As () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return BLOBBINSTREAM_{*this};
 }
 
@@ -319,7 +319,7 @@ template <>
 Characters::String Stroika::Foundation::Memory::BLOB::AsHex (size_t maxBytesToShow) const
 {
     // @todo Could be more efficient
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                  sb;
     size_t                                         cnt{};
     for (byte b : *this) {
@@ -348,7 +348,7 @@ Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 (const Cryptograp
 
 BLOB BLOB::Repeat (unsigned int count) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     if (count == 0) {
         return BLOB{};
     }
@@ -375,13 +375,13 @@ BLOB BLOB::Slice (size_t startAt, size_t endAt) const
 {
     Require (startAt <= endAt);
     Require (endAt < size ());
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return BLOB{begin () + startAt, begin () + endAt};
 }
 
 String BLOB::ToString (size_t maxBytesToShow) const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     bool allBytesAscii = [this] () { return Character::IsASCII (Memory::SpanBytesCast<span<const char>> (this->As<span<const byte>> ())); }();
     auto quoteAscii4Display = [] (const String& s) {
         return s.ReplaceAll ("\n"sv, "\\n"sv).ReplaceAll ("\r"sv, "\\r"sv); // todo more such

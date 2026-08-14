@@ -4,7 +4,7 @@ This folder contains all the Stroika Library [Foundation](../)::Debug source cod
 
 ## Modules
 
-- [AssertExternallySynchronizedMutex.h](AssertExternallySynchronizedMutex.h)
+- [AssertExternallySynchronizedChecker.h](AssertExternallySynchronizedChecker.h)
 - [Assertions.h](Assertions.h) - **very important**, **Assert()**, **Ensure()**, **Require** etc
 - [BackTrace.h](BackTrace.h)
 - [CompileTimeFlagChecker.h](CompileTimeFlagChecker.h)

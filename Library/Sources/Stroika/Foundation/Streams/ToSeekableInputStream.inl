@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/InputStreamDelegationHelper.h"
 
@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
     template <typename ELEMENT_TYPE>
     auto New (const Ptr<ELEMENT_TYPE>& in) -> Ptr<ELEMENT_TYPE>
     {
-        using Debug::AssertExternallySynchronizedMutex;
+        using Debug::AssertExternallySynchronizedChecker;
         struct seekableWrapper final : InputStreamDelegationHelper<ELEMENT_TYPE> {
 
             using inherited = InputStreamDelegationHelper<ELEMENT_TYPE>;
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 /*
                  *  See if the request can be serviced from the cached data. If so, do so.
                  */
@@ -75,13 +75,13 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
-                AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 return fOffset_;
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
                 static const auto                               kException_ = range_error{"seek"};
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 switch (whence) {
                     case Whence::eFromStart: {
                         if (offset < 0) [[unlikely]] {
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
             Memory::InlineBuffer<ELEMENT_TYPE>           fCachedData_;
             SeekOffsetType                               fOffset_{0}; // this rep's seek offset (as oppsed to that in fRealIn)
             SeekOffsetType                               fCacheBaseOffset_{0};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
         if (in.IsSeekable ()) {
             return in;

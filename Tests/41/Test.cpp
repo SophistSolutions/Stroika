@@ -436,7 +436,7 @@ namespace {
                 struct A {
                     int x;
                 };
-                struct APrime : Debug::AssertExternallySynchronizedMutex {
+                struct APrime : Debug::AssertExternallySynchronizedChecker {
                     int x;
                 };
 #if !qStroika_Foundation_Debug_AssertionsChecked

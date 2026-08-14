@@ -56,20 +56,20 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     void ArrayBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::shrink_to_fit ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_.shrink_to_fit ();
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fChangeCounts_.PerformedChange ();
     }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     size_t ArrayBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::capacity () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
         return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.capacity ();
     }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     void ArrayBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::reserve (size_t slotsAlloced)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_.reserve (slotsAlloced);
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fChangeCounts_.PerformedChange ();
     }

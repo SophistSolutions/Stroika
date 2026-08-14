@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Containers/Common.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 
 /**
  *  \file
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename STL_CONTAINER_OF_T>
-    class STLContainerWrapper : public STL_CONTAINER_OF_T, public Debug::AssertExternallySynchronizedMutex {
+    class STLContainerWrapper : public STL_CONTAINER_OF_T, public Debug::AssertExternallySynchronizedChecker {
     private:
         using inherited = STL_CONTAINER_OF_T;
 

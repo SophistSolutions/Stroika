@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ContentEncoding.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Cookie.h"
@@ -143,12 +143,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual Headers& operator= (Headers&& rhs) noexcept;
         nonvirtual Headers& operator= (const Headers& rhs);
 
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
     public:
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
          */
-        void SetAssertExternallySynchronizedMutexContext (const shared_ptr<Debug::AssertExternallySynchronizedMutex::SharedContext>& sharedContext);
+        void SetAssertExternallySynchronizedCheckerContext (const shared_ptr<Debug::AssertExternallySynchronizedChecker::SharedContext>& sharedContext);
 #endif
 
     public:
@@ -489,7 +489,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<CookieList>        fSetCookieList_; // store optional cuz often missing, and faster init
         optional<TransferEncodings> fTransferEncoding_; // must access through property to access extended property handlers (except root getter/setter)
         optional<Containers::Set<String>>            fVary_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
     template <>
     Association<String, String> Headers::As () const;

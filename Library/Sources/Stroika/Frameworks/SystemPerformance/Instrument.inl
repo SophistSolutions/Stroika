@@ -20,7 +20,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     }
     inline MeasurementSet Instrument::Capture ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fCaptureRep_);
         return fCaptureRep_->Capture ();
     }
@@ -47,7 +47,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     template <typename T>
     inline T Instrument::MeasurementAs (const Measurement& m) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext readLock{fThisAssertExternallySynchronized_};
         Require (fType2MeasurementTypes_.ContainsKey (typeid (decay_t<T>)));
         Require (m.fType == fType2MeasurementTypes_[typeid (decay_t<T>)]);
         return fObjectVariantMapper_.ToObject<T> (m.fValue);
@@ -55,7 +55,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     template <typename T>
     optional<T> Instrument::MeasurementAs (const MeasurementSet& m) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext readLock{fThisAssertExternallySynchronized_};
         Require (fType2MeasurementTypes_.ContainsKey (typeid (decay_t<T>)));
         MeasurementType mt = fType2MeasurementTypes_[typeid (decay_t<T>)];
         if (auto i = m.fMeasurements.Find ([=] (const Measurement& m) { return m.fType == mt; })) {
@@ -65,7 +65,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     }
     inline bool Instrument::operator== (const Instrument& rhs) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext readLock{fThisAssertExternallySynchronized_};
         return fInstrumentName_ == rhs.fInstrumentName_;
     }
 

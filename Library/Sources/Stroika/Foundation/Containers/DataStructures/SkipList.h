@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Containers/Common.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 /**
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  \original Author: Sterling Wight
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS = Support::SkipList::DefaultTraits<KEY_TYPE>>
-    class SkipList : public Debug::AssertExternallySynchronizedMutex {
+    class SkipList : public Debug::AssertExternallySynchronizedChecker {
     private:
         struct Link_;
 

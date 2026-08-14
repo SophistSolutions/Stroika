@@ -17,7 +17,7 @@
 
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
 /**
@@ -27,8 +27,8 @@
  *
  *  TODO:
  *
- *      @todo   Cleanup use of  AssertExternallySynchronizedMutex once we have RECURSIVE
- *              flag. (?? note AssertExternallySynchronizedMutex is recursive)
+ *      @todo   Cleanup use of  AssertExternallySynchronizedChecker once we have RECURSIVE
+ *              flag. (?? note AssertExternallySynchronizedChecker is recursive)
  *
  *      @todo   Support remove of counters and instances.
  *
@@ -77,7 +77,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
      *
      * Use the Windows 'Performance Monitor' tool and click PerformanceMonitor and "Add Counters" to see more/list
     */
-    class WMICollector : private Foundation::Debug::AssertExternallySynchronizedMutex {
+    class WMICollector : private Foundation::Debug::AssertExternallySynchronizedChecker {
     public:
         /*
          *      Special, and cannot be combined with other instances

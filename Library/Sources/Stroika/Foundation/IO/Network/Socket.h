@@ -14,7 +14,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #if qStroika_Foundation_Common_Platform_Windows
@@ -382,7 +382,7 @@ namespace Stroika::Foundation::IO::Network {
             nonvirtual const _IRep& _cref () const;
 
         protected:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized;
 
         private:
             shared_ptr<_IRep> fRep_;

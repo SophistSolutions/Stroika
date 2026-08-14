@@ -24,48 +24,48 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline uint8_t ConnectionlessSocket::Ptr::GetMulticastTTL () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         return _cref ().GetMulticastTTL ();
     }
     inline void ConnectionlessSocket::Ptr::SetMulticastTTL (uint8_t ttl) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().SetMulticastTTL (ttl);
     }
     inline bool ConnectionlessSocket::Ptr::GetMulticastLoopMode () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         return _cref ().GetMulticastLoopMode ();
     }
     inline void ConnectionlessSocket::Ptr::SetMulticastLoopMode (bool loopMode) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().SetMulticastLoopMode (loopMode);
     }
     inline void ConnectionlessSocket::Ptr::JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().JoinMulticastGroup (iaddr, onInterface);
     }
     inline void ConnectionlessSocket::Ptr::LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().LeaveMulticastGroup (iaddr, onInterface);
     }
     inline void ConnectionlessSocket::Ptr::SendTo (span<const byte> data, const SocketAddress& sockAddr) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().SendTo (data.data (), data.data () + data.size (), sockAddr);
     }
     inline span<byte> ConnectionlessSocket::Ptr::ReceiveFrom (span<byte> into, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         size_t r = _ref ().ReceiveFrom (into.data (), into.data () + into.size (), flag, fromAddress, timeout);
         return into.subspan (0, r);
     }
     inline shared_ptr<ConnectionlessSocket::_IRep> ConnectionlessSocket::Ptr::_GetSharedRep () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         return Debug::UncheckedDynamicPointerCast<ConnectionlessSocket::_IRep> (inherited::_GetSharedRep ());
     }
     inline ConnectionlessSocket::_IRep& ConnectionlessSocket::Ptr::_ref () const

@@ -172,7 +172,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedChecker.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
@@ -573,6 +573,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedChecker.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.h" />
@@ -1087,7 +1088,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedChecker.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Cast.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Makefile" />

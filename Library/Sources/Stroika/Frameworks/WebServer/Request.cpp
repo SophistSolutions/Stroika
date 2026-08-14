@@ -32,7 +32,7 @@ using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
-using Debug::AssertExternallySynchronizedMutex;
+using Debug::AssertExternallySynchronizedChecker;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -48,7 +48,7 @@ static_assert (movable<Request>);
 Request::Request (const Streams::InputStream::Ptr<byte>& inStream)
     : keepAliveRequested{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::keepAliveRequested);
-        AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
         using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
         if (thisObj->httpVersion == IO::Network::HTTP::Versions::kOnePointZero) {
             return thisObj->headers ().connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
@@ -67,7 +67,7 @@ Memory::BLOB Request::GetBody ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Request::GetBody"};
 #endif
-    AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{_fThisAssertExternallySynchronized};
     if (not fBody_.has_value ()) {
         fBody_ = GetBodyStream ().ReadAll ();
     }
@@ -93,7 +93,7 @@ Streams::InputStream::Ptr<byte> Request::GetBodyStream ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Request::GetBodyStream"};
 #endif
-    AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
+    AssertExternallySynchronizedChecker::WriteContext declareContext{_fThisAssertExternallySynchronized};
     if (fBodyInputStream_ == nullptr) {
         /*
          *  According to https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html:
@@ -125,7 +125,7 @@ Streams::InputStream::Ptr<byte> Request::GetBodyStream ()
 
 String Request::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{_fThisAssertExternallySynchronized};
+    AssertExternallySynchronizedChecker::ReadContext declareContext{_fThisAssertExternallySynchronized};
     StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trialing '{'
     // @todo add stuff about body
     sb << "}"sv;

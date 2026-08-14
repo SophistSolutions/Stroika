@@ -163,19 +163,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline size_t SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::size () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fLength_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::empty () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fLength_ == 0;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::begin () const -> ForwardIterator
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return ForwardIterator{this};
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const SkipList* movedFrom) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -220,7 +220,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindLink_ (const KEYISH_T& key) const -> Link_*
     {
         using Common::ToInt;
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         Assert (fHead_.size () > 0);
         LinkVector_ const* startV = &fHead_;
         for (size_t linkHeight = fHead_.size (); linkHeight > 0; --linkHeight) {
@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <Common::IAnyOf<KEY_TYPE, typename TRAITS::AlternateFindType> KEYISH_T>
     auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::FindFirstLink_ (const KEYISH_T& key) const -> Link_*
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         Assert (fHead_.size () > 0);
         LinkVector_ const* startV    = &fHead_;
         Link_*             candidate = nullptr;
@@ -329,7 +329,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::contains (ArgByValueType<key_type> key) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return FindLink_ (key) != nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
@@ -340,7 +340,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         requires (same_as<mapped_type, void>)
 #endif
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
@@ -399,7 +399,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         requires (not same_as<mapped_type, void>)
 #endif
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
@@ -458,7 +458,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::AddLink_ (Link_* link, const LinkVector_& links)
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         RequireNotNull (link);
         size_t newLinkHeight = DetermineLinkHeight_ ();
         link->fNext.resize (newLinkHeight);
@@ -516,7 +516,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     inline bool SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveIf (ArgByValueType<key_type> key)
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         if constexpr (TRAITS::kCostlyInvariants) {
             Invariant ();
         }
@@ -535,7 +535,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveLink_ (Link_* n, const LinkVector_& links)
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         for (auto it = links.begin (); it != links.end (); ++it) {
             size_t  index     = it - links.begin ();
             Link_** patchLink = (*it == nullptr) ? &fHead_[index] : &(*it)->fNext[index];
@@ -588,7 +588,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::clear ()
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Link_*                                          link = (fHead_.size () == 0) ? nullptr : fHead_[0];
         while (link != nullptr) {
             Link_* nextLink = link->fNext[0];
@@ -700,7 +700,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <qCompilerAndStdLib_RequiresNotMatchXXXDefined_1_BWA (invocable<typename SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::value_type>) FUNCTION>
     inline void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         std::for_each (begin (), end (), forward<FUNCTION> (doToElement));
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, Support::SkipList::IValidTraits<KEY_TYPE> TRAITS>

@@ -9,7 +9,7 @@
 #include <memory>
 #include <optional>
 
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -34,7 +34,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
      *  Optional utility used internally in building Instruments - no need to use it.
      */
     template <typename OPTIONS, derived_from<Context> CONTEXT>
-    struct InstrumentRep_COMMON : Instrument::IRep, Foundation::Debug::AssertExternallySynchronizedMutex {
+    struct InstrumentRep_COMMON : Instrument::IRep, Foundation::Debug::AssertExternallySynchronizedChecker {
     protected:
         using _Context = CONTEXT;
 

@@ -374,7 +374,7 @@ namespace {
 
     template <InternallySynchronized SYNC_STYLE>
     using MyMaybeLock_ =
-        conditional_t<SYNC_STYLE == InternallySynchronized::eNotKnownInternallySynchronized, Debug::AssertExternallySynchronizedMutex, recursive_mutex>;
+        conditional_t<SYNC_STYLE == InternallySynchronized::eNotKnownInternallySynchronized, Debug::AssertExternallySynchronizedChecker, recursive_mutex>;
     static_assert (Common::StdCompat::BasicLockable<MyMaybeLock_<InternallySynchronized::eNotKnownInternallySynchronized>>);
     static_assert (Common::StdCompat::BasicLockable<MyMaybeLock_<InternallySynchronized::eInternallySynchronized>>);
 
@@ -1021,9 +1021,9 @@ Document::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
                       thisObj->operator->()->SetJournalMode (journalMode);
                   }}
 {
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
     if (src != nullptr) {
-        _fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->fAssertExternallySynchronizedMutex.GetSharedContext ());
+        _fAssertExternallySynchronizedChecker.SetAssertExternallySynchronizedCheckerContext (src->fAssertExternallySynchronizedChecker.GetSharedContext ());
     }
 #endif
 }

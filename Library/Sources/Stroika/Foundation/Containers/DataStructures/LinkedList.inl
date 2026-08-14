@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     auto LinkedList<T>::operator= (const LinkedList& rhs) -> LinkedList&
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Invariant ();
         if (this != &rhs) {
             clear ();
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void LinkedList<T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList* movedFrom) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
         // only way
         //
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto LinkedList<T>::begin () const -> ForwardIterator
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return ForwardIterator{this};
     }
     template <typename T>
@@ -180,25 +180,25 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool LinkedList<T>::empty () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fHead_ == nullptr;
     }
     template <typename T>
     inline size_t LinkedList<T>::size () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fLength_;
     }
     template <typename T>
     inline optional<T> LinkedList<T>::GetFirst () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return fHead_ == nullptr ? optional<T>{} : fHead_->fItem;
     }
     template <typename T>
     inline void LinkedList<T>::push_front (ArgByValueType<T> item)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Invariant ();
         fHead_ = new Link_{item, fHead_};
         ++fLength_;
@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void LinkedList<T>::push_back (ArgByValueType<T> item)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         if (this->fHead_ == nullptr) [[unlikely]] {
             push_front (item);
         }
@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <Memory::ISpanOfT<T> SPAN_T>
     void LinkedList<T>::push_back (const SPAN_T& copyFrom)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Link_*                                                 last = this->fHead_; // Compute last once, and re-use for each item appended
         if (last != nullptr) {
             for (; last->fNext != nullptr; last = last->fNext)
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void LinkedList<T>::RemoveFirst ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (not empty ());
         AssertNotNull (fHead_);
         Invariant ();
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T* LinkedList<T>::PeekAt (const ForwardIterator& i)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void LinkedList<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (not i.AtEnd ());
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
@@ -296,7 +296,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> item)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
@@ -329,7 +329,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> item, ForwardIterator* newLinkCreatedAt)
     {
         RequireNotNull (newLinkCreatedAt);
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
@@ -363,7 +363,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void LinkedList<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (not i.AtEnd ());
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
@@ -385,7 +385,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void LinkedList<T>::Remove (const ForwardIterator& i)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (i.fData_ == this); // assure iterator not stale
 #endif
@@ -428,7 +428,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename EQUALS_COMPARER>
     void LinkedList<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Invariant ();
         /*
          *  Base class impl is fine, but doesn't do patching, and doesn't
@@ -449,7 +449,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <invocable<T> FUNCTION>
     inline void LinkedList<T>::Apply (FUNCTION&& doToElement) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
             doToElement (i->fItem);
         }
@@ -458,7 +458,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <predicate<T> FUNCTION>
     inline auto LinkedList<T>::Find (FUNCTION&& firstThat) const -> UnderlyingIteratorRep
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
             if (firstThat (i->fItem)) {
                 return i;
@@ -470,7 +470,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename EQUALS_COMPARER>
     T* LinkedList<T>::Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this}; // lock not shared cuz return mutable ptr
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this}; // lock not shared cuz return mutable ptr
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
             if (forward<EQUALS_COMPARER> (equalsComparer) (i->fItem, item)) {
                 return &i->fItem;
@@ -482,7 +482,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename EQUALS_COMPARER>
     const T* LinkedList<T>::Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
             if (forward<EQUALS_COMPARER> (equalsComparer) (i->fItem, item)) {
                 return &i->fItem;
@@ -493,7 +493,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void LinkedList<T>::clear ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Invariant ();
         for (Link_* i = fHead_; i != nullptr;) {
             Link_* deleteMe = i;
@@ -508,7 +508,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     T LinkedList<T>::GetAt (size_t i) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         Require (i >= 0);
         Require (i < size ());
         const Link_* cur = fHead_;
@@ -521,7 +521,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void LinkedList<T>::SetAt (T item, size_t i)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         Require (i >= 0);
         Require (i < size ());
         Link_* cur = fHead_;
@@ -536,7 +536,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::Invariant_ () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_LinkedList_IncludeSlowDebugChecks_
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
 #endif
         /*
          * Check we are properly linked together.

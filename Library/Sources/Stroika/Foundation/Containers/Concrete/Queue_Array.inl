@@ -25,12 +25,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         // Safe despite this being a queue: RemoveHead () shifts (GetAt (0) then Remove (0u)) rather than
@@ -38,28 +38,28 @@ namespace Stroika::Foundation::Containers::Concrete {
         // rewrite of this rep would have to drop this override (or return only the pre-wrap run).
         virtual optional<span<const value_type>> PeekContiguousStorage () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return span<const value_type>{fData_.data (), fData_.size ()};
         }
         virtual size_t size () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.size ();
         }
         virtual bool empty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement, Execution::SequencePolicy seq) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Apply (doToElement, seq);
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
                                            [[maybe_unused]] Execution::SequencePolicy              seq) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             if (auto i = fData_.Find (that)) {
                 return Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, i)};
             }
@@ -74,13 +74,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void AddTail (ArgByValueType<value_type> item) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             fData_.push_back (item);
             fChangeCounts_.PerformedChange ();
         }
         virtual value_type RemoveHead () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             T                                                      item = fData_.GetAt (0);
             fData_.Remove (0u);
             fChangeCounts_.PerformedChange ();
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual optional<value_type> RemoveHeadIf () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             if (fData_.empty ()) {
                 return optional<value_type>{};
             }
@@ -99,12 +99,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual value_type Head () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.GetAt (0);
         }
         virtual optional<value_type> HeadIf () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             if (fData_.empty ()) {
                 return optional<value_type>{};
             }

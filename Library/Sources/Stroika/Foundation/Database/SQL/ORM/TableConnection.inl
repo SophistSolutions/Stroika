@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     optional<T> TableConnection<T, TRAITS>::Get (const VariantValue& id)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fGetByID_Statement_.Reset ();
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     Sequence<T> TableConnection<T, TRAITS>::GetAll ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         Sequence<Statement::Row> rows;
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     Sequence<T> TableConnection<T, TRAITS>::GetAll (const function<optional<T> (const Statement::Row&, const exception_ptr&)>& onItemException)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         Sequence<Statement::Row> rows;
@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddNew (const T& v)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         using DataExchange::VariantValue;
         fAddNew_Statement_.Reset ();
         fAddNew_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::Update (const T& v)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fUpdate_Statement_.Reset ();
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::Delete (const VariantValue& id)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fDeleteByID_Statement_.Reset ();
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     inline void TableConnection<T, TRAITS>::Delete (const T& v)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         using DataExchange::VariantValue;
         Mapping<String, VariantValue> objFields = fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ();
         VariantValue idField = *objFields.Lookup (Memory::ValueOf (fTableSchema_.GetIDField ()).GetVariantValueFieldName ());

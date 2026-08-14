@@ -62,45 +62,45 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     void HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::ReHash (size_t newBucketCount)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_.ReHash (newBucketCount);
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fChangeCounts_.PerformedChange ();
     }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     void HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::ReHashIfNeeded ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_.ReHashIfNeeded ();
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fChangeCounts_.PerformedChange ();
     }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     size_t HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::bucket_count () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
         return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.bucket_count ();
     }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     size_t HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::bucket_size (size_t bucketIdx) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
         return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.bucket_size (bucketIdx);
     }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     float HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::load_factor () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
         return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.load_factor ();
     }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     float HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::max_load_factor () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
         return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.max_load_factor ();
     }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     void HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::max_load_factor (float mlf)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_.max_load_factor (mlf);
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fChangeCounts_.PerformedChange ();
     }

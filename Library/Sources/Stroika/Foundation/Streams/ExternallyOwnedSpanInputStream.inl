@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
@@ -46,14 +46,14 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
             }
             virtual optional<size_t> AvailableToRead () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 Ensure (fEnd_ >= fCursor_);
                 return static_cast<size_t> (fEnd_ - fCursor_);
             }
             virtual optional<SeekOffsetType> RemainingLength () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 Ensure (fEnd_ >= fCursor_);
                 return static_cast<size_t> (fEnd_ - fCursor_);
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
                 Require (not intoBuffer.empty ());
                 Require (IsOpenRead ());
                 size_t                                                 nRequested = intoBuffer.size ();
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
                 size_t nAvail  = fEnd_ - fCursor_;
                 size_t nCopied = min (nAvail, nRequested);
@@ -73,13 +73,13 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 return fCursor_ - fStart_;
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 static const auto kRangeException_ = range_error{"seek"};
                 switch (whence) {
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
             const ELEMENT_TYPE*                          fStart_;
             const ELEMENT_TYPE*                          fEnd_;
             const ELEMENT_TYPE*                          fCursor_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
 

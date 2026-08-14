@@ -110,7 +110,7 @@ namespace {
     public:
         nonvirtual Characters::String ToString (ToStringFormat format) const
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             StringBuilder                                         sb;
             sb << "{"sv;
             sb << "Offset: "sv << fOffset_;
@@ -151,7 +151,7 @@ namespace {
         }
         virtual void CloseRead () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             if (fSource_ != nullptr) {
                 fSource_.Close ();
             }
@@ -179,7 +179,7 @@ namespace {
         {
             Require (not intoBuffer.empty ());
             Require (IsOpenRead ());
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Assert (fBufferFilledUpValidBytes_ >= fOffset_); // limitation/feature of current implemetnation
             if (fBufferFilledUpValidBytes_ == fOffset_) {
                 size_t roomLeftInBuf = fAllDataReadBuf_.GetSize () - fBufferFilledUpValidBytes_;
@@ -221,13 +221,13 @@ namespace {
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return fOffset_;
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             static const auto kException_ = range_error{"seek"};
             switch (whence) {
@@ -273,7 +273,7 @@ namespace {
         }
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         InputStream::Ptr<byte>                                                                fSource_;
         Memory::InlineBuffer<byte> fAllDataReadBuf_; // OK cuz typically this will be very small (1k) and not really grow...but it can if we must
         size_t fOffset_;                             // text stream offset

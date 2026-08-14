@@ -747,7 +747,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cache\Statistics.cpp">
       <Filter>Sources\Cache</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedChecker.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IntervalTimer.cpp">
@@ -2088,7 +2088,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdmultiset.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedChecker.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.h">
@@ -3636,7 +3636,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_stdmultiset.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedChecker.inl">
       <Filter>Sources\Debug</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.inl">

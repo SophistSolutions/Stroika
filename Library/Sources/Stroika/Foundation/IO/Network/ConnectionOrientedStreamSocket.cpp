@@ -29,7 +29,7 @@ using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
 using namespace ConnectionOrientedStreamSocket;
 
-using Debug::AssertExternallySynchronizedMutex;
+using Debug::AssertExternallySynchronizedChecker;
 
 namespace {
     struct Rep_ : BackSocketImpl_<ConnectionOrientedStreamSocket::_IRep> {
@@ -52,7 +52,7 @@ namespace {
         }
         virtual void Close () override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
             if (fSD_ != kINVALID_NATIVE_HANDLE_ and fAutomaticTCPDisconnectOnClose_) {
                 Shutdown (Socket::ShutdownTarget::eWrites);
                 Time::TimePointSeconds    timeOutAt = Time::GetTickCount () + *fAutomaticTCPDisconnectOnClose_;
@@ -83,7 +83,7 @@ namespace {
         }
         nonvirtual void Connect_Sync_ (const SocketAddress& sockAddr) const
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             sockaddr_storage                               useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qStroika_Foundation_Common_Platform_POSIX
             Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
@@ -95,7 +95,7 @@ namespace {
         }
         nonvirtual void Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, const Time::Duration& timeout) const
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             sockaddr_storage                               useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qStroika_Foundation_Common_Platform_POSIX
             // http://developerweb.net/viewtopic.php?id=3196.
@@ -194,7 +194,7 @@ namespace {
         }
         virtual span<byte> Read (span<byte> into) const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
 
 #if qStroika_Foundation_Debug_AssertionsChecked
             Assert (fCurrentPendingReadsCount++ == 0);
@@ -223,7 +223,7 @@ namespace {
         }
         virtual optional<span<byte>> ReadNonBlocking (span<byte> into) const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             if (AvailableToRead ().has_value ()) {
                 return Read (into);
             }
@@ -231,7 +231,7 @@ namespace {
         }
         virtual optional<size_t> AvailableToRead () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
 #if qStroika_Foundation_Debug_AssertionsChecked
             Assert (fCurrentPendingReadsCount++ == 0);
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
@@ -269,7 +269,7 @@ namespace {
         }
         virtual void Write (span<const byte> data) const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{
                 Stroika_Foundation_Debug_OptionalizeTraceArgs ("IO::Network::Socket...rep...::Write", "lwn={}"_f, data.size ())};
@@ -311,7 +311,7 @@ namespace {
         }
         virtual optional<IO::Network::SocketAddress> GetPeerAddress () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             struct sockaddr_storage                        radr;
             socklen_t                                      len = sizeof (radr);
             if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
@@ -322,17 +322,17 @@ namespace {
         }
         virtual optional<Time::DurationSeconds> GetAutomaticTCPDisconnectOnClose () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             return fAutomaticTCPDisconnectOnClose_;
         }
         virtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSeconds>& waitFor) override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             fAutomaticTCPDisconnectOnClose_ = waitFor;
         }
         virtual KeepAliveOptions GetKeepAlives () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             KeepAliveOptions                               result;
             result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
 #if qStroika_Foundation_Common_Platform_Linux
@@ -348,7 +348,7 @@ namespace {
         }
         virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             setsockopt<int> (SOL_SOCKET, SO_KEEPALIVE, keepAliveOptions.fEnabled);
 #if qStroika_Foundation_Common_Platform_Linux
             // Only available if linux >= 2.4
@@ -378,12 +378,12 @@ namespace {
         }
         virtual bool GetTCPNoDelay () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             return static_cast<bool> (getsockopt<int> (IPPROTO_TCP, TCP_NODELAY));
         }
         virtual void SetTCPNoDelay (bool noDelay) override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             setsockopt<int> (IPPROTO_TCP, TCP_NODELAY, noDelay);
         }
         optional<Time::DurationSeconds> fAutomaticTCPDisconnectOnClose_;

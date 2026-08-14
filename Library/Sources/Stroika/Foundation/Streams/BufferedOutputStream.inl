@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #include "InternallySynchronizedOutputStream.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
@@ -29,12 +29,12 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
         public:
             virtual size_t GetBufferSize () const override
             {
-                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 return fUnwrittenAppends_.capacity ();
             }
             virtual void SetBufferSize (size_t bufSize) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 bufSize = Math::AtLeast (bufSize, INLINE_BUF_SIZE);
                 if (bufSize < fUnwrittenAppends_.size ()) {
                     Flush_ (); // this logic only write because stream not seekable, and buffer is for unwritten appends
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
             nonvirtual void Abort ()
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 fAborted_ = true; // for debug sake track this
                 fUnwrittenAppends_.clear ();
             }
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             }
             virtual void Flush () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 Flush_ ();
             }
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                 Require (not elts.empty ()); // for OutputStream<byte> - this function requires non-empty write
                 Require (not fAborted_);
                 Require (IsOpenWrite ());
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 /*
                  * Minimize the number of writes at the possible cost of extra copying.
                  *
@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE> fUnwrittenAppends_{};
             typename OutputStream::Ptr<ELEMENT_TYPE>            fRealOut_{};
             bool                                                fAborted_{false};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
 

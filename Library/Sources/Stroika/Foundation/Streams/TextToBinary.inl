@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
             }
             virtual void CloseWrite () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 if (IsOpenWrite ()) {
                     _fSource.Close ();
                 }
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
             }
             virtual void Write (span<const Character> elts) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 Memory::StackBuffer<byte> cvtBuf{elts.size () * 5}; // excessive but start with that
                 auto                      srcSpan = elts;
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
             }
             virtual void Flush () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 _fSource.Flush ();
             }
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
             OutputStream::Ptr<byte>                      _fSource;
             Characters::CodeCvt<Character>               _fConverter;
             std::mbstate_t                               _fMBState_{};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
 
         template <Characters ::IUNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
             }
             virtual void CloseWrite () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 if (IsOpenWrite ()) {
                     _fSource.Close ();
                 }
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
             }
             virtual void Write (span<const Character> elts) override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 auto                               srcSpan = elts;
                 Memory::StackBuffer<OUTPUT_CHAR_T> cvtBuf{_fConverter.ComputeTargetBufferSize<OUTPUT_CHAR_T> (srcSpan)};
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
             }
             virtual void Flush () override
             {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 _fSource.Flush ();
             }
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
         protected:
             OutputStream::Ptr<byte>                      _fSource;
             Characters::UTFConvert                       _fConverter;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
 

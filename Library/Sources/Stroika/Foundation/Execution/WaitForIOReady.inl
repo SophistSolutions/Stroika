@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline auto WaitForIOReady<T, TRAITS>::GetDescriptors () const -> Traversal::Iterable<pair<T, TypeOfMonitorSet>>
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return fPollData_;
     }
     template <typename T, typename TRAITS>
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     auto WaitForIOReady<T, TRAITS>::WaitUntil (Time::TimePointSeconds timeoutAt) -> Containers::Set<T>
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Containers::Set<T>                                     result = WaitQuietlyUntil (timeoutAt);
         if (result.empty ()) {
             Execution::ThrowTimeoutExceptionAfter (timeoutAt); // maybe returning 0 entries without timeout, because of fPollable2Wakeup_
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     auto WaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::TimePointSeconds timeoutAt) -> Containers::Set<T>
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
         // Fill two buffers, one with the data needed to pass to _WaitQuietlyUntil, and the other with
         // corresponding 'T' smart wrapper objects, which we map back to and return as our API result (in same order)
         auto fillBuffer = [this] (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer) -> void {

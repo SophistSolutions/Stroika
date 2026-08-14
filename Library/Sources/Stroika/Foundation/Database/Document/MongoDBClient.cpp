@@ -388,7 +388,7 @@ namespace {
 namespace {
     template <InternallySynchronized SYNC_STYLE>
     using MyMaybeLock_ =
-        conditional_t<SYNC_STYLE == InternallySynchronized::eNotKnownInternallySynchronized, Debug::AssertExternallySynchronizedMutex, recursive_mutex>;
+        conditional_t<SYNC_STYLE == InternallySynchronized::eNotKnownInternallySynchronized, Debug::AssertExternallySynchronizedChecker, recursive_mutex>;
     static_assert (Common::StdCompat::BasicLockable<MyMaybeLock_<InternallySynchronized::eNotKnownInternallySynchronized>>);
     static_assert (Common::StdCompat::BasicLockable<MyMaybeLock_<InternallySynchronized::eInternallySynchronized>>);
 }

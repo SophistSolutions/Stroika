@@ -7,7 +7,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 
 #include "Stroika/Frameworks/WebServer/Request.h"
@@ -46,14 +46,14 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual Message& operator= (const Message&) = delete;
         nonvirtual Message& operator= (Message&& rhs) noexcept;
 
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
     public:
         /**
          *  Allow users of the Connection object to have it share a 'assure externally synchronized' context.
          *
-         *  \see AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext
+         *  \see AssertExternallySynchronizedChecker::SetAssertExternallySynchronizedCheckerContext
          */
-        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<Debug::AssertExternallySynchronizedMutex::SharedContext>& sharedContext);
+        nonvirtual void SetAssertExternallySynchronizedCheckerContext (const shared_ptr<Debug::AssertExternallySynchronizedChecker::SharedContext>& sharedContext);
 #endif
 
     public:
@@ -102,7 +102,7 @@ namespace Stroika::Frameworks::WebServer {
         optional<IO::Network::SocketAddress>         fPeerAddress_;
         Request                                      fRequest_;
         Response                                     fResponse_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 
 }

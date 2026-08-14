@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::contains (Common::ArgByValueType<value_type> item) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return this->find (item) != this->end ();
     }
     template <typename STL_CONTAINER_OF_T>
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                                                                               [[maybe_unused]] POINT_TO_SAME_THING&& pointToSameThingTester) const
         requires (convertible_to<invoke_result_t<POINT_TO_SAME_THING, typename STL_CONTAINER_OF_T::const_iterator, typename STL_CONTAINER_OF_T::const_iterator>, bool>)
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
         // only way
         //
@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <invocable<typename STL_CONTAINER_OF_T::value_type> FUNCTION>
     void STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION&& doToElement) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
             (doToElement) (*i);
         }
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <predicate<typename STL_CONTAINER_OF_T ::value_type> FUNCTION>
     auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION&& firstThat) const -> const_iterator
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
             if (firstThat (*i)) {
                 return i;
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <predicate<typename STL_CONTAINER_OF_T ::value_type> FUNCTION>
     auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION&& firstThat) -> iterator
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
             if (firstThat (*i)) {
                 return i;
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <predicate<typename STL_CONTAINER_OF_T::value_type> PREDICATE>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE&& pred) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
         return find_if (this->begin (), this->end (), forward<PREDICATE> (pred)) != this->end ();
     }
     template <typename STL_CONTAINER_OF_T>
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::AtEnd () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
 #endif
         AssertNotNull (_fData);
         return _fStdIterator == _fData->end ();
@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator* () const -> const value_type&
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
         AssertNotNull (_fData);
         Require (not AtEnd ());
         return *_fStdIterator;
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator->() const -> const value_type*
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
         AssertNotNull (_fData);
         Require (not AtEnd ());
         return &*_fStdIterator;
@@ -195,20 +195,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline size_t STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
         AssertNotNull (_fData);
         return static_cast<size_t> (std::distance (_fData->begin (), _fStdIterator));
     }
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
         return _fStdIterator;
     }
     template <typename STL_CONTAINER_OF_T>
     inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetUnderlyingIteratorRep (UnderlyingIteratorRep l)
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData}; // read lock on data, though writing to this iterator
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData}; // read lock on data, though writing to this iterator
         _fStdIterator = l;
     }
     template <typename STL_CONTAINER_OF_T>
@@ -221,7 +221,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator== (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
+        AssertExternallySynchronizedChecker::ReadContext declareContext{*_fData};
         return _fStdIterator == rhs._fStdIterator;
     }
 
