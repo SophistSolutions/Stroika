@@ -106,12 +106,10 @@ Generally will track stuff here between releases
   not samples or any other use.
 - ask if anything else reasonable todo on bidi iterator support or at least if this is good breaking point.
 - test HearHE
-- deal with failed/lost bugs from JIRA
+- deal with failed/lost JIRA tickets/bugs
 - do a performance compare with checked in data
 
 - functinal _movable_function etc  winging on internet
-
-- issue of LOST JIRA TICKETS
 
 - for items where we have a default paraemter of eSeq or ePar, instead OVERLOAD and have
   unspecified version documented to make a good guess which to use, and leave ambiguous. Be specific if
