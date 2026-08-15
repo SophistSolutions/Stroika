@@ -63,18 +63,6 @@ Generally will track stuff here between releases
       needs a CHEAP size, and nullopt has an obvious right answer there (use eSeq). Until something
       concrete needs it, do not add it.
 
-- Test52's permanent 'Sequence_Array<int>::As<vector<int>> () vs plain vector copy' entry WILL flap,
-  and the reason is measurement CONTEXT, not machine load:
-      run standalone ('Test52 --show'):   0.76, 1.06, 1.09, 1.11, 1.19, 1.25, 1.40, 1.64
-      run in-suite ('make run-tests'):    1.69, 1.77
-  ie ~2x higher in the run that actually gates. Test52 runs after 30+ other test binaries in one
-  'make run-tests' invocation, so heap/cache state is nothing like a fresh process. Its threshold (1.5)
-  was tuned from standalone numbers - the code comment claims 0.97-1.07 over 4 runs and calls 1.5
-  "loose enough not to flap" - so it is calibrated against the wrong distribution. Both sides are only
-  ~15-25ms, which makes it that much easier to move.
-  Fix by raising the run count until in-suite readings stabilize, or by widening the threshold to cover
-  the in-suite range. Do NOT re-tune it from a standalone run.
-
 - CMAKE CONVERSION - scheduled for NEXT release (~Sept 2026), still tentative.
   DRIVER: LGP wants Stroika to be cheap for OTHER PEOPLE to consume. That is the whole argument -
   find_package/FetchContent/vcpkg/Conan, ie the normal ways a C++ project takes a dependency. Today,
@@ -109,7 +97,7 @@ Generally will track stuff here between releases
 - deal with failed/lost JIRA tickets/bugs
 - do a performance compare with checked in data
 
-- functinal _movable_function etc  winging on internet
+- function vs movable_function etc winging on internet
 
 - for items where we have a default paraemter of eSeq or ePar, instead OVERLOAD and have
   unspecified version documented to make a good guess which to use, and leave ambiguous. Be specific if

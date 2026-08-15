@@ -2128,15 +2128,32 @@ namespace {
              *  It was chosen when the two sides differed by >100x, where no single count suited both; kept
              *  as-is so the pre/post numbers above stay comparable.
              *
-             *  Threshold: measured 0.97-1.07 over 4 Release runs (occasionally BELOW 1.0 - the baseline
-             *  copies too, and Sequence_stdvector adopts its vector by move). 1.5 is loose enough not to
-             *  flap, and still catches a fall back to either the ~113 or ~170 regime.
+             *  THRESHOLD - set from what this entry must DETECT, not from what it happens to MEASURE.
+             *
+             *  It was 1.5, picked from 4 standalone Release runs that read 0.97-1.07, and it flapped: the
+             *  same entry reads 1.69-1.77 inside 'make run-tests', ie in the run that actually gates. That
+             *  is not machine load, it is measurement CONTEXT - Test52 runs after 30+ other test binaries,
+             *  so heap and cache state are nothing like a fresh process, and both sides here total only
+             *  ~15-25ms, which is small enough for that to move the ratio ~2x on its own. Bare metal,
+             *  docker, and github-actions runners each shift it again, and by different amounts.
+             *
+             *  Re-tuning to any ONE of those distributions just relocates the flap to the others, so do
+             *  not do that. Instead note the gap between signal and noise: the regressions this exists to
+             *  catch are ~113 and ~170, while every legitimate reading anywhere is under ~2. There are two
+             *  orders of magnitude of empty space in between, so the threshold can sit almost anywhere in
+             *  it. 10 is roughly log-centred: ~6x above the highest legitimate reading seen (1.77), ~11x
+             *  below the regression it must catch (113). A context quirk cannot plausibly cover 6x when
+             *  the observed spread is 2x; a fall off the fast path cannot plausibly hide under 11x.
+             *
+             *  Tightening this back toward 1.0 buys NOTHING - there is no known regression mode that lands
+             *  between 2 and 113 - and costs a flapping gate, which is worse than no gate because it
+             *  teaches people to ignore the suite.
              */
             Tester (
                 "Sequence_Array<int>::As<vector<int>> () vs plain vector copy",
                 [] () { Test_IterableAlgorithms_::Baseline_VectorCopy_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
                 "vector<int> copy CTOR", [] () { Test_IterableAlgorithms_::Copy_AsVector_Concrete_<int> (kSeqInts_); },
-                "Sequence_Array<int>::As<vector<int>> ()", 200000, 1.5, &failedTests);
+                "Sequence_Array<int>::As<vector<int>> ()", 200000, 10.0, &failedTests);
             /*
              *  Guards SequentialEquals () over two CONTIGUOUS backends. The baseline advances two Stroika
              *  iterators in lockstep - literally what the general path does, and what this cost before
