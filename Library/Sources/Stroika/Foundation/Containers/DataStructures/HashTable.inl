@@ -304,6 +304,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     template <invocable<typename TRAITS::value_type> FUNCTION>
+    inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement) const
+    {
+        // @todo measure the crossover and auto-choose the policy here - eSeq is a placeholder, not a decision
+        Apply (forward<FUNCTION> (doToElement), Execution::SequencePolicy::eSeq);
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    template <invocable<typename TRAITS::value_type> FUNCTION>
     void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const
     {
         if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {

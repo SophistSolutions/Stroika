@@ -1662,8 +1662,8 @@ namespace {
 
         /*
          *  ---- the REAL OrderBy (), called as a user would call it. Sequence<T>::OrderBy () and the
-         *  Iterable<T>::OrderBy () it hides now take the same arguments (comparer + Execution::SequencePolicy,
-         *  both defaulting to eSeq) and differ only in return type, so the Sequence-vs-Iterable score below
+         *  Iterable<T>::OrderBy () it hides offer the same two overloads (comparer alone, or comparer +
+         *  Execution::SequencePolicy) and differ only in return type, so the Sequence-vs-Iterable score below
          *  is the cost of the two reps rather than of an API divergence. eSeq-vs-ePar is measured for each,
          *  since parallel only wins once N is large enough to pay for the thread hand-off and the crossover
          *  is unmeasured - see the OrderBy entry in TODO.md.
@@ -1864,7 +1864,8 @@ namespace {
                 "Sum int: old Reduce ()-based vs contiguous fast path", [&] () { Sum_Old_<int> (kSeqInts_); },
                 "Sum via Reduce () (the old way)", [&] () { Sum_Fast_<int> (kSeqInts_); }, "Sum (fast path)", kRunCount_, kNoWarn_);
 
-            // Rep cost only - the two OrderBy ()s now take the same arguments and the same eSeq default.
+            // Rep cost only - the two OrderBy ()s offer the same overloads, and the no-policy one currently
+            // picks eSeq in both.
             (void)Tester (
                 "OrderBy divergence: Sequence<int>::OrderBy () vs Iterable<int>::OrderBy () [both default]",
                 [&] () { Real_SequenceOrderByDefault_<int> (kSeqInts_); }, "Sequence::OrderBy (default)",

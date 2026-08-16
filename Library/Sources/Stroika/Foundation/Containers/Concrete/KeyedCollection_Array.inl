@@ -65,8 +65,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
-                                           [[maybe_unused]] Execution::SequencePolicy              seq) const override
+        virtual Iterator<value_type> Find ([[maybe_unused]] bool findFirst, const function<bool (ArgByValueType<value_type> item)>& that,
+                                           [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             if (auto i = fData_.Find (that)) {
@@ -105,8 +105,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); },
-                                     Execution::SequencePolicy::eDEFAULT)) {
+            if (auto i = this->Find (
+                    /*findFirst*/ true, [this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, Execution::SequencePolicy::eSeq)) {
                 if (item != nullptr) {
                     *item = *i;
                 }
@@ -118,8 +118,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             KEY_TYPE                                                 key{fKeyExtractor_ (item)};
-            if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); },
-                                     Execution::SequencePolicy::eDEFAULT)) {
+            if (auto i = this->Find (
+                    /*findFirst*/ true, [this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, Execution::SequencePolicy::eSeq)) {
                 const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
                 fData_.SetAt (iteratorRep.fIterator, item);
                 fChangeCounts_.PerformedChange ();
@@ -148,8 +148,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); },
-                                     Execution::SequencePolicy::eDEFAULT)) {
+            if (auto i = this->Find (
+                    /*findFirst*/ true, [this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, Execution::SequencePolicy::eSeq)) {
                 Remove (i, nullptr);
                 return true;
             }

@@ -52,10 +52,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
-        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
+        virtual Iterator<value_type> Find (bool findFirst, const function<bool (ArgByValueType<value_type> item)>& that,
+                                           Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            return this->inherited::Find (that, seq); // @todo rewrite to use fData
+            return this->inherited::Find (findFirst, that, seq); // @todo rewrite to use fData
         }
 
         // MultiSet<T, TRAITS>::_IRep overrides

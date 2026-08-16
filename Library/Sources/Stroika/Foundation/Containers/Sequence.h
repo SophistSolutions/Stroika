@@ -271,13 +271,11 @@ namespace Stroika::Foundation::Containers {
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
          *        That maybe less performant than a regular (e.g. quicksort) but works better as a default, in most cases, as it allows combining multi-level sorts.
          *
-         *  \note 'seq' defaults to Execution::SequencePolicy::eSeq, matching Iterable<T>::OrderBy (). That
-         *        default is genuinely arguable, and could reasonably be either: sequential measured 1.5-1.8x
-         *        faster than parallel in the only testing done so far ('Test52 --show --orderby-probe'), but
-         *        that was at N=1000 on one machine, and parallel should win at some larger N - the crossover
-         *        is unmeasured. Pass SequencePolicy::ePar explicitly if you are sorting something big. Note
-         *        also that ePar requires your comparison function to be safe for parallel execution.
-         * 
+         *  \note The overload taking NO SequencePolicy leaves the choice to the implementation, exactly as
+         *        Iterable<T>::OrderBy () does - see the notes there for what your comparer must guarantee
+         *        (pure AND non-throwing) if you use it, and for why the current choice is sequential. Pass
+         *        SequencePolicy::ePar explicitly if you are sorting something big.
+         *
          *  \note This may return a different concrete type than the original Sequence<T> started with.
          *
          *  @aliases Sort ()
@@ -285,8 +283,9 @@ namespace Stroika::Foundation::Containers {
          *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
          */
         template <IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
-        nonvirtual Sequence OrderBy (INORDER_COMPARER_TYPE&&   inorderComparer = INORDER_COMPARER_TYPE{},
-                                     Execution::SequencePolicy seq             = Execution::SequencePolicy::eSeq) const;
+        nonvirtual Sequence OrderBy (INORDER_COMPARER_TYPE&& inorderComparer = INORDER_COMPARER_TYPE{}) const;
+        template <IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
+        nonvirtual Sequence OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, Execution::SequencePolicy seq) const;
 
     public:
         /**

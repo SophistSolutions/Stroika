@@ -58,8 +58,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Apply ([&] (const pair<tuple<INDEXES...>, T>& item) { doToElement (tuple_cat (tuple<T>{item.second}, item.first)); });
         }
-        virtual Iterator<tuple<T, INDEXES...>> Find (const function<bool (ArgByValueType<value_type> item)>& that,
-                                                     [[maybe_unused]] Execution::SequencePolicy              seq) const override
+        virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] bool findFirst, const function<bool (ArgByValueType<value_type> item)>& that,
+                                                     [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;

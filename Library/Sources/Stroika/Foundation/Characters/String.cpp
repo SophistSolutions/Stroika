@@ -234,10 +234,10 @@ namespace {
             {
                 return _fData.empty ();
             }
-            virtual Traversal::Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
-                                                          Execution::SequencePolicy                               seq) const override
+            virtual Traversal::Iterator<value_type> Find (bool findFirst, const function<bool (ArgByValueType<value_type> item)>& that,
+                                                          Execution::SequencePolicy seq) const override
             {
-                return inherited::Find (that, seq); // @todo rewrite FOR PERFORMANCE to operate on fData_
+                return inherited::Find (findFirst, that, seq); // @todo rewrite FOR PERFORMANCE to operate on fData_
             }
         };
     };
@@ -487,10 +487,10 @@ namespace {
             {
                 return fUnderlyingRep_->empty ();
             }
-            virtual Traversal::Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
-                                                          [[maybe_unused]] Execution::SequencePolicy              seq) const override
+            virtual Traversal::Iterator<value_type> Find (bool findFirst, const function<bool (ArgByValueType<value_type> item)>& that,
+                                                          Execution::SequencePolicy seq) const override
             {
-                return fUnderlyingRep_->Find (that, seq);
+                return fUnderlyingRep_->Find (findFirst, that, seq);
             }
 
             // String::_IRep overrides - delegate

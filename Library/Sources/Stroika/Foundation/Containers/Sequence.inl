@@ -320,6 +320,13 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
+    inline auto Sequence<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer) const -> Sequence
+    {
+        // @todo measure the crossover and auto-choose the policy here - eSeq is a placeholder, not a decision
+        return OrderBy (forward<INORDER_COMPARER_TYPE> (inorderComparer), Execution::SequencePolicy::eSeq);
+    }
+    template <typename T>
+    template <IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
     auto Sequence<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, [[maybe_unused]] Execution::SequencePolicy seq) const -> Sequence
     {
         /*

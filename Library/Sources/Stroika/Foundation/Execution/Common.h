@@ -14,9 +14,19 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  \brief equivalent which of 4 types being used std::execution::sequenced_policy, parallel_policy, etc...
-     * 
+     *
      *  Much simpler to just have a single enum rather than these 4 classes. STL choice based on (probably more historical)
      *  C++ limitations with overloading (no constexpr) - not much point in that anymore, I don't think.
+     *
+     *  \note   'eDEFAULT' is DEPRECATED, and there is deliberately no replacement enumerator. "I have no
+     *          opinion, pick for me" is not a policy, and encoding it as one lies about what happens:
+     *          eDEFAULT is an alias for eSeq, so a caller who meant 'you decide' silently pinned the
+     *          implementation to sequential and left it no freedom at all.
+     *
+     *          An API that wants to offer that choice provides an OVERLOAD taking no policy - see
+     *          Iterable<T>::Apply (), Iterable<T>::Find (), Iterable<T>::OrderBy (). Not passing a policy is
+     *          then genuinely different from passing one, the implementation is free to get smarter later,
+     *          and no existing call site changes meaning when it does.
      */
     enum class SequencePolicy {
         /**
@@ -71,9 +81,8 @@ namespace Stroika::Foundation::Execution {
 
         Stroika_Define_Enum_Bounds (eSeq, eUnseq)
 
-            // consider losing eDEFAULT, cuz probably will lead to more confusion than prosperity...
-            // or define to pull value from some TLS variable??? that maybe BEST... SO LEAVE FOR NOW...
-            eDEFAULT = eSeq,
+            eDEFAULT [[deprecated ("Since Stroika v3.0d24 - call the overload taking no SequencePolicy to let the "
+                                   "implementation choose, or say eSeq if you require sequential")]] = eSeq,
     };
 
 }

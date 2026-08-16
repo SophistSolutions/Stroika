@@ -60,8 +60,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             fData_.Apply ([&] (auto arg) { doToElement (arg.fKey); });
         }
-        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
-                                           [[maybe_unused]] Execution::SequencePolicy              seq) const override
+        virtual Iterator<value_type> Find ([[maybe_unused]] bool findFirst, const function<bool (ArgByValueType<value_type> item)>& that,
+                                           [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             if (auto iLink = fData_.Find ([&] (auto arg) { return that (arg.fKey); })) {

@@ -362,9 +362,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \note Runtime performance/complexity:
          *      Always: O(N)
+         *
+         *  \note   The overload taking NO SequencePolicy leaves the choice to the implementation. Today it
+         *          runs sequentially, but that is NOT a promise: it may become eSeq, ePar, eParUnseq or
+         *          eUnseq (SIMD). So 'doToElement' must be safe under ANY of them:
+         *
+         *          o   No unsynchronized side effects on shared state - it may run on several threads at once.
+         *          o   No dependence on the ORDER elements are visited in, nor on which thread visits them.
+         *              Bucket order is already unspecified here, but parallel makes it concurrent too.
+         *          o   It must NOT throw - a policy-taking std::for_each () calls std::terminate () when an
+         *              element access function exits via an exception rather than propagating it, and this
+         *              one really does reach std::for_each (execution::par, ...) - see the .inl.
+         *          o   Under eUnseq / eParUnseq, additionally no allocation and no locking - calls may
+         *              interleave within a single thread, so a mutex can deadlock against itself.
+         *
+         *          Pass Execution::SequencePolicy::eSeq explicitly if 'doToElement' cannot meet all of that.
          */
         template <invocable<typename TRAITS::value_type> FUNCTION>
-        nonvirtual void Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
+        nonvirtual void Apply (FUNCTION&& doToElement) const;
+        template <invocable<typename TRAITS::value_type> FUNCTION>
+        nonvirtual void Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const;
 
     public:
         /**

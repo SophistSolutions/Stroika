@@ -41,7 +41,9 @@ namespace Stroika::Foundation::Traversal {
          */
         size_t sz{};
         if constexpr (true) {
-            this->Apply ([&sz] (const T&) { ++sz; }, Execution::SequencePolicy::eDEFAULT);
+            // eSeq is REQUIRED here, not just the current default: '++sz' on a captured local is a data race
+            // under any parallel policy. Do not 'simplify' this to the no-policy overload.
+            this->Apply ([&sz] (const T&) { ++sz; }, Execution::SequencePolicy::eSeq);
         }
         else {
             for (Iterator<T> i = MakeIterator (); i != Iterator<T>::GetEmptyIterator (); ++i, ++sz)
@@ -66,8 +68,8 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    inline auto Iterable<T>::_IRep::Find (const function<bool (ArgByValueType<T> item)>& that, [[maybe_unused]] Execution::SequencePolicy seq) const
-        -> Iterator<value_type>
+    inline auto Iterable<T>::_IRep::Find ([[maybe_unused]] bool findFirst, const function<bool (ArgByValueType<T> item)>& that,
+                                          [[maybe_unused]] Execution::SequencePolicy seq) const -> Iterator<value_type>
     {
         RequireNotNull (that);
         for (Iterator<T> i = MakeIterator (); i != Iterator<T>::GetEmptyIterator (); ++i) {
@@ -90,7 +92,7 @@ namespace Stroika::Foundation::Traversal {
                 // simpler but not sure if faster; better though cuz by default leverages seq, which might
                 // help. In 'size' testing, on windows, this was slightly larger, so
                 // not 100% sure this is the best default -- LGP 2023-02-06
-                return Find ([&v] (const T& rhs) { return equal_to<T>{}(v, rhs); }, seq);
+                return Find (/*findFirst*/ true, [&v] (const T& rhs) { return equal_to<T>{}(v, rhs); }, seq);
             }
             else {
                 for (Iterator<T> i = MakeIterator (); i != Iterator<T>::GetEmptyIterator (); ++i) {
@@ -892,6 +894,13 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
+    inline Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer) const
+    {
+        // @todo measure the crossover and auto-choose the policy here - eSeq is a placeholder, not a decision
+        return OrderBy (forward<INORDER_COMPARER_TYPE> (inorderComparer), Execution::SequencePolicy::eSeq);
+    }
+    template <typename T>
+    template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
     Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
@@ -901,7 +910,7 @@ namespace Stroika::Foundation::Traversal {
             stable_sort (tmp.begin (), tmp.end (), inorderComparer);
         }
         else {
-            stable_sort (std::execution::par, tmp.begin (), tmp.end (), inorderComparer);
+            stable_sort (execution::par, tmp.begin (), tmp.end (), inorderComparer);
         }
 #else
         stable_sort (tmp.begin (), tmp.end (), inorderComparer);
@@ -982,7 +991,7 @@ namespace Stroika::Foundation::Traversal {
     {
         constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
         if (kUseIterableRepIteration_) {
-            Iterator<T> t = this->_fRep->Find (forward<F> (that), Execution::SequencePolicy::eSeq);
+            Iterator<T> t = this->_fRep->Find (/*findFirst*/ true, forward<F> (that), Execution::SequencePolicy::eSeq);
             return t ? optional<T>{*t} : optional<T>{};
         }
         else {
@@ -1004,7 +1013,7 @@ namespace Stroika::Foundation::Traversal {
             optional<RESULT_T>          result; // actual result captured in side-effect of lambda
             auto                        f = [&that, &result] (ArgByValueType<T> i) { return (result = that (i)).has_value (); };
             _SafeReadRepAccessor<_IRep> accessor{this};
-            Iterator<T>                 t = accessor._ConstGetRep ().Find (f, Execution::SequencePolicy::eSeq);
+            Iterator<T>                 t = accessor._ConstGetRep ().Find (/*findFirst*/ true, f, Execution::SequencePolicy::eSeq);
             return t ? result : optional<RESULT_T>{};
         }
         else {
@@ -1307,6 +1316,12 @@ namespace Stroika::Foundation::Traversal {
         return Iterator<T>::GetEmptyIterator ();
     }
     template <typename T>
+    inline void Iterable<T>::Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
+    {
+        // @todo measure the crossover and auto-choose the policy here - eSeq is a placeholder, not a decision
+        Apply (doToElement, Execution::SequencePolicy::eSeq);
+    }
+    template <typename T>
     inline void Iterable<T>::Apply (const function<void (ArgByValueType<T> item)>& doToElement, Execution::SequencePolicy seq) const
     {
         RequireNotNull (doToElement);
@@ -1315,12 +1330,26 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <predicate<T> THAT_FUNCTION>
+    inline Iterator<T> Iterable<T>::Find (THAT_FUNCTION&& that) const
+    {
+        // @todo measure the crossover and auto-choose the policy here - eSeq is a placeholder, not a decision
+        return Find (forward<THAT_FUNCTION> (that), Execution::SequencePolicy::eSeq);
+    }
+    template <typename T>
+    template <predicate<T> THAT_FUNCTION>
     inline Iterator<T> Iterable<T>::Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq) const
     {
         // NB: This transforms perfectly forwarded 'THAT_FUNCTION' and converts it to std::function<> - preventing further inlining at this point -
         // just so it can be done
         _SafeReadRepAccessor<> accessor{this};
-        return accessor._ConstGetRep ().Find (forward<THAT_FUNCTION> (that), seq);
+        return accessor._ConstGetRep ().Find (/*findFirst*/ false, forward<THAT_FUNCTION> (that), seq);
+    }
+    template <typename T>
+    template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
+    inline Iterator<T> Iterable<T>::Find (ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
+    {
+        // @todo measure the crossover and auto-choose the policy here - eSeq is a placeholder, not a decision
+        return Find (v, forward<EQUALS_COMPARER> (equalsComparer), Execution::SequencePolicy::eSeq);
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
@@ -1349,6 +1378,13 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <predicate<T> THAT_FUNCTION>
+    inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, THAT_FUNCTION&& that) const
+    {
+        // @todo measure the crossover and auto-choose the policy here - eSeq is a placeholder, not a decision
+        return Find (startAt, forward<THAT_FUNCTION> (that), Execution::SequencePolicy::eSeq);
+    }
+    template <typename T>
+    template <predicate<T> THAT_FUNCTION>
     inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, THAT_FUNCTION&& that, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {
@@ -1357,6 +1393,13 @@ namespace Stroika::Foundation::Traversal {
             }
         }
         return end ();
+    }
+    template <typename T>
+    template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
+    inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
+    {
+        // @todo measure the crossover and auto-choose the policy here - eSeq is a placeholder, not a decision
+        return Find (startAt, v, forward<EQUALS_COMPARER> (equalsComparer), Execution::SequencePolicy::eSeq);
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>

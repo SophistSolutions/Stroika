@@ -178,6 +178,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <invocable<T> FUNCTION>
+    inline void Array<T>::Apply (FUNCTION&& doToElement) const
+    {
+        // @todo measure the crossover and auto-choose the policy here - eSeq is a placeholder, not a decision
+        Apply (forward<FUNCTION> (doToElement), Execution::SequencePolicy::eSeq);
+    }
+    template <typename T>
+    template <invocable<T> FUNCTION>
     inline void Array<T>::Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};

@@ -544,9 +544,29 @@ namespace Stroika::Foundation::Traversal {
          *          DbgTrace ("cnt={}"_f, cnt);
          *      \endcode
          *
-         *  \note on 'seq' parameter, if you pass anything but (the default) eSeq value, be sure to check
-         *        function argument is threadsafe.
-         * 
+         *  \note on 'seq' parameter, if you pass anything but eSeq, be sure to check that the function
+         *        argument is threadsafe.
+         *
+         *  \note   The overload taking NO SequencePolicy leaves the choice to the implementation. Today it
+         *          runs sequentially, but that is NOT a promise: it may become eSeq, ePar, eParUnseq or
+         *          eUnseq (SIMD), chosen by heuristic (element count, backend, ...).
+         *
+         *          So 'doToElement' must be safe under ANY of them:
+         *
+         *          o   No unsynchronized side effects on shared state - it may run on several threads at once.
+         *          o   No dependence on the ORDER elements are visited in, nor on which thread visits them.
+         *          o   It must NOT throw. Every policy-taking std algorithm calls std::terminate () when an
+         *              element access function exits via an exception, rather than propagating it - see
+         *              [algorithms.parallel.exceptions]. The eSeq path uses the plain (policy-free) algorithm,
+         *              where the exception propagates normally, so this differs by policy.
+         *          o   Under the unsequenced policies (eUnseq / eParUnseq) it must additionally avoid
+         *              vectorization-unsafe operations - allocation, and taking a lock. Calls may interleave
+         *              WITHIN a single thread there, so a mutex can deadlock against itself.
+         *
+         *          If 'doToElement' cannot meet all of that, pass Execution::SequencePolicy::eSeq explicitly.
+         *          That is not a workaround - it is how you state the sequential semantics are load-bearing,
+         *          and it keeps working when the unspecified overload starts choosing for itself.
+         *
          *  \note   Aliases:
          *      o   Apply could have logically been called ForEach, and is nearly identical to
          *          std::for_each (), except for not taking iterators as arguments, and not having
@@ -561,17 +581,17 @@ namespace Stroika::Foundation::Traversal {
          *  \note   \em Thread-Safety   The argument function (lambda) may
          *              directly (or indirectly) access the Iterable<> being iterated over.
          */
-        nonvirtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement,
-                               Execution::SequencePolicy                      seq = Execution::SequencePolicy::eDEFAULT) const;
+        nonvirtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement) const;
+        nonvirtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement, Execution::SequencePolicy seq) const;
 
     public:
         /**
-         *  \brief  Run the argument bool-returning function (or lambda) on each element of the
-         *          container, and return an iterator pointing at the first element (depending on seq) found true.
-         *          (or use First() to do same thing but return optional<>)
+         *  \brief  Run the argument bool-returning function (or lambda) on the elements of the container,
+         *          and return an iterator pointing at AN element for which it returned true - not
+         *          necessarily the first (see the note below; use First () if you need the first).
          *
-         *  Take the given function argument, and call it for each element of the container. This is
-         *  equivalent to:
+         *  Take the given function argument, and call it for the elements of the container. A simple
+         *  implementation - and what the default one does - is:
          *
          *      for (Iterator<T> i = begin (); i != end (); ++i) {
          *          if (that (*i)) {
@@ -580,31 +600,43 @@ namespace Stroika::Foundation::Traversal {
          *      }
          *      return end();
          *
-         *  This function returns an iterator pointing to the element that triggered the abrupt loop
-         *  end (for example the element you were searching for?). It returns the special iterator
-         *  end() to indicate no doToElement() functions returned true.
+         *  ...but that is an EXAMPLE, not the specification: a backend is free to consult an index, or to
+         *  search several elements at once, so it may return a different match than the loop above would,
+         *  and it may call 'that' on elements the loop would have stopped short of.
+         *
+         *  This function returns an iterator pointing to an element for which 'that' returned true (for
+         *  example the element you were searching for?). It returns the special iterator end() to indicate
+         *  no call to 'that' returned true.
          *
          *  Also, note that this function does NOT change any elements of the Iterable.
          * 
-         *  \note about seq - eSeq - then the item returned will be first in
-         *        iteration order. But if you pass in some other Execution::SequencePolicy 'seq', the algorithm
-         *        will return the 'first it finds'.
-         * 
-         *        If you really care that the result is first, probably better to call Iterable<>::First (). Though
-         *        it amounts to the same thing (setting SequencePolicy::eSeq) - its better documenting.
-         * 
+         *  \note   Find () returns SOME matching element - NOT necessarily the first in iteration order.
+         *          If you need THE first, call Iterable<>::First (); that is what it is for.
+         *
+         *          This is deliberately NOT tied to the SequencePolicy. 'Which match' is a statement about
+         *          the freedom the algorithm has, not about how it happens to be executing, and keeping the
+         *          two separate leaves a backend free to answer from a hash bucket, a SIMD scan, or a
+         *          parallel one without the answer's meaning changing with the policy argument. It also
+         *          keeps 'seq' meaning what it means in std::<execution>, where the policy never changes
+         *          WHICH element std::find_if () returns.
+         *
+         *          Note also that for an UNORDERED Iterable (Set<T>, Mapping<>, Collection<T>) 'first' is a
+         *          property of the current iteration order rather than of the data, so the guarantee would
+         *          be close to vacuous there in any case.
+         *
+         *          The overloads taking 'startAt' below are the exception - 'search onward from here' is
+         *          inherently ordered, and they keep that meaning.
+         *
          *  Note that this used to be called 'ContainsWith' - because it can act the same way (due to
          *  operator bool () method of Iterator<T>).
          * 
-         *  \note This is much like First(), except that it optional takes a different starting point, and 
-         *        it returns an Iterator<T> instead of an optional<T>
-         *        First () - often more handy.
-         * 
+         *  \note This is much like First(), except that it optionally takes a different starting point, it
+         *        returns an Iterator<T> instead of an optional<T>, and - see above - it does NOT promise the
+         *        first match. First () - often more handy.
+         *
          *  \note though semantically similar to iterating, it maybe faster, due to delegating 'search' to backend container
          *        implementation (though then call to lambda/checker maybe indirected countering this performance benefit).
          *
-         *  @aliases FirstThat
-         * 
          *  @see Apply
          *
          *  \note   \em Thread-Safety   The argument function (lambda) may
@@ -626,18 +658,50 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  \note despite the name EQUALS_COMPARER, we allow EQUALS_COMPARER to just be IPotentiallyComparer<> and don't require
          *        EqualsComparer, just to simplify use, and because we cannot anticipate any real ambiguity or confusion resulting from this loose restriction.
+         *
+         *  \note   The overloads taking NO SequencePolicy leave the choice to the implementation. Today they
+         *          search sequentially, but that is NOT a promise: it may become eSeq, ePar, eParUnseq or
+         *          eUnseq (SIMD), chosen by heuristic (element count, backend, ...).
+         *
+         *          So 'that' (and 'equalsComparer') must be safe under ANY of them:
+         *
+         *          o   No unsynchronized side effects on shared state - it may run on several threads at once.
+         *              Note this is the requirement people most often miss on Find (), because a predicate
+         *              that records what it saw looks harmless.
+         *          o   No dependence on the ORDER elements are visited in, on which thread visits them, or on
+         *              HOW MANY times it is called - a parallel search may keep testing elements after another
+         *              thread has already matched, so it can be called more times than a sequential scan would.
+         *          o   It must NOT throw. Every policy-taking std algorithm calls std::terminate () when an
+         *              element access function exits via an exception, rather than propagating it - see
+         *              [algorithms.parallel.exceptions].
+         *          o   Under the unsequenced policies (eUnseq / eParUnseq) it must additionally avoid
+         *              vectorization-unsafe operations - allocation, and taking a lock. Calls may interleave
+         *              WITHIN a single thread there, so a mutex can deadlock against itself.
+         *
+         *          If your predicate cannot meet all of that, pass Execution::SequencePolicy::eSeq explicitly.
+         *          That is not a workaround - it is how you state the sequential semantics are load-bearing.
+         *
+         *          To pass a policy with the DEFAULT comparer, name the comparer: Find (v, equal_to<T>{}, ePar).
+         *          There is deliberately no Find (v, seq) shorthand - it would read as an overload set where
+         *          the second argument means two unrelated things.
          */
         template <predicate<T> THAT_FUNCTION>
-        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
-        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
-        nonvirtual Iterator<T> Find (Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
-                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
+        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that) const;
         template <predicate<T> THAT_FUNCTION>
-        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that,
-                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
-        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
-        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
-                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
+        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq) const;
+        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<T>>
+        nonvirtual Iterator<T> Find (Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {}) const;
+        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<T>>
+        nonvirtual Iterator<T> Find (Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const;
+        template <predicate<T> THAT_FUNCTION>
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that) const;
+        template <predicate<T> THAT_FUNCTION>
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that, Execution::SequencePolicy seq) const;
+        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<T>>
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {}) const;
+        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<T>>
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Common::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer,
+                                     Execution::SequencePolicy seq) const;
 
     public:
         /**
@@ -1107,10 +1171,35 @@ namespace Stroika::Foundation::Traversal {
          *          EXPECT_TRUE (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
-         *  \note This defaults to using seq=Execution::SequencePolicy::eSeq since testing suggested it was faster than parallel -
-         *        measured 1.5-1.8x faster (run 'Test52 --show --orderby-probe' and see the "OrderBy divergence" entries).
-         *        VERY limited testing though - N=1000, one machine, int elements - and parallel should win at some larger N,
-         *        so this default could change.
+         *  \note   The overload taking NO SequencePolicy leaves the choice to the implementation. It sorts
+         *          sequentially today, but that is NOT a promise - it may become eSeq, ePar, eParUnseq or
+         *          eUnseq (SIMD), most likely chosen on element count once the crossover has been measured.
+         *
+         *          So when you use that overload, your comparer must be fit to run under ANY of them:
+         *
+         *          o   PURE - callable concurrently, with no side effects on shared state, and no dependence
+         *              on how many times, in what order, or on which thread it is called. A sort calls the
+         *              comparer an unspecified number of times even sequentially; parallel just makes that
+         *              more visible.
+         *          o   NON-THROWING. This one is easy to miss, and it is not implied by purity: eSeq sorts
+         *              via the plain stable_sort (), where an exception from your comparer propagates
+         *              normally, but every parallel policy goes through a policy-taking std algorithm, and
+         *              there an exception escaping an element access function calls std::terminate () -
+         *              see [algorithms.parallel.exceptions]. A pure comparer can still throw (bad_alloc
+         *              comparing Strings, say). Nothing warns you; the process just dies.
+         *          o   Under the unsequenced policies (eUnseq / eParUnseq), additionally free of
+         *              vectorization-unsafe operations - allocation, and taking a lock. Calls may interleave
+         *              WITHIN a single thread there, so a mutex can deadlock against itself.
+         *
+         *          If your comparer cannot meet all of that, pass Execution::SequencePolicy::eSeq explicitly.
+         *          That is not a workaround - it is how you say the sequential semantics are load-bearing, and
+         *          it keeps working when the unspecified overload starts choosing for itself.
+         *
+         *  \note   Measurements so far say sequential, which is why the unspecified overload picks it: ePar
+         *          cost 2.08x on Sequence<int> and 1.81x on Iterable<int> (run 'Test52 --show --orderby-probe').
+         *          That is N=1000, one machine, int elements - parallel should win at some larger N, but the
+         *          crossover is UNMEASURED, so there is no honest threshold to code yet. A size sweep is what
+         *          would replace this eSeq with a real heuristic.
          *
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
          *        That maybe less performant than a regular (e.g. quicksort) but works better as a default, in most cases, as it allows combining multi-level sorts.
@@ -1131,8 +1220,9 @@ namespace Stroika::Foundation::Traversal {
          *  \post result.IsOrderedBy (inorderComparer);
          */
         template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
-        nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&&   inorderComparer = INORDER_COMPARER_TYPE{},
-                                        Execution::SequencePolicy seq             = Execution::SequencePolicy::eSeq) const;
+        nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&& inorderComparer = INORDER_COMPARER_TYPE{}) const;
+        template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
+        nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, Execution::SequencePolicy seq) const;
 
     public:
         /**
@@ -1148,8 +1238,9 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  return first element in iterable, or if 'that' specified, first where 'that' is true, (or return nullopt if none)
          *
-         *  @aliases Find () - but in Stroika, Find () returns an Iterator<>
-         * 
+         *  @see Find () - but Find () returns an Iterator<>, and does NOT promise the FIRST match; that
+         *       guarantee is what First () is for.
+         *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
@@ -1646,10 +1737,28 @@ namespace Stroika::Foundation::Traversal {
     public:
         /*
          *  \see _IRep::MakeIterator for rules about lifetime of returned Iterator<T>
-         *  Defaults to, and is equivalent to, walking the Iterable, and applying 'that' function, and returning the first (depending on seq) entry that
-         *  returns true, or empty iterator if none does.
+         *  Defaults to, and is equivalent to, walking the Iterable, applying 'that' function, and returning an
+         *  entry that returns true (the FIRST such entry if findFirst), or empty iterator if none does.
+         *
+         *  \param findFirst    true  => MUST return the first match in iteration order.
+         *                      false => MAY return any match; returning the first is still legal.
+         *
+         *  \note   'findFirst' is a SEPARATE argument from 'seq' on purpose. Which match you get and how the
+         *          search is executed are independent questions, and folding the first into the second would
+         *          make eSeq silently mean something it does not mean in std::<execution>, where the policy
+         *          never changes WHICH element std::find_if () returns.
+         *
+         *  \note   findFirst=false is a PERMISSION, not an obligation - the first match trivially satisfies
+         *          'any match'. So an override with nothing faster to offer may ignore the flag entirely and
+         *          remain correct; that is why every existing backend needed only a signature change.
+         *
+         *  \note   This is what lets the PUBLIC Iterable<T>::Find () promise only 'a match' while
+         *          Iterable<T>::First () still guarantees the first: First () calls this with findFirst=true
+         *          (see Iterable.inl), and the public Find () passes false. Before this argument existed the
+         *          guarantee rode on eSeq, which meant a backend could break First () just by parallelizing
+         *          what looked like a pure performance knob.
          */
-        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<T> item)>& that, Execution::SequencePolicy seq) const;
+        virtual Iterator<value_type> Find (bool findFirst, const function<bool (ArgByValueType<T> item)>& that, Execution::SequencePolicy seq) const;
 
     public:
         /**
@@ -1665,8 +1774,19 @@ namespace Stroika::Foundation::Traversal {
          *          return Find ([] (const T& lhs) { return equal_to<T>{}(lhs, v); }, seq);
          *      \endcode
          * 
-         *  \note Like Find () - if multiple matching items are found, this guarantees returning the first (in iteration order).
-         * 
+         *  \note An override MUST return the FIRST match in iteration order, unconditionally - there is no
+         *        findFirst argument here because there is no choice to offer. Unlike _IRep::Find (), this is
+         *        called on behalf of callers that need the first (it is how First () reaches an indexed
+         *        backend), and 'equal to v' gives an override nothing cheaper to find than the first anyway:
+         *        the tree backends use lower_bound () precisely to honor this over a run of equal elements
+         *        (see SortedCollection_stdmultiset.inl), and Ensure () against the default implementation.
+         *
+         *        Note this promises MORE than the PUBLIC Iterable<T>::Find (), which promises only 'a match'.
+         *        That is fine - it is a floor, not a ceiling - and the public looser promise is deliberate.
+         *
+         *  \note 'seq' here is a pure performance knob, as in std::<execution>: it may change how the search
+         *        runs, never which element comes back.
+         *
          *  \see _IRep::MakeIterator for rules about lifetime of returned Iterator<T>
          */
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<T>& v, Execution::SequencePolicy seq) const;
