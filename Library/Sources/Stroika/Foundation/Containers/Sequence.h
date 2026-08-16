@@ -35,10 +35,6 @@
  *                  Most of the work for this is now done - MakeBidirectionalIterator () exists - so what remains is
  *                  deciding what rbegin ()/rend () return, and how that interacts with AtEnd ()/sentinel comparison.
  *
- *      @todo       Document that though comparing an iterator with CONTAINER.end () works fine with Stroika iterators,
- *                  other comparisons do not: begin ()/end () are forward-only Iterator<T>, so 'i < s.end ()' and -
- *                  more importantly - 'i - s.begin ()' don't compile. Document that MakeRandomAccessIterator () is how
- *                  you get an iterator supporting difference and ordering.
  *
  *      @todo       Add backend implementation of Sequence<T> using Sequence_stdlist<>. Low priority - Sequence_LinkedList
  *                  and Sequence_DoublyLinkedList already cover the linked-list shape.
@@ -229,6 +225,29 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note that though this always 'works' - the returned iterator maybe quite inefficient
          *        depending on the backend implementation type (like GetAt ()).
+         *
+         *  \note   THIS IS WHAT YOU WANT IF ITERATOR ARITHMETIC OR ORDERING DOESN'T COMPILE.
+         *
+         *          begin () hands back a FORWARD-only Iterator<T>, and end () is not an iterator at all -
+         *          it is a default_sentinel_t. So 'i != s.end ()' works, but these two - both of them
+         *          reflexes carried over from std::vector - do NOT compile:
+         *
+         *      \code
+         *          for (auto i = s.begin (); i < s.end (); ++i) {...}   // no operator< against a sentinel
+         *          size_t idx = i - s.begin ();                         // forward iterators have no difference
+         *      \endcode
+         *
+         *          Neither failure names its remedy - you get a 'no matching operator' template error - so:
+         *
+         *      \code
+         *          for (auto i = s.begin (); i != s.end (); ++i) {...}  // just use !=
+         *          size_t idx = s.IndexOf (i);                          // position of an iterator - see IndexOf ()
+         *          auto ri = s.MakeRandomAccessIterator ();             // or a real RA iterator: Difference (),
+         *                                                               // operator+/-, operator--, ordering
+         *      \endcode
+         *
+         *          Prefer IndexOf () when all you want is the position - it is one call and builds no second
+         *          iterator. Reach for this method when you actually need the arithmetic or the ordering.
          */
         nonvirtual RandomAccessIterator<T> MakeRandomAccessIterator () const;
 
@@ -442,7 +461,10 @@ namespace Stroika::Foundation::Containers {
          *  cannot be overloaded with template members.
          *
          *  If not found for the by value overloads, IndexOf () return {};
-         *  For the IndexOf(Iterator<T>) - \pre it is found/legal iterator 
+         *  For the IndexOf(Iterator<T>) - \pre it is found/legal iterator
+         *
+         *  \note The IndexOf (Iterator<T>) overload is Stroika's answer to 'i - s.begin ()', which does not
+         *        compile because begin () is a forward-only Iterator<T>. See MakeRandomAccessIterator ().
          */
         template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual optional<size_t> IndexOf (ArgByValueType<value_type> i, EQUALS_COMPARER&& equalsComparer = {}) const;
