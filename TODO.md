@@ -15,24 +15,13 @@ Generally will track stuff here between releases
   Prefer a credential helper (Git Credential Manager) over a config entry when reissuing, so the
   replacement is not sitting in cleartext too.
 
-- OrderBy () - remaining work. Measurements: run 'Test52 --show --orderby-probe' (Release, N=1000).
-
-    1. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
-       Iterable<T>::OrderBy ().
-    2. The ePar-vs-eSeq crossover is unmeasured - a size sweep would settle it. At N=1000 ePar costs
-       2.08x on Sequence and 1.81x on Iterable, whose larger copy dilutes the sort's share.
-       This is now the ONLY thing between the no-policy overloads and a real heuristic. Those overloads
-       exist (Iterable Apply/Find/OrderBy, Sequence::OrderBy, DataStructures Array/HashTable Apply) and
-       hardwire eSeq, with a '@todo measure the crossover' at each of the 9 forwarding sites - so the
-       code now points here rather than this file carrying the design.
-       (In-place sort is decided and closed - see the DESIGN NOTE on Sequence<T>::_IRep in Sequence.h.)
-    - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
-      Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access
-      (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes
-      O(n^2) there. Also: reserve () measured 1.33x-1.55x SLOWER than just letting the range CTOR
-      size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
-      - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
-      without new evidence; the size () item below is the thing that would change the picture.
+- Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
+  Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access
+  (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes
+  O(n^2) there. Also: reserve () measured 1.33x-1.55x SLOWER than just letting the range CTOR
+  size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
+  - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
+  without new evidence; the size () item below is the thing that would change the picture.
 - Iterable<T>::PeekSize () -> optional<size_t> - a way to ask "do you know your size cheaply?".
   Not built. Discussed at length 2026-08-13/14; recording the conclusions so it is not re-derived.
     - The DataStructure/container half of this IS done: both linked lists now cache their length, so
@@ -92,7 +81,6 @@ Generally will track stuff here between releases
   rebuilds nothing and only 'library-clobber' gives a build worth trusting - AGENTS.md now says so
   (89a38cf2a2). A run-tests staleness warning was considered and rejected: it would cover tests only,
   not samples or any other use.
-- ask if anything else reasonable todo on bidi iterator support or at least if this is good breaking point.
 - test HearHE
 - deal with failed/lost JIRA tickets/bugs
 - do a performance compare with checked in data
