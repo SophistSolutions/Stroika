@@ -314,6 +314,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const
     {
         if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
+            // only ePar goes parallel; 'default' running sequentially is deliberate - see the dispatch
+            // note on Execution::SequencePolicy
             switch (seq) {
 #if __cpp_lib_execution >= 201603L
                 case Execution::SequencePolicy::ePar:
@@ -323,6 +325,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     });
                     break;
 #endif
+                    // @todo add other Execution::SequencePolicy cases
                 default:
                     for (const auto& bi : this->fBuckets_) {
                         for (const auto& i : bi.fElements) {

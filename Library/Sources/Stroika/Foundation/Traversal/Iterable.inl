@@ -905,18 +905,19 @@ namespace Stroika::Foundation::Traversal {
     {
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp = this->As<vector<T>> ();
-#if __cpp_lib_execution >= 201603L
         switch (seq) {
+#if __cpp_lib_execution >= 201603L
+                // only ePar goes parallel; 'default' running sequentially is deliberate - see the dispatch note
+                // on Execution::SequencePolicy
             case Execution::SequencePolicy::ePar:
                 stable_sort (execution::par, tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
                 break;
+                // @todo add other Execution::SequencePolicy cases
+#endif
             default:
                 stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
                 break;
         }
-#else
-        stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
-#endif
         /*
          *  Hand back a rep that OWNS the sorted vector and exposes it as contiguous storage, rather than
          *  a generator reading out of a captured copy of it. Two things follow, and the second is the

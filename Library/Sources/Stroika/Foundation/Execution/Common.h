@@ -27,6 +27,21 @@ namespace Stroika::Foundation::Execution {
      *          Iterable<T>::Apply (), Iterable<T>::Find (), Iterable<T>::OrderBy (). Not passing a policy is
      *          then genuinely different from passing one, the implementation is free to get smarter later,
      *          and no existing call site changes meaning when it does.
+     *
+     *  \note   HOW STROIKA DISPATCHES ON THIS - the rule for any code switching on a SequencePolicy:
+     *          ONLY ePar selects a parallel std algorithm. Every other policy runs sequentially, and
+     *          that fallthrough is DELIBERATE, not an unhandled case.
+     *
+     *          We have no unsequenced implementation, and answering a request for eUnseq/eParUnseq with
+     *          execution::par would substitute a DIFFERENT policy than the caller asked for: par permits
+     *          locks and demands no vectorization-safety, while the unsequenced policies forbid locking
+     *          and may interleave calls within a single thread. So a caller who wrote a correct lock-free
+     *          SIMD-safe callable would silently get threads, and one who passed eUnseq while holding a
+     *          mutex would get exactly the hazard the policy told them to avoid.
+     *
+     *          Running sequentially is a legal execution of EVERY policy - a policy grants permission, it
+     *          does not compel - so falling back is honest where substituting is not. Dispatch sites
+     *          therefore read 'case ePar: <parallel>; default: <sequential>', never the inverse.
      */
     enum class SequencePolicy {
         /**

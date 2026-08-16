@@ -343,18 +343,17 @@ namespace Stroika::Foundation::Containers {
          *  The copy is cheap-ish in the end, because Sequence_stdvector adopts the vector by move.
          */
         vector<T> tmp = this->As<vector<T>> ();
-#if __cpp_lib_execution >= 201603L
         switch (seq) {
+#if __cpp_lib_execution >= 201603L
             case Execution::SequencePolicy::ePar:
                 stable_sort (std::execution::par, tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
                 break;
+                // @todo add other Execution::SequencePolicy cases
+#endif
             default:
                 stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
                 break;
         }
-#else
-        stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
-#endif
         return Concrete::Sequence_stdvector<T>{move (tmp)};
     }
     template <typename T>
