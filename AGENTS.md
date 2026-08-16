@@ -64,7 +64,27 @@ failures like `make -k`.
 make format-code
 ```
 Runs clang-format (`.clang-format` at repo root) over the codebase — always run before committing
-C++ changes.
+C++ changes. It needs clang-format on `PATH`; on Windows that means the VS LLVM directory
+(`export PATH="$PATH:/cygdrive/c/Program Files/Microsoft Visual Studio/<VER>/Community/VC/Tools/Llvm/x64/bin"`),
+and the target prints the exact line to add if it can't find it.
+
+**Stray `SomeFile.cpp.tmp` files next to real sources are format-code debris, not yours and not a
+mistake — just delete them.** `Build/Scripts/FormatCode` formats through a sibling temp file: for
+each source it writes `FILE.tmp`, then either `rm`s it (output identical, nothing to do) or `mv`s it
+over `FILE` (file needed reformatting).
+
+So while a run is in progress you will see `.tmp` files blink in and out, one per file being
+processed — that is the script working, not an error. Do not try to interpret one you catch
+mid-flight: it may be half-written, so comparing it against its source proves nothing. Only a `.tmp`
+still present *after* the run has finished is an orphan, meaning the cleanup step never ran — the
+`expand | clang-format` pipeline failed (the `&&` then skips cleanup), the script was interrupted,
+or the `rm` lost a race with something holding the file open, which on Windows is routinely an
+indexer or the IDE.
+
+They are inert — nothing compiles them, since the build's only compile rule is
+`$(ObjDir)%${OBJ_SUFFIX} : %.cpp` and `foo.cpp.tmp` does not match `%.cpp`. But they are NOT
+gitignored, so they surface as untracked files and `git add -A` will happily commit one. Check
+`git status` for `.tmp` before committing.
 
 ### Notes
 - `make project-files` regenerates IDE project files (Visual Studio, VS Code); needed after
