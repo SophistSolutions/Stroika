@@ -103,7 +103,10 @@ namespace Stroika::Foundation::Execution {
         if constexpr (kSupportsStopToken) {
 #if __cpp_lib_jthread >= 201911
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
-                bool ready = fConditionVariable.wait_until (lock, *ost, Time::Pin2SafeSeconds (timeoutAt), forward<PREDICATE> (readyToWake));
+                // NB: 'readyToWake' is passed as a plain lvalue here and in the re-wait below, never forwarded:
+                // wait_until () takes its Predicate BY VALUE, and the re-wait sits in a loop, so forwarding would
+                // move out of the caller's predicate and then keep re-reading the moved-from object.
+                bool ready = fConditionVariable.wait_until (lock, *ost, Time::Pin2SafeSeconds (timeoutAt), readyToWake);
                 while (ost->stop_requested () and not ready) {
                     // tricky case.
                     //
@@ -120,8 +123,7 @@ namespace Stroika::Foundation::Execution {
                     }
                     // must recheck / re-wait ONLY on the condition var itself - no stop token (cuz then this instantly returns and doesn't unlock argument lock so the signaler can progress)
                     ready = fConditionVariable.wait_until (
-                        lock, Time::Pin2SafeSeconds (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime)),
-                        forward<PREDICATE> (readyToWake));
+                        lock, Time::Pin2SafeSeconds (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime)), readyToWake);
                 }
                 return ready;
             }
