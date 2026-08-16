@@ -322,7 +322,7 @@ bool WMICollector::AddInstancesIf (const Iterable<String>& instances)
     Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstancesIf"};
 #endif
     AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
-    bool                                            anyAdded = false;
+    bool                                              anyAdded = false;
     instances.Apply ([this, &anyAdded] (String i) {
         if (not fInstanceData_.ContainsKey (i)) {
             AddInstance_ (i);

@@ -226,7 +226,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"FileInputStream::Rep_::SeekRead", "whence: {}, offset: {}", whence, offset};
 #endif
-            static const auto                               kException_ = range_error{"seek"};
+            static const auto                                 kException_ = range_error{"seek"};
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             switch (whence) {
                 case eFromStart: {
@@ -265,10 +265,10 @@ namespace {
         }
 
     private:
-        int                                                                            fFD_;
-        SeekableFlag                                                                   fSeekable_;
-        AdoptFDPolicy                                                                  fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-        optional<filesystem::path>                                                     fFileName_;
+        int                        fFD_;
+        SeekableFlag               fSeekable_;
+        AdoptFDPolicy              fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+        optional<filesystem::path> fFileName_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 }

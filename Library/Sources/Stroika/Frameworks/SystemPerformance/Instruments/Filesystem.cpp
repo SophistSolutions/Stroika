@@ -882,7 +882,7 @@ namespace {
         nonvirtual Info _InternalCapture ()
         {
             AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
-            Debug::TraceContextBumper                       ctx{"Instruments::Filesystem _InternalCapture"};
+            Debug::TraceContextBumper                         ctx{"Instruments::Filesystem _InternalCapture"};
 #if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
             Info result = inherited::_InternalCapture ();
 #else

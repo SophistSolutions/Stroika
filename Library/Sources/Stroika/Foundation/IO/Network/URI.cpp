@@ -181,9 +181,9 @@ URI URI::ParseRelative (const String& rawRelativeURL)
 String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
 {
     // http://stroika-bugs.sophists.com/browse/STK-1000 -- issue about maybe needed more nuanced approach
-    StringPCTEncodedFlag                           usingPCTEncodeFlag = pctEncode.value_or (eDecoded);
+    StringPCTEncodedFlag                             usingPCTEncodeFlag = pctEncode.value_or (eDecoded);
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    StringBuilder                                  result;
+    StringBuilder                                    result;
     if (fScheme_) {
         // From https://tools.ietf.org/html/rfc3986#appendix-A
         //      scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
@@ -258,8 +258,8 @@ URI::operator bool () const
 String URI::GetAuthorityRelativeResourceDir () const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    static const RegularExpression                 kSelectDir_ = "(.*\\/)[^\\/]*"_RegEx;
-    optional<String>                               baseDir;
+    static const RegularExpression                   kSelectDir_ = "(.*\\/)[^\\/]*"_RegEx;
+    optional<String>                                 baseDir;
     (void)fPath_.Matches (kSelectDir_, &baseDir);
     return baseDir.value_or (String{});
 }
@@ -267,7 +267,7 @@ String URI::GetAuthorityRelativeResourceDir () const
 URI URI::Normalize (NormalizationStyle normalization) const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    optional<SchemeType>                           scheme = fScheme_;
+    optional<SchemeType>                             scheme = fScheme_;
     if (scheme) {
         scheme = scheme->Normalize ();
     }
@@ -283,7 +283,7 @@ String URI::ToString () const
 {
     // dont use As<String> () because this can throw if bad string - and no need to pct-encode here
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    StringBuilder                                  result;
+    StringBuilder                                    result;
     if (fScheme_) {
         result << *fScheme_ << ":"sv;
     }

@@ -111,7 +111,7 @@ namespace {
         nonvirtual Characters::String ToString (ToStringFormat format) const
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-            StringBuilder                                         sb;
+            StringBuilder                                           sb;
             sb << "{"sv;
             sb << "Offset: "sv << fOffset_;
             sb << ", HighWaterMark: "sv << fBufferFilledUpValidBytes_;
@@ -274,7 +274,7 @@ namespace {
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
-        InputStream::Ptr<byte>                                                                fSource_;
+        InputStream::Ptr<byte>                                                                  fSource_;
         Memory::InlineBuffer<byte> fAllDataReadBuf_; // OK cuz typically this will be very small (1k) and not really grow...but it can if we must
         size_t fOffset_;                             // text stream offset
         size_t fBufferFilledUpValidBytes_;           // nbytes of valid text in fAllDataReadBuf_

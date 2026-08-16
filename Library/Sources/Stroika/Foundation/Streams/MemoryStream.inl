@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             {
                 Require (IsOpenRead ());
                 Require (not intoBuffer.empty ());
-                size_t                                                 nRequested = intoBuffer.size ();
+                size_t                                                   nRequested = intoBuffer.size ();
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
                 size_t nAvail  = fData_.end () - fReadCursor_;
@@ -82,8 +82,8 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 Require (IsOpenWrite ());
                 // @todo - rewrite so does in one copy - no idea why this code does multiple copies! IF it makes sense DOCUMENT why...--LGP 2023-12-18
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                size_t                                                 roomLeft     = fData_.end () - fWriteCursor_;
-                size_t                                                 roomRequired = elts.size ();
+                size_t                                                   roomLeft     = fData_.end () - fWriteCursor_;
+                size_t                                                   roomRequired = elts.size ();
                 if (roomLeft < roomRequired) {
                     size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
                     size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();

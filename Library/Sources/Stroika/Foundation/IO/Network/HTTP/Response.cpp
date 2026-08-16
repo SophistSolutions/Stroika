@@ -101,7 +101,7 @@ void Response::SetAssertExternallySynchronizedCheckerContext (const shared_ptr<A
 String Response::ToString () const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{_fThisAssertExternallySynchronized};
-    StringBuilder                                  sb;
+    StringBuilder                                    sb;
     sb << "{"sv;
     sb << "statusAndOverrideReason: "sv << fStatusAndOverrideReason_;
     sb << ", headers: "sv << this->headers ();

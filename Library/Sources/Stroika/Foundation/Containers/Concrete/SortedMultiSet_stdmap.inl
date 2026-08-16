@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (
                 &mir.fIterator, &fData_,
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Contains (ArgByValueType<T> item) const override
         {
-            value_type                                            tmp{item};
+            value_type                                              tmp{item};
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.find (item) != fData_.end ();
         }
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return;
             }
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            auto                                                   i = fData_.find (item);
+            auto                                                     i = fData_.find (item);
             if (i == fData_.end ()) {
                 fData_.insert ({item, count});
             }
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (count != 0);
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            auto                                                   i = fData_.find (item);
+            auto                                                     i = fData_.find (item);
             Require (i != fData_.end ());
             if (i != fData_.end ()) {
                 size_t result; // intentionally uninitialized
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.find (item);
+            auto                                                    i = fData_.find (item);
             if (i == fData_.end ()) {
                 return 0;
             }

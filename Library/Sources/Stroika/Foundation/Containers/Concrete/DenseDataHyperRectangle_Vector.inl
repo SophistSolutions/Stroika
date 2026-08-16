@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             return RESULT_TYPE::GetEmptyIterator ();
 #else
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  iLink = const_cast<DataStructureImplType_&> (fData_).Find (doToElement);
+            auto                                                    iLink = const_cast<DataStructureImplType_&> (fData_).Find (doToElement);
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }

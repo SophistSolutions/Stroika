@@ -199,7 +199,7 @@ struct Statement::MyRep_ : IRep {
         _fAssertExternallySynchronizedChecker.SetAssertExternallySynchronizedCheckerContext (
             fConnectionPtr_.fAssertExternallySynchronizedChecker.GetSharedContext ());
 #endif
-        u8string                                        queryUTF8 = query.AsUTF8 ();
+        u8string                                          queryUTF8 = query.AsUTF8 ();
         AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
         AssertNotImplemented ();
     }

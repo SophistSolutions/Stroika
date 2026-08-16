@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type Pop () override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            value_type                                             result = Memory::ValueOf (fData_.GetFirst ());
+            value_type                                               result = Memory::ValueOf (fData_.GetFirst ());
             fData_.RemoveFirst ();
             fChangeCounts_.PerformedChange ();
             return result;

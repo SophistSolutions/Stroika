@@ -633,7 +633,7 @@ void Connection::WriteLogConnectionMsg_ (const String& msg) const
 String Connection::ToString (bool abbreviatedOutput) const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
-    StringBuilder                                  sb;
+    StringBuilder                                    sb;
     sb << "{"sv;
     sb << "socket: "sv << fSocket_;
     if (not abbreviatedOutput) {

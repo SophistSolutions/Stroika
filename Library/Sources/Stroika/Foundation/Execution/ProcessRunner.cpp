@@ -304,7 +304,7 @@ ProcessRunner::BackgroundProcess::BackgroundProcess ()
 void ProcessRunner::BackgroundProcess::PropagateIfException () const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    Thread::Ptr                                    t{fRep_->fProcessRunner};
+    Thread::Ptr                                      t{fRep_->fProcessRunner};
     t.ThrowIfDoneWithException ();
     if (auto o = GetProcessResult ()) {
         if (o->fExitStatus and o->fExitStatus != ExitStatusType{}) {
@@ -331,14 +331,14 @@ void ProcessRunner::BackgroundProcess::WaitForStarted (Time::DurationSeconds tim
 void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSeconds timeout) const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    Thread::Ptr                                    t{fRep_->fProcessRunner};
+    Thread::Ptr                                      t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
 }
 
 void ProcessRunner::BackgroundProcess::Join (Time::DurationSeconds timeout) const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    Thread::Ptr                                    t{fRep_->fProcessRunner};
+    Thread::Ptr                                      t{fRep_->fProcessRunner};
     t.Join (timeout);
     // if he asserts in PropagateIfException () are wrong, I may need to call that here!
 }
@@ -346,14 +346,14 @@ void ProcessRunner::BackgroundProcess::Join (Time::DurationSeconds timeout) cons
 void ProcessRunner::BackgroundProcess::JoinUntil (Time::TimePointSeconds timeoutAt) const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    Thread::Ptr                                    t{fRep_->fProcessRunner};
+    Thread::Ptr                                      t{fRep_->fProcessRunner};
     t.JoinUntil (timeoutAt);
     // if he asserts in PropagateIfException () are wrong, I may need to call that here!
 }
 
 void ProcessRunner::BackgroundProcess::Terminate ()
 {
-    TraceContextBumper                             ctx{"ProcessRunner::BackgroundProcess::Terminate"};
+    TraceContextBumper                               ctx{"ProcessRunner::BackgroundProcess::Terminate"};
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     // @todo? set thread to null when done -
     //
@@ -496,9 +496,9 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
 auto ProcessRunner::Run (const String& cmdStdInValue, const StringOptions& stringOpts, Time::DurationSeconds timeout) -> tuple<String, String>
 {
     AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    MemoryStream::Ptr<byte>                         useStdIn  = MemoryStream::New<byte> ();
-    MemoryStream::Ptr<byte>                         useStdOut = MemoryStream::New<byte> ();
-    MemoryStream::Ptr<byte>                         useStdErr = MemoryStream::New<byte> ();
+    MemoryStream::Ptr<byte>                           useStdIn  = MemoryStream::New<byte> ();
+    MemoryStream::Ptr<byte>                           useStdOut = MemoryStream::New<byte> ();
+    MemoryStream::Ptr<byte>                           useStdErr = MemoryStream::New<byte> ();
 
     auto mkReadStream = [&] (const InputStream::Ptr<byte>& readFromBinStrm) {
         return stringOpts.fInputCodeCvt ? BinaryToText::Reader::New (readFromBinStrm, *stringOpts.fInputCodeCvt)
@@ -1364,7 +1364,7 @@ tuple<function<void ()>, shared_ptr<ProcessRunner::DetailedRunnableRep_>> Proces
     TraceContextBumper ctx{"ProcessRunner::CreateDetailedRunnable_"};
 #endif
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    auto                                           resultDetails = MakeSharedPtr<DetailedRunnableRep_> ();
+    auto                                             resultDetails = MakeSharedPtr<DetailedRunnableRep_> ();
     return make_tuple (
         [resultDetails, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_, out = fStdOut_, err = fStdErr_] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

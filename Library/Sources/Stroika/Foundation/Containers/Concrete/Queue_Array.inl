@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type RemoveHead () override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            T                                                      item = fData_.GetAt (0);
+            T                                                        item = fData_.GetAt (0);
             fData_.Remove (0u);
             fChangeCounts_.PerformedChange ();
             return item;

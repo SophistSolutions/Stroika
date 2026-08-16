@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (
                 &mir.fIterator, &fData_,
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            auto                                                   addedAtI = fData_.insert (item);
+            auto                                                     addedAtI = fData_.insert (item);
             fChangeCounts_.PerformedChange ();
             if (oAddedI != nullptr) [[unlikely]] {
                 *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, addedAtI)};

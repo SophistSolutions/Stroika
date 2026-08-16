@@ -132,7 +132,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , chunkedTransferMode{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::chunkedTransferMode);
         AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
-        auto                                           te = thisObj->headers ().transferEncoding ();
+        auto                                             te = thisObj->headers ().transferEncoding ();
         return te and te->Contains (HTTP::TransferEncoding::kChunked);
     }}
     , codeCvt{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
@@ -611,7 +611,7 @@ void Response::printf (const wchar_t* format, ...)
 {
     ////DEPRECATED
     AssertExternallySynchronizedChecker::WriteContext declareContext{_fThisAssertExternallySynchronized};
-    va_list                                         argsList;
+    va_list                                           argsList;
     va_start (argsList, format);
     String tmp = Characters::FormatV (format, argsList);
     va_end (argsList);
@@ -647,7 +647,7 @@ void Response::FlushNextChunkIfNeeded_ ()
 String Response::ToString () const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{_fThisAssertExternallySynchronized};
-    StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
+    StringBuilder                                    sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
     sb << "Socket: "sv << fSocket_;
     sb << ", chunkedTransferMode: "sv << this->chunkedTransferMode ();
     sb << ", hasEntityBody: "sv << this->hasEntityBody ();

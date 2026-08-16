@@ -244,14 +244,14 @@ namespace Stroika::Foundation::Memory {
     inline byte BLOB::operator[] (const size_t i) const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        span<const byte>                                      tmp = fRep_->GetBounds ();
+        span<const byte>                                        tmp = fRep_->GetBounds ();
         Assert (i < tmp.size ());
         return tmp[i];
     }
     inline bool BLOB::empty () const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        span<const byte>                                      tmp = fRep_->GetBounds ();
+        span<const byte>                                        tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         return tmp.empty ();
     }
@@ -263,13 +263,13 @@ namespace Stroika::Foundation::Memory {
     inline const byte* BLOB::end () const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        auto                                                  b = fRep_->GetBounds ();
+        auto                                                    b = fRep_->GetBounds ();
         return b.data () + b.size ();
     }
     inline size_t BLOB::GetSize () const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        span<const byte>                                      tmp = fRep_->GetBounds ();
+        span<const byte>                                        tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         return tmp.size ();
     }
@@ -317,11 +317,11 @@ namespace Stroika::Foundation::Memory {
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext readLockL{lhs.fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
         Debug::AssertExternallySynchronizedChecker::ReadContext readLockR{rhs.fThisAssertExternallySynchronized_};
-        span<const byte>                                      l            = lhs.fRep_->GetBounds ();
-        span<const byte>                                      r            = rhs.fRep_->GetBounds ();
-        size_t                                                lSize        = l.size ();
-        size_t                                                rSize        = r.size ();
-        size_t                                                nCommonBytes = min (lSize, rSize);
+        span<const byte>                                        l            = lhs.fRep_->GetBounds ();
+        span<const byte>                                        r            = rhs.fRep_->GetBounds ();
+        size_t                                                  lSize        = l.size ();
+        size_t                                                  rSize        = r.size ();
+        size_t                                                  nCommonBytes = min (lSize, rSize);
         if (nCommonBytes != 0) {
             // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
             if (strong_ordering tmp = CompareBytes (l.subspan (0, nCommonBytes), r.subspan (0, nCommonBytes)); tmp != strong_ordering::equal) {

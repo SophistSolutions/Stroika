@@ -101,7 +101,7 @@ Headers::Headers ()
                  [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& connectionValue) {
                      Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::connection);
                      AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-                     optional<String>                                v;
+                     optional<String>                                  v;
                      if (connectionValue) {
                          switch (*connectionValue) {
                              case ConnectionValue::eKeepAlive:
@@ -506,7 +506,7 @@ Collection<String> Headers::LookupAll (const String& name) const
 size_t Headers::Remove (const String& headerName)
 {
     AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    size_t                                          nRemovals{};
+    size_t                                            nRemovals{};
     if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, nullopt, &nRemovals)) {
         return nRemovals; // could be zero if its builtin, but this doesn't change anything
     }
@@ -517,7 +517,7 @@ size_t Headers::Remove (const String& headerName)
 size_t Headers::Remove (const String& headerName, const String& value)
 {
     AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    size_t                                          nRemovals{};
+    size_t                                            nRemovals{};
     if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, value, &nRemovals)) {
         return nRemovals;
     }
@@ -765,7 +765,7 @@ template <>
 Collection<KeyValuePair<String, String>> Headers::As () const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    Collection<KeyValuePair<String, String>>       results = fExtraHeaders_;
+    Collection<KeyValuePair<String, String>>         results = fExtraHeaders_;
     if (fAcceptEncodings_) {
         results.Add ({HeaderName::kAcceptEncoding, fAcceptEncodings_->As<String> ()});
     }

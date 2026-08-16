@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.Find (key);
+            auto                                                    i = fData_.Find (key);
             if (i == fData_.end ()) {
                 if (item != nullptr) {
                     *item = nullopt;
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Add (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            size_t                                                 szBefore = fData_.size ();
+            size_t                                                   szBefore = fData_.size ();
             fData_.Add (item); // note return value says if changed, doesn't report if added, so check size for that
             fChangeCounts_.PerformedChange ();
             return szBefore != fData_.size ();
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            auto                                                   i = fData_.Find (key);
+            auto                                                     i = fData_.Find (key);
             if (i != fData_.end ()) {
                 fData_.Remove (i);
                 fChangeCounts_.PerformedChange ();

@@ -195,7 +195,7 @@ auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family
 Socket::PlatformNativeHandle Socket::Ptr::Detach ()
 {
     Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
-    PlatformNativeHandle                                   h = kINVALID_NATIVE_HANDLE_;
+    PlatformNativeHandle                                     h = kINVALID_NATIVE_HANDLE_;
     if (fRep_ != nullptr) {
         h = fRep_->Detach ();
     }
@@ -265,7 +265,7 @@ bool Socket::Ptr::IsOpen () const
 String Socket::Ptr::ToString () const
 {
     Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-    StringBuilder                                         sb;
+    StringBuilder                                           sb;
     if (fRep_ == nullptr) {
         sb << "nullptr"sv;
     }

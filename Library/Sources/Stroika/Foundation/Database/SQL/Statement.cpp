@@ -63,7 +63,7 @@ auto Statement::GetAllRemainingRows () -> Sequence<Row>
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
     AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
-    Sequence<Row>                                   result;
+    Sequence<Row>                                     result;
     while (auto o = GetNextRow ()) {
         result += *o;
     }
@@ -76,8 +76,8 @@ Sequence<VariantValue> Statement::GetAllRemainingRows (size_t restrictToColumn)
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
     AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
-    Sequence<VariantValue>                          result;
-    ColumnDescription                               col0 = GetColumns ()[restrictToColumn];
+    Sequence<VariantValue>                            result;
+    ColumnDescription                                 col0 = GetColumns ()[restrictToColumn];
     while (auto o = GetNextRow ()) {
         result += *o->Lookup (col0.fName);
     }
@@ -90,9 +90,9 @@ Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRemainingRows (size
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
     AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
-    Sequence<tuple<VariantValue, VariantValue>>     result;
-    ColumnDescription                               col0 = GetColumns ()[restrictToColumn1];
-    ColumnDescription                               col1 = GetColumns ()[restrictToColumn2];
+    Sequence<tuple<VariantValue, VariantValue>>       result;
+    ColumnDescription                                 col0 = GetColumns ()[restrictToColumn1];
+    ColumnDescription                                 col1 = GetColumns ()[restrictToColumn2];
     while (auto o = GetNextRow ()) {
         result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName));
     }
@@ -105,7 +105,7 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemai
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    AssertExternallySynchronizedChecker::WriteContext           critSec{_fAssertExternallySynchronizedChecker};
+    AssertExternallySynchronizedChecker::WriteContext         critSec{_fAssertExternallySynchronizedChecker};
     Sequence<tuple<VariantValue, VariantValue, VariantValue>> result;
     ColumnDescription                                         col0 = GetColumns ()[restrictToColumn1];
     ColumnDescription                                         col1 = GetColumns ()[restrictToColumn2];
@@ -119,7 +119,7 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemai
 void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameters)
 {
     AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
-    int                                             idx = 0;
+    int                                               idx = 0;
     Bind ();
     for (const auto& i : parameters) {
         if (i.fName) {
@@ -176,7 +176,7 @@ void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, 
 String Statement::ToString () const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{_fAssertExternallySynchronizedChecker};
-    StringBuilder                                  sb;
+    StringBuilder                                    sb;
     sb << "{"sv;
     sb << "parameterBindings: "sv << GetParameters ();
     sb << ", columnDescriptions: "sv << GetColumns ();

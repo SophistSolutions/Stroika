@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual KeyEqualityComparerType GetKeyEqualityComparer () const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  keyComparer = fKeyComparer_;
+            auto                                                    keyComparer = fKeyComparer_;
             return [keyComparer] (const KEY_TYPE& lhs, const KEY_TYPE& rhs) { return keyComparer (lhs, rhs) and keyComparer (rhs, lhs); };
         }
         virtual shared_ptr<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> CloneEmpty () const override
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (
                 &mir.fIterator, &fData_,
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.find (key);
+            auto                                                    i = fData_.find (key);
             if (i == fData_.end ()) {
                 if (item != nullptr) {
                     *item = nullopt;
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Add (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            pair<typename DataStructureImplType_::iterator, bool>  flagAndI = fData_.insert (item);
+            pair<typename DataStructureImplType_::iterator, bool>    flagAndI = fData_.insert (item);
             if (flagAndI.second) {
                 fChangeCounts_.PerformedChange ();
                 return true;
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            auto                                                   i = fData_.find (key);
+            auto                                                     i = fData_.find (key);
             if (i != fData_.end ()) {
                 fData_.erase (i);
                 fChangeCounts_.PerformedChange ();

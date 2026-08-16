@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual shared_ptr<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> CloneAndPatchIterator ([[maybe_unused]] Iterator<value_type>* i) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep

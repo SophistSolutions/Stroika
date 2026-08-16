@@ -100,8 +100,8 @@ namespace Stroika::Foundation::Debug {
         : fSharedContext_{sharedContext ? sharedContext : make_shared<SharedContext> ()}
     {
     }
-    inline AssertExternallySynchronizedChecker::AssertExternallySynchronizedChecker (const shared_ptr<SharedContext>&         sharedContext,
-                                                                                 const AssertExternallySynchronizedChecker& src) noexcept
+    inline AssertExternallySynchronizedChecker::AssertExternallySynchronizedChecker (const shared_ptr<SharedContext>& sharedContext,
+                                                                                     const AssertExternallySynchronizedChecker& src) noexcept
         : AssertExternallySynchronizedChecker{sharedContext}
     {
         ReadContext readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Debug {
         ReadContext readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
     inline AssertExternallySynchronizedChecker::AssertExternallySynchronizedChecker (const shared_ptr<SharedContext>& sharedContext,
-                                                                                 [[maybe_unused]] AssertExternallySynchronizedChecker&& src) noexcept
+                                                                                     [[maybe_unused]] AssertExternallySynchronizedChecker&& src) noexcept
         : AssertExternallySynchronizedChecker{sharedContext}
     {
         WriteContext declareWriteContext4Src{src}; // move we must be able to modify source
@@ -123,7 +123,8 @@ namespace Stroika::Foundation::Debug {
         WriteContext writeLockRHS{src}; // move we must be able to modify source
     }
 #endif
-    inline AssertExternallySynchronizedChecker& AssertExternallySynchronizedChecker::operator= ([[maybe_unused]] const AssertExternallySynchronizedChecker& rhs) noexcept
+    inline AssertExternallySynchronizedChecker&
+    AssertExternallySynchronizedChecker::operator= ([[maybe_unused]] const AssertExternallySynchronizedChecker& rhs) noexcept
     {
         ReadContext  readLockRHS{rhs};                // we must be able to read RHS
         WriteContext declareWriteContext4This{*this}; // we must be able modify this

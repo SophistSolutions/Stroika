@@ -1317,7 +1317,7 @@ namespace {
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
-            TraceContextBumper                             ctx{"Xerces::DocRep_::Write"};
+            TraceContextBumper                               ctx{"Xerces::DocRep_::Write"};
             AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotNull (fXMLDoc);
             START_LIB_EXCEPTION_MAPPER_
@@ -1331,7 +1331,7 @@ namespace {
 #endif
             virtual void Validate (const Schema::Ptr& schema) const override
         {
-            TraceContextBumper                             ctx{"Xerces::DocRep_::Validate"};
+            TraceContextBumper                               ctx{"Xerces::DocRep_::Validate"};
             AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             RequireNotNull (schema);
             START_LIB_EXCEPTION_MAPPER_

@@ -421,7 +421,7 @@ namespace Stroika::Foundation::Memory {
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
-        shared_ptr<_IRep>                                                                     fRep_;
+        shared_ptr<_IRep>                                                                       fRep_;
     };
     static_assert (totally_ordered<BLOB>);
     static_assert (regular<BLOB>);

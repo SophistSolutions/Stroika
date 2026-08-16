@@ -75,7 +75,7 @@ void Message::SetAssertExternallySynchronizedCheckerContext (const shared_ptr<As
 String Message::ToString () const
 {
     AssertExternallySynchronizedChecker::ReadContext readLock{fThisAssertExternallySynchronized_};
-    StringBuilder                                  sb;
+    StringBuilder                                    sb;
     sb << "{"sv;
     sb << "peerAddress: "sv << fPeerAddress_;
     sb << ", request: "sv << fRequest_;

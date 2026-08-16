@@ -43,7 +43,7 @@ namespace {
                                           static_cast<long long> (end - start), sockAddr};
 #endif
             AssertExternallySynchronizedChecker::WriteContext declareContext{this->fThisAssertExternallySynchronized};
-            sockaddr_storage                                sa = sockAddr.As<sockaddr_storage> ();
+            sockaddr_storage                                  sa = sockAddr.As<sockaddr_storage> ();
 #if qStroika_Foundation_Common_Platform_POSIX
             Handle_ErrNoResultInterruption ([this, &start, &end, &sa, &sockAddr] () -> int {
                 return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa),
@@ -180,8 +180,8 @@ namespace {
         }
         virtual void SetMulticastTTL (uint8_t ttl) override
         {
-            static constexpr Execution::Activity            kSettingMulticastTTL{"setting multicast TTL"sv};
-            Execution::DeclareActivity                      activityDeclare{&kSettingMulticastTTL};
+            static constexpr Execution::Activity              kSettingMulticastTTL{"setting multicast TTL"sv};
+            Execution::DeclareActivity                        activityDeclare{&kSettingMulticastTTL};
             AssertExternallySynchronizedChecker::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             switch (GetAddressFamily ()) {
                 case SocketAddress::INET: {
@@ -229,8 +229,8 @@ namespace {
         }
         virtual void SetMulticastLoopMode (bool loopMode) override
         {
-            static constexpr Execution::Activity            kSettingMulticastLoopMode{"setting multicast loop mode"sv};
-            Execution::DeclareActivity                      activityDeclare{&kSettingMulticastLoopMode};
+            static constexpr Execution::Activity              kSettingMulticastLoopMode{"setting multicast loop mode"sv};
+            Execution::DeclareActivity                        activityDeclare{&kSettingMulticastLoopMode};
             AssertExternallySynchronizedChecker::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             switch (GetAddressFamily ()) {
                 case SocketAddress::INET: {

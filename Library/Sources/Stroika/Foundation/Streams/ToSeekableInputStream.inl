@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                static const auto                               kException_ = range_error{"seek"};
+                static const auto                                 kException_ = range_error{"seek"};
                 AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 switch (whence) {
                     case Whence::eFromStart: {

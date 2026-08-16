@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder<OPTIONS>::Append (span<const CHAR_T> s)
     {
         Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fAssertExternallySynchronized_};
-        size_t                                                 spanSize = s.size ();
+        size_t                                                   spanSize = s.size ();
         if (spanSize != 0) {
             if constexpr (same_as<CHAR_T, ASCII>) {
                 Character::CheckASCII (s);

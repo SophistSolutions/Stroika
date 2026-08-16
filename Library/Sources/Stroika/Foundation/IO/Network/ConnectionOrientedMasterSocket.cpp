@@ -31,7 +31,7 @@ namespace {
         }
         virtual void Listen (unsigned int backlog) override
         {
-            Debug::TraceContextBumper                       ctx{"IO::Network::Socket::Listen", "backlog={}"_f, backlog};
+            Debug::TraceContextBumper                         ctx{"IO::Network::Socket::Listen", "backlog={}"_f, backlog};
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
 #if qStroika_Foundation_Common_Platform_POSIX
             Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
@@ -44,8 +44,8 @@ namespace {
         virtual ConnectionOrientedStreamSocket::Ptr Accept () override
         {
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
-            sockaddr_storage                                peer{};
-            socklen_t                                       sz = sizeof (peer);
+            sockaddr_storage                                  peer{};
+            socklen_t                                         sz = sizeof (peer);
 #if qStroika_Foundation_Common_Platform_POSIX
             return ConnectionOrientedStreamSocket::Attach (
                 Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); }));

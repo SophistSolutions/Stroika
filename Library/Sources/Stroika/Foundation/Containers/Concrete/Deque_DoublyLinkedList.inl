@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type RemoveHead () override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            T                                                      item = Memory::ValueOf (fData_.GetFirst ());
+            T                                                        item = Memory::ValueOf (fData_.GetFirst ());
             fData_.RemoveFirst ();
             fChangeCounts_.PerformedChange ();
             return item;
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type RemoveTail () override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            value_type                                             item = Memory::ValueOf (fData_.GetFirst ());
+            value_type                                               item = Memory::ValueOf (fData_.GetFirst ());
             fData_.RemoveLast ();
             fChangeCounts_.PerformedChange ();
             return item;

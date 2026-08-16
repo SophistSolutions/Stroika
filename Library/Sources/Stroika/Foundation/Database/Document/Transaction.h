@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Database::Document {
 
     protected:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized;
-        unique_ptr<IRep>                                                                      _fRep;
+        unique_ptr<IRep>                                                                        _fRep;
     };
 
     /**

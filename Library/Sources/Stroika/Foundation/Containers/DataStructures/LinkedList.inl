@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::push_back (const SPAN_T& copyFrom)
     {
         Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
-        Link_*                                                 last = this->fHead_; // Compute last once, and re-use for each item appended
+        Link_* last = this->fHead_; // Compute last once, and re-use for each item appended
         if (last != nullptr) {
             for (; last->fNext != nullptr; last = last->fNext)
                 ;

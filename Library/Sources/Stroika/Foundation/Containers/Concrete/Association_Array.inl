@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterable<mapped_type> Lookup (ArgByValueType<KEY_TYPE> key) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            vector<mapped_type>                                   result;
+            vector<mapped_type>                                     result;
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 if (fKeyEqualsComparer_ (it->fKey, key)) {
                     result.push_back (it->fValue);

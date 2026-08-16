@@ -84,7 +84,7 @@ LibraryContext::LibraryContext ()
     : availableCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
         const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::availableCipherAlgorithms);
         AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-        Set<String>                                    cipherNames;
+        Set<String>                                      cipherNames;
 #if OPENSSL_VERSION_MAJOR >= 3
         ::EVP_CIPHER_do_all_provided (
             nullptr, [] (::EVP_CIPHER* ciph, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); }, &cipherNames);
@@ -107,7 +107,7 @@ LibraryContext::LibraryContext ()
     , standardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
         const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::standardCipherAlgorithms);
         AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-        Set<CipherAlgorithm>                           results;
+        Set<CipherAlgorithm>                             results;
 
         results += CipherAlgorithms::kAES_128_CBC;
         results += CipherAlgorithms::kAES_128_ECB;
@@ -178,7 +178,7 @@ LibraryContext::LibraryContext ()
     , standardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
         const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::standardDigestAlgorithms);
         AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-        Set<DigestAlgorithm>                           results;
+        Set<DigestAlgorithm>                             results;
         results += DigestAlgorithms::kMD5;
         results += DigestAlgorithms::kSHA1;
         results += DigestAlgorithms::kSHA1_224;

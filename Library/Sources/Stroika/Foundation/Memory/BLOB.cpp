@@ -209,7 +209,7 @@ namespace {
         {
         }
         struct REP : InputStream::IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<REP> {
-            bool                                                                           fIsOpenForRead_{true};
+            bool                                                                             fIsOpenForRead_{true};
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
             BLOB fSavedBLOB_; // save ref to BLOB in case it goes out of scope before stream
             REP (const BLOB& b)
@@ -248,9 +248,9 @@ namespace {
             {
                 Require (not intoBuffer.empty ());
                 AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                size_t                                          bytesToRead = intoBuffer.size ();
-                size_t                                          bytesLeft   = fEnd - fCur;
-                bytesToRead                                                 = min (bytesLeft, bytesToRead);
+                size_t                                            bytesToRead = intoBuffer.size ();
+                size_t                                            bytesLeft   = fEnd - fCur;
+                bytesToRead                                                   = min (bytesLeft, bytesToRead);
                 CopyBytes (span{fCur, bytesToRead}, intoBuffer);
                 fCur += bytesToRead;
                 return intoBuffer.subspan (0, bytesToRead);
@@ -263,7 +263,7 @@ namespace {
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                static const auto                               kException_ = range_error{"seek"};
+                static const auto                                 kException_ = range_error{"seek"};
                 AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 switch (whence) {
@@ -320,8 +320,8 @@ Characters::String Stroika::Foundation::Memory::BLOB::AsHex (size_t maxBytesToSh
 {
     // @todo Could be more efficient
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    StringBuilder                                  sb;
-    size_t                                         cnt{};
+    StringBuilder                                    sb;
+    size_t                                           cnt{};
     for (byte b : *this) {
         if (cnt++ > maxBytesToShow) {
 #if qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy

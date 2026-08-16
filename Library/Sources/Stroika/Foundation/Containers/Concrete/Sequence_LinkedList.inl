@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t IndexOf (const Iterator<value_type>& i) const override
         {
-            auto&                                                 mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return mir.fIterator.CurrentIndex (&fData_);
         }
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
-            Debug::AssertExternallySynchronizedChecker::WriteContext           declareWriteContext{fData_};
+            Debug::AssertExternallySynchronizedChecker::WriteContext         declareWriteContext{fData_};
             optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
             if (nextI != nullptr) {
                 savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();

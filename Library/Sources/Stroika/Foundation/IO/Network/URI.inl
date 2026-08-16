@@ -66,7 +66,7 @@ namespace Stroika::Foundation::IO::Network {
     inline PortType URI::GetPortValue () const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        optional<PortType>                                    op = fAuthority_ ? fAuthority_->GetPort () : optional<PortType>{};
+        optional<PortType>                                      op = fAuthority_ ? fAuthority_->GetPort () : optional<PortType>{};
         if (op) {
             return *op;
         }

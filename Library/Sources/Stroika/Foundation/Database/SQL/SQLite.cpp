@@ -328,7 +328,7 @@ namespace {
         virtual Duration GetBusyTimeout () const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
-            optional<int>                                         d;
+            optional<int>                                           d;
             auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                 Assert (argc == 1);
                 Assert (::strcmp (azColName[0], "timeout") == 0);
@@ -480,9 +480,9 @@ struct Statement::MyRep_ : IRep {
         _fAssertExternallySynchronizedChecker.SetAssertExternallySynchronizedCheckerContext (
             fConnectionPtr_.fAssertExternallySynchronizedChecker.GetSharedContext ());
 #endif
-        string                                          queryUTF8 = query.AsUTF8<string> ();
+        string                                            queryUTF8 = query.AsUTF8<string> ();
         AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
-        const char*                                     pzTail = nullptr;
+        const char*                                       pzTail = nullptr;
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), queryUTF8.c_str (), -1, &fStatementObj_, &pzTail), db->Peek ());
         Assert (pzTail != nullptr);
         if (*pzTail != '\0') {
@@ -596,7 +596,7 @@ struct Statement::MyRep_ : IRep {
     {
         Require (not parameterName.empty ());
         AssertExternallySynchronizedChecker::WriteContext declareContext{_fAssertExternallySynchronizedChecker};
-        String                                          pn = parameterName;
+        String                                            pn = parameterName;
         if (pn[0] != ':') {
             pn = ":"_k + pn;
         }

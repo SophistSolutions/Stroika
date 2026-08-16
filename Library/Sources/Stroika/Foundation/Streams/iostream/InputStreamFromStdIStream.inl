@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             virtual optional<size_t> AvailableToRead () override
             {
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                streamsize                                             sz = fOriginalStreamRef_.rdbuf ()->in_avail ();
+                streamsize                                               sz = fOriginalStreamRef_.rdbuf ()->in_avail ();
                 // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
                 if (sz == 0) {
                     return nullopt;

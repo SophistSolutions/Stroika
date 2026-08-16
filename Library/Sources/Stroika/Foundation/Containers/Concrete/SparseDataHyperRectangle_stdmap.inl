@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual T GetAt (INDEXES... indexes) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.find (tuple<INDEXES...>{indexes...});
+            auto                                                    i = fData_.find (tuple<INDEXES...>{indexes...});
             if (i != fData_.end ()) {
                 return i->second;
             }

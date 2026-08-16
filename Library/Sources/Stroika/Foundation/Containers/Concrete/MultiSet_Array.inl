@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -111,14 +111,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Contains (ArgByValueType<T> item) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            value_type                                            tmp{item};
+            value_type                                              tmp{item};
             return Find_ (tmp) != kNotFound_;
         }
         virtual void Add (ArgByValueType<T> item, CounterType count) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            value_type                                             tmp{item, count};
-            size_t                                                 index = Find_ (tmp);
+            value_type                                               tmp{item, count};
+            size_t                                                   index = Find_ (tmp);
             if (index == kNotFound_) {
                 fData_.push_back (tmp);
             }
@@ -132,8 +132,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (count > 0);
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            value_type                                             tmp{item};
-            size_t                                                 index = Find_ (tmp);
+            value_type                                               tmp{item};
+            size_t                                                   index = Find_ (tmp);
             if (index != kNotFound_) {
                 Assert (index < fData_.size ());
                 qStroika_ATTRIBUTE_INDETERMINATE size_t result;
@@ -194,8 +194,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            value_type                                            tmp{item};
-            size_t                                                index = Find_ (tmp);
+            value_type                                              tmp{item};
+            size_t                                                  index = Find_ (tmp);
             if (index == kNotFound_) {
                 return 0;
             }

@@ -110,8 +110,8 @@ namespace Stroika::Foundation::IO::Network {
             virtual Socket::PlatformNativeHandle Detach () override
             {
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
-                Socket::PlatformNativeHandle                           h = fSD_;
-                fSD_                                                     = kINVALID_NATIVE_HANDLE_;
+                Socket::PlatformNativeHandle                             h = fSD_;
+                fSD_                                                       = kINVALID_NATIVE_HANDLE_;
                 return h;
             }
             virtual void Shutdown (Socket::ShutdownTarget shutdownTarget) override
@@ -164,8 +164,8 @@ namespace Stroika::Foundation::IO::Network {
             virtual optional<IO::Network::SocketAddress> GetLocalAddress () const override
             {
                 Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized};
-                struct sockaddr_storage                               radr;
-                socklen_t                                             len = sizeof (radr);
+                struct sockaddr_storage                                 radr;
+                socklen_t                                               len = sizeof (radr);
                 if (::getsockname (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
                     IO::Network::SocketAddress sa{radr};
                     return sa;
@@ -220,8 +220,8 @@ namespace Stroika::Foundation::IO::Network {
             inline RESULT_TYPE getsockopt (int level, int optname) const
             {
                 Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized};
-                RESULT_TYPE                                           r{};
-                socklen_t                                             roptlen = sizeof (r);
+                RESULT_TYPE                                             r{};
+                socklen_t                                               roptlen = sizeof (r);
                 this->getsockopt (level, optname, &r, &roptlen);
                 return r;
             }

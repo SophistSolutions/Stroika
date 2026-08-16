@@ -94,10 +94,10 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
                 Require (IsOpenRead ());
-                static const auto                               kException_ = range_error{"seek"};
+                static const auto                                 kException_ = range_error{"seek"};
                 AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                size_t                                          sourceLen = fSource_.size ();
-                SeekOffsetType                                  newOffset{};
+                size_t                                            sourceLen = fSource_.size ();
+                SeekOffsetType                                    newOffset{};
                 switch (whence) {
                     case eFromStart: {
                         if (offset < 0) [[unlikely]] {

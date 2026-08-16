@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (
                 &mir.fIterator, &fData_,
@@ -108,8 +108,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  i       = fData_.find (item);
-            bool                                                  notDone = i != fData_.end ();
+            auto                                                    i       = fData_.find (item);
+            bool                                                    notDone = i != fData_.end ();
             if (oResult != nullptr and notDone) {
                 *oResult = *i;
             }

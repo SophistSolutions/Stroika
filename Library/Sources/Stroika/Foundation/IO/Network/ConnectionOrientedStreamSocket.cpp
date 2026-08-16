@@ -84,7 +84,7 @@ namespace {
         nonvirtual void Connect_Sync_ (const SocketAddress& sockAddr) const
         {
             AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
-            sockaddr_storage                               useSockAddr = sockAddr.As<sockaddr_storage> ();
+            sockaddr_storage                                 useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qStroika_Foundation_Common_Platform_POSIX
             Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
 #elif qStroika_Foundation_Common_Platform_Windows
@@ -96,7 +96,7 @@ namespace {
         nonvirtual void Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, const Time::Duration& timeout) const
         {
             AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
-            sockaddr_storage                               useSockAddr = sockAddr.As<sockaddr_storage> ();
+            sockaddr_storage                                 useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qStroika_Foundation_Common_Platform_POSIX
             // http://developerweb.net/viewtopic.php?id=3196.
             // and see https://stackoverflow.com/questions/4181784/how-to-set-socket-timeout-in-c-when-making-multiple-connections/4182564#4182564 for why not using SO_RCVTIMEO/SO_SNDTIMEO
@@ -312,8 +312,8 @@ namespace {
         virtual optional<IO::Network::SocketAddress> GetPeerAddress () const override
         {
             AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
-            struct sockaddr_storage                        radr;
-            socklen_t                                      len = sizeof (radr);
+            struct sockaddr_storage                          radr;
+            socklen_t                                        len = sizeof (radr);
             if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
                 IO::Network::SocketAddress sa{radr};
                 return sa;
@@ -333,7 +333,7 @@ namespace {
         virtual KeepAliveOptions GetKeepAlives () const override
         {
             AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
-            KeepAliveOptions                               result;
+            KeepAliveOptions                                 result;
             result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
 #if qStroika_Foundation_Common_Platform_Linux
             // Only available if linux >= 2.4

@@ -126,7 +126,7 @@ Streams::InputStream::Ptr<byte> Request::GetBodyStream ()
 String Request::ToString () const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{_fThisAssertExternallySynchronized};
-    StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trialing '{'
+    StringBuilder                                    sb = inherited::ToString ().SubString (0, -1); // strip trialing '{'
     // @todo add stuff about body
     sb << "}"sv;
     return sb;

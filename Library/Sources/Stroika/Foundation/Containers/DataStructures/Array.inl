@@ -181,8 +181,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
-        const T*                                              start = &fItems_[0];
-        const T*                                              end   = &fItems_[fLength_];
+        const T*                                                start = &fItems_[0];
+        const T*                                                end   = &fItems_[fLength_];
         switch (seq) {
             case Execution::SequencePolicy::eSeq:
                 for_each (start, end, forward<FUNCTION> (doToElement));
@@ -211,9 +211,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     auto Array<T>::Find (FUNCTION&& firstThat) const -> ForwardIterator
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
-        const T*                                              start = &fItems_[0];
-        const T*                                              i     = start;
-        const T*                                              last  = &fItems_[fLength_];
+        const T*                                                start = &fItems_[0];
+        const T*                                                i     = start;
+        const T*                                                last  = &fItems_[fLength_];
         for (; i < last; ++i) {
             if (forward<FUNCTION> (firstThat) (*i)) {
                 return ForwardIterator{this, static_cast<size_t> (i - start)};

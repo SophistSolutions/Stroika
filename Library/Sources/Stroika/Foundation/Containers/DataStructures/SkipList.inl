@@ -589,7 +589,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::clear ()
     {
         AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
-        Link_*                                          link = (fHead_.size () == 0) ? nullptr : fHead_[0];
+        Link_*                                            link = (fHead_.size () == 0) ? nullptr : fHead_[0];
         while (link != nullptr) {
             Link_* nextLink = link->fNext[0];
             delete link;

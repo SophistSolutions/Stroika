@@ -15,7 +15,8 @@ namespace Stroika::Foundation::Database::Document {
         : _fRep{move (rep)}
     {
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
-        this->_fThisAssertExternallySynchronized.SetAssertExternallySynchronizedCheckerContext (_fRep->_fThisAssertExternallySynchronized.GetSharedContext ());
+        this->_fThisAssertExternallySynchronized.SetAssertExternallySynchronizedCheckerContext (
+            _fRep->_fThisAssertExternallySynchronized.GetSharedContext ());
 #endif
     }
     inline Transaction::~Transaction ()

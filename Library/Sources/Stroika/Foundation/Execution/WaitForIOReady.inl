@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Execution {
     auto WaitForIOReady<T, TRAITS>::WaitUntil (Time::TimePointSeconds timeoutAt) -> Containers::Set<T>
     {
         Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        Containers::Set<T>                                     result = WaitQuietlyUntil (timeoutAt);
+        Containers::Set<T>                                       result = WaitQuietlyUntil (timeoutAt);
         if (result.empty ()) {
             Execution::ThrowTimeoutExceptionAfter (timeoutAt); // maybe returning 0 entries without timeout, because of fPollable2Wakeup_
         }

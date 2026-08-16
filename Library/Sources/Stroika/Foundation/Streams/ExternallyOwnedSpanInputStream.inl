@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
             {
                 Require (not intoBuffer.empty ());
                 Require (IsOpenRead ());
-                size_t                                                 nRequested = intoBuffer.size ();
+                size_t                                                   nRequested = intoBuffer.size ();
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
                 size_t nAvail  = fEnd_ - fCursor_;

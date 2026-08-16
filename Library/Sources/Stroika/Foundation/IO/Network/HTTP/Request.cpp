@@ -50,8 +50,8 @@ Request::Request ()
                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& versionOrVersionLabel) {
                       Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
                       AssertExternallySynchronizedChecker::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
-                      static const String                             kLabeled_10_{"HTTP/1.0"sv};
-                      static const String                             kLabeled_11_{"HTTP/1.1"sv};
+                      static const String                               kLabeled_10_{"HTTP/1.0"sv};
+                      static const String                               kLabeled_11_{"HTTP/1.1"sv};
                       auto versionStringComparer = String::EqualsComparer{Characters::eCaseInsensitive};
                       if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or
                           versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
@@ -122,7 +122,7 @@ void Request::SetAssertExternallySynchronizedCheckerContext (const shared_ptr<De
 String Request::ToString () const
 {
     Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{_fThisAssertExternallySynchronized};
-    StringBuilder                                         sb;
+    StringBuilder                                           sb;
     sb << "{"sv;
     sb << "HTTPVersion: "sv << fHTTPVersion_;
     sb << ", method: "sv << fMethod_;

@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&iteratorRep.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Add (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            size_t                                                 oldSize = this->size ();
+            size_t                                                   oldSize = this->size ();
             static_assert (DataStructureImplType_::TraitsType::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces); // here we count on this setting
             (void)fData_.Add (item); // returns if there was a change, but this KeyedCollection returns true iff collection changed size
             bool newItemAdded = this->size () != oldSize;
@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            auto                                                   i = fData_.find (key);
+            auto                                                     i = fData_.find (key);
             if (i != fData_.end ()) {
                 fData_.erase (i);
                 return true;

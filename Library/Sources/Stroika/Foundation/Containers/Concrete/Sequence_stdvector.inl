@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                                            [[maybe_unused]] Execution::SequencePolicy              seq) const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  iLink = const_cast<DataStructureImplType_&> (fData_).Find (that);
+            auto                                                    iLink = const_cast<DataStructureImplType_&> (fData_).Find (that);
             if (iLink == fData_.end ()) {
                 return nullptr;
             }
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (
                 &mir.fIterator, &fData_,

@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Add (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            KEY_TYPE                                               key{fKeyExtractor_ (item)};
+            KEY_TYPE                                                 key{fKeyExtractor_ (item)};
             if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); },
                                      Execution::SequencePolicy::eDEFAULT)) {
                 const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());

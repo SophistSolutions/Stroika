@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual size_t size () const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            size_t                                                cnt = 0;
+            size_t                                                  cnt = 0;
             for (auto i = fData_.begin (); i != fData_.end (); ++i, ++cnt)
                 ;
             return cnt;
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (
                 &mir.fIterator, &fData_,

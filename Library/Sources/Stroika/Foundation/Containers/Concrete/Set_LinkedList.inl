@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            auto                                                    result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -95,8 +95,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
-            Debug::AssertExternallySynchronizedChecker::ReadContext  readLock{fData_};
-            typename DataStructureImplType_::UnderlyingIteratorRep l =
+            Debug::AssertExternallySynchronizedChecker::ReadContext readLock{fData_};
+            typename DataStructureImplType_::UnderlyingIteratorRep  l =
                 fData_.Find ([this, item] (ArgByValueType<value_type> i) { return fEqualsComparer_ (i, item); });
             bool notDone = l != nullptr;
             if (oResult != nullptr and notDone) {

@@ -83,8 +83,8 @@ namespace Stroika::Foundation::IO::Network {
     inline RESULT_TYPE Socket::Ptr::getsockopt (int level, int optname) const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{_fThisAssertExternallySynchronized};
-        RESULT_TYPE                                           r{};
-        socklen_t                                             roptlen = sizeof (r);
+        RESULT_TYPE                                             r{};
+        socklen_t                                               roptlen = sizeof (r);
         _cref ().getsockopt (level, optname, &r, &roptlen);
         return r;
     }
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::IO::Network {
     inline void Socket::Ptr::setsockopt (int level, int optname, ARG_TYPE arg) const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{_fThisAssertExternallySynchronized};
-        socklen_t                                             optvallen = sizeof (arg);
+        socklen_t                                               optvallen = sizeof (arg);
         _ref ().setsockopt (level, optname, &arg, optvallen);
     }
     inline bool Socket::Ptr::operator== (const Ptr& rhs) const

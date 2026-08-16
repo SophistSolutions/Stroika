@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
             {
                 Require (IsOpenWrite ());
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                SeekOffsetType                                         o1 = fRealStream_.SeekWrite (whence, offset);
+                SeekOffsetType                                           o1 = fRealStream_.SeekWrite (whence, offset);
                 [[maybe_unused]] SeekOffsetType o2 = fLogOutput_.Seek (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
                 return o1;
             }
