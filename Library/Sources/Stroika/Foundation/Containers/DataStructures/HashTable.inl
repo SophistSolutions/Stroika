@@ -324,8 +324,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
                                        [&] (const value_type& v) { forward<FUNCTION> (doToElement) (v); });
                     });
                     break;
-#endif
                     // @todo add other Execution::SequencePolicy cases
+#endif
                 default:
                     for (const auto& bi : this->fBuckets_) {
                         for (const auto& i : bi.fElements) {
