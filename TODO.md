@@ -19,13 +19,13 @@ Generally will track stuff here between releases
 
     1. STK-972 ("optimize case where 'iterable' is already sortable") is still open on
        Iterable<T>::OrderBy ().
-    2. The ePar-vs-eSeq crossover is unmeasured. Parallel should win at some larger N, so the eSeq
-       default (now on both Sequence and Iterable) may be wrong for big sequences - a size sweep would
-       settle it. At N=1000 ePar costs 2.08x on Sequence and 1.81x on Iterable, whose larger copy
-       dilutes the sort's share.
+    2. The ePar-vs-eSeq crossover is unmeasured - a size sweep would settle it. At N=1000 ePar costs
+       2.08x on Sequence and 1.81x on Iterable, whose larger copy dilutes the sort's share.
+       This is now the ONLY thing between the no-policy overloads and a real heuristic. Those overloads
+       exist (Iterable Apply/Find/OrderBy, Sequence::OrderBy, DataStructures Array/HashTable Apply) and
+       hardwire eSeq, with a '@todo measure the crossover' at each of the 9 forwarding sites - so the
+       code now points here rather than this file carrying the design.
        (In-place sort is decided and closed - see the DESIGN NOTE on Sequence<T>::_IRep in Sequence.h.)
-
-       Change default to NOT be a value, but algorithm (overload) that picks. Say which you want. Or get the best default (ask Claude if makes sense? Probaly yes once we gaurnatee size() is O(1) - and DOCUMENT that ratioale - WHY we guarnatee size O(1))
     - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
       Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access
       (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes
@@ -59,9 +59,9 @@ Generally will track stuff here between releases
       PeekSize () virtual - a virtual's body cannot be stripped by the linker, and _IRep is a template
       so it multiplies by every T), one bool per rep object, and none of the 41 overriders touched.
       Weakness: an unchecked promise - a backend could set it and lie.
-    - WHAT WOULD JUSTIFY BUILDING IT: the eSeq/ePar overload idea below. Choosing a policy by size
-      needs a CHEAP size, and nullopt has an obvious right answer there (use eSeq). Until something
-      concrete needs it, do not add it.
+    - WHAT WOULD JUSTIFY BUILDING IT: putting a real heuristic inside the no-policy overloads (see the
+      OrderBy item above). Choosing a policy by size needs a CHEAP size, and nullopt has an obvious
+      right answer there (use eSeq). Until something concrete needs it, do not add it.
 
 - CMAKE CONVERSION - scheduled for NEXT release (~Sept 2026), still tentative.
   DRIVER: LGP wants Stroika to be cheap for OTHER PEOPLE to consume. That is the whole argument -
@@ -98,10 +98,6 @@ Generally will track stuff here between releases
 - do a performance compare with checked in data
 
 - function vs movable_function etc winging on internet
-
-- for items where we have a default paraemter of eSeq or ePar, instead OVERLOAD and have
-  unspecified version documented to make a good guess which to use, and leave ambiguous. Be specific if
-  you care. Overload will probably generally look at s.size() - NOT fully considered but trial balloon plan.
 
 + Consider adding Mapping_stdflatmap? Is there such a thing? Maybe fast for small sizes?
 
