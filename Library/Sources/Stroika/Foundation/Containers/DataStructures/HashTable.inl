@@ -315,23 +315,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
             switch (seq) {
-                case Execution::SequencePolicy::eSeq:
-#if __cpp_lib_execution < 201603L
-                default:
+#if __cpp_lib_execution >= 201603L
+                case Execution::SequencePolicy::ePar:
+                    std::for_each (execution::par, fBuckets_.begin (), fBuckets_.end (), [&] (const BucketType_& bi) {
+                        std::for_each (execution::par, bi.fElements.begin (), bi.fElements.end (),
+                                       [&] (const value_type& v) { forward<FUNCTION> (doToElement) (v); });
+                    });
+                    break;
 #endif
+                default:
                     for (const auto& bi : this->fBuckets_) {
                         for (const auto& i : bi.fElements) {
                             forward<FUNCTION> (doToElement) (i);
                         }
                     }
-                    break;
-#if __cpp_lib_execution >= 201603L
-                default:
-                    std::for_each (execution::par, fBuckets_.begin (), fBuckets_.end (), [&] (const BucketType_& bi) {
-                        std::for_each (execution::par, bi.fElements.begin (), bi.fElements.end (),
-                                       [&] (const value_type& v) { forward<FUNCTION> (doToElement) (v); });
-                    });
-#endif
                     break;
             }
         }

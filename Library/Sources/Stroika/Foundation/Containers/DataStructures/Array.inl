@@ -191,15 +191,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const T*                                                start = &fItems_[0];
         const T*                                                end   = &fItems_[fLength_];
         switch (seq) {
-            case Execution::SequencePolicy::eSeq:
-                for_each (start, end, forward<FUNCTION> (doToElement));
+#if __cpp_lib_execution >= 201603L
+            case Execution::SequencePolicy::ePar:
+                for_each (execution::par, start, end, forward<FUNCTION> (doToElement));
+#endif
                 break;
             default:
-#if __cpp_lib_execution >= 201603L
-                for_each (execution::par, start, end, forward<FUNCTION> (doToElement));
-#else
                 for_each (start, end, forward<FUNCTION> (doToElement));
-#endif
                 break;
         }
     }

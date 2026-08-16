@@ -344,14 +344,16 @@ namespace Stroika::Foundation::Containers {
          */
         vector<T> tmp = this->As<vector<T>> ();
 #if __cpp_lib_execution >= 201603L
-        if (seq == Execution::SequencePolicy::eSeq) {
-            stable_sort (tmp.begin (), tmp.end (), inorderComparer);
-        }
-        else {
-            stable_sort (std::execution::par, tmp.begin (), tmp.end (), inorderComparer);
+        switch (seq) {
+            case Execution::SequencePolicy::ePar:
+                stable_sort (std::execution::par, tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
+                break;
+            default:
+                stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
+                break;
         }
 #else
-        stable_sort (tmp.begin (), tmp.end (), inorderComparer);
+        stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
 #endif
         return Concrete::Sequence_stdvector<T>{move (tmp)};
     }

@@ -906,14 +906,16 @@ namespace Stroika::Foundation::Traversal {
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp = this->As<vector<T>> ();
 #if __cpp_lib_execution >= 201603L
-        if (seq == Execution::SequencePolicy::eSeq) {
-            stable_sort (tmp.begin (), tmp.end (), inorderComparer);
-        }
-        else {
-            stable_sort (execution::par, tmp.begin (), tmp.end (), inorderComparer);
+        switch (seq) {
+            case Execution::SequencePolicy::ePar:
+                stable_sort (execution::par, tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
+                break;
+            default:
+                stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
+                break;
         }
 #else
-        stable_sort (tmp.begin (), tmp.end (), inorderComparer);
+        stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
 #endif
         /*
          *  Hand back a rep that OWNS the sorted vector and exposes it as contiguous storage, rather than
