@@ -18,9 +18,18 @@ use strict;
 use warnings;
 use JSON::PP;
 
-my ($rawdir, $outdir) = @ARGV;
-die "usage: $0 <rawdir> <outdir>\n" unless $rawdir && $outdir;
+my ($rawdir, $outdir, $want_md) = @ARGV;
+die "usage: $0 <rawdir> <outdir> [--md]\n" unless $rawdir && $outdir;
 mkdir $outdir unless -d $outdir;
+
+# The .md renderings are NO LONGER CHECKED IN. They existed to be readable/greppable history AND to serve
+# as the GitHub issue bodies; the migration spent the second purpose, and with GitHub live the first is
+# weak. So they are opt-in (--md) rather than default, and regenerating them will not silently dirty the
+# tree with 1025 untracked files.
+#
+# You DO need them, temporarily, for GitHubImport.pl (--go or --patch-bodies), which reads
+# STK-NNNN.md alongside STK-NNNN.json to build a body. Regenerate into a scratch dir for that.
+$want_md = ($want_md && $want_md eq '--md') ? 1 : 0;
 
 my $json = JSON::PP->new->pretty->canonical->utf8;
 
@@ -138,9 +147,11 @@ for my $f (sort glob "$rawdir/_page_*.json") {
             }
         }
 
-        open my $m, '>:encoding(UTF-8)', "$outdir/$name.md" or die $!;
-        print {$m} join ("\n", @md), "\n";
-        close $m;
+        if ($want_md) {
+            open my $m, '>:encoding(UTF-8)', "$outdir/$name.md" or die $!;
+            print {$m} join ("\n", @md), "\n";
+            close $m;
+        }
         $written++;
     }
 }

@@ -41,7 +41,11 @@ my $ARCHIVE   = 'Issues/Archive';
 my $MAPFILE   = 'Issues/STK-to-GitHub.tsv';
 my $TOKENFILE = $ENV{GITHUB_TOKEN_FILE} // "$ENV{HOME}/.stroika-github-token";
 my $MAXBODY   = 64000;    # GitHub's limit is 65536; leave room for the metadata header
-my $SLEEP     = 1.2;      # be kind to the secondary content-creation rate limit
+# Pacing, set by MEASUREMENT not guesswork: at 1.2s this hit GitHub's SECONDARY rate limit after ~510
+# issues, with escalating 403s. That limit is content-creation specific, caps around 500/hour, and does
+# NOT show up in /rate_limit - `core` was only 720/5000 when it triggered, so the primary quota tells you
+# nothing about it. 7.5s keeps ~480/hour, just under. Slower than it looks like it should be, on purpose.
+my $SLEEP = $ENV{IMPORT_SLEEP} // 7.5;
 
 # The .md renderings link attachments RELATIVELY ('](attachments/STK-0647/foo.txt)'), which resolves
 # inside the repo but NOT in a GitHub issue body - there is no base to resolve against there, so the link
@@ -131,13 +135,31 @@ sub api {
     my %opt = (headers => {'Authorization' => "Bearer $token", 'Accept' => 'application/vnd.github+json',
                            'X-GitHub-Api-Version' => '2022-11-28'});
     if ($payload) { $opt{content} = encode_json ($payload); $opt{headers}{'Content-Type'} = 'application/json' }
-    for my $try (1 .. 5) {
+    for my $try (1 .. 8) {
         my $r = $http->request ($method, "https://api.github.com$path", \%opt);
         return decode_json ($r->{content} || '{}') if $r->{success};
-        # 403/429 with a rate-limit hint: back off and retry. Anything else: report and give up.
-        if (($r->{status} == 403 || $r->{status} == 429) && $try < 5) {
-            my $wait = 30 * $try;
-            warn "  rate limited (HTTP $r->{status}); sleeping ${wait}s then retrying\n";
+        # 403/429: secondary rate limit. Honour Retry-After / x-ratelimit-reset when GitHub tells us how
+        # long to wait - blind exponential backoff just guesses, and guessed too short here (a 30..210s
+        # ladder never reached the ~1h the limit actually needed, so it burned 8 tries and died).
+        if (($r->{status} == 403 || $r->{status} == 429) && $try < 8) {
+            my $h    = $r->{headers} || {};
+            my $ra   = $h->{'retry-after'};
+            my $rst  = $h->{'x-ratelimit-reset'};
+            my $wait = $ra                       ? $ra + 2
+                     : ($rst && $rst > time ())  ? ($rst - time ()) + 5
+                     :                             60 * $try;
+            $wait = 3600 if $wait > 3600;    # a sane ceiling
+            warn "  rate limited (HTTP $r->{status}); waiting ${wait}s"
+               . ($ra ? " (Retry-After)" : $rst ? " (until reset)" : " (no hint given)") . "\n";
+            sleep $wait;
+            next;
+        }
+        # 5xx: GitHub's problem, not ours. A ~1450-call run WILL meet one of these during an incident, and
+        # aborting the whole import over a transient 503 is the wrong answer - the map makes us resumable,
+        # but only if we get far enough to write it.
+        if ($r->{status} >= 500 && $try < 8) {
+            my $wait = 5 * $try;
+            warn "  HTTP $r->{status} (try $try) - retrying in ${wait}s\n";
             sleep $wait;
             next;
         }
