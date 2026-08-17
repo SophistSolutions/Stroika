@@ -864,7 +864,6 @@ namespace Stroika::Foundation::Traversal {
     template <Common::IPotentiallyComparer<T> COMPARER>
     Iterable<T> Iterable<T>::Top (size_t n, COMPARER&& cmp) const
     {
-        // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sorted?
         vector<T> tmp = this->As<vector<T>> ();
         // Clamp rather than special-casing 'n >= size ()': partial_sort with middle == end IS a full sort, so
         // the n-too-large case needs no separate path (and this avoids a second, virtual, size () call).
@@ -903,7 +902,6 @@ namespace Stroika::Foundation::Traversal {
     template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
     Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
-        // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp = this->As<vector<T>> ();
         switch (seq) {
 #if __cpp_lib_execution >= 201603L
