@@ -59,6 +59,29 @@ make CONFIGURATION=Debug -C Tests/07 all -j8
 (substitute the test number). `TEST_FAILURES_CAUSE_FAILED_MAKE=0` lets `run-tests` continue past
 failures like `make -k`.
 
+Note that a header edit alone will NOT rebuild a test object (see the header-dependency note below),
+so to recompile one test against a changed header, delete its object first:
+`rm IntermediateFiles/Debug/Tests/07/Test.obj`. This is the cheap way to compile-check a header change
+without the ~12 minute `library-clobber` cycle.
+
+### Continuous integration
+`.github/workflows/build-N-test.yml` builds and runs the regression suite on push, across Linux
+(several gcc versions), Windows (VS2022/VS2026 × cygwin/msys), and macOS/XCode — so it covers
+compilers no single dev box has. **The repo is public, so results are readable with no token and no
+`gh` install**, just curl:
+```bash
+curl -s "https://api.github.com/repos/SophistSolutions/Stroika/actions/runs?branch=v3-Dev&per_page=1"
+curl -s "https://api.github.com/repos/SophistSolutions/Stroika/actions/runs/<id>/jobs"
+```
+Two things to check before concluding a change is covered:
+- `build-N-test-Matrix.json` gates most entries with `"run_on_branch": "v3-Release"`, so a push to
+  `v3-Dev` runs only the subset marked `"always"`. Read the job list, don't assume the matrix.
+- Compare the run's `head_sha` against local `HEAD` — unpushed commits have obviously not been tested,
+  and that is the common case mid-session.
+
+This is NOT the only place regression tests are run, just the most frequent and the easiest to reach;
+a green run here is good evidence, not proof of full coverage.
+
 ### Formatting
 ```bash
 make format-code
