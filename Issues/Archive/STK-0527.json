@@ -1,0 +1,258 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "either using pkg-config or soon will be.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2024-01-02T17:44:41.709-0500",
+               "id" : "16406",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/14400/comment/16406",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2024-01-02T17:44:41.709-0500"
+            }
+         ],
+         "maxResults" : 1,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/14400/comment",
+         "startAt" : 0,
+         "total" : 1
+      },
+      "components" : [
+         {
+            "id" : "10011",
+            "name" : "ThirdPartyProducts",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10011"
+         }
+      ],
+      "created" : "2016-09-18T09:41:18.042-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_230029403751_*|*_5_*:*_1_*:*_0",
+      "customfield_10012" : "0|i0038v:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "I think there are two bugs - but they collaborate so that the net result is that (without a workaround) - curl doesnt support ssl.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "First but - openssl 1.1 now depends on pthreads, but doesnt include ",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "strike"
+                        }
+                     ],
+                     "text" : "lpthread in the resulting pkgconfig files. A workaround for this is to add -lpthread to the CONFIGURE line (I didnt bother since may not be right for all platforms",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " just right for when using pthreads)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "But also - the 'fix' I did include - because its needed - is to include in the libcurl makefile workaround - LIBS='-pthread'",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "fixVersions" : [
+         {
+            "archived" : false,
+            "id" : "12849",
+            "name" : "v3.0d5",
+            "released" : false,
+            "self" : "https://stroika.atlassian.net/rest/api/3/version/12849"
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10303,
+         "description" : "A problem which impairs or prevents the functions of the product.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+         "id" : "10004",
+         "name" : "Bug",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10004",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+         "id" : "3",
+         "name" : "Medium",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2024-01-02T17:44:41.647-0500",
+      "status" : {
+         "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+         "id" : "5",
+         "name" : "Resolved",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+         "statusCategory" : {
+            "colorName" : "yellow",
+            "id" : 4,
+            "key" : "indeterminate",
+            "name" : "In Progress",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "yellow",
+         "id" : 4,
+         "key" : "indeterminate",
+         "name" : "In Progress",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+      },
+      "statuscategorychangedate" : "2024-01-02T17:44:41.752-0500",
+      "summary" : "openssl should put -lpthread into pkconfig and libcurl should use --static pkgconfig testing for components",
+      "updated" : "2024-01-02T17:44:41.745-0500",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-527/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-527/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "14400",
+   "key" : "STK-527",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/14400"
+}

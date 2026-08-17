@@ -1,0 +1,328 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "still NOT done as of v2.0a116 (but I think done for other tpc)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2015-11-29T23:03:19.132-0500",
+               "id" : "10400",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/10120/comment/10400",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2015-11-29T23:03:19.132-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "fixed for everything but openssl (anther bug report to track that)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2015-12-28T22:24:05.418-0500",
+               "id" : "10705",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/10120/comment/10705",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2015-12-28T22:24:05.418-0500"
+            }
+         ],
+         "maxResults" : 2,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/10120/comment",
+         "startAt" : 0,
+         "total" : 2
+      },
+      "components" : [
+         {
+            "id" : "10006",
+            "name" : "Build-System",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10006"
+         }
+      ],
+      "created" : "2015-10-20T21:19:53.132-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_5969052289_*|*_5_*:*_1_*:*_0",
+      "customfield_10012" : "0|i000qn:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "Make sure XERCES and OPENSSL use CC= third party CC CompileDrveer fix – just like we did for lvma, zlib, and curl.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "fixVersions" : [
+         {
+            "archived" : false,
+            "id" : "10300",
+            "name" : "v2.0a120",
+            "released" : false,
+            "self" : "https://stroika.atlassian.net/rest/api/3/version/10300"
+         }
+      ],
+      "issuelinks" : [
+         {
+            "id" : "10200",
+            "outwardIssue" : {
+               "fields" : {
+                  "issuetype" : {
+                     "avatarId" : 10303,
+                     "description" : "A problem which impairs or prevents the functions of the product.",
+                     "hierarchyLevel" : 0,
+                     "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                     "id" : "10004",
+                     "name" : "Bug",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10004",
+                     "subtask" : false
+                  },
+                  "priority" : {
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+                     "id" : "3",
+                     "name" : "Medium",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+                  },
+                  "status" : {
+                     "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+                     "id" : "5",
+                     "name" : "Resolved",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+                     "statusCategory" : {
+                        "colorName" : "yellow",
+                        "id" : 4,
+                        "key" : "indeterminate",
+                        "name" : "In Progress",
+                        "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+                     }
+                  },
+                  "summary" : "Get OpenSSL working with cross-compile..."
+               },
+               "id" : "11204",
+               "key" : "STK-427",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/11204"
+            },
+            "self" : "https://stroika.atlassian.net/rest/api/3/issueLink/10200",
+            "type" : {
+               "id" : "10003",
+               "inward" : "relates to",
+               "name" : "Relates",
+               "outward" : "relates to",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issueLinkType/10003"
+            }
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10318,
+         "description" : "A task that needs to be done.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+         "id" : "10002",
+         "name" : "Task",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/high_new.svg",
+         "id" : "2",
+         "name" : "High",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/2"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2015-12-28T22:24:05.412-0500",
+      "status" : {
+         "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+         "id" : "5",
+         "name" : "Resolved",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+         "statusCategory" : {
+            "colorName" : "yellow",
+            "id" : 4,
+            "key" : "indeterminate",
+            "name" : "In Progress",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "yellow",
+         "id" : 4,
+         "key" : "indeterminate",
+         "name" : "In Progress",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+      },
+      "statuscategorychangedate" : "2015-12-28T22:24:05.421-0500",
+      "summary" : "Make sure XERCES and OPENSSL use CC= third party CC CompileDrveer fix – just like we did for lvma, zlib, and curl.",
+      "updated" : "2015-12-28T22:24:05.419-0500",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-121/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-121/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "10120",
+   "key" : "STK-121",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/10120"
+}

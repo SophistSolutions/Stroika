@@ -1,0 +1,3820 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "maybe just issue in gcc5",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Retry when ubuntu switches to gcc6",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2016-08-17T19:41:58.330-0400",
+               "id" : "13101",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600/comment/13101",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2016-08-17T19:41:58.330-0400"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "re-enable the debug flag.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Define qCompiler_SanitizerVPtrTemplateTypeEraseureBug",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "and conditionally wrap one piece of code with somethign to disable the bug. Re-evaluate if this issue is fixed in the future.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-02-03T22:04:16.592-0500",
+               "id" : "15863",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600/comment/15863",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-02-03T22:04:16.592-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "MERGE CONTENT FROM 640:",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE (\"stack-use-after-scope\")",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "TRIED THIS:",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#if qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "// Crazy warning - cuz its NOT ignored - it works around probable bug with stack-use-after-scope",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "DISABLE_COMPILER_GCC_WARNING_START (\"GCC diagnostic ignored \\\"-Wattributes\\\"\");",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#endif",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "template <typename T, size_t BUF_SIZE>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#if qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE (\"stack-use-after-scope\")",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#endif",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : ": fSize_ (0)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : ", fPointer_ (fBuffer_)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "{ #if qDebug ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_)); ::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_)); #endif Invariant (); }",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#if qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "DISABLE_COMPILER_GCC_WARNING_END (\"GCC diagnostic ignored \\\"-Wattributes\\\"\");",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#endif",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "But according to ",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "https://github.com/google/sanitizers/wiki/AddressSanitizerClangVsGCC-(5.0-vs-7.1)"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "https://github.com/google/sanitizers/wiki/AddressSanitizerClangVsGCC-(5.0-vs-7.1)",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " - no_sanitize() attribute doesnt work til gcc 8, and by then they may have fixed the underlying bug.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "type" : "rule"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Found ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "attribute",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " ((no_sanitize_address, no_sanitize_undefined))",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "worked a little better for gcc7.2 on arm, but not fully (not on ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==13528==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ec81a60 at pc 0x55bdcaa3 bp 0x7ec8197c sp 0x7ec81974",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "WRITE of size 60 at 0x7ec81a60 thread T0",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#0 0x55bdcaa1 in operator() /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.cpp:108",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#1 0x55be111f in _M_invoke /usr/arm-linux-gnueabihf/include/c++/7/bits/std_function.h:302",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#2 0x55be5b91 in std::function<Stroika::Foundation::Characters::String (Stroika::Foundation::Characters::String const&, Stroika::Foundation::Characters::String const&)>::operator()(Stroika::Foundation::Characters::String const&, Stroika::Foundation::Characters::String const&) const /usr/arm-linux-gnueabihf/include/c++/7/bits/std_function.h:706",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#3 0x55bdfca1 in Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::OptionsFile::GetReadFilePath_() const /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.cpp:237",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "...",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "COULD have maybe gotten around that.",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "But easier to disable overall.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Also weird - on command-line had to disable the error with no-sanitize=vptr even though not a vptr failure.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "COULD try no_sanitize(\"vptr\") maybe - but lets just give this a rest and retry with gcc8.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-02-07T16:32:15.953-0500",
+               "id" : "15866",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600/comment/15866",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-02-07T16:32:15.953-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "RETEST WHEN WE HAVE GCC 8 arm cross compiler",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-02-08T10:42:20.401-0500",
+               "id" : "15869",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600/comment/15869",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-02-08T10:42:20.401-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-02-08T10:54:52.094-0500",
+               "id" : "15870",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600/comment/15870",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-02-08T10:54:52.094-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "Got close.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Mostly seems one issue with AssertExternallySynchonized code.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "=================================================================",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==1907==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ed92640 at pc 0x76acdb25 bp 0x7ed91c98 sp 0x7ed91ca8",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "WRITE of size 36 at 0x7ed92640 thread T0",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#0 0x76acdb23  (/usr/lib/arm-linux-gnueabihf/libasan.so.5+0x69b23)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#1 0x1842bad in Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ebug::AssertExternallySynchronizedLock::AssertExternallySynchronizedLock() /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedLock.cpp:23",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#2 0x13db94d in Stroika::Foundation::Streams::Stream<std::byte>:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr(std::shared_ptr<Stroika::Foundation::Streams::Stream<std::byte>::_IRep> const&) ../../../Streams/Stream.inl:23",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#3 0x13d7ce7 in Stroika::Foundation::Streams::OutputStream<std::byte>:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr(std::shared_ptr<Stroika::Foundation::Streams::OutputStream<std::byte>::_IRep> const&) ../../Streams/OutputStream.inl:28",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#4 0x13cb657 in Stroika::Foundation::Streams::InputOutputStream<std::byte>:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr(std::shared_ptr<Stroika::Foundation::Streams::InputOutputStream<std::byte>::_IRep> const&) ../../Streams/InputOutputStream.inl:34",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#5 0x13be307 in Stroika::Foundation::Streams::MemoryStream<std::byte>:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr(std::shared_ptr<Stroika::Foundation::Streams::MemoryStream<std::byte>::Rep_> const&) ../../Streams/MemoryStream.inl:345",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#6 0x13afc19 in Stroika::Foundation::Streams::MemoryStream<std::byte>::New(Stroika::Foundation::Execution::InternallySyncrhonized) ../../Streams/MemoryStream.inl:282",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#7 0x138ae23 in CheckRoundtrip_encode_decode_unchanged /home/lewis/Sandbox/Stroika-Dev/Tests/30/Test.cpp:574",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#8 0x138b66d in DoIt /home/lewis/Sandbox/Stroika-Dev/Tests/30/Test.cpp:588",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#9 0x138b81d in DoAll_ /home/lewis/Sandbox/Stroika-Dev/Tests/30/Test.cpp:605",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#10 0x138dc0d in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Dev/Tests/30/Test.cpp:801",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#11 0x153e945 in Stroika::TestHarness:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "rintPassOrFail(void ",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "atlassian-yellow_star",
+                                 "shortName" : ":yellow_star:",
+                                 "text" : ":yellow_star:"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "()) /home/lewis/Sandbox/Stroika-Dev/Tests/30/../TestHarness/TestHarness.cpp:75",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#12 0x138dc6b in main /home/lewis/Sandbox/Stroika-Dev/Tests/30/Test.cpp:818",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#13 0x763d9065 in __libc_start_main (/lib/arm-linux-gnueabihf/libc.so.6+0x17065)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Address 0x7ed92640 is located in stack of thread T0 at offset 384 in frame",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#0 0x138acc7 in CheckRoundtrip_encode_decode_unchanged /home/lewis/Sandbox/Stroika-Dev/Tests/30/Test.cpp:571",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "This frame has 8 object(s):",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[32, 40) 'vOut'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[96, 108) '<unknown>'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[160, 172) '<unknown>'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[224, 280) '<unknown>'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[320, 432) 'out' <== Memory access at offset 384 is inside this variable",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[480, 504) 'encodedRep'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[544, 568) '<unknown>'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[608, 816) 'tmp'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "(longjmp and C++ exceptions ",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "strong"
+                                 }
+                              ],
+                              "text" : "are",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " supported)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "SUMMARY: AddressSanitizer: stack-use-after-scope (/usr/lib/arm-linux-gnueabihf/libasan.so.5+0x69b23) ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Shadow bytes around the buggy address:",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb2470: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb2480: 00 f2 f2 f2 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb2490: 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00 f2 f2 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb24a0: f2 f2 f2 f2 00 04 f2 f2 f2 f2 f2 f2 00 04 f2 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb24b0: f2 f2 f2 f2 00 00 00 00 00 00 00 f2 f2 f2 f2 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "=>0x2fdb24c0: 00 00 00 00 00 00 00 00[f8]f8 00 00 00 00 f2 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb24d0: f2 f2 f2 f2 00 00 00 f2 f2 f2 f2 f2 00 00 00 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb24e0: f2 f2 f2 f2 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb24f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f2 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb2500: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdb2510: f1 f1 f1 f1 00 f2 f2 f2 f2 f2 f2 f2 00 f2 f2 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Shadow byte legend (one shadow byte represents 8 application bytes):",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Addressable:           00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Partially addressable: 01 02 03 04 05 06 07 ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Heap left redzone:       fa",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Freed heap region:       fd",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack left redzone:      f1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack mid redzone:       f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack right redzone:     f3",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack after return:      f5",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack use after scope:   f8",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Global redzone:          f9",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Global init order:       f6",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Poisoned by user:        f7",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Container overflow:      fc",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Array cookie:            ac",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Intra object redzone:    bb",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "ASan internal:           fe",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Left alloca redzone:     ca",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Right alloca redzone:    cb",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==1907==ABORTING",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[]  (17 seconds)  [30]  Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (scp ../Builds/raspberrypi-g++-8/Test30...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test30)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (14 seconds)  [31]  Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::ObjectVariantMapper  (scp ../Builds/raspberrypi-g++-8/Test31...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test31)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (7  seconds)  [32]  Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::XML::SaxParser  (scp ../Builds/raspberrypi-g++-8/Test32...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test32)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "=================================================================",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2007==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7e9568c0 at pc 0x0155f123 bp 0x7e956610 sp 0x7e956614",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "WRITE of size 4 at 0x7e9568c0 thread T0",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#0 0x155f121 in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "atomic_base<unsigned int>::",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "_atomic_base(unsigned int) /usr/arm-linux-gnueabihf/include/c++/8/bits/atomic_base.h:256",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#1 0x1551a21 in std::atomic<unsigned int>::atomic(unsigned int) /usr/arm-linux-gnueabihf/include/c++/8/atomic:695",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#2 0x1a7690d in Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ebug::AssertExternallySynchronizedLock::AssertExternallySynchronizedLock() /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedLock.cpp:23",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#3 0x1560347 in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::Iterable(std::shared_ptr<Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::_IRep>&&) ../Characters/../Containers/../Traversal/Iterable.inl:220",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#4 0x16f7809 in Stroika::Foundation::Characters::String::String(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&) ../Characters/String.inl:138",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#5 0x205b147 in Stroika::Foundation::IO::FileAccessException::FileAccessException(std::optional<Stroika::Foundation::Characters::String> const&, std::optional<Stroika::Foundation::IO::FileAccessMode> const&) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileAccessException.cpp:46",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#6 0x1de4ff9 in Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_::Rep_(Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/FileInputStream.cpp:77",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#7 0x1df4699 in void _",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "gnu_cxx::new_allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ">::construct<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_*, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/ext/new_allocator.h:136",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#8 0x1df22f5 in void std::allocator_traits<std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> >::construct<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>&, Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_*, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/alloc_traits.h:475",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#9 0x1df0717 in std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ", std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>, (_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "gnu_cxx::_Lock_policy)2>::_Sp_counted_ptr_inplace<Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ">, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr_base.h:549",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#10 0x1deeefb in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "shared_count<(gnu_cxx::_Lock_policy)2>::shared_count<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ", std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Sp_make_shared_tag, Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "*, std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> const&, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr_base.h:662",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#11 0x1dee193 in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "shared_ptr<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ", (_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "gnu_cxx::_Lock_policy)2>::shared_ptr<std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ">, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Sp_make_shared_tag, std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "> const&, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr_base.h:1328",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#12 0x1ded5a3 in std::shared_ptr<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>::shared_ptr<std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Sp_make_shared_tag, std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "> const&, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr.h:360",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#13 0x1dec56b in std::shared_ptr<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> std::allocate_shared<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_, std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> const&, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr.h:707",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#14 0x1deae23 in std::shared_ptr<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> std::make_shared<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) (/tmp/Test33+0x191de23)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#15 0x1de24d3 in Stroika::Foundation::IO::FileSystem::FileInputStream::New(Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/FileInputStream.cpp:251",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#16 0x19a2e83 in Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::OptionsFile::ReadRaw() const /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.cpp:177",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#17 0x19a3e1d in std::optional<Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::VariantValue> Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::OptionsFile::Read<Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::VariantValue>() /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.cpp:210",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#18 0x153c787 in Read<(anonymous namespace)::Test2_OptionsFile_()::MyData_> /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.inl:25",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#19 0x15351af in Read<(anonymous namespace)::Test2_OptionsFile_()::MyData_> /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.inl:46",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#20 0x153228f in Test2_OptionsFile_ /home/lewis/Sandbox/Stroika-Dev/Tests/33/Test.cpp:71",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#21 0x1534079 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Dev/Tests/33/Test.cpp:130",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#22 0x16c56a5 in Stroika::TestHarness:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "rintPassOrFail(void ",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "atlassian-yellow_star",
+                                 "shortName" : ":yellow_star:",
+                                 "text" : ":yellow_star:"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "()) /home/lewis/Sandbox/Stroika-Dev/Tests/33/../TestHarness/TestHarness.cpp:75",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#23 0x15340c3 in main /home/lewis/Sandbox/Stroika-Dev/Tests/33/Test.cpp:138",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#24 0x76370065 in __libc_start_main (/lib/arm-linux-gnueabihf/libc.so.6+0x17065)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Address 0x7e9568c0 is located in stack of thread T0 at offset 32 in frame",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#0 0x205af6b in Stroika::Foundation::IO::FileAccessException::FileAccessException(std::optional<Stroika::Foundation::Characters::String> const&, std::optional<Stroika::Foundation::IO::FileAccessMode> const&) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileAccessException.cpp:43",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "This frame has 2 object(s):",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[32, 88) '<unknown>' <== Memory access at offset 32 is inside this variable",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[128, 152) '<unknown>'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "(longjmp and C++ exceptions ",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "strong"
+                                 }
+                              ],
+                              "text" : "are",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " supported)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "SUMMARY: AddressSanitizer: stack-use-after-scope /usr/arm-linux-gnueabihf/include/c++/8/bits/atomic_base.h:256 in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "atomic_base<unsigned int>::",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "_atomic_base(unsigned int)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Shadow bytes around the buggy address:",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2acc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2acd0: 00 00 00 00 f1 f1 f1 f1 01 f2 f2 f2 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2ace0: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2acf0: 00 f2 f2 f2 f2 f2 f2 f2 00 f2 f2 f2 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2ad00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "=>0x2fd2ad10: f8 f8 f8 f8 f1 f1 f1 f1[f8]f8 f8 f8 00 00 00 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2ad20: f2 f2 f2 f2 00 00 00 f2 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2ad30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2ad40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2ad50: 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd2ad60: 02 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Shadow byte legend (one shadow byte represents 8 application bytes):",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Addressable:           00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Partially addressable: 01 02 03 04 05 06 07 ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Heap left redzone:       fa",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Freed heap region:       fd",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack left redzone:      f1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack mid redzone:       f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack right redzone:     f3",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack after return:      f5",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack use after scope:   f8",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Global redzone:          f9",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Global init order:       f6",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Poisoned by user:        f7",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Container overflow:      fc",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Array cookie:            ac",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Intra object redzone:    bb",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "ASan internal:           fe",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Left alloca redzone:     ca",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Right alloca redzone:    cb",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2007==ABORTING",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[]  (1  seconds)  [33]  Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::Other  (scp ../Builds/raspberrypi-g++-8/Test33...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test33)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (29 seconds)  [34]  Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "atabase  (scp ../Builds/raspberrypi-g++-8/Test34...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test34)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (0  seconds)  [35]  Foundation::Execution::Exceptions  (scp ../Builds/raspberrypi-g++-8/Test35...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test35)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "=================================================================",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "AddressSanitizer: nested bug in the same thread, aborting.",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[]  (437 seconds)  [36]  Foundation::Execution:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "rocessRunner  (scp ../Builds/raspberrypi-g++-8/Test36...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test36)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (4  seconds)  [37]  Foundation::Execution::Signals  (scp ../Builds/raspberrypi-g++-8/Test37...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test37)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (72 seconds)  [38]  Foundation::Execution::Threads  (scp ../Builds/raspberrypi-g++-8/Test38...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test38)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (86 seconds)  [39]  Foundation::Execution::ThreadSafetyBuiltinObject  (scp ../Builds/raspberrypi-g++-8/Test39...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test39)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "=================================================================",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==4731==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ee59260 at pc 0x01423cbb bp 0x7ee58fc0 sp 0x7ee58fc4",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "WRITE of size 4 at 0x7ee59260 thread T0",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#0 0x1423cb9 in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "atomic_base<unsigned int>::",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "_atomic_base(unsigned int) /usr/arm-linux-gnueabihf/include/c++/8/bits/atomic_base.h:256",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#1 0x1417b41 in std::atomic<unsigned int>::atomic(unsigned int) /usr/arm-linux-gnueabihf/include/c++/8/atomic:695",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#2 0x18d6605 in Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ebug::AssertExternallySynchronizedLock::AssertExternallySynchronizedLock() /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedLock.cpp:23",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#3 0x1424edf in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::Iterable(std::shared_ptr<Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::_IRep>&&) ../Characters/../Containers/../Traversal/Iterable.inl:220",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#4 0x15bafc5 in Stroika::Foundation::Characters::String::String(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&) ../Characters/String.inl:138",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#5 0x1ed0467 in Stroika::Foundation::IO::FileAccessException::FileAccessException(std::optional<Stroika::Foundation::Characters::String> const&, std::optional<Stroika::Foundation::IO::FileAccessMode> const&) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileAccessException.cpp:46",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#6 0x1c5a2f1 in Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_::Rep_(Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag) (/tmp/Test40+0x18402f1)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#7 0x1c69991 in void _",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "gnu_cxx::new_allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ">::construct<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_*, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/ext/new_allocator.h:136",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#8 0x1c675ed in void std::allocator_traits<std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> >::construct<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>&, Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_*, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/alloc_traits.h:475",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#9 0x1c65a0f in std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ", std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>, (_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "gnu_cxx::_Lock_policy)2>::_Sp_counted_ptr_inplace<Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ">, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr_base.h:549",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#10 0x1c641f3 in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "shared_count<(gnu_cxx::_Lock_policy)2>::shared_count<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ", std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Sp_make_shared_tag, Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "*, std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> const&, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr_base.h:662",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#11 0x1c6348b in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "shared_ptr<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ", (_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "gnu_cxx::_Lock_policy)2>::shared_ptr<std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : ">, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Sp_make_shared_tag, std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "> const&, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr_base.h:1328",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#12 0x1c6289b in std::shared_ptr<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>::shared_ptr<std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Sp_make_shared_tag, std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "> const&, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr.h:360",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#13 0x1c61863 in std::shared_ptr<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> std::allocate_shared<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_, std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_>, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(std::allocator<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> const&, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) /usr/arm-linux-gnueabihf/include/c++/8/bits/shared_ptr.h:707",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#14 0x1c6011b in std::shared_ptr<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_> std::make_shared<Stroika::Foundation::IO::FileSystem::FileInputStream::Rep_, Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&>(Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag&) (/tmp/Test40+0x184611b)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#15 0x1c577cb in Stroika::Foundation::IO::FileSystem::FileInputStream::New(Stroika::Foundation::Characters::String const&, Stroika::Foundation::Streams::SeekableFlag) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/FileInputStream.cpp:251",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#16 0x1802b23 in Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::OptionsFile::ReadRaw() const /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.cpp:177",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#17 0x1803abd in std::optional<Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::VariantValue> Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::OptionsFile::Read<Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ataExchange::VariantValue>() /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.cpp:210",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#18 0x1407f53 in Read<(anonymous namespace)::Test5_ModuleGetterSetter_:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "RIVATE_::MyData_> /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.inl:25",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#19 0x14017d3 in Read<(anonymous namespace)::Test5_ModuleGetterSetter_:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "RIVATE_::MyData_> /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/DataExchange/OptionsFile.inl:46",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#20 0x13fe6d1 in ModuleGetterSetter_Implementation_MyData_ /home/lewis/Sandbox/Stroika-Dev/Tests/40/Test.cpp:164",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#21 0x1409007 in DoInitOutOfLine_ /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ModuleGetterSetter.inl:56",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#22 0x1403325 in Get /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ModuleGetterSetter.inl:25",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#23 0x13fefb9 in TestUse1_ /home/lewis/Sandbox/Stroika-Dev/Tests/40/Test.cpp:188",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#24 0x1400271 in DoAll /home/lewis/Sandbox/Stroika-Dev/Tests/40/Test.cpp:207",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#25 0x14002c1 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Dev/Tests/40/Test.cpp:221",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#26 0x15883ed in Stroika::TestHarness:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "rintPassOrFail(void ",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "atlassian-yellow_star",
+                                 "shortName" : ":yellow_star:",
+                                 "text" : ":yellow_star:"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "()) /home/lewis/Sandbox/Stroika-Dev/Tests/40/../TestHarness/TestHarness.cpp:75",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#27 0x1400307 in main /home/lewis/Sandbox/Stroika-Dev/Tests/40/Test.cpp:228",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#28 0x7636c065 in __libc_start_main (/lib/arm-linux-gnueabihf/libc.so.6+0x17065)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Address 0x7ee59260 is located in stack of thread T0 at offset 32 in frame",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#0 0x1ed028b in Stroika::Foundation::IO::FileAccessException::FileAccessException(std::optional<Stroika::Foundation::Characters::String> const&, std::optional<Stroika::Foundation::IO::FileAccessMode> const&) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileAccessException.cpp:43",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "This frame has 2 object(s):",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[32, 88) '<unknown>' <== Memory access at offset 32 is inside this variable",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[128, 152) '<unknown>'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "(longjmp and C++ exceptions ",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "strong"
+                                 }
+                              ],
+                              "text" : "are",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " supported)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "SUMMARY: AddressSanitizer: stack-use-after-scope /usr/arm-linux-gnueabihf/include/c++/8/bits/atomic_base.h:256 in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "atomic_base<unsigned int>::",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "_atomic_base(unsigned int)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Shadow bytes around the buggy address:",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb1f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb200: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb210: 01 f2 f2 f2 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb220: 00 00 00 00 f1 f1 f1 f1 00 f2 f2 f2 f2 f2 f2 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb230: 00 f2 f2 f2 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "=>0x2fdcb240: 00 00 00 00 f8 f8 f8 f8 f1 f1 f1 f1[f8]f8 f8 f8",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb250: 00 00 00 f2 f2 f2 f2 f2 00 00 00 f2 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb260: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb270: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb280: 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fdcb290: 00 00 00 00 02 00 00 00 00 00 00 00 02 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Shadow byte legend (one shadow byte represents 8 application bytes):",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Addressable:           00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Partially addressable: 01 02 03 04 05 06 07 ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Heap left redzone:       fa",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Freed heap region:       fd",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack left redzone:      f1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack mid redzone:       f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack right redzone:     f3",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack after return:      f5",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack use after scope:   f8",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Global redzone:          f9",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Global init order:       f6",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Poisoned by user:        f7",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Container overflow:      fc",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Array cookie:            ac",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-09-28T22:15:04.454-0400",
+               "id" : "15909",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600/comment/15909",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-09-28T22:15:04.454-0400"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "Intra object redzone:    bb",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "ASan internal:           fe",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Left alloca redzone:     ca",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Right alloca redzone:    cb",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==4731==ABORTING",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[]  (1  seconds)  [40]  Foundation::Execution::Other  (scp ../Builds/raspberrypi-g++-8/Test40...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test40)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (1  seconds)  [41]  Foundation::IO::Network  (scp ../Builds/raspberrypi-g++-8/Test41...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test41)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (8  seconds)  [42]  Foundation::IO::Network::HTTP  (scp ../Builds/raspberrypi-g++-8/Test42...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test42)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (43 seconds)  [43]  Foundation::IO::Network::Transfer  (scp ../Builds/raspberrypi-g++-8/Test43...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test43)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "=================================================================",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==4879==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ebc1640 at pc 0x01129ecf bp 0x7ebc1388 sp 0x7ebc138c",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "WRITE of size 4 at 0x7ebc1640 thread T0",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#0 0x1129ecd in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "atomic_base<unsigned int>::",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "_atomic_base(unsigned int) /usr/arm-linux-gnueabihf/include/c++/8/bits/atomic_base.h:256",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#1 0x11292b9 in std::atomic<unsigned int>::atomic(unsigned int) /usr/arm-linux-gnueabihf/include/c++/8/atomic:695",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#2 0x1128091 in Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ebug::AssertExternallySynchronizedLock::AssertExternallySynchronizedLock() /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedLock.cpp:23",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#3 0xf5bd57 in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::Iterable(std::shared_ptr<Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::_IRep>&&) ../Characters/../Containers/../Traversal/Iterable.inl:220",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#4 0x101d1a9 in Stroika::Foundation::Characters::String::String(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&) ../Characters/String.inl:138",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#5 0x16997b7 in Stroika::Foundation::IO::FileAccessException::FileAccessException(std::optional<Stroika::Foundation::Characters::String> const&, std::optional<Stroika::Foundation::IO::FileAccessMode> const&) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileAccessException.cpp:46",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#6 0x144473b in Stroika::Foundation::IO::FileSystem:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr::CanonicalizeName(Stroika::Foundation::Characters::String const&, bool) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/FileSystem.cpp:304",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#7 0x14d082b in ReadMountInfo_MTabLikeFile_ /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/MountedFilesystem.cpp:133",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#8 0x14d145d in ReadMountInfo_FromProcFSMounts_ /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/MountedFilesystem.cpp:167",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#9 0x14d2a63 in Stroika::Foundation::IO::FileSystem::GetMountedFilesystems() /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/MountedFilesystem.cpp:313",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#10 0xf50b45 in DoTest /home/lewis/Sandbox/Stroika-Dev/Tests/44/Test.cpp:134",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#11 0xf51685 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Dev/Tests/44/Test.cpp:159",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#12 0xfe97ed in Stroika::TestHarness:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "rintPassOrFail(void ",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "atlassian-yellow_star",
+                                 "shortName" : ":yellow_star:",
+                                 "text" : ":yellow_star:"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "()) /home/lewis/Sandbox/Stroika-Dev/Tests/44/../TestHarness/TestHarness.cpp:75",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#13 0xf516cf in main /home/lewis/Sandbox/Stroika-Dev/Tests/44/Test.cpp:167",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#14 0x76304065 in __libc_start_main (/lib/arm-linux-gnueabihf/libc.so.6+0x17065)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Address 0x7ebc1640 is located in stack of thread T0 at offset 32 in frame",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "#0 0x16995db in Stroika::Foundation::IO::FileAccessException::FileAccessException(std::optional<Stroika::Foundation::Characters::String> const&, std::optional<Stroika::Foundation::IO::FileAccessMode> const&) /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileAccessException.cpp:43",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "This frame has 2 object(s):",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[32, 88) '<unknown>' <== Memory access at offset 32 is inside this variable",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[128, 152) '<unknown>'",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "(longjmp and C++ exceptions ",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "strong"
+                                 }
+                              ],
+                              "text" : "are",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " supported)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "SUMMARY: AddressSanitizer: stack-use-after-scope /usr/arm-linux-gnueabihf/include/c++/8/bits/atomic_base.h:256 in std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "atomic_base<unsigned int>::",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "_atomic_base(unsigned int)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Shadow bytes around the buggy address:",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd78270: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd78280: 00 00 00 00 f1 f1 f1 f1 01 f2 f2 f2 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd78290: f8 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd782a0: 00 f2 f2 f2 f2 f2 f2 f2 00 f2 f2 f2 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd782b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "=>0x2fd782c0: 00 00 00 00 f1 f1 f1 f1[f8]f8 f8 f8 00 00 00 f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd782d0: f2 f2 f2 f2 00 00 00 f2 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd782e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd782f0: 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd78300: 00 00 00 00 02 00 00 00 00 00 00 00 02 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "0x2fd78310: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Shadow byte legend (one shadow byte represents 8 application bytes):",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Addressable:           00",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Partially addressable: 01 02 03 04 05 06 07 ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Heap left redzone:       fa",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Freed heap region:       fd",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack left redzone:      f1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack mid redzone:       f2",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack right redzone:     f3",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack after return:      f5",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Stack use after scope:   f8",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Global redzone:          f9",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Global init order:       f6",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Poisoned by user:        f7",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Container overflow:      fc",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Array cookie:            ac",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Intra object redzone:    bb",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "ASan internal:           fe",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Left alloca redzone:     ca",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "Right alloca redzone:    cb",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==4879==ABORTING",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[]  (2  seconds)  [44]  Foundation::IO::Other  (scp ../Builds/raspberrypi-g++-8/Test44...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test44)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (11 seconds)  [45]  Foundation::Math  (scp ../Builds/raspberrypi-g++-8/Test45...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test45)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (1  seconds)  [46]  Foundation::Memory  (scp ../Builds/raspberrypi-g++-8/Test46...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test46)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (2  seconds)  [47]  Foundation::Streams  (scp ../Builds/raspberrypi-g++-8/Test47...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test47)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (90 seconds)  [48]  Foundation::Time  (scp ../Builds/raspberrypi-g++-8/Test48...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test48)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[Succeeded]  (43 seconds)  [49]  Foundation::Traversal  (scp ../Builds/raspberrypi-g++-8/Test49...; ssh lewis@raspberrypi LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5   /tmp/Test49)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==5081==AddressSanitizer's allocator is terminating the process instead of returning 0",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==5081==If you don't like this behavior set allocator_may_return_null=1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==5081==AddressSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_allocator.cc:216 \"((0)) != (0)\" (0x0, 0x0)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==5081==AddressSanitizer's allocator is terminating the process instead of returning 0",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==5081==If you don't like this behavior set allocator_may_return_null=1",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==5081==AddressSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_allocator.cc:216 \"((0)) != (0)\" (0x0, 0x0)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Leave disabled for now (well - try with release build and asan?).",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-09-28T22:15:16.849-0400",
+               "id" : "15910",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600/comment/15910",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-09-28T22:15:16.849-0400"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "Rewrote how I do AssertExternallySynchronizedLock/0 CTOR.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Make multiset field optional, and lose funky function try/catch stuff. That maybe what broken the compiler, and the code was purposeless anyhow, since I cannot undo the failure of the CTOR. Just fatal.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "So we can close this. Nothing todo.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-10-02T16:59:37.619-0400",
+               "id" : "15912",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600/comment/15912",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-10-02T16:59:37.619-0400"
+            }
+         ],
+         "maxResults" : 8,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600/comment",
+         "startAt" : 0,
+         "total" : 8
+      },
+      "components" : [
+         {
+            "id" : "10006",
+            "name" : "Build-System",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10006"
+         }
+      ],
+      "created" : "2016-07-19T12:58:54.526-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_69566475851_*|*_5_*:*_1_*:*_0",
+      "customfield_10012" : "0|i0032v:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "This appears to be a compiler/build system erorr (some hints on teh web it maybe libs built with no rtti?).",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "anyhow - debug another time - not important, and not really my problem.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "fixVersions" : [
+         {
+            "archived" : false,
+            "id" : "12816",
+            "name" : "v2.1d10",
+            "released" : false,
+            "self" : "https://stroika.atlassian.net/rest/api/3/version/12816"
+         }
+      ],
+      "issuelinks" : [
+         {
+            "id" : "11507",
+            "outwardIssue" : {
+               "fields" : {
+                  "issuetype" : {
+                     "avatarId" : 10318,
+                     "description" : "A task that needs to be done.",
+                     "hierarchyLevel" : 0,
+                     "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+                     "id" : "10002",
+                     "name" : "Task",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+                     "subtask" : false
+                  },
+                  "priority" : {
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+                     "id" : "3",
+                     "name" : "Medium",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+                  },
+                  "status" : {
+                     "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+                     "id" : "5",
+                     "name" : "Resolved",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+                     "statusCategory" : {
+                        "colorName" : "yellow",
+                        "id" : 4,
+                        "key" : "indeterminate",
+                        "name" : "In Progress",
+                        "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+                     }
+                  },
+                  "summary" : "gcc address sanitizer stack-use-after-scope false positives"
+               },
+               "id" : "17163",
+               "key" : "STK-654",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17163"
+            },
+            "self" : "https://stroika.atlassian.net/rest/api/3/issueLink/11507",
+            "type" : {
+               "id" : "10003",
+               "inward" : "relates to",
+               "name" : "Relates",
+               "outward" : "relates to",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issueLinkType/10003"
+            }
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10303,
+         "description" : "A problem which impairs or prevents the functions of the product.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+         "id" : "10004",
+         "name" : "Bug",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10004",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/low_new.svg",
+         "id" : "4",
+         "name" : "Low",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/4"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2018-10-02T17:00:10.328-0400",
+      "status" : {
+         "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+         "id" : "5",
+         "name" : "Resolved",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+         "statusCategory" : {
+            "colorName" : "yellow",
+            "id" : 4,
+            "key" : "indeterminate",
+            "name" : "In Progress",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "yellow",
+         "id" : 4,
+         "key" : "indeterminate",
+         "name" : "In Progress",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+      },
+      "statuscategorychangedate" : "2018-10-02T17:00:10.377-0400",
+      "summary" : "revisit gcc sanitiizer on ARM gcc 7.2 stack use after... (was vptr - see why fails (for now just disabled in regtests))",
+      "updated" : "2018-10-02T17:00:10.365-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-500/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-500/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "13600",
+   "key" : "STK-500",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600"
+}

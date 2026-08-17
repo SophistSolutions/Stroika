@@ -1,0 +1,571 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "I believe fixed a long time ago",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2015-10-16T14:48:47.697-0400",
+               "id" : "10041",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/10096/comment/10041",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2015-10-16T14:48:47.697-0400"
+            }
+         ],
+         "maxResults" : 1,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/10096/comment",
+         "startAt" : 0,
+         "total" : 1
+      },
+      "created" : "2014-08-12T17:48:25.000-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_37141222700_*|*_5_*:*_1_*:*_0",
+      "customfield_10012" : "0|i000lb:",
+      "customfield_10027" : "97",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "ProcessMapType  ExtractFromProcFS_ ()",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "{",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "/// Most status - like time - come from ",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "http://linux.die.net/man/5/proc"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "http://linux.die.net/man/5/proc",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "///proc/[pid]/stat",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "//  Status information about the process. This is used by ps(1). It is defined in /usr/src/linux/fs/proc/array.c.",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "//",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "ProcessMapType  results;",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "attrs" : {
+                  "level" : 1
+               },
+               "content" : [
+                  {
+                     "text" : "if     qUseProcFS_",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "heading"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "for (String dir : IO::FileSystem:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "irectoryIterable (String_Constant (L\"/proc\"))) {",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "attrs" : {
+                  "level" : 1
+               },
+               "content" : [
+                  {
+                     "text" : "if     USE_NOISY_TRACE_IN_THIS_MODULE_",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "heading"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Debug::TraceContextBumper ctx (SDKSTR (\"Stroika::Frameworks::SystemPerformance::Instruments:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rocessDetails::{}::ExtractFromProcFS_::reading proc files\"));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "DbgTrace (L\"isAllNumeric=%d, dir= %s\", isAllNumeric, dir.c_str ());",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "attrs" : {
+                  "level" : 1
+               },
+               "content" : [
+                  {
+                     "text" : "endif",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "heading"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "if (isAllNumeric) {",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "pid_t pid = String2Int<pid_t> (dir);",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "attrs" : {
+                  "level" : 1
+               },
+               "content" : [
+                  {
+                     "text" : "if     USE_NOISY_TRACE_IN_THIS_MODULE_",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "heading"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "DbgTrace (\"reading for pid = %d\", pid);",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "attrs" : {
+                  "level" : 1
+               },
+               "content" : [
+                  {
+                     "text" : "endif",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "heading"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "String  processDirPath = String_Constant (L\"/proc/\") + dir + String_Constant (L\"/\");",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "ProcessType processDetails;",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (processDirPath + String_Constant (L\"cmdline\")));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCurrentWorkingDirectory = IO::FileSystem::FileSystem:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "efault ().ResolveShortcut (processDirPath + String_Constant (L\"cwd\")));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (processDirPath + String_Constant (L\"environ\")));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "efault ().ResolveShortcut (processDirPath + String_Constant (L\"exe\")));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "efault ().ResolveShortcut (processDirPath + String_Constant (L\"root\")));",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "try {",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "static  const   double  kClockTick_ = sysconf(_SC_CLK_TCK);",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L\"stat\"));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "processDetails.fTotalTimeUsed = double (stats.utime) + double (stats.stime ) / kClockTick_;",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "catch (...) {",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "results.Add (pid, processDetails);",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "issuetype" : {
+         "description" : "A user story. Created by JIRA Software - do not edit or delete.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/issuetypes/story.svg",
+         "id" : "10001",
+         "name" : "Story",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10001",
+         "subtask" : false
+      },
+      "labels" : [
+         "DIFFICULTY-EASY",
+         "Frameworks::SystemPerformance",
+         "Soon"
+      ],
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2015-10-16T14:48:47.679-0400",
+      "status" : {
+         "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+         "id" : "5",
+         "name" : "Resolved",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+         "statusCategory" : {
+            "colorName" : "yellow",
+            "id" : 4,
+            "key" : "indeterminate",
+            "name" : "In Progress",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "yellow",
+         "id" : 4,
+         "key" : "indeterminate",
+         "name" : "In Progress",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+      },
+      "statuscategorychangedate" : "2015-10-16T14:48:47.700-0400",
+      "summary" : "ProcessMapType  ExtractFromProcFS_ () should avoid throws - they generate DbgTrace() noise. just 'access' first or use lower level read",
+      "updated" : "2015-10-20T21:51:11.544-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-97/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-97/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "10096",
+   "key" : "STK-97",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/10096"
+}

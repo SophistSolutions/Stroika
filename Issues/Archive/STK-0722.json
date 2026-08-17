@@ -1,0 +1,174 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "maxResults" : 0,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/17231/comment",
+         "startAt" : 0,
+         "total" : 0
+      },
+      "components" : [
+         {
+            "id" : "10004",
+            "name" : "Foundation-Containers",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10004"
+         }
+      ],
+      "created" : "2021-02-14T15:19:38.042-0500",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10012" : "0|i004g7:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "Most of this is pretty easy (if the LockFreeDataStructures::forward_list stuff works as well as it appears to).",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "But we have many other assumptions in the container code about locks - like for doing patching.",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "MAYBE really doing this will require losing the automatic patching feature? Or maybe this already DOES the automatic patching feature (it does something similar).",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "issuetype" : {
+         "avatarId" : 10318,
+         "description" : "A task that needs to be done.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+         "id" : "10002",
+         "name" : "Task",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/low_new.svg",
+         "id" : "4",
+         "name" : "Low",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/4"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "status" : {
+         "description" : "The issue is open and ready for the assignee to start work on it.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/open.png",
+         "id" : "1",
+         "name" : "Open",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/1",
+         "statusCategory" : {
+            "colorName" : "blue-gray",
+            "id" : 2,
+            "key" : "new",
+            "name" : "To Do",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/2"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "blue-gray",
+         "id" : 2,
+         "key" : "new",
+         "name" : "To Do",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/2"
+      },
+      "statuscategorychangedate" : "2021-02-14T15:19:38.552-0500",
+      "summary" : "Do Collection_lockfree_forward_list in suhc a way that we leverage the lock-free implementation LockFreeDataStructures::forward_list",
+      "updated" : "2021-02-14T15:19:38.042-0500",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-722/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-722/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "17231",
+   "key" : "STK-722",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/17231"
+}

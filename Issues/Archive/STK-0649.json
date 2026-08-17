@@ -1,0 +1,730 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "should ahve been closed a long time ago...",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2021-12-14T15:04:12.320-0500",
+               "id" : "16161",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17158/comment/16161",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2021-12-14T15:04:12.320-0500"
+            }
+         ],
+         "maxResults" : 1,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/17158/comment",
+         "startAt" : 0,
+         "total" : 1
+      },
+      "components" : [
+         {
+            "id" : "10004",
+            "name" : "Foundation-Containers",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10004"
+         }
+      ],
+      "created" : "2018-04-05T08:41:16.726-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_116580175639_*|*_5_*:*_1_*:*_0",
+      "customfield_10012" : "0|i003zz:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "void Analyze::Manager:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "eleteSubstance (const String& libraryName, SubstanceID substanceId)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "{",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L\"Analyze::Manager:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "eleteSubstance\", L\"libraryName=%s, substanceId=%d\", libraryName.c_str (), (int)substanceId)};",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "using namespace Frameworks::WebServer;",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "if (libraryName != L\"Default\") {",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Execution::Throw (ClientErrorException (L\"Only library 'Default' currently supported\"));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "auto rwLock = sLibCache_.rwget ();",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "if (Iterator<SubstanceMetaInformation> i = GetAllLibraryDefinition ().fSubstances.FindFirstThat ([=](SubstanceMetaInformation smi) { return smi.fID == substanceId; })) {",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Assert (i.Current ().fFromFile.IsPresent ()); // because we currently read all these from individual files and always record the filename",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "String substanceFileName = *i.Current ().fFromFile;",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "rwLock.store (nullopt);",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "IO::FileSystem:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "efault ().RemoveFileIf (L\"/var/opt/HSI-ChemVu/AnalysisLibraries/Default/Active-Substances/\" + substanceFileName);",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "IO::FileSystem:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "efault ().RemoveFileIf (L\"/var/opt/HSI-ChemVu/AnalysisLibraries/Default/All-Substances/\" + substanceFileName);",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "// There is a wait coming somewhere, this is a good spot to force it...",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "// Someday, make the recompile stuff faster, or separate the recompile for meta info from the recompile for peaks...",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "rwLock.store (FillLibInfo_ ());",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "else {",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Execution::Throw (ClientErrorException (L\"Not a valid substance ID\"));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Produces",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[0x00007f39d5ffb700][33816.273]\t\t\t\tAssert (v->fOwnerID_ != oBeingDeleted) failed in 'void Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rivate:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "atchingDataStructures:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "atchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AssertNoIteratorsReferenceOwner_(Stroika::Foundation::Traversal::IteratorOwnerID) const [with NON_PATCHED_DATA_STRUCTURE_CLASS = Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataStructures::LinkedList<ChemVu::BackendApp::WebServices::Model::AnalyzeLibrary::SubstanceMetaInformation, Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataStructures::LinkedList_DefaultTraits<ChemVu::BackendApp::WebServices::Model::AnalyzeLibrary::SubstanceMetaInformation, void> >; Stroika::Foundation::Traversal::IteratorOwnerID = const void*]'; /mnt/c/Sandbox/HSI/RamanScanner-DevRoot/ThirdPartyComponents/Stroika/StroikaRoot/Library/Sources/Stroika/Foundation/Characters/../Containers/Factory/../Concrete/../Private/PatchingDataStructures/PatchableContainerHelper.inl:66",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[0x00007f39d5ffb700][33816.371]\t\t\t\tBackTrace: ChemVu-Backend(Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ebug::BackTrace[abi:cxx11](unsigned int)+0x6c) [0x55719398e5bd]; ChemVu-Backend(+0x2438918) [0x55719398a918]; ChemVu-Backend(Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ebug:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rivate_::Assertion_Failure_Handler_(char const*, char const*, char const*, int, char const*)+0x71) [0x55719398adc5]; ChemVu-Backend(Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rivate:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "atchingDataStructures:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "atchableContainerHelper<Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataStructures::LinkedList<ChemVu::BackendApp::WebServices::Model::AnalyzeLibrary::SubstanceMetaInformation, Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataStructures::LinkedList_DefaultTraits<ChemVu::BackendApp::WebServices::Model::AnalyzeLibrary::SubstanceMetaInformation, void> > >::AssertNoIteratorsReferenceOwner_(void const*) const+0x80) [0x5571931d0a6a]; ChemVu-Backend(Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rivate:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "atchingDataStructures:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "atchableContainerHelper<Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataStructures::LinkedList<ChemVu::Backe",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "ndApp::WebServices::Model::AnalyzeLibrary::SubstanceMetaInformation, Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataStructures::LinkedList_DefaultTraits<ChemVu::BackendApp::WebServices::Model::AnalyzeLibrary::SubstanceMetaInformation, void> > >::AssertNoIteratorsReferenceOwner(void const*) const+0x3d) [0x5571931dc309]; ChemVu-Backend(Stroika::Foundation::Containers::Concrete::Collection_LinkedList<ChemVu::BackendApp::WebServices::Model::AnalyzeLibrary::SubstanceMetaInformation>::Rep_::AssertNoIteratorsReferenceOwner(void const*) const+0x4e) [0x5571931d09a6]; ChemVu-Backend(Stroika::Foundation::Containers::Collection<ChemVu::BackendApp::WebServices::Model::AnalyzeLibrary::SubstanceMetaInformation>::~Collection()+0x65) [0x55719317a029]; ChemVu-Backend(ChemVu::BackendApp::WebServices::Model::AnalyzeLibrary::LibraryDefinition::~LibraryDefinition()+0x2d) [0x557193173f93]; ChemVu-Backend(ChemVu::BackendApp::Analyze::Manager:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "eleteSubstance(Stroika::Foundation::Characters::String const&, unsigned short)+0x15d) [0x55719314c4c",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "3]; ChemVu-Backend(ChemVu::BackendApp::WebServices::WSImpl::Analyze_Library_Substance_Configuration_DELETE(Stroika::Foundation::Characters::String const&, unsigned short) const+0x79) [0x55719374f307]; ChemVu-Backend(ChemVu::BackendApp::WebServices::WebServer::Rep_::Rep_(std::shared_ptr<ChemVu::BackendApp::WebServices::IWSAPI> const&)::{lambda(Stroika::Frameworks::WebServer::Message*)#6}::operator()(Stroika::Frameworks::WebServer::Message*) const+0x545) [0x5571936847f3]; ChemVu-Backend(std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Function_handler<void (Stroika::Frameworks::WebServer::Message*), ChemVu::BackendApp::WebServices::WebServer::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "::Rep_(std::shared_ptr<ChemVu::BackendApp::WebServices::IWSAPI> const&)::{lambda(Stroika::Frameworks::WebServer::Message*)#6}>::_M_invoke(std::_Any_data const&, Stroika::Frameworks::WebServer::Message*&&)+0x49) [0x5571936aebaf]; ChemVu-Backend(std::function<void (Stroika::Frameworks::WebServer::Message*)>::operator()(Stroika::Frameworks::WebServer::Message*) const+0x58) [0x557193801516]; ChemVu-Backend(Stroika:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : ":Frameworks::WebServer::Router::Rep_::HandleMessage(Stroika::Frameworks::WebServer::Message*)+0x9b) [0x55719383917b]; ChemVu-Backend(Stroika::Frameworks::WebServer::Interceptor::HandleMessage(Stroika::Frameworks::WebServer::Message*)+0x59) [0x557193803253]; ChemVu-Backend(Stroika::Frameworks::WebServer::InterceptorChain::Rep_::HandleMessage(Stroika::Frameworks::WebServer::Message*)+0x95) [0x557193803601]; ChemVu-Backend(Stroika::Frameworks::WebServer::InterceptorChain::HandleMessage(Stroika::Frameworks::WebServer::Message*)+0x55) [0x5571937f66a7]; ChemVu-Backend(Stroika::Frameworks::WebServer::Connection::ReadAndProcessMessage()+0x825) [0x5571937f4b89]; ChemVu-Backend(+0x227ead7) [0x5571937d0ad7]; ChemVu-Backend(+0x22809ab) [0x5571937d29ab]; ChemVu-Backend(std::function<void ()>::operator()() const+0x41) [0x5571932e8f55]; ChemVu-Backend(void Stroika::Foundation::Execution::Function<void ()>::operator()<>() const+0x6a) [0x557193a32bd8]; ChemVu-Backend(Stroika::Foundation::Execution::ThreadPool::MyRunnable_::Ru",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "n()+0x210) [0x557193a5c81e]; ChemVu-Backend(+0x2509105) [0x557193a5b105]; ChemVu-Backend(+0x2509c0b) [0x557193a5bc0b]; ChemVu-Backend(std::function<void ()>::operator()() const+0x41) [0x5571932e8f55]; ChemVu-Backend(void Stroika::Foundation::Execution::Function<void ()>::operator()<>() const+0x6a) [0x557193a32bd8]; ChemVu-Backend(Stroika::Foundation::Execution::Thread::Rep_::Run_()+0x28) [0x557193a2b282]; ChemVu-Backend(Stroika::Foundation::Execution::Thread::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*)+0x4bb) [0x557193a2c19f]; ChemVu-Backend(+0x24d8f7d) [0x557193a2af7d]; ChemVu-Backend(+0x24dd830) [0x557193a2f830]; ChemVu-Backend(+0x24dcf45) [0x557193a2ef45]; ChemVu-Backend(+0x24df43c) [0x557193a3143c]; ChemVu-Backend(+0x24df3e2) [0x557193a313e2]; ChemVu-Backend(+0x24df39f) [0x557193a3139f]; ChemVu-Backend(+0x262cfff) [0x557193b7efff]; /lib/x86_64-linux-gnu/libpthread.so.0(+0x76ba) [0x7f3a4bc0f6ba]; /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7f3a4a62041d];",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[0x00007f39d5ffb700][33816.372]\t\t\t\tABORTING...",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "WORKAROUND (tesitng this) is to assign it to Iterator<T>::GetEnd ()",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "fixVersions" : [
+         {
+            "archived" : false,
+            "id" : "12832",
+            "name" : "v2.1b14",
+            "released" : false,
+            "self" : "https://stroika.atlassian.net/rest/api/3/version/12832"
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10318,
+         "description" : "A task that needs to be done.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+         "id" : "10002",
+         "name" : "Task",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/high_new.svg",
+         "id" : "2",
+         "name" : "High",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/2"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2021-12-14T15:04:12.264-0500",
+      "status" : {
+         "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+         "id" : "5",
+         "name" : "Resolved",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+         "statusCategory" : {
+            "colorName" : "yellow",
+            "id" : 4,
+            "key" : "indeterminate",
+            "name" : "In Progress",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "yellow",
+         "id" : 4,
+         "key" : "indeterminate",
+         "name" : "In Progress",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+      },
+      "statuscategorychangedate" : "2021-12-14T15:04:12.344-0500",
+      "summary" : "overwrite a container (Collection_LInkedList) while it has a live iterator causes assertion failure/crash",
+      "updated" : "2021-12-14T15:04:12.335-0500",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-649/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-649/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "17158",
+   "key" : "STK-649",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/17158"
+}

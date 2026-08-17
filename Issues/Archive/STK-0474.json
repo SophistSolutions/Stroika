@@ -1,0 +1,376 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "maxResults" : 0,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/12200/comment",
+         "startAt" : 0,
+         "total" : 0
+      },
+      "components" : [
+         {
+            "id" : "10005",
+            "name" : "Foundation-Execution",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10005"
+         }
+      ],
+      "created" : "2016-04-06T08:53:07.010-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10012" : "0|i002x3:",
+      "customfield_10300" : "{repository={count=1, dataType=repository}, json={\"cachedValue\":{\"errors\":[],\"summary\":{\"repository\":{\"overall\":{\"count\":1,\"lastUpdated\":\"2016-04-06T09:23:11.000-0400\",\"dataType\":\"repository\"},\"byInstanceType\":{\"oAuth-com.github.integration.production\":{\"count\":1,\"name\":\"GitHub\"},\"GitHub\":{\"count\":1,\"name\":\"GitHub\"}}}}},\"isStale\":true}}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "For now - this comprises just specifying the stack size and the stack guardsize.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "For AIX I see only one obvious way to set this (given use of the std::thread class which uses all teh defaults):",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "// According to ",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "https://www.ibm.com/support/knowledgecenter/ssw_aix_61/com.ibm.aix.performance/thread_supp_tun_params.htm"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "https://www.ibm.com/support/knowledgecenter/ssw_aix_61/com.ibm.aix.performance/thread_supp_tun_params.htm",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "// Default: 98 304 bytes for 32-bit applications, 196 608 bytes for 64-bit applications.",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "// Range: Decimal integer values from 0 to 268 435 455 which will be rounded up to the nearest page (currently 4 096).",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "if (sizeof (void*) == 4)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "{",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "static const char kStackSizeEnvVarSetting_[] = \"AIXTHREAD_STK=130000\";",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "DbgTrace (\"Setting env-var %s\", kStackSizeEnvVarSetting_);",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "and same for AIXTHREAD_GUARD..... (or some such).",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "The trouble with this is its a bit of race - you modify global variables (setenv). Best to avoid if we can.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "For Linux - I'm not sure.",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "UNIX/Linux:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "gthread_create (_gthread_t threadid, void ",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "strong"
+                        }
+                     ],
+                     "text" : "(func) (void",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "),void *_args)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "{ return ",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "gthrw(pthread_create) (",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "_threadid, NULL, __func, __args)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "so construcint std::thread wtih libstdc++ just uses the default for posix_threads.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "MAYBE I can replace (link trick) - the default gthread_create function?",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "For windows - I'm also not sure how todo this. I'm not sure is imporant,a nd since I dont really know how to do it - back burtner for now.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "issuelinks" : [
+         {
+            "id" : "10300",
+            "outwardIssue" : {
+               "fields" : {
+                  "issuetype" : {
+                     "avatarId" : 10300,
+                     "hierarchyLevel" : 0,
+                     "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10300?size=medium",
+                     "id" : "10006",
+                     "name" : "Improvement",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10006",
+                     "subtask" : false
+                  },
+                  "priority" : {
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/high_new.svg",
+                     "id" : "2",
+                     "name" : "High",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/priority/2"
+                  },
+                  "status" : {
+                     "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+                     "id" : "5",
+                     "name" : "Resolved",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+                     "statusCategory" : {
+                        "colorName" : "yellow",
+                        "id" : 4,
+                        "key" : "indeterminate",
+                        "name" : "In Progress",
+                        "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+                     }
+                  },
+                  "summary" : "Decide what todo about thread stack size"
+               },
+               "id" : "12101",
+               "key" : "STK-470",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/12101"
+            },
+            "self" : "https://stroika.atlassian.net/rest/api/3/issueLink/10300",
+            "type" : {
+               "id" : "10003",
+               "inward" : "relates to",
+               "name" : "Relates",
+               "outward" : "relates to",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issueLinkType/10003"
+            }
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10300,
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10300?size=medium",
+         "id" : "10005",
+         "name" : "Feature",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10005",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/low_new.svg",
+         "id" : "4",
+         "name" : "Low",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/4"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "status" : {
+         "description" : "The issue is open and ready for the assignee to start work on it.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/open.png",
+         "id" : "1",
+         "name" : "Open",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/1",
+         "statusCategory" : {
+            "colorName" : "blue-gray",
+            "id" : 2,
+            "key" : "new",
+            "name" : "To Do",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/2"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "blue-gray",
+         "id" : 2,
+         "key" : "new",
+         "name" : "To Do",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/2"
+      },
+      "statuscategorychangedate" : "2016-04-06T08:53:07.010-0400",
+      "summary" : "Support new Thread::Configuration parameter for creating threads on all platforms - set stack size",
+      "updated" : "2016-04-06T08:56:27.052-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-474/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-474/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "12200",
+   "key" : "STK-474",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/12200"
+}

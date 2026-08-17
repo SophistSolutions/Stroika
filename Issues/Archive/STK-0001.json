@@ -1,0 +1,138 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "maxResults" : 0,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/10000/comment",
+         "startAt" : 0,
+         "total" : 0
+      },
+      "created" : "2012-07-22T00:06:16.000-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "4_*:*_1_*:*_18736_*|*_6_*:*_2_*:*_102415391931",
+      "customfield_10012" : "0|hzzzzz:",
+      "customfield_10027" : "1",
+      "customfield_10300" : "{}",
+      "issuetype" : {
+         "description" : "A user story. Created by JIRA Software - do not edit or delete.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/issuetypes/story.svg",
+         "id" : "10001",
+         "name" : "Story",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10001",
+         "subtask" : false
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:782e4b80-6448-4237-8d7e-aed016d34882",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/c567e3a76e53c7bd7d2dda08af2122e3?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Fdefault%2Fdefault-avatar-2.png",
+            "24x24" : "https://secure.gravatar.com/avatar/c567e3a76e53c7bd7d2dda08af2122e3?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Fdefault%2Fdefault-avatar-2.png",
+            "32x32" : "https://secure.gravatar.com/avatar/c567e3a76e53c7bd7d2dda08af2122e3?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Fdefault%2Fdefault-avatar-2.png",
+            "48x48" : "https://secure.gravatar.com/avatar/c567e3a76e53c7bd7d2dda08af2122e3?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Fdefault%2Fdefault-avatar-2.png"
+         },
+         "displayName" : "Imported User 1",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A782e4b80-6448-4237-8d7e-aed016d34882",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2015-10-20T08:49:46.650-0400",
+      "status" : {
+         "description" : "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/closed.png",
+         "id" : "6",
+         "name" : "Closed",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/6",
+         "statusCategory" : {
+            "colorName" : "green",
+            "id" : 3,
+            "key" : "done",
+            "name" : "Done",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "green",
+         "id" : 3,
+         "key" : "done",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+      },
+      "statuscategorychangedate" : "2015-10-20T08:49:46.667-0400",
+      "summary" : "project and builder files",
+      "updated" : "2015-10-20T08:49:46.666-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-1/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-1/watchers",
+         "watchCount" : 0
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "10000",
+   "key" : "STK-1",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/10000"
+}

@@ -1,0 +1,585 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "Major change to handling comparers. MOSTLY - switch to using stdc++ approach, but added 'traits' mechanism to idientify classes of compares for automatic conversion. Redidi ALL containers (we support) to take argument altnaratente comperes, and lost TRAITS from about all of them.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "How just traits on CTORs, where we tkae by value arg of comparer (optionally).",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-04-14T19:49:59.677-0400",
+               "id" : "15887",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17151/comment/15887",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-04-14T19:49:59.677-0400"
+            }
+         ],
+         "maxResults" : 1,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/17151/comment",
+         "startAt" : 0,
+         "total" : 1
+      },
+      "components" : [
+         {
+            "id" : "10103",
+            "name" : "Foundation-Common",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10103"
+         },
+         {
+            "id" : "10004",
+            "name" : "Foundation-Containers",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10004"
+         }
+      ],
+      "created" : "2018-03-07T09:26:59.494-0500",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_6818_*|*_3_*:*_1_*:*_0",
+      "customfield_10012" : "0|i003yf:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "Seriously consider Set<T> having",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "\tChange EqualsComparer to EqualComparerType (function<bool(T,T)>) and DefaultEqualsComparer",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "\tReview implications for inherited methods from Iterable<>",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "\tReview implications for sorted comparisns (subclasses sortedset).",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "\tReview implications for commutatitivty)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "\tConsider if I can do this ONLY for Set<>/SortedSet<> - just as a way to get started, and if works well, do for Mapping etc.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "\tDo all work in backend. Just extra param to CTOR. Then backend does the rest. Not sure we want to bother with TRAITS for Set<>. Simpler without, and the only thing used to replace is comparer, and that’s better replaced by CTOR ARG.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "USE",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "http://en.cppreference.com/w/cpp/utility/functional/equal_to"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "http://en.cppreference.com/w/cpp/utility/functional/equal_to",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "instead of my usual compare crap",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "and ",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "http://en.cppreference.com/w/cpp/utility/functional/less"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "http://en.cppreference.com/w/cpp/utility/functional/less",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "and I THIUNK – test this",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "using EqualsComparerType  std::function<bool(const T&,const T&)>;",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "void WebService::Server::ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "{",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "String method{request->GetHTTPMethod ()};",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "// @todo rewrite to do better case insensitive compare",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Iterable<String> lcMethods = methods.Select<String> ([](const String& s) { return s.ToLowerCase ();  });",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "if (not methods.Contains (method.ToLowerCase ())) {",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Execution::Throw (",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Execution::StringException (",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Characters::Format (L\"Got HTTP method %s%s, but expected one from %s\", Characters::ToString (method).c_str (), (fromInMessage ? (L\" from \" + *fromInMessage) : L\"\").c_str (), Characters::ToString (methods).c_str ())",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "));",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "fixVersions" : [
+         {
+            "archived" : false,
+            "id" : "12811",
+            "name" : "2.0a231",
+            "released" : false,
+            "self" : "https://stroika.atlassian.net/rest/api/3/version/12811"
+         }
+      ],
+      "issuelinks" : [
+         {
+            "id" : "11502",
+            "inwardIssue" : {
+               "fields" : {
+                  "issuetype" : {
+                     "avatarId" : 10318,
+                     "description" : "A task that needs to be done.",
+                     "hierarchyLevel" : 0,
+                     "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+                     "id" : "10002",
+                     "name" : "Task",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+                     "subtask" : false
+                  },
+                  "priority" : {
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+                     "id" : "3",
+                     "name" : "Medium",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+                  },
+                  "status" : {
+                     "description" : "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/closed.png",
+                     "id" : "6",
+                     "name" : "Closed",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/status/6",
+                     "statusCategory" : {
+                        "colorName" : "green",
+                        "id" : 3,
+                        "key" : "done",
+                        "name" : "Done",
+                        "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+                     }
+                  },
+                  "summary" : "For Comparer – we MIGHT need to make that an optional CTOR parameter – overloaded."
+               },
+               "id" : "10429",
+               "key" : "STK-357",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/10429"
+            },
+            "self" : "https://stroika.atlassian.net/rest/api/3/issueLink/11502",
+            "type" : {
+               "id" : "10002",
+               "inward" : "is duplicated by",
+               "name" : "Duplicate",
+               "outward" : "duplicates",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issueLinkType/10002"
+            }
+         },
+         {
+            "id" : "11503",
+            "inwardIssue" : {
+               "fields" : {
+                  "issuetype" : {
+                     "description" : "A user story. Created by JIRA Software - do not edit or delete.",
+                     "hierarchyLevel" : 0,
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/issuetypes/story.svg",
+                     "id" : "10001",
+                     "name" : "Story",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10001",
+                     "subtask" : false
+                  },
+                  "priority" : {
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/high_new.svg",
+                     "id" : "2",
+                     "name" : "High",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/priority/2"
+                  },
+                  "status" : {
+                     "description" : "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/closed.png",
+                     "id" : "6",
+                     "name" : "Closed",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/status/6",
+                     "statusCategory" : {
+                        "colorName" : "green",
+                        "id" : 3,
+                        "key" : "done",
+                        "name" : "Done",
+                        "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+                     }
+                  },
+                  "summary" : "CONSIDER getting rid of TRAITS from Mapping<> template – and JUST use TRAITS on tempalted CONSTRUCTOR"
+               },
+               "id" : "10062",
+               "key" : "STK-63",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/10062"
+            },
+            "self" : "https://stroika.atlassian.net/rest/api/3/issueLink/11503",
+            "type" : {
+               "id" : "10002",
+               "inward" : "is duplicated by",
+               "name" : "Duplicate",
+               "outward" : "duplicates",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issueLinkType/10002"
+            }
+         },
+         {
+            "id" : "11504",
+            "outwardIssue" : {
+               "fields" : {
+                  "issuetype" : {
+                     "avatarId" : 10318,
+                     "description" : "A task that needs to be done.",
+                     "hierarchyLevel" : 0,
+                     "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+                     "id" : "10002",
+                     "name" : "Task",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+                     "subtask" : false
+                  },
+                  "priority" : {
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/low_new.svg",
+                     "id" : "4",
+                     "name" : "Low",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/priority/4"
+                  },
+                  "status" : {
+                     "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+                     "id" : "5",
+                     "name" : "Resolved",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+                     "statusCategory" : {
+                        "colorName" : "yellow",
+                        "id" : 4,
+                        "key" : "indeterminate",
+                        "name" : "In Progress",
+                        "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+                     }
+                  },
+                  "summary" : "Various concrete container constructors could use the same set of COMPARER overloads in the archtype classes (but hours of typing and wait til we've tested more)"
+               },
+               "id" : "17161",
+               "key" : "STK-652",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17161"
+            },
+            "self" : "https://stroika.atlassian.net/rest/api/3/issueLink/11504",
+            "type" : {
+               "id" : "10003",
+               "inward" : "relates to",
+               "name" : "Relates",
+               "outward" : "relates to",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issueLinkType/10003"
+            }
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10318,
+         "description" : "A task that needs to be done.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+         "id" : "10002",
+         "name" : "Task",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+         "id" : "3",
+         "name" : "Medium",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2018-04-14T19:49:59.625-0400",
+      "status" : {
+         "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+         "id" : "5",
+         "name" : "Resolved",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+         "statusCategory" : {
+            "colorName" : "yellow",
+            "id" : 4,
+            "key" : "indeterminate",
+            "name" : "In Progress",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "yellow",
+         "id" : 4,
+         "key" : "indeterminate",
+         "name" : "In Progress",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+      },
+      "statuscategorychangedate" : "2018-03-07T09:27:06.312-0500",
+      "summary" : "New approach to comparison objects, and support this - for now - just in Set<> and SortableSet<> and similarly for Mapping<> and maybe others?",
+      "updated" : "2018-04-14T19:49:59.714-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-642/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-642/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "17151",
+   "key" : "STK-642",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/17151"
+}

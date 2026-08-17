@@ -1,0 +1,3306 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "valgrind -q --tool=helgrind --suppressions=Valgrind-Helgrind-Common.supp  ../Builds/VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc/Test38",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "==28450== ---Thread-Announcement------------------------------------------\r",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== Thread #216 was created",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    at 0x56E2AFE: clone (clone.S:71)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x4E48291: create_thread (createthread.c:100)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x4E49FC7: pthread_create@@GLIBC_2.2.5 (pthread_create.c:822)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x4C36A27: ??? (in /usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x7951D4: std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void ",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "atlassian-yellow_star",
+                                 "shortName" : ":yellow_star:",
+                                 "text" : ":yellow_star:"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "()) (in /home/lewis/Sandbox/Stroika-Regression-Tests/Builds/VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc/Test38)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x6886FA: std::thread::thread<Stroika::Foundation::Execution::Thread::Rep_:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "oCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*)::{lambda()#1}>(Stroika::Foundation::Execution::Thread::Rep_:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "oCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*)::{lambda()#1}&&) (thread:126)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x684639: Stroika::Foundation::Execution::Thread::Rep_:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "oCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*) (Thread.cpp:310)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x686A53: Stroika::Foundation::Execution::Thread:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "tr::Start() const (Thread.cpp:830)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x68793E: Stroika::Foundation::Execution::Thread::New(Stroika::Foundation::Execution::Function<void ()> const&, Stroika::Foundation::Execution::Thread::AutoStartFlag, Stroika::Foundation::Memory::Optional<Stroika::Foundation::Characters::String, Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<Stroika::Foundation::Characters::String> > const&, Stroika::Foundation::Memory::Optional<Stroika::Foundation::Execution::Thread::Configuration, Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<Stroika::Foundation::Execution::Thread::Configuration> > const&) (Thread.cpp:1071)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x575C1F: (anonymous namespace)::RegressionTest22_SycnhonizedUpgradeLock_() (Test.cpp:1087)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x576343: (anonymous namespace):",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "oRegressionTests_() (Test.cpp:1147)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x5CD14D: Stroika::TestHarness:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f61b",
+                                 "shortName" : ":stuck_out_tongue:",
+                                 "text" : "😛"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "rintPassOrFail(void ",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "atlassian-yellow_star",
+                                 "shortName" : ":yellow_star:",
+                                 "text" : ":yellow_star:"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "()) (TestHarness.cpp:81)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== ----------------------------------------------------------------\r",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== Thread #216: pthread_rwlock_{rd,rw}lock with a pthread_mutex_t* argument ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    at 0x4C35814: ??? (in /usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x5849BC: std::__shared_mutex_pthread::lock() (shared_mutex:105)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x584B54: std::shared_timed_mutex::lock() (shared_mutex:378)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x59A925: std::unique_lock<std::shared_timed_mutex>::lock() (std_mutex.h:267)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x596246: std::unique_lock<std::shared_timed_mutex>::unique_lock(std::shared_timed_mutex&) (std_mutex.h:197)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x591394: Stroika::Foundation::Execution::Synchronized<bool, Stroika::Foundation::Execution::Synchronized_Traits<std::shared_timed_mutex, false, std::shared_lock<std::shared_timed_mutex>, std::unique_lock<std::shared_timed_mutex> > >::WritableReference::WritableReference(bool*, std::shared_timed_mutex*) (Synchronized.inl:235)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x58C059: Stroika::Foundation::Execution::Synchronized<bool, Stroika::Foundation::Execution::Synchronized_Traits<std::shared_timed_mutex, false, std::shared_lock<std::shared_timed_mutex>, std::unique_lock<std::shared_timed_mutex> > >::rwget() (Synchronized.inl:124)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x57599A: (anonymous namespace)::RegressionTest22_SycnhonizedUpgradeLock_()::{lambda()#1}::operator()() const (Test.cpp:1083)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x57E0DC: std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Function_handler<void (), (anonymous namespace)::RegressionTest22_SycnhonizedUpgradeLock",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "()::{lambda()#1}>::_M_invoke(std::_Any_data const&) (std_function.h:316)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x58AF28: std::function<void ()>::operator()() const (std_function.h:706)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x68C24B: void Stroika::Foundation::Execution::Function<void ()>::operator()<>() const (Function.inl:46)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x68485B: Stroika::Foundation::Execution::Thread::Rep_::Run_() (Thread.cpp:348)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== ----------------------------------------------------------------\r",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== Thread #216: pthread_rwlock_unlock with a pthread_mutex_t* argument ",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    at 0x4C35FB4: ??? (in /usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x584A32: std::__shared_mutex_pthread::unlock() (shared_mutex:125)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x584B92: std::shared_timed_mutex::unlock() (shared_mutex:380)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x59141A: std::unique_lock<std::shared_timed_mutex>::unlock() (std_mutex.h:323)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x58C0F6: std::unique_lock<std::shared_timed_mutex>::~unique_lock() (std_mutex.h:232)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x587C4C: Stroika::Foundation::Execution::Synchronized<bool, Stroika::Foundation::Execution::Synchronized_Traits<std::shared_timed_mutex, false, std::shared_lock<std::shared_timed_mutex>, std::unique_lock<std::shared_timed_mutex> > >::WritableReference::~WritableReference() (Synchronized.h:426)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x5759CB: (anonymous namespace)::RegressionTest22_SycnhonizedUpgradeLock_()::{lambda()#1}::operator()() const (Test.cpp:1083)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x57E0DC: std::",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "Function_handler<void (), (anonymous namespace)::RegressionTest22_SycnhonizedUpgradeLock",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "()::{lambda()#1}>::_M_invoke(std::_Any_data const&) (std_function.h:316)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x58AF28: std::function<void ()>::operator()() const (std_function.h:706)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x68C24B: void Stroika::Foundation::Execution::Function<void ()>::operator()<>() const (Function.inl:46)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x68485B: Stroika::Foundation::Execution::Thread::Rep_::Run_() (Thread.cpp:348)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450==    by 0x6858B6: Stroika::Foundation::Execution::Thread::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*) (Thread.cpp:591)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==28450== ",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2017-12-20T09:20:45.204-0500",
+               "id" : "15844",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment/15844",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2017-12-20T09:20:45.204-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "I reviewed the g++ stdlib code and it appeared correct.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Instead, I think the issue is:",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "https://www.mail-archive.com/kde-bugs-dist@kde.org/msg09977.html"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "https://www.mail-archive.com/kde-bugs-dist@kde.org/msg09977.html",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "a bug in helgrind. Retest next ubuntu release.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2017-12-20T09:21:30.868-0500",
+               "id" : "15845",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment/15845",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2017-12-20T09:21:30.868-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "worse - attempts to workaround this issue with supressions just result in :",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Helgrind: hg_main.c:309 (lockN_acquire_reader): Assertion 'lk->kind == LK_rdwr' failed.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "So comemtned out the call. Note - when run by itself, this procedure /test does fine. Its a cummulative effect of all the tests (which fits the bug report in that lmail archive).",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "So try again later.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "search for ",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "https://stroika.atlassian.net/browse/STK-632"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "https://stroika.atlassian.net/browse/STK-632",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " in regression test code for workaround (RegressionTest22_SycnhonizedUpgradeLock_)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2017-12-20T11:18:57.394-0500",
+               "id" : "15846",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment/15846",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-09-07T17:36:53.938-0400"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "Also avoid SyncLRUCache for reason of similar crash on helgrind ARM regtest",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Helgrind: hg_main.c:309 (lockN_acquire_reader): Assertion 'lk->kind == LK_rdwr' failed.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "host stacktrace:",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    at 0x58026BEC: show_sched_status_wrk (m_libcassert.c:355)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x58026D4F: report_and_quit (m_libcassert.c:426)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x58026E67: vgPlain_assert_fail (m_libcassert.c:492)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x580071F7: lockN_acquire_reader (hg_main.c:309)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x58009AAF: evhH__post_thread_r_acquires_lock (hg_main.c:1244)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x5800F4FF: hg_handle_client_request (hg_main.c:5381)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x5804055F: wrap_tool_handle_client_request (m_tooliface.c:282)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x58084A8F: do_client_request (scheduler.c:2111)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x58084A8F: vgPlain_scheduler (scheduler.c:1433)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x580952CF: thread_wrapper (syswrap-linux.c:103)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x580952CF: run_a_thread_NORETURN (syswrap-linux.c:156)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x580955D7: vgModuleLocal_start_thread_NORETURN (syswrap-linux.c:320)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x580C7FD3: ??? (in /usr/lib/valgrind/helgrind-arm-linux)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "sched status:",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "running_tid=2",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Thread 1: status = VgTs_WaitSys (lwpid 2697)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    at 0x4898E76: __libc_do_syscall (libc-do-syscall.S:47)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x4896A39: __lll_lock_wait (lowlevellock.c:43)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x489139B: pthread_mutex_lock (pthread_mutex_lock.c:113)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x484422F: mutex_lock_WRK (hg_intercepts.c:902)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x11AB4B: std::mutex::lock() (in /tmp/Test39)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x14E607: int Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ebug::Emitter:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "oEmitMessage_<wchar_t>(unsigned int, wchar_t const*, wchar_t const*) [clone .constprop.413] (in /tmp/Test39)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Thread 2: status = VgTs_Runnable (lwpid 2746)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    at 0x48458CC: pthread_rwlock_rdlock_WRK (hg_intercepts.c:2240)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x131D7D: Stroika::Foundation::Cache::SynchronizedLRUCache<std::_",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "em"
+                                 }
+                              ],
+                              "text" : "cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::equal_to<std::cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::hash<std::cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, Stroika::Foundation::Cache::Statistics::Stats_Null>::Lookup(std::",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : "_cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) const (in /tmp/Test39)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Thread 3: status = VgTs_WaitSys (lwpid 2747)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    at 0x4898E76: __libc_do_syscall (libc-do-syscall.S:47)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x4896A39: __lll_lock_wait (lowlevellock.c:43)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x489139B: pthread_mutex_lock (pthread_mutex_lock.c:113)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x484422F: mutex_lock_WRK (hg_intercepts.c:902)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x11AB4B: std::mutex::lock() (in /tmp/Test39)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "==2697==    by 0x14E607: int Stroika::Foundation:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "ebug::Emitter:",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "id" : "1f603",
+                                 "shortName" : ":smiley:",
+                                 "text" : "😃"
+                              },
+                              "type" : "emoji"
+                           },
+                           {
+                              "text" : "oEmitMessage_<wchar_t>(unsigned int, wchar_t const*, wchar_t const*) [clone .constprop.413] (in /tmp/Test39)",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Note: see also the FAQ in the source distribution.",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "It contains workarounds to several common problems.",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "In particular, if Valgrind aborted or crashed after",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "identifying problems in your program, there's a good chance",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "that fixing those problems will prevent Valgrind aborting or",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "crashing, especially if it happened in m_mallocfree.c.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-09-07T18:06:15.284-0400",
+               "id" : "15900",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment/15900",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-09-07T18:06:15.284-0400"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "This only appears to happen on Ununtu 18.10",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "But now happeing elsewhere:",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2019-08-26T09:39:04.432-0400",
+               "id" : "15972",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment/15972",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2019-08-26T09:39:04.432-0400"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "Did not investigate. BUT - got this erorr that seems probably related or the same thing - but on Ubuntu 20.04:",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "[-------MAIN-------][0053.957]\t<RegressionTest22_SycnhonizedUpgradeLock_> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.957]\t\t<run-test (1) RWSynchronized NonAtomically> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.958]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0053.960]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0053.960]\t\tAdding thread id 0x00007f4e337fb700 to sRunningThreads_ ([])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.962]\t\t\t\t{id: 0x00007f4e337fb700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0053.963]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e337fb700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.963]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.964]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0053.966]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0053.967]\t\tAdding thread id 0x00007f4e33ffc700 to sRunningThreads_ ([ 0x00007f4e337fb700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0053.969]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e33ffc700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.969]\t\t\t\t{id: 0x00007f4e33ffc700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.970]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.971]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0053.972]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0053.974]\t\tAdding thread id 0x00007f4e347fd700 to sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0053.976]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e347fd700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.976]\t\t\t\t{id: 0x00007f4e347fd700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0053.976]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0054.016]\t\tThrowing exception: Timeout Expired {errno: 110} from ...  4# ;  5# ;  6# ;  7# ;  8# ;  9# ; 10# ; 11# ; 12# ; 13# std::function<void ()>::operator()() const; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# ; 21# ; 22# ; 23# ; 24# ; 25# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0054.016]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: {id: 0x00007f4e347fd700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0054.016]\t\tremoving thread id 0x00007f4e347fd700 from sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700, 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0054.017]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.979]\t\t\t<Thread::Abort (*this={id: 0x00007f4e337fb700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.979]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e337fb700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.980]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.981]\t\t\t<Thread::Abort (*this={id: 0x00007f4e33ffc700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.982]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e33ffc700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.982]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.984]\t\t\t<Thread::Abort (*this={id: 0x00007f4e347fd700, status: Completed})/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0056.985]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# std::function<void ()>::operator()() const;  8# ;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0056.985]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e33ffc700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0056.986]\t\tremoving thread id 0x00007f4e33ffc700 from sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0056.986]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0056.989]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# ;  8# ;  9# std::function<void ()>::operator()() const; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# ; 21# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0056.990]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e337fb700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0056.991]\t\tremoving thread id 0x00007f4e337fb700 from sRunningThreads_ ([ 0x00007f4e337fb700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0056.992]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.993]\t\t} </run-test (1) RWSynchronized NonAtomically>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.994]\t\t<run-test (2) RWSynchronized NonAtomically> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0056.995]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0056.996]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0056.997]\t\tAdding thread id 0x00007f4e347fd700 to sRunningThreads_ ([])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0057.000]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e347fd700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0057.000]\t\t\t\t{id: 0x00007f4e347fd700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0057.000]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0057.002]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0057.003]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0057.004]\t\tAdding thread id 0x00007f4e33ffc700 to sRunningThreads_ ([ 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0057.006]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e33ffc700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0057.007]\t\t\t\t{id: 0x00007f4e33ffc700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0057.007]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0057.009]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0057.010]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0057.012]\t\tAdding thread id 0x00007f4e337fb700 to sRunningThreads_ ([ 0x00007f4e33ffc700, 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0057.014]\t\t\t\t{id: 0x00007f4e337fb700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0057.015]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0057.015]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e337fb700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.017]\t\t\t<Thread::Abort (*this={id: 0x00007f4e347fd700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.018]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e347fd700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.018]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.020]\t\t\t<Thread::Abort (*this={id: 0x00007f4e33ffc700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.021]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e33ffc700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.022]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.023]\t\t\t<Thread::Abort (*this={id: 0x00007f4e337fb700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0060.024]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# ;  8# ;  9# std::function<void ()>::operator()() const; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# ; 21# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.024]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e337fb700, signal = SIGUSR2)> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0060.024]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e347fd700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.024]\t\t\t\t} </Stroika::Foundation::Execution::Signals::Execution::SendSignal>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0060.025]\t\tremoving thread id 0x00007f4e347fd700 from sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700, 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.025]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0060.025]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0060.028]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# std::function<void ()>::operator()() const;  8# ;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0060.028]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e337fb700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0060.029]\t\tremoving thread id 0x00007f4e337fb700 from sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0060.029]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.029]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# std::function<void ()>::operator()() const;  8# ;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.031]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e33ffc700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.032]\t\tremoving thread id 0x00007f4e33ffc700 from sRunningThreads_ ([ 0x00007f4e33ffc700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.032]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.034]\t\t} </run-test (2) RWSynchronized NonAtomically>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.034]\t\t<run-test (1) UpgradableRWSynchronized NonAtomically> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.036]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0060.037]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0060.038]\t\tAdding thread id 0x00007f4e337fb700 to sRunningThreads_ ([])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.040]\t\t\t\t{id: 0x00007f4e337fb700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0060.040]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e337fb700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.040]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.042]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.043]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.044]\t\tAdding thread id 0x00007f4e33ffc700 to sRunningThreads_ ([ 0x00007f4e337fb700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.046]\t\t\t\t{id: 0x00007f4e33ffc700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.046]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e33ffc700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.047]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.048]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0060.049]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0060.049]\t\tAdding thread id 0x00007f4e347fd700 to sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0060.050]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e347fd700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.051]\t\t\t\t{id: 0x00007f4e347fd700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0060.051]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.105]\t\tThrowing exception: Timeout Expired {errno: 110} from ...  4# ;  5# ;  6# ;  7# ;  8# ;  9# ; 10# ; 11# ; 12# ; 13# std::function<void ()>::operator()() const; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# ; 21# ; 22# ; 23# ; 24# ; 25# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.106]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: {id: 0x00007f4e33ffc700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.108]\t\tremoving thread id 0x00007f4e33ffc700 from sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700, 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0060.108]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.053]\t\t\t<Thread::Abort (*this={id: 0x00007f4e337fb700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.054]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e337fb700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.055]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.056]\t\t\t<Thread::Abort (*this={id: 0x00007f4e33ffc700, status: Completed})/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.057]\t\t\t<Thread::Abort (*this={id: 0x00007f4e347fd700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.058]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e347fd700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.059]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0063.065]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# ;  8# ;  9# std::function<void ()>::operator()() const; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# ; 21# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0063.067]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# std::function<void ()>::operator()() const;  8# ;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0063.067]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e337fb700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0063.069]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e347fd700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0063.069]\t\tremoving thread id 0x00007f4e337fb700 from sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0063.069]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0063.070]\t\tremoving thread id 0x00007f4e347fd700 from sRunningThreads_ ([ 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0063.070]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.072]\t\t} </run-test (1) UpgradableRWSynchronized NonAtomically>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.072]\t\t<run-test (2) UpgradableRWSynchronized NonAtomically> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.074]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0063.075]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0063.076]\t\tAdding thread id 0x00007f4e347fd700 to sRunningThreads_ ([])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.078]\t\t\t\t{id: 0x00007f4e347fd700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.078]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0063.078]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e347fd700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.079]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0063.080]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0063.080]\t\tAdding thread id 0x00007f4e33ffc700 to sRunningThreads_ ([ 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0063.082]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e33ffc700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.082]\t\t\t\t{id: 0x00007f4e33ffc700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.082]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.084]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0063.085]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0063.087]\t\tAdding thread id 0x00007f4e337fb700 to sRunningThreads_ ([ 0x00007f4e33ffc700, 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0063.089]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e337fb700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.089]\t\t\t\t{id: 0x00007f4e337fb700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0063.089]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.091]\t\t\t<Thread::Abort (*this={id: 0x00007f4e347fd700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.092]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e347fd700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.092]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.093]\t\t\t<Thread::Abort (*this={id: 0x00007f4e33ffc700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.093]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e33ffc700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.094]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.095]\t\t\t<Thread::Abort (*this={id: 0x00007f4e337fb700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.095]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e337fb700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.096]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0066.100]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# std::function<void ()>::operator()() const;  8# ;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0066.101]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e337fb700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0066.101]\t\tremoving thread id 0x00007f4e337fb700 from sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700, 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0066.101]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0066.104]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# std::function<void ()>::operator()() const;  8# ;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0066.104]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# ;  8# ;  9# std::function<void ()>::operator()() const; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# ; 21# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0066.104]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e33ffc700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0066.105]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e347fd700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0066.106]\t\tremoving thread id 0x00007f4e33ffc700 from sRunningThreads_ ([ 0x00007f4e33ffc700, 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0066.106]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0066.107]\t\tremoving thread id 0x00007f4e347fd700 from sRunningThreads_ ([ 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0066.107]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.109]\t\t} </run-test (2) UpgradableRWSynchronized NonAtomically>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.109]\t\t<run-test UpgradableRWSynchronized Atomically> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.110]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0066.111]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0066.112]\t\tAdding thread id 0x00007f4e337fb700 to sRunningThreads_ ([])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.113]\t\t\t\t{id: 0x00007f4e337fb700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.113]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0066.114]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e337fb700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.114]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0066.115]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0066.116]\t\tAdding thread id 0x00007f4e33ffc700 to sRunningThreads_ ([ 0x00007f4e337fb700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.117]\t\t\t\t{id: 0x00007f4e33ffc700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.118]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0066.118]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e33ffc700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.119]\t\t\t<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0066.120]\t",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "Thread::Rep_::ThreadMain_"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "Thread::Rep_::ThreadMain_",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0066.121]\t\tAdding thread id 0x00007f4e347fd700 to sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.122]\t\t\t\t{id: 0x00007f4e347fd700, status: Running} started",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0066.122]\t\t\t} </Thread::Start>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0066.123]\t\tIn Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007f4e347fd700, status: Running}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0067.125]\t\tThrowing exception: Timeout Expired {errno: 110} from ...  4# ;  5# ;  6# ;  7# ;  8# std::function<void ()>::operator()() const;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0067.125]\t\tGot timeout in testUpgradeLockAtomically - expected and ignored... (retry)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0068.125]\t\tThrowing exception: Timeout Expired {errno: 110} from ...  4# ;  5# ;  6# ;  7# ;  8# std::function<void ()>::operator()() const;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0068.126]\t\tGot timeout in testUpgradeLockAtomically - expected and ignored... (retry)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.124]\t\t\t<Thread::Abort (*this={id: 0x00007f4e337fb700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.125]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e337fb700, signal = SIGUSR2)> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0069.125]\t\tThrowing exception: Timeout Expired {errno: 110} from ...  4# ;  5# ;  6# ;  7# ;  8# std::function<void ()>::operator()() const;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.126]\t\t\t\t} </Stroika::Foundation::Execution::Signals::Execution::SendSignal>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0069.126]\t\tGot timeout in testUpgradeLockAtomically - expected and ignored... (retry)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.126]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.128]\t\t\t<Thread::Abort (*this={id: 0x00007f4e33ffc700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.128]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e33ffc700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.129]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.130]\t\t\t<Thread::Abort (*this={id: 0x00007f4e347fd700, status: Running})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.131]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e347fd700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0069.131]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0070.126]\t\tThrowing exception: Timeout Expired {errno: 110} from ...  4# ;  5# ;  6# ;  7# ;  8# std::function<void ()>::operator()() const;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0070.126]\t\tGot timeout in testUpgradeLockAtomically - expected and ignored... (retry)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0070.132]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# std::function<void ()>::operator()() const;  8# ;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0070.133]\t\tIn Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x00007f4e347fd700, status: Aborting}",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0070.134]\t\tremoving thread id 0x00007f4e347fd700 from sRunningThreads_ ([ 0x00007f4e337fb700, 0x00007f4e33ffc700, 0x00007f4e347fd700 ])",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e347fd700][0070.134]\t} </Thread::Rep_::ThreadMain_>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0071.126]\t\tThrowing exception: Timeout Expired {errno: 110} from ...  4# ;  5# ;  6# ;  7# ;  8# std::function<void ()>::operator()() const;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0071.126]\t\tGot timeout in testUpgradeLockAtomically - expected and ignored... (retry)",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0071.135]\t\t\t<Thread::Abort (*this={id: 0x00007f4e337fb700, status: Aborting})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0071.136]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e337fb700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0071.137]\t\t\t} </Thread::Abort>",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e33ffc700][0071.139]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# std::function<void ()>::operator()() const;  8# ;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0071.139]\t\t\t<Thread::Abort (*this={id: 0x00007f4e33ffc700, status: Aborting})> {",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[0x00007f4e337fb700][0071.139]\t\tThrowing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# ;  8# std::function<void ()>::operator()() const;  9# ; 10# ; 11# ; 12# ; 13# ; 14# ; 15# ; 16# ; 17# ; 18# ; 19# ; 20# clone;",
+                              "type" : "text"
+                           },
+                           {
+                              "type" : "hardBreak"
+                           },
+                           {
+                              "text" : "[-------MAIN-------][0071.140]\t\t\t\t<Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x7f4e33ffc700, signal = SIGUSR2)/>",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2020-05-22T21:10:16.705-0400",
+               "id" : "15997",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment/15997",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2020-05-22T21:10:28.878-0400"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "MAYBE can eliminate one bug 632 workaround, but most of the rest still reproduce.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp  Builds/valgrind-debug-SSLPurify-NoBlockAlloc/Tests/Test40",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp  Builds/valgrind-debug-SSLPurify-NoBlockAlloc/Tests/Test41",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "(or using valgrind-release-SSLPurify-NoBlockAlloc).",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Issue appears REALLY to be the libg++ stdlib implementation.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "Retry with version of Linux/g++ newer than Ubuntu 20.04.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2021-11-29T15:51:27.864-0500",
+               "id" : "16131",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment/16131",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2021-11-29T15:51:27.864-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "REPORTED in",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "attrs" : {
+                                 "url" : "https://www.sqlite.org/forum/forumpost/3c9b0de1bc"
+                              },
+                              "type" : "inlineCard"
+                           },
+                           {
+                              "text" : " ",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2021-11-30T08:32:07.279-0500",
+               "id" : "16133",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment/16133",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2021-11-30T08:32:07.279-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "gave up on helgrind",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2023-10-19T22:03:27.998-0400",
+               "id" : "16397",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment/16397",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2023-10-19T22:03:27.998-0400"
+            }
+         ],
+         "maxResults" : 9,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141/comment",
+         "startAt" : 0,
+         "total" : 9
+      },
+      "components" : [
+         {
+            "id" : "10006",
+            "name" : "Build-System",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10006"
+         }
+      ],
+      "created" : "2017-12-20T09:18:57.431-0500",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_183987870606_*|*_6_*:*_1_*:*_0",
+      "customfield_10012" : "0|i003w7:",
+      "customfield_10300" : "{}",
+      "issuetype" : {
+         "avatarId" : 10303,
+         "description" : "A problem which impairs or prevents the functions of the product.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+         "id" : "10004",
+         "name" : "Bug",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10004",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+         "id" : "3",
+         "name" : "Medium",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "This issue won't be actioned.",
+         "id" : "10001",
+         "name" : "Won't Do",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10001"
+      },
+      "resolutiondate" : "2023-10-19T22:03:27.965-0400",
+      "status" : {
+         "description" : "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/closed.png",
+         "id" : "6",
+         "name" : "Closed",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/6",
+         "statusCategory" : {
+            "colorName" : "green",
+            "id" : 3,
+            "key" : "done",
+            "name" : "Done",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "green",
+         "id" : 3,
+         "key" : "done",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+      },
+      "statuscategorychangedate" : "2023-10-19T22:03:28.026-0400",
+      "summary" : "Spurious helgrind warning: pthread_rwlock_{rd,rw}lock with a pthread_mutex_t* argument",
+      "updated" : "2023-10-19T22:03:28.022-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-632/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-632/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "17141",
+   "key" : "STK-632",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/17141"
+}

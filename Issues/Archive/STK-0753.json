@@ -1,0 +1,1905 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "attachment" : [
+         {
+            "author" : {
+               "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+               "accountType" : "atlassian",
+               "active" : true,
+               "avatarUrls" : {
+                  "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                  "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                  "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                  "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+               },
+               "displayName" : "Lewis Pringle",
+               "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+               "timeZone" : "America/New_York"
+            },
+            "content" : "https://stroika.atlassian.net/rest/api/3/attachment/content/10009",
+            "created" : "2021-12-01T12:30:40.105-0500",
+            "filename" : "SQLite-Debug-nosan-valgrind-output.txt",
+            "id" : "10009",
+            "mimeType" : "text/plain",
+            "self" : "https://stroika.atlassian.net/rest/api/3/attachment/10009",
+            "size" : 383983
+         }
+      ],
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "About to report to sqlite people:",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "content" : [
+                                 {
+                                    "text" : "but possible workarounds:",
+                                    "type" : "text"
+                                 }
+                              ],
+                              "type" : "paragraph"
+                           },
+                           {
+                              "content" : [
+                                 {
+                                    "text" : "  - TSAN suppression",
+                                    "type" : "text"
+                                 }
+                              ],
+                              "type" : "paragraph"
+                           },
+                           {
+                              "content" : [
+                                 {
+                                    "text" : "- turn on SQLITE_OPEN_FULLMUTEX",
+                                    "type" : "text"
+                                 }
+                              ],
+                              "type" : "paragraph"
+                           },
+                           {
+                              "content" : [
+                                 {
+                                    "text" : "- revert to older sqlite",
+                                    "type" : "text"
+                                 }
+                              ],
+                              "type" : "paragraph"
+                           }
+                        ],
+                        "type" : "blockquote"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2021-11-30T08:10:17.439-0500",
+               "id" : "16132",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17262/comment/16132",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2021-11-30T08:10:17.439-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "Using ",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "type" : "code"
+                                 }
+                              ],
+                              "text" : "SQLITE_OPEN_FULLMUTEX",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " appears to workaround the issue with TSAN, but not valgrind.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "It still reproduces on Ubuntu 18.04 with:",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "valgrind -q --tool=helgrind --suppressions=Valgrind-Helgrind-Common.supp  ../Builds/g++-8-valgrind-debug-SSLPurify/Tests/Test36",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2021-12-01T11:41:02.854-0500",
+               "id" : "16135",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17262/comment/16135",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2021-12-01T11:41:02.854-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "Reported to sqlite forum and discussing with them",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "attrs" : {
+                                 "url" : "https://sqlite.org/forum/forumpost/cc6668e7b3"
+                              },
+                              "type" : "inlineCard"
+                           },
+                           {
+                              "text" : " ",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2021-12-01T11:48:32.989-0500",
+               "id" : "16136",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17262/comment/16136",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2021-12-01T11:48:32.989-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "This appears to be a new limitation with SQLITE_DEBUG. THAT creates these races. In the process of switching to a better, more targetted workaround.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2021-12-01T14:23:08.785-0500",
+               "id" : "16137",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17262/comment/16137",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2021-12-01T14:23:08.785-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "sqlite makefile: ",
+                              "type" : "text"
+                           },
+                           {
+                              "attrs" : {
+                                 "url" : "https://stroika.atlassian.net/browse/STK-753:"
+                              },
+                              "type" : "inlineCard"
+                           },
+                           {
+                              "text" : "  cleanup writes to BUILD-OUT.txt; dont write SQLITE_DEBUG if qStroika_FeatureSupported_Valgrind or TSAN",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     },
+                     {
+                        "type" : "paragraph"
+                     },
+                     {
+                        "content" : [
+                           {
+                              "text" : "TESTING…",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2021-12-01T16:16:58.295-0500",
+               "id" : "16138",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17262/comment/16138",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2021-12-01T16:16:58.295-0500"
+            },
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "Fix was to set the SQLITE_DEBUG flag more carefully - doesnt work with valgrind or tsan.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2021-12-02T09:58:37.691-0500",
+               "id" : "16141",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17262/comment/16141",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2021-12-02T09:58:37.691-0500"
+            }
+         ],
+         "maxResults" : 6,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/17262/comment",
+         "startAt" : 0,
+         "total" : 6
+      },
+      "components" : [
+         {
+            "id" : "10300",
+            "name" : "Foundation-Database",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10300"
+         }
+      ],
+      "created" : "2021-11-30T08:08:57.345-0500",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_179380483_*|*_5_*:*_1_*:*_0",
+      "customfield_10012" : "0|i004n3:",
+      "customfield_10300" : "{repository={count=1, dataType=repository}, json={\"cachedValue\":{\"errors\":[],\"summary\":{\"repository\":{\"overall\":{\"count\":1,\"lastUpdated\":\"2023-09-13T12:41:14.000-0400\",\"dataType\":\"repository\"},\"byInstanceType\":{\"oAuth-com.github.integration.production\":{\"count\":1,\"name\":\"GitHub\"},\"GitHub\":{\"count\":1,\"name\":\"GitHub\"}}}}},\"isStale\":true}}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "Switching from SQLITE 3.36.0 to 3.37.0 on UNIX with TSAN produces race errors.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "—",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "[Succeeded]  (1  seconds)  [34]  Foundation::DataExchange::XML::SaxParser  (TSAN_OPTIONS=suppressions=/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64//Tests/ThreadSanitizerSuppressions.supp ../Builds/g++-debug-sanitize_thread/Tests/Test34)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[Succeeded]  (17 seconds)  [35]  Foundation::DataExchange::Other  (TSAN_OPTIONS=suppressions=/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64//Tests/ThreadSanitizerSuppressions.supp ../Builds/g++-debug-sanitize_thread/Tests/Test35)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==================",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "WARNING: ThreadSanitizer: data race (pid=2108449)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Read of size 4 at 0x55c2f79772f8 by thread T4 (mutexes: write M509514):",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 sqlite3VdbeExec /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:88607 (Test36+0x492c1b1)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#1 sqlite3Step /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:85145 (Test36+0x4910021)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#2 sqlite3_step /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:85202 (Test36+0x4910d5b)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#3 Stroika::Foundation::Database::SQL::SQLite::Statement::MyRep_::GetNextRow() <null> (Test36+0x2cbcdf8)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#4 Stroika::Foundation::Database::SQL::Statement::GetNextRow() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/Statement.inl:61 (Test36+0x2989550)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#5 Stroika::Foundation::Database::SQL::Statement::GetAllRemainingRows() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/Statement.cpp:69 (Test36+0x2d13fd2)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#6 Stroika::Foundation::Database::SQL::Statement::GetAllRows() <null> (Test36+0x2989a6e)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#7 GetAll /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/ORM/TableConnection.inl:78 (Test36+0x291da3a)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#8 PeriodicallyWriteChecksForEmployeesTable_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:720 (Test36+0x2918bc3)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#9 operator() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:744 (Test36+0x291936e)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#10 _M_invoke /usr/include/c++/8/bits/std_function.h:297 (Test36+0x292cea4)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#11 std::function<void ()>::operator()() const /usr/include/c++/8/bits/std_function.h:687 (Test36+0x319cb2c)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#12 Stroika::Foundation::Execution::Thread::Ptr::Rep_::Run_() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:366 (Test36+0x3185e08)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#13 Stroika::Foundation::Execution::Thread::Ptr::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:659 (Test36+0x3187ca8)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#14 operator() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:328 (Test36+0x31853a7)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#15 _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "invoke_impl<void, Stroika::Foundation::Execution::Thread::Ptr::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "::DoCreate(const std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_>*)::<lambda()> > /usr/include/c++/8/bits/invoke.h:60 (Test36+0x31909fe)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#16 _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "invoke<Stroika::Foundation::Execution::Thread::Ptr::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "::DoCreate(const std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_>*)::<lambda()> > /usr/include/c++/8/bits/invoke.h:95 (Test36+0x318ef2b)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#17 _M_invoke<0> /usr/include/c++/8/thread:244 (Test36+0x3194a51)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#18 operator() /usr/include/c++/8/thread:253 (Test36+0x3194969)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#19 _M_run /usr/include/c++/8/thread:196 (Test36+0x31948fe)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#20 execute_native_thread_routine <null> (Test36+0x3784f6e)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Previous write of size 4 at 0x55c2f79772f8 by thread T3 (mutexes: write M508861):",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 sqlite3WritableSchema /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:114046 (Test36+0x4a111a5)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#1 lockBtree /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:68788 (Test36+0x48755bd)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#2 sqlite3BtreeBeginTrans /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:69061 (Test36+0x4877ff5)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#3 sqlite3VdbeExec /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:90380 (Test36+0x493ff9b)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#4 sqlite3Step /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:85145 (Test36+0x4910021)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#5 sqlite3_step /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:85202 (Test36+0x4910d5b)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#6 Stroika::Foundation::Database::SQL::SQLite::Statement::MyRep_::GetNextRow() <null> (Test36+0x2cbcdf8)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#7 Stroika::Foundation::Database::SQL::Statement::GetNextRow() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/Statement.inl:61 (Test36+0x2989550)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#8 Stroika::Foundation::Database::SQL::Statement::GetAllRemainingRows() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/Statement.cpp:69 (Test36+0x2d13fd2)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#9 Stroika::Foundation::Database::SQL::Statement::GetAllRows() <null> (Test36+0x2989a6e)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#10 GetAll /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/ORM/TableConnection.inl:78 (Test36+0x291da3a)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#11 PeriodicallyUpdateEmployeesTable_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:689 (Test36+0x29182b0)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#12 operator() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:743 (Test36+0x29191fe)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#13 _M_invoke /usr/include/c++/8/bits/std_function.h:297 (Test36+0x292cbba)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#14 std::function<void ()>::operator()() const /usr/include/c++/8/bits/std_function.h:687 (Test36+0x319cb2c)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#15 Stroika::Foundation::Execution::Thread::Ptr::Rep_::Run_() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:366 (Test36+0x3185e08)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#16 Stroika::Foundation::Execution::Thread::Ptr::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:659 (Test36+0x3187ca8)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#17 operator() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:328 (Test36+0x31853a7)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#18 _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "invoke_impl<void, Stroika::Foundation::Execution::Thread::Ptr::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "::DoCreate(const std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_>*)::<lambda()> > /usr/include/c++/8/bits/invoke.h:60 (Test36+0x31909fe)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#19 _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "invoke<Stroika::Foundation::Execution::Thread::Ptr::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "::DoCreate(const std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_>*)::<lambda()> > /usr/include/c++/8/bits/invoke.h:95 (Test36+0x318ef2b)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#20 _M_invoke<0> /usr/include/c++/8/thread:244 (Test36+0x3194a51)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#21 operator() /usr/include/c++/8/thread:253 (Test36+0x3194969)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#22 _M_run /usr/include/c++/8/thread:196 (Test36+0x31948fe)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#23 execute_native_thread_routine <null> (Test36+0x3784f6e)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Location is global 'sqlite3CoverageCounter' of size 4 at 0x55c2f79772f8 (Test36+0x0000083cb2f8)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Mutex M509514 (0x7b14000005a8) created at:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 pthread_mutex_init <null> (Test36+0x2885c9d)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#1 pthreadMutexAlloc /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:27382 (Test36+0x47b3747)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#2 sqlite3MutexAlloc /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:26902 (Test36+0x47b271e)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#3 sqlite3BtreeOpen /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:68144 (Test36+0x48707b6)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#4 openDatabase /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:169926 (Test36+0x4bcb770)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#5 sqlite3_open_v2 /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:170049 (Test36+0x4bcc52b)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#6 Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_::Rep_(Stroika::Foundation::Database::SQL::SQLite::Options const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/SQLite.cpp:203 (Test36+0x2cb3055)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#7 void _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "gnu_cxx::new_allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">::construct<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_, Stroika::Foundation::Database::SQL::SQLite::Options const&>(Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_*, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/ext/new_allocator.h:136 (Test36+0x2ce1395)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#8 void std::allocator_traits<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_> >::construct<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_, Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>&, Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_*, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/alloc_traits.h:475 (Test36+0x2cde617)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#9 std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>, (_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "gnu_cxx::_Lock_policy)2>::_Sp_counted_ptr_inplace<Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/shared_ptr_base.h:545 (Test36+0x2cdb1a9)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#10 std::_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "shared_count<(gnu_cxx::_Lock_policy)2>::shared_count<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>, Stroika::Foundation::Database::SQL::SQLite::Options const&>(Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_*&, std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_alloc_shared_tag<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "> >, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/shared_ptr_base.h:677 (Test36+0x2cd67b1)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#11 std::_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "shared_ptr<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", (_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "gnu_cxx::_Lock_policy)2>::shared_ptr<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">, Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_alloc_shared_tag<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "> >, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/shared_ptr_base.h:1342 (Test36+0x2cd0ac3)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#12 std::shared_ptr<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>::shared_ptr<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>, Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_alloc_shared_tag<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "> >, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/shared_ptr.h:359 (Test36+0x2ccc4d5)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#13 std::shared_ptr<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_> std::allocate_shared<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_, std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>, Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_> const&, Stroika::Foundation::Database::SQL::SQLite::Options const&) <null> (Test36+0x2cc69a1)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#14 std::shared_ptr<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_> std::make_shared<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_, Stroika::Foundation::Database::SQL::SQLite::Options const&>(Stroika::Foundation::Database::SQL::SQLite::Options const&) <null> (Test36+0x2cc1954)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#15 Stroika::Foundation::Database::SQL::SQLite::Connection::New(Stroika::Foundation::Database::SQL::SQLite::Options const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/SQLite.cpp:335 (Test36+0x2caa150)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#16 SetupDB_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:637 (Test36+0x291693f)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#17 ThreadTest_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:742 (Test36+0x29194dd)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#18 DoIt /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:758 (Test36+0x2919b98)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#19 DoRegressionTests_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:771 (Test36+0x2919c83)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#20 Stroika::TestHarness::PrintPassOrFail(void (*)()) ../TestHarness/TestHarness.cpp:75 (Test36+0x2ba92f8)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#21 main /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:779 (Test36+0x2919cd1)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Mutex M508861 (0x7b1400000288) created at:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 pthread_mutex_init <null> (Test36+0x2885c9d)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#1 pthreadMutexAlloc /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:27382 (Test36+0x47b3747)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#2 sqlite3MutexAlloc /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:26902 (Test36+0x47b271e)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#3 sqlite3BtreeOpen /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:68144 (Test36+0x48707b6)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#4 openDatabase /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:169926 (Test36+0x4bcb770)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#5 sqlite3_open_v2 /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:170049 (Test36+0x4bcc52b)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#6 Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_::Rep_(Stroika::Foundation::Database::SQL::SQLite::Options const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/SQLite.cpp:209 (Test36+0x2cb37bd)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#7 void _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "gnu_cxx::new_allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">::construct<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_, Stroika::Foundation::Database::SQL::SQLite::Options const&>(Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_*, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/ext/new_allocator.h:136 (Test36+0x2ce1395)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#8 void std::allocator_traits<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_> >::construct<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_, Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>&, Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_*, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/alloc_traits.h:475 (Test36+0x2cde617)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#9 std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>, (_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "gnu_cxx::_Lock_policy)2>::_Sp_counted_ptr_inplace<Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/shared_ptr_base.h:545 (Test36+0x2cdb1a9)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#10 std::_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "shared_count<(gnu_cxx::_Lock_policy)2>::shared_count<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>, Stroika::Foundation::Database::SQL::SQLite::Options const&>(Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_*&, std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_alloc_shared_tag<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "> >, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/shared_ptr_base.h:677 (Test36+0x2cd67b1)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#11 std::_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "shared_ptr<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", (_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "gnu_cxx::_Lock_policy)2>::shared_ptr<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">, Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_alloc_shared_tag<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "> >, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/shared_ptr_base.h:1342 (Test36+0x2cd0ac3)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#12 std::shared_ptr<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>::shared_ptr<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>, Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_alloc_shared_tag<std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "> >, Stroika::Foundation::Database::SQL::SQLite::Options const&) /usr/include/c++/8/bits/shared_ptr.h:359 (Test36+0x2ccc4d5)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#13 std::shared_ptr<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_> std::allocate_shared<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_, std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_>, Stroika::Foundation::Database::SQL::SQLite::Options const&>(std::allocator<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_> const&, Stroika::Foundation::Database::SQL::SQLite::Options const&) <null> (Test36+0x2cc69a1)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#14 std::shared_ptr<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_> std::make_shared<Stroika::Foundation::Database::SQL::SQLite::Connection::Rep_, Stroika::Foundation::Database::SQL::SQLite::Options const&>(Stroika::Foundation::Database::SQL::SQLite::Options const&) <null> (Test36+0x2cc1954)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#15 Stroika::Foundation::Database::SQL::SQLite::Connection::New(Stroika::Foundation::Database::SQL::SQLite::Options const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Database/SQL/SQLite.cpp:335 (Test36+0x2caa150)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#16 SetupDB_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:637 (Test36+0x291693f)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#17 ThreadTest_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:741 (Test36+0x29194c4)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#18 DoIt /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:758 (Test36+0x2919b98)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#19 DoRegressionTests_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:771 (Test36+0x2919c83)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#20 Stroika::TestHarness::PrintPassOrFail(void (*)()) ../TestHarness/TestHarness.cpp:75 (Test36+0x2ba92f8)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#21 main /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:779 (Test36+0x2919cd1)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Thread T4 'Write Checks' (tid=2108454, running) created by main thread at:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 pthread_create <null> (Test36+0x28853de)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#1 std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) <null> (Test36+0x3785224)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#2 Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:328 (Test36+0x318557f)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#3 Stroika::Foundation::Execution::Thread::Ptr::Start() const /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:880 (Test36+0x318ab86)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#4 Stroika::Foundation::Execution::Thread::New(std::function<void ()> const&, Stroika::Foundation::Execution::Thread::AutoStartFlag, std::optional<Stroika::Foundation::Characters::String> const&, std::optional<Stroika::Foundation::Execution::Thread::Configuration> const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.inl:332 (Test36+0x298fd6f)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#5 ThreadTest_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:744 (Test36+0x2919712)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#6 DoIt /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:758 (Test36+0x2919b98)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#7 DoRegressionTests_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:771 (Test36+0x2919c83)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#8 Stroika::TestHarness::PrintPassOrFail(void (*)()) ../TestHarness/TestHarness.cpp:75 (Test36+0x2ba92f8)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#9 main /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:779 (Test36+0x2919cd1)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Thread T3 'Update Employee' (tid=2108453, running) created by main thread at:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 pthread_create <null> (Test36+0x28853de)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#1 std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) <null> (Test36+0x3785224)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#2 Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:328 (Test36+0x318557f)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#3 Stroika::Foundation::Execution::Thread::Ptr::Start() const /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:880 (Test36+0x318ab86)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#4 Stroika::Foundation::Execution::Thread::New(std::function<void ()> const&, Stroika::Foundation::Execution::Thread::AutoStartFlag, std::optional<Stroika::Foundation::Characters::String> const&, std::optional<Stroika::Foundation::Execution::Thread::Configuration> const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Library/Sources/Stroika/Foundation/Execution/Thread.inl:332 (Test36+0x298fd6f)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#5 ThreadTest_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:743 (Test36+0x29195cc)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#6 DoIt /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:758 (Test36+0x2919b98)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#7 DoRegressionTests_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:771 (Test36+0x2919c83)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#8 Stroika::TestHarness::PrintPassOrFail(void (*)()) ../TestHarness/TestHarness.cpp:75 (Test36+0x2ba92f8)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#9 main /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Tests/36/Test.cpp:779 (Test36+0x2919cd1)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "— ",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "it appears each connection is locking its own mutex when accessing COMMON data structures (shared between threads).",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "From the TSAN report, the issue appears to be:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Read of size 4 at 0x55c2f79772f8 by thread T4 (mutexes: write M509514):",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 sqlite3VdbeExec /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:88607 (Test36+0x492c1b1)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "with",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Previous write of size 4 at 0x55c2f79772f8 by thread T3 (mutexes: write M508861):",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 sqlite3WritableSchema /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/IntermediateFiles/g++-debug-sanitize_thread/ThirdPartyComponents/sqlite/sqlite3.c:114046 (Test36+0x4a111a5)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "The conflict appears as follows:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "testcase( pIn1->flags & MEM_Int );  // READ",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "after write:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "testcase( (db->flags&(SQLITE_WriteSchema|SQLITE_Defensive))==0 );",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "fixVersions" : [
+         {
+            "archived" : false,
+            "id" : "12833",
+            "name" : "2.1b14",
+            "released" : false,
+            "self" : "https://stroika.atlassian.net/rest/api/3/version/12833"
+         }
+      ],
+      "issuelinks" : [
+         {
+            "id" : "11519",
+            "outwardIssue" : {
+               "fields" : {
+                  "issuetype" : {
+                     "avatarId" : 10318,
+                     "description" : "A task that needs to be done.",
+                     "hierarchyLevel" : 0,
+                     "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+                     "id" : "10002",
+                     "name" : "Task",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+                     "subtask" : false
+                  },
+                  "priority" : {
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/high_new.svg",
+                     "id" : "2",
+                     "name" : "High",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/priority/2"
+                  },
+                  "status" : {
+                     "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+                     "id" : "5",
+                     "name" : "Resolved",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+                     "statusCategory" : {
+                        "colorName" : "yellow",
+                        "id" : 4,
+                        "key" : "indeterminate",
+                        "name" : "In Progress",
+                        "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+                     }
+                  },
+                  "summary" : "sqlite code may not be threadsafe"
+               },
+               "id" : "17245",
+               "key" : "STK-736",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17245"
+            },
+            "self" : "https://stroika.atlassian.net/rest/api/3/issueLink/11519",
+            "type" : {
+               "id" : "10003",
+               "inward" : "relates to",
+               "name" : "Relates",
+               "outward" : "relates to",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issueLinkType/10003"
+            }
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10318,
+         "description" : "A task that needs to be done.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+         "id" : "10002",
+         "name" : "Task",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+         "id" : "3",
+         "name" : "Medium",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2021-12-02T09:58:37.598-0500",
+      "status" : {
+         "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+         "id" : "5",
+         "name" : "Resolved",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+         "statusCategory" : {
+            "colorName" : "yellow",
+            "id" : 4,
+            "key" : "indeterminate",
+            "name" : "In Progress",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "yellow",
+         "id" : 4,
+         "key" : "indeterminate",
+         "name" : "In Progress",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+      },
+      "statuscategorychangedate" : "2021-12-02T09:58:37.746-0500",
+      "summary" : "SQLIte 3.37.0 breaks SQLITE_OPEN_NOMUTEX - TSAN failure",
+      "updated" : "2021-12-16T13:01:24.761-0500",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-753/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-753/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "17262",
+   "key" : "STK-753",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/17262"
+}

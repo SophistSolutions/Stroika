@@ -1,0 +1,389 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "maxResults" : 0,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/17000/comment",
+         "startAt" : 0,
+         "total" : 0
+      },
+      "components" : [
+         {
+            "id" : "10002",
+            "name" : "Foundation-DataExchange",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10002"
+         }
+      ],
+      "created" : "2017-06-15T08:46:07.179-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10012" : "0|i003mv:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "[Succeeded]  (0  seconds)  [29]  Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/clang++-debug/Test29)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "/usr/bin/../lib/gcc/x86_64-linux-gnu/6.3.0/../../../../include/c++/6.3.0/functional:2127:14: runtime error: call to function (unknown) through pointer to incorrect function type 'Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataExchange::VariantValue ",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "atlassian-yellow_star",
+                        "shortName" : ":yellow_star:",
+                        "text" : ":yellow_star:"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "(const std::_Any_data &, const Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataExchange::ObjectVariantMapper &, const void *&&)'",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "(/home/lewis/Sandbox/Stroika-Reg-Tests-Dev/Builds/clang++-debug/Test30+0x15fb070): note: (unknown) defined here",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "SUMMARY: AddressSanitizer: undefined-behavior /usr/bin/../lib/gcc/x86_64-linux-gnu/6.3.0/../../../../include/c++/6.3.0/functional:2127:14 in",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "/usr/bin/../lib/gcc/x86_64-linux-gnu/6.3.0/../../../../include/c++/6.3.0/functional:2127:14: runtime error: call to function (unknown) through pointer to incorrect function type 'void ",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "atlassian-yellow_star",
+                        "shortName" : ":yellow_star:",
+                        "text" : ":yellow_star:"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "(const std::_Any_data &, const Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataExchange::ObjectVariantMapper &, const Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataExchange::VariantValue &, void *&&)'",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "(/home/lewis/Sandbox/Stroika-Reg-Tests-Dev/Builds/clang++-debug/Test30+0x15fc230): note: (unknown) defined here",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "SUMMARY: AddressSanitizer: undefined-behavior /usr/bin/../lib/gcc/x86_64-linux-gnu/6.3.0/../../../../include/c++/6.3.0/functional:2127:14 in",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[Succeeded]  (0  seconds)  [30]  Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataExchange::ObjectVariantMapper  (../Builds/clang++-debug/Test30)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[Succeeded]  (1  seconds)  [31]  Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataExchange::XML::SaxParser  (../Builds/clang++-debug/Test31)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "/usr/bin/../lib/gcc/x86_64-linux-gnu/6.3.0/../../../../include/c++/6.3.0/functional:2127:14: runtime error: call to function (unknown) through pointer to incorrect function type 'Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataExchange::VariantValue ",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "atlassian-yellow_star",
+                        "shortName" : ":yellow_star:",
+                        "text" : ":yellow_star:"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "(const std::_Any_data &, const Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ataExchange::ObjectVariantMapper &, const void *&&)'",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "(/home/lewis/Sandbox/Stroika-Reg-Tests-Dev/Builds/clang++-debug/Test32+0x139b2e0): note: (unknown) defined here",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "I believe this is safe, but its concerning to users, so I should find a way to silence the erorr (and verify it is really safe).",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "This is a regression due to the change in ObjectVarinatMapper type reader/writers being now more type safe (changed where cast is done).",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "issuetype" : {
+         "avatarId" : 10300,
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10300?size=medium",
+         "id" : "10006",
+         "name" : "Improvement",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10006",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+         "id" : "3",
+         "name" : "Medium",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "status" : {
+         "description" : "The issue is open and ready for the assignee to start work on it.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/open.png",
+         "id" : "1",
+         "name" : "Open",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/1",
+         "statusCategory" : {
+            "colorName" : "blue-gray",
+            "id" : 2,
+            "key" : "new",
+            "name" : "To Do",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/2"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "blue-gray",
+         "id" : 2,
+         "key" : "new",
+         "name" : "To Do",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/2"
+      },
+      "statuscategorychangedate" : "2017-06-15T08:46:07.179-0400",
+      "summary" : "regression runtime error warnings - due to ObjectVariantMapper type safety improvements",
+      "updated" : "2017-06-15T08:46:07.179-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-590/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-590/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "17000",
+   "key" : "STK-590",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/17000"
+}

@@ -1,0 +1,344 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "maxResults" : 0,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/14403/comment",
+         "startAt" : 0,
+         "total" : 0
+      },
+      "components" : [
+         {
+            "id" : "10004",
+            "name" : "Foundation-Containers",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10004"
+         }
+      ],
+      "created" : "2016-09-18T19:02:43.755-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_6328_*|*_3_*:*_1_*:*_485151838_*|*_6_*:*_1_*:*_0",
+      "customfield_10012" : "0|i0039j:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "/**",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "EXPERIMENTAL AS OF v2.0a22x",
+                                 "type" : "text"
+                              },
+                              {
+                                 "type" : "hardBreak"
+                              },
+                              {
+                                 "text" : "*",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "paragraph"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "This has a moderate performance cost (overhead starting iteration). However, it assures bug-free",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "paragraph"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "behavior if iterating when the container (still exists so owner OK) - but its rep gets replaced",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "paragraph"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "due to assignment. Key to envelope thread safety.",
+                                 "type" : "text"
+                              },
+                              {
+                                 "type" : "hardBreak"
+                              },
+                              {
+                                 "text" : "*",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "paragraph"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "Probably just always leave on.",
+                                 "type" : "text"
+                              },
+                              {
+                                 "type" : "hardBreak"
+                              },
+                              {
+                                 "text" : "*",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "paragraph"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "@todo REVIEW - UNSURE OF THIS - NEEDS BETTER EXPLANATION AT LEAST!!!!",
+                                 "type" : "text"
+                              },
+                              {
+                                 "type" : "hardBreak"
+                              },
+                              {
+                                 "text" : "*/",
+                                 "type" : "text"
+                              },
+                              {
+                                 "type" : "hardBreak"
+                              },
+                              {
+                                 "text" : "#ifndef qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_",
+                                 "type" : "text"
+                              },
+                              {
+                                 "type" : "hardBreak"
+                              },
+                              {
+                                 "text" : "#define qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_        1",
+                                 "type" : "text"
+                              },
+                              {
+                                 "type" : "hardBreak"
+                              },
+                              {
+                                 "text" : "ABOVE VIOLATED CUZ OF THIS – SEE IF WE STILL NEED THIS!",
+                                 "type" : "text"
+                              },
+                              {
+                                 "type" : "hardBreak"
+                              },
+                              {
+                                 "text" : "PRETTY SURE THIS MAKES NO SENSE",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "paragraph"
+                        }
+                     ],
+                     "type" : "listItem"
+                  }
+               ],
+               "type" : "bulletList"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "*\tSEE regression test that references qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "*\t\tI THINK THE LOGIC MAYBE FLAWED (",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "SEEMS I CAN GET RID OF NOW. That simplifes but test for a bit.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "fixVersions" : [
+         {
+            "archived" : false,
+            "id" : "11700",
+            "name" : "v2.0a179",
+            "released" : false,
+            "self" : "https://stroika.atlassian.net/rest/api/3/version/11700"
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10300,
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10300?size=medium",
+         "id" : "10006",
+         "name" : "Improvement",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10006",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/high_new.svg",
+         "id" : "2",
+         "name" : "High",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/2"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2016-09-24T09:48:41.890-0400",
+      "status" : {
+         "description" : "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/closed.png",
+         "id" : "6",
+         "name" : "Closed",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/6",
+         "statusCategory" : {
+            "colorName" : "green",
+            "id" : 3,
+            "key" : "done",
+            "name" : "Done",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "green",
+         "id" : 3,
+         "key" : "done",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+      },
+      "statuscategorychangedate" : "2016-09-24T09:48:41.921-0400",
+      "summary" : "Try to lose qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_",
+      "updated" : "2016-09-24T09:48:41.909-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-530/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-530/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "14403",
+   "key" : "STK-530",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/14403"
+}

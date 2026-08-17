@@ -1,0 +1,411 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "maxResults" : 0,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/17274/comment",
+         "startAt" : 0,
+         "total" : 0
+      },
+      "created" : "2022-02-06T21:11:31.023-0500",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10012" : "0|i004pr:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "The Stroika makefiles are smart enuf to not build components like LedIt/LedLineIt/ActiveLedIt that depnd on MFC, if the ",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "code"
+                        }
+                     ],
+                     "text" : "qFeatureFlag_ATLMFC",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " is none",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "HOWDEVER, I can see no practical way todo this with the msvc project files",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "I CAN expose the <PreProcessorDefinitions flags wiht add addition to ApplyCOnfigurations like",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "  print (OUT \"  <PropertyGroup Label=\\\"UserMacros\\\" Condition=\\\"'\\$(Configuration)|\\$(Platform)'=='$activeConfiguration|Win32'\\\">\\n\");",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "codeBlock"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "  print (OUT \"    <PreProcessorDefinitions>$defs2Print</PreProcessorDefinitions>\\n\");",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "codeBlock"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "  print (OUT \"  </PropertyGroup>\\n\");",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "codeBlock"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "type" : "paragraph"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "type" : "paragraph"
+                        }
+                     ],
+                     "type" : "listItem"
+                  }
+               ],
+               "type" : "bulletList"
+            },
+            {
+               "attrs" : {
+                  "level" : 3
+               },
+               "content" : [
+                  {
+                     "text" : "Unclear if/why this would be needed",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "heading"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "    print (OUT \"  <ItemGroup>\\n\");\n    print (OUT \"  <BuildMacro Include=\\\"StroikaBuildToolsExtraPath\\\">\\n\");",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "codeBlock"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "@@ -555,6 +560,9 @@ sub WriteVS2kIntellisenseConfigFile",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "print (OUT \"  <BuildMacro Include=\"JOBS_FLAG\">\\n\");",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "print (OUT \"     <Value>$(JOBS_FLAG)</Value>\\n\");",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "print (OUT \"  </BuildMacro>\\n\");",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "  print (OUT \"  <BuildMacro Include=\\\"PreProcessorDefinitions\\\">\\n\");",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "codeBlock"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "  print (OUT \"     <Value>\\$(PreProcessorDefinitions)</Value>\\n\");",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "codeBlock"
+                        }
+                     ],
+                     "type" : "listItem"
+                  },
+                  {
+                     "content" : [
+                        {
+                           "content" : [
+                              {
+                                 "text" : "  print (OUT \"  </BuildMacro>\\n\");\n  print (OUT \"  </ItemGroup>\\n\");",
+                                 "type" : "text"
+                              }
+                           ],
+                           "type" : "codeBlock"
+                        }
+                     ],
+                     "type" : "listItem"
+                  }
+               ],
+               "type" : "bulletList"
+            },
+            {
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "and I can do conditionals in .vsproj files as in ",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "attrs" : {
+                        "url" : "https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-conditional-constructs?view=vs-2022"
+                     },
+                     "type" : "inlineCard"
+                  },
+                  {
+                     "text" : " ",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "marks" : [
+                        {
+                           "type" : "code"
+                        }
+                     ],
+                     "text" : "<Choose> <When Condition=\"$([System.Text.RegularExpressions.Regex]::IsMatch( $(DefineConstants), '^(.*;)*DEFINED_CONSTANT(;.*)*$'))\"> <!-- When DEFINED_CONSTANT is defined. --> </When> <!-- other conditions --> </Choose>",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "But this doesnt seem to work for Solution files (.sln).",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "And taths the only place I can find to disable a project (/ dont build it for a conidtionation.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "issuetype" : {
+         "avatarId" : 10318,
+         "description" : "A task that needs to be done.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+         "id" : "10002",
+         "name" : "Task",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+         "id" : "3",
+         "name" : "Medium",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "status" : {
+         "description" : "The issue is open and ready for the assignee to start work on it.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/open.png",
+         "id" : "1",
+         "name" : "Open",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/1",
+         "statusCategory" : {
+            "colorName" : "blue-gray",
+            "id" : 2,
+            "key" : "new",
+            "name" : "To Do",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/2"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "blue-gray",
+         "id" : 2,
+         "key" : "new",
+         "name" : "To Do",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/2"
+      },
+      "statuscategorychangedate" : "2022-02-06T21:11:31.625-0500",
+      "summary" : "visual studio .net samples solution rebuild all when ATLMFC not installed produces errors",
+      "updated" : "2022-02-06T21:11:31.023-0500",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-765/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-765/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "17274",
+   "key" : "STK-765",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/17274"
+}

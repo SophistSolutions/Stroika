@@ -1,0 +1,1941 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "No longer supporting Helgrind.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2024-09-17T11:07:04.186-0400",
+               "id" : "16481",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17424/comment/16481",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2024-09-17T11:07:04.186-0400"
+            }
+         ],
+         "maxResults" : 1,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/17424/comment",
+         "startAt" : 0,
+         "total" : 1
+      },
+      "components" : [
+         {
+            "id" : "10005",
+            "name" : "Foundation-Execution",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10005"
+         },
+         {
+            "description" : "regression and/or performance testing and sanitizers",
+            "id" : "10500",
+            "name" : "Testing",
+            "self" : "https://stroika.atlassian.net/rest/api/3/component/10500"
+         }
+      ],
+      "created" : "2022-06-29T09:14:18.956-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_70077165328_*|*_6_*:*_1_*:*_0",
+      "customfield_10012" : "0|i005mv:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "Random bugs reported by helgrind about blocking queue (really about locking with condition variables I think) - just on Ubuntu 21.10 and Ubuntu 22.04 - guessing same issue as qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : ")))- valgrind -q --tool=helgrind --gen-suppressions=all --suppressions=Tests/Valgrind-Helgrind-Common.supp --suppressions=Tests/Valgrind-Helgrind-qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp --log-file=valgrind-log.tmp Builds/valgrind-debug-SSLPurify/Samples-Serialization/Serialization...done (in 0 minutes)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : ")))- valgrind -q --tool=helgrind --gen-suppressions=all --suppressions=Tests/Valgrind-Helgrind-Common.supp --suppressions=Tests/Valgrind-Helgrind-qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp --log-file=valgrind-log.tmp Builds/valgrind-debug-SSLPurify/Samples-Service/Service --run-directly 10...==3125132== ---Thread-Announcement------------------------------------------",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132== Thread #5 was created",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    at 0x4A6FA33: clone (clone.S:76)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x4A70800: _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "clone_internal (clone-internal.c:72)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x49DF5D4: create_thread (pthread_create.c:295)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x49E0055: pthread_create@@GLIBC_2.34 (pthread_create.c:799)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x484E6A7: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x5745D9: std::thread::M_start_thread(std::unique_ptr<std::thread::State, std::default_delete",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "std::thread::_State"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "std::thread::_State",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : " >, void (*)()) (in /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2110_x86_64/Builds/valgrind-debug-SSLPurify/Samples-Service/Service)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x41137F: std::thread::thread<Stroika::Foundation::Execution::Thread::Ptr::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "::DoCreate(std::shared_ptr",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const*)::{lambda()#1}, , void>(Stroika::Foundation::Execution::Thread::Ptr::Rep::DoCreate(std::shared_ptr",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const*)::{lambda()#1}&&) (std_thread.h:143)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x40D0A7: Stroika::Foundation::Execution::Thread::Ptr::Rep::DoCreate(std::shared_ptr",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const*) (Thread.cpp:337)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x40F72B: Stroika::Foundation::Execution::Thread::Ptr::Start() const (Thread.cpp:889)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x2A1AA1: Stroika::Foundation::Execution::Thread::New(std::function<void ()> const&, Stroika::Foundation::Execution::Thread::AutoStartFlag, std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Characters::String"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Characters::String",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const&, std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Thread::Configuration"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Thread::Configuration",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const&) (Thread.inl:332)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x2B577D: Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunDirectly(std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Time::Duration"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Time::Duration",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const&) (Main.cpp:578)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x2B429D: Stroika::Frameworks::Service::Main::LoggerServiceWrapper::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "RunDirectly(std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Time::Duration"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Time::Duration",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : " const&) (Main.cpp:424)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132== ---Thread-Announcement------------------------------------------",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132== Thread #4 was created",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    at 0x4A6FA33: clone (clone.S:76)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x4A70800: clone_internal (clone-internal.c:72)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x49DF5D4: create_thread (pthread_create.c:295)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x49E0055: pthread_create@@GLIBC_2.34 (pthread_create.c:799)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x484E6A7: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x5745D9: std::thread::M_start_thread(std::unique_ptr<std::thread::State, std::default_delete",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "std::thread::_State"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "std::thread::_State",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : " >, void (*)()) (in /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2110_x86_64/Builds/valgrind-debug-SSLPurify/Samples-Service/Service)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x41137F: std::thread::thread<Stroika::Foundation::Execution::Thread::Ptr::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "::DoCreate(std::shared_ptr",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const*)::{lambda()#1}, , void>(Stroika::Foundation::Execution::Thread::Ptr::Rep::DoCreate(std::shared_ptr",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const*)::{lambda()#1}&&) (std_thread.h:143)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x40D0A7: Stroika::Foundation::Execution::Thread::Ptr::Rep::DoCreate(std::shared_ptr",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Thread::Ptr::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const*) (Thread.cpp:337)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x40F72B: Stroika::Foundation::Execution::Thread::Ptr::Start() const (Thread.cpp:889)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x364628: Stroika::Foundation::Execution::Logger::Rep::UpdateBookkeepingThread() (Logger.cpp:169)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x36082F: Stroika::Foundation::Execution::Logger::SetSuppressDuplicates(std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Time::Duration"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Time::Duration",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const&) (Logger.cpp:302)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x2A597F: main (Main.cpp:168)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132== ----------------------------------------------------------------",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132== Thread #5 unlocked lock at 0x4B8DE58 currently held by thread #4",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    at 0x484C126: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x33BCC1: _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "gthread_mutex_unlock(pthread_mutex_t*) (gthr-default.h:779)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x33C6B1: std::mutex::unlock() (std_mutex.h:118)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x33CADA: std::lock_guard",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "std::mutex"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "std::mutex",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "::~lock_guard() (std_mutex.h:235)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x3689AE: void Stroika::Foundation::Execution::ConditionVariable<std::mutex, std::condition_variable>::MutateDataNotifyAll<Stroika::Foundation::Execution::BlockingQueue<std::pair<Stroika::Foundation::Execution::Logger::Priority, Stroika::Foundation::Characters::String> >::AddTail(std::pair<Stroika::Foundation::Execution::Logger::Priority, Stroika::Foundation::Characters::String> const&, double)::{lambda()#1}>(Stroika::Foundation::Execution::BlockingQueue<std::pair<Stroika::Foundation::Execution::Logger::Priority, Stroika::Foundation::Characters::String> >::AddTail(std::pair<Stroika::Foundation::Execution::Logger::Priority, Stroika::Foundation::Characters::String> const&, double)::{lambda()#1}) (ConditionVariable.inl:139)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x3661C4: Stroika::Foundation::Execution::BlockingQueue<std::pair<Stroika::Foundation::Execution::Logger::Priority, Stroika::Foundation::Characters::String> >::AddTail(std::pair<Stroika::Foundation::Execution::Logger::Priority, Stroika::Foundation::Characters::String> const&, double) (BlockingQueue.inl:34)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x3601DC: Stroika::Foundation::Execution::Logger::Log",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "(Stroika::Foundation::Execution::Logger::Priority, Stroika::Foundation::Characters::String const&) (Logger.cpp:254)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x360A27: Stroika::Foundation::Execution::Logger::Log(Stroika::Foundation::Execution::Logger::Priority, wchar_t const*, ...) (Logger.cpp:315)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x29FD64: Samples::Service::SampleAppServiceRep::MainLoop(std::function<void ()> const&) (Service.cpp:92)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x2B55C1: Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunDirectly(std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Time::Duration"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Time::Duration",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const&)::{lambda()#1}::operator()() const (Main.cpp:580)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x2B7F1B: void std::__invoke_impl<void, Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunDirectly(std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Time::Duration"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Time::Duration",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const&)::{lambda()#1}&>(std::__invoke_other, Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunDirectly(std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Time::Duration"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Time::Duration",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const&)::{lambda()#1}&) (invoke.h:61)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x2B78ED: std::enable_if<is_invocable_r_v<void, Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunDirectly(std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Time::Duration"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Time::Duration",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const&)::{lambda()#1}&>, std::enable_if>::type std::__invoke_r<void, Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "RunDirectly(std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Time::Duration"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Time::Duration",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : " const&)::{lambda()#1}&>(void&&, (Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::RunDirectly(std::optional",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Time::Duration"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Time::Duration",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : " const&)::{lambda()#1}&)...) (invoke.h:111)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==  Lock at 0x4B8DE58 was first observed",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    at 0x484BC0F: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x33BC92: gthread_mutex_lock(pthread_mutex_t*) (gthr-default.h:749)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x33C67F: std::mutex::lock() (std_mutex.h:100)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x369CA0: std::unique_lock",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "std::mutex"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "std::mutex",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "::lock() (unique_lock.h:139)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x367852: std::unique_lock",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "std::mutex"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "std::mutex",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "::unique_lock(std::mutex&) (unique_lock.h:69)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x3652EB: Stroika::Foundation::Execution::BlockingQueue<std::pair<Stroika::Foundation::Execution::Logger::Priority, Stroika::Foundation::Characters::String> >::RemoveHeadIfPossible(double) (BlockingQueue.inl:76)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x363899: Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "::Flush() (Logger.cpp:103)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x364675: Stroika::Foundation::Execution::Logger::Rep::UpdateBookkeepingThread() (Logger.cpp:174)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x3603CB: Stroika::Foundation::Execution::Logger::SetBufferingEnabled(bool) (Logger.cpp:271)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x2A5940: main (Main.cpp:167)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==  Address 0x4b8de58 is 152 bytes inside a block of size 800 alloc'd",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    at 0x4846033: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x370A9A: __gnu_cxx::new_allocator<std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", (__gnu_cxx::_Lock_policy)2> >::allocate(unsigned long, void const*) (new_allocator.h:127)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x36FBF4: std::allocator_traits<std::allocator<std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", (__gnu_cxx::_Lock_policy)2> > >::allocate(std::allocator<std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", (__gnu_cxx::_Lock_policy)2> >&, unsigned long) (alloc_traits.h:460)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x36E769: std::__allocated_ptr<std::allocator<std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", (__gnu_cxx::_Lock_policy)2> > > std::__allocate_guarded<std::allocator<std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", (__gnu_cxx::_Lock_policy)2> > >(std::allocator<std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_counted_ptr_inplace<Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", (__gnu_cxx::_Lock_policy)2> >&) (allocated_ptr.h:97)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x36D2C1: std::__shared_count<(__gnu_cxx::_Lock_policy)2>::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "shared_count<Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">(Stroika::Foundation::Execution::Logger::Rep*&, std::_Sp_alloc_shared_tag<std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " >) (shared_ptr_base.h:648)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x36BCAF: std::_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "shared_ptr<Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", (__gnu_cxx::_Lock_policy)2>::__shared_ptr<std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">(std::_Sp_alloc_shared_tag<std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " >) (shared_ptr_base.h:1342)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x36A5C8: std::shared_ptr",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "::shared_ptr<std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">(std::",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Sp_alloc_shared_tag<std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : " >) (shared_ptr.h:409)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "==3125132==    by 0x36875B: std::shared_ptr",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        },
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : " std::allocate_shared<Stroika::Foundation::Execution::Logger::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ">(std::allocator",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " const&) (shared_ptr.h:863)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x365D43: std::shared_ptr",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " std::make_shared",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "attrs" : {
+                              "href" : "Stroika::Foundation::Execution::Logger::Rep_"
+                           },
+                           "type" : "link"
+                        }
+                     ],
+                     "text" : "Stroika::Foundation::Execution::Logger::Rep_",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "() (shared_ptr.h:879)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x35FBF8: Stroika::Foundation::Execution::Logger::Logger() (Logger.cpp:179)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x362276: __static_initialization_and_destruction_0(int, int) (Logger.cpp:44)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==    by 0x362380: _GLOBAL__sub_I__ZN7Stroika10Foundation9Execution6Logger5sThe_E (Logger.cpp:487)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==  Block was alloc'd by thread #1",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==3125132==",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "{",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "<insert_a_suppression_name_here>",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Helgrind:UnlockForeign",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:_ZL22__gthread_mutex_unlockP15pthread_mutex_t",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:_ZNSt5mutex6unlockEv",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:_ZNSt10lock_guardISt5mutexED1Ev",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE19MutateDataNotifyAllIZNS1_13BlockingQueueISt4pairINS1_6Logger8PriorityENS0_10Characters6StringEEE7AddTailERKSD_dEUlvE_EEvT",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:_ZN7Stroika10Foundation9Execution13BlockingQueueISt4pairINS1_6Logger8PriorityENS0_10Characters6StringEEE7AddTailERKS8_d",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:_ZN7Stroika10Foundation9Execution6Logger4Log_ENS2_8PriorityERKNS0_10Characters6StringE",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:_ZN7Stroika10Foundation9Execution6Logger3LogENS2_8PriorityEPKwz",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:_ZN7Samples7Service19SampleAppServiceRep8MainLoopERKSt8functionIFvvEE",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:_ZZN7Stroika10Frameworks7Service4Main20BasicUNIXServiceImpl12_RunDirectlyERKSt8optionalINS_10Foundation4Time8DurationEEENKUlvE_clEv",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "ZSt13__invoke_implIvRZN7Stroika10Frameworks7Service4Main20BasicUNIXServiceImpl12_RunDirectlyERKSt8optionalINS0_10Foundation4Time8DurationEEEUlvE_JEET_St14__invoke_otherOT0_DpOT1",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "fun:",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "ZSt10__invoke_rIvRZN7Stroika10Frameworks7Service4Main20BasicUNIXServiceImpl12_RunDirectlyERKSt8optionalINS0_10Foundation4Time8DurationEEEUlvE_JEENSt9enable_ifIX16is_invocable_r_vIT_T0_DpT1_EESF_E4typeEOSG_DpOSH",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "}",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "fixVersions" : [
+         {
+            "archived" : false,
+            "id" : "12853",
+            "name" : "v3.0d10",
+            "released" : false,
+            "self" : "https://stroika.atlassian.net/rest/api/3/version/12853"
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10318,
+         "description" : "A task that needs to be done.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+         "id" : "10002",
+         "name" : "Task",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+         "id" : "3",
+         "name" : "Medium",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "This issue won't be actioned.",
+         "id" : "10001",
+         "name" : "Won't Do",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10001"
+      },
+      "resolutiondate" : "2024-09-17T11:07:04.134-0400",
+      "status" : {
+         "description" : "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/closed.png",
+         "id" : "6",
+         "name" : "Closed",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/6",
+         "statusCategory" : {
+            "colorName" : "green",
+            "id" : 3,
+            "key" : "done",
+            "name" : "Done",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "green",
+         "id" : 3,
+         "key" : "done",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+      },
+      "statuscategorychangedate" : "2024-09-17T11:07:04.249-0400",
+      "summary" : "Random bugs reported by helgrind about blocking queue (really about locking with condition variables I think) - just on Ubuntu 21.10 and Ubuntu 22.04 - guessing same issue as qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp",
+      "updated" : "2024-09-17T11:07:04.245-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-915/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-915/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "17424",
+   "key" : "STK-915",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/17424"
+}

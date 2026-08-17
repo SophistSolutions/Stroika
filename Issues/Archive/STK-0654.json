@@ -1,0 +1,2235 @@
+{
+   "fields" : {
+      "aggregateprogress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "assignee" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "comment" : {
+         "comments" : [
+            {
+               "author" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "body" : {
+                  "content" : [
+                     {
+                        "content" : [
+                           {
+                              "text" : "I think this is worked around. I opened ",
+                              "type" : "text"
+                           },
+                           {
+                              "marks" : [
+                                 {
+                                    "attrs" : {
+                                       "href" : "https://stroika.atlassian.net/browse/STK-655"
+                                    },
+                                    "type" : "link"
+                                 }
+                              ],
+                              "text" : "https://stroika.atlassian.net/browse/STK-655",
+                              "type" : "text"
+                           },
+                           {
+                              "text" : " to track this (workaround). I suspect a compiler bug (asan). But not sure. Anyhow - relatively simple workaround.",
+                              "type" : "text"
+                           }
+                        ],
+                        "type" : "paragraph"
+                     }
+                  ],
+                  "type" : "doc",
+                  "version" : 1
+               },
+               "created" : "2018-09-28T22:02:23.237-0400",
+               "id" : "15908",
+               "jsdPublic" : true,
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17163/comment/15908",
+               "updateAuthor" : {
+                  "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "accountType" : "atlassian",
+                  "active" : true,
+                  "avatarUrls" : {
+                     "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+                     "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+                  },
+                  "displayName" : "Lewis Pringle",
+                  "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+                  "timeZone" : "America/New_York"
+               },
+               "updated" : "2018-09-28T22:02:23.237-0400"
+            }
+         ],
+         "maxResults" : 1,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/17163/comment",
+         "startAt" : 0,
+         "total" : 1
+      },
+      "created" : "2018-05-24T13:11:39.357-0400",
+      "creator" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "customfield_10001" : "1_*:*_1_*:*_11004643930_*|*_5_*:*_1_*:*_0",
+      "customfield_10012" : "0|i00413:",
+      "customfield_10300" : "{}",
+      "description" : {
+         "content" : [
+            {
+               "content" : [
+                  {
+                     "text" : "Saw some of this with gcc7 on arm.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "But now seeing with gcc 8.1 (my build) - on x86 - even more.",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "=================================================================",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==22733==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7fed2e4fde30 at pc 0x0000009e51ac bp 0x7fed2e4fdd40 sp 0x7fed2e4fdd38",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "WRITE of size 32 at 0x7fed2e4fde30 thread T38",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 0x9e51ab in Stroika::Foundation::Memory::Optional<unsigned long, Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<unsigned long> > Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rivate::IndexOf_<int, std::equal_to<int> >(Stroika::Foundation::Traversal::Iterable<int> const&, std::conditional<((sizeof (int))<=((2)",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "strong"
+                        }
+                     ],
+                     "text" : "(sizeof (void",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "))))&&std::is_trivially_copyable<int>::value, int, int const&>::type, std::equal_to<int> const&) (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39+0x9e51ab)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#1 0x9c95af in Stroika::Foundation::Memory::Optional<unsigned long, Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<unsigned long> > Stroika::Foundation::Containers::Sequence<int>::IndexOf<std::equal_to<int> >(int, std::equal_to<int> const&) const (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39+0x9c95af)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#2 0x93735c in operator() /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/39/Test.cpp:703",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#3 0x94ce4b in operator() /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/39/Test.cpp:571",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#4 0x98b180 in _M_invoke /home/lewis/gcc-8.1.0/include/c++/8.1.0/bits/std_function.h:297",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#5 0xf6d681 in std::function<void ()>::operator()() const /home/lewis/gcc-8.1.0/include/c++/8.1.0/bits/std_function.h:687",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#6 0xf65bc9 in void Stroika::Foundation::Execution::Function<void ()>::operator()<>() const ../Execution/Function.inl:46",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#7 0xf4bf65 in Stroika::Foundation::Execution::Thread::Rep_::Run_() /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:348",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#8 0xf4f0c6 in Stroika::Foundation::Execution::Thread::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:591",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#9 0xf4b399 in operator() /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:310",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#10 0xf5bbb1 in _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "invoke_impl<void, Stroika::Foundation::Execution::Thread::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ":",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "oCreate(const std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_>*)::<lambda()> > /home/lewis/gcc-8.1.0/include/c++/8.1.0/bits/invoke.h:60",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#11 0xf59d8a in _",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "em"
+                        }
+                     ],
+                     "text" : "invoke<Stroika::Foundation::Execution::Thread::Rep",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ":",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "oCreate(const std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_>*)::<lambda()> > /home/lewis/gcc-8.1.0/include/c++/8.1.0/bits/invoke.h:95",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#12 0xf5faef in _M_invoke<0> /home/lewis/gcc-8.1.0/include/c++/8.1.0/thread:234",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#13 0xf5fa11 in operator() /home/lewis/gcc-8.1.0/include/c++/8.1.0/thread:243",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#14 0xf5f9ab in _M_run /home/lewis/gcc-8.1.0/include/c++/8.1.0/thread:186",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#15 0x127d1ae in execute_native_thread_routine /home/lewis/Sandbox/Stroika-Dev/BUILD-GCC-8.1.0/objdir/../gcc-8.1.0/libstdc+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-v3/src/c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+11/thread.cc:80",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#16 0x7fed32fdf6da in start_thread (/lib/x86_64-linux-gnu/libpthread.so.0+0x76da)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#17 0x7fed3162688e in __clone (/lib/x86_64-linux-gnu/libc.so.6+0x12188e)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Address 0x7fed2e4fde30 is located in stack of thread T38 at offset 160 in frame",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 0x9e4fc4 in Stroika::Foundation::Memory::Optional<unsigned long, Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<unsigned long> > Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rivate::IndexOf_<int, std::equal_to<int> >(Stroika::Foundation::Traversal::Iterable<int> const&, std::conditional<((sizeof (int))<=((2)",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "strong"
+                        }
+                     ],
+                     "text" : "(sizeof (void",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "))))&&std::is_trivially_copyable<int>::value, int, int const&>::type, std::equal_to<int> const&) (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39+0x9e4fc4)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "This frame has 4 object(s):",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[32, 36) 'item'",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[96, 104) 'n'",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[160, 192) '__for_end' <== Memory access at offset 160 is inside this variable",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[224, 256) '<unknown>'",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "(longjmp and C++ exceptions ",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "strong"
+                        }
+                     ],
+                     "text" : "are",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " supported)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Thread T38 created by T0 here:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 0x7fed33243630 in __interceptor_pthread_create /home/lewis/Sandbox/Stroika-Dev/BUILD-GCC-8.1.0/objdir/../gcc-8.1.0/libsanitizer/asan/asan_interceptors.cc:202",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#1 0x127d434 in __gthread_create /home/lewis/Sandbox/Stroika-Dev/BUILD-GCC-8.1.0/objdir/x86_64-pc-linux-gnu/libstdc++-v3/include/x86_64-pc-linux-gnu/bits/gthr-default.h:662",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#2 0x127d434 in std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void ",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "atlassian-yellow_star",
+                        "shortName" : ":yellow_star:",
+                        "text" : ":yellow_star:"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "()) /home/lewis/Sandbox/Stroika-Dev/BUILD-GCC-8.1.0/objdir/../gcc-8.1.0/libstdc+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-v3/src/c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+11/thread.cc:135",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#3 0xf4b644 in Stroika::Foundation::Execution::Thread::Rep_:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "oCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:310",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#4 0xf53861 in Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr::Start() const /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:819",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#5 0x9b49d3 in Stroika::Foundation::Execution::Thread::Start(Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr> const&)::{lambda(Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&)#1}::operator()(Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&) const (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39+0x9b49d3)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#6 0x9d133d in std::_Function_handler<void (Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&), Stroika::Foundation::Execution::Thread::Start(Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr> const&)::{lambda(Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&)#1}>::_M_invoke(std::_Any_data const&, Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&) (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39+0x9d133d)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#7 0xb6494a in std::function<void (Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&)>::operator()(Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&) const /home/lewis/gcc-8.1.0/include/c++/8.1.0/bits/std_function.h:687",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#8 0xb2cb2e in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr>::_IRep::_Apply(std::function<void (Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&)> const&) const (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39+0xb2cb2e)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#9 0xaef04f in Stroika::Foundation::Traversal::IterableFromIterator<Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr, Stroika::Foundation::Traversal:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rivate_::GenItWrapper_<Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr>, std::function<Stroika::Foundation::Memory::Optional<Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr, Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr> > ()> >::_Rep::Apply(std::function<void (Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&)> const&) const (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39+0xaef04f)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#10 0x9bc2dd in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr>::Apply(std::function<void (Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr const&)> const&) const ../Characters/../Containers/../Traversal/Iterable.inl:759",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#11 0x9b4be5 in Stroika::Foundation::Execution::Thread::Start(Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Execution::Thread:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "tr> const&) (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39+0x9b4be5)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#12 0x94ec92 in TestBasics_<Stroika::Foundation::Containers::Sequence<int>, (anonymous namespace)::Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "oIt()::<lambda(Stroika::Foundation::Containers::Sequence<int>",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "strong"
+                        }
+                     ],
+                     "text" : ", int)>, (anonymous namespace)::Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "strong"
+                        }
+                     ],
+                     "text" : "oIt()::<lambda(Stroika::Foundation::Containers::Sequence<int>",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : ", int)>, (anonymous namespace)::Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "oIt()::<lambda(const Stroika::Foundation::Containers::Sequence<int>*)>, (anonymous namespace)::Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "oIt()::<lambda(int)> > /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/39/Test.cpp:688",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#13 0x937d24 in DoIt /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/39/Test.cpp:700",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#14 0x938718 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/39/Test.cpp:741",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#15 0xcdb6ae in Stroika::TestHarness:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rintPassOrFail(void ",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "atlassian-yellow_star",
+                        "shortName" : ":yellow_star:",
+                        "text" : ":yellow_star:"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "()) /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/39/../TestHarness/TestHarness.cpp:81",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#16 0x9387bd in main /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/39/Test.cpp:748",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#17 0x7fed31526b96 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x21b96)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "SUMMARY: AddressSanitizer: stack-use-after-scope (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39+0x9e51ab) in Stroika::Foundation::Memory::Optional<unsigned long, Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<unsigned long> > Stroika::Foundation::Containers:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rivate::IndexOf_<int, std::equal_to<int> >(Stroika::Foundation::Traversal::Iterable<int> const&, std::conditional<((sizeof (int))<=((2)",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "strong"
+                        }
+                     ],
+                     "text" : "(sizeof (void",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "))))&&std::is_trivially_copyable<int>::value, int, int const&>::type, std::equal_to<int> const&)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Shadow bytes around the buggy address:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97b70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97b80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97b90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97ba0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97bb0: 00 00 f1 f1 f1 f1 04 f2 f2 f2 f2 f2 f2 f2 00 f2",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "=>0x0ffe25c97bc0: f2 f2 f2 f2 f2 f2[f8]f8 f8 f8 f2 f2 f2 f2 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97bd0: 00 00 f3 f3 f3 f3 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97be0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97bf0: f1 f1 f1 f1 01 f2 f2 f2 f2 f2 f2 f2 00 00 f2 f2",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97c00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x0ffe25c97c10: f1 f1 00 00 f2 f2 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Shadow byte legend (one shadow byte represents 8 application bytes):",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Addressable:           00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Partially addressable: 01 02 03 04 05 06 07 ",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Heap left redzone:       fa",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Freed heap region:       fd",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack left redzone:      f1",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack mid redzone:       f2",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack right redzone:     f3",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack after return:      f5",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack use after scope:   f8",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Global redzone:          f9",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Global init order:       f6",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Poisoned by user:        f7",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Container overflow:      fc",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Array cookie:            ac",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Intra object redzone:    bb",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "ASan internal:           fe",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Left alloca redzone:     ca",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Right alloca redzone:    cb",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==22733==ABORTING",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[]  (7  seconds)  [39]  Foundation::Execution::ThreadSafetyBuiltinObject  (LD_LIBRARY_PATH=:~/gcc-8.1.0/lib64 ../Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test39)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[Succeeded]  (0  seconds)  [40]  Foundation::Execution::Other  (LD_LIBRARY_PATH=:~/gcc-8.1.0/lib64 ../Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test40)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[Succeeded]  (0  seconds)  [41]  Foundation::IO::Network  (LD_LIBRARY_PATH=:~/gcc-8.1.0/lib64 ../Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test41)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[Succeeded]  (0  seconds)  [42]  Foundation::IO::Network::HTTP  (LD_LIBRARY_PATH=:~/gcc-8.1.0/lib64 ../Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test42)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[Succeeded]  (4  seconds)  [43]  Foundation::IO::Network::Transfer  (LD_LIBRARY_PATH=:~/gcc-8.1.0/lib64 ../Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test43)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "=================================================================",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==22864==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7fff3f3ba8d0 at pc 0x0000008a0f43 bp 0x7fff3f3ba800 sp 0x7fff3f3ba7f8",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "WRITE of size 8 at 0x7fff3f3ba8d0 thread T0",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 0x8a0f42 in std::shared_lock<Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ebug::AssertExternallySynchronizedLock const>::shared_lock(Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ebug::AssertExternallySynchronizedLock const&) /home/lewis/gcc-8.1.0/include/c++/8.1.0/shared_mutex:552",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#1 0x8ba828 in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::IO::FileSystem::MountedFilesystemType>::_SafeReadRepAccessor<Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::IO::FileSystem::MountedFilesystemType>::_IRep>::_SafeReadRepAccessor(Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::IO::FileSystem::MountedFilesystemType> const*) ../../Characters/../Containers/../Traversal/Iterable.inl:82",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#2 0x8b1519 in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::IO::FileSystem::MountedFilesystemType>::MakeIterator() const (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test44+0x8b1519)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#3 0x8a77fa in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::IO::FileSystem::MountedFilesystemType>::begin() const (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test44+0x8a77fa)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#4 0x894afd in DoTest /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/44/Test.cpp:134",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#5 0x8957a4 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/44/Test.cpp:159",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#6 0x92e662 in Stroika::TestHarness:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f61b",
+                        "shortName" : ":stuck_out_tongue:",
+                        "text" : "😛"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "rintPassOrFail(void ",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "atlassian-yellow_star",
+                        "shortName" : ":yellow_star:",
+                        "text" : ":yellow_star:"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "()) /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/44/../TestHarness/TestHarness.cpp:81",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#7 0x8957ed in main /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/44/Test.cpp:167",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#8 0x7f72722d8b96 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x21b96)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#9 0x88ed89 in _start (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test44+0x88ed89)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "Address 0x7fff3f3ba8d0 is located in stack of thread T0 at offset 32 in frame",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "#0 0x8b1479 in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::IO::FileSystem::MountedFilesystemType>::MakeIterator() const (/home/lewis/Sandbox/Stroika-Regression-Tests/Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test44+0x8b1479)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "This frame has 1 object(s):",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[32, 64) '<unknown>' <== Memory access at offset 32 is inside this variable",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "(longjmp and C++ exceptions ",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "strong"
+                        }
+                     ],
+                     "text" : "are",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : " supported)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "SUMMARY: AddressSanitizer: stack-use-after-scope /home/lewis/gcc-8.1.0/include/c++/8.1.0/shared_mutex:552 in std::shared_lock<Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ebug::AssertExternallySynchronizedLock const>::shared_lock(Stroika::Foundation:",
+                     "type" : "text"
+                  },
+                  {
+                     "attrs" : {
+                        "id" : "1f603",
+                        "shortName" : ":smiley:",
+                        "text" : "😃"
+                     },
+                     "type" : "emoji"
+                  },
+                  {
+                     "text" : "ebug::AssertExternallySynchronizedLock const&)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Shadow bytes around the buggy address:",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f4c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f4d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f4e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f4f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f500: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "=>0x100067e6f510: 00 00 f8 f8 f8 f8 f1 f1 f1 f1[f8]f8 f8 f8 f3 f3",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f520: f3 f3 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f530: 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f540: 00 00 00 00 00 00 00 00 00 00 f2 f2 f2 f2 f2 f2",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f550: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f2 f2",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "0x100067e6f560: f2 f2 f2 f2 00 00 00 00 00 00 00 00 00 00 00 00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Shadow byte legend (one shadow byte represents 8 application bytes):",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Addressable:           00",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Partially addressable: 01 02 03 04 05 06 07 ",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Heap left redzone:       fa",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Freed heap region:       fd",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack left redzone:      f1",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack mid redzone:       f2",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack right redzone:     f3",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack after return:      f5",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Stack use after scope:   f8",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Global redzone:          f9",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Global init order:       f6",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Poisoned by user:        f7",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Container overflow:      fc",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Array cookie:            ac",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Intra object redzone:    bb",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "ASan internal:           fe",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Left alloca redzone:     ca",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "Right alloca redzone:    cb",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "==22864==ABORTING",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[]  (1  seconds)  [44]  Foundation::IO::Other  (LD_LIBRARY_PATH=:~/gcc-8.1.0/lib64 ../Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test44)",
+                     "type" : "text"
+                  },
+                  {
+                     "type" : "hardBreak"
+                  },
+                  {
+                     "text" : "[Succeeded]  (1  seconds)  [45]  Foundation::Math  (LD_LIBRARY_PATH=:~/gcc-8.1.0/lib64 ../Builds/my-g+",
+                     "type" : "text"
+                  },
+                  {
+                     "marks" : [
+                        {
+                           "type" : "underline"
+                        }
+                     ],
+                     "text" : "-8.1-debug-c",
+                     "type" : "text"
+                  },
+                  {
+                     "text" : "+17/Test45)",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "I tried using Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE (\"addresss\") in a targetted way but couldnt get that to work.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            },
+            {
+               "content" : [
+                  {
+                     "text" : "So just disabled on my regression testing 8.1 configuration for now.",
+                     "type" : "text"
+                  }
+               ],
+               "type" : "paragraph"
+            }
+         ],
+         "type" : "doc",
+         "version" : 1
+      },
+      "fixVersions" : [
+         {
+            "archived" : false,
+            "id" : "12816",
+            "name" : "v2.1d10",
+            "released" : false,
+            "self" : "https://stroika.atlassian.net/rest/api/3/version/12816"
+         }
+      ],
+      "issuelinks" : [
+         {
+            "id" : "11506",
+            "inwardIssue" : {
+               "fields" : {
+                  "issuetype" : {
+                     "avatarId" : 10318,
+                     "description" : "A task that needs to be done.",
+                     "hierarchyLevel" : 0,
+                     "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+                     "id" : "10002",
+                     "name" : "Task",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+                     "subtask" : false
+                  },
+                  "priority" : {
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/high_new.svg",
+                     "id" : "2",
+                     "name" : "High",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/priority/2"
+                  },
+                  "status" : {
+                     "description" : "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/closed.png",
+                     "id" : "6",
+                     "name" : "Closed",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/status/6",
+                     "statusCategory" : {
+                        "colorName" : "green",
+                        "id" : 3,
+                        "key" : "done",
+                        "name" : "Done",
+                        "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/3"
+                     }
+                  },
+                  "summary" : "inline static variables of template specializations broken on clang"
+               },
+               "id" : "17164",
+               "key" : "STK-655",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/17164"
+            },
+            "self" : "https://stroika.atlassian.net/rest/api/3/issueLink/11506",
+            "type" : {
+               "id" : "10003",
+               "inward" : "relates to",
+               "name" : "Relates",
+               "outward" : "relates to",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issueLinkType/10003"
+            }
+         },
+         {
+            "id" : "11507",
+            "inwardIssue" : {
+               "fields" : {
+                  "issuetype" : {
+                     "avatarId" : 10303,
+                     "description" : "A problem which impairs or prevents the functions of the product.",
+                     "hierarchyLevel" : 0,
+                     "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                     "id" : "10004",
+                     "name" : "Bug",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10004",
+                     "subtask" : false
+                  },
+                  "priority" : {
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/low_new.svg",
+                     "id" : "4",
+                     "name" : "Low",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/priority/4"
+                  },
+                  "status" : {
+                     "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+                     "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+                     "id" : "5",
+                     "name" : "Resolved",
+                     "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+                     "statusCategory" : {
+                        "colorName" : "yellow",
+                        "id" : 4,
+                        "key" : "indeterminate",
+                        "name" : "In Progress",
+                        "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+                     }
+                  },
+                  "summary" : "revisit gcc sanitiizer on ARM gcc 7.2 stack use after... (was vptr - see why fails (for now just disabled in regtests))"
+               },
+               "id" : "13600",
+               "key" : "STK-500",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issue/13600"
+            },
+            "self" : "https://stroika.atlassian.net/rest/api/3/issueLink/11507",
+            "type" : {
+               "id" : "10003",
+               "inward" : "relates to",
+               "name" : "Relates",
+               "outward" : "relates to",
+               "self" : "https://stroika.atlassian.net/rest/api/3/issueLinkType/10003"
+            }
+         }
+      ],
+      "issuetype" : {
+         "avatarId" : 10318,
+         "description" : "A task that needs to be done.",
+         "hierarchyLevel" : 0,
+         "iconUrl" : "https://stroika.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+         "id" : "10002",
+         "name" : "Task",
+         "self" : "https://stroika.atlassian.net/rest/api/3/issuetype/10002",
+         "subtask" : false
+      },
+      "priority" : {
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/priorities/medium_new.svg",
+         "id" : "3",
+         "name" : "Medium",
+         "self" : "https://stroika.atlassian.net/rest/api/3/priority/3"
+      },
+      "progress" : {
+         "progress" : 0,
+         "total" : 0
+      },
+      "project" : {
+         "avatarUrls" : {
+            "16x16" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=xsmall",
+            "24x24" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=small",
+            "32x32" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668?size=medium",
+            "48x48" : "https://stroika.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10668"
+         },
+         "id" : "10000",
+         "key" : "STK",
+         "name" : "Stroika",
+         "projectTypeKey" : "software",
+         "self" : "https://stroika.atlassian.net/rest/api/3/project/10000",
+         "simplified" : false
+      },
+      "reporter" : {
+         "accountId" : "557058:4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "accountType" : "atlassian",
+         "active" : true,
+         "avatarUrls" : {
+            "16x16" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "24x24" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "32x32" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png",
+            "48x48" : "https://secure.gravatar.com/avatar/9415554eef74e2169ce3e459c177ff75?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLP-4.png"
+         },
+         "displayName" : "Lewis Pringle",
+         "self" : "https://stroika.atlassian.net/rest/api/3/user?accountId=557058%3A4fe560ca-b4e1-41d1-9bdf-97b1684eda32",
+         "timeZone" : "America/New_York"
+      },
+      "resolution" : {
+         "description" : "Work has been completed on this issue.",
+         "id" : "10000",
+         "name" : "Done",
+         "self" : "https://stroika.atlassian.net/rest/api/3/resolution/10000"
+      },
+      "resolutiondate" : "2018-09-28T22:02:23.216-0400",
+      "status" : {
+         "description" : "A resolution has been taken, and it is awaiting verification by reporter. From here issues are either reopened, or are closed.",
+         "iconUrl" : "https://stroika.atlassian.net/images/icons/statuses/resolved.png",
+         "id" : "5",
+         "name" : "Resolved",
+         "self" : "https://stroika.atlassian.net/rest/api/3/status/5",
+         "statusCategory" : {
+            "colorName" : "yellow",
+            "id" : 4,
+            "key" : "indeterminate",
+            "name" : "In Progress",
+            "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+         }
+      },
+      "statusCategory" : {
+         "colorName" : "yellow",
+         "id" : 4,
+         "key" : "indeterminate",
+         "name" : "In Progress",
+         "self" : "https://stroika.atlassian.net/rest/api/3/statuscategory/4"
+      },
+      "statuscategorychangedate" : "2018-09-28T22:02:23.287-0400",
+      "summary" : "gcc address sanitizer stack-use-after-scope false positives",
+      "updated" : "2018-09-28T22:03:32.151-0400",
+      "votes" : {
+         "hasVoted" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-654/votes",
+         "votes" : 0
+      },
+      "watches" : {
+         "isWatching" : false,
+         "self" : "https://stroika.atlassian.net/rest/api/3/issue/STK-654/watchers",
+         "watchCount" : 1
+      },
+      "worklog" : {
+         "maxResults" : 20,
+         "startAt" : 0,
+         "total" : 0
+      },
+      "workratio" : -1
+   },
+   "id" : "17163",
+   "key" : "STK-654",
+   "self" : "https://stroika.atlassian.net/rest/api/3/issue/17163"
+}
