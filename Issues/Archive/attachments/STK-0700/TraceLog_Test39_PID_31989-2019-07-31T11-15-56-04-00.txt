@@ -1,0 +1,444 @@
+[0x00007fa28a8a4340][0000.000]	***Starting TraceLog***
+[0x00007fa28a8a4340][0000.000]	<debug-state> {
+[0x00007fa28a8a4340][0000.000]		Debug::kBuiltWithAddressSanitizer = false
+[0x00007fa28a8a4340][0000.000]		Debug::IsRunningUnderValgrind () = false
+[0x00007fa28a8a4340][0000.000]	} </debug-state>
+[-------MAIN-------][0000.004]	(REAL THREADID=0x00007fa28a8a4340)	(pthread_self=0x7fa28a8a4340)	<Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR/>
+[-------MAIN-------][0000.011]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGILL, handlers: [ {type: Direct, target: 0x7b0c000001b0} ])/>
+[-------MAIN-------][0000.012]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGBUS, handlers: [ {type: Direct, target: 0x7b0c000001b0} ])/>
+[-------MAIN-------][0000.012]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGFPE, handlers: [ {type: Direct, target: 0x7b0c000001b0} ])/>
+[-------MAIN-------][0000.012]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGSEGV, handlers: [ {type: Direct, target: 0x7b0c000001b0} ])/>
+[-------MAIN-------][0000.012]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGSYS, handlers: [ {type: Direct, target: 0x7b0c000001b0} ])/>
+[-------MAIN-------][0000.013]	<AssignAndIterateAtSameTimeTest_1_::DoIt ()> {
+[-------MAIN-------][0000.013]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.014]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.015]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.016]				{id: 0x00007fa2880ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0000.016]			} </Thread::Start>
+[-------MAIN-------][0000.016]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.017]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.017]		<{}IterateOverThread::MAIN...> {
+[0x00007fa2876ff700][0000.018]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.018]				{id: 0x00007fa2876ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0000.018]			} </Thread::Start>
+[0x00007fa2876ff700][0000.022]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.022]		<{}OverwriteThread::MAIN...> {
+[0x00007fa2880ff700][0000.030]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2880ff700][0000.031]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.031]	} </Thread::Rep_::ThreadMain_>
+[0x00007fa2876ff700][0000.094]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2876ff700][0000.094]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.094]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.196]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0000.196]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0000.196]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.197]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.197]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.198]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2876ff700][0000.198]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[-------MAIN-------][0000.198]				{id: 0x00007fa2876ff700, status: Running} started
+[0x00007fa2876ff700][0000.198]		<{}IterateOverThread::MAIN...> {
+[-------MAIN-------][0000.198]			} </Thread::Start>
+[-------MAIN-------][0000.199]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.210]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.210]				{id: 0x00007fa2880ff700, status: Running} started
+[0x00007fa2880ff700][0000.210]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[-------MAIN-------][0000.210]			} </Thread::Start>
+[0x00007fa2880ff700][0000.211]		<{}OverwriteThread::MAIN...> {
+[-------MAIN-------][0000.211]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0000.218]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2876ff700][0000.218]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.219]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.222]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.222]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0000.266]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2880ff700][0000.267]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.267]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.270]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.270]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.270]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.271]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.271]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.274]				{id: 0x00007fa2880ff700, status: Running} started
+[0x00007fa2880ff700][0000.274]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[-------MAIN-------][0000.274]			} </Thread::Start>
+[-------MAIN-------][0000.274]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.275]		<{}IterateOverThread::MAIN...> {
+[0x00007fa2876ff700][0000.283]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2880ff700][0000.283]		} </{}IterateOverThread::MAIN...>
+[-------MAIN-------][0000.283]				{id: 0x00007fa2876ff700, status: Not-Yet-Running} started
+[0x00007fa2880ff700][0000.283]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[-------MAIN-------][0000.283]			} </Thread::Start>
+[0x00007fa2876ff700][0000.283]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.283]		<{}OverwriteThread::MAIN...> {
+[-------MAIN-------][0000.284]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Completed}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0000.286]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.286]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.286]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0000.338]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2876ff700][0000.338]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.338]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.338]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.338]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.341]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.341]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.342]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2876ff700][0000.346]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[-------MAIN-------][0000.346]				{id: 0x00007fa2876ff700, status: Running} started
+[0x00007fa2876ff700][0000.346]		<{}IterateOverThread::MAIN...> {
+[-------MAIN-------][0000.347]			} </Thread::Start>
+[-------MAIN-------][0000.347]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.358]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2876ff700][0000.360]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2876ff700][0000.360]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.360]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.361]				{id: 0x00007fa2880ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0000.361]			} </Thread::Start>
+[-------MAIN-------][0000.361]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0000.362]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Not-Yet-Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0000.362]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.362]		<{}OverwriteThread::MAIN...> {
+[0x00007fa2880ff700][0000.420]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2880ff700][0000.420]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.420]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.421]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.421]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.421]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.421]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.422]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2880ff700][0000.423]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[-------MAIN-------][0000.423]				{id: 0x00007fa2880ff700, status: Running} started
+[0x00007fa2880ff700][0000.423]		<{}IterateOverThread::MAIN...> {
+[-------MAIN-------][0000.423]			} </Thread::Start>
+[-------MAIN-------][0000.423]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.442]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2880ff700][0000.444]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2880ff700][0000.444]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.444]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.445]				{id: 0x00007fa2876ff700, status: Running} started
+[0x00007fa2876ff700][0000.445]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[-------MAIN-------][0000.445]			} </Thread::Start>
+[0x00007fa2876ff700][0000.445]		<{}OverwriteThread::MAIN...> {
+[-------MAIN-------][0000.445]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0000.445]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0000.500]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2876ff700][0000.500]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.500]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.500]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.500]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.500]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.501]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.509]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.510]				{id: 0x00007fa2876ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0000.510]			} </Thread::Start>
+[-------MAIN-------][0000.510]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.510]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.511]		<{}IterateOverThread::MAIN.../>
+[0x00007fa2880ff700][0000.518]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2876ff700][0000.518]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.518]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.519]				{id: 0x00007fa2880ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0000.520]			} </Thread::Start>
+[-------MAIN-------][0000.520]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0000.520]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Not-Yet-Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0000.520]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.520]		<{}OverwriteThread::MAIN...> {
+[0x00007fa2880ff700][0000.574]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2880ff700][0000.574]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.574]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.574]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.574]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.574]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.575]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.575]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.582]				{id: 0x00007fa2880ff700, status: Running} started
+[-------MAIN-------][0000.582]			} </Thread::Start>
+[0x00007fa2880ff700][0000.582]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[-------MAIN-------][0000.582]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.582]		<{}IterateOverThread::MAIN...> {
+[0x00007fa2876ff700][0000.587]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.587]				{id: 0x00007fa2876ff700, status: Running} started
+[0x00007fa2876ff700][0000.587]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[-------MAIN-------][0000.587]			} </Thread::Start>
+[-------MAIN-------][0000.588]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0000.588]		<{}OverwriteThread::MAIN...> {
+[0x00007fa2880ff700][0000.606]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2880ff700][0000.606]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.606]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.606]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.607]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0000.639]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2876ff700][0000.639]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.639]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.639]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.639]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.639]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.640]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.642]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.642]				{id: 0x00007fa2876ff700, status: Running} started
+[0x00007fa2876ff700][0000.642]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[-------MAIN-------][0000.642]			} </Thread::Start>
+[0x00007fa2876ff700][0000.643]		<{}IterateOverThread::MAIN...> {
+[-------MAIN-------][0000.643]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.645]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2876ff700][0000.645]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.646]	} </Thread::Rep_::ThreadMain_>
+[0x00007fa2880ff700][0000.646]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.646]				{id: 0x00007fa2880ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0000.646]			} </Thread::Start>
+[-------MAIN-------][0000.646]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0000.647]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Not-Yet-Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0000.650]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.650]		<{}OverwriteThread::MAIN...> {
+[0x00007fa2880ff700][0000.705]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2880ff700][0000.706]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.706]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.706]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.706]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.706]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.707]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.708]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.708]				{id: 0x00007fa2880ff700, status: Running} started
+[0x00007fa2880ff700][0000.709]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[-------MAIN-------][0000.709]			} </Thread::Start>
+[0x00007fa2880ff700][0000.709]		<{}IterateOverThread::MAIN...> {
+[-------MAIN-------][0000.709]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.713]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.714]				{id: 0x00007fa2876ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0000.714]			} </Thread::Start>
+[0x00007fa2876ff700][0000.714]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.714]		<{}OverwriteThread::MAIN...> {
+[-------MAIN-------][0000.714]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0000.715]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2880ff700][0000.716]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.716]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.716]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.717]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0000.759]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2876ff700][0000.760]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.760]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.762]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.762]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.762]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.763]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.763]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2876ff700][0000.766]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[-------MAIN-------][0000.766]				{id: 0x00007fa2876ff700, status: Running} started
+[0x00007fa2876ff700][0000.766]		<{}IterateOverThread::MAIN...> {
+[-------MAIN-------][0000.766]			} </Thread::Start>
+[-------MAIN-------][0000.766]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.770]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2876ff700][0000.770]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.778]	} </Thread::Rep_::ThreadMain_>
+[0x00007fa2880ff700][0000.778]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.781]				{id: 0x00007fa2880ff700, status: Running} started
+[-------MAIN-------][0000.781]			} </Thread::Start>
+[-------MAIN-------][0000.781]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0000.781]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0000.781]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.781]		<{}OverwriteThread::MAIN...> {
+[0x00007fa2880ff700][0000.826]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2880ff700][0000.827]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.827]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.827]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.827]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.827]		<{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()> {
+[-------MAIN-------][0000.828]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0000.830]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0000.830]				{id: 0x00007fa2880ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0000.830]			} </Thread::Start>
+[-------MAIN-------][0000.831]			<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.834]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2880ff700][0000.834]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.834]		<{}IterateOverThread::MAIN...> {
+[-------MAIN-------][0000.834]				{id: 0x00007fa2876ff700, status: Running} started
+[-------MAIN-------][0000.834]			} </Thread::Start>
+[-------MAIN-------][0000.835]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0000.835]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.835]		<{}OverwriteThread::MAIN...> {
+[0x00007fa2880ff700][0000.840]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2880ff700][0000.840]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0000.840]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.840]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.840]			<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0000.889]		} </{}OverwriteThread::MAIN...>
+[0x00007fa2876ff700][0000.889]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.889]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.890]			} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0000.890]		} </{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()>
+[-------MAIN-------][0000.890]	} </AssignAndIterateAtSameTimeTest_1_::DoIt ()>
+[-------MAIN-------][0000.890]	<IterateWhileMutatingContainer_Test_2_::DoIt ()> {
+[-------MAIN-------][0000.890]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.891]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2876ff700][0000.891]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0000.891]		<{}IterateOverThread::MAIN...> {
+[-------MAIN-------][0000.892]			{id: 0x00007fa2876ff700, status: Running} started
+[-------MAIN-------][0000.892]		} </Thread::Start>
+[-------MAIN-------][0000.892]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0000.893]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2876ff700][0000.893]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2880ff700][0000.893]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2876ff700][0000.893]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0000.894]			{id: 0x00007fa2880ff700, status: Running} started
+[0x00007fa2880ff700][0000.894]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[-------MAIN-------][0000.894]		} </Thread::Start>
+[0x00007fa2880ff700][0000.894]		<{}::MutateFunction ()> {
+[0x00007fa2880ff700][0000.894]			(type N7Stroika10Foundation10Containers3SetIiEE)
+[-------MAIN-------][0000.894]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0000.894]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0001.233]		} </{}::MutateFunction ()>
+[0x00007fa2880ff700][0001.233]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0001.233]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0001.233]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0001.234]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0001.234]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0001.240]			{id: 0x00007fa2880ff700, status: Running} started
+[-------MAIN-------][0001.240]		} </Thread::Start>
+[0x00007fa2880ff700][0001.240]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0001.240]		<{}IterateOverThread::MAIN.../>
+[0x00007fa2880ff700][0001.241]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[-------MAIN-------][0001.241]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0001.242]	} </Thread::Rep_::ThreadMain_>
+[0x00007fa2876ff700][0001.243]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0001.244]			{id: 0x00007fa2876ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0001.244]		} </Thread::Start>
+[-------MAIN-------][0001.244]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0001.244]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Not-Yet-Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0001.244]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0001.245]		<{}::MutateFunction ()> {
+[0x00007fa2876ff700][0001.245]			(type N7Stroika10Foundation10Containers8SequenceIiEE)
+[0x00007fa2876ff700][0001.427]		} </{}::MutateFunction ()>
+[0x00007fa2876ff700][0001.427]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0001.427]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0001.428]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0001.428]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0001.428]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0001.429]			{id: 0x00007fa2876ff700, status: Running} started
+[0x00007fa2876ff700][0001.429]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[-------MAIN-------][0001.429]		} </Thread::Start>
+[0x00007fa2876ff700][0001.429]		<{}IterateOverThread::MAIN...> {
+[-------MAIN-------][0001.429]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0001.438]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0001.438]			{id: 0x00007fa2880ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0001.438]		} </Thread::Start>
+[-------MAIN-------][0001.438]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0001.439]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2876ff700][0001.439]		} </{}IterateOverThread::MAIN...>
+[0x00007fa2880ff700][0001.439]		<{}::MutateFunction ()> {
+[0x00007fa2876ff700][0001.439]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2880ff700][0001.439]			(type N7Stroika10Foundation10Characters6StringE)
+[0x00007fa2876ff700][0001.439]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0001.439]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0001.440]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0001.582]		} </{}::MutateFunction ()>
+[0x00007fa2880ff700][0001.583]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0001.583]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0001.586]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0001.586]	} </IterateWhileMutatingContainer_Test_2_::DoIt ()>
+[-------MAIN-------][0001.586]	<{}::Test3_SynchronizedOptional_::DoIt ()> {
+[-------MAIN-------][0001.586]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0001.587]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0001.590]			{id: 0x00007fa2880ff700, status: Running} started
+[0x00007fa2880ff700][0001.590]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[-------MAIN-------][0001.594]		} </Thread::Start>
+[-------MAIN-------][0001.594]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0001.595]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0001.596]			{id: 0x00007fa2876ff700, status: Running} started
+[0x00007fa2876ff700][0001.596]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[-------MAIN-------][0001.602]		} </Thread::Start>
+[-------MAIN-------][0001.602]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=9.016019e+02)> {
+[0x00007fa2876ff700][0002.124]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0002.124]	} </Thread::Rep_::ThreadMain_>
+[0x00007fa2880ff700][0002.124]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0002.124]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0002.124]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0002.125]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Completed}, timeoutAt=9.016019e+02)/>
+[-------MAIN-------][0002.125]		<Thread::Abort (*this={id: 0x0000000000000000, status: Completed})/>
+[-------MAIN-------][0002.125]		<Thread::Abort (*this={id: 0x0000000000000000, status: Completed})/>
+[-------MAIN-------][0002.127]	} </{}::Test3_SynchronizedOptional_::DoIt ()>
+[-------MAIN-------][0002.127]	<{}::Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ()/>
+[-------MAIN-------][0002.127]	<{}::Test5_SetSpecificSyncMethods::DoIt ()/>
+[-------MAIN-------][0002.128]	<{}::Test6_OverloadsWithSyncMethods_::DoIt ()/>
+[-------MAIN-------][0002.128]	<{}::Test7_Synchronized_::DoIt ()> {
+[-------MAIN-------][0002.128]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0002.129]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0002.129]			{id: 0x00007fa2876ff700, status: Running} started
+[0x00007fa2876ff700][0002.129]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[-------MAIN-------][0002.129]		} </Thread::Start>
+[-------MAIN-------][0002.129]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0002.142]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0002.142]			{id: 0x00007fa2880ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0002.142]		} </Thread::Start>
+[-------MAIN-------][0002.142]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0002.146]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2876ff700][0002.293]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0002.293]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0002.293]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0002.293]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0002.303]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0002.303]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0002.304]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0002.304]	} </{}::Test7_Synchronized_::DoIt ()>
+[-------MAIN-------][0002.304]	<{}::Test8_AssertExternallySynchronized_::DoIt ()/>
+[-------MAIN-------][0002.304]	<{}::Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ()> {
+[-------MAIN-------][0002.305]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0002.305]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0002.306]			{id: 0x00007fa2880ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0002.306]		} </Thread::Start>
+[-------MAIN-------][0002.306]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0002.310]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2876ff700][0002.310]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0002.310]			{id: 0x00007fa2876ff700, status: Not-Yet-Running} started
+[-------MAIN-------][0002.310]		} </Thread::Start>
+[-------MAIN-------][0002.311]		<Thread::Start (*this={id: 0x0000000000000000, status: Not-Yet-Running})> {
+[0x00007fa283eff700][0002.343]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0002.344]			{id: 0x00007fa283eff700, status: Not-Yet-Running} started
+[-------MAIN-------][0002.344]		} </Thread::Start>
+[-------MAIN-------][0002.344]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2880ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa283eff700][0002.344]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa283eff700, status: Running}
+[0x00007fa2876ff700][0002.354]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa283eff700][0002.368]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa283eff700, status: Running}
+[0x00007fa283eff700][0002.368]	} </Thread::Rep_::ThreadMain_>
+[0x00007fa2880ff700][0002.574]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, status: Running}
+[0x00007fa2880ff700][0002.574]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0002.575]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0002.575]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, status: Running}, timeoutAt=inf)> {
+[0x00007fa2876ff700][0002.612]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2876ff700, status: Running}
+[0x00007fa2876ff700][0002.612]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0002.612]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0002.613]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa283eff700, status: Completed}, timeoutAt=inf)/>
+[-------MAIN-------][0002.613]	} </{}::Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ()>
+[-------MAIN-------][0002.613]	<{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()> {
+[-------MAIN-------][0002.613]		<Execution::Thread::SetThreadName (thisThreadID=0x0000000000000000, threadName = 'adderThread')/>
+[-------MAIN-------][0002.613]		<Execution::Thread::SetThreadName (thisThreadID=0x0000000000000000, threadName = 'removerThread')/>
+[-------MAIN-------][0002.613]		<Execution::Thread::SetThreadName (thisThreadID=0x0000000000000000, threadName = 'examineThread')/>
+[-------MAIN-------][0002.613]		<Execution::Thread::SetThreadName (thisThreadID=0x0000000000000000, threadName = 'walkerThread')/>
+[-------MAIN-------][0002.614]		<Thread::Start (*this={id: 0x0000000000000000, name: 'adderThread', status: Not-Yet-Running})> {
+[0x00007fa283eff700][0002.614]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0002.615]			{id: 0x00007fa283eff700, name: 'adderThread', status: Running} started
+[-------MAIN-------][0002.615]		} </Thread::Start>
+[0x00007fa283eff700][0002.615]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa283eff700, name: 'adderThread', status: Running}
+[-------MAIN-------][0002.615]		<Thread::Start (*this={id: 0x0000000000000000, name: 'removerThread', status: Not-Yet-Running})> {
+[0x00007fa2876ff700][0002.629]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0002.629]			{id: 0x00007fa2876ff700, name: 'removerThread', status: Running} started
+[-------MAIN-------][0002.629]		} </Thread::Start>
+[-------MAIN-------][0002.629]		<Thread::Start (*this={id: 0x0000000000000000, name: 'examineThread', status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0002.641]	<Thread::Rep_::ThreadMain_> {
+[0x00007fa2876ff700][0002.642]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2876ff700, name: 'removerThread', status: Running}
+[-------MAIN-------][0002.646]			{id: 0x00007fa2880ff700, name: 'examineThread', status: Not-Yet-Running} started
+[-------MAIN-------][0002.646]		} </Thread::Start>
+[-------MAIN-------][0002.646]		<Thread::Start (*this={id: 0x0000000000000000, name: 'walkerThread', status: Not-Yet-Running})> {
+[0x00007fa2880ff700][0002.654]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2880ff700, name: 'examineThread', status: Running}
+[0x00007fa2836fe700][0002.660]	<Thread::Rep_::ThreadMain_> {
+[-------MAIN-------][0002.660]			{id: 0x00007fa2836fe700, name: 'walkerThread', status: Running} started
+[0x00007fa2836fe700][0002.660]		In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {id: 0x00007fa2836fe700, name: 'walkerThread', status: Running}
+[-------MAIN-------][0002.660]		} </Thread::Start>
+[-------MAIN-------][0002.661]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa283eff700, name: 'adderThread', status: Running}, timeoutAt=inf)> {
+[0x00007fa2880ff700][0002.834]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2880ff700, name: 'examineThread', status: Running}
+[0x00007fa2880ff700][0002.834]	} </Thread::Rep_::ThreadMain_>
+[0x00007fa2836fe700][0220.777]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa2836fe700, name: 'walkerThread', status: Running}
+[0x00007fa2836fe700][0220.777]	} </Thread::Rep_::ThreadMain_>
+[0x00007fa283eff700][0246.775]		In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {id: 0x00007fa283eff700, name: 'adderThread', status: Running}
+[0x00007fa283eff700][0246.775]	} </Thread::Rep_::ThreadMain_>
+[-------MAIN-------][0246.776]		} </Thread::WaitForDoneUntil>
+[-------MAIN-------][0246.776]		<Thread::WaitForDoneUntil (*this={id: 0x00007fa2876ff700, name: 'removerThread', status: Running}, timeoutAt=inf)

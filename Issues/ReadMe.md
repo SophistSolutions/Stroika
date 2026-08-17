@@ -52,15 +52,40 @@ across 2025-2026) that is kilobytes a year.
 
 - **`STK-1017` through `STK-1020` are absent.** Everything else in `STK-1`..`STK-1029` is present.
   Four consecutive numbers is a bulk delete or the tail of the data-loss incident, not attrition.
-- **Attachments are not included** - the search API returns fields only; the `.md` notes an
-  attachment's filename where one exists, but not its content. For a complete archive, also take a
-  zip from the JIRA admin UI (Site settings -> System -> Backup manager), which needs no API token.
+- Attachments ARE included, in `Archive/attachments/STK-NNNN/`, and the `.md` links to them - but they
+  come from a SEPARATE pass (`Scripts/JIRAAttachments.pl`), because the search API returns attachment
+  metadata only. An export without that pass silently keeps the filenames and loses every byte. 16
+  files, 7.3MB raw / 0.55MB compressed. Filenames on disk are sanitized
+  (`[^A-Za-z0-9._-]` -> `_`) since the originals contain `#`, spaces and parens; the true name is in
+  the JSON and is used as the link text.
+- A JIRA admin Backup Manager zip (Site settings -> System -> Backup manager, no API token needed) is
+  still the only fully self-contained archive, and worth taking once.
+
+## Migration to GitHub Issues (in progress)
+
+The archive above is history. New work is moving to **GitHub Issues** on this repository, because the
+JIRA tracker had become unreachable in practice - four issue updates across 2025-2026, and no outside
+reporter is going to create an Atlassian account to file a bug.
+
+`Scripts/GitHubImport.pl` imports the archive into GitHub Issues: title `[STK-972] <summary>`, the
+`.md` rendering as the body, a machine-readable `<!-- jira-import: {...} -->` block for everything
+GitHub has no field for (notably `updated` - the last-modified date before import, since GitHub stamps
+its own), JIRA components/type/priority mapped to labels, and the 427 resolved issues created then
+closed. It is DRY RUN unless given `--go`, and resumable - `STK-to-GitHub.tsv` records every mapping as
+it goes and already-mapped keys are skipped.
+
+`STK-to-GitHub.tsv` is the `STK-NNN` -> GitHub issue number map. It is what lets the
+`stroika-bugs.sophists.com` redirect keep resolving the ~180 in-source `STK-NNN` links after JIRA is
+retired, WITHOUT rewriting those links in 122 source files.
 
 ## Scripts/
 
 ```bash
-Issues/Scripts/JIRAExport.sh    [PROJECT] [RAWDIR]   # fetch -> raw paged JSON
-perl Issues/Scripts/JIRANormalize.pl  <RAWDIR> Issues/Archive
+Issues/Scripts/JIRAExport.sh      [PROJECT] [RAWDIR]   # fetch issues -> raw paged JSON
+perl Issues/Scripts/JIRAAttachments.pl [ARCHIVE] [OUTDIR]   # fetch attachment bytes (no token needed)
+perl Issues/Scripts/JIRANormalize.pl   <RAWDIR> Issues/Archive
+perl Issues/Scripts/GitHubImport.pl    --labels | --create-labels --go | --go [--limit N|--only KEY]
+echo '<graphql>' | perl Issues/Scripts/gql.pl                # Projects v2 has no REST API
 ```
 
 `JIRAExport.sh` needs an Atlassian API token - self-service at

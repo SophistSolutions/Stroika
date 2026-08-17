@@ -115,7 +115,14 @@ for my $f (sort glob "$rawdir/_page_*.json") {
         push @md, "| resolved | " . $fl->{resolutiondate} . ' |' if $fl->{resolutiondate};
         if ($fl->{labels} && @{$fl->{labels}}) { push @md, '| labels | ' . join (', ', @{$fl->{labels}}) . ' |' }
         if ($fl->{attachment} && @{$fl->{attachment}}) {
-            push @md, '| attachments | ' . join (', ', map { $_->{filename} // '?' } @{$fl->{attachment}}) . ' |';
+            # link into attachments/, which JIRAAttachments.pl populates - the search API returns attachment
+            # metadata only, so without that script these are names pointing at nothing. Sanitizing must match
+            # what that script does, or the links dangle.
+            push @md, '| attachments | ' . join (', ', map {
+                my $orig = $_->{filename} // '?';
+                (my $safe = $orig) =~ s/[^A-Za-z0-9._-]/_/g;
+                sprintf '[%s](attachments/%s/%s)', $orig, $name, $safe;
+            } @{$fl->{attachment}}) . ' |';
         }
         push @md, '', "<https://stroika.atlassian.net/browse/$key>", '';
 

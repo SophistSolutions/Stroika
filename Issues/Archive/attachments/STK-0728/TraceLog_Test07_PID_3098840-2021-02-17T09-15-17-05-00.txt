@@ -1,0 +1,42 @@
+[MAIN][0000.000]	(NEW THREAD, index=MAIN Real Thread ID=0x4bb2400)	(pthread_self=0x4bb2400)	***Starting TraceLog***
+[MAIN][0000.278]	EXEPath='/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2010_x86_64/Builds/g++-valgrind-debug-SSLPurify-NoBlock…'
+[MAIN][0000.287]	<debug-state {>
+[MAIN][0000.291]	  Debug::kBuiltWithAddressSanitizer = false
+[MAIN][0000.293]	  Debug::IsRunningUnderValgrind () = true
+[MAIN][0000.294]	</debug-state>
+[MAIN][0000.298]	<Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR/>
+[MAIN][0000.508]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGILL, handlers: [ {type: Direct, target: 0x4be6540} ])> {
+[MAIN][0000.614]	} </Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers>
+[MAIN][0000.628]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGBUS, handlers: [ {type: Direct, target: 0x4bec7e0} ])/>
+[MAIN][0000.642]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGFPE, handlers: [ {type: Direct, target: 0x4bf2040} ])/>
+[MAIN][0000.655]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGSEGV, handlers: [ {type: Direct, target: 0x4bf78a0} ])/>
+[MAIN][0000.668]	<Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGSYS, handlers: [ {type: Direct, target: 0x4bfd130} ])/>
+[MAIN][0000.688]	<{}::test_01/>
+[MAIN][0000.694]	<{}::test_02/>
+[MAIN][0000.705]	<{}::test_03/>
+[MAIN][0000.710]	<{}::test_04> {
+[MAIN][0001.351]	} </{}::test_04>
+[MAIN][0001.353]	<{}::test_05> {
+[MAIN][0002.041]	} </{}::test_05>
+[MAIN][0002.043]	<{}::test_06> {
+[MAIN][0003.021]	} </{}::test_06>
+[MAIN][0003.022]	<{}::test_07> {
+[MAIN][0004.875]	} </{}::test_07>
+[MAIN][0004.877]	<{}::test_08> {
+[MAIN][0005.352]	} </{}::test_08>
+[MAIN][0005.353]	<{}::test_09> {
+[MAIN][0005.383]	} </{}::test_09>
+[MAIN][0005.384]	<{}::test_10/>
+[MAIN][0005.388]	<{}::test_11/>
+[MAIN][0005.393]	<{}::test_12/>
+[MAIN][0005.400]	<{}::test_13/>
+[MAIN][0005.407]	<{}::test_14> {
+[MAIN][0005.591]	} </{}::test_14>
+[MAIN][0005.592]	<{}::test_15> {
+[0001][0005.627]	(NEW THREAD, index=0001 Real Thread ID=0x9fbc640)	(pthread_self=0x9fbc640)	cleared=1
+[0002][0005.755]	(NEW THREAD, index=0002 Real Thread ID=0x57b3640)	(pthread_self=0x57b3640)	cleared=5
+[0003][0006.035]	(NEW THREAD, index=0003 Real Thread ID=0x97bb640)	(pthread_self=0x97bb640)	cleared=47
+[0004][0006.501]	(NEW THREAD, index=0004 Real Thread ID=0x87b9640)	(pthread_self=0x87b9640)	cleared=3
+[0005][0006.704]	(NEW THREAD, index=0005 Real Thread ID=0x8fba640)	(pthread_self=0x8fba640)	cleared=4
+[0001][0006.798]	cleared=13
+[0002][0006.861]	cleared=0

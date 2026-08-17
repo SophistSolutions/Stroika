@@ -1,0 +1,94 @@
+diff --git a/Library/Sources/Stroika/Foundation/Containers/Common.h b/Library/Sources/Stroika/Foundation/Containers/Common.h
+index 593fae4cc..7bbb93a77 100644
+--- a/Library/Sources/Stroika/Foundation/Containers/Common.h
++++ b/Library/Sources/Stroika/Foundation/Containers/Common.h
+@@ -13,6 +13,7 @@
+ namespace Stroika::Foundation::Containers {
+ 
+ // https://stroika.atlassian.net/browse/STK-535
++#define qIterationOnCopiedContainer_ThreadSafety_Buggy 0
+ #ifndef qIterationOnCopiedContainer_ThreadSafety_Buggy
+ #define qIterationOnCopiedContainer_ThreadSafety_Buggy 1
+ #endif
+diff --git a/Tests/39/Test.cpp b/Tests/39/Test.cpp
+index 891bc7091..08a59e34c 100644
+--- a/Tests/39/Test.cpp
++++ b/Tests/39/Test.cpp
+@@ -543,8 +543,8 @@ namespace {
+             template <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename EXAMINE_FUNCTION, typename ITER_FUNCTION>
+             void TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, EXAMINE_FUNCTION examineF, ITER_FUNCTION iterF)
+             {
+-                static const size_t     kIOverallRepeatCount_               = (qDebug and Debug::IsRunningUnderValgrind ()) ? 10 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 50 : 1000);
+-                static const int        kInnterConstantForHowMuchStuffTodo_ = (qDebug and Debug::IsRunningUnderValgrind ()) ? 10 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 100 : 1000);
++                static const size_t     kIOverallRepeatCount_               = 15; // (qDebug and Debug::IsRunningUnderValgrind ()) ? 10 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 50 : 1000);
++                static const int        kInnterConstantForHowMuchStuffTodo_ = 15; // (qDebug and Debug::IsRunningUnderValgrind ()) ? 10 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 100 : 1000);
+                 Synchronized<CONTAINER> syncObj;
+                 Thread::Ptr             adderThread = Thread::New (
+                     [&syncObj, &addF]() {
+@@ -555,6 +555,7 @@ namespace {
+                         }
+                     },
+                     String{L"adderThread"});
++#if 0
+                 Thread::Ptr removerThread = Thread::New (
+                     [&syncObj, &remF]() {
+                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
+@@ -572,6 +573,7 @@ namespace {
+                         }
+                     },
+                     String{L"examineThread"});
++#endif
+                 Thread::Ptr walkerThread = Thread::New (
+                     [&syncObj, &iterF]() {
+                         constexpr size_t kMultiplierCuzThisTooFast_{7};
+@@ -679,14 +681,15 @@ namespace {
+                             */
+                             auto HACK_WORKAROUND_SERIOUS_BUG = syncObj.cget ();
+ #endif
+-                            for (auto j : syncObj.load ()) {
++                            auto tmp = syncObj.load ();
++                            for (auto j : tmp) {
+                                 iterF (j);
+                             }
+                         }
+                     },
+                     String{L"walkerThread"});
+-                Thread::Start ({adderThread, removerThread, examineThread, walkerThread});
+-                Thread::WaitForDone ({adderThread, removerThread, examineThread, walkerThread});
++                Thread::Start ({adderThread, /*removerThread, examineThread,*/ walkerThread});
++                Thread::WaitForDone ({adderThread, /*removerThread, examineThread,*/ walkerThread});
+             }
+         }
+         void DoIt ()
+@@ -702,6 +705,7 @@ namespace {
+                 [](Sequence<int>* c, [[maybe_unused]] int i) { Lambda_Arg_Unused_BWA (i); size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
+                 [](const Sequence<int>* c) { [[maybe_unused]] size_t n = Memory::ValueOrDefault (c->IndexOf (3)); },
+                 [&cnt](int v) { cnt += v; });
++#if 0
+             Private_::TestBasics_<Set<int>> (
+                 [](Set<int>* c, int i) { c->Add (i); },
+                 [](Set<int>* c, int i) { c->Remove (i); },
+@@ -712,6 +716,7 @@ namespace {
+                 [](Mapping<int, Time::DateTime>* c, int i) { c->Remove (i); },
+                 [](const Mapping<int, Time::DateTime>* c) { [[maybe_unused]] bool b = c->ContainsKey (5); },
+                 [&cnt](KeyValuePair<int, Time::DateTime> v) { cnt += v.fKey; });
++#endif
+         }
+     }
+ }
+@@ -729,6 +734,7 @@ namespace {
+             VerifyTestResult (runningThreads.size () == 0);
+         });
+ #endif
++#if 0
+         AssignAndIterateAtSameTimeTest_1_::DoIt ();
+         IterateWhileMutatingContainer_Test_2_::DoIt ();
+         Test3_SynchronizedOptional_::DoIt_ ();
+@@ -738,6 +744,7 @@ namespace {
+         Test7_Synchronized_::DoIt ();
+         Test8_AssertExternallySynchronized_::DoIt ();
+         Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ();
++#endif
+         Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ();
+     }
+ }
