@@ -43,9 +43,25 @@ my $TOKENFILE = $ENV{GITHUB_TOKEN_FILE} // "$ENV{HOME}/.stroika-github-token";
 my $MAXBODY   = 64000;    # GitHub's limit is 65536; leave room for the metadata header
 my $SLEEP     = 1.2;      # be kind to the secondary content-creation rate limit
 
-my ($go, $only, $limit, $labels_only, $create_labels) = (0, undef, undef, 0, 0);
+# The .md renderings link attachments RELATIVELY ('](attachments/STK-0647/foo.txt)'), which resolves
+# inside the repo but NOT in a GitHub issue body - there is no base to resolve against there, so the link
+# silently goes nowhere. Rewrite to absolute blob URLs.
+#
+# Branch, not the default branch, on purpose: the repo's default is v3-Release, but Issues/ currently
+# exists only on v3-Dev, so a default-branch link would 404 until the next promotion. NB these links also
+# require the attachments to be PUSHED - committing locally is not enough.
+my $LINK_BRANCH = $ENV{GITHUB_LINK_BRANCH} // 'v3-Dev';
+sub absolutize_links {
+    my ($md) = @_;
+    my $base = "https://github.com/$REPO/blob/$LINK_BRANCH/Issues/Archive/attachments/";
+    $md =~ s{\]\(attachments/}{]($base}g;
+    return $md;
+}
+
+my ($go, $only, $limit, $labels_only, $create_labels, $patch_bodies) = (0, undef, undef, 0, 0, 0);
 GetOptions ('go' => \$go, 'only=s' => \$only, 'limit=i' => \$limit,
-            'labels' => \$labels_only, 'create-labels' => \$create_labels)
+            'labels' => \$labels_only, 'create-labels' => \$create_labels,
+            'patch-bodies' => \$patch_bodies)
     or die "bad options\n";
 
 # ---------------------------------------------------------------- label mapping (REVIEW THIS)
@@ -139,7 +155,8 @@ for my $jf (sort glob "$ARCHIVE/*.json") {
     (my $mdf = $jf) =~ s/\.json$/.md/;
     my $md = '';
     if (-f $mdf) { open my $m, '<:raw', $mdf or die $!; $md = do { local $/; <$m> }; close $m }
-    $md =~ s/^\#[^\n]*\n//;    # the H1 becomes the GitHub title
+    $md =~ s/^\#[^\n]*\n//;          # the H1 becomes the GitHub title
+    $md = absolutize_links ($md);    # relative attachment links do not resolve in an issue body
     push @issues, {key => $j->{key}, fields => $fl, md => $md};
 }
 # numeric order, so GitHub numbers ascend with STK numbers
