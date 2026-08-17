@@ -106,10 +106,11 @@ my $MARKER_LABEL = 'jira-import';    # so the whole batch stays identifiable and
 sub type_label     { 'type::'     . $_[0] }
 sub priority_label { 'priority::' . $_[0] }
 
-# Medium is JIRA's DEFAULT priority - 510 of 1025 issues carry it, which means it was never set rather
-# than deliberately chosen. Labelling half the tracker with it adds clutter and no information; the real
-# value is still recorded in the jira-import metadata comment either way. Set to 0 to label them anyway.
-my $SKIP_DEFAULT_PRIORITY = 1;
+# Label EVERY priority, including Medium. Medium happens to be JIRA's default value, and it is tempting
+# to treat it as "never set" and drop it as noise - that was wrong. LGP assigns it deliberately, so the
+# label carries real signal: this issue HAS been evaluated and judged middling. An unlabelled issue means
+# nobody looked, which is a different and useful state to be able to see. Do not re-add the skip.
+my $SKIP_DEFAULT_PRIORITY = 0;
 my $DEFAULT_PRIORITY      = 'Medium';
 
 # ---------------------------------------------------------------- http
@@ -204,6 +205,47 @@ if ($labels_only or $create_labels) {
     exit 0;
 }
 
+# ---------------------------------------------------------------- title / body
+# Shared by the create path and by --patch-bodies, so a change to the body format cannot apply to new
+# issues but silently not to re-patched ones.
+sub build_title {
+    my ($i) = @_;
+    my $t = sprintf '[%s] %s', $i->{key}, ($i->{fields}{summary} // '(no summary)');
+    return length $t > 253 ? substr ($t, 0, 250) . '...' : $t;
+}
+sub build_body {
+    my ($i) = @_;
+    my $fl = $i->{fields};
+    # everything GitHub has no field for, kept machine-readable so GitHubProjectSync.pl can read it back
+    my %meta = (
+        key         => $i->{key},
+        created     => $fl->{created},
+        updated     => $fl->{updated},    # last modified BEFORE import - GitHub stamps its own dates
+        status      => $fl->{status} ? $fl->{status}{name} : undef,
+        resolution  => $fl->{resolution} ? $fl->{resolution}{name} : undef,
+        resolved    => $fl->{resolutiondate},
+        type        => $fl->{issuetype} ? $fl->{issuetype}{name} : undef,
+        priority    => $fl->{priority} ? $fl->{priority}{name} : undef,
+        reporter    => $fl->{reporter} ? ($fl->{reporter}{displayName} // undef) : undef,
+        assignee    => $fl->{assignee} ? ($fl->{assignee}{displayName} // undef) : undef,
+        components  => [map { $_->{name} } @{$fl->{components} || []}],
+        fixVersions => [map { $_->{name} } @{$fl->{fixVersions} || []}],
+        jiraLabels  => $fl->{labels} || [],
+        links       => [map { {type => $_->{type}{name}, key => ($_->{outwardIssue} || $_->{inwardIssue} || {})->{key}} }
+                        @{$fl->{issuelinks} || []}],
+        attachments => [map { $_->{filename} } @{$fl->{attachment} || []}],
+    );
+    my $metaline = '<!-- jira-import: ' . JSON::PP->new->canonical->encode (\%meta) . ' -->';
+    my $body     = $metaline . "\n\n" . $i->{md};
+    if (length $body > $MAXBODY) {
+        my $keep = $MAXBODY - length ($metaline) - 200;
+        $body = $metaline . "\n\n" . substr ($i->{md}, 0, $keep)
+              . "\n\n---\n*Truncated for GitHub's issue body limit. Full text: `$ARCHIVE/"
+              . sprintf ('%s-%04d', ($i->{key} =~ /^([A-Z]+)/)[0], ($i->{key} =~ /(\d+)/)[0]) . ".md` in this repo.*\n";
+    }
+    return $body;
+}
+
 # ---------------------------------------------------------------- resume map
 my %done;
 if (-f $MAPFILE) {
@@ -214,6 +256,35 @@ if (-f $MAPFILE) {
 print "already imported (from $MAPFILE): ", scalar keys %done, "\n" if %done;
 
 load_token () if $go;
+
+# ---------------------------------------------------------------- --patch-bodies
+# Rewrite the body of issues ALREADY imported, from the current .md. Needed whenever the renderer
+# improves after an import - eg the attachment links, which did not exist when the first batch went in.
+# Bodies only: labels and state are left alone, so this is safe to re-run.
+if ($patch_bodies) {
+    my %bykey = map { $_->{key} => $_ } @issues;
+    my $p = 0;
+    for my $key (sort { ($a =~ /(\d+)/)[0] <=> ($b =~ /(\d+)/)[0] } keys %done) {
+        last if defined $limit and $p >= $limit;
+        next if $only and $key ne $only;
+        my $i = $bykey{$key} or do { warn "  $key: in the map but not in the archive\n"; next };
+        $p++;
+        my $num  = $done{$key};
+        my $body = build_body ($i);
+        if (!$go) {
+            my $n = () = $body =~ m{blob/$LINK_BRANCH/Issues/Archive/attachments}g;
+            printf "[dry] %-9s #%-4d %6d chars, %d attachment link(s)\n", $key, $num, length $body, $n;
+            next;
+        }
+        api ('PATCH', "/repos/$REPO/issues/$num", {body => $body});
+        my $n = () = $body =~ m{blob/$LINK_BRANCH/Issues/Archive/attachments}g;
+        printf "  %-9s #%-4d patched (%d chars, %d attachment link(s))\n", $key, $num, length $body, $n;
+        select undef, undef, undef, $SLEEP;
+    }
+    print $go ? "\npatched $p body(s)\n" : "\nDRY RUN - $p body(s) would be patched. Re-run with --go.\n";
+    exit 0;
+}
+
 my %have_label;
 if ($go) {
     for my $page (1 .. 5) {
@@ -230,37 +301,8 @@ for my $i (@issues) {
     my $fl = $i->{fields};
     $n++;
 
-    my $title = sprintf '[%s] %s', $i->{key}, ($fl->{summary} // '(no summary)');
-    $title = substr ($title, 0, 250) . '...' if length $title > 253;
-
-    # everything GitHub has no field for, kept machine-readable
-    my %meta = (
-        key        => $i->{key},
-        created    => $fl->{created},
-        updated    => $fl->{updated},                       # last modified BEFORE import - the staleness hint
-        status     => $fl->{status} ? $fl->{status}{name} : undef,
-        resolution => $fl->{resolution} ? $fl->{resolution}{name} : undef,
-        resolved   => $fl->{resolutiondate},
-        type       => $fl->{issuetype} ? $fl->{issuetype}{name} : undef,
-        priority   => $fl->{priority} ? $fl->{priority}{name} : undef,
-        reporter   => $fl->{reporter} ? ($fl->{reporter}{displayName} // undef) : undef,
-        assignee   => $fl->{assignee} ? ($fl->{assignee}{displayName} // undef) : undef,
-        components => [map { $_->{name} } @{$fl->{components} || []}],
-        fixVersions=> [map { $_->{name} } @{$fl->{fixVersions} || []}],
-        jiraLabels => $fl->{labels} || [],
-        links      => [map { {type => $_->{type}{name}, key => ($_->{outwardIssue} || $_->{inwardIssue} || {})->{key}} }
-                       @{$fl->{issuelinks} || []}],
-        attachments=> [map { $_->{filename} } @{$fl->{attachment} || []}],
-    );
-    my $metaline = '<!-- jira-import: ' . JSON::PP->new->canonical->encode (\%meta) . ' -->';
-
-    my $body = $metaline . "\n\n" . $i->{md};
-    if (length $body > $MAXBODY) {
-        my $keep = $MAXBODY - length ($metaline) - 200;
-        $body = $metaline . "\n\n" . substr ($i->{md}, 0, $keep)
-              . "\n\n---\n*Truncated for GitHub's issue body limit. Full text: `$ARCHIVE/"
-              . sprintf ('%s-%04d', ($i->{key} =~ /^([A-Z]+)/)[0], ($i->{key} =~ /(\d+)/)[0]) . ".md` in this repo.*\n";
-    }
+    my $title = build_title ($i);
+    my $body  = build_body ($i);
 
     my @lab = ($MARKER_LABEL);
     push @lab, $COMPONENT_LABEL{$_->{name}} for grep { $COMPONENT_LABEL{$_->{name}} } @{$fl->{components} || []};
