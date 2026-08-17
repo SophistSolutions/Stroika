@@ -35,10 +35,21 @@ my $REPO    = $ENV{GITHUB_REPO} // 'SophistSolutions/Stroika';
 my $MAPFILE = 'Issues/STK-to-GitHub.tsv';
 my $TF      = $ENV{GITHUB_TOKEN_FILE} // "$ENV{HOME}/.stroika-github-project-token";
 
-my ($projnum, $owner, $limit, $go, $is_org) = (undef, 'SophistSolutions', undef, 0, 1);
+my ($projnum, $owner, $limit, $go, $is_org, $overwrite) = (undef, 'SophistSolutions', undef, 0, 1, 0);
 GetOptions ('project=i' => \$projnum, 'owner=s' => \$owner, 'limit=i' => \$limit, 'go' => \$go,
-            'org!' => \$is_org)
+            'org!' => \$is_org, 'overwrite' => \$overwrite)
     or die "bad options\n";
+
+# Keys already synced. GitHub is the live tracker now, so re-setting fields from the frozen JIRA metadata
+# would revert any Priority changed by hand in the project. Recording what has been synced means a re-run
+# only touches NEW issues - which is what you want after each batch of the import.
+my $SYNCED = 'Issues/project-synced.tsv';
+my %synced;
+if (-f $SYNCED) {
+    open my $s, '<', $SYNCED or die $!;
+    while (<$s>) { chomp; $synced{$_} = 1 if length }
+    close $s;
+}
 die "--project <number> required\n" unless $projnum;
 # A project is owned by an ORG or a USER, and they are different GraphQL roots - there is no lookup that
 # covers both. Default to org (--noorg for a user-owned one).
@@ -99,6 +110,7 @@ my $n = 0;
 for my $r (@rows) {
     my ($key, $num) = @$r;
     last if defined $limit and $n >= $limit;
+    if ($synced{$key} and not $overwrite) { next }    # already done - do not revert hand edits
     $n++;
 
     # read the metadata back out of the issue body - the issue stays the source of truth
@@ -134,6 +146,9 @@ for my $r (@rows) {
                 fieldId:"$F{$s->[0]}{id}", value:{$s->[1]}}) { projectV2Item { id } } }});
         select undef, undef, undef, 0.25;
     }
+    open my $sf, '>>', $SYNCED or die $!;
+    print {$sf} "$key\n";
+    close $sf;
     printf "  %-9s #%-4d -> item set (%d field(s))\n", $key, $num, scalar @sets;
 }
 print $go ? "\nsynced $n issue(s)\n" : "\nDRY RUN - $n issue(s). Re-run with --go.\n";

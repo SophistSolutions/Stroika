@@ -58,10 +58,11 @@ sub absolutize_links {
     return $md;
 }
 
-my ($go, $only, $limit, $labels_only, $create_labels, $patch_bodies) = (0, undef, undef, 0, 0, 0);
+my ($go, $only, $limit, $labels_only, $create_labels, $patch_bodies, $clobber_ok)
+    = (0, undef, undef, 0, 0, 0, 0);
 GetOptions ('go' => \$go, 'only=s' => \$only, 'limit=i' => \$limit,
             'labels' => \$labels_only, 'create-labels' => \$create_labels,
-            'patch-bodies' => \$patch_bodies)
+            'patch-bodies' => \$patch_bodies, 'i-know-this-overwrites' => \$clobber_ok)
     or die "bad options\n";
 
 # ---------------------------------------------------------------- label mapping (REVIEW THIS)
@@ -262,6 +263,13 @@ load_token () if $go;
 # improves after an import - eg the attachment links, which did not exist when the first batch went in.
 # Bodies only: labels and state are left alone, so this is safe to re-run.
 if ($patch_bodies) {
+    # GitHub is the LIVE tracker now, so this is destructive: it replaces the body wholesale from the .md,
+    # discarding anything edited in GitHub since the import. Harmless during the initial load, not after.
+    if ($go and not $clobber_ok) {
+        die "REFUSING: --patch-bodies overwrites issue bodies from the archive, discarding any edits made\n"
+          . "in GitHub since the import. That was safe during the initial load; it is not any more.\n"
+          . "Re-run with --i-know-this-overwrites if you are sure.\n";
+    }
     my %bykey = map { $_->{key} => $_ } @issues;
     my $p = 0;
     for my $key (sort { ($a =~ /(\d+)/)[0] <=> ($b =~ /(\d+)/)[0] } keys %done) {

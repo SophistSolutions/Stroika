@@ -2,19 +2,27 @@
 
 ## Reporting a bug, or asking a question
 
-Stroika's live issue tracker is **JIRA**, at <https://stroika.atlassian.net/browse/STK>. It is
-world-readable without an account, so you can search existing issues before filing.
+**Use [GitHub Issues](https://github.com/SophistSolutions/Stroika/issues) on this repository.** That is
+where Stroika's issues live and where all new work is tracked.
 
-In-source references to issues look like `@todo http://stroika-bugs.sophists.com/browse/STK-972`.
-That host is a Sophist Solutions redirect to the tracker, which is why it - rather than the
-`atlassian.net` hostname - is what appears in code comments. The indirection means the tracker can
-move without touching the ~180 links in the source tree.
+The [Stroika Issues project](https://github.com/SophistSolutions/Stroika/projects) is a view over those
+same issues carrying fields GitHub Issues has no room for - notably a sortable Priority. Issues are
+filed and discussed on the Issues tab; the project is for ordering them.
 
-GitHub Issues on this repository is also enabled, and is the lower-friction path if you do not have
-(and do not want) an Atlassian account.
+### JIRA is retired
 
-> If the tracker ever moves, **this file and the redirect are the two things to update** - nothing
-> else in the tree names the tracker directly.
+Stroika used JIRA (`stroika.atlassian.net`, project `STK`) until 2026-08. It is **no longer used** - do
+not file there, and treat anything it still shows as frozen as of 2026-08-16. Its 1025 issues were
+exported into `Archive/` here and imported into GitHub Issues; `STK-to-GitHub.tsv` maps the old keys to
+the new issue numbers.
+
+In-source references still look like `@todo http://stroika-bugs.sophists.com/browse/STK-972`. That host
+is a Sophist Solutions redirect, which is why it - rather than any tracker's own hostname - is what
+appears in ~180 code comments: the tracker can move without editing 122 source files. It should now
+resolve `STK-NNN` to the corresponding GitHub issue, per `STK-to-GitHub.tsv`.
+
+> If the tracker moves again, **this file and the redirect are the two things to update** - nothing else
+> in the tree names the tracker directly.
 
 ## Archive/
 
@@ -61,11 +69,20 @@ across 2025-2026) that is kilobytes a year.
 - A JIRA admin Backup Manager zip (Site settings -> System -> Backup manager, no API token needed) is
   still the only fully self-contained archive, and worth taking once.
 
-## Migration to GitHub Issues (in progress)
+## Migration to GitHub Issues
 
-The archive above is history. New work is moving to **GitHub Issues** on this repository, because the
-JIRA tracker had become unreachable in practice - four issue updates across 2025-2026, and no outside
-reporter is going to create an Atlassian account to file a bug.
+The archive above is history; GitHub Issues is now the live tracker. JIRA had become unreachable in
+practice - four issue updates across 2025-2026, and no outside reporter was going to create an Atlassian
+account to file a bug.
+
+> **THE IMPORT SCRIPTS ARE ONE-WAY, AND RE-RUNNING TWO OF THEM DESTROYS WORK.** They were written to load
+> an empty tracker. Now that GitHub is where work actually happens:
+> - `GitHubImport.pl --patch-bodies` overwrites an issue's body from the `.md`. Any edit made in GitHub is
+>   lost. It requires `--i-know-this-overwrites` for that reason.
+> - `GitHubProjectSync.pl` re-sets project fields from the JIRA metadata, so a Priority you changed by
+>   hand reverts. It skips items whose fields are already set unless given `--overwrite`.
+>
+> Plain `GitHubImport.pl --go` is always safe: it skips any key already in `STK-to-GitHub.tsv`.
 
 `Scripts/GitHubImport.pl` imports the archive into GitHub Issues: title `[STK-972] <summary>`, the
 `.md` rendering as the body, a machine-readable `<!-- jira-import: {...} -->` block for everything
