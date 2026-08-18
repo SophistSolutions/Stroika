@@ -134,7 +134,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      * 
      *  \note - each of these - if they throw - they throw a subtype of ClientErrorException
      * 
-     *  \note This should be integrated with JSON-schema validation - https://stroika.atlassian.net/browse/STK-1008
+     *  \note This should be integrated with JSON-schema validation - https://github.com/SophistSolutions/Stroika/issues/1140 (STK-1008)
      */
     struct ExtractArgumentsAsVariantValue {
         /**

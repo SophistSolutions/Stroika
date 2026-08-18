@@ -58,7 +58,7 @@ String DerivedKey::ToString () const
 namespace {
     pair<BLOB, BLOB> mkWinCryptDeriveKey_ (size_t keyLen, [[maybe_unused]] DigestAlgorithm digestAlgorithm, const BLOB& passwd)
     {
-        // @todo http://stroika-bugs.sophists.com/browse/STK-192
+        // @todo https://github.com/SophistSolutions/Stroika/issues/327 (STK-192)
         /*
          *  From http://msdn2.microsoft.com/en-us/library/aa379916.aspx
          *

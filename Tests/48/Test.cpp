@@ -426,7 +426,7 @@ namespace {
                 x = x;
             }
         }
-        // note - see http://stroika-bugs.sophists.com/browse/STK-556 - we DON'T support Optional self-move
+        // note - see https://github.com/SophistSolutions/Stroika/issues/692 (STK-556) - we DON'T support Optional self-move
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");

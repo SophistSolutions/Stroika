@@ -903,7 +903,7 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
             return ln.As<Sequence<VariantValue>> () <=> rn.As<Sequence<VariantValue>> ();
         }
         case VariantValue::eMap: {
-            //http://stroika-bugs.sophists.com/browse/STK-985
+            //https://github.com/SophistSolutions/Stroika/issues/1117 (STK-985)
             //
             // same iff all elts same (importantly after normalizing which sorts)
             // @todo find way to make this compare work, but for now, just hack and re-create sorted mapping

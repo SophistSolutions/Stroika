@@ -520,7 +520,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
     template <typename ELEMENT_TYPE>
     inline auto New (Options options) -> Ptr<ELEMENT_TYPE>
     {
-        // @todo - could do better on NullLock stuff \see http://stroika-bugs.sophists.com/browse/STK-584
+        // @todo - could do better on NullLock stuff \see https://github.com/SophistSolutions/Stroika/issues/720 (STK-584)
         if (options.fSeekable) {
             return options.fInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized
                        ? Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::SeekableRep_<ELEMENT_TYPE, recursive_mutex>> ()}

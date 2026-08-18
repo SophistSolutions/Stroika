@@ -287,7 +287,7 @@ namespace {
         }
 #if 0
             {
-                // http://stroika-bugs.sophists.com/browse/STK-812
+                // https://github.com/SophistSolutions/Stroika/issues/944 (STK-812)
                 // trying to figure out how to do...
                 unsigned int totalCallsCount{};
                 Memoizer     memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};

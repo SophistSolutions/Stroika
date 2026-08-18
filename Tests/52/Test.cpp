@@ -1156,7 +1156,7 @@ namespace {
 namespace {
     namespace JSONTests_ {
         /*
-         *  Tests based on http://stroika-bugs.sophists.com/browse/STK-781
+         *  Tests based on https://github.com/SophistSolutions/Stroika/issues/913 (STK-781)
          *  and complaints on reddit (2022-12-13) when I posted there without any benchmark test results.
          *
          *  Test lifted/comparable to 

@@ -22,7 +22,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-446 - AssertExternallySynchronizedChecker
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/580 (STK-446) - AssertExternallySynchronizedChecker
  *
  *      @todo   Consider if we want to make the promise currently defined below in Equals()
  *              about iterating two originally equal iterators. The trouble is - this doesn

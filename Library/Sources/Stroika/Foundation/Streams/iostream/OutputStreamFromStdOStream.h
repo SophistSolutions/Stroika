@@ -17,7 +17,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-606 - Implement StdIStreamFromInputStream and StdOStreamFromOutputStream classes
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/742 (STK-606) - Implement StdIStreamFromInputStream and StdOStreamFromOutputStream classes
  */
 
 namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {

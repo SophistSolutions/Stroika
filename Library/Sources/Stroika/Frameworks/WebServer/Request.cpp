@@ -118,7 +118,7 @@ Streams::InputStream::Ptr<byte> Request::GetBodyStream ()
              */
             fBodyInputStream_ = MemoryStream::New<byte> ();
         }
-        // @todo See http://stroika-bugs.sophists.com/browse/STK-758 - zip compression support
+        // @todo See https://github.com/SophistSolutions/Stroika/issues/891 (STK-758) - zip compression support
     }
     return fBodyInputStream_;
 }

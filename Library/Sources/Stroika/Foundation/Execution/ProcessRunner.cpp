@@ -972,7 +972,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
                             if (bytesWritten == 0) {
                                 // don't busy wait, but not clear how long to wait? Maybe should only sleep if readSoNotBlocking above returns no change
                                 //
-                                // OK - this is clearly wrong - @see http://stroika-bugs.sophists.com/browse/STK-589 - Fix performance of ProcessRunner - use select / poll instead of sleep when write to pipe returns 0
+                                // OK - this is clearly wrong - @see https://github.com/SophistSolutions/Stroika/issues/725 (STK-589) - Fix performance of ProcessRunner - use select / poll instead of sleep when write to pipe returns 0
                                 //
                                 Sleep (1ms);
                             }

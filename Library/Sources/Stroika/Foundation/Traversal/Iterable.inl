@@ -1139,7 +1139,7 @@ namespace Stroika::Foundation::Traversal {
                 if (s->empty ()) [[unlikely]] {
                     return nullopt;
                 }
-                return *std::min_element (s->begin (), s->end ());
+                return *min_element (s->begin (), s->end ());
             }
         }
         return Reduce<T> ([] (ArgByValueType<T> lhs, ArgByValueType<T> rhs) -> T { return min (lhs, rhs); });
@@ -1170,7 +1170,7 @@ namespace Stroika::Foundation::Traversal {
                 if (s->empty ()) [[unlikely]] {
                     return nullopt;
                 }
-                return *std::max_element (s->begin (), s->end ());
+                return *max_element (s->begin (), s->end ());
             }
         }
         return Reduce<T> ([] (ArgByValueType<T> lhs, ArgByValueType<T> rhs) -> T { return max (lhs, rhs); });

@@ -50,7 +50,7 @@ using Containers::Set;
 #endif
 
 // Use this for POSIX, since condition_variables aren't safe on POSIX (signals)
-// http://stroika-bugs.sophists.com/browse/STK-617
+// https://github.com/SophistSolutions/Stroika/issues/753 (STK-617)
 // https://stackoverflow.com/questions/31117959/waking-up-thread-from-signal-handler
 // -- LGP 2017-09-10
 #ifndef qConditionVariablesSafeInAsyncSignalHanlders
@@ -401,7 +401,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         else {
             l->Add (signal, directHandlers);
         }
-        // @todo see http://stroika-bugs.sophists.com/browse/STK-465
+        // @todo see https://github.com/SophistSolutions/Stroika/issues/599 (STK-465)
         Require (0 <= signal and signal < static_cast<SignalID> (std::size (fDirectSignalHandlersCache_)));
         vector<function<void (SignalID)>> shs;
         for (const SignalHandler& sh : l->LookupValue (signal)) {
@@ -490,7 +490,7 @@ void SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler handle
     }
 }
 
-// use no_sanitize(thread) to workaround http://stroika-bugs.sophists.com/browse/STK-677
+// use no_sanitize(thread) to workaround https://github.com/SophistSolutions/Stroika/issues/812 (STK-677)
 Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 {
     /*
@@ -614,12 +614,12 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
         /*
          *  Pretty sure this all allocates no memory, so should be safe/lock free
          *
-         *  @todo see http://stroika-bugs.sophists.com/browse/STK-465
+         *  @todo see https://github.com/SophistSolutions/Stroika/issues/599 (STK-465)
          *
          *  Poor man's interlock/mutex, which avoids any memory allocation/stdc++ locks
          *
          *  \note If you see a thread-sanitizer warning here - see 
-         *          http://stroika-bugs.sophists.com/browse/STK-647
+         *          https://github.com/SophistSolutions/Stroika/issues/128 (STK-647)
          */
         Require (0 <= signal and signal < static_cast<SignalID> (std::size (SHR.fDirectSignalHandlersCache_)));
     Again:

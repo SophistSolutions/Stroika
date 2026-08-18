@@ -810,7 +810,7 @@ namespace {
             EXPECT_EQ (a0, 1);
             EXPECT_EQ (a1, 1);
             // Will fail to compile
-            //a[0]   = 3; --- @todo - @see and maybe use http://stroika-bugs.sophists.com/browse/STK-583 AssertDoesntCompile
+            //a[0]   = 3; --- @todo - @see and maybe use https://github.com/SophistSolutions/Stroika/issues/719 (STK-583) AssertDoesntCompile
             a (0) = 3; // updates only work using ()
             EXPECT_EQ (a (0), 3);
             EXPECT_EQ (a[0], 3);
@@ -822,7 +822,7 @@ namespace {
             String                  a0 = a[0];
             [[maybe_unused]] String a1 = a (0); // can use either
             // Should fail to compile
-            //a[0]   = "3"; --- @todo - @see and maybe use http://stroika-bugs.sophists.com/browse/STK-583 AssertDoesntCompile
+            //a[0]   = "3"; --- @todo - @see and maybe use https://github.com/SophistSolutions/Stroika/issues/719 (STK-583) AssertDoesntCompile
             a (0) = "3"; // updates only work using ()
             EXPECT_EQ (a (0), "3");
             EXPECT_EQ (a[0], "3");
@@ -836,7 +836,7 @@ namespace {
             EXPECT_TRUE (a (0).Contains ("3")); // can call '.' methods on result of a(n)
         }
         {
-            // https://stroika.atlassian.net/browse/STK-1024
+            // https://github.com/SophistSolutions/Stroika/issues/1151 (STK-1024)
             // Not sure why - but cannot get 'Format' stuff working here - minor - but an issue
             Sequence<String> a;
             a += "1";
@@ -844,11 +844,11 @@ namespace {
             DbgTrace ("a[0]={}"_f, (String)a (0));
             auto ooo1 = a (0);
             auto oo   = Characters::ToString (move (ooo1));
-            //DbgTrace ("a[0]={}"_f, a (0));    // one case didnt work!!! - https://stroika.atlassian.net/browse/STK-1024
+            //DbgTrace ("a[0]={}"_f, a (0));    // one case didnt work!!! - https://github.com/SophistSolutions/Stroika/issues/1151 (STK-1024)
             Sequence<int> b;
             b += 1;
             DbgTrace ("b[0]={}"_f, b[0]);
-            //DbgTrace ("b[0]={}"_f, b (0));    https://stroika.atlassian.net/browse/STK-1024 doesnt work on clang/macos
+            //DbgTrace ("b[0]={}"_f, b (0));    https://github.com/SophistSolutions/Stroika/issues/1151 (STK-1024) doesnt work on clang/macos
         }
     }
 }

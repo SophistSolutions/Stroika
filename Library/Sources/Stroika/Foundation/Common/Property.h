@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Common {
      *  \see For more information on this topic, see 
      *       https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t?noredirect=1#comment116600269_65940393
      *
-     *  \see http://stroika-bugs.sophists.com/browse/STK-939 - probably LOSE This define and REQUIRE its always zero, so can COPY properties safely.
+     *  \see https://github.com/SophistSolutions/Stroika/issues/1071 (STK-939) - probably LOSE This define and REQUIRE its always zero, so can COPY properties safely.
      */
 #ifndef qStroika_Foundation_Common_Property_EmbedThisInProperties
 #if qCompilerAndStdLib_function_dependency_too_complex_Buggy

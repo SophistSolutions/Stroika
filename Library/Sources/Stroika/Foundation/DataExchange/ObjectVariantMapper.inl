@@ -130,7 +130,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper)
     {
-        // See http://stroika-bugs.sophists.com/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
+        // See https://github.com/SophistSolutions/Stroika/issues/737 (STK-601) - properly/safely map the types, or do the more performant cast of the function objects
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
             return [fromObjectMapper] (const ObjectVariantMapper& mapper, const T* objOfType) -> VariantValue {
                 return fromObjectMapper (mapper, objOfType);
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper)
     {
-        // See http://stroika-bugs.sophists.com/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
+        // See https://github.com/SophistSolutions/Stroika/issues/737 (STK-601) - properly/safely map the types, or do the more performant cast of the function objects
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
             return [toObjectMapper] (const ObjectVariantMapper& mapper, const VariantValue& d, T* into) -> void {
                 toObjectMapper (mapper, d, into);
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::DataExchange {
     inline ObjectVariantMapper::FromGenericObjectMapperType
     ObjectVariantMapper::TypeMappingDetails::mkGenericFromMapper_ (const FromObjectMapperType<T>& fromObjectMapper)
     {
-        // See http://stroika-bugs.sophists.com/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
+        // See https://github.com/SophistSolutions/Stroika/issues/737 (STK-601) - properly/safely map the types, or do the more performant cast of the function objects
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
             return [fromObjectMapper] (const ObjectVariantMapper& mapper, const void* objOfType) -> VariantValue {
                 return fromObjectMapper (mapper, reinterpret_cast<const T*> (objOfType));
@@ -657,7 +657,7 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObjOfTypeT = nullopt;
             }
             else {
-                // SEE http://stroika-bugs.sophists.com/browse/STK-910
+                // SEE https://github.com/SophistSolutions/Stroika/issues/1042 (STK-910)
                 // fix here - I KNOW I have something there, but how to construct
                 *intoObjOfTypeT = mapper.ToObject<T> (d);
             }
@@ -686,7 +686,7 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObjOfTypeT = nullopt;
             }
             else {
-                // SEE http://stroika-bugs.sophists.com/browse/STK-910
+                // SEE https://github.com/SophistSolutions/Stroika/issues/1042 (STK-910)
                 // fix here - I KNOW I have something there, but how to construct
                 T tmp{};
                 options.fTMapper->ToObjectMapper<T> () (mapper, d, &tmp);
@@ -695,7 +695,7 @@ namespace Stroika::Foundation::DataExchange {
         };
         return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (optional<T>)};
     }
-    //  http://stroika-bugs.sophists.com/browse/STK-910
+    //  https://github.com/SophistSolutions/Stroika/issues/1042 (STK-910)
     template <>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<IO::Network::CIDR>*);
     template <typename T, typename TRAITS>
@@ -887,7 +887,7 @@ namespace Stroika::Foundation::DataExchange {
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
     {
         using namespace Characters::Literals;
-        // @todo - see http://stroika-bugs.sophists.com/browse/STK-581 - to switch from generic to 'T' based mapper.
+        // @todo - see https://github.com/SophistSolutions/Stroika/issues/717 (STK-581) - to switch from generic to 'T' based mapper.
         auto fromObjectMapper = [] (const ObjectVariantMapper& mapper, const void* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             FromObjectMapperType<T> valueMapper{mapper.FromObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0

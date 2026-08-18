@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Characters {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   Design note - mutability vs. immutability
-     *          http://stroika-bugs.sophists.com/browse/STK-968 (see about deleting deprecated APIs and remnants of mutability) and c_str()
+     *          https://github.com/SophistSolutions/Stroika/issues/1100 (STK-968) (see about deleting deprecated APIs and remnants of mutability) and c_str()
      * 
      *          String objects are IMMUTABLE (except for the OBVIOUS meaning case of operator= being allowed).
      * 
@@ -449,7 +449,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  @aliases GetCharAt (size_t i) const;
          * 
-         *  \note returns const due to https://stroika.atlassian.net/browse/STK-376 - so cannot accidentally have illusion of assignment being legal
+         *  \note returns const due to https://github.com/SophistSolutions/Stroika/issues/510 (STK-376) - so cannot accidentally have illusion of assignment being legal
          */
         nonvirtual const Character operator[] (size_t i) const noexcept;
 
@@ -1654,8 +1654,8 @@ namespace Stroika::Foundation::Characters {
         {
             return Character::AsASCIIQuietly (span<const wchar_t>{fromStart, fromEnd}, into);
         }
-        [[deprecated (
-            "Since Stroika v3.0d1 due to http://stroika-bugs.sophists.com/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t*
+        [[deprecated ("Since Stroika v3.0d1 due to https://github.com/SophistSolutions/Stroika/issues/1097 (STK-965) - NOT "
+                      "IMPLEMENTED")]] nonvirtual const wchar_t*
                                                                            data () const;
         [[deprecated ("Since Stroika v3.0d8 - use RemoveFirstIf")]] String Remove (Character c) const
         {

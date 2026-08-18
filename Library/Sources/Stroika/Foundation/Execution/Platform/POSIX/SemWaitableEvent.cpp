@@ -58,7 +58,7 @@ void SemWaitableEvent::Wait ()
     Execution::ThrowPOSIXErrNoIfNegative (s);
 }
 
-// use no_sanitize(thread) to workaround http://stroika-bugs.sophists.com/browse/STK-677
+// use no_sanitize(thread) to workaround https://github.com/SophistSolutions/Stroika/issues/812 (STK-677)
 Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SemWaitableEvent::Set ()
 {
 #if qCompilerAndStdLib_unnamed_semaphores_Buggy
@@ -66,7 +66,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SemWaitableEvent::Set
 #else
     sem_t* pSem = &fSem_;
 #endif
-    // see http://stroika-bugs.sophists.com/browse/STK-677 - save/restore errno so this doesn't spoil errno if called from signal handler
+    // see https://github.com/SophistSolutions/Stroika/issues/812 (STK-677) - save/restore errno so this doesn't spoil errno if called from signal handler
     errno_t saved = errno;
     Verify (::sem_post (pSem) == 0);
     errno = saved;

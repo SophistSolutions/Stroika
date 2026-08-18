@@ -369,7 +369,7 @@ namespace Stroika::Foundation::Memory {
         Require (n == 1);
         T* result = reinterpret_cast<T*> (BlockAllocationPool_<AdjustSizeForPool_ ()>::Allocate (sizeof (T)));
         EnsureNotNull (result);
-        Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0); // see http://stroika-bugs.sophists.com/browse/STK-511 - assure aligned
+        Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0); // see https://github.com/SophistSolutions/Stroika/issues/648 (STK-511) - assure aligned
         return result;
     }
     template <typename T>

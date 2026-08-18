@@ -96,7 +96,7 @@
  *
  *      @todo   USE UnknownSubElementDisposition more thoroughly...
  *
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-408 - cleanup template specializations
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/542 (STK-408) - cleanup template specializations
  *
  *
  *  \em Design Overview

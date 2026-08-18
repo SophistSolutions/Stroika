@@ -32,7 +32,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Release">Release</a>
  *
  * TODO:
- *      @todo - http://stroika-bugs.sophists.com/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
+ *      @todo - https://github.com/SophistSolutions/Stroika/issues/806 (STK-671) - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
  *
  *      @todo   Support various 64bit int (epoch time) types - even if time_t is 32-bit (such as on AIX).
  *              Be careful about overflow in underlying types like Date and TimeOfDay() however.
@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty DateTime object (DateTime {}).
          *
-         *  \note   @todo - http://stroika-bugs.sophists.com/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
+         *  \note   @todo - https://github.com/SophistSolutions/Stroika/issues/806 (STK-671) - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          * 
          *  \note   Handling of extra junk (including whitespace) at the start or end of the date MAY or MAY not be tollerated, depending on the
          *          format parameters given. But generally this API is struct, and will treat junk at the start or end of the date as a format
@@ -395,7 +395,7 @@ namespace Stroika::Foundation::Time {
          * 
          *  \note the default for Format() with no arguments is to use the default locale, but with the eCurrentLocale_WithZerosStripped flag set.
          *
-         *  \note   @todo - http://stroika-bugs.sophists.com/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
+         *  \note   @todo - https://github.com/SophistSolutions/Stroika/issues/806 (STK-671) - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          * 
          *  \par Example Usage
          *      \code

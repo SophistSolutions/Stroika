@@ -131,7 +131,7 @@ namespace {
 unique_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
 {
     Debug::TraceContextBumper ctx{"WaitForIOReady_Support::mkEventFD"};
-    // @todo - See http://stroika-bugs.sophists.com/browse/STK-709
+    // @todo - See https://github.com/SophistSolutions/Stroika/issues/843 (STK-709)
     // to support eventfd and pipe based helper classes
     /// need ifdefs to allow build based on eventfd, or pipe
     return make_unique<EventFD_Based_SocketPair_> ();

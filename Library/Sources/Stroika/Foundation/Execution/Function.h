@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Execution {
          * 
          *  \note Constructor with nullptr or a null function object - will produce a UNIQUE function value (according to operator==).
          *        ANY other function object - each time you call the constructor - you will get a different (according to operator==) Function
-         *        object. See http://stroika-bugs.sophists.com/browse/STK-960 for some of the reasoning behind this.
+         *        object. See https://github.com/SophistSolutions/Stroika/issues/1092 (STK-960) for some of the reasoning behind this.
          */
         Function () = default;
         Function (nullptr_t);

@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Debug {
      */
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
     inline AssertExternallySynchronizedChecker::AssertExternallySynchronizedChecker (const shared_ptr<SharedContext>& sharedContext) noexcept
-        // http://stroika-bugs.sophists.com/browse/STK-500
+        // https://github.com/SophistSolutions/Stroika/issues/634 (STK-500)
         // NOTE - this will generate a throw and std::unexpected violation if there is no memory and multiset CTOR
         // throws. There is no good answer in this case. We declare the constructors noexcept so the footprint of
         // AssertExternallySynchronizedChecker is as light as possible and the same (API/constraints) between debug and release

@@ -30,9 +30,9 @@
  *      @todo   Deadlock from two threads doing UpgradeLockNonAtomically(quietly) is ??? detectable, so in DEBUG builds translate that to an
  *              assert error?
  *
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-613 - Synchronized<>::ReadableReference and WritableReference could be more efficient if not subclassing each other
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/749 (STK-613) - Synchronized<>::ReadableReference and WritableReference could be more efficient if not subclassing each other
  *
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-657 - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in synchronized
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/792 (STK-657) - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in synchronized
  *
  *      @todo   Tons of cleanups, orthogonality, docs, etc.
  *

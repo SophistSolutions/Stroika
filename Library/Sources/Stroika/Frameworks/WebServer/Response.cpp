@@ -140,7 +140,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         AssertExternallySynchronizedChecker::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
         if (thisObj->fCodeCvt_ == nullopt) {
             AssertExternallySynchronizedChecker::WriteContext declareContext2{const_cast<Response*> (thisObj)->_fThisAssertExternallySynchronized};
-            // http://stroika-bugs.sophists.com/browse/STK-983
+            // https://github.com/SophistSolutions/Stroika/issues/1115 (STK-983)
             thisObj->fCodeCvt_ = Characters::CodeCvt<>{thisObj->fCodePage_};
         }
         return *thisObj->fCodeCvt_;

@@ -574,7 +574,7 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
         *consumedCharacters = nCharsConsumed;
     }
     // @todo probably could read TIMEZONE (occasionally) from the when output (maybe look at format string to tell if its being set)
-    // SEE http://stroika-bugs.sophists.com/browse/STK-671
+    // SEE https://github.com/SophistSolutions/Stroika/issues/806 (STK-671)
     return DateTime{when, Timezone::kUnknown};
 }
 

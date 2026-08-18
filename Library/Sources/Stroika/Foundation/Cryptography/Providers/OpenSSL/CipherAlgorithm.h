@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
          *  o   (and others listed in https://wiki.openssl.org/index.php/OpenSSL_3.0 but we never supported them before)
          * are only available in the LEGACY provider, and it is not recommended to use, so dont make that easy
          * from Stroika. By default just assume default provider is in use.
-         *  @see http://stroika-bugs.sophists.com/browse/STK-735
+         *  @see https://github.com/SophistSolutions/Stroika/issues/869 (STK-735)
          * 
          * @todo mark these below as deprecated...
          */

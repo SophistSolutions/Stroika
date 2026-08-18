@@ -237,7 +237,7 @@ CommandLine::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
         case WrapInShell::eBash:
 #if qStroika_Foundation_Common_Platform_Windows
         {
-            // https://stroika.atlassian.net/browse/STK-1029
+            // https://github.com/SophistSolutions/Stroika/issues/132 (STK-1029)
             // Weird bug workaround only needed on Medusa? - unclear why
             if (optional<filesystem::path> pp = FindExecutableInPath ("bash"sv)) {
                 fArgs_ += String{*pp};

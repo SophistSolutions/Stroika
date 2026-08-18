@@ -208,7 +208,7 @@ void Logger::Shutdown_ ()
     // @todo FIX to assure all shutdown properly...
     // But this is OK for now pragmatically
 #if 1
-    // see http://stroika-bugs.sophists.com/browse/STK-917
+    // see https://github.com/SophistSolutions/Stroika/issues/1049 (STK-917)
     bool changed = false;
     RequireNotNull (fRep_); // not yet destroyed
     {
@@ -263,7 +263,7 @@ void Logger::Log_ (Priority logLevel, const String& msg)
         auto p = make_pair (logLevel, msg);
         if (fRep_->fSuppressDuplicatesThreshold_.cget ()->has_value ()) {
             auto lastMsgLocked = fRep_->fLastMessages_.rwget ();
-            // @todo fix performance when we fix http://stroika-bugs.sophists.com/browse/STK-928 -
+            // @todo fix performance when we fix https://github.com/SophistSolutions/Stroika/issues/1060 (STK-928) -
             if (auto msgInfo = lastMsgLocked->Lookup (p)) {
                 Rep_::LastMsgInfoType_ mi = *msgInfo;
                 ++mi.fRepeatCount_;
@@ -436,7 +436,7 @@ public:
     }
 
 private:
-    Synchronized<Streams::OutputStream::Ptr<Characters::Character>> fWriter_; // All Stroika-provided appenders must be internally synchronized - http://stroika-bugs.sophists.com/browse/STK-610
+    Synchronized<Streams::OutputStream::Ptr<Characters::Character>> fWriter_; // All Stroika-provided appenders must be internally synchronized - https://github.com/SophistSolutions/Stroika/issues/746 (STK-610)
 };
 
 Logger::StreamAppender::StreamAppender (const Streams::OutputStream::Ptr<byte>& out)

@@ -1152,17 +1152,17 @@ namespace {
 namespace {
     void RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ()
     {
-        // http://stroika-bugs.sophists.com/browse/STK-767 - ONCE saw hang in this routine under Ubuntu 21.10, TSAN, so adding TraceContextMbumper to debug
+        // https://github.com/SophistSolutions/Stroika/issues/130 (STK-767) - ONCE saw hang in this routine under Ubuntu 21.10, TSAN, so adding TraceContextMbumper to debug
         Debug::TraceContextBumper        ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
         Debug::TimingTrace               tt;
         BlockingQueue<function<void ()>> q;
         Verify (q.size () == 0);
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
-                Debug::TraceContextBumper ctx1{"**inner thread"}; // for http://stroika-bugs.sophists.com/browse/STK-767
+                Debug::TraceContextBumper ctx1{"**inner thread"}; // for https://github.com/SophistSolutions/Stroika/issues/130 (STK-767)
                 while (true) {
-                    Debug::TraceContextBumper ctx2{"**inner thread loop"}; // for http://stroika-bugs.sophists.com/browse/STK-767
-                    function<void ()>         f = q.RemoveHead ();
+                    Debug::TraceContextBumper ctx2{"**inner thread loop"}; // for https://github.com/SophistSolutions/Stroika/issues/130 (STK-767)
+                    function<void ()> f = q.RemoveHead ();
                     f ();
                 }
             },
@@ -1412,7 +1412,7 @@ namespace {
         }
         t1.AbortAndWaitForDone ();
         // doing this last part is what triggers TSAN failure if SanitizerDoubleLockWithConditionVariables
-        // see http://stroika-bugs.sophists.com/browse/STK-717
+        // see https://github.com/SophistSolutions/Stroika/issues/851 (STK-717)
         try {
             auto c = test.cget (5ms);
         }

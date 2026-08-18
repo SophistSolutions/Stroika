@@ -862,7 +862,7 @@ namespace {
             using Containers::Sequence;
             using Containers::Set;
             Sequence<int> a{1, 3, 5, 7, 9};
-            a = Sequence<int>{a.Skip (2)}; // http://stroika-bugs.sophists.com/browse/STK-532 - crash
+            a = Sequence<int>{a.Skip (2)}; // https://github.com/SophistSolutions/Stroika/issues/669 (STK-532) - crash
             EXPECT_EQ (a, (Sequence<int>{5, 7, 9}));
         }
         {

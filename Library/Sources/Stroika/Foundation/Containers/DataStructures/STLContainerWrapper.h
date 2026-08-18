@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *          there is no zero (or even low for forward_list) cost way to map from const to non const
      *          iterators (needed to perform the update).
      *
-     *          @see http://stroika-bugs.sophists.com/browse/STK-538
+     *          @see https://github.com/SophistSolutions/Stroika/issues/674 (STK-538)
      */
     template <typename STL_CONTAINER_OF_T>
     class STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {

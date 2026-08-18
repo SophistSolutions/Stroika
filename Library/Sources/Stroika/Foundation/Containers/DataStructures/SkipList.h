@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *              @todo - should we use shared_ptr  - must be more careful bout leaks if not using shared_ptr
      *              @todo Cleanup docs
      *              @todo use InlineBuffer instead of vector, and make size of pre-allocated guy fixed in TRAITS (@todo discuss with sterl)
-     *              @todo   https://stroika.atlassian.net/browse/STK-1016 - ranges/sentinel support
+     *              @todo   https://github.com/SophistSolutions/Stroika/issues/1148 (STK-1016) - ranges/sentinel support
      * 
     // OLD DOCS to lift from (from SSW impl)
     In principle you can use different probabilities for having more than one link. The optimal probability for finds is 1/4, and that also produces a list

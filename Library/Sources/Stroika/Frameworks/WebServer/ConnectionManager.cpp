@@ -300,7 +300,7 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
     DbgTrace ("Constructing WebServer::ConnectionManager ({}), with threadpoolSize={}, backlog={}, and listening on {}"_f,
               static_cast<const void*> (this), fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options),
               Characters::ToString (bindAddresses));
-    fWaitForReadyConnectionThread_.Start (); // start here instead of AutoStart so a guaranteed initialized before thread main starts - see http://stroika-bugs.sophists.com/browse/STK-706
+    fWaitForReadyConnectionThread_.Start (); // start here instead of AutoStart so a guaranteed initialized before thread main starts - see https://github.com/SophistSolutions/Stroika/issues/840 (STK-706)
 }
 
 #if qStroika_Foundation_Debug_DefaultTracingOn

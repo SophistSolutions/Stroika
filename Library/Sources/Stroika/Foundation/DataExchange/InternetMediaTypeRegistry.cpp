@@ -353,7 +353,7 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
 #if qStroika_Foundation_Common_Platform_Windows
     return WindowsRegistryDefaultBackend ();
 #endif
-    // @todo fix for MacOS - which doesn't support these - http://stroika-bugs.sophists.com/browse/STK-795
+    // @todo fix for MacOS - which doesn't support these - https://github.com/SophistSolutions/Stroika/issues/927 (STK-795)
     if (filesystem::exists ("/usr/share/mime"sv)) {
         try {
             return UsrSharedDefaultBackend ();

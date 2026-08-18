@@ -180,7 +180,7 @@ URI URI::ParseRelative (const String& rawRelativeURL)
 
 String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
 {
-    // http://stroika-bugs.sophists.com/browse/STK-1000 -- issue about maybe needed more nuanced approach
+    // https://github.com/SophistSolutions/Stroika/issues/1132 (STK-1000) -- issue about maybe needed more nuanced approach
     StringPCTEncodedFlag                             usingPCTEncodeFlag = pctEncode.value_or (eDecoded);
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                    result;

@@ -63,7 +63,7 @@ namespace Stroika::Frameworks::WebServer {
      *      o   movable<Response>
      * 
      *  TODO:
-     *      @todo Support http://stroika-bugs.sophists.com/browse/STK-727 - HTTP Chunked Transfer Trailers. We do support
+     *      @todo Support https://github.com/SophistSolutions/Stroika/issues/861 (STK-727) - HTTP Chunked Transfer Trailers. We do support
      *            chunked transfers, but require all the headers set first.
      * 
      *  \note   When todo compressed responses
@@ -193,7 +193,7 @@ namespace Stroika::Frameworks::WebServer {
          *  Conversion applied to String objects to convert to bytes emitted to stream output.
          *  This value depends on the codePage property.
          * 
-         *  \see http://stroika-bugs.sophists.com/browse/STK-983
+         *  \see https://github.com/SophistSolutions/Stroika/issues/1115 (STK-983)
          */
         Common::ReadOnlyProperty<Characters::CodeCvt<>> codeCvt;
 
@@ -210,7 +210,7 @@ namespace Stroika::Frameworks::WebServer {
          *      \pre this->headersCanBeSet()
          *      \pre TotalBytesWritten == 0
          * 
-         *  \note SEE http://stroika-bugs.sophists.com/browse/STK-983
+         *  \note SEE https://github.com/SophistSolutions/Stroika/issues/1115 (STK-983)
          * 
          * \note - if DataExchange::InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::Wildcards::kText, fContentType_), then
          *         the character set will be automatically folded into the used contentType. To avoid this, 

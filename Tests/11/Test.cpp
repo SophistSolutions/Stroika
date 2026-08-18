@@ -259,11 +259,11 @@ namespace {
     GTEST_TEST (Foundation_Containers_Association, ClearBug)
     {
         Debug::TraceContextBumper ctx{"{}::ClearBug"};
-        // http://stroika-bugs.sophists.com/browse/STK-541
+        // https://github.com/SophistSolutions/Stroika/issues/677 (STK-541)
         Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
                                 KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
         Association<int, int> mm{move (m)};
-        // SEE http://stroika-bugs.sophists.com/browse/STK-541  - this call to clear is ILLEGAL - after m has been moved from
+        // SEE https://github.com/SophistSolutions/Stroika/issues/677 (STK-541)  - this call to clear is ILLEGAL - after m has been moved from
         //m.clear ();
     }
 }
@@ -297,7 +297,7 @@ namespace {
         using namespace Characters;
         {
             Association<String, String> parameters{String::EqualsComparer{Characters::eCaseInsensitive}};
-            // http://stroika-bugs.sophists.com/browse/STK-738 (and see other workarounds in other files)
+            // https://github.com/SophistSolutions/Stroika/issues/872 (STK-738) (and see other workarounds in other files)
             Association<String, String> parameters2{String::EqualsComparer{Characters::eCaseInsensitive}, parameters};
         }
     }

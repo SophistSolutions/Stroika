@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Common {
     template <typename ENUM>
     inline constexpr underlying_type_t<ENUM> ToInt (ENUM e)
     {
-        // http://stroika-bugs.sophists.com/browse/STK-549
+        // https://github.com/SophistSolutions/Stroika/issues/685 (STK-549)
         //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
         return static_cast<typename underlying_type<ENUM>::type> (e);
     }
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Common {
     template <typename ENUM>
     inline constexpr ENUM ToEnum (underlying_type_t<ENUM> e)
     {
-        // http://stroika-bugs.sophists.com/browse/STK-549
+        // https://github.com/SophistSolutions/Stroika/issues/685 (STK-549)
         //static_assert (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
         return static_cast<ENUM> (e);
     }
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Common {
     inline constexpr make_unsigned_t<underlying_type_t<ENUM>> OffsetFromStart (ENUM e)
     {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        // http://stroika-bugs.sophists.com/browse/STK-549
+        // https://github.com/SophistSolutions/Stroika/issues/685 (STK-549)
         //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
         return static_cast<make_unsigned_t<underlying_type_t<ENUM>>> (ToInt (e) - ToInt (ENUM::eSTART));
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");

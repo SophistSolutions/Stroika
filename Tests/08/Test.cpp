@@ -349,7 +349,7 @@ namespace {
             const int                 perThreadOpCount = int (sTimeMultiplier_ * 100000);
             atomic<bool>              done             = false;
             if (Debug::IsRunningUnderValgrind ()) {
-                // workaround hang using MEMCHECK  -- http://stroika-bugs.sophists.com/browse/STK-728
+                // workaround hang using MEMCHECK  -- https://github.com/SophistSolutions/Stroika/issues/862 (STK-728)
                 return;
             }
             for (int i = 0; i < threadCount; i++) {

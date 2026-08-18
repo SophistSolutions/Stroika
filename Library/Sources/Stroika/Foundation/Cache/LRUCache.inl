@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline auto LRUCache<KEY, VALUE, TRAITS>::begin_ () const -> CacheIterator_
     {
-        LRUCache* ncThis = const_cast<LRUCache*> (this); // http://stroika-bugs.sophists.com/browse/STK-764
+        LRUCache* ncThis = const_cast<LRUCache*> (this); // https://github.com/SophistSolutions/Stroika/issues/897 (STK-764)
         return CacheIterator_{std::begin (ncThis->fCachedElts_First_), std::end (ncThis->fCachedElts_First_)};
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>

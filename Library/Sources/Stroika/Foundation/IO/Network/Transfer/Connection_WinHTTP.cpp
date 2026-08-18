@@ -214,7 +214,7 @@ namespace {
                                                              fURL_.GetAuthorityRelativeResource ().As<wstring> ().c_str (), nullptr, WINHTTP_NO_REFERER,
                                                              WINHTTP_DEFAULT_ACCEPT_TYPES, useSecureHTTP ? WINHTTP_FLAG_SECURE : 0)};
 
-            // See http://stroika-bugs.sophists.com/browse/STK-442 - we pre-set to avoid double try on failure, but
+            // See https://github.com/SophistSolutions/Stroika/issues/576 (STK-442) - we pre-set to avoid double try on failure, but
             // we cannot IF we want to know if SSL connect failed (until I figure out how)
             constexpr bool kDefault_FailConnectionIfSSLCertificateInvalid{true};
             if (not fOptions_.fReturnSSLInfo and
@@ -241,7 +241,7 @@ namespace {
             // REALLY - don't want these flags here - but have a CALLBACK whcih checks arbitrary rules and THROWS if unhappy - and doesn't do rest of fetch...
             //      TODO!!!
             //
-            // See http://stroika-bugs.sophists.com/browse/STK-442
+            // See https://github.com/SophistSolutions/Stroika/issues/576 (STK-442)
             //
             if (fOptions_.fReturnSSLInfo and
                 not fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) and sslExceptionProblem) {

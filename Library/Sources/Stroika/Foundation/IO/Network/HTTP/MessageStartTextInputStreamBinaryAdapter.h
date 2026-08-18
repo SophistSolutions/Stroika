@@ -33,7 +33,7 @@ namespace Stroika::Foundation::IO::Network::HTTP::MessageStartTextInputStreamBin
      *
      *  \par TODO
      *      @todo   Must rewrite this to properly handle other than ASCII characterset on incoming headers
-     *              and URL lines - http://stroika-bugs.sophists.com/browse/STK-969
+     *              and URL lines - https://github.com/SophistSolutions/Stroika/issues/1101 (STK-969)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */

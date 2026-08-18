@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers {
                 return fValue_;
             }
         }
-        // Tried this for https://stroika.atlassian.net/browse/STK-1024 - but didn't help
+        // Tried this for https://github.com/SophistSolutions/Stroika/issues/1151 (STK-1024) - but didn't help
         // and dont much like anyhow
         //auto ToString () const
         //{

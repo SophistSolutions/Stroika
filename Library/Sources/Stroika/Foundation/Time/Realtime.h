@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Time {
     TimePointSeconds GetTickCount () noexcept;
 
     /**
-     *  @See http://stroika-bugs.sophists.com/browse/STK-619    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinity differently - no arithmetic, just no timeout
+     *  @See https://github.com/SophistSolutions/Stroika/issues/755 (STK-619)    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinity differently - no arithmetic, just no timeout
      */
     constexpr DurationSeconds kInfinity = DurationSeconds{numeric_limits<DurationSeconds::rep>::infinity ()};
 

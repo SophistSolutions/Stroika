@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterableOfTo<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     void MultiSet<T, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        // see http://stroika-bugs.sophists.com/browse/STK-645
+        // see https://github.com/SophistSolutions/Stroika/issues/781 (STK-645)
         if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
                 // very rare corner case

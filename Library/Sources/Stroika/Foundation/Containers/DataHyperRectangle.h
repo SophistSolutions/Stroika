@@ -16,7 +16,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *  TODO:
- *      @todo http://stroika-bugs.sophists.com/browse/STK-580 - get DataHyperRectangle to the point where it is minimally usable!
+ *      @todo https://github.com/SophistSolutions/Stroika/issues/716 (STK-580) - get DataHyperRectangle to the point where it is minimally usable!
  *
  *      @todo DataHyperRectangle<int, int, int> x = Concrete::DenseDataHyperRectangle_Vector<int, int, int>{3, 4}; simplified - not saying int so many times.
  *            make use make_DataHyperRectangle () - cuz I think functions can do type inference where classes cannot.

@@ -62,7 +62,7 @@ namespace {
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
 
             if constexpr (qStroika_Foundation_Common_Platform_Windows) {
-                // TMPHACK for - http://stroika-bugs.sophists.com/browse/STK-964
+                // TMPHACK for - https://github.com/SophistSolutions/Stroika/issues/1096 (STK-964)
                 auto s = Execution::WaitForIOReady{fSD_}.WaitQuietly (timeout);
                 Execution::Thread::CheckForInterruption ();
                 if (s.empty ()) {
@@ -189,7 +189,7 @@ namespace {
                     break;
                 }
                 case SocketAddress::INET6: {
-                    constexpr bool kIPV6LoophackMulticastTTLLinuxBug_{qStroika_Foundation_Common_Platform_Linux}; // http://stroika-bugs.sophists.com/browse/STK-578
+                    constexpr bool kIPV6LoophackMulticastTTLLinuxBug_{qStroika_Foundation_Common_Platform_Linux}; // https://github.com/SophistSolutions/Stroika/issues/714 (STK-578)
                     if (kIPV6LoophackMulticastTTLLinuxBug_) {
                         try {
                             setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS, ttl);
@@ -238,7 +238,7 @@ namespace {
                     break;
                 }
                 case SocketAddress::INET6: {
-                    constexpr bool kIPV6LoophackMulticastModeLinuxBug_{qStroika_Foundation_Common_Platform_Linux}; // http://stroika-bugs.sophists.com/browse/STK-578
+                    constexpr bool kIPV6LoophackMulticastModeLinuxBug_{qStroika_Foundation_Common_Platform_Linux}; // https://github.com/SophistSolutions/Stroika/issues/714 (STK-578)
                     if (kIPV6LoophackMulticastModeLinuxBug_) {
                         try {
                             setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode);

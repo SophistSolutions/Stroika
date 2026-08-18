@@ -11,7 +11,7 @@
 /**
  * TODO:
  * 
- *      @todo   SEE http://stroika-bugs.sophists.com/browse/STK-768 - major refactor of this module
+ *      @todo   SEE https://github.com/SophistSolutions/Stroika/issues/900 (STK-768) - major refactor of this module
  * 
  *      @todo   Add Int2String () module? Like FloatConversion::ToString, and this String2Int?
  *

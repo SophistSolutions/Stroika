@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Memory {
      *  For easier use, probably the best approach is to @see UseBlockAllocationIfAppropriate (this class ignores qStroika_Foundation_Memory_PreferBlockAllocation)
      *
      *  \note   Design Note: alignas / alignment of allocated values
-     *          http://stroika-bugs.sophists.com/browse/STK-511
+     *          https://github.com/SophistSolutions/Stroika/issues/648 (STK-511)
      *          We use sizeof(). We always allocate large blocks which (I think are always) aligned to the largest
      *          alignment required by the system, and we that as an array.
      *

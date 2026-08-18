@@ -47,7 +47,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-558 ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/694 (STK-558) ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready
  *              use KeyedCollection<> instead of Mapping for fSerializers - was using Set<> which is closer API wise, but Set<> has misfeature
  *              that adding when already there does nothing, and new KeyedCollection will have property - like Mapping - of replacing value.
  *
@@ -93,7 +93,7 @@
  *
  *              Anyhow - this is a long-term todo item, so no need to work out details now.
  *
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-743 - Add SupportsAdder concept and use that to simplify use in ObjectVariantMapper
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/877 (STK-743) - Add SupportsAdder concept and use that to simplify use in ObjectVariantMapper
  */
 
 namespace Stroika::Foundation::DataExchange {
@@ -243,7 +243,7 @@ namespace Stroika::Foundation::DataExchange {
      *              this can be done with reflections TS).
      * 
      *  \note   Design Note (ToObject construction strategy):
-     *          \see http://stroika-bugs.sophists.com/browse/STK-1015
+     *          \see https://github.com/SophistSolutions/Stroika/issues/1147 (STK-1015)
      *          Some possibilities:
      *              (1) ToObject () requires pre-constructed object argument, and takes &o as argument, and fills in/overrides fields
      * 
@@ -300,7 +300,7 @@ namespace Stroika::Foundation::DataExchange {
          *  for internal storage of mappers.
          *
          *  \note For performance reasons, we treat this as interchangeable with the real FromObjectMapperType<T>, but
-         *        see http://stroika-bugs.sophists.com/browse/STK-601 for details but, with UBSan, we need todo an extra
+         *        see https://github.com/SophistSolutions/Stroika/issues/737 (STK-601) for details but, with UBSan, we need todo an extra
          *        layer of lambdas mapping, cuz it detects this not totally kosher cast.
          *
          *  @see ToGenericObjectMapperType
@@ -314,7 +314,7 @@ namespace Stroika::Foundation::DataExchange {
          *  for internal storage of mappers.
          *
          *  \note For performance reasons, we treat this as interchangeable with the real FromObjectMapperType<T>, but
-         *        see http://stroika-bugs.sophists.com/browse/STK-601 for details but, with ubsan, we need todo an extra
+         *        see https://github.com/SophistSolutions/Stroika/issues/737 (STK-601) for details but, with ubsan, we need todo an extra
          *        layer of lambdas mapping, cuz it detects this not totally kosher cast.
          *
          *  @see FromGenericObjectMapperType

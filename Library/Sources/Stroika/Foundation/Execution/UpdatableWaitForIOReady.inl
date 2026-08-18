@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Execution {
     inline WaitForIOReady<T, TRAITS> UpdatableWaitForIOReady<T, TRAITS>::mkWaiter_ ()
     {
 #if 1
-        // https://stroika.atlassian.net/browse/STK-1021
+        // https://github.com/SophistSolutions/Stroika/issues/131 (STK-1021)
         using Traversal::Iterable;
         auto dataLock = fData_.rwget (); // not 100% understood yet, but it appears you need to hold lock longer - to make tsan happy
         Iterable<pair<T, TypeOfMonitorSet>> r{dataLock.cref ()};

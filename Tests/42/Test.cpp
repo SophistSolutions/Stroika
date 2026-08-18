@@ -99,9 +99,9 @@ namespace {
             EXPECT_TRUE (f3 != f2);
         }
         {
-            // http://stroika-bugs.sophists.com/browse/STK-960
+            // https://github.com/SophistSolutions/Stroika/issues/1092 (STK-960)
             // In WTF, really in Execution::IntervalTime code - was getting two functions added with same function pointer.
-            // Workaround for http://stroika-bugs.sophists.com/browse/STK-960 addresses that. But not sure why this doesn't trigger
+            // Workaround for https://github.com/SophistSolutions/Stroika/issues/1092 (STK-960) addresses that. But not sure why this doesn't trigger
             // with old code?
             Function<int ()> f1 = [] () { return 1; };
             Function<int ()> f2 = [] () { return -1; };

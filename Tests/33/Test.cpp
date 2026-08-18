@@ -772,7 +772,7 @@ namespace {
 }
 
 namespace {
-    // http://stroika-bugs.sophists.com/browse/STK-909
+    // https://github.com/SophistSolutions/Stroika/issues/1041 (STK-909)
     namespace Test14_ObjVarMapperAsStringVsToString_STK_909_ {
         void DoIt ()
         {

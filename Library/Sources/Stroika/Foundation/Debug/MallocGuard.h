@@ -25,7 +25,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-621 stopped testing regularly in Stroika
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/757 (STK-621) stopped testing regularly in Stroika
  *              2.0a217 (october 2017).
  *
  *      @todo   Support on Windows/MSVC

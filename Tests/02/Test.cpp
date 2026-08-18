@@ -581,7 +581,7 @@ namespace {
     {
         auto DoTest1 = [] (String s) {
             StringBuilder    t1 = s;
-            constexpr size_t kMaxCount_{100}; // NOTE - see http://stroika-bugs.sophists.com/browse/STK-996
+            constexpr size_t kMaxCount_{100}; // NOTE - see https://github.com/SophistSolutions/Stroika/issues/1128 (STK-996)
             for (size_t i = 0; i < kMaxCount_; ++i) {
                 t1 += L"X";
             }
@@ -1110,7 +1110,7 @@ namespace {
             EXPECT_EQ (CString::HexString2Int ("     "), 0u);
         }
         {
-            // http://stroika-bugs.sophists.com/browse/STK-966
+            // https://github.com/SophistSolutions/Stroika/issues/1098 (STK-966)
             auto doTest = [] (const wstring& w, long double wVal) {
                 StringBuilder sb1;
                 sb1 << w;
@@ -1188,7 +1188,7 @@ namespace {
                         [[maybe_unused]] auto x1        = FloatConversion::ToFloat<double> (kNumber1_);
                         [[maybe_unused]] auto x2        = FloatConversion::ToFloat<double> (kNumber2_);
 
-                        // This test is an ABJECT FAILURE - http://stroika-bugs.sophists.com/browse/STK-747 but LOW PRIORITY
+                        // This test is an ABJECT FAILURE - https://github.com/SophistSolutions/Stroika/issues/881 (STK-747) but LOW PRIORITY
                     };
                     checkJapaneseNumbers ();
                     if (auto ln = Common::FindLocaleNameQuietly ("ja"sv, "JP"sv)) {
@@ -1199,13 +1199,13 @@ namespace {
 
                 {
                     // European comma/period confusion
-                    // BROKEN - see http://stroika-bugs.sophists.com/browse/STK-748
+                    // BROKEN - see https://github.com/SophistSolutions/Stroika/issues/882 (STK-748)
                     // See https://docs.oracle.com/cd/E19455-01/806-0169/overview-9/index.html
                     if (auto ln = Common::FindLocaleNameQuietly (L"en", L"US")) {
                         Common::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
                         EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> ("100.1"), 100.1));
                         [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> ("967,295.01");
-                        //EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));     -- http://stroika-bugs.sophists.com/browse/STK-748
+                        //EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));     -- https://github.com/SophistSolutions/Stroika/issues/882 (STK-748)
                     }
                     if (auto ln = Common::FindLocaleNameQuietly (L"es", L"ES")) {
                         Common::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString (eIgnoreErrors).c_str ()}};
@@ -1214,7 +1214,7 @@ namespace {
                         EXPECT_TRUE (std::use_facet<std::numpunct<char>> (locale{}).decimal_point () == ',');
                         EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"100,1"), 100.1));
                         [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> (L"967.295,01");
-                        //EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967.295,01") , 967295.01)); -- http://stroika-bugs.sophists.com/browse/STK-748
+                        //EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967.295,01") , 967295.01)); -- https://github.com/SophistSolutions/Stroika/issues/882 (STK-748)
                     }
                 }
             }

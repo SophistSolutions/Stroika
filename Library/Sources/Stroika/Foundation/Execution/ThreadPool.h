@@ -333,7 +333,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  NOTE - see http://stroika-bugs.sophists.com/browse/STK-995 for how we might cheaply significantly improve these stats
+         *  NOTE - see https://github.com/SophistSolutions/Stroika/issues/1127 (STK-995) for how we might cheaply significantly improve these stats
          */
         struct Statistics {
             unsigned int fNumberOfTasksAdded{0};

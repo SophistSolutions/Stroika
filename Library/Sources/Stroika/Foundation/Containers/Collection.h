@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note - this nextI value is therefore of very little value, since you cannot reliably continue iterating with it, knowing
          *        what you will get next. @todo consider if this should be deprecated.
-         *        http://stroika-bugs.sophists.com/browse/STK-922
+         *        https://github.com/SophistSolutions/Stroika/issues/1054 (STK-922)
          * 
          *  This is basically the same as {Remove (i); Add (newValue);} except that it might perform better.
          *

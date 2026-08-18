@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  @aliases Lookup (key, mapped_type* value) - is equivalent to .Net TryGetValue ()
          * 
-         *  \@todo http://stroika-bugs.sophists.com/browse/STK-928 - add overload 'returning' Iterator<>, so can use with Update method
+         *  \@todo https://github.com/SophistSolutions/Stroika/issues/1060 (STK-928) - add overload 'returning' Iterator<>, so can use with Update method
          */
         nonvirtual optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
         nonvirtual bool                  Lookup (ArgByValueType<key_type> key, optional<mapped_type>* item) const;

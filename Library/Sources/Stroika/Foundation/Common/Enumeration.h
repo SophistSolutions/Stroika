@@ -21,7 +21,7 @@
  *
  * TODO:
  *
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-549 - RequireItemsOrderedByEnumValue and
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/685 (STK-549) - RequireItemsOrderedByEnumValue and
  *              static_cast usage confusion.
  *
  *      @todo   I tried using EnumNames<> as an alias for initializer_list, but then I couldn't add the

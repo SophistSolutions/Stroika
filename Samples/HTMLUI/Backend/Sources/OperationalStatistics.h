@@ -84,8 +84,8 @@ namespace Stroika::Samples::HTMLUI {
             Time::DurationSeconds  fDuration;
             size_t                 fLength;
         };
-        Rec_   fRollingHistory_[1024]; // @todo see https://stroika.atlassian.net/browse/STK-174 - redo as circular q when available
-        size_t fNextHistory_{0};       // circular - can be < first. - first==last implies zero length q
+        Rec_ fRollingHistory_[1024]; // @todo see https://github.com/SophistSolutions/Stroika/issues/309 (STK-174) - redo as circular q when available
+        size_t fNextHistory_{0}; // circular - can be < first. - first==last implies zero length q
 
         void Add_ (const Rec_& r);
     };

@@ -112,7 +112,7 @@ namespace Stroika::Foundation::IO::Network {
          * 
          *  \note URL/0 is treated as of empty path and nullopt for authority, query, scheme, fragment.
          *
-         *  \todo http://stroika-bugs.sophists.com/browse/STK-750
+         *  \todo https://github.com/SophistSolutions/Stroika/issues/884 (STK-750)
          *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexcept
          *        on GCC. THIS compiles fine, but then later bits of code that use it fail to compile (g++ 9 at least).
          */

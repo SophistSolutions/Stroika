@@ -913,7 +913,7 @@ namespace {
                      *  Not using XQilla anymore. And may have been another misunderstanding anyhow. So have attributes
                      *  inherit the namespace of the element they are from, by default --LGP 2024-01-09
                      * 
-                     *  MAYBE related to  http://stroika-bugs.sophists.com/browse/STK-999 - diff symptoms but similar workaround
+                     *  MAYBE related to  https://github.com/SophistSolutions/Stroika/issues/1131 (STK-999) - diff symptoms but similar workaround
                      */
                     element->setAttributeNS (attrName.fNamespace ? attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str () : nullptr,
                                              attrName.fName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
