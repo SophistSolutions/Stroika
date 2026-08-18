@@ -42,7 +42,9 @@ binmode STDOUT, ':encoding(UTF-8)';    # summaries contain non-ASCII; keep the d
 binmode STDERR, ':encoding(UTF-8)';
 
 my $REPO      = $ENV{GITHUB_REPO} // 'SophistSolutions/Stroika';
-my $ARCHIVE   = 'Issues/Archive';
+# Overridable because the .md renderings are no longer checked in: regenerate them into a scratch dir
+# (JIRANormalize.pl --md writes .json AND .md there) and point ISSUES_ARCHIVE at it.
+my $ARCHIVE   = $ENV{ISSUES_ARCHIVE} // 'Issues/Archive';
 my $MAPFILE   = 'Issues/STK-to-GitHub.tsv';
 my $TOKENFILE = $ENV{GITHUB_TOKEN_FILE} // "$ENV{HOME}/.stroika-github-token";
 my $MAXBODY   = 64000;    # GitHub's limit is 65536; leave room for the metadata header

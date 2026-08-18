@@ -110,18 +110,25 @@ for my $f (sort glob "$rawdir/_page_*.json") {
 
         # --- readable copy
         my $fl = $issue->{fields} || {};
+        # DELIBERATELY OMITTED: status, priority, type, assignee.
+        #
+        # Those four have a LIVE owner elsewhere now - GitHub's open/closed state, and the project's
+        # Priority / JIRA type / Assignees fields - so printing the JIRA value here creates a second,
+        # frozen copy that silently disagrees the moment anything is edited. A stale value that looks
+        # authoritative is worse than no value. What stays is only what cannot drift: who filed it and
+        # when, and how JIRA finished with it.
+        #
+        # The original values of all four are still in the <!-- jira-import: {...} --> block, which is
+        # explicitly a historical snapshot rather than a display of current state.
         my @md = ("# $key - " . ($fl->{summary} // '(no summary)'), '');
+        push @md, '*Imported from JIRA. The table below is the state as of the 2026-08-16 export - historical,';
+        push @md, 'not current. Live status is this issue; live priority/type are the project fields.*', '';
         push @md, '| | |', '|---|---|';
-        push @md, "| status | " . ($fl->{status} ? $fl->{status}{name} : '?') . ' |';
-        push @md, "| type | " . ($fl->{issuetype} ? $fl->{issuetype}{name} : '?') . ' |'
-            if $fl->{issuetype};
-        push @md, "| priority | " . $fl->{priority}{name} . ' |' if $fl->{priority} && $fl->{priority}{name};
-        push @md, "| resolution | " . $fl->{resolution}{name} . ' |' if $fl->{resolution} && $fl->{resolution}{name};
+        push @md, "| jira resolution | " . $fl->{resolution}{name} . ' |' if $fl->{resolution} && $fl->{resolution}{name};
         push @md, "| reporter | " . who ($fl->{reporter}) . ' |' if $fl->{reporter};
-        push @md, "| assignee | " . who ($fl->{assignee}) . ' |' if $fl->{assignee};
-        push @md, "| created | " . ($fl->{created} // '?') . ' |';
-        push @md, "| updated | " . ($fl->{updated} // '?') . ' |';
-        push @md, "| resolved | " . $fl->{resolutiondate} . ' |' if $fl->{resolutiondate};
+        push @md, "| jira created | " . ($fl->{created} // '?') . ' |';
+        push @md, "| jira last updated | " . ($fl->{updated} // '?') . ' |';
+        push @md, "| jira resolved | " . $fl->{resolutiondate} . ' |' if $fl->{resolutiondate};
         if ($fl->{labels} && @{$fl->{labels}}) { push @md, '| labels | ' . join (', ', @{$fl->{labels}}) . ' |' }
         if ($fl->{attachment} && @{$fl->{attachment}}) {
             # link into attachments/, which JIRAAttachments.pl populates - the search API returns attachment
