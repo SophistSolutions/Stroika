@@ -8,22 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- PORT Issues/Scripts/ FROM PERL TO PYTHON, and lose the perl. Raised 2026-08-17; LGP prefers python and
-  wants the perl gone. Revisit ~2026-08-19.
-    - WHY IT IS PERL NOW: not a preference - `python3` on the dev box resolves to the Microsoft Store
-      *App Execution Alias* stub (`WindowsApps/python3` -> AppInstallerPythonRedirector.exe), which prints
-      "Python was not found" and exits. So python LOOKED absent. It is not.
-    - THE REAL INSTALLS: C:\Python312 (3.12.3, verified working) and C:\Python310. Fix the shadowing via
-      Settings -> Apps -> Advanced app settings -> App execution aliases -> turn OFF python.exe/python3.exe,
-      or put C:\Python312 ahead of WindowsApps on PATH.
-    - PORT IS EASY: everything needed is stdlib (json, urllib.request, ssl) - no pip, no new dependency.
-      5 scripts: JIRAExport.sh, JIRAAttachments.pl, JIRANormalize.pl, GitHubImport.pl, GitHubProjectSync.pl,
-      gql.pl.
-    - COUNTER-ARGUMENT to weigh: perl is ALREADY a Stroika build prerequisite (configure is perl;
-      Build/Lib/Perl/*.pl; StrawberryPerl is fetched as a third-party component), whereas python is not. So
-      perl scripts add no dependency to a project whose whole pitch is being cheap to consume. Decide
-      whether Issues/Scripts (operational, not build) has to answer to that constraint at all.
-
 - JIRA: failed/lost tickets, and whether to stay on stroika.atlassian.net at all.
   EXPORTED 2026-08-16: 1025 issues (STK-1..STK-1029), 11MB of JSON, via `.claude/jira-export.sh`
   (needs an API token in a creds file - self-service at id.atlassian.com, no support ticket).
