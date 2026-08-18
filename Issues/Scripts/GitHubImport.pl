@@ -19,7 +19,12 @@
 # equivalent is preserved in the issue BODY two ways:
 #   - a machine-readable <!-- jira-import: {...} --> comment (invisible when rendered, greppable, and
 #     re-parseable later if this ever needs to feed a Project field or a re-sync), and
-#   - the human-readable table already in Issues/Archive/STK-NNNN.md.
+#   - the human-readable table rendered into STK-NNNN.md.
+#
+# NB THE .md FILES ARE NO LONGER CHECKED IN - they were dropped once the migration finished. This script
+# still reads STK-NNNN.md beside STK-NNNN.json to build a body, so regenerate them first:
+#   perl Issues/Scripts/JIRANormalize.pl .claude/jira-archive /tmp/rendered --md
+# and point ARCHIVE at that directory. Without them every body would be metadata and nothing else.
 # That matters most for 'updated' - the last-modified date BEFORE import - because GitHub stamps
 # created_at/updated_at as the import moment and there is no way to set them.
 #

@@ -26,35 +26,25 @@ resolve `STK-NNN` to the corresponding GitHub issue, per `STK-to-GitHub.tsv`.
 
 ## Archive/
 
-A point-in-time export of the issue database, **two files per issue**, because no single format does
-both jobs:
+A point-in-time export of the issue database: `STK-NNNN.json`, one file per issue, zero-padded so the
+directory sorts numerically. Plus `attachments/`.
 
-| | purpose | lossy? |
-|---|---|---|
-| `STK-NNNN.json` | restore / migrate. Structure: ids, links, status, resolution, timestamps, custom fields, comment identity. | no, for practical purposes - see below |
-| `STK-NNNN.md`   | read / grep / review a diff. Rendered plain text. | yes, deliberately |
+This exists because the tracker is hosted, and hosted things lose data - some of this database went
+missing once and came back only after complaint, with no local copy at the time. That argument did NOT
+retire with JIRA: GitHub can equally lose data, suspend an account, or change terms, so a copy that is
+not on someone else's servers is still the point. ~14.6MB on disk, 0.84MB of git objects.
 
-Zero-padded so the directory sorts numerically.
-
-Why both: this archive exists because the tracker is hosted, and hosted things lose data - some of
-this database went missing once and came back only after complaint, with no local copy at the time.
-Meeting that requirement needs the JSON, since markdown would let you *read* the history but not
-*rebuild* it. But the reason it lives in this repo rather than a repo of its own is co-location - so
-`grep STK-972` finds the `@todo` and the ticket together, offline - and that needs the markdown,
-because JIRA stores text in Atlassian Document Format, fragmented across nested nodes: grepping the
-JSON for a sentence fails as soon as a bold word or line break splits it.
-
-It is cheap enough that having both is not worth arguing about: 14.6MB + 1.4MB on disk compresses to
-**0.84MB + 0.34MB** of git objects. And since it is one file per issue rather than one per API page,
-a refresh only rewrites issues that actually changed - at this project's rate (~20 issue updates
-across 2025-2026) that is kilobytes a year.
+There used to be a rendered `STK-NNNN.md` beside each `.json`. They were dropped once the migration
+finished: they existed to be readable/greppable history AND to be the GitHub issue bodies, and the second
+purpose is spent now that the issues are in GitHub. `Scripts/JIRANormalize.pl --md` still generates them
+if you want them - see the note under Scripts/ about needing them for `GitHubImport.pl`.
 
 ### Rules
 
-- **Never hand-edit anything in `Archive/`.** Both forms are generated. Fix the tracker, or fix the
-  scripts and regenerate.
-- The `.md` files are derived from the `.json` data, so improving the renderer churns all of them in
-  one diff. That is expected; keep such a commit separate from content refreshes.
+- **Never hand-edit anything in `Archive/`.** It is generated. Fix the source, or fix the scripts and
+  regenerate.
+- The `.json` is canonical (sorted keys, stable indent) with empty fields dropped, so a refresh produces a
+  readable one-line diff per changed field rather than a reshuffle.
 
 ### Known gaps
 
@@ -111,7 +101,18 @@ echo '<graphql>' | perl Issues/Scripts/gql.pl                # Projects v2 has n
 `--config` file so it never appears in the process list, and never echoes it. Keep that file outside
 the repo, mode 600.
 
-The raw paged JSON is scratch - it is not checked in. Only the normalized per-issue pair is.
+The raw paged JSON is scratch - it is not checked in. Only the normalized per-issue `.json` is.
+
+**`GitHubImport.pl` needs the `.md` renderings, which are no longer checked in.** It reads
+`STK-NNNN.md` beside `STK-NNNN.json` to build an issue body, so regenerate them into a scratch
+directory first and point it there:
+
+```bash
+perl Issues/Scripts/JIRANormalize.pl .claude/jira-archive /tmp/rendered --md
+```
+
+Without that, every body would be the metadata comment and nothing else. This only matters if you re-run
+the import or `--patch-bodies`; the migration itself is done.
 
 `JIRAExport.sh` auto-detects whether the site serves the newer `/rest/api/3/search/jql`
 (nextPageToken paging) or the older `/rest/api/3/search` (startAt paging); Atlassian has been
