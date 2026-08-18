@@ -14,17 +14,9 @@ Generally will track stuff here between releases
     - WHAT IS ACTUALLY MISSING: exactly four consecutive tickets - STK-1017, 1018, 1019, 1020.
       Everything else in 1..1029 is present. Four in a row is a bulk delete or the tail of the
       incident, not random attrition - that is the lead to chase.
-    - ALL 321 STK tickets referenced from source are present, so every in-code bug link resolves.
     - THE EXPORT IS NOT YET SAFE: it is in gitignored .claude/jira-archive, ie one disk, unversioned,
       unpushed - the same single point of failure as before. Give it a real home (separate private
       repo is the obvious one) before calling this done.
-    - STILL TO DO: one Backup Manager zip from the JIRA admin UI - no token needed, and it is the only
-      thing that captures ATTACHMENTS, which the API export cannot.
-    - MIGRATION (undecided): GitHub Issues is the recommendation, on the same "cheap for other people
-      to consume" grounds as the cmake item - has_issues is on but there is exactly 1 open issue while
-      JIRA holds 1025, ie outsiders have no working channel. Cost is lower than it looks: 180 of the
-      192 in-code links go through stroika-bugs.sophists.com, which is OUR IIS box issuing a 302, so
-      re-point the redirect rather than rewriting 122 files.
 
 - ROTATE the personal access token stored in plaintext in a local (NOT in-repo) git config on the
   Windows dev box - github.com/settings/tokens, revoke and reissue. Noticed 2026-08-14. It is in a
