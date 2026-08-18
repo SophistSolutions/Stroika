@@ -62,35 +62,6 @@ Generally will track stuff here between releases
       OrderBy item above). Choosing a policy by size needs a CHEAP size, and nullopt has an obvious
       right answer there (use eSeq). Until something concrete needs it, do not add it.
 
-- CMAKE CONVERSION - scheduled for NEXT release (~Sept 2026), still tentative.
-  DRIVER: LGP wants Stroika to be cheap for OTHER PEOPLE to consume. That is the whole argument -
-  find_package/FetchContent/vcpkg/Conan, ie the normal ways a C++ project takes a dependency. Today,
-  using Stroika means adopting Stroika's build system, and no amount of patching the hand-rolled make
-  changes that. Decide this on THAT basis, not on any individual build bug.
-  Secondary wins: header dependency tracking for free (see the DECIDED note below), native MSVC builds with no
-  MSYS/Cygwin involved, IDE project generation and CTest, and the removal of a whole class of
-  hand-rolled-build bug - the swallowed exit statuses and missing failure propagation fixed in
-  c02ebaa1c6 / 9caa6f69f9 exist BECAUSE the build is bespoke.
-  SCOPE - weeks, and most of it is NOT the compile rules. What has to be re-expressed:
-    - the named-configuration system (ConfigurationFiles/*.xml + the perl 'configure' + config tags +
-      per-feature flags) -> CMakePresets/cache vars. NB CMakePresets is a clumsier fit than what we
-      have now; the tags model is genuinely good and some expressiveness will be lost.
-    - ThirdPartyComponents' fetch/patch/build of boost/openssl/curl/xerces/mongo-cxx ->
-      FetchContent/ExternalProject, per component. boost and openssl are the usual pain.
-    - Skel + Skel-Templates - this is PUBLIC API for downstream apps, so every Skel-generated app
-      breaks and needs a CMake equivalent.
-    - HTMLViewCompiler/.swsp custom build steps; the REMOTE=/valgrind test paths; the docker build
-      VMs; CI.
-  DE-RISK FIRST: a CMake build covering ONLY the Foundation library + the test suite - no third-party
-  fetching, no Skel, no configure - is a few days and answers most of the open questions (does the
-  model fit, where is the friction, what will ThirdPartyComponents really cost) without committing to
-  the whole thing.
-  DECIDED 2026-08-12: do NOT do .d/header-dependency work in the hand-rolled build first. It would be
-  ~1 day and 100% thrown away by this conversion. Live with the limitation until then: there is NO
-  header dependency tracking (an object depends on its .cpp and nothing else), so editing a header
-  rebuilds nothing and only 'library-clobber' gives a build worth trusting - AGENTS.md now says so
-  (89a38cf2a2). A run-tests staleness warning was considered and rejected: it would cover tests only,
-  not samples or any other use.
 - test HearHE
 - do a performance compare with checked in data
 
