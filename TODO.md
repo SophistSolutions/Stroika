@@ -8,16 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- JIRA: failed/lost tickets, and whether to stay on stroika.atlassian.net at all.
-  EXPORTED 2026-08-16: 1025 issues (STK-1..STK-1029), 11MB of JSON, via `.claude/jira-export.sh`
-  (needs an API token in a creds file - self-service at id.atlassian.com, no support ticket).
-    - WHAT IS ACTUALLY MISSING: exactly four consecutive tickets - STK-1017, 1018, 1019, 1020.
-      Everything else in 1..1029 is present. Four in a row is a bulk delete or the tail of the
-      incident, not random attrition - that is the lead to chase.
-    - THE EXPORT IS NOT YET SAFE: it is in gitignored .claude/jira-archive, ie one disk, unversioned,
-      unpushed - the same single point of failure as before. Give it a real home (separate private
-      repo is the obvious one) before calling this done.
-
 - ROTATE the personal access token stored in plaintext in a local (NOT in-repo) git config on the
   Windows dev box - github.com/settings/tokens, revoke and reissue. Noticed 2026-08-14. It is in a
   world-readable file, and it was read into an AI session transcript, which is enough on its own -
@@ -32,6 +22,7 @@ Generally will track stuff here between releases
   size the target itself, so it was not adopted (and that note is no longer in Iterable<T>::As<> ()
   - a negative result does not need a causal story attached to it). Do not reintroduce reserve ()
   without new evidence; the size () item below is the thing that would change the picture.
+  
 - Iterable<T>::PeekSize () -> optional<size_t> - a way to ask "do you know your size cheaply?".
   Not built. Discussed at length 2026-08-13/14; recording the conclusions so it is not re-derived.
     - The DataStructure/container half of this IS done: both linked lists now cache their length, so
