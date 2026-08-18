@@ -56,7 +56,5 @@ Generally will track stuff here between releases
 - test HearHE
 - do a performance compare with checked in data
 
-- function vs movable_function etc winging on internet
-
 + Consider adding Mapping_stdflatmap? Is there such a thing? Maybe fast for small sizes?
 
