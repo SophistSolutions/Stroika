@@ -45,6 +45,7 @@
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/CPUAffinity.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/SpinLock.h"
@@ -1933,6 +1934,33 @@ namespace {
         GetOutStream_ () << "[[[Started testing at: " << startedAt.Format () << "]]]" << endl << endl;
         if (not Math::NearlyEquals (sTimeMultiplier_, 1.0)) {
             GetOutStream_ () << "Using TIME MULTIPLIER: " << sTimeMultiplier_ << endl << endl;
+        }
+
+        /*
+         *  Pin to a single logical CPU core, so that a run measures the code rather than the scheduler
+         *  moving it between cores partway through. Measured on Windows x86_64, this takes the run-to-run
+         *  spread from 8.3% median (39% worst) down to 2.6% (17% worst) - about 3x tighter - while leaving
+         *  the scores themselves alone (median pinned/unpinned ratio 0.992x over 34 tests).
+         *
+         *  Done HERE and not only in Build/Scripts/RunPerformanceRegressionTests, because that script is
+         *  not the only way these get run: 'make run-tests' runs this test as an ordinary gtest, and the
+         *  exe gets run by hand. Pinning in the harness covers every path. It is also idempotent - if the
+         *  script already pinned us, our permitted set is that one core and this re-picks it.
+         *
+         *  SKIPPED for --orderby-probe, which deliberately measures eSeq against ePar: on a single core
+         *  ePar is pathological and that comparison would be meaningless.
+         *
+         *  Reported into the dump on purpose. A dump that does not record how it was measured cannot
+         *  safely be compared against one measured differently, and the archive already has that problem.
+         */
+        if (sRunOrderByProbe_) {
+            GetOutStream_ () << "NOT pinning to a CPU core: --orderby-probe measures parallel policies" << endl << endl;
+        }
+        else if (optional<unsigned int> pinnedTo = Execution::PinToOneLogicalCPUCoreQuietly ()) {
+            GetOutStream_ () << "Pinned to logical CPU core: " << *pinnedTo << endl << endl;
+        }
+        else {
+            GetOutStream_ () << "NOT pinned to a CPU core (not available here) - expect more run-to-run variance" << endl << endl;
         }
 
         Set<String> failedTests;

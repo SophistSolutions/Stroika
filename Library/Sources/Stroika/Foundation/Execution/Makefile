@@ -17,6 +17,7 @@ Objs	:=	\
 	$(ObjDir)AbortableMutex${OBJ_SUFFIX}\
 	$(ObjDir)Activity${OBJ_SUFFIX}\
 	$(ObjDir)CommandLine${OBJ_SUFFIX}\
+	$(ObjDir)CPUAffinity${OBJ_SUFFIX}\
 	$(ObjDir)DLLSupport${OBJ_SUFFIX}\
 	$(ObjDir)Exceptions${OBJ_SUFFIX}\
 	$(ObjDir)FeatureNotSupportedException${OBJ_SUFFIX}\

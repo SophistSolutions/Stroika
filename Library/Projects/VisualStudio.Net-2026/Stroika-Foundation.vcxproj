@@ -185,6 +185,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Activity.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CPUAffinity.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedException.cpp" />
@@ -594,6 +595,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Async.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CPUAffinity.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
@@ -1103,6 +1105,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Async.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\CPUAffinity.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />

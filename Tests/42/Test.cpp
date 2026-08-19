@@ -6,12 +6,14 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Async.h"
+#include "Stroika/Foundation/Execution/CPUAffinity.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
@@ -318,6 +320,58 @@ namespace {
         Mapping<String, String>   env = Execution::kEnvironment;
         EXPECT_TRUE (env.ContainsKey ("PATH"));
         DbgTrace ("env={}"_f, env);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution, CPUAffinity)
+    {
+        Debug::TraceContextBumper ctx{"CPUAffinity"};
+        /*
+         *  NB: this test MUTATES the affinity of the running test process, so everything below is wrapped
+         *  in a Finally that puts it back. Leaving the process pinned would not fail anything here - it
+         *  would quietly serialize every test that runs after this one, which is a far worse failure mode
+         *  than an assertion.
+         */
+        optional<LogicalCPUCoreSet> originally = GetCPUAffinity ();
+        [[maybe_unused]] auto&&     cleanup    = Execution::Finally ([&] () noexcept {
+            if (originally and not originally->empty ()) {
+                (void)SetCPUAffinityQuietly (*originally);
+            }
+        });
+
+        if constexpr (kCPUAffinitySupported) {
+            // we should be able to see what we are allowed to run on, and it must be self-consistent
+            EXPECT_TRUE (originally.has_value ());
+            if (originally) {
+                DbgTrace ("initial affinity={}, logical cores={}"_f, *originally, Common::GetNumberOfLogicalCPUCores ());
+                EXPECT_FALSE (originally->empty ()); // we are running, so at least one core is permitted
+                for (unsigned int c : *originally) {
+                    EXPECT_TRUE (c < Common::GetNumberOfLogicalCPUCores ());
+                }
+            }
+
+            // pin to one core, and check that the mask we read back is exactly that one core
+            optional<unsigned int> pinnedTo = PinToOneLogicalCPUCoreQuietly ();
+            EXPECT_TRUE (pinnedTo.has_value ());
+            if (pinnedTo) {
+                EXPECT_TRUE (originally->Contains (*pinnedTo)); // must have chosen from what we held
+                optional<LogicalCPUCoreSet> now = GetCPUAffinity ();
+                EXPECT_TRUE (now.has_value ());
+                if (now) {
+                    EXPECT_TRUE (*now == LogicalCPUCoreSet{*pinnedTo});
+                }
+            }
+
+            // widening to a core we do not hold, or one that does not exist, must fail rather than appear to work
+            EXPECT_FALSE (SetCPUAffinityQuietly (LogicalCPUCoreSet{Common::GetNumberOfLogicalCPUCores () + 1000}));
+        }
+        else {
+            // macOS and friends: every entry point must be a well-behaved no-op, not a crash and not a lie
+            EXPECT_FALSE (originally.has_value ());
+            EXPECT_FALSE (PinToOneLogicalCPUCoreQuietly ().has_value ());
+            EXPECT_FALSE (SetCPUAffinityQuietly (LogicalCPUCoreSet{0}));
+        }
     }
 }
 
