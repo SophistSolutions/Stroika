@@ -8,6 +8,8 @@
 #		EXE=Builds/my-gcc-6.1.0-release-c++17/Tests/Test49 Build/Scripts/RunPerformanceRegressionTests
 #		EXE=Builds/Release/Tests/Test49 USE_TEST_BASENAME=FRED Build/Scripts/RunPerformanceRegressionTests
 #		MULTIPLIER=1 Build/Scripts/RunPerformanceRegressionTests
+#		NO_PIN=1 Build/Scripts/RunPerformanceRegressionTests      # skip CPU pinning
+#		PIN_CPU=3 Build/Scripts/RunPerformanceRegressionTests     # pin to a specific CPU
 #
 VER=`Build/Scripts/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
@@ -18,10 +20,42 @@ export DETECTED_HOST_OS=`Build/Scripts/DetectedHostOS`
 
 
 MULTIPLIER=${MULTIPLIER-15}
+
+#
+# CPU PINNING - the one variance reduction that is free here.
+#
+# The perf tests are single-threaded (they compare a Stroika call against a stdlib call in a loop), so
+# pinning changes nothing semantically, and it stops the scheduler migrating the process between cores
+# part way through a measurement. Worth doing on every platform, not just GNU/Linux - taskset ships with
+# both cygwin and msys2, so Windows can have it too.
+#
+# DO NOT hardcode 'taskset -c 0', which is what this script used to do on GNU/Linux. Inside a container
+# started with --cpuset-cpus, or on a VM, CPU 0 may not be in the allowed set, and taskset then fails
+# outright:
+#		$ docker run --cpuset-cpus=2,3 ... taskset -c 0 true
+#		taskset: failed to set pid 9's affinity: Invalid argument
+# The redirection below has already created the output file by then, so the failure yields a ZERO-BYTE
+# dump while this script still prints "done". There is one such file in the archive
+# (2.0/PerformanceDump-Ubuntu1804_x86_64-2.0a234.txt). So ask what affinity we actually have and use
+# the first CPU from that, and if pinning still will not work, say so and carry on unpinned.
+#
+# CAVEAT if the default OrderBy () policy ever becomes parallel (see the @todo in Iterable.inl): pinning
+# would then serialize it and change that test's score. Revisit this if so.
+#
+PIN_PREFIX=""
+if [ "${NO_PIN-0}" != "1" ] && command -v taskset > /dev/null 2>&1 ; then
+	PIN_CPU=${PIN_CPU-`taskset -pc $$ 2>/dev/null | sed -e 's/^.*: *//' -e 's/[,-].*$//'`}
+	if [ -n "$PIN_CPU" ] && taskset -c "$PIN_CPU" true > /dev/null 2>&1 ; then
+		PIN_PREFIX="taskset -c $PIN_CPU "
+	else
+		echo "note: cannot pin to a CPU (tried '${PIN_CPU:-none}') - running unpinned, expect more variance"
+	fi
+fi
+
 if [ "$DETECTED_HOST_OS" == "Darwin" ] ; then
     EXE=${EXE-"Builds/Release/Tests/$PERF_TEST"}
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Release-arm64"; fi
-    CMDRUN_PREFIX="nice -10 "
+    CMDRUN_PREFIX="nice -10 $PIN_PREFIX"
 elif [ "$DETECTED_HOST_OS" == "Linux" ] ; then
     # Do something under GNU/Linux platform
     EXE=${EXE-"Builds/g++-optimized/Tests/$PERF_TEST"}
@@ -30,7 +64,7 @@ elif [ "$DETECTED_HOST_OS" == "Linux" ] ; then
 	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-13-release++2b/Tests/$PERF_TEST"; fi
 	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-14-release++23/Tests/$PERF_TEST"; fi
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="linux-g++-7.3-x64"; fi
-    CMDRUN_PREFIX="nice -10 taskset -c 0 "
+    CMDRUN_PREFIX="nice -10 $PIN_PREFIX"
 elif [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
     # Do something under Windows NT platform
     EXE2=${EXE-"Builds/Release-x86_64/Tests/$PERF_TEST"}
@@ -38,17 +72,43 @@ elif [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; th
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-${DETECTED_HOST_OS}-vs2k"; fi
     USE_TEST_BASENAME_APP="x86-"
     USE_TEST_BASENAME_APP2="x86_64-"
-    CMDRUN_PREFIX=""
+    #
+    # NB: no 'nice' here, deliberately - every checked-in Windows dump was produced without it, and the
+    # thresholds in Tests/52/Test.cpp are calibrated against Windows x86_64 numbers (that being the only
+    # configuration where kPrintOutIfFailsToMeetPerformanceExpectations_ is true). Adding it would shift
+    # the measurement out from under them.
+    #
+    CMDRUN_PREFIX="$PIN_PREFIX"
 else
     echo "WARNING - unrecognized OS"
 fi
 
+#
+# Sanity check each dump before leaving it behind. A run that dies, or that somehow writes something
+# other than performance output, used to be indistinguishable from a good one until someone tried to read
+# the archive years later: 52 of the 627 checked-in dumps contain no performance data at all (d18-d21,
+# every platform - they hold a passing google-test log instead), and one is empty. Cheap to catch here.
+#
+CheckDump ()
+{
+	local f="$1"
+	if [ ! -s "$f" ] ; then
+		echo "*** WARNING: $f is EMPTY - the test run failed; not a usable dump"
+	elif ! grep -q PERFORMANCE_SCORE "$f" ; then
+		echo "*** WARNING: $f contains no PERFORMANCE_SCORE lines - wrong output captured; not a usable dump"
+	fi
+}
+
+OUT1="Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP$VER.txt"
 if [ ! -e "$EXE" ] ; then echo "Warning: $EXE not found"; fi
-echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP$VER.txt ... "
-$CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP$VER.txt
+echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > $OUT1 ... "
+$CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > "$OUT1"
+CheckDump "$OUT1"
 
 if [ -e "$EXE2" ] ; then
-    echo -n "$CMDRUN_PREFIX" "$EXE2 --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP2$VER.txt ... "
-    $CMDRUN_PREFIX $EXE2 --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP2$VER.txt
+    OUT2="Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP2$VER.txt"
+    echo -n "$CMDRUN_PREFIX" "$EXE2 --x $MULTIPLIER --show > $OUT2 ... "
+    $CMDRUN_PREFIX $EXE2 --x $MULTIPLIER --show > "$OUT2"
+    CheckDump "$OUT2"
 fi
 echo "done"

@@ -1937,6 +1937,50 @@ namespace {
 
         Set<String> failedTests;
 
+        /*
+         *  ABOUT THE warnIfPerformanceScoreHigherThan ARGUMENT (the last double in each Tester () call).
+         *
+         *  These are calibrated for ONE configuration - the only one that can warn. See
+         *  kPrintOutIfFailsToMeetPerformanceExpectations_ above: it requires _MSC_VER, a release build, block
+         *  allocation, no default tracing, and sizeof (void*) == 8. So a warning is possible on Windows
+         *  x86_64 release ONLY, and the wide spread of these scores across platforms (about 4x, MacOS m1 and
+         *  32-bit being the far ends) is irrelevant to picking these numbers. Calibrate against the
+         *  Windows-x86_64 dumps in Tests/HistoricalPerformanceRegressionTestResults/ and nothing else -
+         *  mixing the other platforms in produces values 2-4x too loose, which is silently useless.
+         *
+         *  Rederive with:
+         *
+         *      Tests/Scripts/AnalyzePerformanceThresholds.py [PerformanceDump.txt]
+         *
+         *  which flags the two failure modes: DEAD (threshold so far above the real score that only a
+         *  multi-x regression trips it - 7 were, before 3.0d24) and HAIR-TRIGGER (threshold at or below the
+         *  typical value, so it warns constantly and means nothing - about 20 were).
+         *
+         *  The rule used for the 3.0d24 pass: worst per-release MEDIAN on Windows x86_64 over the releases
+         *  since the workloads were reworked, times 1.20. Per-release median rather than worst single
+         *  observation, because one outlier run would otherwise set the bound (String Characters::Format ()
+         *  ranges 2.88-3.54 per release but has a lone 5.99, which would have set 6.89 instead of 4.25).
+         *  The 1.20 is about 3x the 7% per-release run-to-run noise measured on this platform, so ordinary
+         *  jitter cannot trip it.
+         *
+         *  THAT MARGIN CAN SHRINK, once there is pinned history to calibrate from.
+         *  Build/Scripts/RunPerformanceRegressionTests now pins the run to one CPU, and measured back to
+         *  back on this box that takes the run-to-run spread from 8.3% median (39% worst) down to 2.9%
+         *  median (17% worst) - about 3x tighter - while moving the scores themselves not at all (median
+         *  pinned/unpinned 0.992x, and both pinned runs warn on nothing with the values below). The
+         *  numbers below are still derived from UNPINNED dumps, since that is all the archive holds. Once
+         *  a few pinned releases exist, rederiving with a ~1.10 margin would make these detect roughly
+         *  twice as small a regression as they can today.
+         *
+         *  AND NOTE: a threshold is only meaningful while the workload behind it is unchanged. Every one of
+         *  these went stale when the tests were reworked around 3.0d11-d16 - the +=wchar_t[] 100x baseline
+         *  went 5.8s -> 93.9s, which moved its score 66 -> 7 while leaving the threshold at 78, i.e. dead
+         *  for four releases. Do not calibrate across that boundary, and if you change what a test measures,
+         *  rederive its threshold in the same commit.
+         *
+         *  Tests too new to calibrate (fewer than 4 releases of data) are deliberately left alone.
+         */
+
 #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
             Stroika::Frameworks::Test::WarnTestIssue ("qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy and "
@@ -1948,21 +1992,21 @@ namespace {
         Tester ("Test of simple locking strategies (mutex v shared_ptr copy)", Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
                 Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, .90, &failedTests);
         Tester ("Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
-                Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, .51, &failedTests);
+                Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, 0.61, &failedTests);
         Tester ("Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
-                Test_StructWithStringsFillingAndCopying<String>, L"Characters::String", 65000, 0.49, &failedTests);
+                Test_StructWithStringsFillingAndCopying<String>, L"Characters::String", 65000, 0.6, &failedTests);
         Tester ("Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
-                Test_StructWithStringsFillingAndCopying2<String>, L"Characters::String", 66000, 0.45, &failedTests);
+                Test_StructWithStringsFillingAndCopying2<String>, L"Characters::String", 66000, 0.76, &failedTests);
         Tester ("Simple String append test (+='string object') 10x", Test_SimpleStringAppends1_<wstring>, L"wstring",
-                Test_SimpleStringAppends1_<String>, L"Characters::String", 1350000, 4.9, &failedTests);
+                Test_SimpleStringAppends1_<String>, L"Characters::String", 1350000, 2.08, &failedTests);
         Tester ("Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, L"wstring",
-                Test_SimpleStringAppends2_<String>, L"Characters::String", 1500000, 4.1, &failedTests);
+                Test_SimpleStringAppends2_<String>, L"Characters::String", 1500000, 5.86, &failedTests);
         Tester ("Simple String append test (+=wchar_t[]) 100x", Test_SimpleStringAppends3_<wstring>, L"wstring",
-                Test_SimpleStringAppends3_<String>, L"Characters::String", 360000, 78, &failedTests);
-        Tester ("String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 2.1, &failedTests);
+                Test_SimpleStringAppends3_<String>, L"Characters::String", 360000, 10, &failedTests);
+        Tester ("String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 2.05, &failedTests);
         Tester ("wstringstream << test", Test_OperatorINSERT_ostream_<wstring>, L"wstring", Test_OperatorINSERT_ostream_<String>,
-                L"Characters::String", 6000, 1.4, &failedTests);
-        Tester ("String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Characters::String", 2700000, 1.7, &failedTests);
+                L"Characters::String", 6000, 1.58, &failedTests);
+        Tester ("String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Characters::String", 2700000, 2.47, &failedTests);
         struct MemStreamOfChars_ : public MemoryStream::Ptr<Characters::Character> {
             MemStreamOfChars_ ()
                 : Ptr{MemoryStream::New<Characters::Character> ()}
@@ -1975,39 +2019,39 @@ namespace {
             [] () {
                 Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([] (const MemStreamOfChars_& w) { return w.As<String> (); });
             },
-            L"MemoryStream<Characters::Character>", 210000, 1.2, &failedTests);
+            L"MemoryStream<Characters::Character>", 210000, 1.57, &failedTests);
         Tester (
             "wstringstream versus StringBuilder",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             [] () {
                 Test_StreamBuilderStringBuildingWithExtract_<StringBuilder<>> ([] (const StringBuilder<>& w) { return w.As<String> (); });
             },
-            "StringBuilder", 220000, 0.48, &failedTests);
+            "StringBuilder", 220000, 0.53, &failedTests);
         Tester ("Sequence<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, "Sequence<int>", 125000, 0.75, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, "Sequence<int>", 125000, 1.44, &failedTests);
         Tester ("Sequence<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
-                Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, "Sequence<string>", 9900, 0.33, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, "Sequence<string>", 9900, 0.31, &failedTests);
         Tester ("Sequence_DoublyLinkedList<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>,
-                "Sequence_DoublyLinkedList<int>", 120000, 5.1, &failedTests);
+                "Sequence_DoublyLinkedList<int>", 120000, 11, &failedTests);
         Tester ("Sequence_Array<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-                Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, L"Sequence_Array<int>", 120000, 0.7, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, L"Sequence_Array<int>", 120000, 1.42, &failedTests);
         Tester ("Sequence_stdvector<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, L"Sequence_stdvector<int>", 120000,
-                1.1, &failedTests);
+                1.97, &failedTests);
         Tester ("Sequence_DoublyLinkedList<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>,
-                "Sequence_DoublyLinkedList<string>", 9900, 0.55, &failedTests);
+                "Sequence_DoublyLinkedList<string>", 9900, 0.84, &failedTests);
         Tester (
             "Collection<int> basics",
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([] (vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([] (Collection<int>* c) { c->Add (2); }); },
-            L"Collection<int>", 113000, 4.9, &failedTests);
+            L"Collection<int>", 113000, 12, &failedTests);
         Tester (
             "Collection<string> basics",
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string{}); }); },
-            "Collection<string>", 9600, 0.85, &failedTests);
+            "Collection<string>", 9600, 1.38, &failedTests);
         {
             // In Stroika 2.1b15, we changed the default Collection factory to use SortedCollection_stdmultiset. This is probably a good choice,
             // but is a small pessimization so include original Collection_stdforward_list for comparison (maybe orig was something else but this works).
@@ -2021,7 +2065,7 @@ namespace {
                     Test_CollectionVectorAdditionsAndCopies_<Collection_LinkedList<string>> (
                         [] (Collection_LinkedList<string>* c) { c->Add (string{}); });
                 },
-                "Collection_LinkedList<string>", 9600, 0.6, &failedTests);
+                "Collection_LinkedList<string>", 9600, 0.86, &failedTests);
             Tester (
                 "Collection_stdforward_list<string> basics",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
@@ -2029,7 +2073,7 @@ namespace {
                     Test_CollectionVectorAdditionsAndCopies_<Collection_stdforward_list<string>> (
                         [] (Collection_stdforward_list<string>* c) { c->Add (string{}); });
                 },
-                "Collection_stdforward_list<string>", 9600, 0.6, &failedTests);
+                "Collection_stdforward_list<string>", 9600, 0.92, &failedTests);
             Tester (
                 "SortedCollection_stdmultiset<string> basics",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
@@ -2037,7 +2081,7 @@ namespace {
                     Test_CollectionVectorAdditionsAndCopies_<SortedCollection_stdmultiset<string>> (
                         [] (SortedCollection_stdmultiset<string>* c) { c->Add (string{}); });
                 },
-                "SortedCollection_stdmultiset<string>", 9600, 1.0, &failedTests);
+                "SortedCollection_stdmultiset<string>", 9600, 1.38, &failedTests);
         }
         {
             using Containers::Concrete::SortedCollection_stdmultiset;
@@ -2065,18 +2109,18 @@ namespace {
                     Test_CollectionVectorAdditionsAndCopies_<SortedCollection_stdmultiset<string>> (
                         [] (SortedCollection_stdmultiset<string>* c) { c->Add (kRandomStrings_[rand () % kRandomStrings_.size ()]); });
                 },
-                "SortedCollection_stdmultiset<string>", 9600, 1.3, &failedTests);
+                "SortedCollection_stdmultiset<string>", 9600, 1.8, &failedTests);
         }
-        Tester ("std::set<int> vs Set<int>", Test_SetvsSet_<set<int>>, "set<int>", Test_SetvsSet_<Set<int>>, "Set<int>", 13000, 0.21, &failedTests);
+        Tester ("std::set<int> vs Set<int>", Test_SetvsSet_<set<int>>, "set<int>", Test_SetvsSet_<Set<int>>, "Set<int>", 13000, 0.31, &failedTests);
         Tester ("String Characters::Format ()", Test_String_Format_<wstring>, "sprintf", Test_String_Format_<String>,
-                "String Characters::Format", 2100000, 1.8, &failedTests);
+                "String Characters::Format", 2100000, 4.25, &failedTests);
         Tester ("BLOB versus vector<byte>", Test_BLOB_Versus_Vector_Byte<vector<byte>>, L"vector<byte>",
-                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, "BLOB", 13000, 1.0, &failedTests);
+                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, "BLOB", 13000, 1.26, &failedTests);
         Tester ("BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, L"vector<byte>",
-                Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, "BLOB", 5000, 0.85, &failedTests);
+                Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, "BLOB", 5000, 1.17, &failedTests);
         Tester ("Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, "Test_JSONReadWriteFile",
-                Debug::IsRunningUnderValgrind () ? 2 : 640, 0.5, &failedTests);
-        Tester ("Test_Optional_", Test_Optional_::DoRunPerfTest, "Test_Optional_", 4875, 0.5, &failedTests);
+                Debug::IsRunningUnderValgrind () ? 2 : 640, 0.39, &failedTests);
+        Tester ("Test_Optional_", Test_Optional_::DoRunPerfTest, "Test_Optional_", 4875, 0.22, &failedTests);
         {
             // Guards against OrderBy () being pessimized. Baseline is what the same sort costs with plain
             // std machinery, so the score is 'what Stroika's OrderBy () adds over stable_sort'.

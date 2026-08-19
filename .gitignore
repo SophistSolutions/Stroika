@@ -23,3 +23,8 @@ xcuserdata/
 
 # Local Claude Code settings (per-machine permissions, etc.) - not shared across machines.
 .claude/
+
+# Python bytecode cache - the scripts under Tests/Scripts/ are importable as modules (they share a
+# dump parser), and importing one writes a __pycache__ beside it.
+__pycache__/
+*.pyc

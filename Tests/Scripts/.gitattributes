@@ -5,3 +5,5 @@
 PrintTestName text eol=lf
 PrintTestsList text eol=lf
 TestsList text eol=lf
+
+*.py text eol=lf

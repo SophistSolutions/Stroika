@@ -54,5 +54,4 @@ Generally will track stuff here between releases
       right answer there (use eSeq). Until something concrete needs it, do not add it.
 
 - test HearHE
-- do a performance compare with checked in data
 
