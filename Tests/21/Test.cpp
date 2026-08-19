@@ -1016,6 +1016,49 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Containers_Sequence, STLStyle_append_range_)
+    {
+        Debug::TraceContextBumper ctx{"{}::STLStyle_append_range_"};
+        // append_range () is the STL-style spelling of AppendAll () - named for C++23's
+        // vector::append_range (). It is a pure alias, so what these check is that it forwards faithfully:
+        // same result as AppendAll () for every source shape, and appends rather than replacing.
+        {
+            Sequence<int> viaAlias{1, 2};
+            Sequence<int> viaAppendAll{1, 2};
+            viaAlias.append_range (vector<int>{3, 4, 5});
+            viaAppendAll.AppendAll (vector<int>{3, 4, 5});
+            EXPECT_EQ (viaAlias, (Sequence<int>{1, 2, 3, 4, 5}));
+            EXPECT_EQ (viaAlias, viaAppendAll);
+        }
+        {
+            // a Stroika source, and appending to an empty target
+            Sequence<int> s;
+            s.append_range (Sequence<int>{1, 2, 3});
+            EXPECT_EQ (s, (Sequence<int>{1, 2, 3}));
+        }
+        {
+            // a non-random-access source (list), since AppendAll takes any input iterator range
+            Sequence<int> s{0};
+            s.append_range (list<int>{7, 8});
+            EXPECT_EQ (s, (Sequence<int>{0, 7, 8}));
+        }
+        {
+            // appending nothing must leave the target alone
+            Sequence<int> s{1, 2};
+            s.append_range (vector<int>{});
+            EXPECT_EQ (s, (Sequence<int>{1, 2}));
+        }
+        {
+            // non-trivially-copyable T
+            using Characters::String;
+            Sequence<String> s{"a"};
+            s.append_range (vector<String>{"b", "c"});
+            EXPECT_EQ (s, (Sequence<String>{"a", "b", "c"}));
+        }
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Containers_Sequence, CLEANUPS)
     {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check

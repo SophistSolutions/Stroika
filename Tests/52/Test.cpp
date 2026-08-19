@@ -571,6 +571,56 @@ namespace {
     }
 }
 
+#if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
+namespace {
+    /*
+     *  append_range () against the std spelling of the same operation - std::vector::append_range (), C++23.
+     *  A like-for-like pairing: both take an existing container and append the same N elements from the same
+     *  contiguous source, so the score is purely the cost of getting those elements in.
+     *
+     *  Deliberately a PROBE (kNoWarn_) and not a gate, though it compares against the standard library
+     *  rather than another Stroika path. Measured twice on the same machine it scored 55.9 and 29.7: the
+     *  Stroika side moved 2% between runs while the BASELINE moved 91%, because vector::append_range () of
+     *  1000 ints is ~90-180ns and most of that is the two allocations per iteration, not the memmove - and
+     *  allocator timing swings with heap state. A threshold loose enough to tolerate 30-56 could only catch
+     *  a >2.3x regression, which is a dead gate by the standards of AnalyzePerformanceThresholds.py. The
+     *  ratio is still far too large to be explained by that noise, so it serves fine as a before/after.
+     *
+     *  This entry is what proved the AppendAll () batching landed. Before it, append_range () forwarded to
+     *  an AppendAll () that made one VIRTUAL _IRep::Insert () call per element (a span of size 1 each), and
+     *  this scored 30-56x. With contiguous sources handed to the rep as a single span, it scores ~1.5x - the
+     *  residue being one dispatch plus the copy-on-write check against a bare memmove.
+     *
+     *  \note Guarded on __cpp_lib_containers_ranges: vector::append_range () is C++23, and Stroika only
+     *        requires C++20, so on an older toolchain this entry simply does not exist.
+     */
+    const vector<int>& AppendRange_SourceInts_ ()
+    {
+        static const vector<int> kData_ = [] () {
+            vector<int> r;
+            r.reserve (1000);
+            for (int i = 0; i < 1000; ++i) {
+                r.push_back (i);
+            }
+            return r;
+        }();
+        return kData_;
+    }
+    void Test_AppendRange_StdVector_ ()
+    {
+        vector<int> v{0};
+        v.append_range (AppendRange_SourceInts_ ());
+        EXPECT_TRUE (v.size () == 1001); // so nothing gets optimized away
+    }
+    void Test_AppendRange_Sequence_ ()
+    {
+        Sequence<int> s{0};
+        s.append_range (AppendRange_SourceInts_ ());
+        EXPECT_TRUE (s.size () == 1001);
+    }
+}
+#endif
+
 namespace {
     namespace Private_ {
         template <typename CONTAINER>
@@ -1676,7 +1726,12 @@ namespace {
          *
          *  So an N-element Sequence costs N virtual dispatches and N ReserveAtLeast () checks where one of
          *  each would do - _IRep::Insert () already takes a span<const T>, so the interface to batch through
-         *  exists and no backend would have to change. These entries are the BEFORE measurement for that.
+         *  exists and no backend would have to change.
+         *
+         *  Those entries drove the fix and now guard it. Before batching: int 60-70x, String 5.0-5.9x,
+         *  envelope-vs-concrete 1.25-1.37x. After: 1.30x, 1.00x, 0.99x - so an N-element Sequence<int> build
+         *  went 0.171s -> 0.0042s (~40x), and Sequence<String> now costs exactly what copying a
+         *  vector<String> costs, since both are just N string copies once the dispatch is gone.
          *
          *  Both element types are measured on purpose. The per-element overhead is fixed, so it should be a
          *  large share of the total for int and a small one for String - the same shape as every other
@@ -1853,9 +1908,9 @@ namespace {
              *      3. is the envelope's factory lookup a separate cost from the dispatch, or noise
              */
             (void)Tester (
-                "Build Sequence<int> from vector<int> vs vector<int> copy CTOR  <== BEFORE (batching AppendAll)",
-                [&] () { Baseline_VectorCopy_<int> (SourceInts_ ()); }, "vector<int> copy CTOR",
-                [&] () { Construct_Sequence_FromVector_<int> (SourceInts_ ()); }, "Sequence<int>{vector<int>}", kRunCount_, kNoWarn_);
+                "Build Sequence<int> from vector<int> vs vector<int> copy CTOR", [&] () { Baseline_VectorCopy_<int> (SourceInts_ ()); },
+                "vector<int> copy CTOR", [&] () { Construct_Sequence_FromVector_<int> (SourceInts_ ()); }, "Sequence<int>{vector<int>}",
+                kRunCount_, kNoWarn_);
             (void)Tester (
                 "Build Sequence<String> from vector<String> vs vector<String> copy CTOR",
                 [&] () { Baseline_VectorCopy_<String> (SourceStrings_ ()); }, "vector<String> copy CTOR",
@@ -2060,6 +2115,15 @@ namespace {
          *  multi-x regression trips it - 7 were, before 3.0d24) and HAIR-TRIGGER (threshold at or below the
          *  typical value, so it warns constantly and means nothing - about 20 were).
          *
+         *  AND CALIBRATE FROM THE LOWEST MULTIPLIER YOU CARE ABOUT, not from the archive's -x 15 dumps.
+         *  The score is multiplier-invariant for the FOUR-argument Tester () - both sides are measured, so the
+         *  multiplier cancels - but NOT for the two-argument form, where the baseline is synthetic (1/runCount
+         *  then scaled, i.e. exactly the multiplier in seconds) while the comparison is real work. If that work
+         *  does not scale linearly, the ratio moves: Test_JSONReadWriteFile runs 0.62ms/iteration at -x 1 but
+         *  0.40ms at -x 15 as warmup and file caching amortize, so it scores 0.396 versus 0.255. Calibrating
+         *  those two from -x 15 alone (as the 3.0d24 pass first did) produced a threshold that fired on plain
+         *  'make run-tests', which passes no -x at all.
+         *
          *  The rule used for the 3.0d24 pass: worst per-release MEDIAN on Windows x86_64 over the releases
          *  since the workloads were reworked, times 1.20. Per-release median rather than worst single
          *  observation, because one outlier run would otherwise set the bound (String Characters::Format ()
@@ -2133,6 +2197,28 @@ namespace {
             "StringBuilder", 220000, 0.53, &failedTests);
         Tester ("Sequence<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, "Sequence<int>", 125000, 1.44, &failedTests);
+        /*
+         *  GUARDS THE AppendAll () BATCHING. Building a Sequence<int> from a contiguous source hands the whole
+         *  range to _IRep::Insert () as one span; if that fast path ever stops firing - a concept tweak, a
+         *  refactor that loses contiguity, a source type that no longer satisfies it - this drops straight
+         *  back to one virtual dispatch per element and the score goes from ~1.3 to ~60. Threshold 1.6 is
+         *  1.25x the measured 1.30, so it catches far smaller damage than that too.
+         *
+         *  Unlike the --orderby-probe entries this runs every time, which is the point: a probe that has to be
+         *  asked for cannot notice a regression.
+         */
+        Tester (
+            "Build Sequence<int> from vector<int> vs vector<int> copy CTOR",
+            [] () { Test_IterableAlgorithms_::Baseline_VectorCopy_<int> (Test_IterableAlgorithms_::SourceInts_ ()); }, L"vector<int> copy CTOR",
+            [] () { Test_IterableAlgorithms_::Construct_Sequence_FromVector_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
+            "Sequence<int>{vector<int>}", 1000000, 2.3, &failedTests);
+#if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
+        // Sequence<int>::append_range () against std::vector<int>::append_range () - the same operation, so
+        // the score is the cost of Stroika's per-element _IRep::Insert () dispatch. See the batching @todo in
+        // Sequence.h; this entry is what will show that work landing.
+        Tester ("Sequence<int>::append_range () vs vector<int>::append_range ()", Test_AppendRange_StdVector_, L"vector<int>::append_range ()",
+                Test_AppendRange_Sequence_, "Sequence<int>::append_range ()", 500000, 1000.0 /* probe, not a gate - see note */, &failedTests);
+#endif
         Tester ("Sequence<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
                 Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, "Sequence<string>", 9900, 0.31, &failedTests);
         Tester ("Sequence_DoublyLinkedList<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
@@ -2223,8 +2309,8 @@ namespace {
         Tester ("BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, L"vector<byte>",
                 Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, "BLOB", 5000, 1.17, &failedTests);
         Tester ("Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, "Test_JSONReadWriteFile",
-                Debug::IsRunningUnderValgrind () ? 2 : 640, 0.39, &failedTests);
-        Tester ("Test_Optional_", Test_Optional_::DoRunPerfTest, "Test_Optional_", 4875, 0.22, &failedTests);
+                Debug::IsRunningUnderValgrind () ? 2 : 640, 0.48, &failedTests);
+        Tester ("Test_Optional_", Test_Optional_::DoRunPerfTest, "Test_Optional_", 4875, 0.26, &failedTests);
         {
             // Guards against OrderBy () being pessimized. Baseline is what the same sort costs with plain
             // std machinery, so the score is 'what Stroika's OrderBy () adds over stable_sort'.

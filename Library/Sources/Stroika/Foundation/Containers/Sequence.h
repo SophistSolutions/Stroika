@@ -628,10 +628,24 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  @aliases Append
-         * 
+         *
          *  \note mutates container
          */
         nonvirtual void push_back (ArgByValueType<value_type> item);
+
+    public:
+        /**
+         *  @aliases AppendAll
+         *
+         *  \brief STL-style spelling of AppendAll () - the same operation std::vector calls append_range ()
+         *
+         *  Named for C++23's vector::append_range (), which is what the standard library calls appending a
+         *  whole range.
+         *
+         *  \note mutates container
+         */
+        template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
+        nonvirtual void append_range (ITERABLE_OF_ADDABLE&& s);
 
     public:
         /**

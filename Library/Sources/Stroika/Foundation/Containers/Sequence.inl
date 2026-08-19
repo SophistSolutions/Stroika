@@ -535,9 +535,37 @@ namespace Stroika::Foundation::Containers {
     inline void Sequence<T>::AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
     {
         _SafeReadWriteRepAccessor<_IRep> accessor = {this};
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
-            const T& tmp = *i;
-            accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span{&tmp, 1u});
+        /*
+         *  FAST PATH - when the source is contiguous and already T, hand the whole range to the rep as ONE
+         *  span in ONE virtual call. _IRep::Insert () has always taken a span<const value_type>, and every
+         *  backend implements the bulk case properly (DataStructures::Array<T> does a single
+         *  ReserveAtLeast () then one Memory::Insert (), which for a trivially-copyable T is a memmove), so
+         *  this needs no rep or backend change at all.
+         *
+         *  It matters more than it looks: appending N elements one span-of-1 at a time costs N virtual
+         *  dispatches and N capacity checks, and for a cheap T that IS essentially the whole cost. Measured
+         *  before this, Sequence<int>::append_range () ran ~30-56x std::vector<int>::append_range (), and
+         *  Stroika's absolute time barely differed between int and String even though a String copy costs
+         *  far more - the per-element overhead was swamping the element work.
+         *
+         *  Requires all three: contiguous_iterator (so to_address () yields a real pointer), a sized
+         *  sentinel (so the length is known without walking), and a value type that is exactly T (a
+         *  convertible-but-different type cannot be viewed as span<const T> - appending vector<short> to a
+         *  Sequence<int> must still go element by element).
+         */
+        if constexpr (contiguous_iterator<remove_cvref_t<ITERATOR_OF_ADDABLE>> and
+                      sized_sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE2>, remove_cvref_t<ITERATOR_OF_ADDABLE>> and
+                      same_as<remove_cvref_t<iter_value_t<remove_cvref_t<ITERATOR_OF_ADDABLE>>>, T>) {
+            if (start != end) [[likely]] {
+                accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex,
+                                                    span<const T>{to_address (start), static_cast<size_t> (end - start)});
+            }
+        }
+        else {
+            for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
+                const T& tmp = *i;
+                accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span{&tmp, 1u});
+            }
         }
     }
     template <typename T>
@@ -610,6 +638,12 @@ namespace Stroika::Foundation::Containers {
     inline void Sequence<T>::push_back (ArgByValueType<value_type> item)
     {
         Append (item);
+    }
+    template <typename T>
+    template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
+    inline void Sequence<T>::append_range (ITERABLE_OF_ADDABLE&& s)
+    {
+        AppendAll (forward<ITERABLE_OF_ADDABLE> (s));
     }
     template <typename T>
     inline auto Sequence<T>::back () const -> value_type
