@@ -363,8 +363,12 @@ namespace {
                 }
             }
 
-            // widening to a core we do not hold, or one that does not exist, must fail rather than appear to work
-            EXPECT_FALSE (SetCPUAffinityQuietly (LogicalCPUCoreSet{Common::GetNumberOfLogicalCPUCores () + 1000}));
+            // A core number no platform could represent must fail cleanly - false, not an abort. Deliberately
+            // an absurd value rather than 'cores + 1000': the mask ceiling is 32 on Windows x86, 64 on x64
+            // and 1024 with glibc, so a modest overshoot passes on some platforms and not others. The first
+            // version of this test used +1000, which slipped under glibc's 1024 and tripped an assertion on
+            // Windows x86 debug - green on 4 of 5 CI platforms.
+            EXPECT_FALSE (SetCPUAffinityQuietly (LogicalCPUCoreSet{1u << 20}));
         }
         else {
             // macOS and friends: every entry point must be a well-behaved no-op, not a crash and not a lie

@@ -30,6 +30,21 @@ namespace {
     {
         Throw (FeatureNotSupportedException{"CPU affinity"sv});
     }
+
+    /*
+     *  The largest core number this platform's mask TYPE can represent. Not a property of the machine - an
+     *  API limit, and a wildly inconsistent one: a Windows DWORD_PTR mask covers one processor group, so 32
+     *  in a 32-bit build and 64 in a 64-bit one, while glibc's cpu_set_t holds CPU_SETSIZE (1024).
+     */
+    constexpr unsigned int kMaxRepresentableCore_ =
+#if qStroika_Foundation_Common_Platform_Windows
+        static_cast<unsigned int> (sizeof (DWORD_PTR) * 8)
+#elif qStroika_Foundation_Common_Platform_Linux
+        static_cast<unsigned int> (CPU_SETSIZE)
+#else
+        0
+#endif
+        ;
 }
 
 namespace {
@@ -125,6 +140,15 @@ void Execution::SetCPUAffinity ([[maybe_unused]] const LogicalCPUCoreSet& cores)
     // between the check and the call - a cgroup cpuset can be rewritten, cores can be hotplugged. Checking
     // would be a race that reports a programmer error for something that is not one. The OS checks anyway,
     // and reports it as an exception (or false, from the Quietly form), which is the right channel for it.
+    //
+    // A core number too large for the platform's MASK is a throw for the same reason, and this one is
+    // learned the hard way: it started as a Require () inside the mask builders, which meant a release
+    // build returned false while a debug build ABORTED on the identical call. Nothing a caller can know
+    // portably either - the ceiling is 32, 64 or 1024 depending on platform and word size - so it belongs
+    // in the same channel as any other refusal rather than in an assertion.
+    if (kCPUAffinitySupported and not cores.All ([] (unsigned int c) { return c < kMaxRepresentableCore_; })) {
+        Throw (RuntimeErrorException{"CPU core number is too large for this platform's affinity mask"sv});
+    }
 #if qStroika_Foundation_Common_Platform_Windows
     if (::SetProcessAffinityMask (::GetCurrentProcess (), mkMask_ (cores)) == 0) {
         ThrowSystemErrNo ();
