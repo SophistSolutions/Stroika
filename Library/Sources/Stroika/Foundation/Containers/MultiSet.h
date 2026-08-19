@@ -380,6 +380,28 @@ namespace Stroika::Foundation::Containers {
          *      \endcode
          *
          *  UniqueElements () operates as if it copies the data from the original container, and will not reflect any subsequent changes.
+         *
+         *  \note   Returns Iterable<T>, not Set<T> - deliberately, so that MultiSet<> need not depend on Set<>.
+         *          Say As<Set<T>> () when you want a Set, and note that WHICH comparer you hand it decides
+         *          both the semantics and the speed:
+         *      \code
+         *          // the usual case: default equality, so the factory can pick an indexed backend
+         *          // (SortedSet_stdset, O(log N) lookup, comparisons inlined)
+         *          Set<T> s = t.UniqueElements ().As<Set<T>> ();
+         *
+         *          // preserving a NON-default comparer, which matters if this MultiSet has one: without
+         *          // this, s would compare elements differently than t does (a case-insensitive MultiSet
+         *          // yields a case-SENSITIVE Set, so s.Contains () can disagree with t.Contains ())
+         *          Set<T> s = t.UniqueElements ().As<Set<T>> (t.GetElementEqualsComparer ());
+         *      \endcode
+         *          The second form costs real performance, and it is worth knowing why rather than
+         *          discovering it: an equality-only comparer gives the Set factory nothing to index or sort
+         *          by, so it falls back to Concrete::Set_Array<T> - a linear scan, making the build O(N^2)
+         *          - and ElementEqualityComparerType is a std::function, so every one of those comparisons
+         *          is an indirect call that cannot inline. Pass a concrete comparer, or name a specific
+         *          backend, if that matters.
+         *
+         *  @see Iterable<T>::As
          */
         nonvirtual Iterable<T> UniqueElements () const;
 
