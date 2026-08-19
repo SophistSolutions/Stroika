@@ -246,7 +246,8 @@ sub build_title {
 sub build_body {
     my ($i) = @_;
     my $fl = $i->{fields};
-    # everything GitHub has no field for, kept machine-readable so GitHubProjectSync.pl can read it back
+    # everything GitHub has no field for, kept machine-readable so it can be read back out later (that was
+    # GitHubProjectSync.pl, since deleted - see 'The GitHub Project' in Issues/ReadMe.md)
     my %meta = (
         key         => $i->{key},
         created     => $fl->{created},

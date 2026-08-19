@@ -69,8 +69,6 @@ account to file a bug.
 > an empty tracker. Now that GitHub is where work actually happens:
 > - `GitHubImport.pl --patch-bodies` overwrites an issue's body from the `.md`. Any edit made in GitHub is
 >   lost. It requires `--i-know-this-overwrites` for that reason.
-> - `GitHubProjectSync.pl` re-sets project fields from the JIRA metadata, so a Priority you changed by
->   hand reverts. It skips items whose fields are already set unless given `--overwrite`.
 >
 > Plain `GitHubImport.pl --go` is always safe: it skips any key already in `STK-to-GitHub.tsv`.
 
@@ -84,6 +82,36 @@ it goes and already-mapped keys are skipped.
 `STK-to-GitHub.tsv` is the `STK-NNN` -> GitHub issue number map. It is what lets the
 `stroika-bugs.sophists.com` redirect keep resolving the ~180 in-source `STK-NNN` links after JIRA is
 retired, WITHOUT rewriting those links in 122 source files.
+
+## The GitHub Project, and what it can and cannot do for you
+
+Issues live in project #1 "Stroika Issues". It exists because GitHub Issues has no custom fields and
+**cannot sort by label** - so priority, and "how long has this sat untouched", have nowhere to live on the
+issue itself. A Project holds them as real fields that sort and group, which is the only way to ask "show
+me the worst open bugs".
+
+A new issue is added to the project automatically (the project's own auto-add workflow) and gets
+`Status = Todo`. **Priority is NOT set automatically** - Projects v2 has no default value for a custom
+field, and the built-in workflows can only set Status. So a new issue sits with Priority empty until it is
+set by hand, or until someone writes an Action to do it. Verified 2026-08-19 against #1160.
+
+`GitHubProjectSync.pl` used to backfill those fields from the `<!-- jira-import: {...} -->` block during
+the migration. It was deleted afterwards: it only ever worked on JIRA-imported issues, so it could never
+help a new one, and it needed a credential deliberately revoked once the migration finished. Its
+hard-won API notes, which is the part worth keeping:
+
+- **Projects v2 is GraphQL-only** - there is no REST API for it. See `Scripts/gql.pl`.
+- **Its mutations need a CLASSIC PAT**, not a fine-grained one. (Reads are fine with a fine-grained token -
+  verified 2026-08-19 - so a failure here is about writing, not about reaching the API at all.)
+- **The `project` scope alone is not enough for an ORG-owned project**; it also needs `read:org`. Without
+  it every org-scoped call fails with "does not have the correct permissions", which reads exactly like an
+  org policy problem and is not one. User-owned projects work with `project` alone, which is what makes
+  the misdiagnosis easy.
+- **Linking a project to a repository additionally needs `public_repo`**, because that mutation writes to
+  the REPOSITORY, not to the project.
+
+So if you ever need to bulk-set fields again - backfilling Priority across many issues, say - expect to
+mint a fresh classic PAT with all three scopes, and revoke it when done.
 
 ## Scripts/
 

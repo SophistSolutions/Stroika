@@ -8,13 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- ROTATE the personal access token stored in plaintext in a local (NOT in-repo) git config on the
-  Windows dev box - github.com/settings/tokens, revoke and reissue. Noticed 2026-08-14. It is in a
-  world-readable file, and it was read into an AI session transcript, which is enough on its own -
-  a token that has left the machine should be treated as compromised whether or not it was misused.
-  Prefer a credential helper (Git Credential Manager) over a config entry when reissuing, so the
-  replacement is not sitting in cleartext too.
-
 - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
   Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access
   (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes
