@@ -93,52 +93,41 @@ namespace Stroika::Foundation::Execution {
     using Containers::Sequence;
 
     /**
-     *  \brief Run the given command, and optionally support stdin/stdout/stderr as streams (either sync with Run, RunInBackground)
+     *  \brief Run an external command, with stdin/stdout/stderr as strings or as streams - like perl backticks
+     *
+     *  There are two ways to run, and the difference is all you really need to know:
+     *
+     *      o   Run () is synchronous. It returns the output, and THROWS on any failure - including the
+     *          process merely exiting non-zero. Nothing to check; if it returns, it worked.
+     *      o   RunInBackground () hands back a BackgroundProcess you wait on and interrogate - exit status,
+     *          signal, child pid - so you can treat a failed run as data instead of as an exception.
+     *
+     *  Run () behaves as if it were RunInBackground (), then waiting, then
+     *  ProcessResultType::ThrowIfFailed ().
      *
      *  \note   ProcessRunner searches the PATH for the given executable: it need not be a full or even relative to
      *          cwd path.
      *
-     *  \note   Historical Note:
-     *          IDEA HERE IS FROM KDJ - Do something like python/perl stuff for managing subprocesses easily.
-     *
-     *          Look input stream, output stream(or streams - stdout/stderr) - and some kind of external process control
-     *          so can say WIAT or Terminate.
-     *
-     *          Simple portable wrapper.
-     *
-     *          Could use simple singly threaded approach used in TypeNValue ReportDefinition::RunExternalProcess_ (const SDKString& cmdLine, const SDKString& currentDir, const BLOBs::BLOB& stdinBLOB, const ContentType& resultFormat, float timeout)
-     *          except that code has the defect that when the input pipe is full, and there is nothing in the output pipes
-     *          it busy waits. We COULD fix this by doing a select.
-     *
-     *          OR - as KDJ suggests - create 3 threads - one that just reads on stdout, one that just reads on stderr, and one that
-     *          spits into stdin.
-     *
-     *          The caller of 'subprocess' then would just wait on each of the 3 subprocesses (or would implement the aforementioned
-     *          looping over reads/writes/selects etc).
-     *
-     *  \par Example Usage
+     *  \par Example Usage - Run (), the simple case
      *      \code
      *          String name = get<0> (ProcessRunner{"uname"}.Run (String {})).Trim ();
-     *      \endcode
      *
-     *  \par Example Usage
-     *      \code
      *          ProcessRunner pr{"echo hi mom"};
-     *          auto [stdOutStr, stdErrStr] = pr.Run ("");
+     *          auto [stdOutStr, stdErrStr] = pr.Run ("");     // throws if echo fails or exits non-zero
      *          EXPECT_EQ (stdOutStr.Trim (), "hi mom");
-     *          EXPECT_EQ (stdErrStr, "");
      *      \endcode
      *
-     *  \par Example Usage
+     *  \par Example Usage - RunInBackground (), when the exit status is data rather than an error
      *      \code
-     *          ProcessRunner                    pr{"cat"};
-     *          Memory::BLOB                     kData_{ Memory::BLOB::FromRaw ("this is a test")  };
-     *          Streams::MemoryStream::Ptr<byte> processStdIn = Streams::MemoryStream::New<byte> (kData_ );
-     *          Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
-     *          pr.Run (processStdIn, processStdOut).ThrowIfFailed ();
-     *          EXPECT_EQ (processStdOut.ReadAll (), kData_);
+     *          ProcessRunner::BackgroundProcess bp = ProcessRunner{"grep pattern somefile"}.RunInBackground ();
+     *          bp.WaitForDone ();
+     *          // grep exits 1 for 'no match', which is an answer and not a failure
+     *          optional<ProcessRunner::ProcessResultType> r = bp.GetProcessResult ();
+     *          bool matched = r and r->fExitStatus == 0;
      *      \endcode
      *
+     *  \note   Historical note: the idea came from KDJ - do something like python/perl subprocess handling,
+     *          as a simple portable wrapper.
      */
     class ProcessRunner {
     public:
