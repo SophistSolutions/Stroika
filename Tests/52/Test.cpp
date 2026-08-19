@@ -1662,6 +1662,53 @@ namespace {
         }
 
         /*
+         *  ---- BUILDING a Stroika container from N elements, which is the reverse direction from the
+         *  As<vector<T>> () entries above and is NOT covered by them.
+         *
+         *  Every Sequence<T> constructor that takes a range or an iterable - and operator+= - routes through
+         *  AppendAll (), which hoists the copy-on-write accessor out of the loop (good) and then makes one
+         *  VIRTUAL _IRep::Insert () call per element, each wrapping span{&elt, 1}:
+         *
+         *      for (auto i = start; i != end; ++i) {
+         *          const T& tmp = *i;
+         *          accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span{&tmp, 1u});
+         *      }
+         *
+         *  So an N-element Sequence costs N virtual dispatches and N ReserveAtLeast () checks where one of
+         *  each would do - _IRep::Insert () already takes a span<const T>, so the interface to batch through
+         *  exists and no backend would have to change. These entries are the BEFORE measurement for that.
+         *
+         *  Both element types are measured on purpose. The per-element overhead is fixed, so it should be a
+         *  large share of the total for int and a small one for String - the same shape as every other
+         *  erasure cost in this file - and that predicts where batching will and will not show up.
+         */
+        template <typename T>
+        void Construct_Sequence_FromVector_ (const vector<T>& src)
+        {
+            Sequence<T> tmp{src};
+            Consume_ (tmp);
+        }
+        template <typename T>
+        void AppendAll_Sequence_FromVector_ (const vector<T>& src)
+        {
+            Sequence<T> tmp;
+            tmp.AppendAll (src);
+            Consume_ (tmp);
+        }
+        /*
+         *  The same build against the CONCRETE backend, to separate two costs that would otherwise be
+         *  confounded: Sequence<T> also pays a factory call to pick a backend, where Sequence_Array<T> names
+         *  one. If the concrete entry is much cheaper than the envelope entry, the factory is worth looking
+         *  at separately from the per-element dispatch.
+         */
+        template <typename T>
+        void Construct_SequenceArray_FromVector_ (const vector<T>& src)
+        {
+            Containers::Concrete::Sequence_Array<T> tmp{src};
+            Consume_ (tmp);
+        }
+
+        /*
          *  ---- the REAL OrderBy (), called as a user would call it. Sequence<T>::OrderBy () and the
          *  Iterable<T>::OrderBy () it hides offer the same two overloads (comparer alone, or comparer +
          *  Execution::SequencePolicy) and differ only in return type, so the Sequence-vs-Iterable score below
@@ -1793,6 +1840,35 @@ namespace {
                 "Non-trivial T: As<vector<String>> () vs plain vector<String> copy",
                 [&] () { Baseline_VectorCopy_<String> (SourceStrings_ ()); }, "vector<String> copy CTOR",
                 [&] () { Copy_AsVector_Concrete_<String> (kSeqStrs_); }, "Sequence_Array<String>::As<vector<String>> ()", kRunCount_ / 10, kNoWarn_);
+
+            /*
+             *  ---- The OTHER direction: BUILDING a Sequence<T> from N elements, which nothing above measures.
+             *
+             *  AppendAll () makes one virtual _IRep::Insert () call per element (see the note on
+             *  Construct_Sequence_FromVector_), so these are the before-numbers for batching that through the
+             *  span<const T> overload _IRep::Insert () already has. Three questions, one entry each:
+             *
+             *      1. how much does the per-element dispatch cost, for a cheap T
+             *      2. does it still matter when T is expensive to copy (predicted: much less)
+             *      3. is the envelope's factory lookup a separate cost from the dispatch, or noise
+             */
+            (void)Tester (
+                "Build Sequence<int> from vector<int> vs vector<int> copy CTOR  <== BEFORE (batching AppendAll)",
+                [&] () { Baseline_VectorCopy_<int> (SourceInts_ ()); }, "vector<int> copy CTOR",
+                [&] () { Construct_Sequence_FromVector_<int> (SourceInts_ ()); }, "Sequence<int>{vector<int>}", kRunCount_, kNoWarn_);
+            (void)Tester (
+                "Build Sequence<String> from vector<String> vs vector<String> copy CTOR",
+                [&] () { Baseline_VectorCopy_<String> (SourceStrings_ ()); }, "vector<String> copy CTOR",
+                [&] () { Construct_Sequence_FromVector_<String> (SourceStrings_ ()); }, "Sequence<String>{vector<String>}", kRunCount_ / 10, kNoWarn_);
+            (void)Tester (
+                "Build: Sequence<int> envelope vs Sequence_Array<int> concrete (isolates the factory)",
+                [&] () { Construct_SequenceArray_FromVector_<int> (SourceInts_ ()); }, "Sequence_Array<int>{vector<int>}",
+                [&] () { Construct_Sequence_FromVector_<int> (SourceInts_ ()); }, "Sequence<int>{vector<int>}", kRunCount_, kNoWarn_);
+            // AppendAll () onto an already-built Sequence, in case the CTOR path differs from the append path
+            (void)Tester (
+                "Build Sequence<int> via AppendAll () vs via CTOR (same rep calls either way?)",
+                [&] () { Construct_Sequence_FromVector_<int> (SourceInts_ ()); }, "Sequence<int>{vector<int>}",
+                [&] () { AppendAll_Sequence_FromVector_<int> (SourceInts_ ()); }, "Sequence<int>{}.AppendAll (vector<int>)", kRunCount_, kNoWarn_);
 
             /*
              *  ...and what a NON-COPYING consumer would gain, which is the number that actually decides
