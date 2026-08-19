@@ -250,6 +250,57 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, FailedRunThrowsAndCarriesExitStatus)
+    {
+        Debug::TraceContextBumper ctx{"FailedRunThrowsAndCarriesExitStatus"};
+        /*
+         *  https://github.com/SophistSolutions/Stroika/issues/148 (STK-11)
+         *
+         *  Distinct from TestFailureHandling above, which runs a command that cannot even START (and so
+         *  proves only that *something* threw). The interesting case is a process that launches perfectly
+         *  well and then exits non-zero: that must throw too, rather than silently returning as if it had
+         *  worked, and the exception must carry the status so a caller can tell WHY.
+         */
+        {
+            ProcessRunner pr{"bash -c \"exit 3\""};
+            try {
+                (void)pr.Run (""sv);
+                ADD_FAILURE () << "a non-zero exit must throw";
+            }
+            catch (const ProcessRunner::Exception& e) {
+                EXPECT_TRUE (e.fExitStatus.has_value ());
+                if (e.fExitStatus) {
+                    EXPECT_EQ (static_cast<int> (*e.fExitStatus), 3);
+                }
+                EXPECT_FALSE (e.fTermSignal.has_value ()); // exited, was not killed
+            }
+        }
+        {
+            // and stderr must reach the exception - that is what makes such a failure diagnosable at all
+            ProcessRunner pr{"bash -c \"echo some-error-text 1>&2; exit 4\""};
+            try {
+                (void)pr.Run (""sv);
+                ADD_FAILURE () << "a non-zero exit must throw";
+            }
+            catch (const ProcessRunner::Exception& e) {
+                if (e.fExitStatus) {
+                    EXPECT_EQ (static_cast<int> (*e.fExitStatus), 4);
+                }
+                EXPECT_TRUE (e.fStderrFragment.has_value ());
+                if (e.fStderrFragment) {
+                    EXPECT_TRUE (e.fStderrFragment->Contains ("some-error-text"sv));
+                }
+            }
+        }
+        {
+            // ... and a process that exits zero must NOT throw (guards against over-eager failure detection)
+            ProcessRunner pr{"bash -c \"exit 0\""};
+            EXPECT_NO_THROW (pr.Run (""sv));
+        }
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, AutomaticWrapInBashOrCmdShellForPipesInShell)
     {
         Debug::TraceContextBumper ctx{"AutomaticWrapInBashOrCmdShellForPipesInShell"};

@@ -301,33 +301,19 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief Run the given external command/process (set by constructor) - with the given arguments, and block until that completes and return the results
+         *  \brief Run the command synchronously, returning its output, and THROW on any failure
          *
-         *  Run the given external command/process (set by constructor) - with the given arguments, and block until
-         *  that completes and return the results.
+         *      o   STRING overload: pass stdin as a string, get back {stdout, stderr}. Run () with no
+         *          argument means Run (""). The simplest form.
+         *      o   STREAMS overload: pass binary streams instead. Any of the three left nullptr is
+         *          redirected to /dev/null.
          *
-         *  Run STREAMS overload:
-         *      This overload takes input/output/error binary streams
-         * 
-         *      STDIN/STDOUT/STDERR:
-         *          *  If nullptr/not specified, will redirected to /dev/null
-         * 
-         *  Run STRING overload:
-         *      This is the simplest API. Just pass in a string, and get back a string (first one is stdout, second is stderr).
-         * 
-         *      The cmdStdInValue is passed as stdin (stream) to the subprocess.
-         * 
-         *  Run ()/0:
-         *      Treat as Run("") - so stderr captured automatically and inserted into exception (and logged).
-         * 
-         *  BOTH overloads will throw if there is any sort of error, including error exit from the process called.
-         *  Use RunInBackground () to examine the results of the sub-process.
-         * 
-         *  \note Exceptions:
-         *        A number of issues before the process is run will generate an exception.
-         *        If the argument processResult is null, failure (non SUCCESS exit or signal termination) will trigger an exception, and otherwise the
-         *        parameter *processResult will be filled in.
-         * 
+         *  \note Exceptions - failure is ONLY reported by throwing ProcessRunner::Exception, whether that is
+         *        something going wrong before the process starts, a non-zero exit (Exception::fExitStatus),
+         *        or death by an uncaught signal (Exception::fTermSignal). The string overload also captures
+         *        the child's stderr into Exception::fStderrFragment, usually the only thing that says WHY.
+         *        To read an exit status instead of catching it, use RunInBackground ().
+         *
          *  \note if this is called with a timeout, and it times out, the child is killed immediately upon timeout.
          *        To avoid this behavior, use RunInBackground
          *
