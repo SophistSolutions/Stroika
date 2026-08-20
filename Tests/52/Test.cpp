@@ -571,6 +571,206 @@ namespace {
     }
 }
 
+namespace {
+    /*
+     ********************************************************************************
+     *  Stroika containers versus their std counterparts, ONE OPERATION PER ENTRY
+     ********************************************************************************
+     *
+     *  These cover what the older "... basics" entries (Test_SequenceVectorAdditionsAndCopies_ and
+     *  Test_CollectionVectorAdditionsAndCopies_) were reaching for. Those append 500 elements one at a time
+     *  AND then make 21 by-value copies, and report one number for both. For Stroika those pull in OPPOSITE
+     *  directions - it loses on per-element appends (a virtual _IRep::Insert () per element) and wins hugely
+     *  on copies (copy-on-write makes them a refcount bump instead of a deep copy) - so the score is a small
+     *  residual of two large opposing effects and cannot attribute a change to either. It read 1.09-1.44 for
+     *  int while the append cost alone was ~5x and the copy advantage was order-of-magnitude. Those also
+     *  append ELEMENTTYPE{} - the EMPTY string in the string case - so their "expensive element" case is not
+     *  expensive, and they run EXPECT_TRUE () inside the timed recursion.
+     *
+     *  So: one operation per entry, the same operation on both sides, the container built outside the timed
+     *  region, and a non-degenerate element.
+     *
+     *  The "... basics" entries are deliberately still here rather than deleted, for now. Two reasons: they
+     *  carry ~30 releases of archive history where these start empty, so running both for a few releases
+     *  gives the overlap needed to relate the two - which is exactly what is missing whenever a name gets
+     *  re-pointed at a new workload (see the "+=wchar_t[] 100x" note below). And they are not strictly
+     *  redundant even now: the blended Collection entries add string{} or all-identical strings, where these
+     *  add distinct ones, so the degenerate all-equal-keys case is absent here rather than reproduced.
+     *  Revisit once there is a release or two of overlap to look at.
+     *
+     *  What each is expected to show, so a surprise is recognizable as one:
+     *      o   ADD ONE AT A TIME - Stroika slower, and inherently so. Each push_back () is one virtual
+     *          dispatch plus a copy-on-write check; there is nothing to batch. This is the standing cost of
+     *          the envelope/rep design, worth SEEING rather than chasing.
+     *      o   ADD MANY AT ONCE - near parity since c384915a32 handed contiguous sources to the rep as a
+     *          single span. This is the entry that would notice that fast path breaking.
+     *      o   COPY - Stroika much faster, and MORE so for String than for int: copying vector<T> costs N
+     *          per-element copies (for Stroika's String, itself copy-on-write, N atomic increments) where
+     *          Sequence<T> costs exactly one, while for int vector only has to memcpy.
+     *      o   COPY THEN WRITE - the honest other half. Copy-on-write only defers; writing to the copy pays
+     *          the deep copy after all, plus the bookkeeping. Without this entry the suite would only tell
+     *          the flattering half of the story.
+     *
+     *  As measured 3.0d24, Windows x86_64 release, 500 elements, pinned, RANGE over repeated runs (each
+     *  threshold is 1.25x the worst run seen, so it has ~25% headroom over the worst of these):
+     *
+     *                                          add 1-at-a-time   add many at once   copy      copy then write
+     *      Sequence<int>                          2.00-3.37 (!)      1.73-1.91      0.19-0.29     2.68-3.10
+     *      Sequence<String>                       2.35-2.58          0.92-1.11    0.0019-0.0023   1.42-1.82
+     *      Sequence_Array<int>                    1.44-1.79          1.31-1.51
+     *      Sequence_stdvector<int>                2.46-2.70          1.53-1.59
+     *      Sequence_DoublyLinkedList<String>      2.02-2.09          3.47-4.12                    2.21-2.60
+     *      Collection<int>                       13.28-13.90      328-374 (!!)
+     *      Collection<String>                     9.15-9.70         17.46-19.41  0.0021-0.0024    2.44-2.98
+     *      Collection_LinkedList<String>          1.42-1.51          2.75-2.79
+     *      Collection_stdforward_list<String>     1.46-1.61          3.11-3.20
+     *
+     *  Reading it:
+     *      o   COPY is where copy-on-write pays: 0.0021 means ~480x, since copying vector<String> costs 500
+     *          refcount bumps where Sequence/Collection<String> costs exactly one. For int, where vector only
+     *          has to memcpy, the same win is 5x. COPY THEN WRITE is the other half of that trade and reads
+     *          ABOVE 1.0 - the deferred deep copy plus the rep bookkeeping costs more than an eager copy did.
+     *      o   ADD MANY AT ONCE reads WORSE than add-one-at-a-time for every node-based backend. That is
+     *          mostly the BASELINE getting cheaper (vector::insert of a range is ~2x a push_back loop), not
+     *          Stroika getting slower: at equal runCount the absolute Stroika times are within ~1% of each
+     *          other, because AddAll () on those containers just loops. Only Sequence<T> batches
+     *          (c384915a32), which is why Sequence_Array/stdvector<int> sit near 1.5 and everything else does
+     *          not. Collection<int> at ~350x is the extreme case and the best argument for doing that work.
+     *      o   A SHORT COMPARISON WINDOW NEEDS MARGIN EVEN WHEN REPEATED RUNS LOOK STABLE. Sequence<int>:
+     *          copy measures ~4ms and read 0.187-0.213 over five consecutive runs, so it was set to 0.27 -
+     *          and the sixth run produced 0.288. Five agreeing samples are not evidence that a 4ms
+     *          measurement is stable; they are five draws from a distribution with a tail. The three
+     *          copy-on-write entries therefore carry margin set from the measurement WINDOW (~1-4ms), not
+     *          from the observed spread. They lose little by it: the failure they exist to catch is
+     *          copy-on-write breaking, which lands near 1.0, so anything below ~0.5 still catches it.
+     *      o   (!) Sequence<int>: add one at a time is the LOOSEST gate here (4.9 against a ~2.7 typical) and
+     *          catches only an ~80% regression. Its baseline is 500 vector<int> push_back () calls - nearly
+     *          pure allocator behaviour with no element-copy cost to steady it - and it ranged 0.0395-0.0717s
+     *          while the comparison side held 0.126-0.147s. Tightening it means finding a less
+     *          allocator-dominated baseline, not just lowering the number. The add-many and copy entries
+     *          cover the same code path far more precisely; prefer them when reading a regression.
+     */
+    namespace ContainerVsStd_ {
+        constexpr size_t kEltCount_ = 500;
+
+        volatile size_t sSink_ = 0; // keep the work from being optimized away
+
+        const vector<int>& SourceInts_ ()
+        {
+            static const vector<int> kData_ = [] () {
+                vector<int> r;
+                r.reserve (kEltCount_);
+                for (size_t i = 0; i < kEltCount_; ++i) {
+                    r.push_back (static_cast<int> (i));
+                }
+                return r;
+            }();
+            return kData_;
+        }
+        const vector<String>& SourceStrings_ ()
+        {
+            // deliberately not String{} - the old test appended empty strings, so it measured nothing about
+            // the cost of a real element. Long enough to be a normal heap-backed string rather than degenerate.
+            static const vector<String> kData_ = [] () {
+                vector<String> r;
+                r.reserve (kEltCount_);
+                for (size_t i = 0; i < kEltCount_; ++i) {
+                    r.push_back ("element {} of a string long enough not to be degenerate"_f(i));
+                }
+                return r;
+            }();
+            return kData_;
+        }
+        template <typename T>
+        const vector<T>& Source_ ();
+        template <>
+        const vector<int>& Source_<int> ()
+        {
+            return SourceInts_ ();
+        }
+        template <>
+        const vector<String>& Source_<String> ()
+        {
+            return SourceStrings_ ();
+        }
+
+        /*
+         *  The container families spell one-at-a-time and all-at-once differently - Sequence<T> uses
+         *  push_back ()/AppendAll (), Collection<T> uses Add ()/AddAll (), std uses push_back ()/insert () -
+         *  so pick the spelling here rather than writing the whole matrix out three times. It stays ONE
+         *  operation either way, which is the property these entries depend on.
+         */
+        template <typename CONTAINER>
+        void AddOne_ (CONTAINER& c, const typename CONTAINER::value_type& e)
+        {
+            if constexpr (requires { c.push_back (e); }) {
+                c.push_back (e);
+            }
+            else {
+                c.Add (e);
+            }
+        }
+        template <typename CONTAINER>
+        void AddAll_ (CONTAINER& c, const vector<typename CONTAINER::value_type>& src)
+        {
+            if constexpr (requires { c.AppendAll (src); }) {
+                c.AppendAll (src);
+            }
+            else if constexpr (requires { c.AddAll (src); }) {
+                c.AddAll (src);
+            }
+            else {
+                c.insert (c.end (), src.begin (), src.end ());
+            }
+        }
+
+        // built ONCE, outside any timed region, so the copy entries measure only the copy
+        template <typename CONTAINER>
+        const CONTAINER& Prebuilt_ ()
+        {
+            static const CONTAINER kC_ = [] () {
+                CONTAINER c;
+                for (const auto& i : Source_<typename CONTAINER::value_type> ()) {
+                    AddOne_ (c, i);
+                }
+                return c;
+            }();
+            return kC_;
+        }
+
+        template <typename CONTAINER>
+        void AddOneAtATime_ ()
+        {
+            CONTAINER c;
+            for (const auto& i : Source_<typename CONTAINER::value_type> ()) {
+                AddOne_ (c, i);
+            }
+            sSink_ = sSink_ + c.size ();
+        }
+        template <typename CONTAINER>
+        void AddManyAtOnce_ ()
+        {
+            // the same operation on both sides: add the whole range to an empty container
+            CONTAINER c;
+            AddAll_ (c, Source_<typename CONTAINER::value_type> ());
+            sSink_ = sSink_ + c.size ();
+        }
+        template <typename CONTAINER>
+        void CopyOnly_ ()
+        {
+            CONTAINER tmp = Prebuilt_<CONTAINER> ();
+            sSink_        = sSink_ + tmp.size ();
+        }
+        template <typename CONTAINER>
+        void CopyThenWrite_ ()
+        {
+            CONTAINER tmp = Prebuilt_<CONTAINER> ();
+            AddOne_ (tmp, typename CONTAINER::value_type{}); // forces copy-on-write to actually copy
+            sSink_ = sSink_ + tmp.size ();
+        }
+    }
+}
+
 #if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
 namespace {
     /*
@@ -2158,9 +2358,9 @@ namespace {
 #endif
 
         Tester ("Test of simple locking strategies (mutex v shared_ptr copy)", Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
-                Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, .90, &failedTests);
+                Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, 1.7, &failedTests);
         Tester ("Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
-                Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, 0.61, &failedTests);
+                Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, 0.83, &failedTests);
         Tester ("Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
                 Test_StructWithStringsFillingAndCopying<String>, L"Characters::String", 65000, 0.6, &failedTests);
         Tester ("Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
@@ -2198,20 +2398,124 @@ namespace {
         Tester ("Sequence<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, "Sequence<int>", 125000, 1.44, &failedTests);
         /*
+         *  Sequence<T> vs vector<T>, one operation per entry - see the note on namespace ContainerVsStd_.
+         *  NEW NAMES on purpose: the archive keys its 30-release history on the test name, so re-pointing an
+         *  existing name at a different workload silently invalidates it. That is exactly what happened to
+         *  "Simple String append test (+=wchar_t[]) 100x" around 3.0d11-d16, whose baseline went 5.8s -> 93.9s
+         *  and score 66 -> 7 with nothing saying so.
+         *
+         *  ONE ELEMENT TYPE PER BACKEND, deliberately. The int/String pair on the DEFAULT backend already
+         *  characterizes what the element type costs, so repeating both types for every concrete backend
+         *  would add entries without adding signal. int for the array-backed ones (where the question is
+         *  realloc and memcpy) and String for the node-based ones (where it is one allocation per element).
+         *
+         *  EVERY container gets "add many at once", INCLUDING the ones whose AddAll () currently just loops.
+         *  That is the point of those entries rather than an argument against them: c384915a32 batched
+         *  Sequence<T>::AppendAll () only, and the same optimization is outstanding for Collection/Set/MultiSet
+         *  (see TODO.md). A gate can only ever notice a regression; what motivates the work, and what will
+         *  later prove it landed, is a BEFORE number. Any of these reading far above its add-one-at-a-time
+         *  sibling is naming a container whose rep does not take a span yet.
+         *
+         *  Caveat on those, since it affects how far the thresholds can be trusted: Tester () uses one
+         *  runCount for both sides, and add-many on a vector<int> is a memcpy (~66ns for 500 elements), so a
+         *  runCount that keeps the Stroika side to a fraction of a second leaves the BASELINE only a few ms.
+         *  Short baselines are noisier, so those entries carry more margin than the rest.
+         */
+        Tester ("Sequence<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, "vector<int>",
+                ContainerVsStd_::AddOneAtATime_<Sequence<int>>, "Sequence<int>", 40000, 4.9, &failedTests);
+        Tester ("Sequence<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>, "vector<String>",
+                ContainerVsStd_::AddOneAtATime_<Sequence<String>>, "Sequence<String>", 20000, 3.7, &failedTests);
+        Tester ("Sequence<int> vs vector<int>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<int>>, "vector<int>",
+                ContainerVsStd_::AddManyAtOnce_<Sequence<int>>, "Sequence<int>", 200000, 2.8, &failedTests);
+        Tester ("Sequence<String> vs vector<String>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<String>>, "vector<String>",
+                ContainerVsStd_::AddManyAtOnce_<Sequence<String>>, "Sequence<String>", 20000, 1.5, &failedTests);
+        Tester ("Sequence<int> vs vector<int>: copy (COW)", ContainerVsStd_::CopyOnly_<vector<int>>, "vector<int>",
+                ContainerVsStd_::CopyOnly_<Sequence<int>>, "Sequence<int>", 400000, 0.47, &failedTests);
+        Tester ("Sequence<String> vs vector<String>: copy (COW)", ContainerVsStd_::CopyOnly_<vector<String>>, "vector<String>",
+                ContainerVsStd_::CopyOnly_<Sequence<String>>, "Sequence<String>", 100000, 0.005, &failedTests);
+        Tester ("Sequence<String> vs vector<String>: copy then write (COW pays up)", ContainerVsStd_::CopyThenWrite_<vector<String>>,
+                "vector<String>", ContainerVsStd_::CopyThenWrite_<Sequence<String>>, "Sequence<String>", 20000, 2.4, &failedTests);
+        Tester ("Sequence<int> vs vector<int>: copy then write (COW pays up)", ContainerVsStd_::CopyThenWrite_<vector<int>>, "vector<int>",
+                ContainerVsStd_::CopyThenWrite_<Sequence<int>>, "Sequence<int>", 300000, 4.5, &failedTests);
+        /*
+         *  The concrete backends, same operations. What the DEFAULT Sequence<T> entries above cannot show is
+         *  that the four operations do not rank the backends the same way: an array-backed rep appends with
+         *  amortized realloc and breaks copy-on-write with one memcpy, where a node-based one pays one
+         *  allocation per element for BOTH. The old blended "..._basics" entries averaged those two effects
+         *  together, which is why Sequence_DoublyLinkedList<int> needed a threshold of 11 and nobody could
+         *  say which half of the workload it came from.
+         */
+        Tester ("Sequence_Array<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, L"vector<int>",
+                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Sequence_Array<int>>, "Sequence_Array<int>", 40000, 2.7, &failedTests);
+        Tester ("Sequence_Array<int> vs vector<int>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<int>>, L"vector<int>",
+                ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Sequence_Array<int>>, "Sequence_Array<int>", 200000, 2.3, &failedTests);
+        Tester ("Sequence_stdvector<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, L"vector<int>",
+                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Sequence_stdvector<int>>, "Sequence_stdvector<int>", 40000, 3.6, &failedTests);
+        Tester ("Sequence_stdvector<int> vs vector<int>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<int>>, L"vector<int>",
+                ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Sequence_stdvector<int>>, "Sequence_stdvector<int>", 200000, 2.5, &failedTests);
+        Tester ("Sequence_DoublyLinkedList<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Sequence_DoublyLinkedList<String>>,
+                "Sequence_DoublyLinkedList<String>", 10000, 3.0, &failedTests);
+        Tester ("Sequence_DoublyLinkedList<String> vs vector<String>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Sequence_DoublyLinkedList<String>>,
+                "Sequence_DoublyLinkedList<String>", 10000, 6.1, &failedTests);
+        Tester ("Sequence_DoublyLinkedList<String> vs vector<String>: copy then write (COW pays up)", ContainerVsStd_::CopyThenWrite_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::CopyThenWrite_<Containers::Concrete::Sequence_DoublyLinkedList<String>>,
+                "Sequence_DoublyLinkedList<String>", 10000, 3.4, &failedTests);
+        /*
+         *  Collection<T>, the same operations. Note this is NOT the same comparison as Sequence<T> versus
+         *  vector<T> even though the baseline is still vector<T>: Collection<T> promises no order, and its
+         *  default factory picks SortedCollection_stdmultiset<T> for any totally_ordered T (see
+         *  Collection_Factory.inl), so "add one at a time" here buys a sort nobody asked for. That is the
+         *  real cost being reported, and it is a FACTORY choice rather than anything about Collection<T> -
+         *  which is why Collection_LinkedList<String> and Collection_stdforward_list<String> are here too.
+         *
+         *  The elements are DISTINCT strings, so the degenerate all-identical-keys case that the old "with
+         *  rnd strings" entry existed to dodge cannot arise. One fewer entry, by construction rather than by
+         *  a second workload.
+         */
+        Tester ("Collection<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, L"vector<int>",
+                ContainerVsStd_::AddOneAtATime_<Collection<int>>, "Collection<int>", 10000, 20, &failedTests);
+        Tester ("Collection<int> vs vector<int>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<int>>, L"vector<int>",
+                ContainerVsStd_::AddManyAtOnce_<Collection<int>>, "Collection<int>", 20000, 725, &failedTests);
+        Tester ("Collection<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::AddOneAtATime_<Collection<String>>, "Collection<String>", 5000, 13, &failedTests);
+        Tester ("Collection<String> vs vector<String>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::AddManyAtOnce_<Collection<String>>, "Collection<String>", 5000, 35, &failedTests);
+        Tester ("Collection<String> vs vector<String>: copy (COW)", ContainerVsStd_::CopyOnly_<vector<String>>, L"vector<String>",
+                ContainerVsStd_::CopyOnly_<Collection<String>>, "Collection<String>", 100000, 0.005, &failedTests);
+        Tester ("Collection<String> vs vector<String>: copy then write (COW pays up)", ContainerVsStd_::CopyThenWrite_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::CopyThenWrite_<Collection<String>>, "Collection<String>", 10000, 3.9, &failedTests);
+        Tester ("Collection_LinkedList<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_LinkedList<String>>,
+                "Collection_LinkedList<String>", 10000, 2.3, &failedTests);
+        Tester ("Collection_stdforward_list<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_stdforward_list<String>>,
+                "Collection_stdforward_list<String>", 10000, 2.3, &failedTests);
+        Tester ("Collection_LinkedList<String> vs vector<String>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Collection_LinkedList<String>>,
+                "Collection_LinkedList<String>", 10000, 4.6, &failedTests);
+        Tester ("Collection_stdforward_list<String> vs vector<String>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<String>>,
+                L"vector<String>", ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Collection_stdforward_list<String>>,
+                "Collection_stdforward_list<String>", 10000, 4.7, &failedTests);
+        /*
          *  GUARDS THE AppendAll () BATCHING. Building a Sequence<int> from a contiguous source hands the whole
          *  range to _IRep::Insert () as one span; if that fast path ever stops firing - a concept tweak, a
          *  refactor that loses contiguity, a source type that no longer satisfies it - this drops straight
-         *  back to one virtual dispatch per element and the score goes from ~1.3 to ~60. Threshold 1.6 is
-         *  1.25x the measured 1.30, so it catches far smaller damage than that too.
+         *  back to one virtual dispatch per element and the score goes from ~1.7 to ~60, so even a loose
+         *  threshold catches the thing this exists to catch. 3.3 is 1.30x the worst of 10 runs: the entry
+         *  reads 1.65-1.88 seven times out of eight and then produces 2.48, and 2.3 (set from too few runs)
+         *  duly fired on one of those excursions.
          *
          *  Unlike the --orderby-probe entries this runs every time, which is the point: a probe that has to be
-         *  asked for cannot notice a regression.
+         *  asked for cannot notice a regression. \note the probe there shares this entry's NAME - harmless,
+         *  since the two never appear in one dump, but do not assume the name identifies one Tester call.
          */
         Tester (
             "Build Sequence<int> from vector<int> vs vector<int> copy CTOR",
             [] () { Test_IterableAlgorithms_::Baseline_VectorCopy_<int> (Test_IterableAlgorithms_::SourceInts_ ()); }, L"vector<int> copy CTOR",
             [] () { Test_IterableAlgorithms_::Construct_Sequence_FromVector_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
-            "Sequence<int>{vector<int>}", 1000000, 2.3, &failedTests);
+            "Sequence<int>{vector<int>}", 1000000, 3.3, &failedTests);
 #if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
         // Sequence<int>::append_range () against std::vector<int>::append_range () - the same operation, so
         // the score is the cost of Stroika's per-element _IRep::Insert () dispatch. See the batching @todo in
@@ -2310,7 +2614,7 @@ namespace {
                 Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, "BLOB", 5000, 1.17, &failedTests);
         Tester ("Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, "Test_JSONReadWriteFile",
                 Debug::IsRunningUnderValgrind () ? 2 : 640, 0.48, &failedTests);
-        Tester ("Test_Optional_", Test_Optional_::DoRunPerfTest, "Test_Optional_", 4875, 0.26, &failedTests);
+        Tester ("Test_Optional_", Test_Optional_::DoRunPerfTest, "Test_Optional_", 4875, 0.46, &failedTests);
         {
             // Guards against OrderBy () being pessimized. Baseline is what the same sort costs with plain
             // std machinery, so the score is 'what Stroika's OrderBy () adds over stable_sort'.
