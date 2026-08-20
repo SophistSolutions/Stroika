@@ -194,15 +194,15 @@ namespace {
                 }
             });
 
-            DoItOnce_<String> (&lock, L"123456789", kRepeatCount_, [&lock] (Synchronized<String>* oneToKeepOverwriting) {
+            DoItOnce_<String> (&lock, "123456789", kRepeatCount_, [&lock] (Synchronized<String>* oneToKeepOverwriting) {
                 for (int ii = 0; ii <= 100; ++ii) {
                     if (Math::IsOdd (ii)) {
                         lock_guard<decltype (lock)> critSec{lock};
-                        (*oneToKeepOverwriting) = L"abc123"_k;
+                        (*oneToKeepOverwriting) = "abc123"_k;
                     }
                     else {
                         lock_guard<decltype (lock)> critSec{lock};
-                        (*oneToKeepOverwriting) = L"123abc"_k;
+                        (*oneToKeepOverwriting) = "123abc"_k;
                     }
                 }
             });
@@ -336,10 +336,10 @@ namespace {
                     EXPECT_EQ (tmp.cget ()->find ('x'), 0u);
                 }
                 {
-                    static Synchronized<String> tmp{L"x"};
+                    static Synchronized<String> tmp{"x"};
                     [[maybe_unused]] auto&&     critSec = lock_guard{tmp}; // make sure explicit locks work too
                     String                      a{tmp};
-                    EXPECT_EQ (a, L"x");
+                    EXPECT_EQ (a, "x");
                     EXPECT_EQ (tmp.cget ()->find ('z'), string::npos);
                     EXPECT_EQ (tmp.cget ()->find ('x'), 0u);
                 }
@@ -705,14 +705,14 @@ namespace {
                             EXPECT_TRUE (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
                     },
-                    L"writerThread"_k);
+                    "writerThread"_k);
                 Thread::Ptr copierThread = Thread::New (
                     [&mapValue] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             EXPECT_TRUE (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
                     },
-                    L"copierThread"_k);
+                    "copierThread"_k);
                 Thread::Start ({writerThread, copierThread});
                 Thread::WaitForDone ({writerThread, copierThread});
             }

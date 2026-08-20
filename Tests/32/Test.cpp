@@ -430,15 +430,15 @@ namespace {
                 };
                 const Case_ kCase1_{[] () {
                                         DataExchange::Variant::INI::Section section{{
-                                            {"NAME", L"Ubuntu"},
-                                            {"VERSION", L"13.10, Saucy Salamander"},
-                                            {"ID", L"ubuntu"},
-                                            {"ID_LIKE", L"debian"},
-                                            {"PRETTY_NAME", L"Ubuntu 13.10"},
-                                            {"VERSION_ID", L"13.10"},
-                                            {"HOME_URL", L"http://www.ubuntu.com/"},
-                                            {"SUPPORT_URL", L"http://help.ubuntu.com/"},
-                                            {"BUG_REPORT_URL", L"http://bugs.launchpad.net/ubuntu/"},
+                                            {"NAME", "Ubuntu"},
+                                            {"VERSION", "13.10, Saucy Salamander"},
+                                            {"ID", "ubuntu"},
+                                            {"ID_LIKE", "debian"},
+                                            {"PRETTY_NAME", "Ubuntu 13.10"},
+                                            {"VERSION_ID", "13.10"},
+                                            {"HOME_URL", "http://www.ubuntu.com/"},
+                                            {"SUPPORT_URL", "http://help.ubuntu.com/"},
+                                            {"BUG_REPORT_URL", "http://bugs.launchpad.net/ubuntu/"},
                                         }};
                                         return DataExchange::Variant::INI::Profile{section};
                                     }(),
@@ -587,7 +587,7 @@ namespace {
             }
         };
         {
-            VariantValue v1 = L"hello world";
+            VariantValue v1 = "hello world";
             CheckMatchesExpected_WRITER_ (v1, "\"hello world\"\n");
         }
         {
@@ -598,17 +598,17 @@ namespace {
 // Sterl's bug report email dated 2015-10-15 - a backslash must be followed by one of “\/bfnrtu
 #if 0
                     {
-                        VariantValue    v1 = L"test\?";
+                        VariantValue    v1 = "test\?";
                         CheckMatchesExpected_WRITER_ (v1, "\"test?\"\n");
                     }
 #endif
             {
-                VariantValue v1 = L"test\\?";
+                VariantValue v1 = "test\\?";
                 CheckMatchesExpected_WRITER_ (v1, "\"test\\\\?\"\n");
             }
 #if 0
                     {
-                        Mapping<String, VariantValue> m { pair<String, VariantValue> {L"fCmdLine", L"test\\?" } };
+                        Mapping<String, VariantValue> m { pair<String, VariantValue> {"fCmdLine", "test\\?" } };
                         VariantValue    v1 { m };
                         CheckMatchesExpected_WRITER_ (v1, "{\n    \"fCmdLine\" : \"test\\\\?\"\n}\n");
                     }
@@ -620,7 +620,7 @@ namespace {
 #if 1
             // CRAZY - but clang-format gets confused without #if 1 surrounding this code -LGP 2024-01-02
             {
-                VariantValue v1 = L"\t";
+                VariantValue v1 = "\t";
                 CheckMatchesExpected_WRITER_ (v1, "\"\\t\"\n");
             }
             {
@@ -634,7 +634,7 @@ namespace {
             CheckMatchesExpected_WRITER_ (v1, "4.7\n");
         }
         {
-            VariantValue v1 = L"\"";
+            VariantValue v1 = "\"";
             CheckMatchesExpected_WRITER_ (v1, "\"\\\"\"\n");
         }
         {
@@ -642,7 +642,7 @@ namespace {
             vector<VariantValue> v;
             v.push_back (3);
             v.push_back (7);
-            v.push_back (L"cookie");
+            v.push_back ("cookie");
             VariantValue v1 = VariantValue{v};
             CheckMatchesExpected_WRITER_ (v1, "[\n    3,\n    7,\n    \"cookie\"\n]\n");
         }
@@ -669,7 +669,7 @@ namespace {
             EXPECT_TRUE (v1 == expected);
         };
         {
-            VariantValue v1 = L"hello world";
+            VariantValue v1 = "hello world";
             CheckMatchesExpected_READER_ ("\"hello world\"", v1);
         }
         {
@@ -689,7 +689,7 @@ namespace {
             vector<VariantValue> v;
             v.push_back (3);
             v.push_back (7);
-            v.push_back (L"cookie");
+            v.push_back ("cookie");
             VariantValue v1 = VariantValue{v};
             CheckMatchesExpected_READER_ ("[\n    3,\n    7,\n    \"cookie\"\n]", v1);
         }
@@ -784,15 +784,15 @@ namespace {
             }
         };
         CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\t\r\n\f\x3"}); // proper read/write control characters
-        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"test\?"});
-        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"test\\?"});
-        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"cookie"});
-        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"c:\\"});
-        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"'"});
-        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\""});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{"test\?"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{"test\\?"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{"cookie"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{"c:\\"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{"'"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{"\""});
         //this test is OK, but makes no sense, and isn't testing what it appears to--- CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\\u20a9")); //  ₩
         CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\u20a9"}); //  ₩
-        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\"apple\""});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{"\"apple\""});
         CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<int>::min ()});
         CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<int>::max ()});
         CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<long int>::min ()});
@@ -965,7 +965,7 @@ namespace {
             f (VariantValue{405.1});
             f (VariantValue{4405.2});
             f (VariantValue{44905.3});
-            f (VariantValue{L"'"});
+            f (VariantValue{"'"});
             f (VariantValue{Date{Year{1933}, February, day{12}}});
             f (VariantValue{DateTime{Date{Year{1933}, February, day{12}}, TimeOfDay{432}}});
 
@@ -1099,8 +1099,8 @@ namespace {
         {
             VariantValue v;
             EXPECT_TRUE (v.empty ());
-            v = String{L"hi"};
-            EXPECT_TRUE (v == L"hi");
+            v = String{"hi"};
+            EXPECT_TRUE (v == "hi");
         }
         Test3_VariantValue_Helper_MinMax_<int> ();
         Test3_VariantValue_Helper_MinMax_<unsigned int> ();
@@ -1126,8 +1126,8 @@ namespace {
             EXPECT_EQ (v, vv);
         };
         roundTripCheck (VariantValue{3});
-        roundTripCheck (VariantValue{L"x"});
-        roundTripCheck (VariantValue (Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"n", L"34"}}));
+        roundTripCheck (VariantValue{"x"});
+        roundTripCheck (VariantValue (Mapping<String, VariantValue>{pair<String, VariantValue>{"a", 3}, pair<String, VariantValue>{"n", "34"}}));
     }
 }
 
@@ -1179,7 +1179,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, Write2JSONSThenRead2JSONsWithSharedStream_)
     {
-        static VariantValue kTestVariant_{Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"b", 99}}};
+        static VariantValue kTestVariant_{Mapping<String, VariantValue>{pair<String, VariantValue>{"a", 3}, pair<String, VariantValue>{"b", 99}}};
         auto WriteJSON_ = [] (const Streams::OutputStream::Ptr<byte>& out) {
             using namespace DataExchange::Variant::JSON;
             const Writer::Options kOptions_{false};

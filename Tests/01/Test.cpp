@@ -459,7 +459,7 @@ namespace {
             using Characters::String;
             using IO::Network::CIDR;
             using IO::Network::InternetAddress;
-            CIDR cidr{L"192.168.243.0/24"};
+            CIDR cidr{"192.168.243.0/24"};
             BloomFilter<InternetAddress> f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints ()}}; // way more than needed so SB small # of false positives
             Containers::Set<InternetAddress> oracle;
             for (const InternetAddress& ia : cidr.GetRange ()) {
@@ -499,7 +499,7 @@ namespace {
             using IO::Network::CIDR;
             using IO::Network::InternetAddress;
             auto hashFunction = [] (const InternetAddress& a) -> size_t { return hash<string>{}(a.As<String> ().AsUTF8<string> ()); };
-            CIDR cidr{L"192.168.243.0/24"};
+            CIDR cidr{"192.168.243.0/24"};
             BloomFilter<InternetAddress> f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}}; // way more than needed so SB small # of false positives
             Containers::Set<InternetAddress> oracle;
             for (const InternetAddress& ia : cidr.GetRange ()) {
@@ -542,7 +542,7 @@ namespace {
             auto hashFunction = [] (const InternetAddress& a) -> int {
                 return Digester<Algorithm::SuperFastHash>{}(Memory::BLOB{a.As<vector<uint8_t>> ()});
             };
-            CIDR                             cidr{L"192.168.243.0/24"};
+            CIDR                             cidr{"192.168.243.0/24"};
             BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}};
             Containers::Set<InternetAddress> oracle;
             for (const InternetAddress& ia : cidr.GetRange ()) {
@@ -625,13 +625,13 @@ namespace {
                     }
                 }
             };
-            runTest (CIDR{L"192.168.243.0/24"}, .5, .5);
-            runTest (CIDR{L"192.168.243.0/24"}, .5, .6);
-            runTest (CIDR{L"192.168.243.0/24"}, .5, .7);
-            runTest (CIDR{L"192.168.243.0/24"}, .5, .5, 2);
-            runTest (CIDR{L"192.168.243.0/24"}, .5, .6, 2);
-            runTest (CIDR{L"192.168.243.0/24"}, .5, .7, 2);
-            runTest (CIDR{L"192.168.243.0/24"}, .5, .8, 2);
+            runTest (CIDR{"192.168.243.0/24"}, .5, .5);
+            runTest (CIDR{"192.168.243.0/24"}, .5, .6);
+            runTest (CIDR{"192.168.243.0/24"}, .5, .7);
+            runTest (CIDR{"192.168.243.0/24"}, .5, .5, 2);
+            runTest (CIDR{"192.168.243.0/24"}, .5, .6, 2);
+            runTest (CIDR{"192.168.243.0/24"}, .5, .7, 2);
+            runTest (CIDR{"192.168.243.0/24"}, .5, .8, 2);
         }
     }
     GTEST_TEST (Foundation_Caching, BloomFilter_)

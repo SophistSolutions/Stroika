@@ -111,7 +111,7 @@ namespace {
         /*
          *  Use DbgTrace (and often implicitly Characters::ToString ()) to echo objects to a tracelog file (and/or debugger output under windows)
          */
-        Debug::TraceContextBumper ctx{L"PrintTheContentsOfAContainerToTheTraceLog_"};
+        Debug::TraceContextBumper ctx{"PrintTheContentsOfAContainerToTheTraceLog_"};
         Collection<int>           tmp{1, 3, 5, 7, 9};
         DbgTrace ("tmp={}"_f, tmp);
     }
@@ -120,7 +120,7 @@ namespace {
 namespace {
     void UseLinqLikeFunctionalAPIs_ ()
     {
-        Debug::TraceContextBumper ctx{L"PrintTheContentsOfAContainerToTheTraceLog_"};
+        Debug::TraceContextBumper ctx{"PrintTheContentsOfAContainerToTheTraceLog_"};
         /*
          *  See the Iterable<> template in Iterable.h - for a ton more of this functional style linq-like operations
          *  you can do on any Stroika container.

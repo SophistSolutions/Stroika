@@ -242,9 +242,9 @@ namespace {
         {
             EXPECT_TRUE ((Hash<String>{}("x") != Hash<String>{}("y"))); // practically this should never fail if not absolutely required
             EXPECT_TRUE ((Hash<String>{"somesalt"}("x") != Hash<String>{}("x")));
-            EXPECT_TRUE ((Hash<String>{"somesalt"}("x") == Hash<String>{"somesalt"}(L"x")));
+            EXPECT_TRUE ((Hash<String>{"somesalt"}("x") == Hash<String>{"somesalt"}("x")));
 
-            EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
+            EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}("x") == Hash<String>{}("x")));
             struct altStringSerializer {
                 auto operator() (String s)
                 {
@@ -339,7 +339,7 @@ namespace {
         }
         {
             // verify can do digest of an Iterable<T>
-            Characters::String    s1 = L"abc";
+            Characters::String    s1 = "abc";
             [[maybe_unused]] auto r1 = Digest::ComputeDigest<Digest::Algorithm::MD5> (s1);
             [[maybe_unused]] auto r2 = Digest::ComputeDigest<Digest::Algorithm::SuperFastHash> (s1);
             [[maybe_unused]] auto r3 = Digest::ComputeDigest<Digest::Algorithm::SuperFastHash> ("abc"_k);
@@ -381,7 +381,7 @@ namespace {
         {
             EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 10338022));
             EXPECT_TRUE ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{}("1") == 2154528969));
-            EXPECT_TRUE ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 2154528969));
+            EXPECT_TRUE ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}("1") == 2154528969));
             EXPECT_TRUE ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{"mysalt"}("1") == 1355707049));
             EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 1748544338));
         }
@@ -407,7 +407,7 @@ namespace {
         }
         {
             using namespace Characters; // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
-            EXPECT_TRUE (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
+            EXPECT_TRUE (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
             EXPECT_TRUE (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
             EXPECT_TRUE ((GUID{Hash<string, USE_DIGESTER_>{}("x")} == GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
             EXPECT_TRUE ((Hash<string, USE_DIGESTER_, GUID>{}("x") == GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
@@ -695,25 +695,25 @@ namespace {
 
         // openssl rc4 -P -k mypass -md md5 -nosalt
         //      key=A029D0DF84EB5549C641E04A9EF389E5
-        checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass",
+        checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, "mypass",
                      DerivedKey{BLOB::FromHex ("A029D0DF84EB5549C641E04A9EF389E5"), BLOB{}});
 
         // openssl rc4 -P -k mypass  -md md5 -S 0102030405060708
         //  salt=0102030405060708
         //  key=56BDFF04895C5D16F5E3F68737000092
-        checkWithSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass", BLOB::FromHex ("0102030405060708"),
+        checkWithSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, "mypass", BLOB::FromHex ("0102030405060708"),
                        DerivedKey{BLOB::FromHex ("56BDFF04895C5D16F5E3F68737000092"), BLOB{}});
 
         // openssl blowfish -P -k mypass -md sha1 -nosalt
         //      key=E727D1464AE12436E899A726DA5B2F11
         //      iv =D8381B26923E0415
-        checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kSHA1, L"mypass",
+        checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kSHA1, "mypass",
                      DerivedKey{BLOB::FromHex ("E727D1464AE12436E899A726DA5B2F11"), BLOB::FromHex ("D8381B26923E0415")});
 
         // openssl aes-256-cbc -P -k mypass -md md5 -nosalt
         //      key=A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367
         //      iv =541F477059FAEFD57328A0B0D22F2A20
-        checkNoSalt (OpenSSL::CipherAlgorithms::kAES_256_CBC, OpenSSL::DigestAlgorithms::kMD5, L"mypass",
+        checkNoSalt (OpenSSL::CipherAlgorithms::kAES_256_CBC, OpenSSL::DigestAlgorithms::kMD5, "mypass",
                      DerivedKey{BLOB::FromHex ("A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367"),
                                 BLOB::FromHex ("541F477059FAEFD57328A0B0D22F2A20")});
 
@@ -721,7 +721,7 @@ namespace {
         //      salt=1122334455667788
         //      key=36237DC4B90DD237329731E85EE5BB5A
         //      iv =35F1A763D974A002DB1721B8F25498E6
-        checkWithSalt (OpenSSL::CipherAlgorithms::kAES_128_OFB, OpenSSL::DigestAlgorithms::kSHA1, L"mypass", BLOB::FromHex ("1122334455667788"),
+        checkWithSalt (OpenSSL::CipherAlgorithms::kAES_128_OFB, OpenSSL::DigestAlgorithms::kSHA1, "mypass", BLOB::FromHex ("1122334455667788"),
                        DerivedKey{BLOB::FromHex ("36237DC4B90DD237329731E85EE5BB5A"), BLOB::FromHex ("35F1A763D974A002DB1721B8F25498E6")});
 #endif
     }
@@ -765,7 +765,7 @@ namespace {
         //  echo apples and pears| openssl rc4 -md md5 -e -k abc -nosalt | od -t x1 --width=64
         //      0000000 4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d
         //
-        checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"abc",
+        checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, "abc",
                      BLOB::FromHex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a"),
                      BLOB::FromHex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d"));
 
@@ -775,14 +775,14 @@ namespace {
         //      hi mom
         //  echo hi mom| openssl bf -md md5 -k aaa -nosalt | od -t x1 --width=64
         //      0000000 29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6
-        checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kMD5, L"aaa",
+        checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kMD5, "aaa",
                      BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::FromHex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"sv));
 
         //  echo hi mom| od -t x1 --width=64
         //      0000000 68 69 20 6d 6f 6d 0d 0a
         //   echo hi mom| openssl aes-128-cbc -md md5 -k aaa -nosalt | od -t x1 --width=64
         //      0000000 6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53
-        checkNoSalt (OpenSSL::CipherAlgorithms::kAES_128_CBC, OpenSSL::DigestAlgorithms::kMD5, L"aaa",
+        checkNoSalt (OpenSSL::CipherAlgorithms::kAES_128_CBC, OpenSSL::DigestAlgorithms::kMD5, "aaa",
                      BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a"sv), BLOB::FromHex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
 #endif
     }

@@ -123,7 +123,7 @@ namespace {
      * for the PAYCHECKS table.
      */
     const Schema::Table kPaychecksTableSchema_{
-        L"PAYCHECKS"sv,
+        "PAYCHECKS"sv,
         Collection<Schema::Field>{
             // clang-format off
             {.fName = "ID"sv, .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}

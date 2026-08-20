@@ -139,7 +139,7 @@ namespace {
         }
         {
             using Characters::String;
-            SortedSet<String> tmp{String::LessComparer{Characters::eCaseInsensitive}, {"a", L"b", "A"sv}};
+            SortedSet<String> tmp{String::LessComparer{Characters::eCaseInsensitive}, {"a", "b", "A"sv}};
             EXPECT_EQ (tmp.size (), 2u);
             EXPECT_TRUE (tmp.Contains ("A"));
             EXPECT_TRUE (tmp.Contains ("B"));

@@ -119,10 +119,10 @@ namespace {
         bool                  newEnabled = true;
         SharedContactsConfig_ tmp;
         tmp.fEnabled = newEnabled;
-        tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
-        tmp.fThisPHRsIDToSharedContactID2.Add (L"A", L"B");
+        tmp.fThisPHRsIDToSharedContactID.Add ("A", "B");
+        tmp.fThisPHRsIDToSharedContactID2.Add ("A", "B");
         tmp.fLastSynchronizedAt =
-            DateTime{Time::Date{Time::Year{1998}, Time::April, Time::day{11}}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
+            DateTime{Time::Date{Time::Year{1998}, Time::April, Time::day{11}}, Time::TimeOfDay::Parse ("3pm", locale::classic ())};
 
         VariantValue v = mapper.FromObject (tmp);
 
@@ -348,7 +348,7 @@ namespace {
 namespace {
     void DoRegressionTests_DurationsDateTime_6_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_DurationsDateTime_6_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_DurationsDateTime_6_"};
         using namespace Traversal;
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
@@ -411,7 +411,7 @@ namespace {
 
         ObjectVariantMapper mapper;
         mapper.AddClass<SharedContactsConfig_> ({
-            {L"fVV1", &SharedContactsConfig_::fVV1},
+            {"fVV1", &SharedContactsConfig_::fVV1},
         });
 
         SharedContactsConfig_ tmp;
@@ -503,8 +503,8 @@ namespace {
         tmp.fSet1_.Add (193);
         tmp.fVector1_.push_back (3);
         tmp.fVector1_.push_back (-91);
-        tmp.fPair1_    = pair<int, String>{3, L"test"};
-        tmp.fTuple2_   = tuple<int, String>{4, L"test4"};
+        tmp.fPair1_    = pair<int, String>{3, "test"};
+        tmp.fTuple2_   = tuple<int, String>{4, "test4"};
         VariantValue v = mapper.FromObject (tmp);
 
         Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
@@ -526,7 +526,7 @@ namespace {
 namespace {
     void DoRegressionTests_Subclass_9_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_Subclass_9_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_Subclass_9_"};
         using namespace Traversal;
 
         struct BaseObj_ {
@@ -669,7 +669,7 @@ namespace {
                         Execution::Throw (DataExchange::BadFormatException{L"RGBColor sb length 7"});
                     }
                     if (tmpInBuf[0] != '#') {
-                        Execution::Throw (DataExchange::BadFormatException{L"RGBColor must start with #"});
+                        Execution::Throw (DataExchange::BadFormatException{"RGBColor must start with #"});
                     }
                     auto readColorComponent = [] (const wchar_t* start, const wchar_t* end) -> uint8_t {
                         wchar_t buf[1024];

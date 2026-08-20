@@ -1060,7 +1060,7 @@ namespace {
             Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
 #if !qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
             EXPECT_EQ (c.Join (), "localhost, INADDR_ANY");
-            EXPECT_EQ (c.Join (L"; "), "localhost; INADDR_ANY");
+            EXPECT_EQ (c.Join ("; "), "localhost; INADDR_ANY");
 #endif
         }
         {

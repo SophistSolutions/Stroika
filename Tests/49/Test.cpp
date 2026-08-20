@@ -132,22 +132,22 @@ namespace {
             void T1_ ()
             {
                 MemoryStream::Ptr<Character> out = MemoryStream::New<Character> ();
-                out << L"abc";
-                EXPECT_TRUE (out.As<String> () == L"abc");
-                out << L"123";
-                EXPECT_TRUE (out.As<String> () == L"abc123");
+                out << "abc";
+                EXPECT_TRUE (out.As<String> () == "abc");
+                out << "123";
+                EXPECT_TRUE (out.As<String> () == "abc123");
             }
             void T2_ ()
             {
                 MemoryStream::Ptr<Character> out = MemoryStream::New<Character> ();
-                out << L"abc";
-                EXPECT_TRUE (out.As<String> () == L"abc");
-                out << L"123";
-                EXPECT_TRUE (out.As<String> () == L"abc123");
+                out << "abc";
+                EXPECT_TRUE (out.As<String> () == "abc");
+                out << "123";
+                EXPECT_TRUE (out.As<String> () == "abc123");
                 out.SeekWrite (2);
                 out.SeekRead (3); // safe but irrelevant, as we don't read
-                out << L"C";
-                EXPECT_TRUE (out.As<String> () == L"abC123");
+                out << "C";
+                EXPECT_TRUE (out.As<String> () == "abC123");
             }
         }
     }
@@ -222,12 +222,12 @@ namespace {
         using Characters::Character;
         using Characters::String;
         MemoryStream::Ptr<Character> in = MemoryStream::New<Character> ();
-        in << L"abc";
-        EXPECT_TRUE (in.As<String> () == L"abc");
+        in << "abc";
+        EXPECT_TRUE (in.As<String> () == "abc");
 
         MemoryStream::Ptr<Character> out = MemoryStream::New<Character> ();
         Streams::CopyAll<Character> (in, out);
-        EXPECT_TRUE (out.As<String> () == L"abc");
+        EXPECT_TRUE (out.As<String> () == "abc");
     }
 }
 

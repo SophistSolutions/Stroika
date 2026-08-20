@@ -39,7 +39,7 @@ namespace {
         {
             using Characters::String;
             optional<String> x;
-            x = String{L"x"};
+            x = String{"x"};
         }
         {
             optional<int> x;
@@ -112,7 +112,7 @@ namespace {
         }
         {
             optional<int> x = 1;
-            EXPECT_TRUE (Characters::ToString (x) == L"1");
+            EXPECT_TRUE (Characters::ToString (x) == "1");
         }
         {
             // empty optional < any other value
@@ -388,7 +388,7 @@ namespace {
             using Characters::String;
             StackBuffer<String> buf1{3};
             for (int i = 0; i < 1000; i++) {
-                buf1.push_back (String{L"hi mom"});
+                buf1.push_back (String{"hi mom"});
             }
             buf1.resize (0);
         }
@@ -422,7 +422,7 @@ namespace {
                 x = x;
             }
             {
-                optional<Characters::String> x{L"x"};
+                optional<Characters::String> x{"x"};
                 x = x;
             }
         }

@@ -39,12 +39,12 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"Test1_URI_::Private_::TestHostParsing_"};
                 using UniformResourceIdentification::Host;
-                EXPECT_EQ ((Host{Network::V4::kLocalhost}.As<String> (Host::ePCTEncoded)), L"127.0.0.1"sv);
-                EXPECT_EQ ((Host{InternetAddress{169, 254, 0, 1}}.As<String> (Host::ePCTEncoded)), L"169.254.0.1"sv);
-                EXPECT_EQ ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.As<String> (Host::ePCTEncoded)), "[fe80::44de:4247:5b76:ddc9]"sv);
+                EXPECT_EQ ((Host{Network::V4::kLocalhost}.As<String> (Host::ePCTEncoded)), "127.0.0.1"sv);
+                EXPECT_EQ ((Host{InternetAddress{169, 254, 0, 1}}.As<String> (Host::ePCTEncoded)), "169.254.0.1"sv);
+                EXPECT_EQ ((Host{InternetAddress{"fe80::44de:4247:5b76:ddc9"}}.As<String> (Host::ePCTEncoded)), "[fe80::44de:4247:5b76:ddc9]"sv);
                 EXPECT_EQ ((Host::Parse ("[fe80::44de:4247:5b76:ddc9]"sv).AsInternetAddress ()), (InternetAddress{"fe80::44de:4247:5b76:ddc9"sv}));
                 EXPECT_EQ ((Host{"www.sophists.com"}.As<String> (Host::ePCTEncoded)), "www.sophists.com"sv);
-                EXPECT_EQ ((Host{"hello mom"}.As<String> (Host::ePCTEncoded)), L"hello%20mom"sv);
+                EXPECT_EQ ((Host{"hello mom"}.As<String> (Host::ePCTEncoded)), "hello%20mom"sv);
                 EXPECT_EQ ((Host::Parse ("hello%20mom")), (Host{"hello mom"}));
                 {
                     // negative tests - must throw
@@ -73,7 +73,7 @@ namespace {
                 using IO::Network::UniformResourceIdentification::SchemeType;
                 Debug::TraceContextBumper ctx{"Test1_URI_::Private_::SimpleURITests_"};
                 {
-                    IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
+                    IO::Network::URI uri = IO::Network::URI::Parse ("http://localhost:1234");
                     EXPECT_TRUE (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "localhost");
                     EXPECT_TRUE (uri.GetAuthority ()->GetPort () == 1234);
                     EXPECT_TRUE (uri.As<String> () == "http://localhost:1234");
@@ -102,7 +102,7 @@ namespace {
                     EXPECT_TRUE (not uri.GetAuthority ().has_value ());
                     EXPECT_TRUE (uri.GetPath () == "/StyleSheet.css");
                     EXPECT_TRUE (uri.GetQuery<String> () == "ThemeName=Cupertino");
-                    EXPECT_TRUE (uri.GetQuery ()->operator() (L"ThemeName") == "Cupertino");
+                    EXPECT_TRUE (uri.GetQuery ()->operator() ("ThemeName") == "Cupertino");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("HTTPS://www.MICROSOFT.com/Path");
@@ -121,51 +121,51 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"Test1_URI_::Private_::Test_Reference_Resolution_Examples_From_RFC_3986_"};
                 // tests from https://tools.ietf.org/html/rfc3986#section-5.4
-                URI base = URI::Parse (L"http://a/b/c/d;p?q");
+                URI base = URI::Parse ("http://a/b/c/d;p?q");
 
                 // https://tools.ietf.org/html/rfc3986#section-5.4.1
-                EXPECT_TRUE (base.Combine (URI::Parse ("g:h")).As<String> () == L"g:h");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g")).As<String> () == L"http://a/b/c/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("./g")).As<String> () == L"http://a/b/c/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("/g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("//g")).As<String> () == L"http://g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("?y")).As<String> () == L"http://a/b/c/d;p?y");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g?y")).As<String> () == L"http://a/b/c/g?y");
-                EXPECT_TRUE (base.Combine (URI::Parse ("#s")).As<String> () == L"http://a/b/c/d;p?q#s");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g#s")).As<String> () == L"http://a/b/c/g#s");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g?y#s")).As<String> () == L"http://a/b/c/g?y#s");
-                EXPECT_TRUE (base.Combine (URI::Parse (";x")).As<String> () == L"http://a/b/c/;x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g;x")).As<String> () == L"http://a/b/c/g;x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("")).As<String> () == L"http://a/b/c/d;p?q");
-                EXPECT_TRUE (base.Combine (URI::Parse (".")).As<String> () == L"http://a/b/c/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("./")).As<String> () == L"http://a/b/c/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("..")).As<String> () == L"http://a/b/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../")).As<String> () == L"http://a/b/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../g")).As<String> () == L"http://a/b/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../..")).As<String> () == L"http://a/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../../")).As<String> () == L"http://a/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../../g")).As<String> () == L"http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g:h")).As<String> () == "g:h");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g")).As<String> () == "http://a/b/c/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("./g")).As<String> () == "http://a/b/c/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("/g")).As<String> () == "http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("//g")).As<String> () == "http://g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("?y")).As<String> () == "http://a/b/c/d;p?y");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g?y")).As<String> () == "http://a/b/c/g?y");
+                EXPECT_TRUE (base.Combine (URI::Parse ("#s")).As<String> () == "http://a/b/c/d;p?q#s");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g#s")).As<String> () == "http://a/b/c/g#s");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g?y#s")).As<String> () == "http://a/b/c/g?y#s");
+                EXPECT_TRUE (base.Combine (URI::Parse (";x")).As<String> () == "http://a/b/c/;x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g;x")).As<String> () == "http://a/b/c/g;x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("")).As<String> () == "http://a/b/c/d;p?q");
+                EXPECT_TRUE (base.Combine (URI::Parse (".")).As<String> () == "http://a/b/c/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("./")).As<String> () == "http://a/b/c/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("..")).As<String> () == "http://a/b/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../")).As<String> () == "http://a/b/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../g")).As<String> () == "http://a/b/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../..")).As<String> () == "http://a/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../../")).As<String> () == "http://a/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../../g")).As<String> () == "http://a/g");
 
                 // https://tools.ietf.org/html/rfc3986#section-5.4.2 Abnormal Examples
-                EXPECT_TRUE (base.Combine (URI::Parse ("../../../g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../../../../g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("/./g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("/../g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g.")).As<String> () == L"http://a/b/c/g.");
-                EXPECT_TRUE (base.Combine (URI::Parse (".g")).As<String> () == L"http://a/b/c/.g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g..")).As<String> () == L"http://a/b/c/g..");
-                EXPECT_TRUE (base.Combine (URI::Parse ("..g")).As<String> () == L"http://a/b/c/..g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("./../g")).As<String> () == L"http://a/b/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("./g/.")).As<String> () == L"http://a/b/c/g/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g/./h")).As<String> () == L"http://a/b/c/g/h");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g/../h")).As<String> () == L"http://a/b/c/h");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g;x=1/./y")).As<String> () == L"http://a/b/c/g;x=1/y");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g;x=1/../y")).As<String> () == L"http://a/b/c/y");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g?y/./x")).As<String> () == L"http://a/b/c/g?y/./x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g?y/../x")).As<String> () == L"http://a/b/c/g?y/../x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g#s/./x")).As<String> () == L"http://a/b/c/g#s/./x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g#s/../x")).As<String> () == L"http://a/b/c/g#s/../x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("http:g")).As<String> () == L"http:g"); // strict interpretation "for strict parsers"
+                EXPECT_TRUE (base.Combine (URI::Parse ("../../../g")).As<String> () == "http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../../../../g")).As<String> () == "http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("/./g")).As<String> () == "http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("/../g")).As<String> () == "http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g.")).As<String> () == "http://a/b/c/g.");
+                EXPECT_TRUE (base.Combine (URI::Parse (".g")).As<String> () == "http://a/b/c/.g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g..")).As<String> () == "http://a/b/c/g..");
+                EXPECT_TRUE (base.Combine (URI::Parse ("..g")).As<String> () == "http://a/b/c/..g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("./../g")).As<String> () == "http://a/b/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("./g/.")).As<String> () == "http://a/b/c/g/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g/./h")).As<String> () == "http://a/b/c/g/h");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g/../h")).As<String> () == "http://a/b/c/h");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g;x=1/./y")).As<String> () == "http://a/b/c/g;x=1/y");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g;x=1/../y")).As<String> () == "http://a/b/c/y");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g?y/./x")).As<String> () == "http://a/b/c/g?y/./x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g?y/../x")).As<String> () == "http://a/b/c/g?y/../x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g#s/./x")).As<String> () == "http://a/b/c/g#s/./x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g#s/../x")).As<String> () == "http://a/b/c/g#s/../x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("http:g")).As<String> () == "http:g"); // strict interpretation "for strict parsers"
             }
             void TestEmptyURI_ ()
             {
@@ -220,7 +220,7 @@ namespace {
                     auto o = URI{"//www.cwi.nl:80/%7Eguido/Python.html"};
                     EXPECT_TRUE (o.GetScheme () == nullopt);
                     EXPECT_TRUE (o.GetAuthority () == Authority::Parse ("www.cwi.nl:80"));
-                    EXPECT_TRUE (o.GetPath () == L"/~guido/Python.html");
+                    EXPECT_TRUE (o.GetPath () == "/~guido/Python.html");
                     EXPECT_TRUE (o.GetQuery () == nullopt);
                     EXPECT_TRUE (o.GetFragment () == nullopt);
                     EXPECT_TRUE (o.As<string> () == "//www.cwi.nl:80/~guido/Python.html");
@@ -239,7 +239,7 @@ namespace {
                     auto o = URI{"www.cwi.nl/%7Eguido/Python.html"};
                     EXPECT_TRUE (o.GetScheme () == nullopt);
                     EXPECT_TRUE (o.GetAuthority () == nullopt);
-                    EXPECT_TRUE (o.GetPath () == L"www.cwi.nl/~guido/Python.html"); // again, differ from python because our getPath returns decoded string
+                    EXPECT_TRUE (o.GetPath () == "www.cwi.nl/~guido/Python.html"); // again, differ from python because our getPath returns decoded string
                     EXPECT_TRUE (o.GetQuery () == nullopt);
                     EXPECT_TRUE (o.GetFragment () == nullopt);
                     EXPECT_TRUE (o.As<string> () == "www.cwi.nl/~guido/Python.html"); // again, differ from python because %7E (~) is unreserved character
@@ -258,7 +258,7 @@ namespace {
                     auto o = URI{"help/Python.html"};
                     EXPECT_TRUE (o.GetScheme () == nullopt);
                     EXPECT_TRUE (o.GetAuthority () == nullopt);
-                    EXPECT_TRUE (o.GetPath () == L"help/Python.html");
+                    EXPECT_TRUE (o.GetPath () == "help/Python.html");
                     EXPECT_TRUE (o.GetQuery () == nullopt);
                     EXPECT_TRUE (o.GetFragment () == nullopt);
                     EXPECT_TRUE (o.As<string> () == "help/Python.html");
@@ -288,14 +288,14 @@ namespace {
                 using namespace IO::Network::UniformResourceIdentification;
                 {
                     auto o = URI{"dyn:/Reminders/Home.htm"};
-                    EXPECT_TRUE (o.GetScheme () == SchemeType{L"dyn"});
-                    EXPECT_TRUE (o.GetPath () == L"/Reminders/Home.htm");
+                    EXPECT_TRUE (o.GetScheme () == SchemeType{"dyn"});
+                    EXPECT_TRUE (o.GetPath () == "/Reminders/Home.htm");
                 }
                 {
                     auto o = URI{"dyn:/StyleSheet.css?ThemeName=Cupertino"};
-                    EXPECT_TRUE (o.GetScheme () == SchemeType{L"dyn"});
-                    EXPECT_TRUE (o.GetPath () == L"/StyleSheet.css");
-                    EXPECT_TRUE ((*o.GetQuery<Query> ()) (L"ThemeName") == L"Cupertino");
+                    EXPECT_TRUE (o.GetScheme () == SchemeType{"dyn"});
+                    EXPECT_TRUE (o.GetPath () == "/StyleSheet.css");
+                    EXPECT_TRUE ((*o.GetQuery<Query> ()) ("ThemeName") == "Cupertino");
                 }
             }
             void Test_RegressionDueToBugInCompareURIsC20Spaceship_ ()
@@ -368,7 +368,7 @@ namespace {
             void Test_SetScheme_ ()
             {
                 URI u;
-                u.SetScheme (URI::SchemeType{L"http"});
+                u.SetScheme (URI::SchemeType{"http"});
             }
             void Test_roundtrip_IPV6NumericHostname_ ()
             {
@@ -422,10 +422,10 @@ GTEST_TEST (Foundation_IO_Network, Test2_InternetAddress_)
 {
     Debug::TraceContextBumper trcCtx{"Test2_InternetAddress_"};
     {
-        EXPECT_TRUE ((InternetAddress{169, 254, 0, 1}).As<String> () == L"169.254.0.1");
-        EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}).As<String> () == L"1.2.3.4");
-        EXPECT_TRUE ((InternetAddress{L"1.2.3.4"}).As<String> () == L"1.2.3.4");
-        EXPECT_TRUE ((InternetAddress{"1.2.3.4"}).As<String> () == L"1.2.3.4");
+        EXPECT_TRUE ((InternetAddress{169, 254, 0, 1}).As<String> () == "169.254.0.1");
+        EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}).As<String> () == "1.2.3.4");
+        EXPECT_TRUE ((InternetAddress{"1.2.3.4"}).As<String> () == "1.2.3.4");
+        EXPECT_TRUE ((InternetAddress{"1.2.3.4"}).As<String> () == "1.2.3.4");
     }
     {
         EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[0] == 1));
@@ -442,10 +442,10 @@ GTEST_TEST (Foundation_IO_Network, Test2_InternetAddress_)
             EXPECT_TRUE (iaddr2.As<String> () == s);
             EXPECT_TRUE (iaddr3.As<String> () == s);
         };
-        testRoundtrip (L"192.168.131.3");
-        testRoundtrip (L"::");
-        testRoundtrip (L"fec0:0:0:ffff::1");
-        testRoundtrip (L"fe80::44de:4247:5b76:ddc9");
+        testRoundtrip ("192.168.131.3");
+        testRoundtrip ("::");
+        testRoundtrip ("fec0:0:0:ffff::1");
+        testRoundtrip ("fe80::44de:4247:5b76:ddc9");
     }
     {
         struct Tester {

@@ -566,7 +566,7 @@ namespace {
 #endif
             }
             DateTime dt2{d, TimeOfDay{60}};
-            //TOFIX!EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+            //TOFIX!EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == "4/4/1903 12:01 AM");
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
@@ -581,7 +581,7 @@ namespace {
             DateTime dt2{d, TimeOfDay{60}};
             TestRoundTripFormatThenParseNoChange_ (dt2);
             // want a variant that does this formatting!
-            //EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+            //EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == "4/4/1903 12:01 AM");
         }
         EXPECT_TRUE (DateTime::Parse ("2010-01-01", DateTime::kISO8601Format).GetDate ().GetYear () == Time::Year{2010});
         {

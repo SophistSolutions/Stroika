@@ -1291,7 +1291,7 @@ namespace {
                 auto lk = test.cget ();
                 Sleep (30s);
             },
-            Thread::eAutoStart, L"t1");
+            Thread::eAutoStart, "t1");
         [[maybe_unused]] Time::TimePointSeconds waitStart = Time::GetTickCount ();
         Sleep (1s); // long enough so t1 running
         try {
@@ -1393,7 +1393,7 @@ namespace {
                 auto lk = test.cget ();
                 Sleep (30s);
             },
-            Thread::eAutoStart, L"t1");
+            Thread::eAutoStart, "t1");
         [[maybe_unused]] Time::TimePointSeconds waitStart = Time::GetTickCount ();
         Sleep (1s); // long enough so t1 running
         try {

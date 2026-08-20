@@ -83,3 +83,4 @@ Generally will track stuff here between releases
 
 - test HearHE
 
+- does https://github.com/SophistSolutions/Stroika/issues/148 look done/easy? Review

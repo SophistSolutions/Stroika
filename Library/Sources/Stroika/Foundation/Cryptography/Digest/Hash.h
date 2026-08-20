@@ -126,13 +126,13 @@ namespace Stroika::Foundation::Cryptography::Digest {
      * 
      *  \par Example Usage (using explicitly specified serializer)
      *      \code
-     *          EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
+     *          EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}("x") == Hash<String>{}("x")));
      *          struct altStringSerializer {
      *               auto operator () (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
      *          };
      *          // NICE to figure out how to get this working instead of the 'struct' above - @todo
      *          //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
-     *          EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") != Hash<String>{}(L"xxx")));
+     *          EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") != Hash<String>{}("xxx")));
      *          EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
      *      \endcode
      * 

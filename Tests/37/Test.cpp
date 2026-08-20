@@ -35,7 +35,7 @@ using namespace Stroika::Frameworks;
 namespace {
     GTEST_TEST (Foundation_Execution_Exceptions, ThrowCatchStringException_)
     {
-        Debug::TraceContextBumper ctx{L"ThrowCatchStringException_"};
+        Debug::TraceContextBumper ctx{"ThrowCatchStringException_"};
         try {
             Throw (Exception{"HiMom"});
             EXPECT_TRUE (false);
@@ -59,7 +59,7 @@ namespace {
             void T1_system_error_ ()
             {
                 static const int kErr2TestFor_ = make_error_code (errc::bad_address).value ();           // any value from errc would do
-                static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv; // maybe not always right due to locales?
+                static const Characters::String kErr2TestForExpectedMsg_ = "bad address {errno: 14}"sv; // maybe not always right due to locales?
                 try {
                     ThrowPOSIXErrNo (kErr2TestFor_);
                 }
@@ -144,10 +144,10 @@ namespace {
             using Characters::String;
             String argument;
 
-            [[maybe_unused]] static constexpr Activity kBuildingThingy1_{L"Building thingy"sv};
+            [[maybe_unused]] static constexpr Activity kBuildingThingy1_{"Building thingy"sv};
             [[maybe_unused]] static constexpr Activity kBuildingThingy2{"Building thingy"sv};
             [[maybe_unused]] static constexpr Activity kBuildingThingy3_{"Building thingy"};
-            [[maybe_unused]] static constexpr Activity kBuildingThingy4_{L"Building thingy"};
+            [[maybe_unused]] static constexpr Activity kBuildingThingy4_{"Building thingy"};
 
             // constexpr only works if we lose the virtual in ~AsStringObj_ ()
             static constexpr const auto kA1_{Activity<wstring_view>{L"a1"sv}};
@@ -155,9 +155,9 @@ namespace {
             static const auto kOtherActivity = Activity<String>{L"kOtherActivity"};
 
             // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
-            auto otherActivity = Activity<String>{L"otherActivity" + argument}; // activities can be stack based, but these cost more to define
+            auto otherActivity = Activity<String>{"otherActivity" + argument}; // activities can be stack based, but these cost more to define
 
-            auto lazyEvalActivity = LazyEvalActivity{[&] () -> String { return argument.Repeat (5) + L"xxx"; }};
+            auto lazyEvalActivity = LazyEvalActivity{[&] () -> String { return argument.Repeat (5) + "xxx"; }};
 
             DeclareActivity active1{&kA1_};
             DeclareActivity active2{&kOtherActivity};
@@ -260,7 +260,7 @@ namespace {
     }
     GTEST_TEST (Foundation_Execution_Exceptions, Test5_error_code_condition_compares_)
     {
-        Debug::TraceContextBumper ctx{L"Test5_error_code_condition_compares_"};
+        Debug::TraceContextBumper ctx{"Test5_error_code_condition_compares_"};
         Test5_error_code_condition_compares_::Private::Bug1_ ();
 #if qStroika_Foundation_Common_Platform_Windows
         Test5_error_code_condition_compares_::Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
@@ -276,7 +276,7 @@ namespace {
                 Debug::TraceContextBumper ctx{"ThrowCatchStringException_"};
                 {
                     try {
-                        Throw (Exception (L"HiMom"));
+                        Throw (Exception ("HiMom"));
                         EXPECT_TRUE (false);
                     }
                     catch (const Exception<>& e) {
@@ -285,7 +285,7 @@ namespace {
                 }
                 {
                     try {
-                        Throw (Exception (L"HiMom"));
+                        Throw (Exception ("HiMom"));
                         EXPECT_TRUE (false);
                     }
                     catch (const std::exception& e) {

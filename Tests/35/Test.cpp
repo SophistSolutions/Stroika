@@ -36,11 +36,11 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"{}::Atom_"};
         {
-            Atom<> a = L"d";
+            Atom<> a = "d";
             Atom<> b = "d";
             EXPECT_EQ (a, b);
-            EXPECT_EQ (a.GetPrintName (), L"d");
-            EXPECT_EQ (a.As<String> (), L"d");
+            EXPECT_EQ (a.GetPrintName (), "d");
+            EXPECT_EQ (a.As<String> (), "d");
             EXPECT_EQ (a.As<wstring> (), L"d");
             EXPECT_TRUE (not a.empty ());
         }
@@ -48,7 +48,7 @@ namespace {
             EXPECT_TRUE (Atom<> ().empty ());
         }
         {
-            Atom<> a = L"d";
+            Atom<> a = "d";
             Atom<> b = "e";
             EXPECT_TRUE (a != b);
             EXPECT_TRUE (not a.empty ());
@@ -213,7 +213,7 @@ namespace {
             EXPECT_EQ (ct0.GetSubType (), "plain");
             EXPECT_EQ (ct0.GetSuffix (), nullopt);
 
-            InternetMediaType ct1{L"text/plain;charset=ascii"};
+            InternetMediaType ct1{"text/plain;charset=ascii"};
             EXPECT_EQ (ct1.GetParameters (), (Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
             EXPECT_EQ (ct1.GetSuffix (), nullopt);
 
@@ -254,7 +254,7 @@ namespace {
             auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
                 [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
                 using namespace Characters;
-                if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
+                if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (""))) {
                     Stroika::Frameworks::Test::WarnTestIssue (Format ("File suffix mismatch for {}: got {}, expected {}"_f, i,
                                                                       r.GetPreferredAssociatedFileSuffix (i), possibleFileSuffixes));
                 }
@@ -266,13 +266,13 @@ namespace {
                                     .As<Set<InternetMediaType>> ()));
                 }
             };
-            dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
+            dumpCT ("PLAINTEXT", InternetMediaTypes::kText_PLAIN);
             checkCT (InternetMediaTypes::kText_PLAIN, {".txt"});
             dumpCT ("HTML"sv, InternetMediaTypes::kHTML);
             checkCT (InternetMediaTypes::kHTML, {".html", ".htm"});
-            dumpCT (L"JSON", InternetMediaTypes::kJSON);
+            dumpCT ("JSON", InternetMediaTypes::kJSON);
             checkCT (InternetMediaTypes::kJSON, {".json"});
-            dumpCT (L"PNG", InternetMediaTypes::kPNG);
+            dumpCT ("PNG", InternetMediaTypes::kPNG);
             checkCT (InternetMediaTypes::kPNG, {".png"});
             {
                 InternetMediaTypeRegistry registry = InternetMediaTypeRegistry::sThe;

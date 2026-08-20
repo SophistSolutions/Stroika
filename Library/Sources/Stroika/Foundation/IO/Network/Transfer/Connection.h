@@ -83,7 +83,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
      *  \par Example Usage
      *      \code
      *          Connection::Ptr c   =   IO::Network::Transfer::CreateConnection ();
-     *          Response        r   =   c.GET (URI{L"http://www.google.com"});
+     *          Response        r   =   c.GET (URI{"http://www.google.com"});
      *          Assert (r.GetSucceeded ());
      *          EXPECT_TRUE (r.GetData ().size () > 1);
      *      \endcode
@@ -391,7 +391,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
              *  If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication.
              *
              *      \note   digest/basic/etc - normal username/password:
-             *              Authentication{L"Mr-Smith", L"Super-Secret"} is equivalent to curl --user Mr-Smith:Super-Secret URL
+             *              Authentication{"Mr-Smith", "Super-Secret"} is equivalent to curl --user Mr-Smith:Super-Secret URL
              *
              *      \note   For OAuth2:
              *              Authentication{"OAuth <ACCESS_TOKEN>"} is equivalent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL

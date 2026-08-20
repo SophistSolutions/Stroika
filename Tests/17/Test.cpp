@@ -216,7 +216,7 @@ namespace {
             const auto kReference1a_ = Mapping<String, String>{{KeyValuePair<String, String>{"Content-Length", "3"}}};
             const auto kReference1b_ =
                 Mapping<String, String>{{KeyValuePair<String, String>{"Content-Length", "3"}, KeyValuePair<String, String>{"xx", "3"}}};
-            const auto kReference1c_ = Mapping<String, String>{KeyValuePair<String, String>{L"Content-Length", "3"}};
+            const auto kReference1c_ = Mapping<String, String>{KeyValuePair<String, String>{"Content-Length", "3"}};
             const auto kReference2a_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}}};
             const auto kReference2b_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}}};
             const auto kReference2c_ = Mapping<String, String>{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}};

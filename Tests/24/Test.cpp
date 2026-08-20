@@ -101,7 +101,7 @@ namespace {
                 for (auto i : *this) {
                     return i.fName;
                 }
-                return L"Unknown"sv;
+                return "Unknown"sv;
             }
             void AddName (const String& name, unsigned int priority)
             {

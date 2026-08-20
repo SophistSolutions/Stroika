@@ -73,16 +73,16 @@ namespace {
 
         // Add Initial Employees
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {":NAME", L"Paul"},
+            {":NAME", "Paul"},
             {":AGE", 32},
-            {":ADDRESS", L"California"},
+            {":ADDRESS", "California"},
             {":SALARY", 20000.00},
             {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {":NAME", L"Allen"},
+            {":NAME", "Allen"},
             {":AGE", 25},
-            {":ADDRESS", L"Texas"},
+            {":ADDRESS", "Texas"},
             {":SALARY", 15000.00},
             {":STILL_EMPLOYED", 1},
         });
@@ -110,7 +110,7 @@ namespace {
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
             {":NAME", "Kim"sv},
             {":AGE", 22},
-            {":ADDRESS", L"South-Hall"},
+            {":ADDRESS", "South-Hall"},
             {":SALARY", 45000.00},
             {":STILL_EMPLOYED", 1},
         });
@@ -161,7 +161,7 @@ namespace {
                             uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                             tuple<VariantValue, VariantValue> killMe = activeEmps[empDistr (generator)];
                             cout << "Firing employee: {}, {}"_f(get<0> (killMe).As<int> (), get<1> (killMe).As<String> ()) << endl;
-                            fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{L":ID", get<0> (killMe).As<int> ()}});
+                            fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{":ID", get<0> (killMe).As<int> ()}});
                         }
                     } break;
                 }

@@ -107,7 +107,7 @@ filesystem::path FileSystem::WellKnownLocations::GetSpoolDirectory ()
 filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
 #if qStroika_Foundation_Common_Platform_POSIX
-    // USED UNTIL STROIKA v2.0a207 - so watch out for older apps - backward compat - static String kVarLib_ = String_Constant{ L"/var/lib/" };
+    // USED UNTIL STROIKA v2.0a207 - so watch out for older apps - backward compat - static String kVarLib_ = String_Constant{ "/var/lib/" };
     static const filesystem::path kVarLib_{"/var/opt/"sv};
     return kVarLib_;
 #elif qStroika_Foundation_Common_Platform_Windows

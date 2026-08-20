@@ -31,14 +31,14 @@ namespace {
         {
             // Examples from https://tools.ietf.org/html/rfc6265#section-3.1
             {
-                Cookie c = Cookie::Parse (L"SID=31d4d96e407aad42");
-                EXPECT_TRUE (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
+                Cookie c = Cookie::Parse ("SID=31d4d96e407aad42");
+                EXPECT_TRUE (c.fKey == "SID" and c.fValue == "31d4d96e407aad42");
                 EXPECT_TRUE (c.GetAttributes ().empty ());
             }
             {
-                Cookie c = Cookie::Parse (L"SID=31d4d96e407aad42; Path=/; Secure; HttpOnly");
-                EXPECT_TRUE (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
-                EXPECT_TRUE (c.fPath == L"/");
+                Cookie c = Cookie::Parse ("SID=31d4d96e407aad42; Path=/; Secure; HttpOnly");
+                EXPECT_TRUE (c.fKey == "SID" and c.fValue == "31d4d96e407aad42");
+                EXPECT_TRUE (c.fPath == "/");
                 EXPECT_TRUE (c.fSecure);
                 EXPECT_TRUE (c.fHttpOnly);
                 c.fPath.reset ();
@@ -47,17 +47,17 @@ namespace {
                 EXPECT_TRUE (c.GetAttributes ().empty ());
             }
             {
-                Cookie c = Cookie::Parse (L"lang=en-US; Path=/; Domain=example.com");
-                EXPECT_TRUE (c.fKey == L"lang" and c.fValue == L"en-US");
-                EXPECT_TRUE (c.fPath == L"/");
-                EXPECT_TRUE (c.fDomain == L"example.com");
+                Cookie c = Cookie::Parse ("lang=en-US; Path=/; Domain=example.com");
+                EXPECT_TRUE (c.fKey == "lang" and c.fValue == "en-US");
+                EXPECT_TRUE (c.fPath == "/");
+                EXPECT_TRUE (c.fDomain == "example.com");
                 c.fPath.reset ();
                 c.fDomain.reset ();
                 EXPECT_TRUE (c.GetAttributes ().empty ());
             }
             {
-                Cookie c = Cookie::Parse (L"lang=en-US; Expires=Wed, 09 Jun 2021 10:18:14 GMT");
-                EXPECT_TRUE (c.fKey == L"lang" and c.fValue == L"en-US");
+                Cookie c = Cookie::Parse ("lang=en-US; Expires=Wed, 09 Jun 2021 10:18:14 GMT");
+                EXPECT_TRUE (c.fKey == "lang" and c.fValue == "en-US");
                 using namespace Time;
                 EXPECT_TRUE (c.fExpires == (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
                 c.fExpires.reset ();
@@ -70,18 +70,18 @@ namespace {
         {
             {
                 CacheControl c{};
-                EXPECT_TRUE (c.As<String> () == L"");
-                EXPECT_TRUE (c == CacheControl::Parse (L""));
+                EXPECT_TRUE (c.As<String> () == "");
+                EXPECT_TRUE (c == CacheControl::Parse (""));
             }
             {
                 CacheControl c{CacheControl::eNoStore};
-                EXPECT_TRUE (c.As<String> () == L"no-store");
-                EXPECT_TRUE (c == CacheControl::Parse (L"no-store"));
+                EXPECT_TRUE (c.As<String> () == "no-store");
+                EXPECT_TRUE (c == CacheControl::Parse ("no-store"));
             }
             {
                 CacheControl c{.fCacheability = CacheControl::eNoStore, .fMaxAge = 0};
-                EXPECT_TRUE (c.As<String> () == L"no-store, max-age=0");
-                EXPECT_TRUE (c == CacheControl::Parse (L"no-store, max-age=0"));
+                EXPECT_TRUE (c.As<String> () == "no-store, max-age=0");
+                EXPECT_TRUE (c == CacheControl::Parse ("no-store, max-age=0"));
             }
         }
     }
@@ -91,13 +91,13 @@ namespace {
             {
                 IO::Network::HTTP::Headers h;
                 h.contentLength        = 3;
-                const auto kReference_ = Mapping<String, String>{{L"Content-Length", L"3"}};
+                const auto kReference_ = Mapping<String, String>{{"Content-Length", "3"}};
                 EXPECT_TRUE ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 IO::Network::HTTP::Headers h;
-                h.ETag                 = ETag{L"1-2-3-4"};
-                const auto kReference_ = Mapping<String, String>{{L"ETag", L"\"1-2-3-4\""}};
+                h.ETag                 = ETag{"1-2-3-4"};
+                const auto kReference_ = Mapping<String, String>{{"ETag", "\"1-2-3-4\""}};
                 EXPECT_TRUE ((h.As<Mapping<String, String>> () == kReference_));
                 h = IO::Network::HTTP::Headers{kReference_};
                 EXPECT_TRUE ((h.As<Mapping<String, String>> () == kReference_));
@@ -106,12 +106,12 @@ namespace {
                 IO::Network::HTTP::Headers h;
                 h.contentLength        = 3;
                 h.cacheControl         = CacheControl{CacheControl::eNoCache};
-                const auto kReference_ = Mapping<String, String>{{L"Cache-Control", L"no-cache"}, {L"Content-Length", L"3"}};
+                const auto kReference_ = Mapping<String, String>{{"Cache-Control", "no-cache"}, {"Content-Length", "3"}};
                 EXPECT_TRUE ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 const auto kReference_ =
-                    Mapping<String, String>{{L"Cache-Control", L"no-cache"}, {L"blah-blah", L"unknown-header"}, {L"Content-Length", L"3"}};
+                    Mapping<String, String>{{"Cache-Control", "no-cache"}, {"blah-blah", "unknown-header"}, {"Content-Length", "3"}};
                 IO::Network::HTTP::Headers h{kReference_};
                 EXPECT_TRUE (h.contentLength () == 3);
                 EXPECT_TRUE (h.cacheControl () == CacheControl{CacheControl::eNoCache});
@@ -122,9 +122,9 @@ namespace {
                 IO::Network::HTTP::Headers h1;
                 // Test cases from https://tools.ietf.org/html/rfc2616#section-3.3.1
                 const DateTime kReferenceTest_{Date{Year{1994}, November, DayOfMonth{6}}, TimeOfDay{8, 49, 37}, Timezone::kUTC};
-                const String   kTest1_ = L"Sun, 06 Nov 1994 08:49:37 GMT";
-                const String   kTest2_ = L"Sunday, 06-Nov-94 08:49:37 GMT";
-                const String   kTest3_ = L"Sun Nov  6 08:49:37 1994";
+                const String   kTest1_ = "Sun, 06 Nov 1994 08:49:37 GMT";
+                const String   kTest2_ = "Sunday, 06-Nov-94 08:49:37 GMT";
+                const String   kTest3_ = "Sun Nov  6 08:49:37 1994";
                 EXPECT_TRUE (h1.date == nullopt);
                 EXPECT_TRUE (h1.LookupOne (HTTP::HeaderName::kDate) == nullopt);
                 h1.date = kReferenceTest_;
@@ -151,7 +151,7 @@ namespace {
             }
             {
                 IO::Network::HTTP::Headers h1;
-                ETag                       etag = ETag{L"1-2-3-4"};
+                ETag                       etag = ETag{"1-2-3-4"};
                 h1.ETag                         = etag;
                 IO::Network::HTTP::Headers h2;
                 h2.ifNoneMatch = IfNoneMatch{{etag}};
