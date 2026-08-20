@@ -166,8 +166,8 @@ public:
               Route{"api/?"_RegEx, DefaultPage_}
 
               /**
-            * /auth
-            */
+               * /auth
+               */
               ,
               Route{"api/(v1/)?auth/oauth/configurations/?"_RegEx, ObjectRequestHandler::Factory{{Auth::kMapper},
                                                                                                  [this] () {
@@ -193,8 +193,8 @@ public:
                                                                                             }}}
 
               /**
-             * /about - health check etc
-             */
+               * /about - health check etc
+               */
               ,
               Route{"api/about/?"_RegEx, ObjectRequestHandler::Factory{{About::kMapper},
                                                                        [this] () {
@@ -202,7 +202,7 @@ public:
                                                                            return fWSImpl_->about_GET ();
                                                                        }}}
 
-              /**
+            /**
              * /healthcheck - health check etc
              */
               ,
@@ -212,7 +212,7 @@ public:
                                                                                  return fWSImpl_->healthcheck_GET ();
                                                                              }}}
 
-              /**
+            /**
              * /connections - just for debugging - maybe useful - probably wouldn't leave i a real product
              */
               ,
@@ -232,7 +232,7 @@ public:
                         m.rwResponse ().writeln ("}"sv);
                     }}
 
-              /**
+            /**
              * /resource
              * 
              *      \note saying HTTP::MethodsRegEx::kGet here is not needed, and just as an example - its the default and can
@@ -247,13 +247,13 @@ public:
                         m.rwResponse ().write (r.fData);
                     }}
 
-              /*
-             * configuration data for web-gui - private - just so can communicate with /api
-             */
+             /*
+              * configuration data for web-gui - private - just so can communicate with /api
+              */
               ,
               Route{"config.json"_RegEx, ObjectRequestHandler::Factory{{Config_::kMapper}, [=] () { return GetConfig_ (); }}}
 
-              /*
+            /*
              * Serve up contents of html folder as static site
              * 
              *  Note - since this matches any URL, and is the last in the router, the above patterns match first, and anything
