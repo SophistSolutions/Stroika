@@ -121,6 +121,41 @@ namespace {
 //
 // Don't print when they differ on other platforms.
 // This is only intended to alert me when something changes GROSSLY.
+//
+//  WHY THE WARNINGS ARE WINDOWS-ONLY, and why extending them to Linux/macOS was looked at and dropped
+//  (2026-08-21). This costs something real - the four Linux CI jobs run the whole perf suite and throw
+//  the verdict away - so it is a deliberate choice, not an oversight:
+//
+//      o   Every warnIfPerfScore below is a RATIO against the platform's own standard library, so the
+//          same number means different things on different platforms. Measured: running this suite on
+//          g++-14 (ubuntu-24.04, release) and checking each score against its threshold, 27 of 62
+//          entries would fire, the worst at 12.1x. That is not drift or noise - the worst offenders are
+//          all entries whose BASELINE is a std::vector operation ("add many at once", "Build
+//          Sequence<int> from vector<int>"), because libstdc++'s bulk vector operations are far faster
+//          relative to Stroika than MSVC's are.
+//
+//      o   So one shared "slack multiplier" for non-MSVC cannot work: enough slack to quiet the worst
+//          entry (12x) makes the other 61 gates meaningless.
+//
+//      o   Per-compiler-family thresholds - kT_ (msvc, gcc, clang) picked at compile time - would be
+//          simple and free at runtime, but one number per family still has to cover every version of
+//          that family we test (g++-12 through g++-15, and both old and new clang), and how far apart
+//          those versions actually sit here was never measured - only g++-14 was. So it would triple
+//          this table to 186 numbers, two thirds of them guesses, and a guessed threshold that fires
+//          is worse than no gate: it teaches you to skim past the warnings, which is how a real
+//          regression gets missed.
+//
+//      o   What is actually lost is narrow: a regression that is BOTH gross AND invisible on Windows.
+//          Windows is the baseline platform precisely because it already catches gross changes.
+//
+//  Note the cross-platform view is NOT missing, it just lives outside the test:
+//  Tests/Scripts/AnalyzePerformanceTrends.py compares against real per-platform history in
+//  Tests/HistoricalPerformanceRegressionTestResults, which does carry Linux and macOS (for 3.0,
+//  ~19 Ubuntu2204 dumps and ~14 Ubuntu2404, alongside the Windows ones). So the data for a
+//  platform-agnostic rule already exists - warn when a score moves more than N% from the last release
+//  ON THIS PLATFORM, rather than against a constant compiled into the test. That is the shape worth
+//  building if this ever matters enough; it needs the test to read that history at runtime, which is a
+//  feature, not a flag flip.
 namespace {
 #if defined(_MSC_VER)
     constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ =

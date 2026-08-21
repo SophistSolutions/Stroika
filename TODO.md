@@ -45,11 +45,6 @@ Generally will track stuff here between releases
   Collection_Array<String> - one node alloc versus push_back with realloc and String moves) even
   though Collection_Array is 2.9x faster for a batched AddAll (). Workload-dependent, not backwards.
 
-- Perf-suite gap: warnings can only fire on Windows x86_64 release. See
-  kPrintOutIfFailsToMeetPerformanceExpectations_ in Tests/52 - it needs _MSC_VER, no assertions, block
-  allocation, and sizeof (void*) == 8. So the four Linux CI jobs run the whole perf suite and throw the
-  verdict away. Probably cheap to widen, and it is the biggest structural weakness left in that suite.
-
 - Perf thresholds could be ~2x tighter once there is PINNED history to calibrate from. The 3.0d24 pass
   used 1.20x margin against a 7% unpinned noise floor; pinned (which
   Build/Scripts/RunPerformanceRegressionTests now does) the floor is 2.9%, so ~1.10 would catch roughly
