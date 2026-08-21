@@ -86,6 +86,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
+#if qCompilerAndStdLib_MemoryInsertAt_Buggy
+        // see the note on qCompilerAndStdLib_MemoryInsertAt_Buggy - without this, g++ <= 14 drops
+        // the `if (oAddedI != nullptr)` guard below and writes through the null pointer
+        [[gnu::noinline, gnu::optimize ("O0")]]
+#endif
         virtual void Add (const span<const value_type>& items, Iterator<value_type>* oAddedI) override
         {
             Require (not items.empty ());

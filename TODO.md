@@ -20,10 +20,13 @@ Generally will track stuff here between releases
       shape. COLLECTION IS DONE: _IRep::Add () takes span<const value_type> (incompatible change to
       the rep interface rather than a second virtual, so no extra vtable slot), all 6 backends
       converted, contiguous fast path in AddAll (). Read that before doing Set/MultiSet, because the
-      interesting result is that batching only pays where the BACKEND has a bulk op: Collection_Array
-      went 7.3ns -> 0.21ns per element (~35x), while the sorted and node-based reps did not move at
-      all - their cost is tree or per-node allocation, not dispatch. So check the data structure for a
-      bulk insert FIRST; without one, batching buys only the dispatch and the change-count bump.
+      interesting result is that batching only pays where the BACKEND has a bulk op. Measured by the
+      Tests/52 probes that feed AddAll () the same range from a std::list (per-element branch) versus a
+      vector (span branch), which isolates the batching and nothing else: Collection_Array 5.93ns ->
+      0.19ns per element (~30x), but Collection<int> (sorted multiset) only 0.508s -> 0.482s (5%),
+      because tree insertion dominates. So check the data structure for a bulk insert FIRST; without
+      one, batching buys only the dispatch and the change-count bump.
+      NB the DEFAULT Collection<T> for an ordered T is the sorted multiset, so the default gets the 5%.
   Guarded by the Tests/52 entry "Build Sequence<int> from vector<int>" (threshold 3.3): if the fast
   path stops firing that score returns to ~60.
 

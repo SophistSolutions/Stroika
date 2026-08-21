@@ -375,6 +375,25 @@ make[2]: *** Waiting for unfinished jobs....
     [33] Foundation::DataExchange::ObjectVariantMapper - ../Builds/g++-14-release++23/Tests/Test33 --gtest_brief
 Segmentation fault (core dumped)
  */
+/*
+ *  \note This flag covers TWO symptoms, both g++ <= 14 optimizer bugs, and almost certainly the same
+ *        underlying defect - so one flag, one place to bump when g++-14 support is dropped:
+ *
+ *          1.  Memory::Insert () miscompiled. DataStructures/Array.inl takes the Insert_BWA ()
+ *              per-element loop instead. (The original reason for this flag.)
+ *
+ *          2.  (2026-08-21) Collection<T>::_IRep::Add (span<const value_type>, Iterator<value_type>*)
+ *              has its `if (oAddedI != nullptr)` guard DISCARDED at -O2 + LTO: the body executes with
+ *              the pointer null and writes through it. Proven by an fprintf INSIDE the branch printing
+ *              oAddedI=(nil) - gdb variable values are meaningless in optimized builds, so the earlier
+ *              debugger evidence for this did not count. SIGSEGV'd 6 regression tests (36/40/44/45/53/
+ *              54) on ubuntu-24.04; ubuntu-26.04 with the same g++-14 was clean, as were g++-14 Debug,
+ *              MSVC x4 and XCode. Worked around by [[gnu::noinline, gnu::optimize ("O0")]] on the Add ()
+ *              override in all six Collection reps. noinline is REQUIRED for the attribute to apply at
+ *              all - an inlined function takes its caller's flags, and these are all inline templates.
+ *              Measured: noinline alone does NOT fix it, noipa alone does NOT fix it, and passing the
+ *              span by value does NOT fix it. Only noinline+O0 does.
+ */
 #ifndef qCompilerAndStdLib_MemoryInsertAt_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
