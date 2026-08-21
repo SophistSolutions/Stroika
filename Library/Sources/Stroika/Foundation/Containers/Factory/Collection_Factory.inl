@@ -40,12 +40,18 @@ namespace Stroika::Foundation::Containers::Factory {
             if constexpr (totally_ordered<T>) {
                 if (fHints_OptimizeForLookupSpeedOverUpdateSpeed) [[likely]] {
                     /*
-                     *  The default. Chosen for LOOKUP/REMOVE speed - O(log n) Contains ()/Remove ()
-                     *  instead of a linear scan - and NOT for add speed, which it is markedly worse at.
-                     *  Measured 3.0d24 (Tests/52, Windows x86_64 release, 500 elements) against
-                     *  Collection_Array<int>: adding one at a time costs ~8x more here, and AddAll () of
-                     *  a contiguous range ~200x more, because every element pays a tree insertion that
-                     *  no amount of batching removes.
+                     *  The default, and measurement says it is the right one - see Tests/52, and the
+                     *  note in TODO.md so this does not get re-litigated. All 3.0d24, Windows x86_64
+                     *  release, 500 elements, versus Collection_Array:
+                     *      COSTS   adding one at a time ~8x more; AddAll () of a contiguous range ~200x
+                     *              more - every element pays a tree insertion, which batching the
+                     *              _IRep::Add () span cannot remove
+                     *      BUYS    Contains () ~10x faster on a hit and 23x (int) / 34x (String) faster
+                     *              on a miss, since Find_equal_to () is overridden to descend the tree
+                     *              instead of scanning
+                     *  Net: building 500 elements costs ~21us more, one 500-lookup sweep saves ~130us,
+                     *  so a single lookup pass repays construction ~6x. Only a Collection that is
+                     *  essentially never searched wants the array - which is what the hint below is for.
                      */
                     static const auto kDefault_ = Concrete::SortedCollection_stdmultiset<T>{};
                     return kDefault_;

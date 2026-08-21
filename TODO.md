@@ -27,21 +27,20 @@ Generally will track stuff here between releases
   Guarded by the Tests/52 entry "Build Sequence<int> from vector<int>" (threshold 3.3): if the fast
   path stops firing that score returns to ~60.
 
-- Is SortedCollection_stdmultiset the right DEFAULT for Collection<T> when T is totally_ordered?
-  Unanswered, and the evidence is one-sided. Its whole justification is O(log n) Contains ()/Remove ()
-  instead of a linear scan, and NOTHING in Tests/52 measures either one. What IS measured (3.0d24,
-  Windows x86_64 release, 500 elements) is the cost: versus Collection_Array<int>, adding one at a
-  time is ~8x more expensive and AddAll () of a contiguous range ~200x, because every element pays a
-  tree insertion. Do NOT flip the default on that half of the picture.
-  Wants three entries, none of which needs a library rebuild: Contains () and Remove () for
-  Collection_Array vs SortedCollection_stdmultiset at int AND String (for 500 ints a linear scan over
-  contiguous memory may well beat the tree; for String comparisons it will not), plus
-  Collection_Array<String> vs Collection_LinkedList<String> on adds - because the non-ordered branch
-  picks LinkedList for "optimize for updates", which predates Collection_Array having a bulk insert
-  and so may now be backwards.
-  (The narrower defect here - that branch ignoring the hint entirely - IS fixed: it now honors
-  fHints_OptimizeForLookupSpeedOverUpdateSpeed and returns Collection_Array when asked for update
-  speed. No in-tree caller passed the hint, so the default did not change.)
+- ANSWERED, do not re-litigate: SortedCollection_stdmultiset IS the right default for Collection<T>
+  when T is totally_ordered. Measured 3.0d24, Windows x86_64 release, 500 elements, probes now in
+  Tests/52 ("Contains () each PRESENT/ABSENT, Collection_Array<...> vs sorted default"):
+      Contains () hit   sorted ~10x faster than Collection_Array's linear scan, int AND String
+      Contains () miss  sorted 23x (int) / 34x (String) faster
+  The guess that a linear scan over 500 contiguous ints would beat the tree was WRONG - it loses at
+  both element types. Arithmetic that settles it: the sorted rep costs ~21us MORE to build 500
+  elements, and saves ~130us per 500-lookup sweep, so ONE lookup pass repays the whole construction
+  penalty ~6x. Only a Collection that is essentially never searched would prefer the array - which is
+  what fHints_OptimizeForLookupSpeedOverUpdateSpeed is for, and that branch now honors it.
+  Related, also measured, also no change wanted: for non-ordered T the "optimize for updates" branch
+  picks Collection_LinkedList, and that is right for per-element adds (1.9x faster than
+  Collection_Array<String> - one node alloc versus push_back with realloc and String moves) even
+  though Collection_Array is 2.9x faster for a batched AddAll (). Workload-dependent, not backwards.
 
 - Perf-suite gap: warnings can only fire on Windows x86_64 release. See
   kPrintOutIfFailsToMeetPerformanceExpectations_ in Tests/52 - it needs _MSC_VER, no assertions, block

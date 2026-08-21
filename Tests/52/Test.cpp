@@ -784,6 +784,67 @@ namespace {
             }
             sSink_ = sSink_ + c.size ();
         }
+        // 500 values NOT in the container, so Contains () has to scan/descend all the way and miss
+        const vector<int>& AbsentInts_ ()
+        {
+            static const vector<int> kData_ = [] () {
+                vector<int> r;
+                r.reserve (kEltCount_);
+                for (size_t i = 0; i < kEltCount_; ++i) {
+                    r.push_back (static_cast<int> (i + kEltCount_ * 10)); // disjoint from SourceInts_
+                }
+                return r;
+            }();
+            return kData_;
+        }
+        const vector<String>& AbsentStrings_ ()
+        {
+            static const vector<String> kData_ = [] () {
+                vector<String> r;
+                r.reserve (kEltCount_);
+                for (size_t i = 0; i < kEltCount_; ++i) {
+                    r.push_back ("ABSENT {} of a string long enough not to be degenerate"_f(i));
+                }
+                return r;
+            }();
+            return kData_;
+        }
+        template <typename T>
+        const vector<T>& Absent_ ();
+        template <>
+        const vector<int>& Absent_<int> ()
+        {
+            return AbsentInts_ ();
+        }
+        template <>
+        const vector<String>& Absent_<String> ()
+        {
+            return AbsentStrings_ ();
+        }
+        template <typename CONTAINER>
+        void ContainsEachPresent_ ()
+        {
+            const CONTAINER& c = Prebuilt_<CONTAINER> ();
+            size_t           n = 0;
+            for (const auto& i : Source_<typename CONTAINER::value_type> ()) {
+                if (c.Contains (i)) {
+                    ++n;
+                }
+            }
+            sSink_ = sSink_ + n;
+        }
+        template <typename CONTAINER>
+        void ContainsEachAbsent_ ()
+        {
+            const CONTAINER& c = Prebuilt_<CONTAINER> ();
+            size_t           n = 0;
+            for (const auto& i : Absent_<typename CONTAINER::value_type> ()) {
+                if (c.Contains (i)) {
+                    ++n;
+                }
+            }
+            sSink_ = sSink_ + n;
+        }
         template <typename CONTAINER>
         void CopyOnly_ ()
         {
@@ -2532,6 +2593,44 @@ namespace {
          *  (Array::Insert (at, span) reserves once, then one Memory::Insert), as opposed to the
          *  sorted reps above where per-element tree/skiplist insertion dominates regardless.
          */
+        /*
+         *  THE LOOKUP SIDE of the factory's sorted-by-default choice (see TODO.md). Baseline is
+         *  Collection_Array (linear scan over contiguous memory), comparison is Collection<int>/<String>
+         *  - i.e. SortedCollection_stdmultiset, which overrides _IRep::Find_equal_to () so Contains ()
+         *  really does descend the tree.
+         *
+         *  Score BELOW 1.0 means the sorted default is earning its ~8x/200x add penalty; ABOVE 1.0
+         *  means at this size the array wins on lookups too, and the default is simply wrong.
+         */
+        (void)Tester ("Contains () each PRESENT, Collection_Array<int> vs sorted default",
+                      ContainerVsStd_::ContainsEachPresent_<Containers::Concrete::Collection_Array<int>>, "Collection_Array<int>",
+                      ContainerVsStd_::ContainsEachPresent_<Collection<int>>, "Collection<int> (sorted)", 2000,
+                      1000.0 /* probe - answers a design question, not a gate */);
+        (void)Tester ("Contains () each ABSENT, Collection_Array<int> vs sorted default",
+                      ContainerVsStd_::ContainsEachAbsent_<Containers::Concrete::Collection_Array<int>>, "Collection_Array<int>",
+                      ContainerVsStd_::ContainsEachAbsent_<Collection<int>>, "Collection<int> (sorted)", 2000,
+                      1000.0 /* probe - answers a design question, not a gate */);
+        (void)Tester ("Contains () each PRESENT, Collection_Array<String> vs sorted default",
+                      ContainerVsStd_::ContainsEachPresent_<Containers::Concrete::Collection_Array<String>>, "Collection_Array<String>",
+                      ContainerVsStd_::ContainsEachPresent_<Collection<String>>, "Collection<String> (sorted)", 300,
+                      1000.0 /* probe - answers a design question, not a gate */);
+        (void)Tester ("Contains () each ABSENT, Collection_Array<String> vs sorted default",
+                      ContainerVsStd_::ContainsEachAbsent_<Containers::Concrete::Collection_Array<String>>, "Collection_Array<String>",
+                      ContainerVsStd_::ContainsEachAbsent_<Collection<String>>, "Collection<String> (sorted)", 300,
+                      1000.0 /* probe - answers a design question, not a gate */);
+        /*
+         *  And the OTHER factory branch: for non-ordered T it picks Collection_LinkedList when asked to
+         *  optimize for updates. That predates Collection_Array having a bulk insert, so it may now be
+         *  backwards - matched element type here so the two are actually comparable.
+         */
+        (void)Tester ("add many at once, Collection_Array<String> vs Collection_LinkedList<String>",
+                      ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Collection_Array<String>>, "Collection_Array<String>",
+                      ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Collection_LinkedList<String>>, "Collection_LinkedList<String>",
+                      10000, 1000.0 /* probe - answers a design question, not a gate */);
+        (void)Tester ("add one at a time, Collection_Array<String> vs Collection_LinkedList<String>",
+                      ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_Array<String>>, "Collection_Array<String>",
+                      ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_LinkedList<String>>, "Collection_LinkedList<String>",
+                      10000, 1000.0 /* probe - answers a design question, not a gate */);
         Tester ("Collection_Array<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, "vector<int>",
                 ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_Array<int>>, "Collection_Array<int>", 40000, 3.2, &failedTests);
         /*
