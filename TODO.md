@@ -55,22 +55,6 @@ Generally will track stuff here between releases
   Build/Scripts/RunPerformanceRegressionTests now does) the floor is 2.9%, so ~1.10 would catch roughly
   half-size regressions. Needs a few pinned releases in the archive first.
 
-- Three AGENTS.md notes, all cost real time to rediscover:
-    - clang-format version. AGENTS.md gives the VS2022 path as the example, but the tree is formatted
-      with the VS2026 one (installs as "Microsoft Visual Studio\18\", clang-format 22.1.3). Running
-      VS2022's 19.1.5 silently reformats ~65 unrelated files backwards. Also worth noting
-      Build/Scripts/FormatCode takes a directory + filenames, so you can format just what you changed
-      instead of the ~20 minute whole-tree sweep.
-    - a new Foundation .cpp needs IntermediateFiles/$(CONFIGURATION)/Library/Foundation/cached-list-objs
-      deleted, or it compiles but never enters the library archive - and the failure surfaces as an
-      unresolved external when a TEST links, not when the library builds.
-    - the SAME file makes 'library-clobber then libraries -j8' print a convincing FALSE failure:
-      "Makefile:74: *** open: .../cached-list-objs: No such file or directory. Stop." followed by
-      "make: *** [Makefile:216: libraries] Error 2", early in the log. Clobber deleted it and something
-      reads it before it is regenerated; make then regenerates it and the build completes rc=0. Trust
-      the exit status and the built artifacts, not the Error 2 - reading the log text alone says the
-      build failed when it did not.
-
 - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
   Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access
   (the doubly-linked one has native *bidirectional* only), so a vector range CTOR over it goes
@@ -112,5 +96,3 @@ Generally will track stuff here between releases
       add it.
 
 - test HearHE
-
-- does https://github.com/SophistSolutions/Stroika/issues/148 look done/easy? Review

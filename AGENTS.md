@@ -79,6 +79,27 @@ Two things to check before concluding a change is covered:
 - Compare the run's `head_sha` against local `HEAD` — unpushed commits have obviously not been tested,
   and that is the common case mid-session.
 
+That public access covers run/job *status* only. **Logs and artifacts need `actions:read`** and return
+401/403 unauthenticated; the credential is usually already on the dev box in Git Credential Manager, so
+there is no token file to find and nothing to paste:
+```bash
+CFG=$(mktemp)   # --config so the token never reaches a command line or the process list
+printf 'header = "Authorization: Bearer %s"\n' \
+  "$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill | sed -n 's/^password=//p')" > "$CFG"
+curl -sL --config "$CFG" ".../actions/jobs/<job_id>/logs" -o out.log
+curl -sL --config "$CFG" ".../actions/runs/<run_id>/artifacts"     # then archive_download_url
+rm -f "$CFG"
+```
+For a CRASH the job log is nearly useless — it prints only `FAILED: SIGNAL= SIGSEGV`. The
+`Log Data (<job>)` artifact is what you want: CI configures `--trace2file enable`, so it holds a
+per-test `tmp/TraceLog_TestNN_PID#….txt` whose tail names the last function entered.
+
+**`fail-fast` hides the blast radius.** When one Linux job fails the siblings get cancelled, so a
+failing run cannot tell you whether the other compilers are affected — and a cancelled job is not a
+passing job. Disable `fail-fast` or reproduce per-compiler before calling a failure toolchain-specific.
+The OS matters as much as the compiler version: an Aug 2026 miscompile hit ubuntu-24.04's g++-14 while
+ubuntu-26.04's g++-14 was clean.
+
 This is NOT the only place regression tests are run, just the most frequent and the easiest to reach;
 a green run here is good evidence, not proof of full coverage.
 
@@ -90,6 +111,23 @@ Runs clang-format (`.clang-format` at repo root) over the codebase — always ru
 C++ changes. It needs clang-format on `PATH`; on Windows that means the VS LLVM directory
 (`export PATH="$PATH:/cygdrive/c/Program Files/Microsoft Visual Studio/<VER>/Community/VC/Tools/Llvm/x64/bin"`),
 and the target prints the exact line to add if it can't find it.
+
+**Use the clang-format from the NEWEST installed Visual Studio, and check which one you got.** The
+tree is currently formatted with the VS2026 one — which installs as
+`Microsoft Visual Studio/18/`, note the bare version number, not the year — and reports
+`clang-format version 22.1.3`. Running an older one (VS2022 ships 19.1.5) silently reformats the tree
+*backwards*: it "fixed" ~65 files nobody had touched, which is easy to miss in a big diff and
+miserable to unpick afterwards. `clang-format --version` before a whole-tree sweep is worth the two
+seconds.
+
+**`Build/Scripts/FormatCode` takes a directory then filenames**, so you can format only what you
+changed rather than sitting through the ~20 minute whole-tree run:
+```bash
+Build/Scripts/FormatCode Tests/52 Test.cpp
+Build/Scripts/FormatCode Library/Sources/Stroika/Foundation/Containers/Concrete Collection_Array.inl Collection_LinkedList.inl
+```
+One directory per invocation — a second dir/file pair in the same call is silently treated as more
+filenames in the first directory.
 
 **Stray `SomeFile.cpp.tmp` files next to real sources are format-code debris, not yours and not a
 mistake — just delete them.** `Build/Scripts/FormatCode` formats through a sibling temp file: for
@@ -128,6 +166,34 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
   `make run-tests` inherits the same shortcut.)
   `library-clobber` deletes everything except the third-party products, which are slow to rebuild
   and aren't part of Stroika anyway — so it is the cheap way to get a *trustworthy* rebuild.
+  There IS a fast path when you know exactly which `.cpp` instantiates the template you edited, and
+  it needs BOTH halves — deleting the object alone is not enough, because `QUICK_BUILD=1` skips even
+  looking:
+  ```bash
+  find IntermediateFiles/$CONFIG -name 'TheOne.o' -delete
+  QUICK_BUILD=0 make CONFIGURATION=$CONFIG libraries      # without QUICK_BUILD=0: "libraries exist", builds nothing
+  ```
+  Verify it did something — `grep -c Compiling` on the output. A rebuild that compiled 0 files after a
+  header edit means you are still testing the old code.
+- **`cached-list-objs` will lie to you, in both directions.** It is a generated list of the objects
+  that go into the library archive, at
+  `IntermediateFiles/$(CONFIGURATION)/Library/Foundation/cached-list-objs`:
+    - **Adding a new Foundation `.cpp` requires deleting it.** Otherwise the new file compiles happily
+      but never enters the archive, and the failure shows up as an unresolved external when some
+      *test* links — nowhere near the library build that actually went wrong.
+    - **After `library-clobber` it makes the next build print a convincing FALSE failure.** Early in
+      the log you get `Makefile:74: *** open: .../cached-list-objs: No such file or directory. Stop.`
+      followed by `make: *** [Makefile:216: libraries] Error 2`. Clobber deleted the file and
+      something reads it before it is regenerated; make then regenerates it and the build completes
+      normally. Trust the exit status and the built artifacts, not the `Error 2` — reading the log
+      text alone says the build failed when it did not.
+- **Debugging an optimized build: do not trust a debugger's variable values.** In `Release` (`-O2`,
+  and LTO on the Linux configs) gdb will cheerfully print a stale register or the wrong stack slot for
+  a local, with no indication it is guessing — it sent a real investigation down three dead ends in
+  Aug 2026. Make the *program* report its own state instead: an `fprintf` inside the branch you are
+  suspicious of cannot be hoisted across it, so what it prints is what actually happened. `.lto_priv`
+  and `[clone .constprop.N]` in a backtrace are the tell that frames and inlining have been rearranged
+  and the line attribution is approximate.
 - Docker images (`sophistsolutionsinc/stroika-buildvm-*`) are the easiest way to get a complete,
   correctly-versioned build environment; see `Documentation/Building-Stroika.md`.
 - Stroika ships as a static library only, by design (see Building-Stroika.md for rationale).
