@@ -74,8 +74,29 @@ namespace Stroika::Foundation::Containers {
     void Collection<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
-            tmp._GetWriteableRep ().Add (*i, nullptr);
+        /*
+         *  A CONTIGUOUS source of exactly value_type goes to the rep as ONE span: one virtual
+         *  dispatch and one change-count bump for the whole range, instead of one of each per
+         *  element. Mirrors what Sequence<T>::AppendAll () does (c384915a32).
+         *
+         *  Note this does NOT make the backend's own work cheaper - a sorted multiset still pays
+         *  per-element tree insertion - so the win is large for array-backed reps and small for
+         *  node-based ones. See the Tests/52 "add many at once" entries.
+         */
+        if constexpr (contiguous_iterator<remove_cvref_t<ITERATOR_OF_ADDABLE>> and
+                      sized_sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE2>, remove_cvref_t<ITERATOR_OF_ADDABLE>> and
+                      same_as<remove_cvref_t<iter_value_t<remove_cvref_t<ITERATOR_OF_ADDABLE>>>, value_type>) {
+            if (start != end) [[likely]] {
+                tmp._GetWriteableRep ().Add (span<const value_type>{to_address (start), static_cast<size_t> (end - start)}, nullptr);
+            }
+        }
+        else {
+            for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
+                // const& so that an iterator returning a reference costs no copy, and one returning
+                // by value gets its temporary lifetime-extended across the Add () call
+                const value_type& v = *i;
+                tmp._GetWriteableRep ().Add (span<const value_type>{&v, 1}, nullptr);
+            }
         }
     }
     template <typename T>
@@ -96,14 +117,14 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Collection<T>::Add (ArgByValueType<value_type> item)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item, nullptr);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (span<const value_type>{&item, 1}, nullptr);
         Ensure (not this->empty ());
     }
     template <typename T>
     inline void Collection<T>::Add (ArgByValueType<value_type> item, Iterator<T>* addedAt)
     {
         RequireNotNull (addedAt);
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item, addedAt);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (span<const value_type>{&item, 1}, addedAt);
         Ensure (not this->empty ());
         Ensure (not addedAt->Done ());
     }

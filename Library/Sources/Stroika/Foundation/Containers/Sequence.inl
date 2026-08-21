@@ -558,7 +558,7 @@ namespace Stroika::Foundation::Containers {
                       same_as<remove_cvref_t<iter_value_t<remove_cvref_t<ITERATOR_OF_ADDABLE>>>, T>) {
             if (start != end) [[likely]] {
                 accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex,
-                                                    span<const T>{to_address (start), static_cast<size_t> (end - start)});
+                                                     span<const T>{to_address (start), static_cast<size_t> (end - start)});
             }
         }
         else {

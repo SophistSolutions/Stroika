@@ -87,16 +87,20 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
+        virtual void Add (const span<const value_type>& items, Iterator<value_type>* oAddedI) override
         {
+            Require (not items.empty ());
+            Require (oAddedI == nullptr or items.size () == 1);
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
             if (oAddedI == nullptr) [[likely]] {
-                fData_.Add (item);
+                for (const value_type& i : items) {
+                    fData_.Add (i); // skiplist insert; no bulk form
+                }
                 fChangeCounts_.PerformedChange ();
             }
             else {
                 typename DataStructureImplType_::ForwardIterator retIt;
-                fData_.Add (item, &retIt);
+                fData_.Add (items[0], &retIt);
                 fChangeCounts_.PerformedChange ();
                 *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, retIt)};
             }

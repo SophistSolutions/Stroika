@@ -38,9 +38,31 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         if (this->fFactory_ == nullptr) [[likely]] {
             if constexpr (totally_ordered<T>) {
-                // faster adds/removes - same size - so better if possible to use (unless very small collections maybe)
-                static const auto kDefault_ = Concrete::SortedCollection_stdmultiset<T>{};
-                return kDefault_;
+                if (fHints_OptimizeForLookupSpeedOverUpdateSpeed) [[likely]] {
+                    /*
+                     *  The default. Chosen for LOOKUP/REMOVE speed - O(log n) Contains ()/Remove ()
+                     *  instead of a linear scan - and NOT for add speed, which it is markedly worse at.
+                     *  Measured 3.0d24 (Tests/52, Windows x86_64 release, 500 elements) against
+                     *  Collection_Array<int>: adding one at a time costs ~8x more here, and AddAll () of
+                     *  a contiguous range ~200x more, because every element pays a tree insertion that
+                     *  no amount of batching removes.
+                     */
+                    static const auto kDefault_ = Concrete::SortedCollection_stdmultiset<T>{};
+                    return kDefault_;
+                }
+                else {
+                    /*
+                     *  Asked for update speed, so give up the O(log n) lookup for the array: AddAll ()
+                     *  of a contiguous range hands the whole span to Array::Insert (), which reserves
+                     *  once - measured ~20-30x cheaper per element than the per-element path, and ~200x
+                     *  cheaper than doing it through the sorted multiset above.
+                     *
+                     *  Before this, the totally_ordered branch ignored the hint entirely, so a caller
+                     *  asking for update speed was silently given the sorted multiset anyway.
+                     */
+                    static const auto kDefault_ = Concrete::Collection_Array<T>{};
+                    return kDefault_;
+                }
             }
             else {
                 if (fHints_OptimizeForLookupSpeedOverUpdateSpeed) [[likely]] {

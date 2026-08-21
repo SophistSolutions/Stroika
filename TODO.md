@@ -16,10 +16,32 @@ Generally will track stuff here between releases
       the same hook Iterable<T>::As () already uses.
     - a non-contiguous source (list, generator). Could chunk through a small stack buffer - 256
       elements per Insert () call is still ~256x fewer dispatches than now.
-    - the OTHER containers. Collection/Set/MultiSet/... have the same per-element AddAll () shape;
-      worth checking whether their reps take spans too. Not looked at.
-  Guarded by the Tests/52 entry "Build Sequence<int> from vector<int>" (threshold 2.3): if the fast
+    - the OTHER containers. Set/MultiSet/KeyedCollection/... still have the per-element AddAll ()
+      shape. COLLECTION IS DONE: _IRep::Add () takes span<const value_type> (incompatible change to
+      the rep interface rather than a second virtual, so no extra vtable slot), all 6 backends
+      converted, contiguous fast path in AddAll (). Read that before doing Set/MultiSet, because the
+      interesting result is that batching only pays where the BACKEND has a bulk op: Collection_Array
+      went 7.3ns -> 0.21ns per element (~35x), while the sorted and node-based reps did not move at
+      all - their cost is tree or per-node allocation, not dispatch. So check the data structure for a
+      bulk insert FIRST; without one, batching buys only the dispatch and the change-count bump.
+  Guarded by the Tests/52 entry "Build Sequence<int> from vector<int>" (threshold 3.3): if the fast
   path stops firing that score returns to ~60.
+
+- Is SortedCollection_stdmultiset the right DEFAULT for Collection<T> when T is totally_ordered?
+  Unanswered, and the evidence is one-sided. Its whole justification is O(log n) Contains ()/Remove ()
+  instead of a linear scan, and NOTHING in Tests/52 measures either one. What IS measured (3.0d24,
+  Windows x86_64 release, 500 elements) is the cost: versus Collection_Array<int>, adding one at a
+  time is ~8x more expensive and AddAll () of a contiguous range ~200x, because every element pays a
+  tree insertion. Do NOT flip the default on that half of the picture.
+  Wants three entries, none of which needs a library rebuild: Contains () and Remove () for
+  Collection_Array vs SortedCollection_stdmultiset at int AND String (for 500 ints a linear scan over
+  contiguous memory may well beat the tree; for String comparisons it will not), plus
+  Collection_Array<String> vs Collection_LinkedList<String> on adds - because the non-ordered branch
+  picks LinkedList for "optimize for updates", which predates Collection_Array having a bulk insert
+  and so may now be backwards.
+  (The narrower defect here - that branch ignoring the hint entirely - IS fixed: it now honors
+  fHints_OptimizeForLookupSpeedOverUpdateSpeed and returns Collection_Array when asked for update
+  speed. No in-tree caller passed the hint, so the default did not change.)
 
 - Perf-suite gap: warnings can only fire on Windows x86_64 release. See
   kPrintOutIfFailsToMeetPerformanceExpectations_ in Tests/52 - it needs _MSC_VER, no assertions, block
@@ -31,7 +53,7 @@ Generally will track stuff here between releases
   Build/Scripts/RunPerformanceRegressionTests now does) the floor is 2.9%, so ~1.10 would catch roughly
   half-size regressions. Needs a few pinned releases in the archive first.
 
-- Two AGENTS.md notes, both cost real time to rediscover:
+- Three AGENTS.md notes, all cost real time to rediscover:
     - clang-format version. AGENTS.md gives the VS2022 path as the example, but the tree is formatted
       with the VS2026 one (installs as "Microsoft Visual Studio\18\", clang-format 22.1.3). Running
       VS2022's 19.1.5 silently reformats ~65 unrelated files backwards. Also worth noting
@@ -40,6 +62,12 @@ Generally will track stuff here between releases
     - a new Foundation .cpp needs IntermediateFiles/$(CONFIGURATION)/Library/Foundation/cached-list-objs
       deleted, or it compiles but never enters the library archive - and the failure surfaces as an
       unresolved external when a TEST links, not when the library builds.
+    - the SAME file makes 'library-clobber then libraries -j8' print a convincing FALSE failure:
+      "Makefile:74: *** open: .../cached-list-objs: No such file or directory. Stop." followed by
+      "make: *** [Makefile:216: libraries] Error 2", early in the log. Clobber deleted it and something
+      reads it before it is regenerated; make then regenerates it and the build completes rc=0. Trust
+      the exit status and the built artifacts, not the Error 2 - reading the log text alone says the
+      build failed when it did not.
 
 - Do NOT pre-size a copy via MakeRandomAccessIterator () unconditionally: Sequence_LinkedList and
   Sequence_DoublyLinkedList still return _MakeRandomAccessIterator_ViaGetAt () for random access

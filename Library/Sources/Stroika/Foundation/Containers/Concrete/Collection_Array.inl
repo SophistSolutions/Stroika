@@ -86,11 +86,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
+        virtual void Add (const span<const value_type>& items, Iterator<value_type>* oAddedI) override
         {
+            Require (not items.empty ());
+            Require (oAddedI == nullptr or items.size () == 1);
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            // Appending is fastest
-            fData_.push_back (item);
+            // Appending is fastest, and Array::Insert () takes the whole span in one go
+            fData_.Insert (fData_.size (), items);
             fChangeCounts_.PerformedChange ();
             if (oAddedI != nullptr) [[unlikely]] {
                 *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, fData_.size () - 1)};

@@ -1127,7 +1127,8 @@ namespace {
         };
         roundTripCheck (VariantValue{3});
         roundTripCheck (VariantValue{"x"});
-        roundTripCheck (VariantValue (Mapping<String, VariantValue>{pair<String, VariantValue>{"a", 3}, pair<String, VariantValue>{"n", "34"}}));
+        roundTripCheck (
+            VariantValue (Mapping<String, VariantValue>{pair<String, VariantValue>{"a", 3}, pair<String, VariantValue>{"n", "34"}}));
     }
 }
 

@@ -99,12 +99,18 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
+        virtual void Add (const span<const value_type>& items, Iterator<value_type>* oAddedI) override
         {
+            Require (not items.empty ());
+            Require (oAddedI == nullptr or items.size () == 1);
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            auto                                                     addedAtI = fData_.insert (item);
-            fChangeCounts_.PerformedChange ();
-            if (oAddedI != nullptr) [[unlikely]] {
+            if (oAddedI == nullptr) [[likely]] {
+                fData_.insert (items.begin (), items.end ()); // multiset has a range insert
+                fChangeCounts_.PerformedChange ();
+            }
+            else {
+                auto addedAtI = fData_.insert (items[0]);
+                fChangeCounts_.PerformedChange ();
                 *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, addedAtI)};
             }
         }

@@ -386,8 +386,24 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual shared_ptr<_IRep> CloneEmpty () const                                   = 0;
         virtual shared_ptr<_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
-        // if oAddedI != nullptr, on output, its filled in with iterator pointing to added item
-        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI)                            = 0;
+        /**
+         *  Add every item in 'items' to this collection. The order in which they are added is
+         *  unspecified - Collection<T> promises no ordering - so a backend may add them in whatever
+         *  order is cheapest for its data structure.
+         *
+         *  This takes a SPAN rather than a single item so that AddAll () over a contiguous source
+         *  costs ONE virtual dispatch and ONE change-count bump instead of N of each. Backends whose
+         *  data structure has a bulk insert (std::multiset::insert (first, last),
+         *  forward_list::insert_after (pos, first, last), DataStructures::Array::Insert (at, span))
+         *  should use it rather than looping.
+         *
+         *  \req not items.empty ()
+         *  \req oAddedI == nullptr or items.size () == 1
+         *       - "the" added item is only meaningful when exactly one was added.
+         *
+         *  if oAddedI != nullptr, on output, its filled in with iterator pointing to added item
+         */
+        virtual void Add (const span<const value_type>& items, Iterator<value_type>* oAddedI)                        = 0;
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<T> newValue, Iterator<value_type>* nextI) = 0;
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                             = 0;
     };

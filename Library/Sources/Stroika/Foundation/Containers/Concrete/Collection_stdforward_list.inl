@@ -79,10 +79,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual void Add (ArgByValueType<value_type> item, Iterator<value_type>* oAddedI) override
+        virtual void Add (const span<const value_type>& items, Iterator<value_type>* oAddedI) override
         {
+            Require (not items.empty ());
+            Require (oAddedI == nullptr or items.size () == 1);
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fData_};
-            fData_.push_front (item);
+            // order meaningless for a collection, so insert at the front - and forward_list has a
+            // range insert_after (), so the whole span costs one call
+            fData_.insert_after (fData_.before_begin (), items.begin (), items.end ());
             fChangeCounts_.PerformedChange ();
             if (oAddedI != nullptr) [[unlikely]] {
                 *oAddedI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
