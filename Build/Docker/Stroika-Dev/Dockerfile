@@ -12,9 +12,11 @@ RUN apt-get install -y openssh-server
 RUN apt-get install -y clang-format curl vim apt-file nodejs iproute2 lldb
 
 EXPOSE 22
-## @todo have not figured out how to get sshd to start automatically
-## so for now, start docker container and manually run sudo service ssh restart and then you can connect
-#CMD /usr/sbin/sshd && bash
-CMD bash
 
+# Fixes the old '@todo have not figured out how to get sshd to start automatically'. The work cannot be
+# done in a RUN step: these containers bind-mount the host's /etc/passwd, so the user identity and home
+# path only exist at container start - see the comments in the script.
+COPY Shared-Files/stroika-dev-entrypoint.sh /usr/local/bin/stroika-dev-entrypoint.sh
+RUN chmod +x /usr/local/bin/stroika-dev-entrypoint.sh
 
+CMD ["/usr/local/bin/stroika-dev-entrypoint.sh"]
