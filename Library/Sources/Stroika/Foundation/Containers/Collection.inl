@@ -91,8 +91,7 @@ namespace Stroika::Foundation::Containers {
                 tmp._GetWriteableRep ().Add (span<const value_type>{to_address (start), static_cast<size_t> (end - start)}, nullptr);
             }
         }
-        else if constexpr (default_initializable<value_type>) {
-            // see the default_initializable note in Sequence<T>::AppendAll ()
+        else {
             /*
              *  Neither contiguous nor offering PeekContiguousStorage () (a std::list, a generator, a lazy
              *  pipeline) - so it must be walked one element at a time, but it can still be HANDED OVER a
@@ -111,15 +110,6 @@ namespace Stroika::Foundation::Containers {
             }
             if (buf.size () != 0) [[likely]] {
                 tmp._GetWriteableRep ().Add (span<const value_type>{buf.begin (), buf.size ()}, nullptr);
-            }
-        }
-        else {
-            // T cannot be buffered - one Add () per element, as before
-            for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
-                // const& so that an iterator returning a reference costs no copy, and one returning
-                // by value gets its temporary lifetime-extended across the Add () call
-                const value_type& v = *i;
-                tmp._GetWriteableRep ().Add (span<const value_type>{&v, 1}, nullptr);
             }
         }
     }

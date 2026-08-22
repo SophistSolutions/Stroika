@@ -511,8 +511,7 @@ namespace Stroika::Foundation::Containers {
                     i, span<const T>{to_address (start), static_cast<size_t> (end - start)});
             }
         }
-        else if constexpr (default_initializable<T>) {
-            // see the default_initializable note in AppendAll ()
+        else {
             /*
              *  Chunked, for the same reasons as AppendAll () - see the long comment there. Here it also
              *  restores the ASYMPTOTICS for a non-contiguous source: inserting element-at-a-time at an
@@ -534,13 +533,6 @@ namespace Stroika::Foundation::Containers {
             }
             if (buf.size () != 0) [[likely]] {
                 accessor._GetWriteableRep ().Insert (insertAt, span<const T>{buf.begin (), buf.size ()});
-            }
-        }
-        else {
-            // T cannot be buffered - one Insert () per element at an advancing index, as before
-            size_t insertAt = i;
-            for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != forward<ITERATOR_OF_ADDABLE2> (end); ++ii) {
-                Insert (insertAt++, *ii);
             }
         }
     }
@@ -687,15 +679,7 @@ namespace Stroika::Foundation::Containers {
                                                      span<const T>{to_address (start), static_cast<size_t> (end - start)});
             }
         }
-        else if constexpr (default_initializable<T>) {
-            /*
-             *  
-ote   Gated on default_initializable<T> because the chunk buffer needs it: InlineBuffer's
-             *          growth path value-initializes with T{} (uninitialized_fill in InlineBuffer.inl), and
-             *          not every T qualifies - Collection<pair<Socket::Ptr, Set<...>>> is a real in-tree
-             *          example, since a Ptr with no default ctor makes the pair non-default-constructible.
-             *          Those fall through to the original element-at-a-time path below, unchanged.
-             */
+        else {
             /*
              *  A source that is neither contiguous nor able to offer PeekContiguousStorage () - a std::list,
              *  a generator, a lazy Where () pipeline - still has to be walked one element at a time. But it
@@ -725,13 +709,6 @@ ote   Gated on default_initializable<T> because the chunk buffer needs it: Inlin
             }
             if (buf.size () != 0) [[likely]] {
                 accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span<const T>{buf.begin (), buf.size ()});
-            }
-        }
-        else {
-            // T cannot be buffered (see the note above) - one _IRep::Insert () per element, as before
-            for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
-                const T& tmp = *i;
-                accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span{&tmp, 1u});
             }
         }
     }
