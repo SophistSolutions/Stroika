@@ -10,6 +10,7 @@
 
 #include "Stroika/Foundation/Containers/Factory/Collection_Factory.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Containers {
 
@@ -90,7 +91,30 @@ namespace Stroika::Foundation::Containers {
                 tmp._GetWriteableRep ().Add (span<const value_type>{to_address (start), static_cast<size_t> (end - start)}, nullptr);
             }
         }
+        else if constexpr (default_initializable<value_type>) {
+            // see the default_initializable note in Sequence<T>::AppendAll ()
+            /*
+             *  Neither contiguous nor offering PeekContiguousStorage () (a std::list, a generator, a lazy
+             *  pipeline) - so it must be walked one element at a time, but it can still be HANDED OVER a
+             *  chunk at a time. See the long comment on Sequence<T>::AppendAll () for why this is worth
+             *  doing even when T is expensive to copy: the saving is mostly the backend reserving once per
+             *  chunk instead of growing per element, which swamps the extra source->buffer copy.
+             */
+            constexpr size_t                kChunkSize_ = Memory::StackBuffer<value_type>::kMinCapacity;
+            Memory::StackBuffer<value_type> buf;
+            for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
+                buf.push_back (*i);
+                if (buf.size () == kChunkSize_) [[unlikely]] {
+                    tmp._GetWriteableRep ().Add (span<const value_type>{buf.begin (), buf.size ()}, nullptr);
+                    buf.clear ();
+                }
+            }
+            if (buf.size () != 0) [[likely]] {
+                tmp._GetWriteableRep ().Add (span<const value_type>{buf.begin (), buf.size ()}, nullptr);
+            }
+        }
         else {
+            // T cannot be buffered - one Add () per element, as before
             for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
                 // const& so that an iterator returning a reference costs no copy, and one returning
                 // by value gets its temporary lifetime-extended across the Add () call

@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/Private/IterableUtils.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Containers {
 
@@ -510,7 +511,33 @@ namespace Stroika::Foundation::Containers {
                     i, span<const T>{to_address (start), static_cast<size_t> (end - start)});
             }
         }
+        else if constexpr (default_initializable<T>) {
+            // see the default_initializable note in AppendAll ()
+            /*
+             *  Chunked, for the same reasons as AppendAll () - see the long comment there. Here it also
+             *  restores the ASYMPTOTICS for a non-contiguous source: inserting element-at-a-time at an
+             *  advancing index shifts the tail once per element, O (m*n), and chunking makes that once per
+             *  chunk. Measured 123x (int, 1000 elements) for a list source versus a vector one, which is
+             *  the single largest gap any of these probes found.
+             */
+            constexpr size_t                 kChunkSize_ = Memory::StackBuffer<T>::kMinCapacity;
+            Memory::StackBuffer<T>           buf;
+            _SafeReadWriteRepAccessor<_IRep> accessor{this};
+            size_t                           insertAt = i;
+            for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != forward<ITERATOR_OF_ADDABLE2> (end); ++ii) {
+                buf.push_back (*ii);
+                if (buf.size () == kChunkSize_) [[unlikely]] {
+                    accessor._GetWriteableRep ().Insert (insertAt, span<const T>{buf.begin (), buf.size ()});
+                    insertAt += buf.size ();
+                    buf.clear ();
+                }
+            }
+            if (buf.size () != 0) [[likely]] {
+                accessor._GetWriteableRep ().Insert (insertAt, span<const T>{buf.begin (), buf.size ()});
+            }
+        }
         else {
+            // T cannot be buffered - one Insert () per element at an advancing index, as before
             size_t insertAt = i;
             for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != forward<ITERATOR_OF_ADDABLE2> (end); ++ii) {
                 Insert (insertAt++, *ii);
@@ -660,7 +687,48 @@ namespace Stroika::Foundation::Containers {
                                                      span<const T>{to_address (start), static_cast<size_t> (end - start)});
             }
         }
+        else if constexpr (default_initializable<T>) {
+            /*
+             *  
+ote   Gated on default_initializable<T> because the chunk buffer needs it: InlineBuffer's
+             *          growth path value-initializes with T{} (uninitialized_fill in InlineBuffer.inl), and
+             *          not every T qualifies - Collection<pair<Socket::Ptr, Set<...>>> is a real in-tree
+             *          example, since a Ptr with no default ctor makes the pair non-default-constructible.
+             *          Those fall through to the original element-at-a-time path below, unchanged.
+             */
+            /*
+             *  A source that is neither contiguous nor able to offer PeekContiguousStorage () - a std::list,
+             *  a generator, a lazy Where () pipeline - still has to be walked one element at a time. But it
+             *  does NOT have to be handed over one element at a time: buffer a chunk and pass that as a span,
+             *  so the rep sees one call per CHUNK instead of one per element.
+             *
+             *  Measured (g++-15 release, 1000 elements, Tests/52 "vector source vs LIST source"): a list
+             *  source cost 49x a vector one for int and 9.8x for String. The String number is the
+             *  interesting one - it says the dominant cost is NOT the virtual dispatch but the backend
+             *  growing its buffer incrementally, reallocating and moving every element already there, where
+             *  one span insert reserves once. That is also why this is NOT gated on T being cheap to copy:
+             *  the extra source->buffer copy per element was the obvious objection to chunking, and it is
+             *  swamped by what amortizing the growth saves, for String as much as for int.
+             *
+             *  StackBuffer (not InlineBuffer) because this is exactly a scratch buffer living in a stack
+             *  frame; its default inline element count is already tuned to stay under the frame size where
+             *  Windows calls _chkstk, so flushing at kMinCapacity means it never touches the free store.
+             */
+            constexpr size_t       kChunkSize_ = Memory::StackBuffer<T>::kMinCapacity;
+            Memory::StackBuffer<T> buf;
+            for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
+                buf.push_back (*i);
+                if (buf.size () == kChunkSize_) [[unlikely]] {
+                    accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span<const T>{buf.begin (), buf.size ()});
+                    buf.clear ();
+                }
+            }
+            if (buf.size () != 0) [[likely]] {
+                accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span<const T>{buf.begin (), buf.size ()});
+            }
+        }
         else {
+            // T cannot be buffered (see the note above) - one _IRep::Insert () per element, as before
             for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
                 const T& tmp = *i;
                 accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span{&tmp, 1u});

@@ -2124,6 +2124,63 @@ namespace {
             Consume_ (tmp);
         }
         /*
+         *  ---- A NON-CONTIGUOUS SOURCE (std::list here, but equally a generator or a lazy Where ()
+         *  pipeline) can take NEITHER fast path: not the contiguous_iterator one, because a list iterator
+         *  is not contiguous, and not PeekContiguousStorage (), because a list has no such storage. So it
+         *  still pays one virtual _IRep::Insert () per element, and for InsertAll () it is still O (m*n) as
+         *  well, since each element inserts separately at an advancing index.
+         *
+         *  Each pair below feeds the SAME data from a list and from a vector, so the score isolates exactly
+         *  one thing: the cost of the source not being contiguous. That is the number that would justify (or
+         *  kill) chunking a non-contiguous source through a stack buffer, which is not free - it copies
+         *  source->buffer->container, ie TWO copies per element, so it should win big for int and could
+         *  easily LOSE for String.
+         */
+        template <typename T>
+        const list<T>& SourceAsList_ (const vector<T>& from)
+        {
+            static const list<T> kData_{from.begin (), from.end ()};
+            return kData_;
+        }
+        template <typename T>
+        void AppendAll_Sequence_FromList_ (const list<T>& src)
+        {
+            Sequence<T> tmp;
+            tmp.AppendAll (src);
+            Consume_ (tmp);
+        }
+        template <typename T>
+        void InsertAll_Sequence_FromList_OntoNonEmpty_ (const Sequence<T>& target, const list<T>& src)
+        {
+            Sequence<T> tmp{target};
+            tmp.InsertAll (2, src);
+            Consume_ (tmp);
+        }
+        template <typename T>
+        void InsertAll_Sequence_FromVector_OntoNonEmpty_ (const Sequence<T>& target, const vector<T>& src)
+        {
+            Sequence<T> tmp{target};
+            tmp.InsertAll (2, src);
+            Consume_ (tmp);
+        }
+        /*
+         *  ---- THE SOURCE SIDE, for the containers whose _IRep::Add () still takes ONE item (Set, MultiSet,
+         *  KeyedCollection - Collection's takes a span already). Filling one from a Stroika container costs
+         *  TWO virtual calls per element: one to advance Iterator<T>, one to Add (). Filling it from a vector
+         *  costs only the second, because a vector iterator is a raw pointer.
+         *
+         *  So this ratio is purely the SOURCE-side dispatch, with the destination doing identical work on
+         *  both sides - which is what makes it the right measurement for whether asking the source for
+         *  PeekContiguousStorage () is worth it WITHOUT any change to those rep interfaces.
+         */
+        template <typename CONTAINER, typename SRC>
+        void AddAllInto_ (const SRC& src)
+        {
+            CONTAINER c;
+            c.AddAll (src);
+            sOptimizerSink_ = sOptimizerSink_ + c.size ();
+        }
+        /*
          *  The same build against the CONCRETE backend, to separate two costs that would otherwise be
          *  confounded: Sequence<T> also pays a factory call to pick a backend, where Sequence_Array<T> names
          *  one. If the concrete entry is much cheaper than the envelope entry, the factory is worth looking
@@ -2796,6 +2853,44 @@ namespace {
                     Test_IterableAlgorithms_::PrependAll_Sequence_OntoNonEmpty_<String> (kSrcSeqStrs_, Test_IterableAlgorithms_::SourceStrings_ ());
                 },
                 "PrependAll (O (m*n))", 200, 1000.0 /* probe - no threshold until the fix lands */);
+            /*
+             *  The NON-CONTIGUOUS source, and the source-side dispatch for the still-single-item reps.
+             *  See the comments on SourceAsList_ () and AddAllInto_ (). All probes: these exist to decide
+             *  whether the remaining two AppendAll () batching items are worth building at all.
+             */
+            (void)Tester (
+                "Sequence<int>::AppendAll (): vector source vs LIST source",
+                [] () { Test_IterableAlgorithms_::AppendAll_Sequence_FromVector_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
+                "from vector<int> (span path)",
+                [] () {
+                    Test_IterableAlgorithms_::AppendAll_Sequence_FromList_<int> (
+                        Test_IterableAlgorithms_::SourceAsList_<int> (Test_IterableAlgorithms_::SourceInts_ ()));
+                },
+                "from list<int> (per-element)", 50000, 1000.0 /* probe */);
+            (void)Tester (
+                "Sequence<String>::AppendAll (): vector source vs LIST source",
+                [] () { Test_IterableAlgorithms_::AppendAll_Sequence_FromVector_<String> (Test_IterableAlgorithms_::SourceStrings_ ()); },
+                "from vector<String> (span path)",
+                [] () {
+                    Test_IterableAlgorithms_::AppendAll_Sequence_FromList_<String> (
+                        Test_IterableAlgorithms_::SourceAsList_<String> (Test_IterableAlgorithms_::SourceStrings_ ()));
+                },
+                "from list<String> (per-element)", 20000, 1000.0 /* probe */);
+            (void)Tester (
+                "Sequence<int>::InsertAll (middle): vector source vs LIST source",
+                [] () {
+                    Test_IterableAlgorithms_::InsertAll_Sequence_FromVector_OntoNonEmpty_<int> (kSrcSeqInts_, Test_IterableAlgorithms_::SourceInts_ ());
+                },
+                "from vector<int> (one span insert)",
+                [] () {
+                    Test_IterableAlgorithms_::InsertAll_Sequence_FromList_OntoNonEmpty_<int> (
+                        kSrcSeqInts_, Test_IterableAlgorithms_::SourceAsList_<int> (Test_IterableAlgorithms_::SourceInts_ ()));
+                },
+                "from list<int> (still O (m*n))", 2000, 1000.0 /* probe */);
+            (void)Tester (
+                "Set<int>::AddAll (): vector source vs STROIKA source (source-side dispatch)",
+                [] () { Test_IterableAlgorithms_::AddAllInto_<Set<int>> (Test_IterableAlgorithms_::SourceInts_ ()); }, "from vector<int>",
+                [] () { Test_IterableAlgorithms_::AddAllInto_<Set<int>> (kSrcSeqInts_); }, "from Sequence<int>", 5000, 1000.0 /* probe */);
         }
 #if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
         // Sequence<int>::append_range () against std::vector<int>::append_range () - the same operation, so
