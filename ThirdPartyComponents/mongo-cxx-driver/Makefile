@@ -33,7 +33,8 @@ SHELL=/bin/bash
 #
 #		(NOTE WHEN CHANGING THIS - REVIEW THE PATCHES THAT DEPEND ON THIS VERSION BELOW)
 #
-MONGOCXXDRIRVER_VERSION_=r4.4.0
+MONGOCXXDRIRVER_VERSION_=r4.5.0
+# MONGOCXXDRIRVER_VERSION_=r4.4.0
 # MONGOCXXDRIRVER_VERSION_=r4.3.1
 # MONGOCXXDRIRVER_VERSION_=r4.3.0
 
@@ -143,7 +144,11 @@ endif
 
 
 
-ifeq (${MONGOCXXDRIRVER_VERSION_},r4.4.0)
+# The '1' ABI suffix in the installed .pc/library names (libbsoncxx1-static.pc etc) appeared in r4.4.0
+# and applies to everything since. Expressed as a >= test rather than a list of versions so it does not
+# go stale on the next bump: VersionCompare returns 2 for '<', so 'not 2' means >=. It compares
+# numerically, so 4.10.0 >= 4.4.0 holds (a plain string compare would get that wrong).
+ifneq (2,$(shell ${StroikaRoot}Build/Scripts/VersionCompare $(patsubst r%,%,${MONGOCXXDRIRVER_VERSION_}) 4.4.0; echo $$?))
 LIBABIVER_=1
 else
 LIBABIVER_=
@@ -248,9 +253,11 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 		${SED} -i "s/Requires: .*/&, libzstd/" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
 	fi
 endif
-else ifeq (${MONGOCXXDRIRVER_VERSION_},r4.4.0)
+else ifneq (,$(filter r4.4.0 r4.5.0,${MONGOCXXDRIRVER_VERSION_}))
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@# @todo test if still needed
+	@# Safe to leave enabled for a version that may not need it: the grep below tests for the defect
+	@# and the sed only runs if it is actually present, so this is a no-op once upstream fixes it.
+	@# Whether r4.5.0 still needs it is UNVERIFIED - only reachable on a VisualStudio build.
 	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
 	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
 		${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
