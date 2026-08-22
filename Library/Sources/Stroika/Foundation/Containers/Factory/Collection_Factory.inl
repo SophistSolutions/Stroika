@@ -40,9 +40,10 @@ namespace Stroika::Foundation::Containers::Factory {
             if constexpr (totally_ordered<T>) {
                 if (fHints_OptimizeForLookupSpeedOverUpdateSpeed) [[likely]] {
                     /*
-                     *  The default, and measurement says it is the right one - see Tests/52, and the
-                     *  note in TODO.md so this does not get re-litigated. All 3.0d24, Windows x86_64
-                     *  release, 500 elements, versus Collection_Array:
+                     *  The default, and measurement says it is the right one - see the Tests/52 probes
+                     *  ("Contains () each PRESENT/ABSENT, Collection_Array<...> vs sorted default").
+                     *  Recorded HERE, rather than in a TODO, so it does not get re-litigated. All
+                     *  3.0d24, Windows x86_64 release, 500 elements, versus Collection_Array:
                      *      COSTS   adding one at a time ~8x more; AddAll () of a contiguous range ~200x
                      *              more - every element pays a tree insertion, which batching the
                      *              _IRep::Add () span cannot remove

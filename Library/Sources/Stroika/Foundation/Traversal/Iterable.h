@@ -374,6 +374,51 @@ namespace Stroika::Foundation::Traversal {
          *  \em Performance:
          *      The performance of size() may vary wildly. It could be anywhere from O(1) to O(N)
          *      depending on the underlying type of Iterable<T>.
+         *
+         *  \note Design Note: there is deliberately NO PeekSize () -> optional<size_t> ("tell me your
+         *        size only if it is cheap"). Considered at length and NOT built; recorded here so it is
+         *        not re-derived, since this is where anyone wanting it would look.
+         *
+         *        Every Stroika CONTAINER does have O(1) size () - both linked lists cache their length,
+         *        so every DataStructures class does (see Containers/DataStructures/ReadMe.md). The
+         *        guarantee stops at Iterable<T> because an Iterable need not be a container: it may be a
+         *        generator, or a lazy pipeline - Where () returns a lazy Iterable<T> - whose count cannot
+         *        be known without running a predicate over every element, and running it may not even be
+         *        repeatable (socket, file). That is not an implementation gap; caching cannot cache what
+         *        was never computed.
+         *
+         *        Two tempting shapes were rejected:
+         *          o   returning numeric_limits<size_t>::max () for "unknown" - it makes an unknown look
+         *              like a number, and callers do arithmetic on size (): Median () computes size ()/2,
+         *              reserve (size ()) throws, size () - 1 wraps, 'i < size ()' becomes an infinite
+         *              loop. It fails silently and late, and collapses three distinct states
+         *              (known-and-cheap / knowable-but-expensive / unbounded) into one value.
+         *          o   overloading this virtual (size (SizeQuery)) to avoid adding a second one - there
+         *              are 41 in-tree overrides of 'size () const override' plus out-of-tree backends,
+         *              all of which would have to change, to save one vtable slot. Default arguments on
+         *              virtuals also bind to the STATIC type, which is its own trap.
+         *
+         *        If it is ever actually wanted, the shape to build is NOT a virtual: "is my size () cheap"
+         *        is a per-TYPE constant needing no dynamic dispatch, so put a protected bool on
+         *        Iterable<T>::_IRep (defaulting to false = "I promise nothing"), set it in backends that
+         *        can guarantee it, and make PeekSize () a non-virtual on Iterable<T> that reads it. That
+         *        costs zero vtable slots - the objection to a virtual being that its body cannot be
+         *        stripped by the linker, and _IRep is a template so it multiplies by every T - and touches
+         *        none of the 41 overriders. Its weakness is an unchecked promise: a backend could lie.
+         *
+         *        What would justify building it: a real heuristic inside the no-policy overloads, where
+         *        the "@todo measure the crossover and auto-choose the policy here - eSeq is a placeholder,
+         *        not a decision" notes sit in Iterable.inl / Sequence.inl. Choosing a policy by size needs
+         *        a cheap size, and nullopt has an obvious right answer there (use eSeq). Until something
+         *        concrete needs that, do not add it.
+         *
+         *  \note Design Note: do NOT use this to pre-size a copy of an arbitrary Iterable<T>, and do not
+         *        pre-size via MakeRandomAccessIterator () unconditionally. Sequence_LinkedList and
+         *        Sequence_DoublyLinkedList return _MakeRandomAccessIterator_ViaGetAt () for random access
+         *        (the doubly-linked one is natively only BIDIRECTIONAL), so a vector range CTOR over one
+         *        goes O(n^2). Separately, an explicit reserve () measured 1.33x-1.55x SLOWER than simply
+         *        letting the range CTOR size the target itself, so it was not adopted. Do not reintroduce
+         *        either without new evidence; a cheap PeekSize () above is what would change the picture.
          */
         nonvirtual size_t size () const;
 
