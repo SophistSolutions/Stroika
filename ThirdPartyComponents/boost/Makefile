@@ -29,7 +29,8 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)Build/Scripts/SubstituteBackVar
 ## Check latest release: https://www.boost.org/releases/latest/
 ##
 
-VERSION:=1_91_0
+VERSION:=1_92_0
+#VERSION:=1_91_0
 #VERSION:=1_90_0
 #VERSION:=1_89_0
 VERSION_WITH_DOTS:=$(shell echo $(VERSION) | sed s/_/\./g)
