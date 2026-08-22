@@ -722,7 +722,20 @@ namespace Stroika::Foundation::Traversal {
         }
         else {
             RESULT_CONTAINER c = forward<RESULT_CONTAINER> (emptyResult);
-            // reserve iff we know the right size and container supports reserve
+            /*
+             *  \note   BUG - see https://github.com/SophistSolutions/Stroika/issues/1163
+             *
+             *          This reserves iff the TARGET supports reserve () and we are not filtering - it does
+             *          NOT establish that our own size () is cheap, despite what this comment used to say.
+             *          _IRep::size () defaults to counting by iteration, so for a lazy source (Where ()
+             *          returning Iterable<T> is a generator closure) this walks everything for the size and
+             *          then Apply () walks it all again. Performance only - generator Iterables are
+             *          re-traversable, so the result is correct, just computed twice.
+             *
+             *          Not reachable from in-tree code today: no Stroika container has reserve (), and no
+             *          in-tree caller does Map<vector<...>> (). It bites user code mapping into a
+             *          std::vector. The clean fix wants a PeekSize () - declined for now, see issue #1162.
+             */
             if constexpr (not kOptionalExtractor_ and requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
                 c.reserve (this->size ());
             }
