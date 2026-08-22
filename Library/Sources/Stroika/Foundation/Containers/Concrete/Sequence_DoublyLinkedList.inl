@@ -37,7 +37,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t size () const override
         {
-            // NOTE: O(N), but could easily be made faster caching the length
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
             return fData_.size ();
         }

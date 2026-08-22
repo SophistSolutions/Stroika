@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \brief   Queue_DoublyLinkedList<T> is an Array-based concrete implementation of the Queue<T> container pattern.
      *
      * \note Runtime performance/complexity:
-     *      o   size () is O(N)
+     *      o   size () is O(1)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

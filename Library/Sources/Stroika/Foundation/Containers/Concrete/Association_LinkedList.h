@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \brief   Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an LinkedList-based concrete implementation of the Association<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::AssociationTraitsType> container pattern.
      *
      * \note Runtime performance/complexity:
-     *      o   size () is O(N), but empty () is constant
+     *      o   size () and empty () are O(1)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

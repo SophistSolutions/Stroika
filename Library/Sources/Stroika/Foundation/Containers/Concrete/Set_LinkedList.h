@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Runtime performance/complexity:
      *      Set_stdset<T> is a compact representation, but ONLY reasonable for very small sets. Performance is O(N) as set grows.
      *
-     *      o   size () is O(N), but empty () is constant
+     *      o   size () and empty () are O(1)
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *      o   Additions and Removals are generally O(N)
      *

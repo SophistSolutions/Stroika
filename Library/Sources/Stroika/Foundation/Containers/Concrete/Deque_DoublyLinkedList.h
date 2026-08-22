@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      * \note Runtime performance/complexity:
-     *      o   size () is O(N), but empty () is constant
+     *      o   size () and empty () are O(1)
      */
     template <typename T>
     class Deque_DoublyLinkedList : public Deque<T> {
