@@ -45,15 +45,33 @@ namespace Stroika::Foundation::Memory {
 
     /**
      *  \brief Store variable sized (BUF_SIZE elements) array on the stack (\see also InlineBuffer<T,BUF_SIZE>), and on heap if it grows if needed
-     * 
+     *
      *  Typically, StackBuffer<> combines the performance of using a stack buffer (inline array on stack) to store arrays with
      *  the safety and flexability of using the free store (malloc).
      *
-     *  \note we used to have separate InlineBuffer and StackBuffer, but they did exactly the same thing. The only difference was
+     *  \note   StackBuffer<T,N> and InlineBuffer<T,N> are the SAME TYPE; StackBuffer is
+     *          an alias - so the choice is about INTENT and about the default size, and is enforced by
+     *          convention rather than by the compiler:
+     *
+     *          o   StackBuffer says "this buffer lives in a stack frame": a scratch buffer local to one
+     *              function - marshalling, chunking a range before handing it off, accumulating a small
+     *              result. THIS IS THE ONE TO USE for that, which is the common case.
+     *          o   InlineBuffer is the general-purpose form, and is what you want when the buffer is a
+     *              DATA MEMBER of an object that may itself live on the heap - a context StackBuffer is
+     *              not intended for.
+     *
+     *          The default sizes follow from that intent, and are the one concrete difference:
+     *          StackBuffer's default inline element count targets kStackBuffer_TargetInlineByteBufferSize
+     *          (deliberately only 2K on Windows, see the note there) to keep the frame below the size
+     *          where _chkstk gets called - those calls litter profiles of every function along the path,
+     *          including ones that never touch the buffer. InlineBuffer defaults to a flat 4K, which is
+     *          fine for a heap-resident member, where that concern does not apply.
+     *
+     *          Summary: stack frame -> StackBuffer. Data member -> InlineBuffer.
+     *
+     *  \note Historical Note: InlineBuffer and StackBuffer used to be more different, but they did exactly the same thing. The only difference was
      *        the IDEA that StackBuffer might someday be re-implemented using alloca. I dont think thats plausible any longer, but something akin
      *        to it might be possible, so maintain the API difference for now.
-     * 
-     *
      */
     template <typename T = byte, size_t BUF_SIZE = StackBuffer_DefaultInlineSize<T> ()>
     using StackBuffer = InlineBuffer<T, BUF_SIZE>;

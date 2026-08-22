@@ -50,7 +50,8 @@ namespace Stroika::Foundation::Memory {
      *
      *  typically sizeof(InlineBuffer<T,BUF_SIZE>) will come to roughly BUF_SIZE*sizeof(T).
      * 
-     *  \see also StackBuffer<T,BUF_SIZE> - similar, but less flexible, and could someday be more performant.
+     *  \see also StackBuffer<T,BUF_SIZE> - is a type alias for InlineBuffer, but with sizes tuned
+     *       for stack based usage. Prefer StackBuffer for a scratch buffer local to a function.
      *
      *  All allocated objects are default initialized, unless they are allocated through a call to resize_uninitialized(), or
      *  the constructor with the argument eUninitialized
