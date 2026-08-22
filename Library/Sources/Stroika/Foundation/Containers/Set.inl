@@ -176,6 +176,41 @@ namespace Stroika::Foundation::Containers {
                 return;
             }
         }
+        /*
+         *  SOURCE-SIDE fast path only. Set<T>::_IRep::Add () takes ONE item (unlike Collection<T>::_IRep,
+         *  whose Add () takes a span), so this cannot batch the DESTINATION without an incompatible change
+         *  to that interface. It can, however, stop paying a virtual Iterator<T> advance per element, by
+         *  walking the source's own buffer when the source is a Stroika container that has one - and that
+         *  needs no rep-interface change whatsoever.
+         *
+         *  So filling from a Stroika container costs two virtual calls per element (advance + Add) where
+         *  filling from a vector costs one, and this removes the first. Measured (Tests/52 "Set<int>::AddAll
+         *  (): vector source vs STROIKA source"): a Sequence<int> source cost 1.42x a vector<int> one, with
+         *  the destination doing identical tree-insertion work on both sides - so that gap is exactly what
+         *  this recovers.
+         *
+         *  See Sequence<T>::InsertAll (i, ITERABLE_OF_ADDABLE) for why borrowing the source's buffer while
+         *  writing our own rep is safe, and why the same-envelope case must be excluded.
+         */
+        if constexpr (derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Iterable<value_type>>) {
+            if (static_cast<const Iterable<value_type>*> (this) != static_cast<const Iterable<value_type>*> (&items)) [[likely]] {
+                bool handled = false;
+                {
+                    _SafeReadWriteRepAccessor<_IRep>                           destAccessor{this};
+                    _IRep&                                                     destRep = destAccessor._GetWriteableRep ();
+                    _SafeReadRepAccessor<typename Iterable<value_type>::_IRep> srcAccessor{&items};
+                    if (auto srcSpan = srcAccessor._ConstGetRep ().PeekContiguousStorage ()) {
+                        for (const value_type& v : *srcSpan) {
+                            destRep.Add (v);
+                        }
+                        handled = true;
+                    }
+                }
+                if (handled) {
+                    return;
+                }
+            }
+        }
         AddAll (std::begin (items), std::end (items));
     }
     template <typename T>
