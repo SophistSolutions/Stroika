@@ -227,6 +227,37 @@ namespace Stroika::Foundation::Containers {
     template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
+        /*
+         *  SOURCE-SIDE fast path - see Set<T>::AddAll (ITERABLE_OF_ADDABLE) for the mechanism and why
+         *  borrowing the source's buffer is safe. _IRep::Add () takes one item and returns whether it
+         *  actually added, so this cannot batch the destination and the span walk has to accumulate the
+         *  count this method returns. Measured ~1.11x penalty for a Stroika source (Tests/52
+         *  "KeyedCollection<int,int>::AddAll ()"), which is what this recovers - modest next to Set's
+         *  1.42x, because a key extraction (often through a std::function) per element makes the
+         *  destination work a bigger share of the total.
+         */
+        if constexpr (derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Iterable<T>>) {
+            if (static_cast<const Iterable<T>*> (this) != static_cast<const Iterable<T>*> (&items)) [[likely]] {
+                optional<unsigned int> cntAdded;
+                {
+                    _SafeReadWriteRepAccessor<_IRep>                  destAccessor{this};
+                    _IRep&                                            destRep = destAccessor._GetWriteableRep ();
+                    _SafeReadRepAccessor<typename Iterable<T>::_IRep> srcAccessor{&items};
+                    if (auto srcSpan = srcAccessor._ConstGetRep ().PeekContiguousStorage ()) {
+                        unsigned int n{};
+                        for (const T& v : *srcSpan) {
+                            if (destRep.Add (v)) {
+                                ++n;
+                            }
+                        }
+                        cntAdded = n;
+                    }
+                }
+                if (cntAdded) {
+                    return *cntAdded;
+                }
+            }
+        }
         if constexpr (same_as<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection>) {
             // avoid trouble with a.AddAll(a);
             if (this != &items) {

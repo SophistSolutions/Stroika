@@ -30,7 +30,9 @@
 #include "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/MultiSet.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
@@ -2181,6 +2183,50 @@ namespace {
             sOptimizerSink_ = sOptimizerSink_ + c.size ();
         }
         /*
+         *  The same source-side question for the other two single-item reps. Neither is a copy of Set:
+         *
+         *      o   MultiSet<T>::AddAll (ITERABLE) is templated on IIterableOfTo<TRAITS::CountedValueType>,
+         *          so a Sequence<int> source is NOT an Iterable<CountedValue<int>> - a single derived_from
+         *          check against the counted type would silently never fire for the common case. It also
+         *          calls the PUBLIC Add () per element, which takes a fresh accessor each time - a cost a
+         *          vector source pays too, and which hoisting the accessor would fix for both.
+         *      o   KeyedCollection<T,KEY>::AddAll () returns a count, so a span walk must accumulate it.
+         */
+        template <typename SRC>
+        void AddAll_MultiSet_ (const SRC& src)
+        {
+            MultiSet<int> c;
+            c.AddAll (src);
+            sOptimizerSink_ = sOptimizerSink_ + c.size ();
+        }
+        /*
+         *  NB KeyedCollection<int,int> does NOT compile: with T and KEY_TYPE the same type,
+         *  Contains (ArgByValueType<value_type>) and Contains (ArgByValueType<MAPPED_VALUE_TYPE>) collapse
+         *  to one signature (likewise Remove/RemoveIf). Hence pair<int,int> keyed on .first - T and KEY
+         *  stay distinct, and no new struct is needed.
+         */
+        using KCElt_ = pair<int, int>;
+        const vector<KCElt_>& SourceKCElts_ ()
+        {
+            static const vector<KCElt_> kData_ = [] () {
+                vector<KCElt_> r;
+                r.reserve (SourceInts_ ().size ());
+                for (int i : SourceInts_ ()) {
+                    r.push_back (KCElt_{i, i});
+                }
+                return r;
+            }();
+            return kData_;
+        }
+        template <typename SRC>
+        void AddAll_KeyedCollection_ (const SRC& src)
+        {
+            // the extractor is on both sides of the ratio, so its cost cancels
+            KeyedCollection<KCElt_, int> c{[] (KCElt_ e) { return e.first; }};
+            c.AddAll (src);
+            sOptimizerSink_ = sOptimizerSink_ + c.size ();
+        }
+        /*
          *  The same build against the CONCRETE backend, to separate two costs that would otherwise be
          *  confounded: Sequence<T> also pays a factory call to pick a backend, where Sequence_Array<T> names
          *  one. If the concrete entry is much cheaper than the envelope entry, the factory is worth looking
@@ -2820,8 +2866,9 @@ namespace {
          *  reported times rather than trusting these.
          */
         {
-            static const Sequence<int>    kSrcSeqInts_{Test_IterableAlgorithms_::SourceInts_ ()};
-            static const Sequence<String> kSrcSeqStrs_{Test_IterableAlgorithms_::SourceStrings_ ()};
+            static const Sequence<int>                              kSrcSeqInts_{Test_IterableAlgorithms_::SourceInts_ ()};
+            static const Sequence<Test_IterableAlgorithms_::KCElt_> kSrcSeqKCElts_{Test_IterableAlgorithms_::SourceKCElts_ ()};
+            static const Sequence<String>                           kSrcSeqStrs_{Test_IterableAlgorithms_::SourceStrings_ ()};
             (void)Tester (
                 "Sequence<int>::AppendAll (): Stroika source vs vector source",
                 [] () { Test_IterableAlgorithms_::AppendAll_Sequence_FromVector_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
@@ -2891,6 +2938,15 @@ namespace {
                 "Set<int>::AddAll (): vector source vs STROIKA source (source-side dispatch)",
                 [] () { Test_IterableAlgorithms_::AddAllInto_<Set<int>> (Test_IterableAlgorithms_::SourceInts_ ()); }, "from vector<int>",
                 [] () { Test_IterableAlgorithms_::AddAllInto_<Set<int>> (kSrcSeqInts_); }, "from Sequence<int>", 5000, 1000.0 /* probe */);
+            (void)Tester (
+                "MultiSet<int>::AddAll (): vector source vs STROIKA source (source-side dispatch)",
+                [] () { Test_IterableAlgorithms_::AddAll_MultiSet_ (Test_IterableAlgorithms_::SourceInts_ ()); }, "from vector<int>",
+                [] () { Test_IterableAlgorithms_::AddAll_MultiSet_ (kSrcSeqInts_); }, "from Sequence<int>", 5000, 1000.0 /* probe */);
+            (void)Tester (
+                "KeyedCollection<int,int>::AddAll (): vector source vs STROIKA source (source-side dispatch)",
+                [] () { Test_IterableAlgorithms_::AddAll_KeyedCollection_ (Test_IterableAlgorithms_::SourceKCElts_ ()); },
+                "from vector<pair<int,int>>", [] () { Test_IterableAlgorithms_::AddAll_KeyedCollection_ (kSrcSeqKCElts_); },
+                "from Sequence<pair<int,int>>", 5000, 1000.0 /* probe */);
         }
 #if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
         // Sequence<int>::append_range () against std::vector<int>::append_range () - the same operation, so

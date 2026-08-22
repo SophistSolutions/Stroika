@@ -287,6 +287,31 @@ namespace Stroika::Foundation::Containers {
                 return;
             }
         }
+        /*
+         *  \note   NO source-side _IRep::PeekContiguousStorage () fast path here, unlike Set<T>::AddAll (),
+         *          Collection<T>::AddAll () and KeyedCollection<T,KEY>::AddAll (). Tried and NOT viable -
+         *          recorded so it is not re-attempted:
+         *
+         *          Measured cost of not having it: ~1.10x versus filling from a vector (Tests/52
+         *          "MultiSet<int>::AddAll (): vector source vs STROIKA source"), ie about 10%.
+         *
+         *          Why it cannot be done the way the others do it: MultiSet<T> derives from
+         *          Iterable<TRAITS::CountedValueType>, NOT from Iterable<T>. The common source is a bare-T
+         *          container (a Sequence<T>), and reaching ITS storage means naming Iterable<T>::_IRep and
+         *          constructing an Iterable<T>::_SafeReadRepAccessor - both PROTECTED members of a class
+         *          this one does not derive from. The inherited accessor is the CountedValueType one, whose
+         *          constructor will not take a const Iterable<T>*.
+         *
+         *          A peek restricted to the counted-type source (ie another MultiSet) does compile, but
+         *          that is the rare case and is not what the measurement above covers, so it would be an
+         *          unmeasurable change.
+         *
+         *          NOT actually blocked, to be clear - and no change to Iterable is needed: a small shim
+         *          deriving from Iterable<T> purely to forward the protected accessor would reach it fine.
+         *          It is just not worth the machinery for ~10% at this stage, where the interest is
+         *          correctness and large wins --LGP 2026-08-22. Revisit only if this path shows up hot in a
+         *          real profile.
+         */
         for (const auto& i : items) {
             Add (i);
         }
