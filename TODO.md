@@ -7,5 +7,3 @@ tracker, or design doc. Prune entries as they're fixed; don't let this grow into
 Generally will track stuff here between releases
 
 ## Open
-
-- test HearHE
