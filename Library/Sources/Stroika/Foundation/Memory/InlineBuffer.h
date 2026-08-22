@@ -86,9 +86,8 @@ namespace Stroika::Foundation::Memory {
      *
      *  \note   We do not provide an operator[] overload because this creates ambiguity with the operator* overload.
      *
-     *  \note   Implementation Note - we store the store the 'capacity' in a union (fCapacityOfFreeStoreAllocation_) overlapping with fInlinePreallocatedBuffer_ if its > BUF_SIZE, and pin it at the minimum
+     *  \note   Implementation Note - we store the 'capacity' in a union (fCapacityOfFreeStoreAllocation_) overlapping with fInlinePreallocatedBuffer_ if its > BUF_SIZE, and pin it at the minimum
      *          to BUF_SIZE
-     *
      */
     template <typename T = byte, size_t BUF_SIZE = InlineBuffer_DefaultInlineSize<T> ()>
     class InlineBuffer final {
@@ -117,7 +116,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  kMinCapacity is the baked in minimum capacity of this buff (inline allocated part).
+         *  kMinCapacity is the baked in minimum capacity of this buffer (the inline allocated part).
          */
         static constexpr size_t kMinCapacity = BUF_SIZE;
 
@@ -256,7 +255,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  If resize () causes the list to grow, the new elements are fillValue/default-initialized()
          *
-x        *  \post GetSize () <= capacity ();
+         *  \post GetSize () <= capacity ();
          *
          *  \note Shrinking constructs nothing, so resize (n) does not build a fillValue in that case.
          *
