@@ -127,7 +127,9 @@ namespace Stroika::Foundation::Memory {
          *  InlineBuffer::default-ctor creates a zero-sized stack buffer (so resize with resize, or push_back etc).
          */
         InlineBuffer () noexcept;
-        InlineBuffer (size_t nElements);
+        InlineBuffer (size_t nElements)
+            requires (default_initializable<T>);
+        InlineBuffer (size_t nElements, Common::ArgByValueType<T> fillValue);
         InlineBuffer (UninitializedConstructorFlag flag, size_t nElements);
         template <size_t FROM_BUF_SIZE>
         InlineBuffer (const InlineBuffer<T, FROM_BUF_SIZE>& src);
@@ -249,14 +251,20 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  Grow or shrink the buffer. The 'size' is the number of constructed elements, and this function automatically
-         *  assures the capacity is maintained at least as large as the size.
+         *  \brief Grow or shrink the buffer. The 'size' is the number of constructed elements, and this function automatically
+         *         assures the capacity is maintained at least as large as the size. Overload without fillValue requires default_initializable<T>.
          *
-         *  If resize () causes the list to grow, the new elements are default-initialized()
+         *  If resize () causes the list to grow, the new elements are fillValue/default-initialized()
+         *
+x        *  \post GetSize () <= capacity ();
+         *
+         *  \note Shrinking constructs nothing, so resize (n) does not build a fillValue in that case.
          *
          *  \post GetSize () <= capacity ();
          */
-        nonvirtual void resize (size_t nElements);
+        nonvirtual void resize (size_t nElements)
+            requires (default_initializable<T>);
+        nonvirtual void resize (size_t nElements, Common::ArgByValueType<T> fillValue);
 
     public:
         /**
@@ -283,7 +291,15 @@ namespace Stroika::Foundation::Memory {
          *
          *  \post GetSize () <= capacity ();
          */
-        nonvirtual void GrowToSize (size_t nElements);
+        nonvirtual void GrowToSize (size_t nElements)
+            requires (default_initializable<T>);
+
+    public:
+        /**
+         *  \brief same as GrowToSize (), except you say what to fill new elements with - so it works for any
+         *         copy-constructible T. \see resize (size_t, Common::ArgByValueType<T>)
+         */
+        nonvirtual void GrowToSize (size_t nElements, Common::ArgByValueType<T> fillValue);
 
     public:
         /**

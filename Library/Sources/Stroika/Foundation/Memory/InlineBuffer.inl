@@ -31,9 +31,17 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (size_t nElements)
+        requires (default_initializable<T>)
         : InlineBuffer{}
     {
         resize (nElements);
+        Invariant ();
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (size_t nElements, Common::ArgByValueType<T> fillValue)
+        : InlineBuffer{}
+    {
+        resize (nElements, fillValue);
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
@@ -207,9 +215,18 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::GrowToSize (size_t nElements)
+        requires (default_initializable<T>)
     {
         if (nElements > size ()) {
             resize (nElements);
+        }
+        Ensure (size () >= nElements);
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline void InlineBuffer<T, BUF_SIZE>::GrowToSize (size_t nElements, Common::ArgByValueType<T> fillValue)
+    {
+        if (nElements > size ()) {
+            resize (nElements, fillValue);
         }
         Ensure (size () >= nElements);
     }
@@ -225,6 +242,18 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::resize (size_t nElements)
+        requires (default_initializable<T>)
+    {
+        // only build a fill value when actually GROWING - a shrink constructs nothing, as before
+        if (nElements > fSize_) {
+            resize (nElements, T{});
+        }
+        else {
+            ShrinkTo (nElements);
+        }
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline void InlineBuffer<T, BUF_SIZE>::resize (size_t nElements, Common::ArgByValueType<T> fillValue)
     {
         if (nElements > fSize_) {
             // Growing
@@ -236,7 +265,7 @@ namespace Stroika::Foundation::Memory {
             auto newEnd = this->begin () + nElements;
             Assert (this->end () < newEnd);
             // uninitialized_fill() guarantees filling all or none - if an exception doing some, it undoes the ones it did (so setting fsize after safe)
-            uninitialized_fill (this->end (), newEnd, T{});
+            uninitialized_fill (this->end (), newEnd, fillValue);
             fSize_ = nElements;
             Assert (this->end () == newEnd);
         }
@@ -539,7 +568,11 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::clear () noexcept
     {
-        resize (0);
+        // ShrinkTo (), NOT resize (0): both do the same thing for a shrink, but resize () also contains the
+        // GROW branch's uninitialized_fill (..., T{}), and instantiating it compiles that T{} even though a
+        // shrink can never reach it. That made clear () - and so any code merely CALLING clear () - require
+        // default_initializable<T>, for a code path that cannot run. See the note on resize ().
+        ShrinkTo (0);
     }
     template <typename T, size_t BUF_SIZE>
     inline InlineBuffer<T, BUF_SIZE>::operator T*() noexcept
