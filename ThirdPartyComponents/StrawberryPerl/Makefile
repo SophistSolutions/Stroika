@@ -14,8 +14,10 @@ include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 # CHECK FOR UPDATED VERSIONS https://strawberryperl.com/releases.html
 #	MAYBE BETTER https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases
 #
-PERL_VERSION_=5.42.0.1
-#PERL_VERSION_=5.40.2.1
+PERL_VERSION_=5.42.3.1
+# PERL_VERSION_=5.42.2.1
+# PERL_VERSION_=5.42.0.1
+# PERL_VERSION_=5.40.2.1
 
 COMPRESS_PERL_VERSION_=$(shell echo "${PERL_VERSION_}" | sed "s/\\.//g")
 
