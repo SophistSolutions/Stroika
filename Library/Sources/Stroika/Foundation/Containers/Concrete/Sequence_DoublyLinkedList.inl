@@ -156,14 +156,28 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.push_back (copyFrom);
             }
             else {
-                size_t index = at;
+                /*
+                 *  Walk to the element currently sitting AT 'at' and insert ahead of it.
+                 *
+                 *  This used to read 'if (--index == 0)', which stops one element EARLY: with at==2 the
+                 *  counter reaches 0 while the iterator is still on element 1, so Insert (2, ...) into
+                 *  [1, 2, 6, 7] produced [1, 3, 4, 5, 2, 6, 7]. It applied to a single-element Insert () just
+                 *  as much as to a span. Nothing caught it because this branch is only reached for
+                 *  0 < at < size () - both ends are special-cased above - and no test inserted into the
+                 *  middle of a linked-list-backed Sequence until Tests/21 grew one.
+                 */
+                size_t remaining = at;
                 for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
-                    if (--index == 0) {
-                        for (auto p = copyFrom.rbegin (); p != copyFrom.rend (); ++p) {
+                    if (remaining == 0) {
+                        // FORWARD, not reversed: AddBefore () takes 'it' by const ref and inserts ahead of
+                        // the SAME node every time, so each element lands after the previously added one.
+                        // Walking the source backwards here yielded the span reversed.
+                        for (auto p = copyFrom.begin (); p != copyFrom.end (); ++p) {
                             fData_.AddBefore (it, *p);
                         }
                         break;
                     }
+                    --remaining;
                 }
                 //Assert (not it.AtEnd ());      // cuz that would mean we never added
             }

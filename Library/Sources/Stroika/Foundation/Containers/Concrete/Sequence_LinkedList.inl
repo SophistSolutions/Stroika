@@ -154,15 +154,19 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.push_back (copyFrom);
             }
             else {
-                size_t                                           index = at;
+                // identical off-by-one to the one fixed in Sequence_DoublyLinkedList::Insert () - see the
+                // comment there; these two branches are copy-paste siblings, so they were both wrong
+                size_t                                           remaining = at;
                 typename DataStructureImplType_::ForwardIterator it{&fData_};
                 for (; not it.AtEnd (); ++it) {
-                    if (--index == 0) {
-                        for (auto p = copyFrom.rbegin (); p != copyFrom.rend (); ++p) {
+                    if (remaining == 0) {
+                        // forward, not reversed - see the comment in Sequence_DoublyLinkedList::Insert ()
+                        for (auto p = copyFrom.begin (); p != copyFrom.end (); ++p) {
                             fData_.AddBefore (it, *p);
                         }
                         break;
                     }
+                    --remaining;
                 }
                 Assert (not it.AtEnd ()); // cuz that would mean we never added
             }

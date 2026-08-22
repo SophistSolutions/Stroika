@@ -330,6 +330,67 @@ namespace {
             EXPECT_TRUE (EQUALS_COMPARER{}(s[2], 12));
             EXPECT_TRUE (EQUALS_COMPARER{}(s[3], 10));
         }
+        {
+            /*
+             *  InsertAll () INTO THE MIDDLE of a non-empty sequence, and PrependAll () onto a non-empty one.
+             *  The block above only ever prepends onto an EMPTY 's', so neither shape was covered - and they
+             *  are exactly what InsertAll () changed for: a contiguous source, or a Stroika source offering
+             *  _IRep::PeekContiguousStorage (), now reaches the backend as ONE multi-element span at an
+             *  ARBITRARY index, where previously only single elements ever arrived anywhere except the
+             *  append sentinel.
+             *
+             *  ORDER is the thing that can break silently here, which is why every element is checked rather
+             *  than just the size: Sequence_DoublyLinkedList walks to the position and adds the span in
+             *  REVERSE so it comes out forwards, and an off-by-one in that loop would still yield the right
+             *  size and the right set of elements.
+             *
+             *  Built with push_back/Append rather than braced initializer lists so this asks no more of T
+             *  than the rest of this function does (T is also OnlyCopyableMoveable here, not just size_t).
+             */
+            vector<T> middle; // 3, 4, 5
+            middle.push_back (3);
+            middle.push_back (4);
+            middle.push_back (5);
+            auto fillOuter_ = [] (CONCRETE_SEQUENCE_T* c) {
+                c->Append (1);
+                c->Append (2);
+                c->Append (6);
+                c->Append (7);
+            };
+            auto expectIs1Through7_ = [] (const CONCRETE_SEQUENCE_T& c) {
+                EXPECT_TRUE (c.size () == 7);
+                size_t expected = 1;
+                for (Iterator<T> i = c.begin (); i != c.end (); ++i, ++expected) {
+                    EXPECT_TRUE (EQUALS_COMPARER{}(*i, expected));
+                }
+            };
+            {
+                // contiguous (vector) source -> the span fast path, at a middle index
+                CONCRETE_SEQUENCE_T c;
+                fillOuter_ (&c);
+                c.InsertAll (2, middle);
+                expectIs1Through7_ (c);
+            }
+            {
+                // Stroika source - Iterator<T> is not contiguous, so this can only batch via
+                // PeekContiguousStorage (), and must fall back correctly on backends that offer none
+                Sequence<T> stroikaSrc;
+                stroikaSrc.AppendAll (middle);
+                CONCRETE_SEQUENCE_T c;
+                fillOuter_ (&c);
+                c.InsertAll (2, stroikaSrc);
+                expectIs1Through7_ (c);
+
+                // and PrependAll () onto a NON-EMPTY target - the O (m*n) shape that motivated the change
+                c.PrependAll (stroikaSrc);
+                EXPECT_TRUE (c.size () == 10);
+                EXPECT_TRUE (EQUALS_COMPARER{}(c[0], 3));
+                EXPECT_TRUE (EQUALS_COMPARER{}(c[1], 4));
+                EXPECT_TRUE (EQUALS_COMPARER{}(c[2], 5));
+                EXPECT_TRUE (EQUALS_COMPARER{}(c[3], 1));
+                EXPECT_TRUE (EQUALS_COMPARER{}(c[9], 7));
+            }
+        }
     }
 }
 
