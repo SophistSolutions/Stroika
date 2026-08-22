@@ -490,9 +490,31 @@ namespace Stroika::Foundation::Containers {
     void Sequence<T>::InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end)
     {
         Require (i <= this->size ());
-        size_t insertAt = i;
-        for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != forward<ITERATOR_OF_ADDABLE2> (end); ++ii) {
-            Insert (insertAt++, *ii);
+        /*
+         *  FAST PATH - the same three-part test as AppendAll (), and the same one-dispatch-per-range
+         *  payoff, but here it fixes an ASYMPTOTIC cost and not just a constant one.
+         *
+         *  The loop below inserts at an ADVANCING index, so every Insert () shifts whatever follows
+         *  position i: inserting m elements ahead of n existing ones moves those n elements m separate
+         *  times, O (m*n). One span insert shifts that tail exactly once, O (m+n).
+         *
+         *  \note   This is invisible when the target is EMPTY - then the advancing index lands at the end
+         *          every time and shifts nothing, so the loop is already O (m). It only bites when
+         *          inserting ahead of existing elements, which is exactly what PrependAll () does.
+         */
+        if constexpr (contiguous_iterator<remove_cvref_t<ITERATOR_OF_ADDABLE>> and
+                      sized_sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE2>, remove_cvref_t<ITERATOR_OF_ADDABLE>> and
+                      same_as<remove_cvref_t<iter_value_t<remove_cvref_t<ITERATOR_OF_ADDABLE>>>, T>) {
+            if (start != end) [[likely]] {
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (
+                    i, span<const T>{to_address (start), static_cast<size_t> (end - start)});
+            }
+        }
+        else {
+            size_t insertAt = i;
+            for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != forward<ITERATOR_OF_ADDABLE2> (end); ++ii) {
+                Insert (insertAt++, *ii);
+            }
         }
     }
     template <typename T>
@@ -500,6 +522,57 @@ namespace Stroika::Foundation::Containers {
     inline void Sequence<T>::InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s)
     {
         Require (i <= this->size ());
+        /*
+         *  A STROIKA SOURCE cannot reach the contiguous_iterator fast path in the iterator-pair overload,
+         *  because Iterator<T> is not a contiguous_iterator - it is a virtual cursor. But an array-backed
+         *  backend can still hand over its whole buffer at once through _IRep::PeekContiguousStorage (),
+         *  which is the same hook As<vector<T>> (), SequentialEquals () and IndexOf () already use. So ask.
+         *
+         *  Backends that have no contiguous storage (the linked lists, a lazy Where () pipeline, a
+         *  generator) answer nullopt and we fall through to the element-at-a-time path unchanged - the hook
+         *  is purely additive, and every caller is required to keep a working slow path.
+         *
+         *  WHY BORROWING THE SOURCE'S BUFFER WHILE WRITING OURSELVES IS SAFE - it is copy-on-write that
+         *  makes it so, not the order of the accessors:
+         *
+         *      o   if 's' and '*this' are distinct envelopes sharing one rep ('Sequence<T> b = a;
+         *          a.AppendAll (b);'), _GetWriteableRep () sees a use count above one and CLONES. Our insert
+         *          then mutates the clone, while the span still views the original buffer that 's' holds. So
+         *          the span cannot be invalidated by our own write.
+         *      o   holding a read context on 's' and a write context on '*this' is likewise fine even for
+         *          that shared-rep case, because the checker (Iterable<T>::_fThisAssertExternallySynchronized)
+         *          is a member of the ENVELOPE, not of the rep - two envelopes never share one.
+         *      o   taking the destination accessor first is therefore not required for correctness; it just
+         *          means the two reps are already provably distinct objects at the moment we borrow. It also
+         *          costs nothing, since these methods always mutate and so the clone happens either way.
+         *      o   the accessors are scoped to end before the fallback, because the slow path takes its own.
+         *
+         *  The one genuinely unsafe case is 's' being LITERALLY this same envelope ('a.InsertAll (0, a)'):
+         *  there is no clone, so the span would view the very buffer being inserted into. Excluded up front,
+         *  which leaves that call behaving exactly as it did before this fast path existed.
+         */
+        if constexpr (derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Iterable<T>>) {
+            if (static_cast<const Iterable<T>*> (this) != static_cast<const Iterable<T>*> (&s)) [[likely]] {
+                bool handled = false;
+                {
+                    _SafeReadWriteRepAccessor<_IRep> destAccessor{this};
+                    _IRep&                           destRep = destAccessor._GetWriteableRep ();
+                    // NB: explicitly Iterable<T>::_IRep, NOT this class's _IRep - the source may be any
+                    // Iterable<T> (a Collection, a Set, ...), and the accessor AssertMember-checks the
+                    // dynamic type in debug builds. PeekContiguousStorage () is declared on the base anyway.
+                    _SafeReadRepAccessor<typename Iterable<T>::_IRep> srcAccessor{&s};
+                    if (auto srcSpan = srcAccessor._ConstGetRep ().PeekContiguousStorage ()) {
+                        if (not srcSpan->empty ()) [[likely]] {
+                            destRep.Insert (i, *srcSpan);
+                        }
+                        handled = true;
+                    }
+                }
+                if (handled) {
+                    return;
+                }
+            }
+        }
         InsertAll (i, s.begin (), s.end ());
     }
     template <typename T>
@@ -528,6 +601,32 @@ namespace Stroika::Foundation::Containers {
     template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
     inline void Sequence<T>::AppendAll (ITERABLE_OF_ADDABLE&& s)
     {
+        // Same _IRep::PeekContiguousStorage () fast path as InsertAll (i, ITERABLE_OF_ADDABLE) - see the
+        // long comment there for why the accessors are ordered and scoped the way they are, and why the
+        // same-envelope case has to be excluded. Appends via the sentinel index rather than size (), so it
+        // stays a single virtual call with no size () query, exactly as the iterator-pair overload does.
+        if constexpr (derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Iterable<T>>) {
+            if (static_cast<const Iterable<T>*> (this) != static_cast<const Iterable<T>*> (&s)) [[likely]] {
+                bool handled = false;
+                {
+                    _SafeReadWriteRepAccessor<_IRep> destAccessor{this};
+                    _IRep&                           destRep = destAccessor._GetWriteableRep ();
+                    // NB: explicitly Iterable<T>::_IRep, NOT this class's _IRep - the source may be any
+                    // Iterable<T> (a Collection, a Set, ...), and the accessor AssertMember-checks the
+                    // dynamic type in debug builds. PeekContiguousStorage () is declared on the base anyway.
+                    _SafeReadRepAccessor<typename Iterable<T>::_IRep> srcAccessor{&s};
+                    if (auto srcSpan = srcAccessor._ConstGetRep ().PeekContiguousStorage ()) {
+                        if (not srcSpan->empty ()) [[likely]] {
+                            destRep.Insert (_IRep::_kSentinelLastItemIndex, *srcSpan);
+                        }
+                        handled = true;
+                    }
+                }
+                if (handled) {
+                    return;
+                }
+            }
+        }
         AppendAll (s.begin (), s.end ());
     }
     template <typename T>

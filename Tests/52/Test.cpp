@@ -2076,6 +2076,54 @@ namespace {
             Consume_ (tmp);
         }
         /*
+         *  ---- THE TWO GAPS LEFT OVER from the AppendAll () batching, measured BEFORE closing them so
+         *  there is a real before-number to quote. A ratio produced only after a change proves nothing.
+         *
+         *  (1) A STROIKA SOURCE. AppendAll ()'s fast path requires a contiguous_iterator, and Iterator<T>
+         *      is not one - so 'dest.AppendAll (someSequence)' still pays one virtual _IRep::Insert () per
+         *      element even when BOTH sides are array-backed and the source could hand over its whole
+         *      buffer in one call. _IRep::PeekContiguousStorage () exists for precisely this and is what
+         *      As<vector<T>> () already uses; AppendAll () simply never asks. Measured against a vector
+         *      source - which DOES take the span path - on the same binary, so the score is exactly the
+         *      penalty for the source being a Stroika container and nothing else.
+         *
+         *  (2) PREPEND. InsertAll () loops 'Insert (insertAt++, *ii)', so prepending m elements onto a
+         *      container already holding n shifts those n elements m separate times: O (m*n), where one
+         *      memmove plus one bulk copy would do.
+         *
+         *      The target MUST be non-empty to see this, which is why these take a populated Sequence
+         *      rather than starting from {}. Into an empty target the advancing index makes every Insert ()
+         *      land at the end, so it degenerates to an append and shifts nothing - the naive probe measures
+         *      zero penalty and looks like there is no bug.
+         *
+         *  Both take the already-batched shape as their BASELINE and the un-batched shape as the
+         *  comparison, so the score reads as "what this costs extra today" and stays meaningful as a
+         *  regression gate afterwards (a threshold near 1 then says "still batched").
+         */
+        template <typename T>
+        void AppendAll_Sequence_FromStroika_ (const Sequence<T>& src)
+        {
+            Sequence<T> tmp;
+            tmp.AppendAll (src);
+            Consume_ (tmp);
+        }
+        // The COW copy is O (1) and identical on both sides of the prepend pair, so it cancels out of the
+        // ratio; it is here only to get a non-empty target whose buffer the insert has to shift.
+        template <typename T>
+        void AppendAll_Sequence_OntoNonEmpty_ (const Sequence<T>& target, const vector<T>& src)
+        {
+            Sequence<T> tmp{target};
+            tmp.AppendAll (src);
+            Consume_ (tmp);
+        }
+        template <typename T>
+        void PrependAll_Sequence_OntoNonEmpty_ (const Sequence<T>& target, const vector<T>& src)
+        {
+            Sequence<T> tmp{target};
+            tmp.PrependAll (src);
+            Consume_ (tmp);
+        }
+        /*
          *  The same build against the CONCRETE backend, to separate two costs that would otherwise be
          *  confounded: Sequence<T> also pays a factory call to pick a backend, where Sequence_Array<T> names
          *  one. If the concrete entry is much cheaper than the envelope entry, the factory is worth looking
@@ -2704,6 +2752,51 @@ namespace {
             [] () { Test_IterableAlgorithms_::Baseline_VectorCopy_<int> (Test_IterableAlgorithms_::SourceInts_ ()); }, "vector<int> copy CTOR",
             [] () { Test_IterableAlgorithms_::Construct_Sequence_FromVector_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
             "Sequence<int>{vector<int>}", 1000000, 3.3, &failedTests);
+        /*
+         *  The two remaining batching gaps - see the long comment on AppendAll_Sequence_FromStroika_ ().
+         *  PROBES (no threshold) for now: these exist to capture the BEFORE numbers. Once the fix lands and
+         *  the scores settle, the useful ones become gates with a threshold near 1.0, which then reads as
+         *  "a contiguous source is still taking the bulk path".
+         *
+         *  Run counts here are first guesses at ~1s per side (kN_ = 1000 elements per call, and the prepend
+         *  pair is O (m*n), so it needs far fewer iterations than the append pair) - recalibrate from the
+         *  reported times rather than trusting these.
+         */
+        {
+            static const Sequence<int>    kSrcSeqInts_{Test_IterableAlgorithms_::SourceInts_ ()};
+            static const Sequence<String> kSrcSeqStrs_{Test_IterableAlgorithms_::SourceStrings_ ()};
+            (void)Tester (
+                "Sequence<int>::AppendAll (): Stroika source vs vector source",
+                [] () { Test_IterableAlgorithms_::AppendAll_Sequence_FromVector_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
+                "from vector<int> (span path)", [] () { Test_IterableAlgorithms_::AppendAll_Sequence_FromStroika_<int> (kSrcSeqInts_); },
+                "from Sequence<int> (per-element)", 50000, 1000.0 /* probe - no threshold until the fix lands */);
+            (void)Tester (
+                "Sequence<String>::AppendAll (): Stroika source vs vector source",
+                [] () { Test_IterableAlgorithms_::AppendAll_Sequence_FromVector_<String> (Test_IterableAlgorithms_::SourceStrings_ ()); },
+                "from vector<String> (span path)",
+                [] () { Test_IterableAlgorithms_::AppendAll_Sequence_FromStroika_<String> (kSrcSeqStrs_); },
+                "from Sequence<String> (per-element)", 20000, 1000.0 /* probe - no threshold until the fix lands */);
+            (void)Tester (
+                "Sequence<int>: PrependAll () vs AppendAll (), onto a NON-EMPTY target",
+                [] () {
+                    Test_IterableAlgorithms_::AppendAll_Sequence_OntoNonEmpty_<int> (kSrcSeqInts_, Test_IterableAlgorithms_::SourceInts_ ());
+                },
+                "AppendAll (batched)",
+                [] () {
+                    Test_IterableAlgorithms_::PrependAll_Sequence_OntoNonEmpty_<int> (kSrcSeqInts_, Test_IterableAlgorithms_::SourceInts_ ());
+                },
+                "PrependAll (O (m*n))", 2000, 1000.0 /* probe - no threshold until the fix lands */);
+            (void)Tester (
+                "Sequence<String>: PrependAll () vs AppendAll (), onto a NON-EMPTY target",
+                [] () {
+                    Test_IterableAlgorithms_::AppendAll_Sequence_OntoNonEmpty_<String> (kSrcSeqStrs_, Test_IterableAlgorithms_::SourceStrings_ ());
+                },
+                "AppendAll (batched)",
+                [] () {
+                    Test_IterableAlgorithms_::PrependAll_Sequence_OntoNonEmpty_<String> (kSrcSeqStrs_, Test_IterableAlgorithms_::SourceStrings_ ());
+                },
+                "PrependAll (O (m*n))", 200, 1000.0 /* probe - no threshold until the fix lands */);
+        }
 #if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
         // Sequence<int>::append_range () against std::vector<int>::append_range () - the same operation, so
         // the score is the cost of Stroika's per-element _IRep::Insert () dispatch. See the batching @todo in

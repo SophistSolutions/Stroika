@@ -112,6 +112,42 @@ namespace Stroika::Foundation::Containers {
                 return;
             }
         }
+        /*
+         *  A STROIKA SOURCE takes the per-element branch of the iterator-pair overload, because Iterator<T>
+         *  is not a contiguous_iterator. An array-backed source can still offer its whole buffer at once via
+         *  _IRep::PeekContiguousStorage (), so ask before falling back. Mirrors what
+         *  Sequence<T>::InsertAll (i, ITERABLE_OF_ADDABLE) does - see the long comment there for why borrowing
+         *  the source's buffer while writing our own rep is safe (copy-on-write, plus a per-envelope rather
+         *  than per-rep synchronization checker) and why the accessors are scoped to end before the fallback.
+         *
+         *  The same-envelope case is already handled above for a Collection source; the pointer check here
+         *  covers it for any other Iterable that could alias, and costs one comparison.
+         *
+         *  \note   Batching only helps where the BACKEND has a bulk insert. A sorted multiset - the default
+         *          Collection<T> for an ordered T - still pays per-element tree insertion, so expect this to
+         *          matter for the array-backed reps and to be nearly free elsewhere. See the Tests/52
+         *          "AddAll from vector vs from list" probes.
+         */
+        if constexpr (derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Iterable<value_type>>) {
+            if (static_cast<const Iterable<value_type>*> (this) != static_cast<const Iterable<value_type>*> (&items)) [[likely]] {
+                bool handled = false;
+                {
+                    _SafeReadWriteRepAccessor<_IRep> destAccessor{this};
+                    _IRep&                           destRep = destAccessor._GetWriteableRep ();
+                    // explicitly the BASE rep - see the matching note in Sequence.inl
+                    _SafeReadRepAccessor<typename Iterable<value_type>::_IRep> srcAccessor{&items};
+                    if (auto srcSpan = srcAccessor._ConstGetRep ().PeekContiguousStorage ()) {
+                        if (not srcSpan->empty ()) [[likely]] {
+                            destRep.Add (*srcSpan, nullptr);
+                        }
+                        handled = true;
+                    }
+                }
+                if (handled) {
+                    return;
+                }
+            }
+        }
         AddAll (std::begin (items), std::end (items));
     }
     template <typename T>
