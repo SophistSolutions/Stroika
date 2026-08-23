@@ -16,31 +16,34 @@
 
 namespace Stroika::Foundation::Memory {
 
-    /**
-     *  On Windows, there is _chkstk which shows up in alot of profiles. Perhaps something similar for UNIX? Or just kernel does this automatically?
-     *  Anyhow - target number we try - for performance reasons - to avoid more than this much in a stack frame.
-     * 
-     *      https://www.codeguru.com/visual-studio/adventures-with-_chkstk/
-     */
-    constexpr size_t kStackBuffer_SizeIfLargerStackGuardCalled =
-        qStroika_Foundation_Common_Platform_Windows ? (sizeof (int) == 4 ? 4 : 8) * 1024 : 16 * 1024;
+    namespace Support::StackBuffer {
 
-    /**
-     *  \note good to keep this small (around 2k) for Windows, cuz else _chkstack calls end up litering profiles in alot of functions
-     *        even if along paths not actually used. COULD optimize those paths with specific value in usages, but seems reasonable to keep
-     *        to 2k for now --LGP 2023-09-12
-     */
-    constexpr size_t kStackBuffer_TargetInlineByteBufferSize = qStroika_Foundation_Common_Platform_Windows ? 2 * 1024 : 4 * 1024;
+        /**
+         *  On Windows, there is _chkstk which shows up in alot of profiles. Perhaps something similar for UNIX? Or just kernel does this automatically?
+         *  Anyhow - target number we try - for performance reasons - to avoid more than this much in a stack frame.
+         * 
+         *      https://www.codeguru.com/visual-studio/adventures-with-_chkstk/
+         */
+        constexpr size_t kSizeIfLargerStackGuardCalled = qStroika_Foundation_Common_Platform_Windows ? (sizeof (int) == 4 ? 4 : 8) * 1024 : 16 * 1024;
 
-    /**
-     */
-    template <typename T = byte>
-    constexpr size_t StackBuffer_DefaultInlineSize ()
-    {
-        // note must be defined here, not in inl file, due to use as default template argument
-        auto r = ((kStackBuffer_TargetInlineByteBufferSize / sizeof (T)) == 0 ? 1 : (kStackBuffer_TargetInlineByteBufferSize / sizeof (T)));
-        Ensure (r >= 1);
-        return r;
+        /**
+         *  \note good to keep this small (around 2k) for Windows, cuz else _chkstack calls end up litering profiles in alot of functions
+         *        even if along paths not actually used. COULD optimize those paths with specific value in usages, but seems reasonable to keep
+         *        to 2k for now --LGP 2023-09-12
+         */
+        constexpr size_t kTargetInlineByteBufferSize = qStroika_Foundation_Common_Platform_Windows ? 2 * 1024 : 4 * 1024;
+
+        /**
+         */
+        template <typename T = byte>
+        constexpr size_t DefaultInlineSize ()
+        {
+            // note must be defined here, not in inl file, due to use as default template argument
+            auto r = ((kTargetInlineByteBufferSize / sizeof (T)) == 0 ? 1 : (kTargetInlineByteBufferSize / sizeof (T)));
+            Ensure (r >= 1);
+            return r;
+        }
+
     }
 
     /**
@@ -61,7 +64,7 @@ namespace Stroika::Foundation::Memory {
      *              not intended for.
      *
      *          The default sizes follow from that intent, and are the one concrete difference:
-     *          StackBuffer's default inline element count targets kStackBuffer_TargetInlineByteBufferSize
+     *          StackBuffer's default inline element count targets Support::StackBuffer::kTargetInlineByteBufferSize
      *          (deliberately only 2K on Windows, see the note there) to keep the frame below the size
      *          where _chkstk gets called - those calls litter profiles of every function along the path,
      *          including ones that never touch the buffer. InlineBuffer defaults to a flat 4K, which is
@@ -73,7 +76,7 @@ namespace Stroika::Foundation::Memory {
      *        the IDEA that StackBuffer might someday be re-implemented using alloca. I dont think thats plausible any longer, but something akin
      *        to it might be possible, so maintain the API difference for now.
      */
-    template <typename T = byte, size_t BUF_SIZE = StackBuffer_DefaultInlineSize<T> ()>
+    template <typename T = byte, size_t BUF_SIZE = Support::StackBuffer::DefaultInlineSize<T> ()>
     using StackBuffer = InlineBuffer<T, BUF_SIZE>;
 
 }

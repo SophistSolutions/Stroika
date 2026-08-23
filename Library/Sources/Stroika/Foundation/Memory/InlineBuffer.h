@@ -21,15 +21,19 @@
 
 namespace Stroika::Foundation::Memory {
 
-    /**
-     */
-    template <typename T = byte>
-    constexpr size_t InlineBuffer_DefaultInlineSize ()
-    {
-        // note must be defined here, not in inl file, due to use as default template argument
-        auto r = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)));
-        Ensure (r >= 1);
-        return r;
+    namespace Support::InlineBuffer {
+
+        /**
+         */
+        template <typename T = byte>
+        constexpr size_t DefaultInlineSize ()
+        {
+            // note must be defined here, not in inl file, due to use as default template argument
+            auto r = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)));
+            Ensure (r >= 1);
+            return r;
+        }
+
     }
 
     /**
@@ -89,7 +93,7 @@ namespace Stroika::Foundation::Memory {
      *  \note   Implementation Note - we store the 'capacity' in a union (fCapacityOfFreeStoreAllocation_) overlapping with fInlinePreallocatedBuffer_ if its > BUF_SIZE, and pin it at the minimum
      *          to BUF_SIZE
      */
-    template <typename T = byte, size_t BUF_SIZE = InlineBuffer_DefaultInlineSize<T> ()>
+    template <typename T = byte, size_t BUF_SIZE = Support::InlineBuffer::DefaultInlineSize<T> ()>
     class InlineBuffer final {
     public:
         /**

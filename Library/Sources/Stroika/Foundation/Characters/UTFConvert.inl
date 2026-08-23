@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Characters {
                 // worst case is each src byte is a character: for small buffers, not worth computing tighter limit but for larger, could
                 // plausibly avoid a malloc, and even without, more likely to avoid wasted RAM/fragmentation for larger allocations
                 if constexpr (sizeof (TO) == 4) {
-                    if (src.size () * sizeof (TO) > Memory::kStackBuffer_TargetInlineByteBufferSize) {
+                    if (src.size () * sizeof (TO) > Memory::Support::StackBuffer::kTargetInlineByteBufferSize) {
                         if (auto i = ComputeCharacterLength (src)) {
                             return *i;
                         }
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Characters {
                     // the maximum number of bytes for a character in UTF-8 is ... 4 (really 4 safe now so use that - was 6 bytes)
 
                     // @todo this is probably worth walking the characters and doing a better estimate
-                    if (src.size () * 4 > Memory::kStackBuffer_TargetInlineByteBufferSize) {
+                    if (src.size () * 4 > Memory::Support::StackBuffer::kTargetInlineByteBufferSize) {
                         // walk the characters, and see how much space each will use when encoded
                         size_t sz{};
                         for (auto c : src) {
