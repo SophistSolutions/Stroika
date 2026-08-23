@@ -33,8 +33,6 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 
 
-
-
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
@@ -72,6 +70,11 @@ ifneq ($(QUICK_BUILD), 1)
 	@${MAKE} --no-print-directory --silent CURRENT
 endif
 	@${MAKE} --no-print-directory MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) check
+
+
+# avoid issue with char8_t
+CMAKE_ARGS+= -DCMAKE_CXX_STANDARD=20
+
 
 
 #ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
