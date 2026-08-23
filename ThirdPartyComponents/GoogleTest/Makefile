@@ -72,7 +72,7 @@ endif
 	@${MAKE} --no-print-directory MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) check
 
 
-# avoid issue with char8_t
+# avoid issue with char8_t - link errors on Windows
 CMAKE_ARGS+= -DCMAKE_CXX_STANDARD=20
 
 
