@@ -36,7 +36,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - id: set-matrix
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
@@ -50,7 +50,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - id: set-matrix
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
@@ -64,7 +64,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - id: set-matrix
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
@@ -86,7 +86,7 @@ jobs:
       ARTIFACTS_DIR_BUILDLOGS: "${ARTIFACTS_DIR}/BUILD_LOGS/"
     container: ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
         run: |
           lsb_release -d 2>/dev/null || true
@@ -276,7 +276,7 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ matrix.xcode }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build System Info
         run: |
           echo "CWD: `pwd`"
@@ -373,7 +373,7 @@ jobs:
       ARTIFACTS_DIR: "c:/Artifacts/"
       USE_DOCKER_ROOT: "D:/docker"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
         shell: "bash"
         run: |
@@ -548,7 +548,7 @@ jobs:
       MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Install tools required to build Stroika
       run: |
         sudo apt-get update -y
@@ -593,7 +593,7 @@ jobs:
     runs-on: ubuntu-latest
     container: sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
         run: |
           lsb_release -d 2>/dev/null || true
@@ -636,7 +636,7 @@ jobs:
     container: sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Make Documentation (since I dont know how to copy result from other step - this is simpler)
         run: |
           make documentation

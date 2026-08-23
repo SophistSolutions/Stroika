@@ -19,7 +19,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - id: set-matrix
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
@@ -33,7 +33,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - id: set-matrix
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
@@ -49,7 +49,7 @@ jobs:
     env:
       "BUILD_DEV_IMAGES": "0" 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build System Info
         shell: "bash"
         run: |
@@ -90,7 +90,7 @@ jobs:
           install: >-
             base-devel
             make
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build System Info
         shell: "bash"
         run: |
