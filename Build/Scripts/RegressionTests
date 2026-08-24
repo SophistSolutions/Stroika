@@ -48,7 +48,7 @@ if [ "$DETECTED_HOST_OS" == "Darwin" ] ; then
     echo "USING MacOS($USE_TEST_BASENAME)..."
 fi
 if [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
-	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_${DETECTED_HOST_OS}_VS2k19"; fi
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_${DETECTED_HOST_OS}_VS2k26"; fi
     echo "USING Visual Studio ($USE_TEST_BASENAME)..."
 fi
 
@@ -464,12 +464,17 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		echo -n "SKEL_TEST ... "
 		echo -n "$PREFIX_OUT_LABEL" "SKEL_TEST ... " >>$TEST_OUT_FILE 2>&1
 		STAGE_STARTAT_INT=$(date +%s)
-		echo "Build/Scripts/Skel --appRoot $USE_TEST_BASENAME-skel" >>$TEST_OUT_FILE 2>&1
-		rm -rf $USE_TEST_BASENAME-skel
-		Build/Scripts/Skel --appRoot $USE_TEST_BASENAME-skel >>$TEST_OUT_FILE 2>&1
-		echo -n "cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug ... " 2>&1
-		echo "cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug $PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
-		(cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1
+		USE_SKEL_NAME=$USE_TEST_BASENAME-skel
+		# Workaround https://github.com/SophistSolutions/Stroika/issues/769
+		if [[  "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
+			USE_SKEL_NAME="SKEL-TEST"
+		fi
+		echo "Build/Scripts/Skel --appRoot $USE_SKEL_NAME" >>$TEST_OUT_FILE 2>&1
+		rm -rf $USE_SKEL_NAME
+		Build/Scripts/Skel --appRoot $USE_SKEL_NAME >>$TEST_OUT_FILE 2>&1
+		echo -n "cd $USE_SKEL_NAME && make CONFIGURATION=Debug ... " 2>&1
+		echo "cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
+		(cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1
 		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
