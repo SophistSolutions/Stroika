@@ -237,7 +237,7 @@ jobs:
           # NOTE - some of these copies may fail, if the item is not present, but not a problem (like if we dont build libxml2 the log files wont be there)
           cp IntermediateFiles/"${{ matrix.config_name }}"/Samples-HTMLUI/html/*.txt "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
       - name: Archive Samples Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Sample apps (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -245,7 +245,7 @@ jobs:
             Builds/${{ matrix.config_name }}/*Samples-*
       - name: Archive Log Data
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -255,7 +255,7 @@ jobs:
             /tmp/Trace*.txt
       - name: Archive Core-Dumps
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: CoreDumps (${{ matrix.displayTargetName }})
           if-no-files-found: ignore
@@ -335,7 +335,7 @@ jobs:
           df -h
       - name: Archive Log Data
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -355,7 +355,7 @@ jobs:
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/BUILD-OUT.txt
             ${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Sample apps (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -513,7 +513,7 @@ jobs:
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/zlib/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/zlib/" || :
       - name: Archive Log Data
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -522,7 +522,7 @@ jobs:
             ${{ env.ARTIFACTS_DIR }}BUILD_LOGS
             ${{ env.ARTIFACTS_DIR }}TRACE_LOGS
       - name: Archive Sample Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Sample apps (${{ matrix.displayTargetName }})
           if-no-files-found: warn
@@ -579,7 +579,7 @@ jobs:
       run: make all
     - name: Archive Log Data
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: Log Data (codeql-analyze)
         if-no-files-found: warn
@@ -609,7 +609,7 @@ jobs:
           make documentation
           (cd Builds; tar xvf Stroika-Doxygen-Help.tar.gz)
       - name: Archive Documentation Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         # https://github.com/actions/upload-artifact/issues/506 include matrix configname until bug fixed --LGP 2024-11-27
         continue-on-error: true
         with:
@@ -618,7 +618,7 @@ jobs:
             Builds/Stroika-Doxygen-Help
       - name: Archive Log Data
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Log Data (doxygen)
           if-no-files-found: warn
