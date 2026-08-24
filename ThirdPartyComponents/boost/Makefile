@@ -315,10 +315,10 @@ configureAndBuild_:
 	@#  number mean the same thing in both shells (a cygwin realpath yields /cygdrive/c/... and reads 9
 	@#  characters longer than the MSYS /c/... for the same directory).
 	@#
-	@#  Empirically: 77 chars builds fine; 102 chars overran by 437, so warn from 90 up. Diagnostic
+	@#  Empirically: 94 chars builds fine; 102 chars overran by 437, so warn from 95 up. Diagnostic
 	@#  only - the leading - keeps a missing cygpath/realpath from failing the build.
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	-@MAXCHAR=90 && WINPATH=$$(cygpath -w "$$(realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))") && if [[ $${#WINPATH} -gt $$MAXCHAR ]] ; then $(ECHO) && $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#WINPATH} (> $$MAXCHAR): boost puts one -I per sublibrary on every command line, so a long build path can exceed the cmd.exe 8191 char limit. If the build fails, grep ConfigureAndBuild-OUT.txt for 'action contains a line that is too long' - if present, rebuild from a shorter root directory (https://github.com/SophistSolutions/Stroika/issues/769)" && $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n; fi;
+	-@MAXCHAR=95 && WINPATH=$$(cygpath -w "$$(realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))") && if [[ $${#WINPATH} -gt $$MAXCHAR ]] ; then $(ECHO) && $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#WINPATH} (> $$MAXCHAR): boost puts one -I per sublibrary on every command line, so a long build path can exceed the cmd.exe 8191 char limit. If the build fails, grep ConfigureAndBuild-OUT.txt for 'action contains a line that is too long' - if present, rebuild from a shorter root directory (https://github.com/SophistSolutions/Stroika/issues/769)" && $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@
 	@#@todo - document why we need to patch project-config.jam file - why cannot specifiy ARCH/COMPILER externally?
