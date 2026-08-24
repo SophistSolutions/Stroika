@@ -48,6 +48,7 @@ ZIPPEDFILE:=../Origs-Cache/boost_$(VERSION).tar.gz
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+GCC_VERSION_INTEGER_ := $(shell $(StroikaRoot)Build/Scripts/GetGCCVersion "$(CXX)" -i 2>/dev/null)
 
 
 all:	
@@ -231,6 +232,23 @@ B2_CONFIGURATION_ARGS +=	--without-atomic
 B2_CONFIGURATION_ARGS +=	--without-python
 B2_CONFIGURATION_ARGS +=	--without-regex
 B2_CONFIGURATION_ARGS +=	--without-wave
+
+
+## Building boost 1_92_0 on armhf with gcc < 12 fails (s/context/src/asm/jump_arm_aapcs_elf_gas.S:88: Error: selected processor does not support `vstmia sp,{d8-d15}' in ARM mode)
+## And boost ignores --without-context if you include something else that depends on it.
+ifeq ($(ARCH),armhf)
+ifneq (,$(GCC_VERSION_INTEGER_))
+ifneq (,$(shell test $(GCC_VERSION_INTEGER_) -lt 12 && echo true))
+B2_CONFIGURATION_ARGS +=	--without-context
+B2_CONFIGURATION_ARGS +=	context-impl=ucontext
+B2_CONFIGURATION_ARGS +=	--without-cobalt
+B2_CONFIGURATION_ARGS +=	--without-coroutine
+B2_CONFIGURATION_ARGS +=	--without-fiber
+B2_CONFIGURATION_ARGS +=	--without-graph_parallel
+B2_CONFIGURATION_ARGS +=	--without-mpi
+endif
+endif
+endif
 
 
 # At least fails on build-n-test-Linux (Linux, ubuntu-22.04-clang++-15-debug-libc++-c++23, clang++-15, ubuntu-latest,... 
