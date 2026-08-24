@@ -303,9 +303,22 @@ configureAndBuild_:
 	@
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
 	@
-	@#https://stroika.atlassian.net/browse/STK-633
-ifeq ($(DETECTED_HOST_OS),Cygwin)
-	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}: sometimes if its more than $$MAXCHAR characters on windows it may cause boost build problem (https://stroika.atlassian.net/browse/STK-633)" && $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n; fi;
+	@#https://github.com/SophistSolutions/Stroika/issues/769
+	@#
+	@#  boost's modular layout puts one -I per sublibrary on EVERY compile/rc action (62 of them as of
+	@#  boost 1.89), so the build directory length gets multiplied by ~62 in each command line. cmd.exe
+	@#  caps a command at 8191 characters, and the b2 rc action is the longest, so a long build path
+	@#  fails there first, with:
+	@#      msvc.compile.rc action contains a line that is too long (NNNN, max 8191)
+	@#
+	@#  Measure the WINDOWS form of the path - that is what lands on the command line, and it makes the
+	@#  number mean the same thing in both shells (a cygwin realpath yields /cygdrive/c/... and reads 9
+	@#  characters longer than the MSYS /c/... for the same directory).
+	@#
+	@#  Empirically: 77 chars builds fine; 102 chars overran by 437, so warn from 90 up. Diagnostic
+	@#  only - the leading - keeps a missing cygpath/realpath from failing the build.
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+	-@MAXCHAR=90 && WINPATH=$$(cygpath -w "$$(realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))") && if [[ $${#WINPATH} -gt $$MAXCHAR ]] ; then $(ECHO) && $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#WINPATH} (> $$MAXCHAR): boost puts one -I per sublibrary on every command line, so a long build path can exceed the cmd.exe 8191 char limit. If the build fails, grep ConfigureAndBuild-OUT.txt for 'action contains a line that is too long' - if present, rebuild from a shorter root directory (https://github.com/SophistSolutions/Stroika/issues/769)" && $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@
 	@#@todo - document why we need to patch project-config.jam file - why cannot specifiy ARCH/COMPILER externally?
