@@ -31,22 +31,6 @@ using Debug::AssertExternallySynchronizedChecker;
  ********************************************************************************
  */
 namespace {
-    String PatchOldStroikaURLPath2NewPath_ (const optional<URI::Authority>& a, const String& s)
-    {
-        if (s.empty ()) {
-            return s;
-        }
-        if (s.StartsWith (L"/")) {
-            return s;
-        }
-        if (a) {
-            return "/" + s;
-        }
-        return s;
-    }
-}
-
-namespace {
     String remove_dot_segments_ (const String& p, URI::NormalizationStyle normalization = URI::NormalizationStyle::eRFC3986)
     {
         // @todo - this is a fairly inefficient implementation, but so far hasn't shown up in profiles
@@ -223,11 +207,11 @@ String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
     }
     if (fFragment_) {
         if (usingPCTEncodeFlag == eDecoded) {
-            result << "#"sv + *fFragment_;
+            result << "#"sv << *fFragment_;
         }
         else {
             static constexpr UniformResourceIdentification::PCTEncodeOptions kFragmentEncodeOptions_{false, false, false, true};
-            result << "#"sv + UniformResourceIdentification::PCTEncode2String (*fFragment_, kFragmentEncodeOptions_);
+            result << "#"sv << UniformResourceIdentification::PCTEncode2String (*fFragment_, kFragmentEncodeOptions_);
         }
     }
     Ensure (result.str ().All ([] (Character c) { return c.IsASCII (); }));
