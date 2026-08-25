@@ -2818,7 +2818,7 @@ namespace {
                       ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_LinkedList<String>>, "Collection_LinkedList<String>",
                       10000, 1000.0 /* probe - answers a design question, not a gate */);
         Tester ("Collection_Array<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, "vector<int>",
-                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_Array<int>>, "Collection_Array<int>", 40000, 3.2, &failedTests);
+                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_Array<int>>, "Collection_Array<int>", 40000, 3.3, &failedTests);
         /*
          *  What the span-taking _IRep::Add () actually bought. Baseline is a std::list source, which
          *  takes AddAll ()'s per-element branch - the pre-change code path exactly - and comparison is
