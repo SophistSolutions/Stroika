@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { computed, ComputedRef, ref, Ref } from 'vue';
 
-import { IAbout } from 'src/models/IAbout';
-import api from 'src/proxy/API'
+import { IAbout } from '@/models/IAbout';
+import api from '@/proxy/API'
 
 
 export const useMainAppStateStore = defineStore('MainApp-State-Store', () => {

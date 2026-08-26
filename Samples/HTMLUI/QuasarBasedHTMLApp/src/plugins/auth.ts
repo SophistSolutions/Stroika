@@ -11,7 +11,7 @@ import {
 } from '@openid/appauth';
 import { DateTime, Duration } from "luxon";
 
-import { fetchTokens, fetchUserInfo, revokeTokens } from 'src/proxy/API';
+import { fetchTokens, fetchUserInfo, revokeTokens } from '@/proxy/API';
 
 export interface IOAuthProviderConfig {
     provider: string;

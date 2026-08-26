@@ -4,8 +4,8 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '/', component: () => import('pages/HomePage.vue') }],
+    component: () => import('@/layouts/MainLayout.vue'),
+    children: [{ path: '/', component: () => import('@/pages/HomePage.vue') }],
     meta: {
       breadcrumbs: [{ text: 'Home', exact: true, disabled: true }],
       dividerAfter: true,
@@ -15,9 +15,9 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/about',
     name: 'About',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('@/layouts/MainLayout.vue'),
     children: [
-      { path: '/about', component: () => import('pages/AboutPage.vue') },
+      { path: '/about', component: () => import('@/pages/AboutPage.vue') },
     ],
     meta: {
       breadcrumbs: [
@@ -30,9 +30,9 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/authtest',
     name: 'Auth-Test',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('@/layouts/MainLayout.vue'),
     children: [
-      { path: '/authtest', component: () => import('pages/AuthTestPage.vue') },
+      { path: '/authtest', component: () => import('@/pages/AuthTestPage.vue') },
     ],
     meta: {
       breadcrumbs: [
@@ -42,12 +42,12 @@ const routes: RouteRecordRaw[] = [
       showInDotDotDotMenu: true,
     },
   },
-  { path: '/oauth/callback', component: () => import('pages/OAuthCallback.vue') },
+  { path: '/oauth/callback', component: () => import('@/pages/OAuthCallback.vue') },
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    component: () => import('@/pages/ErrorNotFound.vue'),
   },
 ];
 

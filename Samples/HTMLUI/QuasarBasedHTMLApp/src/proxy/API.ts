@@ -1,7 +1,7 @@
-import { IAbout } from 'src/models/IAbout';
-import { gRuntimeConfiguration } from 'boot/configuration';
-import { Logger } from 'src/utils/Logger';
-import { IAuthService } from "src/plugins/auth";
+import { IAbout } from '@/models/IAbout';
+import { gRuntimeConfiguration } from '@/boot/configuration';
+import { Logger } from '@/utils/Logger';
+import { IAuthService } from "@/plugins/auth";
 
 const kFetchOptions_: RequestInit = {};
 

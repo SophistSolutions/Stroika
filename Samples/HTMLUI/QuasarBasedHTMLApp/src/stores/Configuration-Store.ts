@@ -1,7 +1,7 @@
 import { computed, ComputedRef, ref, Ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 
-import { gRuntimeConfiguration } from 'boot/configuration';
+import { gRuntimeConfiguration } from '@/boot/configuration';
 
 
 export const useConfigurationStore = defineStore('Configuration-Store', () => {

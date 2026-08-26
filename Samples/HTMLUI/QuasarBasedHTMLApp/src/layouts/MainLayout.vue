@@ -3,9 +3,9 @@ import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router';
 
-import EssentialLink from 'components/EssentialLink.vue';
-import ToolbarBreadcrumbs from 'components/ToolbarBreadcrumbs.vue';
-import { useConfigurationStore } from 'src/stores/Configuration-Store';
+import EssentialLink from '@/components/EssentialLink.vue';
+import ToolbarBreadcrumbs from '@/components/ToolbarBreadcrumbs.vue';
+import { useConfigurationStore } from '@/stores/Configuration-Store';
 
 const route = useRoute();
 const router = useRouter();

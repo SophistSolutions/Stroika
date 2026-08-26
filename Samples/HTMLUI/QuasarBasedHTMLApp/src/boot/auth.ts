@@ -1,7 +1,7 @@
 import { boot } from "quasar/wrappers"
 
-import authPlugin, { IOAuthProviderConfig } from 'src/plugins/auth'
-import { getOAuthConfigurations } from 'src/proxy/API';
+import authPlugin, { IOAuthProviderConfig } from '@/plugins/auth'
+import { getOAuthConfigurations } from '@/proxy/API';
 
 async function configFetcher(): Promise<IOAuthProviderConfig[] | undefined> {
     const oauthConfig = await getOAuthConfigurations();
