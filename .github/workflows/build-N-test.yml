@@ -284,7 +284,7 @@ jobs:
           system_profiler SPSoftwareDataType
           system_profiler SPDeveloperToolsDataType
           sw_vers
-          echo "    X-CODE: `xcodebuild -version | tr '\n' ';'`"
+          echo "    XCode: `xcodebuild -version | tr '\n' ';'`"
           echo "LIBRARY_PATH = $LIBRARY_PATH"
           echo "hw.ncpu=" $(sysctl -n hw.ncpu)
           echo "hw.memsize=" $(sysctl -n hw.memsize)

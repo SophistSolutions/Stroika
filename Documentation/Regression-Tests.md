@@ -59,12 +59,12 @@ These can all be run at the same time (each in a separate bash shell window). Mo
 do work remotely on other machines (MACHINE=ARG), and then copy back results to this machine where I can
 checkin from one spot.
 
-- \$TEST_TARGET=MacOS_XCode16_m1
+- \$TEST_TARGET=MacOS_XCode26_m1
 
   (takes about 2 HRs)
 
   ```bash
-  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode16_m1 PARALELLMAKEFLAG=-j5 \
+  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode26_m1 PARALELLMAKEFLAG=-j5 \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       ./Build/Scripts/RunRemoteRegressionTests
   ```
