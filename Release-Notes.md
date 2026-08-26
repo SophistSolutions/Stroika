@@ -18,9 +18,11 @@ especially those they need to be aware of when upgrading.
 - **NOT BACKWARD COMPATIBLE** change to Iterator<>::IRep - More () returns optional<> and AtEnd ()/Current () are now required (only affects code providing its own iterator rep)
 - Debug::AssertExternallySynchronizedMutex renamed to Debug::AssertExternallySynchronizedChecker (old name deprecated)
 - Many data-structure backend bug fixes: LinkedList/DoublyLinkedList operator=, Remove (item, comparer), push_back (span), copy-CTOR leak on throw, O(1) size (), middle-index Insert (); duplicate-key Lookup ()/Find_equal_to (); several never-exercised iterator paths
+- Stream bug fixes: BufferedInputStream could not seek (its seekable rep) and could not read at all (its un-seekable rep); ToSeekableInputStream re-read out of bounds from its cache and hung seeking past EOF - all now covered by Tests/49, which had no coverage of either class
 - Toolchain: VisualStudio.Net-2026, Ubuntu 26.04, g++-16, clang++-21/22, and openssl 4.0 all supported
 - Build tree reorganized: ScriptsLib is now Build/{Scripts,Lib,Shared} (old paths still work via deprecated shims); QtCreator support dropped
 - Issue tracking moved from JIRA to GitHub Issues - all 1025 issues imported, an archive checked in under Issues/, and in-source links repointed
+- HTMLUI sample modernized: @quasar/app-vite 3 (+ vue-router 5, pinia 4), eslint 10 flat config, typescript 6, and current Vue 3 idioms
 
 #### Upgrade Notes (3.0d23 to 3.0d24)
 
@@ -120,6 +122,48 @@ especially those they need to be aware of when upgrading.
   - warning suppression: clang `-Wcharacter-conversion` in the UTF codec and from the vendored gtest headers (and temporarily disabled in configure for clang++-21), gcc non-template-friend warnings, and the chrono_literals operator warning
 - Library
   - Foundation
+    - Characters
+      - `FloatConversion::ToString` default-float docs/regtests loosened (clang++-21 libc++)
+      - `ToString ()` implementations redone to display consistently in camelCase
+    - Containers
+      - `Collection<T>::_IRep::Add ()` takes a span - `Collection<T>::AddAll ()` batches a contiguous source into ONE virtual dispatch and one change-count bump; all 6 in-tree backends converted, three with a real bulk operation (`Collection_Array`, `Collection_stdforward_list`, `SortedCollection_stdmultiset`). Measured `Collection_Array<int>` 5.93ns -> 0.19ns per element
+      - `Sequence<T>::AppendAll ()` batched for contiguous sources (~40x faster construction); fixed quadratic `InsertAll ()`; Sequence/Collection also chunk a non-contiguous source rather than handing it over element-at-a-time, for any copy-constructible T
+      - `Set<T>` and `KeyedCollection<T>` fill from a Stroika source via `PeekContiguousStorage ()` with no rep-interface change (source-side only, since their `_IRep::Add ()` still takes one item). MultiSet deliberately not changed, and MultiSet.inl now records why
+      - `Sequence<>::MakeBidirectionalIterator ()`/`MakeRandomAccessIterator ()` implemented; `Sequence_Array`, `Sequence_DoublyLinkedList`, `Sequence_stdvector` and `STLContainerWrapper` wired to their native iterators
+      - `Sequence<T>` - fixed `Insert (Iterator<T>, T)` for at-end iterators, and added an STL-style `insert ()`
+      - `Sequence_LinkedList`/`Sequence_DoublyLinkedList` - fixed middle-index `Insert ()`
+      - DataStructures `LinkedList`/`DoublyLinkedList` - fixed `operator=`, `Remove (item, comparer)` and `push_back (span)`; copy CTOR no longer leaks if an element copy throws; length cached so `size ()` is O(1)
+      - fixed several bugs in `DoublyLinkedList<T>::BidirectionalIterator` and in the `Array<T>::ForwardIterator` backward/random-access operators - paths previously never exercised
+      - fixed `Lookup ()`/`Find_equal_to ()` returning the wrong duplicate-key element on some stdlib/random orderings
+      - worked around a g++ 14 and earlier miscompile that dropped a null guard in the Collection reps
+      - `Association` - added an STL-ish `count ()` method, plus docs
+      - `SkipList_Support` -> `Support::SkipList`; Support-namespace pattern applied inside Containers for Mapping
+    - Cryptography
+      - CERT signing/examining code updated for openssl 4 stricter const handling
+    - DataExchange
+      - `fJSONPrettyPrint` old name removed
+      - `_GetRep () const` -> `_ConstGetRep ()` on Archive/Variant Reader/Writer
+    - Debug
+      - `AssertExternallySynchronizedMutex` renamed to `AssertExternallySynchronizedChecker` (see Upgrade Notes); dbgtraces cleanups
+    - Execution
+      - new `Execution::CPUAffinity` - portable control over which logical CPU cores a process may run on; reports an unrepresentable core number rather than asserting on it
+      - `Async`/`RunAll ()` - improved docs and examples, now returns results if any and throws the first exception if any was thrown
+      - `Thread` on Windows - use `SetThreadDescription ()` instead of `RaiseException` (more modern, and avoids an ASAN failure); lost a private set-thread-name define
+      - POSIX `ProcessRunner` - use `closefrom (3)` instead of computing a max-FD number (which got too large on Ubuntu 26.04); several macOS `closefrom` workarounds
+    - IO/Network
+      - fixed HTTP `Response::GetCharset ()` to regexp-match, to better find the charset string
+      - minor URI code cleanups
+      - minor tweak to `IO/Network/Transfer/Cache`
+    - Memory
+      - support helpers for `StackBuffer`/`InlineBuffer` moved to `Memory::Support::`
+      - `InlineBuffer` - stop requiring `default_initializable<T>` where it is not needed, and offer it explicitly where it is; include `Execution/Throw.h` directly rather than forward-declaring one overload (clang++ link errors)
+    - Streams
+      - `BufferedInputStream` - the rep chosen when the source is already seekable answered `IsSeekable ()` true but never overrode `SeekRead ()`, so any seek asserted out with "Not Implemented". Only reachable through `FileInputStream::New (..., eBuffered)`, whose `BufferFlag` overloads have no in-tree caller, which is why it went unnoticed
+      - `BufferedInputStream` - the un-seekable rep (used for any non-seekable buffered stream) could never successfully read anything: it refilled through `span{fIntermediateBuffer_}`, and an `InlineBuffer`'s `size ()` starts at ZERO - `INLINE_BUF_SIZE` is only its inline capacity - so that span was empty and the first `Read ()` tripped `Require (not intoBuffer.empty ())`. It now refills through a local buffer and commits only on success, so a throwing upstream read cannot leave the buffer half-updated. Also fixed `GetReadOffset ()`, which summed two overlapping offsets and so over-reported (30, after consuming 4 elements of a 26-element refill), and an `Assert` that asked `IsAtEOF ()` - which peeks, and therefore requires seekability - of a stream that by construction usually is not seekable
+      - `ToSeekableInputStream` - `SeekRead ()` sized its copy out of the cache with `max` where `min` was meant. Both arguments are upper bounds (elements cached ahead of the current offset, and room in the caller's buffer), so taking the larger overran one of them - the cache when the caller's buffer was bigger, the caller's buffer when the cache was
+      - `ToSeekableInputStream` - `SeekRead (eFromStart, past-the-end)` looped forever: it read upstream until the cache reached the target offset, with no check for the upstream being exhausted, so at EOF the cache stopped growing and the loop spun. It now throws the same `range_error{"seek"}` the function already threw for a negative `eFromStart` offset
+      - `ToSeekableInputStream` - `AvailableToRead ()`'s `Ensure (cacheEnd - fOffset_ > 0)` compared an unsigned difference against zero, so it could not fail (from CodeQL code-scanning 34); and `RemainingLength ()` no longer casts the cache remainder through `size_t`, which discarded the high half on a 32-bit target
+      - `ToSeekableInputStream` - better class docs and examples
     - Traversal
       - `BidirectionalIterator` documented to and enforced (static_assert) as satisfying `bidirectional_iterator` and related concepts
       - `RandomAccessIterator` satisfies `random_access_iterator`; several additions needed, checked by static_asserts; const-correctness and friend-template linkage bugs fixed
@@ -136,41 +180,6 @@ especially those they need to be aware of when upgrading.
       - `Iterable<T>::_IRep::Find ()` - new leading findFirst flag, so which match you get no longer rides on SequencePolicy; all 41 backend overrides updated
       - `Iterable<T>::Reduce ()` argument order; `Iterable<T>` internals take `ArgByValueType<T>` in lambdas
       - `Math/Statistics` and `Execution/ConditionVariable` - forward each argument at most once
-    - Containers
-      - `Collection<T>::_IRep::Add ()` takes a span - `Collection<T>::AddAll ()` batches a contiguous source into ONE virtual dispatch and one change-count bump; all 6 in-tree backends converted, three with a real bulk operation (`Collection_Array`, `Collection_stdforward_list`, `SortedCollection_stdmultiset`). Measured `Collection_Array<int>` 5.93ns -> 0.19ns per element
-      - `Sequence<T>::AppendAll ()` batched for contiguous sources (~40x faster construction); fixed quadratic `InsertAll ()`; Sequence/Collection also chunk a non-contiguous source rather than handing it over element-at-a-time, for any copy-constructible T
-      - `Set<T>` and `KeyedCollection<T>` fill from a Stroika source via `PeekContiguousStorage ()` with no rep-interface change (source-side only, since their `_IRep::Add ()` still takes one item). MultiSet deliberately not changed, and MultiSet.inl now records why
-      - `Sequence<>::MakeBidirectionalIterator ()`/`MakeRandomAccessIterator ()` implemented; `Sequence_Array`, `Sequence_DoublyLinkedList`, `Sequence_stdvector` and `STLContainerWrapper` wired to their native iterators
-      - `Sequence<T>` - fixed `Insert (Iterator<T>, T)` for at-end iterators, and added an STL-style `insert ()`
-      - `Sequence_LinkedList`/`Sequence_DoublyLinkedList` - fixed middle-index `Insert ()`
-      - DataStructures `LinkedList`/`DoublyLinkedList` - fixed `operator=`, `Remove (item, comparer)` and `push_back (span)`; copy CTOR no longer leaks if an element copy throws; length cached so `size ()` is O(1)
-      - fixed several bugs in `DoublyLinkedList<T>::BidirectionalIterator` and in the `Array<T>::ForwardIterator` backward/random-access operators - paths previously never exercised
-      - fixed `Lookup ()`/`Find_equal_to ()` returning the wrong duplicate-key element on some stdlib/random orderings
-      - worked around a g++ 14 and earlier miscompile that dropped a null guard in the Collection reps
-      - `Association` - added an STL-ish `count ()` method, plus docs
-      - `SkipList_Support` -> `Support::SkipList`; Support-namespace pattern applied inside Containers for Mapping
-    - Execution
-      - new `Execution::CPUAffinity` - portable control over which logical CPU cores a process may run on; reports an unrepresentable core number rather than asserting on it
-      - `Async`/`RunAll ()` - improved docs and examples, now returns results if any and throws the first exception if any was thrown
-      - `Thread` on Windows - use `SetThreadDescription ()` instead of `RaiseException` (more modern, and avoids an ASAN failure); lost a private set-thread-name define
-      - POSIX `ProcessRunner` - use `closefrom (3)` instead of computing a max-FD number (which got too large on Ubuntu 26.04); several macOS `closefrom` workarounds
-    - Debug
-      - `AssertExternallySynchronizedMutex` renamed to `AssertExternallySynchronizedChecker` (see Upgrade Notes); dbgtraces cleanups
-    - Memory
-      - support helpers for `StackBuffer`/`InlineBuffer` moved to `Memory::Support::`
-      - `InlineBuffer` - stop requiring `default_initializable<T>` where it is not needed, and offer it explicitly where it is; include `Execution/Throw.h` directly rather than forward-declaring one overload (clang++ link errors)
-    - Characters
-      - `FloatConversion::ToString` default-float docs/regtests loosened (clang++-21 libc++)
-      - `ToString ()` implementations redone to display consistently in camelCase
-    - DataExchange
-      - `fJSONPrettyPrint` old name removed
-      - `_GetRep () const` -> `_ConstGetRep ()` on Archive/Variant Reader/Writer
-    - Cryptography
-      - CERT signing/examining code updated for openssl 4 stricter const handling
-    - IO/Network
-      - fixed HTTP `Response::GetCharset ()` to regexp-match, to better find the charset string
-      - minor URI code cleanups
-      - minor tweak to `IO/Network/Transfer/Cache`
   - Frameworks
     - UPnP/SSDP advertisement docs and serializer format cleanups
 - Tests
@@ -178,9 +187,18 @@ especially those they need to be aware of when upgrading.
   - perf-suite infrastructure: recalibrated thresholds, archive tooling, and CPU pinning when running (including on Windows); documented why the performance warnings are Windows-only
   - new regtests `Foundation_Caching` and `ValuelessSentinalType` - used to fix a small bug with `TimedCache` and `ValuelessCache`
   - Tests 51/52 - added missing `<algorithm>`/`<list>` includes (fixes the gcc build)
+  - `Tests/49` (`Foundation::Streams`) - first coverage of `BufferedInputStream` and `ToSeekableInputStream`, neither of which had any: seek on a buffered-over-seekable stream, read-and-offset tracking on a buffered un-seekable stream through to EOF, seek past the end, and the cache re-read path. The seek-past-end case hangs rather than fails against the old code, so it was verified pre-fix under a timeout
   - narrowed wide string literals to narrow ones where the literal initializes a String, in more places
 - Samples
   - added a binary-payload directive to the rpmspec to make rpmbuild faster
+  - HTMLUI (`Samples/HTMLUI/QuasarBasedHTMLApp`) brought up to current tooling and current Vue 3 practice
+    - migrated to `@quasar/app-vite` 3, plus vue-router 5, pinia 4, quasar-cli 5, @quasar/extras 2 and prettier 3. Two of the four breaking changes handled are silent - they build clean and fail only at runtime: app-vite 3's folder aliases (`components/`, `pages/`, `boot/`, ...) are gone, so 28 import specifiers were rewritten to `@/...`; and `build.env` became `build.defineEnv`, injecting as `import.meta.env` rather than `process.env` - the old key still exists but now means .env *loading options*, so every compile-time config value was silently coming out undefined
+    - `.env` handling now uses app-vite 3's own instead of hand-rolled dotenv: only `QCLI_`-prefixed variables reach client code, so `VUE_APP_*` was renamed to `QCLI_APP_*` and the dotenv dependency dropped
+    - eslint 10 flat config (`eslint.config.mjs`, replacing `.eslintrc`/`.eslintignore`), the typescript-eslint meta-package, and typescript 6 - not 7, which typescript-eslint refuses. Note app-vite 3 dropped its built-in eslint integration, so the build no longer lints; `npm run lint` is the only lint path
+    - `@typescript-eslint/no-unused-vars` turned back on (it had been `off`, which is why the dead code accumulated) - 15 genuine items removed; `defineComponent` dropped from all 5 files that used it; route meta is now typed, via a new `src/models/INavigation.ts` and a `RouteMeta` augmentation, so breadcrumb/context-menu payloads are no longer `any`
+    - dependency hygiene: esbuild advisory cleared, the phantom `pretty-bytes` dependency declared, dead dependencies dropped, same-major versions brought current
+    - fixes: the About page now reports BOTH the backend and the frontend version (the frontend's was defined and consumed nowhere) and the "Report issues at" link pointed at a different project's tracker; `ToolbarBreadcrumbs` was bound with `v-model:breadcrumbs` but never emitted `update:breadcrumbs`, so the two-way binding did not exist; and `quasar.config.ts` no longer reads version numbers out of `package-lock.json`'s internal layout
+    - README documents that only `QCLI_`-prefixed variables reach the browser and that build-time computed values go in `build.defineEnv`; dead quasar.dev links repointed
 - Issues (new)
   - Issue tracking moved from JIRA to GitHub Issues. All 1025 issues imported (including the 427 resolved ones, created then closed), with a machine-readable jira-import comment block for the fields GitHub has no home for, and JIRA components/type/priority mapped to labels
   - `Issues/Archive/` holds a point-in-time export of the issue database (one .json per issue, plus recovered attachments), on the argument that hosted trackers lose data
