@@ -4,28 +4,24 @@
  * while leaving calls in place in the source.
  */
 export class Logger {
-  // eslint-disable-next-line
   public static debug(message?: any, ...optionalParams: any[]): void {
     if (Logger.sEmitToLog) {
       // tslint:disable-next-line
       console.debug(message, ...optionalParams);
     }
   }
-  // eslint-disable-next-line
   public static info(message?: any, ...optionalParams: any[]): void {
     if (Logger.sEmitToLog) {
       // tslint:disable-next-line
       console.info(message, ...optionalParams);
     }
   }
-  // eslint-disable-next-line
   public static warn(message?: any, ...optionalParams: any[]): void {
     if (Logger.sEmitToLog) {
       // tslint:disable-next-line
       console.warn(message, ...optionalParams);
     }
   }
-  // eslint-disable-next-line
   public static error(message?: any, ...optionalParams: any[]): void {
     if (Logger.sEmitToLog) {
       // tslint:disable-next-line
