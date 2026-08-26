@@ -226,7 +226,7 @@ endif
 
 
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-# https://stroika.atlassian.net/browse/STK-759
+# https://github.com/SophistSolutions/Stroika/issues/892
 ### On M1 Mac (even if running under rosetta) - really just one mac tested - 
 ### Get error:
 #		undef: _BrotliDecoderDestroyInstance
@@ -262,7 +262,7 @@ endif
 
 
 ifeq ($(DETECTED_HOST_OS), Darwin)
-# https://stroika.atlassian.net/browse/STK-759
+# https://github.com/SophistSolutions/Stroika/issues/892
 # Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
 LIBCURL_CONFIGURE +=  LIBS='-framework Foundation -framework SystemConfiguration'
 endif

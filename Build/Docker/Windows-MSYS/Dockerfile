@@ -15,7 +15,7 @@ FROM ${BASE_IMAGE}
 #
 
 
-#### https://stroika.atlassian.net/browse/STK-766
+#### https://github.com/SophistSolutions/Stroika/issues/899
 #### NOTE https://github.com/microsoft/hcsshim/issues/696 - is the source of the del /f /s /q "C:\$Recycle.Bin
 #### Magic - that PREVENTS the MSYS install hang!!!
 

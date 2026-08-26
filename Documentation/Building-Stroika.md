@@ -705,7 +705,7 @@ But - even with just plain make, you need some sort of configure script to estab
   make project-files
   ~~~
 
-  See also [STK-943](https://stroika.atlassian.net/browse/STK-943)
+  See also [STK-943](https://github.com/SophistSolutions/Stroika/issues/1075)
 
 - ThirdParty components not automatically rebuilt from Visual Studio project files
     ~~~

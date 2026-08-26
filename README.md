@@ -327,4 +327,4 @@ Looking through the samples is also a good way to start:
 
 Please report bugs/issues at:
 
-&nbsp;&nbsp;&nbsp;&nbsp;[http://stroika-bugs.sophists.com](https://stroika.atlassian.net/jira/dashboards/10000)
+&nbsp;&nbsp;&nbsp;&nbsp;[GitHub Issues](https://github.com/SophistSolutions/Stroika/issues)

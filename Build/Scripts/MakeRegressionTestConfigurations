@@ -183,19 +183,19 @@ raspberryPiCrossCompileTestConfigurations_ ()
 	# DUE TO qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy, omit raspberrypi-g++-11-release-sanitize_address since
 	# various attempts at supressions failed, and the suppressions DO work for g++-12 (and other cases work) - and appears to just be old compiler bug with asan stuff --LGP 2023-12-16
 	#### ./configure raspberrypi-g++-11-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-11' --sanitize none,address --cross-compiling true
-	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023 (no-sanitize=alignment no longer sufficient in g++-11 raspberry pi - not sure why
+	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://github.com/SophistSolutions/Stroika/issues/1150 (no-sanitize=alignment no longer sufficient in g++-11 raspberry pi - not sure why
 	# ./configure raspberrypi-g++-11-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-11' --cross-compiling true
 	#
 	# gcc-12 ARM raspberrypi compiler
-	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
+	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://github.com/SophistSolutions/Stroika/issues/1150
 	./configure raspberrypi-g++-12-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-12' --cross-compiling true
 	./configure raspberrypi-g++-12-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-12' --sanitize none,address --cross-compiling true
-	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023 (no-sanitize=alignment no longer sufficient in g++-12 raspberry pi - not sure why
+	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://github.com/SophistSolutions/Stroika/issues/1150 (no-sanitize=alignment no longer sufficient in g++-12 raspberry pi - not sure why
 	# ./configure raspberrypi-g++-12-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-12' --cross-compiling true
 	#
 	# gcc-13 ARM raspberrypi compiler
-	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
-	#### NOTE to get this working on current raspbi/debian - see https://stroika.atlassian.net/browse/STK-1022
+	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://github.com/SophistSolutions/Stroika/issues/1150
+	#### NOTE to get this working on current raspbi/debian - see https://github.com/SophistSolutions/Stroika/issues/1149
 	./configure raspberrypi-g++-13-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true
 	./configure raspberrypi-g++-13-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-13' --sanitize none,address --cross-compiling true
 	./configure raspberrypi-g++-13-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true

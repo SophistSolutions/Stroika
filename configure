@@ -163,7 +163,7 @@ $DEFAULT_CXXWARNING_FLAGS_CLANG		= $DEFAULT_CXXWARNING_FLAGS_CLANG . '-Wno-futur
 my $DEFAULT_CXXWARNING_FLAGS_CLANG21	= $DEFAULT_CXXWARNING_FLAGS_CLANG . '-Wno-character-conversion ';
 
 
-my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to support plural
+my $Config_Tag = undef;   #see 	https://github.com/SophistSolutions/Stroika/issues/802 to support plural
 
 my $BuildByDefault = "always";	# for now default to always...
 
@@ -1164,11 +1164,11 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		if ($gAssertionsEnabled == DEFAULT_BOOL_OPTIONS) {
 			$gAssertionsEnabled = 0;
 		}
-		# https://stroika.atlassian.net/browse/STK-763
+		# https://github.com/SophistSolutions/Stroika/issues/896
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS and $lsb_release == "20.04" and $TargettingValgrind == true) {
 			$ENABLE_LTO = false;
 		}
-		# https://stroika.atlassian.net/browse/STK-996
+		# https://github.com/SophistSolutions/Stroika/issues/1128
 		#	./Builds/g++-release-sanitize_address_undefined/Tests/Test02
 		#	=================================================================
 		#	==2050532==ERROR: AddressSanitizer: requested allocation size 0xccccccccccc86000 (0xccccccccccc87000 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)
@@ -1409,7 +1409,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 	}
 
 	if ($lsb_release == "20.04" or $lsb_release == "20.10" or $lsb_release == "21.04" or $lsb_release == "21.10" or $lsb_release == "22.04" or $lsb_release == "23.10") {
-		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
+		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://github.com/SophistSolutions/Stroika/issues/851
 
 		#### VERIFIED STILL BROKEN TSAN DEBUG on Ubuntu 22.04 g++-debug-sanitize_thread
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER) and GetGCCVersion_ ($COMPILER_DRIVER) < 14.0)) {
@@ -2679,7 +2679,7 @@ sub PostProcessOptions_ ()
 				$LinkerArgs_ExtraPrefix .= " " . $crap2Add2CZZFlags;
 			}
 			if ($isVisualStudio) {
-				# https://stroika.atlassian.net/browse/STK-984
+				# https://github.com/SophistSolutions/Stroika/issues/1116
 				my $clVer = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
 				if(IsTargettingSanitizer_ ('address') and 193732822 <= $clVer) {	## and $clVer <= 193732822(so far not fixed)
 					FillInToolsPathAdditionsIfNeeded_();
@@ -2819,7 +2819,7 @@ sub PostProcessOptions_ ()
 				push @LinkerArgs_LibDependencies_ADD, "-lstdc++";
 			}
 			if ($STATIC_LINK_GCCRUNTIME == 1) {
-				# https://stroika.atlassian.net/browse/STK-676 (-static causes some apps crash; and there is no option to JUST staticly link libc - eg no -static-libc)
+				# https://github.com/SophistSolutions/Stroika/issues/811 (-static causes some apps crash; and there is no option to JUST staticly link libc - eg no -static-libc)
 				# https://stackoverflow.com/questions/26304531/compiling-with-static-libgcc-static-libstdc-still-results-in-dynamic-depende
 				$LinkerArgs_ExtraPrefix .= " -static-libstdc++";
 				$LinkerArgs_ExtraPrefix .= " -static-libgcc";
@@ -3405,7 +3405,7 @@ if ($onlyGenerateIfCompilerExists) {
 		foreach my $i (0 .. $#sanitizerFlags) {
 			if ($sanitizerFlags[$i] eq "thread") {
 				$generate = false;
-				$generateBecause = "qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - see https://stroika.atlassian.net/browse/STK-717 AND https://gcc.gnu.org/bugzilla//show_bug.cgi?id=101978 ";
+				$generateBecause = "qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - see https://github.com/SophistSolutions/Stroika/issues/851 AND https://gcc.gnu.org/bugzilla//show_bug.cgi?id=101978 ";
 			}
 		}
 	}

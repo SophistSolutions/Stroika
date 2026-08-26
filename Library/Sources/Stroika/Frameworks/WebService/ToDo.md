@@ -4,7 +4,7 @@ Status:
 	[[[This is not even really started, just at the early desgin phase]]]
 
 
-	*	http://stroika-bugs.sophists.com/browse/STK-416 - Consider directly integrating with Swagger
+	*	https://github.com/SophistSolutions/Stroika/issues/550 - Consider directly integrating with Swagger
 
 TODO/DESIGN NOTES:
 

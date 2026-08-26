@@ -25,11 +25,11 @@ help:
 	@echo "And first thing when you run docker image, cat /Getting-Started-With-Stroika.md"
 
 ### NOTE - if you see Invoke-WebRequest : The remote name could not be resolved:...
-### see https://stroika.atlassian.net/browse/STK-742
+### see https://github.com/SophistSolutions/Stroika/issues/876
 ### and add to docker desktop app config dns... setting 8.8.8.8
 
 
-# Was originally mostly for https://stroika.atlassian.net/browse/STK-742, but better workaround in ReadMe.md file.
+# Was originally mostly for https://github.com/SophistSolutions/Stroika/issues/876, but better workaround in ReadMe.md file.
 EXTRA_DOCKER_BUILD_ARGS=
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 #

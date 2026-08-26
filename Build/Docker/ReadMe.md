@@ -102,7 +102,7 @@ cat /Getting-Started-With-Stroika.md
 
 #### Windows troubleshooting
 
-+ DNS is generally broken with docker/windows (https://stroika.atlassian.net/browse/STK-742).
++ DNS is generally broken with docker/windows (https://github.com/SophistSolutions/Stroika/issues/876).
 
 An easy workaround: Docker Engine Config file:
 ~~~
@@ -154,7 +154,7 @@ edge it into the usuable domain.
 
 - DNS Resolution error on Docker Desktop windows
   "Invoke-WebRequest : The remote name could not be resolved: 'github.com'" or "Could not resolve host: github.com"
-  - See https://stroika.atlassian.net/browse/STK-742
+  - See https://github.com/SophistSolutions/Stroika/issues/876
   - See https://forums.docker.com/t/dns-broken-on-docker-desktop-for-windows/130121
   - See https://github.com/docker/for-win/issues/3810
 

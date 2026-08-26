@@ -169,7 +169,7 @@ CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 # Important - soon to be used in Stroika (at least experimentally) - https://www.sqlite.org/json1.html
 CFLAGS	+= -DSQLITE_ENABLE_JSON1
 
-# See https://stroika.atlassian.net/browse/STK-753 and https://sqlite.org/forum/forumpost/cc6668e7b3 - avoid TSAN/Valgrind issues 
+# See https://github.com/SophistSolutions/Stroika/issues/133 and https://sqlite.org/forum/forumpost/cc6668e7b3 - avoid TSAN/Valgrind issues 
 ifeq (1,$(AssertionsEnabled))
 ifeq (,$(findstring qStroika_FeatureSupported_Valgrind,$(CPPFLAGS)))
 ifeq (,$(findstring thread,$(SanitizerFlags)))

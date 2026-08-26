@@ -16,13 +16,19 @@ not file there, and treat anything it still shows as frozen as of 2026-08-16. It
 exported into `Archive/` here and imported into GitHub Issues; `STK-to-GitHub.tsv` maps the old keys to
 the new issue numbers.
 
-In-source references still look like `@todo http://stroika-bugs.sophists.com/browse/STK-972`. That host
-is a Sophist Solutions redirect, which is why it - rather than any tracker's own hostname - is what
-appears in ~180 code comments: the tracker can move without editing 122 source files. It should now
-resolve `STK-NNN` to the corresponding GitHub issue, per `STK-to-GitHub.tsv`.
+In-source references point straight at GitHub - `@todo https://github.com/SophistSolutions/Stroika/issues/1128`.
+There is no indirection: 339 such links across 140 files name the tracker directly, and no `STK-NNN`
+reference in the tree lacks a resolvable URL.
 
-> If the tracker moves again, **this file and the redirect are the two things to update** - nothing else
-> in the tree names the tracker directly.
+They used to go through a Sophist Solutions redirect (`stroika-bugs.sophists.com/browse/STK-NNN`), on the
+theory that the tracker could then move without editing source. In practice that never held - 196 links in
+120 files had already been rewritten to GitHub URLs by hand - so on 2026-08-26 the remaining 144 stragglers
+(34 still naming `stroika.atlassian.net`, 110 naming the redirect) were mapped through `STK-to-GitHub.tsv`
+and rewritten too. The redirect is no longer load-bearing for anything in this tree.
+
+> If the tracker moves again, `git grep github.com/SophistSolutions/Stroika/issues` finds every site.
+> That is the price of links that resolve without a redirect someone has to keep alive - paid deliberately,
+> since the redirect had already been bypassed in 120 files anyway.
 
 ## Archive/
 
@@ -79,9 +85,10 @@ its own), JIRA components/type/priority mapped to labels, and the 427 resolved i
 closed. It is DRY RUN unless given `--go`, and resumable - `STK-to-GitHub.tsv` records every mapping as
 it goes and already-mapped keys are skipped.
 
-`STK-to-GitHub.tsv` is the `STK-NNN` -> GitHub issue number map. It is what lets the
-`stroika-bugs.sophists.com` redirect keep resolving the ~180 in-source `STK-NNN` links after JIRA is
-retired, WITHOUT rewriting those links in 122 source files.
+`STK-to-GitHub.tsv` is the `STK-NNN` -> GitHub issue number map. In-source links no longer need it - they
+were rewritten to point at GitHub directly on 2026-08-26 - but it remains how you resolve an `STK-NNNN`
+name found in `Archive/`, in `Release-Notes.md`, or in the captured output under
+`Tests/HistoricalRegressionTestResults/`, none of which were rewritten.
 
 ## The GitHub Project, and what it can and cannot do for you
 

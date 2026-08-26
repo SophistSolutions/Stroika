@@ -9,7 +9,7 @@
    fun:dl_main
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-661 part1 (ARM/DEBIAN/RASPBERRYPI)
+   https://github.com/SophistSolutions/Stroika/issues/796 part1 (ARM/DEBIAN/RASPBERRYPI)
    Memcheck:Cond
    ...
    fun:_dl_open
@@ -20,7 +20,7 @@
    fun:__libc_dlopen_mode
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-661 part2 (ARM/DEBIAN/RASPBERRYPI)
+   https://github.com/SophistSolutions/Stroika/issues/796 part2 (ARM/DEBIAN/RASPBERRYPI)
    Memcheck:Cond
    ...
    fun:_dl_catch_exception
@@ -33,157 +33,157 @@
    fun:_dl_start
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   https://github.com/SophistSolutions/Stroika/issues/797 (ARM/DEBIAN/RASPBERRYPI)
    Memcheck:Addr8
    obj:/usr/lib/arm-linux-gnueabihf/libarmmem.so
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   https://github.com/SophistSolutions/Stroika/issues/797 (ARM/DEBIAN/RASPBERRYPI)
    Memcheck:Cond
    obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   https://github.com/SophistSolutions/Stroika/issues/797 (ARM/DEBIAN/RASPBERRYPI)
    Memcheck:Addr8
    obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   https://github.com/SophistSolutions/Stroika/issues/797 (ARM/DEBIAN/RASPBERRYPI)
    Memcheck:Value4
    obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-669  -- ARM ONLY
+   https://github.com/SophistSolutions/Stroika/issues/804  -- ARM ONLY
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation4Time8DateTime10AddSecondsEx
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-669  -- ARM ONLY
+   https://github.com/SophistSolutions/Stroika/issues/804  -- ARM ONLY
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation4Time8DateTime2AsIlEET_v
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-678 -raspberrypi either report of bug in openssl purify code or false positive
+   https://github.com/SophistSolutions/Stroika/issues/813 -raspberrypi either report of bug in openssl purify code or false positive
    Memcheck:Param
    write(buf)
    ...
    fun:sock_write
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-678 -raspberrypi only, ssl/curl related
+   https://github.com/SophistSolutions/Stroika/issues/813 -raspberrypi only, ssl/curl related
    Memcheck:Cond
    fun:dprintf_formatf
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-678 -raspberrypi only, curl related
+   https://github.com/SophistSolutions/Stroika/issues/813 -raspberrypi only, curl related
    Memcheck:Cond
    fun:seturl
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-698 - raspberrypi only - 
+   https://github.com/SophistSolutions/Stroika/issues/833 - raspberrypi only - 
    Memcheck:Cond
    ...
    fun:_ZN7Stroika10Foundation10Characters7CString7FormatV*9__va_list*
    ...
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-698 - raspberrypi only - 
+   https://github.com/SophistSolutions/Stroika/issues/833 - raspberrypi only - 
    Memcheck:Value4
    ...
    fun:_ZN7Stroika10Foundation10Characters7CString7FormatV*9__va_list*
    ...
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:_ZN7Stroika10Foundation5Debug8Private_16TraceModuleData_C2Ev*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:_ZNSt6locale5_ImplC1EPKcj
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:_ZNSt11__timepunctI*EC1EP15__locale_structPKcj
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:_ZNSt7__cxx118messagesI*EC1EP15__locale_structPKcj
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:_ZNSt8messagesI*EC1EP15__locale_structPKcj
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation10Characters6String9FromASCIIEPKcS4_
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:getaddrinfo
    ...
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    ...
    fun:getaddrinfo
    ...
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation10Characters6String8FromUTF8EPKcS4_
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation4Time8Duration12UnParseTime_B5cxx11Ed
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:_ZN7Stroika10Foundation4Time8Duration12UnParseTime_B5cxx11Ed
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPcEEvT_S7_St20forward_iterator_tag.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPcEEvT_S7_St20forward_iterator_tag.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7reserveEj
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:juliandayFunc.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:sqlite3*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:sqlite3*
 }
@@ -194,380 +194,380 @@
    fun:sqlite3MemMalloc.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:vdbeChangeP4Full
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:vdbeChangeP4Full
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    ...
    fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERjj.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation12Cryptography8Encoding9Algorithm12DecodeBase64ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation12Cryptography8Private_11mkArrayFmt_B5cxx11EPKhS4_
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:_ZN7Stroika10Foundation12Cryptography8Private_11mkArrayFmt_B5cxx11EPKhS4_
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation12Cryptography6Digest8DigesterINS2_9Algorithm5CRC32EjE13ComputeDigestERKNS0_7Streams11InputStreamISt4byteE3PtrE
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN12_GLOBAL__N_110MD5Update_EPNS_7MD5_CTXEPKhj
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:_ZN12_GLOBAL__N_110MD5Update_EPNS_7MD5_CTXEPKhj
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:vfprintf
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    ...
    fun:vfprintf
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    ...
    fun:_ZN7Stroika10Foundation12Cryptography8Private_11mkArrayFmt_B5cxx11EPKhS4_
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN12_GLOBAL__N_110Base64Test8PRIVATE_12_GLOBAL__N_122DO_ONE_REGTEST_BASE64_ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKSt6vectorISt4byteSaISC_EE
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:main
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN12_GLOBAL__N_119DoCommonHasherTest_IN7Stroika10Foundation12Cryptography6Digest8DigesterINS4_9Algorithm5CRC32EjEEEEvPKSt4byteSB_j.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareEPKc
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation6Memory4BLOBC1EPKSt4byteS5_
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN12_GLOBAL__N_114BLOBBINSTREAM_3REP4ReadEPSt4byteS3_
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Param
    exit_group(status)
    fun:_Exit
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:_ZNK7Stroika10Foundation12DataExchange7Archive3Zip6Reader4Rep_17GetContainedFilesEv
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation7Streams32ExternallyOwnedMemoryInputStreamISt4byteE4Rep_4ReadEPS3_S6_
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZNSt12_GLOBAL__N_17ucs4_inERNS_5rangeIKcLb1EEERNS0_IDiLb1EEEmSt12codecvt_mode
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZNSt12_GLOBAL__N_120read_utf8_code_pointERNS_5rangeIKcLb1EEEm
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:releaseMemArray.part.*.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:releaseMemArray.part.*.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:insertCell.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:insertCell.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:btreeParseCellPtr
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:btreeParseCellPtr
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:freeSpace.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:freeSpace.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:getCellInfo.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:clearCell.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:pageFindSlot
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:pageFindSlot
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:enlargeAndAppend.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Param
    write(buf)
    fun:write
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:dropCell.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:exprDup.constprop.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:balance
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:balance
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:copyNodeContent.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:btreeComputeFreeSpace*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:getnameinfo
    ...
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    ...
    fun:getnameinfo
    ...
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:libunistring_mem_iconv*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    obj:/usr/lib/arm-linux-gnueabihf/libunistring.so.2.1.0
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:seturl
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    ...
    fun:seturl
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:hostname_check.isra.1
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN12_GLOBAL__N_137BinaryOutputStreamFromOStreamAdapter_3T1_Ev.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation6Memory4BLOB14EqualsComparerclERKS2_S5_.*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation6Memory16SmallStackBufferISt4byteLj64EE8reserve_Ej
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:_ZN7Stroika10Foundation6Memory16SmallStackBufferISt4byteLj64EE8reserve_Ej
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:_ZN7Stroika10Foundation10Characters6String13FromSDKStringEPKc
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    ...
    fun:_ZN7Stroika10Foundation10Characters6String13FromSDKStringEPKc
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation10Characters17CodePageConverter12MapToUNICODEEPKcjPDiPj
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:Curl_*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    ...
    fun:Curl_*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:curl_*
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Param
    send(len)
    ...
    fun:send
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    obj:/tmp/Test43
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:__udivmoddi4
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    fun:iconv
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    ...
    fun:iconv
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    ...
    obj:/usr/lib/arm-linux-gnueabihf/libunistring.so.2.1.0
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   https://github.com/SophistSolutions/Stroika/issues/834 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
    fun:u8_strconv_from_encoding
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-701
+   https://github.com/SophistSolutions/Stroika/issues/835
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation6Memory16SmallStackBufferIcLj4096EEC2ENS1_22SmallStackBufferCommon28UninitializedConstructorFlagEj.constprop.234
 }
 {
-   http://stroika-bugs.sophists.com/browse/STK-701
+   https://github.com/SophistSolutions/Stroika/issues/835
    Memcheck:Cond
    fun:_ZN7Stroika10Foundation12Cryptography6Digest8DigesterINS2_9Algorithm3MD5ESt5arrayIhLj16EEE13ComputeDigestEPKSt4byteSB_
 }

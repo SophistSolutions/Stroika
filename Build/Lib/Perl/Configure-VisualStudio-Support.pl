@@ -162,7 +162,7 @@ sub RunBackTickWithVCVarsSetInEnvironment_
 	print $fh $result;
 	print $fh $cmd2Run . "\r\n";
 	close $fh;
-	# https://stroika.atlassian.net/browse/STK-941 /E:ON needed for this ticket
+	# https://github.com/SophistSolutions/Stroika/issues/1073 /E:ON needed for this ticket
 	local $result = `cmd /E:ON/C $tmpFileName`;
 	unlink ($tmpFileName);
 	return $result;

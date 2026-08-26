@@ -326,7 +326,7 @@ Stroika uses a utility class template ComparisonRelationDeclaration<> and some r
 and some concepts to filter, so you can declare the type of comparison relation function.
 
 NOTE - if you use 'three-way-comparers', there is no need for that, as their function signature is enough to automatically detect what they are.
-<a href="https://stroika.atlassian.net/browse/STK-980">Stroika containers and concepts for equality comparosn etc should automatically convert/handle operator<=></a>
+<a href="https://github.com/SophistSolutions/Stroika/issues/1112">Stroika containers and concepts for equality comparosn etc should automatically convert/handle operator<=></a>
 
 ### Using T= versus typedef
 

@@ -100,7 +100,7 @@ endif
 
 CONFIG_ARGS+=	-no-shared
 ifeq (purify,$(findstring purify,$(CONFIGURED_EXTRA_ARGS)))
-#see https://stroika.atlassian.net/browse/STK-400 - -DPURIFY to cleanly valgrind
+#see https://github.com/SophistSolutions/Stroika/issues/534 - -DPURIFY to cleanly valgrind
 CONFIG_ARGS+=	-DPURIFY
 endif
 
@@ -119,7 +119,7 @@ endif
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-#https://stroika.atlassian.net/browse/STK-528
+#https://github.com/SophistSolutions/Stroika/issues/665
 #CONFIG_ARGS+=	-asm
 CONFIG_ARGS+=	-no-asm
 endif

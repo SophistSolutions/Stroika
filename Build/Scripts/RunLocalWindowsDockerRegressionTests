@@ -14,7 +14,7 @@ BRANCH="${BRANCH:-v3-Dev}"
 VERSION=`./Build/Scripts/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 DOCKER="${DOCKER:-docker.exe}"
 
-# Due to https://stroika.atlassian.net/browse/STK-742 - Invoke-WebRequest : The remote name could not be resolved: 
+# Due to https://github.com/SophistSolutions/Stroika/issues/876 - Invoke-WebRequest : The remote name could not be resolved: 
 #  Add 
 #  "dns": [
 #     "8.8.8.8"
@@ -47,7 +47,7 @@ $DOCKER exec \
     $CONTAINER_NAME \
     bash -c "git clone https://github.com/SophistSolutions/Stroika.git --branch $BRANCH"
 
-# NB: https://stroika.atlassian.net/browse/STK-762 -  -l needed for building openssl on MSYS
+# NB: https://github.com/SophistSolutions/Stroika/issues/895 -  -l needed for building openssl on MSYS
 $DOCKER exec \
     --env USE_TEST_BASENAME=$USE_TEST_BASENAME \
     $CONTAINER_NAME \
