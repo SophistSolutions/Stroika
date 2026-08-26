@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                 if (baseRemaining) {
                     SeekOffsetType cacheEnd = fCacheBaseOffset_ + fCachedData_.size ();
                     Assert (fOffset_ <= cacheEnd);
-                    baseRemaining = *baseRemaining + static_cast<size_t> (cacheEnd - fOffset_); // if we have some cached data past current seek offset, add it too
+                    baseRemaining = *baseRemaining + (cacheEnd - fOffset_); // if we have some cached data past current seek offset, add it too
                 }
                 return baseRemaining;
             }
@@ -97,6 +97,11 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                             // fRealIn is always seeked to the end cached data.
                             byte someBuf[1024];
                             auto r = this->fRealIn.ReadBlocking (span{someBuf});
+                            if (r.empty ()) [[unlikely]] {
+                                // upstream is exhausted, so newOffset is past the end of the stream: no
+                                // further data can ever arrive, and looping again would spin forever
+                                Execution::Throw (kException_);
+                            }
                             fCachedData_.push_back (r); // nb: an exception in this copy would cause fRealIn offset to be out of sync, but not sure what todo about it
                             cacheEnd = fCacheBaseOffset_ + fCachedData_.size ();
                         }

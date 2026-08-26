@@ -55,6 +55,12 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Require (IsOpenRead ());
                 return fReader_.RemainingLength ();
             }
+            virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
+            {
+                Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Require (IsOpenRead ());
+                return fReader_.Seek (whence, offset);
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -205,7 +211,10 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             virtual SeekOffsetType GetReadOffset () const override
             {
                 Require (IsOpenRead ());
-                return fReadOffsetIntoIntermediateBuf_ + fRealIn_.GetOffset ();
+                // fRealIn_ has typically pre-read PAST what the caller has consumed, so back out
+                // whatever is still sitting unread in fIntermediateBuffer_
+                Assert (fRealIn_.GetOffset () >= GetNEltsAlreadyBufferedFromUpstream_ ());
+                return fRealIn_.GetOffset () - GetNEltsAlreadyBufferedFromUpstream_ ();
             }
             virtual optional<size_t> AvailableToRead () override
             {
@@ -236,21 +245,29 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Require (IsOpenRead ());
                 auto n = GetNEltsAlreadyBufferedFromUpstream_ ();
                 if (n == 0) [[unlikely]] {
-                    // read into fIntermediateBuffer_ (not intoBuffer)- OK to overwrite cuz
-                    // no seeking allowed, so we will never re-examine that data/buffer
-                    auto bufR = fRealIn_.Read (span{fIntermediateBuffer_}, blockFlag);
-                    if (bufR) {
+                    // read a big chunk upstream (not into intoBuffer, which may be tiny) - OK to
+                    // overwrite what we had cuz no seeking allowed, so we never re-examine it.
+                    //  NB: read via a local buffer, NOT span{fIntermediateBuffer_}: an InlineBuffer's
+                    //  size () starts out ZERO (INLINE_BUF_SIZE is only its inline CAPACITY), so that
+                    //  span would be empty - which is a precondition violation in Read (). Going
+                    //  through a local also means fIntermediateBuffer_ is only touched once the read
+                    //  has actually succeeded.
+                    ELEMENT_TYPE buf[INLINE_BUF_SIZE];
+                    if (auto bufR = fRealIn_.Read (span{buf}, blockFlag)) {
                         // we filled buffer (possibly with zero elements)
+                        fIntermediateBuffer_.resize_uninitialized (0);
+                        fIntermediateBuffer_.push_back (*bufR);
                         fReadOffsetIntoIntermediateBuf_ = 0;
                         n                               = bufR->size ();
-                        fIntermediateBuffer_.resize_uninitialized (n);
                     }
                     else {
                         return nullopt; // no new information, don't change state so can Read again
                     }
                 }
                 // if we get here, and n = 0, really EOF, cuz return above on NOT-AVAIL case
-                Assert (n != 0 or fRealIn_.IsAtEOF ());
+                //  nb: IsAtEOF () peeks - read then seek back - so it can only be asked of a
+                //  seekable stream, and fRealIn_ here often is not one
+                Assert (n != 0 or not fRealIn_.IsSeekable () or fRealIn_.IsAtEOF ());
                 size_t n2Read = Math::AtMost (n, intoBuffer.size ());
                 auto   t = Memory::CopySpanData (span{fIntermediateBuffer_}.subspan (fReadOffsetIntoIntermediateBuf_, n2Read), intoBuffer);
                 Assert (t.size () == n2Read);

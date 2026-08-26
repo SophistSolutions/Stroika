@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
+#include "Stroika/Foundation/Streams/BufferedInputStream.h"
 #include "Stroika/Foundation/Streams/Copy.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
@@ -306,6 +307,24 @@ namespace {
         EXPECT_EQ (s.Seek (0), 0u);
         return s;
     }
+
+    // Read until EOF in pieces of at most 'chunk' elements; returns the total read.
+    size_t ReadAllInPieces_ (const InputStream::Ptr<byte>& s, span<byte> into, size_t chunk)
+    {
+        size_t n = 0;
+        while (n < into.size ()) {
+            size_t want = into.size () - n;
+            if (want > chunk) {
+                want = chunk;
+            }
+            span<byte> r = s.ReadBlocking (into.subspan (n, want));
+            if (r.empty ()) {
+                break;
+            }
+            n += r.size ();
+        }
+        return n;
+    }
 }
 
 namespace {
@@ -344,6 +363,64 @@ namespace {
     }
 }
 
+namespace {
+    GTEST_TEST (Foundation_Streams, BufferedInputStream_SeekableOverSeekable_CanSeek_)
+    {
+        Debug::TraceContextBumper ctx{"BufferedInputStream_SeekableOverSeekable_CanSeek_"};
+        // A stream that answers IsSeekable () true must actually support Seek ().
+        InputStream::Ptr<byte> s = BufferedInputStream::New<byte> (MemoryStream::New<byte> (as_bytes (span{kABCs_, kABCsLen_})));
+        EXPECT_TRUE (s.IsSeekable ());
+        byte first[10];
+        EXPECT_EQ (s.ReadBlocking (span{first}).size (), sizeof (first));
+        EXPECT_EQ (std::memcmp (first, kABCs_, sizeof (first)), 0);
+        EXPECT_EQ (s.GetOffset (), sizeof (first));
+        EXPECT_EQ (s.Seek (0), 0u);
+        EXPECT_EQ (s.GetOffset (), 0u);
+        byte again[10];
+        EXPECT_EQ (s.ReadBlocking (span{again}).size (), sizeof (again));
+        EXPECT_EQ (std::memcmp (again, first, sizeof (first)), 0);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Streams, BufferedInputStream_UnSeekable_ReadsAndTracksOffset_)
+    {
+        Debug::TraceContextBumper ctx{"BufferedInputStream_UnSeekable_ReadsAndTracksOffset_"};
+        // The eNotSeekable rep buffers upstream reads; it must still deliver every element in
+        // order, and report the offset the CALLER is at - not how far it has pre-read upstream.
+        stringstream backing{kABCs_};
+        InputStream::Ptr<byte> s = BufferedInputStream::New<byte> (InputStreamFromStdIStream::New<byte> (backing, eNotSeekable), eNotSeekable);
+        EXPECT_FALSE (s.IsSeekable ());
+        byte head[4];
+        EXPECT_EQ (s.ReadBlocking (span{head}).size (), sizeof (head));
+        EXPECT_EQ (std::memcmp (head, kABCs_, sizeof (head)), 0);
+        EXPECT_EQ (s.GetOffset (), sizeof (head));
+        // the rest, in small pieces, all served out of the one buffer already filled upstream
+        byte   rest[kABCsLen_];
+        size_t n = ReadAllInPieces_ (s, span{rest, kABCsLen_ - sizeof (head)}, 3);
+        EXPECT_EQ (n, kABCsLen_ - sizeof (head));
+        EXPECT_EQ (std::memcmp (rest, kABCs_ + sizeof (head), n), 0);
+        EXPECT_EQ (s.GetOffset (), kABCsLen_);
+        // at EOF. (IsAtEOF () is not askable here - it peeks, which needs seekability)
+        byte past[4];
+        EXPECT_TRUE (s.ReadBlocking (span{past}).empty ());
+        EXPECT_EQ (s.GetOffset (), kABCsLen_);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Streams, ToSeekableInputStream_SeekPastEnd_)
+    {
+        Debug::TraceContextBumper ctx{"ToSeekableInputStream_SeekPastEnd_"};
+        // Seeking beyond the end cannot be satisfied - the wrapper can only cache what upstream
+        // actually has - so it must report that, NOT spin forever waiting for data that will
+        // never arrive.
+        stringstream           backing{kABCs_};
+        InputStream::Ptr<byte> s = ToSeekableInputStream::New<byte> (InputStreamFromStdIStream::New<byte> (backing, eNotSeekable));
+        EXPECT_TRUE (s.IsSeekable ());
+        EXPECT_ANY_THROW (s.Seek (kABCsLen_ * 10));
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])
