@@ -20,7 +20,7 @@ onMounted(() => {
 
 watch([() => props.message, () => props.popupTitle], onChange_);
 
-var useTitle: Ref<string> = ref('');
+const useTitle: Ref<string> = ref('');
 </script>
 
 <template>

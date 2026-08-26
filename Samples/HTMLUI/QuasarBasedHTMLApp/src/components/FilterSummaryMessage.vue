@@ -37,7 +37,7 @@ watch(
 /*
  *  This is for use in the filter section of the app-bar, to say how much is filtered out.
  */
-var msg = ref('');
+const msg = ref('');
 </script>
 
 <template>

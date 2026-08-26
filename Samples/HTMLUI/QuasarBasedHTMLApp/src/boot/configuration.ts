@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers';
 
-import { kCompileTimeConfiguration } from '../config/config';
-import { Logger } from '../utils/Logger';
+import { kCompileTimeConfiguration } from '@/config/config';
+import { Logger } from '@/utils/Logger';
 
 export default boot(async (/* { app, router, ... } */) => {
   let API_ROOT: string | null = null;

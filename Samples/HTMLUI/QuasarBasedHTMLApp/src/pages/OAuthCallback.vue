@@ -2,7 +2,7 @@
 import { onMounted, ref, toRaw } from "vue";
 
 import { getCurrentInstance } from "vue";
-import { IAuthService } from "../plugins/auth";
+import { IAuthService } from "@/plugins/auth";
 
 let showPage = ref(false);
 

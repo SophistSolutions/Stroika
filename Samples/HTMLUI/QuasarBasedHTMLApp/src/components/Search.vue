@@ -7,7 +7,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:searchFor']);
 
-var searchRO: ToRef<string | undefined> = toRef(props, 'searchFor'); // read-only reference to the prop, so we are notified if it changes
+const searchRO: ToRef<string | undefined> = toRef(props, 'searchFor'); // read-only reference to the prop, so we are notified if it changes
 let search: Ref<string> = ref(props.searchFor || ''); // writable prop, we can update with v-model
 
 watch(searchRO, () => (search.value = props.searchFor || ''));

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed, Ref, ref } from "vue";
+import { onMounted, onUnmounted, computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
 import prettyBytes from "pretty-bytes";
@@ -9,7 +9,6 @@ import { kCompileTimeConfiguration } from "@/config/config";
 import { IAPIEndpoint, IWebServerStats, IComponent, IDatabase } from "@/models/IAbout";
 import { useMainAppStateStore } from "@/stores/MainApp-State-store";
 import { PluralizeNoun } from "@/utils/Linguistics";
-import { useConfigurationStore } from "@/stores/Configuration-Store";
 import { gRuntimeConfiguration } from "@/boot/configuration";
 let polling: undefined | NodeJS.Timeout;
 const $q = useQuasar();
@@ -62,7 +61,6 @@ const lastSuccessfulAPICallMessage = computed(() => {
     : "no data received yet";
 });
 
-const configurationStore = useConfigurationStore();
 
 onMounted(() => {
   // first time check quickly, then more gradually

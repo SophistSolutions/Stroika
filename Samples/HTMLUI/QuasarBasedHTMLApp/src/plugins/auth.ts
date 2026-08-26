@@ -407,12 +407,12 @@ class AuthService {
                 // console.log('configuration=', configuration);
                 // revoke the token(s) - really only need todo to refresh token OR the access token since doing for refresh token should automatically do both
                 const revocationHandler = new BaseTokenRequestHandler(new FetchRequestor());
-                const result = await revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
+                await revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
                     token: tokens2Revoke.refreshToken,
                     client_id: oauthConfig.clientId,
                     // client_secret: oauthConfig.clientSecret
                 }));
-                const result2 = await revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
+                await revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
                     token: tokens2Revoke.accessToken,
                     client_id: oauthConfig.clientId,
                     client_secret: "THE REASON THIS DOESNT WORK WITH GOOGLE AND WHY WE DO IT IN THE BACKEND"

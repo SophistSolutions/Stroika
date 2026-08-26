@@ -63,8 +63,11 @@ export default tseslint.config(
       // allow debugger during development only
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
 
+      // Dead code is a real finding; keep this ON. The base 'no-unused-vars'
+      // above must stay off, as it does not understand type declarations.
+      '@typescript-eslint/no-unused-vars': 'warn',
+
       // ... at least for now
-      '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-inferrable-types': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       'vue/no-deprecated-slot-attribute': 'off',

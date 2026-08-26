@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router';
 import EssentialLink from '@/components/EssentialLink.vue';
 import ToolbarBreadcrumbs from '@/components/ToolbarBreadcrumbs.vue';
 import { useConfigurationStore } from '@/stores/Configuration-Store';
+import { IBreadcrumb, IContextMenuItem } from '@/models/INavigation';
 
 const route = useRoute();
 const router = useRouter();
@@ -39,30 +40,30 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
-const defaultContextMenu = [
+const defaultContextMenu: IContextMenuItem[] = [
   { name: 'No special operations on this page', enabled: false },
 ];
-var breadcrumbs = ref([]);
-var contextMenu = ref(defaultContextMenu);
+const breadcrumbs = ref<IBreadcrumb[]>([]);
+const contextMenu = ref<IContextMenuItem[]>(defaultContextMenu);
 
-function updateBreadcrumbs(newBreadCrumbs: any) {
+function updateBreadcrumbs(newBreadCrumbs: IBreadcrumb[]) {
   // explicit EVENTs can be used to update the breadcrumbs (like when they contain dynamic per page information)
   breadcrumbs.value = newBreadCrumbs;
 }
 
-function updateContextMenu(newContextMenu: any) {
+function updateContextMenu(newContextMenu: IContextMenuItem[]) {
   contextMenu.value = newContextMenu;
 }
 
-router.afterEach((to, from) => {
+router.afterEach((to) => {
   // each time we nagivate, update the breadcrumbs
-  breadcrumbs.value = to.meta.breadcrumbs;
+  breadcrumbs.value = to.meta.breadcrumbs ?? [];
   contextMenu.value = to.meta.contextMenu ?? defaultContextMenu;
 });
 
 onMounted(() => {
   // needed to capture the initial breadcrumbs value
-  breadcrumbs.value = route.meta.breadcrumbs;
+  breadcrumbs.value = route.meta.breadcrumbs ?? [];
   contextMenu.value = route.meta.contextMenu ?? defaultContextMenu;
 });
 </script>
@@ -78,7 +79,7 @@ onMounted(() => {
           <q-menu>
             <q-list style="min-width: 100px">
               <template v-for="(item, index) in contextMenu" :key="index">
-                <q-item v-if="item.name" clickable v-close-popup :active="item.enabled" :onClick="item.onClick">
+                <q-item v-if="item.name" clickable v-close-popup :active="item.enabled" @click="item.onClick">
                   <q-item-section> {{ item.name }}</q-item-section>
                 </q-item>
                 <q-separator v-if="item?.dividerAfter" />

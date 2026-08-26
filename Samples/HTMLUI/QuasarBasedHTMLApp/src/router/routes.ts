@@ -1,5 +1,18 @@
 import { RouteRecordRaw } from 'vue-router';
 
+import { IBreadcrumb, IContextMenuItem } from '@/models/INavigation';
+
+// Type the per-route 'meta' payload, so consumers (MainLayout) do not need 'any'.
+// https://router.vuejs.org/guide/advanced/meta.html
+declare module 'vue-router' {
+  interface RouteMeta {
+    breadcrumbs?: IBreadcrumb[];
+    contextMenu?: IContextMenuItem[];
+    dividerAfter?: boolean;
+    showInDotDotDotMenu?: boolean;
+  }
+}
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',

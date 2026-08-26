@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-    defineComponent,
     computed,
     toRaw,
     watch,
@@ -12,13 +11,8 @@ import {
 } from "vue";
 import { QSelectOption } from "quasar";
 
-import { useRouter, useRoute } from "vue-router";
-import { useConfigurationStore } from "../stores/Configuration-Store";
-import { IAuthService, IOAuthProviderConfig } from "../plugins/auth";
+import { IAuthService, IOAuthProviderConfig } from "@/plugins/auth";
 
-defineComponent({
-    components: {},
-});
 
 function capitalize_(s: string) {
     if (s.length > 0) {
@@ -27,9 +21,6 @@ function capitalize_(s: string) {
     return s;
 }
 
-const route = useRoute();
-const router = useRouter();
-const configurationStore = useConfigurationStore();
 let auth: IAuthService = getCurrentInstance()?.appContext.config.globalProperties.$auth;
 
 const availableProviders: Ref<IOAuthProviderConfig[] | undefined> =

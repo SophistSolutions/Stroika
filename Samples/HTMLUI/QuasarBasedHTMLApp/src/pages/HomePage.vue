@@ -1,23 +1,3 @@
-<script setup lang="ts">
-import {
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  computed,
-  ComputedRef,
-} from 'vue';
-
-defineComponent({
-  components: {
-  },
-});
-
-let polling: undefined | NodeJS.Timeout;
-
-const kRefreshFrequencyInSeconds_: number = 15;
-
-</script>
-
 <template>
   <q-page padding>
     <div class="row text-h4 text-center q-mb-md">

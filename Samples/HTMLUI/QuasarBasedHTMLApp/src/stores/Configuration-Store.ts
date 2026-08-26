@@ -24,7 +24,7 @@ export const useConfigurationStore = defineStore('Configuration-Store', () => {
 
   // add watchers
   watch(leftDrawerOpen,
-    (newV, oldV) => localStorage.setItem('Configuration-Store.leftDrawerOpen', JSON.stringify(newV)));
+    (newV) => localStorage.setItem('Configuration-Store.leftDrawerOpen', JSON.stringify(newV)));
 
   return {
     apiServer, leftDrawerOpen, 

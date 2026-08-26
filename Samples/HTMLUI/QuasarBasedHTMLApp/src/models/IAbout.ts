@@ -23,7 +23,7 @@ export interface IAPIEndpoint {
   callsCompleted: number;
   errors: number;
   // duration of each of the different calls
-  callTimes?: ICommonStatistics;
+  callTimes: ICommonStatistics;
   medianRunningAPITasks?: number;
 }
 export interface IWebServerStats {

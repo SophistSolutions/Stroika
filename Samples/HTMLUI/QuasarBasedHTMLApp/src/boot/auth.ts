@@ -22,6 +22,6 @@ async function configFetcher(): Promise<IOAuthProviderConfig[] | undefined> {
         });
 };
 
-export default boot(({ app, router, store }) => {
+export default boot(({ app, router }) => {
     app.use(authPlugin, { configFetcher, router });
 })
