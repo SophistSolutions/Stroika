@@ -8,37 +8,219 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-### 3.0d24x - PREP
+### 3.0d24 {2026-08-26x} {[diff](../../compare/3.0d23...3.0d24)} - DRAFT
+
+#### TLDR
+
+- Started using Claude to help improve/accelerator stroika development
+- Bidirectional and random-access iterators support, as well as DataStructures (Array/DoublyLinkedList)
+- Large container performance work (e.g. Iterable<T>::_IRep::PeekContiguousStorage () etc)
+- **NOT BACKWARD COMPATIBLE** change to Iterator<>::IRep - More () returns optional<> and AtEnd ()/Current () are now required (only affects code providing its own iterator rep)
+- Debug::AssertExternallySynchronizedMutex renamed to Debug::AssertExternallySynchronizedChecker (old name deprecated)
+- Many data-structure backend bug fixes: LinkedList/DoublyLinkedList operator=, Remove (item, comparer), push_back (span), copy-CTOR leak on throw, O(1) size (), middle-index Insert (); duplicate-key Lookup ()/Find_equal_to (); several never-exercised iterator paths
+- Toolchain: VisualStudio.Net-2026, Ubuntu 26.04, g++-16, clang++-21/22, and openssl 4.0 all supported
+- Build tree reorganized: ScriptsLib is now Build/{Scripts,Lib,Shared} (old paths still work via deprecated shims); QtCreator support dropped
+- Issue tracking moved from JIRA to GitHub Issues - all 1025 issues imported, an archive checked in under Issues/, and in-source links repointed
+
+#### Upgrade Notes (3.0d23 to 3.0d24)
+
+- Debug
+  - `AssertExternallySynchronizedMutex` -> `AssertExternallySynchronizedChecker`; replace all uses in user code
+    - files `AssertExternallySynchronizedMutex.{h,inl,cpp}` -> `AssertExternallySynchronizedChecker.{h,inl,cpp}`
+    - `SetAssertExternallySynchronizedMutexContext ()` -> `SetAssertExternallySynchronizedCheckerContext ()`
+    - macro `qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled` -> `..._AssertExternallySynchronizedChecker_Enabled`
+- Traversal::Iterator
+  - **Iterator<>::IRep changed incompatibly**: `More ()` returns `optional<T>`, and `AtEnd ()`/`Current ()` are new required methods. Only affects code that implements its own iterator rep (rare)
+  - `Done ()` deprecated in favor of `AtEnd ()` (Iterator<>, and Forward/BackwardIterator in Containers::DataStructures)
+  - the iterator category is no longer carried on the TRAITS object; RandomAccessIterator is assignable to BidirectionalIterator, and BidirectionalIterator to Iterator<T>
+- Iterable<T> / MultiSet<T>
+  - **`Top ()` with no count argument now returns `optional<T>` and means the single top element**, not every element ordered. For the old behavior pass a count larger than the container (eg `Top (numeric_limits<size_t>::max ())`) or use `OrderBy ()`. Affects `Iterable<T>::Top ()`, `Iterable<T>::Top (cmp)`, `MultiSet<T>::Top ()`, `MultiSet<T>::TopElements ()`. The counted overloads are unchanged
+  - **`Reduce ()` now calls `op (runningTotal, element)`, not `op (element, runningTotal)`** - matching std::accumulate and Join ()'s combiner. Commutative ops (arithmetic, min, max - the large majority) are unaffected; non-commutative ops change answer, eg `Iterable<String>{"A","B","C"}.Sum ()` returned "CBA" and now returns "ABC"
+  - `OrderBy ()` now defaults to `SequencePolicy::eSeq` (was `ePar`). Callers relying on the parallel default must pass `SequencePolicy::ePar` explicitly. A user-supplied comparer no longer needs to be safe for parallel execution unless you opt in
+  - `SequencePolicy::eDEFAULT` deprecated - use the no-policy overload instead
+  - `SequentialEquals ()`: the `useIterableSize` overloads are deprecated
+  - `OrderBy ()` result backend is unspecified (it is now contiguous-backed rather than a generator)
+- SequencePolicy dispatch
+  - **only `ePar` now selects a parallel algorithm.** `eParUnseq` and `eUnseq` previously got `execution::par` by accident and now run sequentially (a legal execution of either). Affects `Iterable<T>::OrderBy ()`, `Sequence<T>::OrderBy ()`, DataStructures `Array`/`HashTable` `Apply ()`
+- Sequence<T>
+  - `As (ptr)` form deprecated; `Sequence<T>::As ()` no longer hides `Iterable<T>::As ()`
+- Collection<T>
+  - `_IRep::Add ()` now takes `span<const value_type>` instead of a single item - affects any out-of-tree Collection backend
+- Renames / moves
+  - support helpers for `Memory::StackBuffer`/`InlineBuffer` moved to `Memory::Support::{StackBuffer,InlineBuffer}`
+  - `SkipList_Support` -> `Support::SkipList`
+  - `_GetRep () const` -> `_ConstGetRep ()` on the Archive/Variant Reader/Writer classes
+  - `fJSONPrettyPrint` (already deprecated) removed - **not backward compatible**; the deprecation warning could not be suppressed under gcc16
+- Build system
+  - `ScriptsLib/` is now split by role into `Build/Scripts/` (executables), `Build/Lib/Make/` (.mk fragments), `Build/Lib/Perl/` (.pl requires) and `Build/Shared/` (Skel-Templates); `Tests/ScriptsLib/` is now `Tests/Scripts/`. Apps that vendor Stroika and name `ScriptsLib/...` in their own Makefiles keep working via deprecated forwarding shims at `ScriptsLib/*` (each warns to stderr), **but those shims will be removed in a future release** - update to the `Build/...` paths. Newly scaffolded Skel apps already use the new paths
+  - `Build/BootstrapToolsSrc` -> `Build/Tools/Src`; `DockerBuildContainers` -> `Build/Docker`
+  - **QtCreator support removed** - `Library/Projects/QtCreator/` and the `project-files-qt-creator{,-load,-save}` targets are gone (already unused since 2.1r4)
+- Third-party requirements
+  - mongo-cxx-driver r4.3.0 or later required (compatibility with r4.0.0/r4.1.0 dropped); currently uses r4.5.0
+  - openssl 4.0 is supported (CERT signing/examining code updated for its stricter const handling)
+
+#### Change Details
+
+- Documentation
+  - New `Documentation/Patterns.md` design-patterns document
+  - New `AGENTS.md`/`CLAUDE.md` describing the build and CI traps that cost repeated rediscovery: that a header change never triggers a rebuild, the `.tmp` files `make format-code` leaves beside sources, how to read GitHub Actions results, and the force-rebuild trick for a single test
+  - `Building-Stroika.md` - QtCreator section removed; vs2k2026 added to the regression-test docs
+  - Documented the `Build/` folder layout, and the rep-accessor naming plus member-underscore conventions
+  - Container docs cleanups; `ProcessRunner` class docs now lead with what the API actually is, and the `Run ()` exception docs corrected
+  - `Sequence<T>` - documented why subtracting `begin ()` from an iterator does not compile and what to use instead, and strengthened the note on why `operator[]` cannot return a mutable reference
+  - `MultiSet` - documented how to get a `Set<>` out of `UniqueElements ()`, and what it costs
+  - `Memory` - documented which of `StackBuffer`/`InlineBuffer` to use, and why
+  - SSDP advertisement docs/format (serializer) cleanups
+- Build System and Scripts
+  - Reorganization (see Upgrade Notes): `ScriptsLib` -> `Build/ScriptsLib` -> `Build/{Scripts,Lib,Shared}`; `Tests/ScriptsLib` -> `Tests/Scripts`; `BootstrapToolsSrc` -> `Build/Tools/Src`; `DockerBuildContainers` -> `Build/Docker`. `Build/Lib` content is include/require-only and is no longer marked executable; everything in `Build/Scripts` keeps its executable bit (losing it breaks UNIX builds while still appearing to work under MSYS/Cygwin)
+  - Dropped QtCreator support, and a few deprecated scripts not used by users
+  - Moved the configuration-making recipes out of the top-level Makefile into scripts
+  - `configure`
+    - support for VisualStudio.Net-2026, and now defaults to vs2k2026 when both 2026 and 2022 are present
+    - fixed so the test for python does not hang on latest MSYS under docker
+    - `-Wno-free-nonheap-object` BWA also needed for g++16; tightened the `-Wno-return-local-addr` BWA to just g++-12
+    - lost the `_DISABLE_VECTOR_ANNOTATION` BWA (caused problems, unclear what it helped)
+  - Makefiles
+    - MSVC compile lines no longer swallow the compiler exit status
+    - fixed a top-level Makefile bug where bash lines used `;` instead of `&&`, so third-party-component build failures were sometimes ignored
+    - `Tests/Makefile` - propagate failures out of the all-configurations check/run-tests loops; three error-handling/legibility fixes in the test and Skel-template makefiles
+    - Windows: use `-Z7` for the cmake-built ThirdPartyComponents and drop the dead `-Zi` support; must set `CMAKE_POLICY_DEFAULT_CMP0091=NEW` for cmake to honor `CMAKE_MSVC_RUNTIME_LIBRARY`
+  - Skel now generates VS2k26 project files, not just VS2k22
+  - Visual Studio.Net 2026 project/solution files, and .sln/workspace updates
+  - .github Actions/Workflows
+    - added ubuntu-26.04 configurations, and builds of the vs2k26 MSYS/cygwin containers
+    - upgraded actions to v7 (including `upload-artifact@v7`) to clear deprecation warnings
+    - more log capture on Linux, and mongo-cxx-driver logs copied out on build failure
+    - `-Os` on the ubuntu-26.04-g++-14-c++23 config to avoid running out of space
+  - Docker
+    - new Ubuntu2604-Small / Ubuntu2604-RegressionTests images, and Stroika-Dev-2604
+    - `clean-images` target; assorted cleanups (StroikaRoot usage)
+    - Windows containers use VS_18_7_0/VS_18_7_2/VS_18_9_1 and MSYS_20251213
+    - Stroika-Dev containers: ssh public-key auth fixed via an entrypoint script (the old start command left the home directory root-owned and world-writable, so sshd StrictModes refused to read the authorized_keys file)
+    - boost build-path-length (maxpath) workarounds for Windows, including the skel test in the regression tests
+  - Scripts
+    - `RegressionTests` - `ulimit -n 1024` when running valgrind, to avoid failures after the host upgrade to 26.04
+    - `MakeRegressionTestConfigurations` progress for Ubuntu 26.04; more g++ c++23 configs added; several ubuntu-26.04 clang configs disabled; clang++18 dropped from 2604 (fails to build several third-party components); for clang < 20 on 2604, use libstdc++
+    - clang-format: latest run over the code; updated the location lookup in `GetMessageForMissingTool`
+  - Third-party component versions
+    - boost 1.91.0 then 1.92.0 (1.91 needed for latest Visual Studio 2026); workaround for building 1.92.0 on armhf with gcc < 12
+    - openssl 3.6.2 -> 4.0.0/4.0.1 (with a temporary revert while mongo-cxx-driver caught up)
+    - mongo-cxx-driver r4.3.0 -> r4.3.1 -> r4.4.0 -> r4.5.0 (r4.4.0 changed the .pc file name, hence a configure change); makefile cleanup; workaround for malformed TRY_COMPILE CMAKE_FLAGS in the fetched mongo-c-driver; documented the CDRIVER-6346 ASAN-on-windows issue
+    - SQLite 3.53.02 / 3.53.3 / 3.53.03, libxml 2.15.3, curl 8.20.0 / 8.21, GoogleTest 1.18.0 (built with `-DCMAKE_CXX_STANDARD=20` to avoid a char8_t issue), StrawberryPerl 5.42.3.1
+    - curl: fixed macOS/Homebrew-style CPATH shadowing our own openssl build
+- Compiler Bug Defines
+  - support for g++-16 (`_GLIBCXX_RELEASE` 15 and 16), including `qCompilerAndStdLib_StdFmtOfPath_Buggy` for gcc16 in C++23 mode
+  - more bug defines for GCC 15 (Ubuntu 26.04), and an `IStdFormatterPredefinedFor` BWA for C++23 mode with `_GLIBCXX_RELEASE == 15`
+  - clang++-21 and draft clang++-22 bug-define support
+  - `qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy` still broken on g++-16
+  - `qCompilerAndStdLib_tsubst_pack_expansion_Buggy` BWA for g++-11
+  - better docs and fix for `qCompilerAndStdLib_stacktraceLinkError_Buggy`
+  - a couple of `qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE` uses changed to the VCBUGGY variant for the latest MSVC
+  - LTO disabled with clang in more cases (just seems broken)
+  - warning suppression: clang `-Wcharacter-conversion` in the UTF codec and from the vendored gtest headers (and temporarily disabled in configure for clang++-21), gcc non-template-friend warnings, and the chrono_literals operator warning
+- Library
+  - Foundation
+    - Traversal
+      - `BidirectionalIterator` documented to and enforced (static_assert) as satisfying `bidirectional_iterator` and related concepts
+      - `RandomAccessIterator` satisfies `random_access_iterator`; several additions needed, checked by static_asserts; const-correctness and friend-template linkage bugs fixed
+      - iterator category removed from the TRAITS object, so RandomAccessIterator assigns to BidirectionalIterator and BidirectionalIterator to Iterator<T>
+      - new `RandomAccessIteratorImplHelper_`/`BidirectionalIteratorImplHelper_`; `IteratorImplHelper_` gained a `BASE_IREP` template parameter to support them
+      - `Iterator<>::IRep`: `More ()` returns `optional<>`, new required `AtEnd ()`/`Current ()` (incompatible - see Upgrade Notes); `Done ()` deprecated for `AtEnd ()`
+      - `Traversal::Support` and new `Support::IIteratorTraits`; `ptrdiff_t` instead of `int` in several places
+      - fixed a `DelegatedIterator` bug so a new `Iterator<>` `Invariant ()` assertion could be re-enabled
+      - `Iterable<T>::_IRep::PeekContiguousStorage ()` - backends can offer their storage as a span; overridden in the Array-backed reps
+      - `Iterable<T>::As ()` - contiguous-storage fast path, for EVERY target type
+      - `Iterable<T>::Contains ()`, `Min ()`/`Max ()`/`Sum ()`, `SequentialEquals ()` - use contiguous storage when the backend has it
+      - `Iterable<T>::OrderBy ()` - returns a contiguous-backed result rather than a generator (the sorted vector is moved in once and shared, instead of being copied by value into a generator lambda); measured 4.11x -> 2.87x the cost of a raw `std::stable_sort`
+      - `Iterable<T>::Top ()` - single-element form is a `min_element ()` pass, O(S) rather than O(S log S) plus a materialization
+      - `Iterable<T>::_IRep::Find ()` - new leading findFirst flag, so which match you get no longer rides on SequencePolicy; all 41 backend overrides updated
+      - `Iterable<T>::Reduce ()` argument order; `Iterable<T>` internals take `ArgByValueType<T>` in lambdas
+      - `Math/Statistics` and `Execution/ConditionVariable` - forward each argument at most once
+    - Containers
+      - `Collection<T>::_IRep::Add ()` takes a span - `Collection<T>::AddAll ()` batches a contiguous source into ONE virtual dispatch and one change-count bump; all 6 in-tree backends converted, three with a real bulk operation (`Collection_Array`, `Collection_stdforward_list`, `SortedCollection_stdmultiset`). Measured `Collection_Array<int>` 5.93ns -> 0.19ns per element
+      - `Sequence<T>::AppendAll ()` batched for contiguous sources (~40x faster construction); fixed quadratic `InsertAll ()`; Sequence/Collection also chunk a non-contiguous source rather than handing it over element-at-a-time, for any copy-constructible T
+      - `Set<T>` and `KeyedCollection<T>` fill from a Stroika source via `PeekContiguousStorage ()` with no rep-interface change (source-side only, since their `_IRep::Add ()` still takes one item). MultiSet deliberately not changed, and MultiSet.inl now records why
+      - `Sequence<>::MakeBidirectionalIterator ()`/`MakeRandomAccessIterator ()` implemented; `Sequence_Array`, `Sequence_DoublyLinkedList`, `Sequence_stdvector` and `STLContainerWrapper` wired to their native iterators
+      - `Sequence<T>` - fixed `Insert (Iterator<T>, T)` for at-end iterators, and added an STL-style `insert ()`
+      - `Sequence_LinkedList`/`Sequence_DoublyLinkedList` - fixed middle-index `Insert ()`
+      - DataStructures `LinkedList`/`DoublyLinkedList` - fixed `operator=`, `Remove (item, comparer)` and `push_back (span)`; copy CTOR no longer leaks if an element copy throws; length cached so `size ()` is O(1)
+      - fixed several bugs in `DoublyLinkedList<T>::BidirectionalIterator` and in the `Array<T>::ForwardIterator` backward/random-access operators - paths previously never exercised
+      - fixed `Lookup ()`/`Find_equal_to ()` returning the wrong duplicate-key element on some stdlib/random orderings
+      - worked around a g++ 14 and earlier miscompile that dropped a null guard in the Collection reps
+      - `Association` - added an STL-ish `count ()` method, plus docs
+      - `SkipList_Support` -> `Support::SkipList`; Support-namespace pattern applied inside Containers for Mapping
+    - Execution
+      - new `Execution::CPUAffinity` - portable control over which logical CPU cores a process may run on; reports an unrepresentable core number rather than asserting on it
+      - `Async`/`RunAll ()` - improved docs and examples, now returns results if any and throws the first exception if any was thrown
+      - `Thread` on Windows - use `SetThreadDescription ()` instead of `RaiseException` (more modern, and avoids an ASAN failure); lost a private set-thread-name define
+      - POSIX `ProcessRunner` - use `closefrom (3)` instead of computing a max-FD number (which got too large on Ubuntu 26.04); several macOS `closefrom` workarounds
+    - Debug
+      - `AssertExternallySynchronizedMutex` renamed to `AssertExternallySynchronizedChecker` (see Upgrade Notes); dbgtraces cleanups
+    - Memory
+      - support helpers for `StackBuffer`/`InlineBuffer` moved to `Memory::Support::`
+      - `InlineBuffer` - stop requiring `default_initializable<T>` where it is not needed, and offer it explicitly where it is; include `Execution/Throw.h` directly rather than forward-declaring one overload (clang++ link errors)
+    - Characters
+      - `FloatConversion::ToString` default-float docs/regtests loosened (clang++-21 libc++)
+      - `ToString ()` implementations redone to display consistently in camelCase
+    - DataExchange
+      - `fJSONPrettyPrint` old name removed
+      - `_GetRep () const` -> `_ConstGetRep ()` on Archive/Variant Reader/Writer
+    - Cryptography
+      - CERT signing/examining code updated for openssl 4 stricter const handling
+    - IO/Network
+      - fixed HTTP `Response::GetCharset ()` to regexp-match, to better find the charset string
+      - minor URI code cleanups
+      - minor tweak to `IO/Network/Transfer/Cache`
+  - Frameworks
+    - UPnP/SSDP advertisement docs and serializer format cleanups
+- Tests
+  - `Tests/52` performance suite substantially extended: 25 one-operation-per-entry container entries alongside the blended basics ones, OrderBy () entries plus an opt-in implementation probe, `PeekContiguousStorage ()` for a non-trivial T, before-numbers for AppendAll () batching, and measurement of the lookup side of the Collection sorted-by-default choice
+  - perf-suite infrastructure: recalibrated thresholds, archive tooling, and CPU pinning when running (including on Windows); documented why the performance warnings are Windows-only
+  - new regtests `Foundation_Caching` and `ValuelessSentinalType` - used to fix a small bug with `TimedCache` and `ValuelessCache`
+  - Tests 51/52 - added missing `<algorithm>`/`<list>` includes (fixes the gcc build)
+  - narrowed wide string literals to narrow ones where the literal initializes a String, in more places
+- Samples
+  - added a binary-payload directive to the rpmspec to make rpmbuild faster
+- Issues (new)
+  - Issue tracking moved from JIRA to GitHub Issues. All 1025 issues imported (including the 427 resolved ones, created then closed), with a machine-readable jira-import comment block for the fields GitHub has no home for, and JIRA components/type/priority mapped to labels
+  - `Issues/Archive/` holds a point-in-time export of the issue database (one .json per issue, plus recovered attachments), on the argument that hosted trackers lose data
+  - `Issues/STK-to-GitHub.tsv` maps the old STK-NNN keys to the new issue numbers
+  - `Issues/Scripts/` holds the export/normalize/import tooling, paced under GitHub secondary rate limits and guarded against re-runs
+  - in-source issue references repointed from JIRA (and from the stroika-bugs.sophists.com redirect) to their GitHub issue URLs
 
 
-On Iterator stuff:
-  = maybe replace int with ptrdiff_t on operator+/- methods
-  - RandomAccessIterator replace (overload) +/- methods to call new virtual method
+#### Release-Validation
 
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14, 15, 16 }
+  - Clang++ { unix: 15, 16, 17, 18, 19, 20, 21, 22; XCode: 16.4, 26.3 }
+  - MSVC: { 17.14.34 (VS2k22 docker), 17.14.39 (VS2k22 native), 18.9.1 (VS2k26) }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 24H2 (build 26100) - medusa-windows-dev VM
+    - Windows 11 version 25H2 (build 26200) - Protagoras (laptop)
+    - VisualStudio.Net-2022 and VisualStudio.Net-2026, each with cygwin and MSYS
+    - mcr.microsoft.com/windows/servercore:ltsc2025 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20251213.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 26.5.2 - arm64/m1 chip
+    - 15.x on github actions (macos-15 runner)
+  - Linux: { Ubuntu: [22.04, 24.04, 25.04, 26.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - performance-test thresholds needed loosening twice this cycle on slower/virtualized hosts: `Collection_Array<int>` vs `vector<int>` add-one-at-a-time, and the `As<vector<int>>` entry (ratio 1.5 -> 10)
 
-        nonvirtual _IRep&       _GetRep ();
-        nonvirtual const _IRep& _GetRep () const;
-
-VS
-_ConstGetRep ()
-NAMING - PICK A STRATEGY AND DOCUMENT WHY..
-
-
-
-- regtests support and testig and more coverage (maybe new g++ compiler/clang compiler) for
-  - VS2k2026
-  - Ubuntu 2604
-
-- BIDI Iterators
-
-- Doxygen/Docs
-
-- SSL impl on webserver
-
-- hopefully final before first alpha
-
----
-
+----------------------------
 
 
 ### 3.0d23 {2026-04-11} {[diff](../../compare/3.0d22...3.0d23)}
