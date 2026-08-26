@@ -188,8 +188,19 @@ function dbStatsMsg_(info: IDatabase, showShort: boolean): string {
             <div class="col-1" />
             <div class="col-9">
               <div class="row" v-if="about">
-                <div class="col-3">Version</div>
+                <div class="col-3" title="Version of the backend (Stroika) server app">
+                  Backend Version
+                </div>
                 <div class="col">{{ about.applicationVersion }}</div>
+              </div>
+              <div class="row">
+                <div class="col-3"
+                  title="Version of this HTML UI app itself; comes from package.json at build time, via QCLI_APP_VERSION in quasar.config.ts">
+                  Frontend Version
+                </div>
+                <div class="col">
+                  {{ kCompileTimeConfiguration.MY_HTML_APP_VERSION }}
+                </div>
               </div>
               <div class="row" v-if="about">
                 <div class="col-3">Components</div>
@@ -357,7 +368,7 @@ Units 1=1 logical core">
           <div class="row">
             <div class="col-3 text-h6">Report issues at</div>
             <div class="col-9">
-              <a href="https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues" target="_new">github
+              <a href="https://github.com/SophistSolutions/Stroika/issues" target="_new">github
                 issues</a>
             </div>
           </div>

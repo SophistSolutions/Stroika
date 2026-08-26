@@ -10,9 +10,15 @@
 import { defineConfig } from '@quasar/app-vite';
 import fs from 'fs'
 
-const packageLockJson = JSON.parse(fs.readFileSync('./package-lock.json'));
-const vueVersion =
-  packageLockJson.packages['node_modules/@vue/runtime-core'].version;
+// Read these from the packages themselves rather than from package-lock.json:
+// indexing the lockfile's internal layout (packages['node_modules/@vue/runtime-core'])
+// breaks this config file outright if npm ever hoists that entry differently.
+const appVersion = JSON.parse(
+  fs.readFileSync('./package.json', 'utf8')
+).version;
+const vueVersion = JSON.parse(
+  fs.readFileSync('./node_modules/vue/package.json', 'utf8')
+).version;
 
 export default defineConfig(function (/* ctx */) {
     return {
@@ -60,12 +66,12 @@ export default defineConfig(function (/* ctx */) {
       // publicPath: '/',
       // analyze: true,
 
-      // https://quasar.dev/quasar-cli-vite/handling-process-env
+      // https://quasar.dev/quasar-cli-vite/quasar-config-file
       // .env* variables prefixed QCLI_ are exposed to client code automatically;
       // these two are computed here rather than read from a file.
       defineEnv: {
         QCLI_VUE_VERSION: vueVersion,
-        QCLI_APP_VERSION: packageLockJson.version,
+        QCLI_APP_VERSION: appVersion,
       },
 
       // rawDefine: {}

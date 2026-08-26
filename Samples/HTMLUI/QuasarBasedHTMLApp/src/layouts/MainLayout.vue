@@ -74,7 +74,7 @@ onMounted(() => {
       <q-toolbar class="justify-between">
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
         <q-toolbar-title> Stroika Sample: HTMLUI - QuasarBasedHTML </q-toolbar-title>
-        <ToolbarBreadcrumbs v-model:breadcrumbs="breadcrumbs" />
+        <ToolbarBreadcrumbs :breadcrumbs="breadcrumbs" />
         <q-btn flat dense round icon="mdi-dots-vertical" style="margin-left: 1in" aria-label="Menu" color="white">
           <q-menu>
             <q-list style="min-width: 100px">
