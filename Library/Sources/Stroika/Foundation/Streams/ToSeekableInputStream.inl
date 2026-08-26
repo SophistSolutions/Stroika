@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
             {
                 SeekOffsetType cacheEnd = fCacheBaseOffset_ + fCachedData_.size ();
                 if (fCacheBaseOffset_ <= fOffset_ and fOffset_ < cacheEnd) [[unlikely]] {
-                    Ensure (cacheEnd - fOffset_ > 0);
+                    Ensure (cacheEnd > fOffset_);
                     return static_cast<size_t> (cacheEnd - fOffset_);
                 }
                 return this->fRealIn.AvailableToRead ();
@@ -58,7 +58,9 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                  */
                 SeekOffsetType cacheEnd = fCacheBaseOffset_ + fCachedData_.size ();
                 if (fCacheBaseOffset_ <= fOffset_ and fOffset_ < cacheEnd) [[unlikely]] {
-                    size_t copyCnt = max<size_t> (static_cast<size_t> (cacheEnd - fOffset_), intoBuffer.size ());
+                    // copyCnt: both of these are upper bounds (elements cached from fOffset_ forward, and room in
+                    // intoBuffer); so take the lesser
+                    size_t copyCnt = min<size_t> (static_cast<size_t> (cacheEnd - fOffset_), intoBuffer.size ());
                     auto r = Memory::CopyBytes (span{fCachedData_}.subspan (static_cast<size_t> (fOffset_ - fCacheBaseOffset_), copyCnt), intoBuffer);
                     fOffset_ += copyCnt;
                     return r;

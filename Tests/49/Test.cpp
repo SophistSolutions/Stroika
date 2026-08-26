@@ -4,6 +4,7 @@
 //  TEST    Foundation::Streams
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <cstring>
 #include <iostream>
 #include <sstream>
 
@@ -15,6 +16,7 @@
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
+#include "Stroika/Foundation/Streams/ToSeekableInputStream.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Streams/iostream/OutputStreamFromStdOStream.h"
 
@@ -273,6 +275,75 @@ namespace {
         }
     }
 }
+namespace {
+    constexpr char   kABCs_[]  = "abcdefghijklmnopqrstuvwxyz";
+    constexpr size_t kABCsLen_ = sizeof (kABCs_) - 1; // no trailing NUL
+
+    /*
+     *  ToSeekableInputStream::New () returns its argument unchanged when that argument is already
+     *  seekable, so the source stream MUST be non-seekable or none of the caching code these tests
+     *  exercise is even reached. Reads it all forward (which is what accumulates the cache), then
+     *  seeks back to the start, ready to re-read out of that cache.
+     */
+    InputStream::Ptr<byte> MkSeekableOverCachedABCs_ (stringstream& backing)
+    {
+        InputStream::Ptr<byte> nonSeekable = InputStreamFromStdIStream::New<byte> (backing, eNotSeekable);
+        EXPECT_FALSE (nonSeekable.IsSeekable ());
+        InputStream::Ptr<byte> s = ToSeekableInputStream::New<byte> (nonSeekable);
+        EXPECT_TRUE (s.IsSeekable ());
+        byte   all[kABCsLen_];
+        size_t nRead = 0;
+        while (nRead < kABCsLen_) {
+            span<byte> r = s.ReadBlocking (span{all + nRead, kABCsLen_ - nRead});
+            if (r.empty ()) {
+                break;
+            }
+            nRead += r.size ();
+        }
+        EXPECT_EQ (nRead, kABCsLen_);
+        EXPECT_EQ (std::memcmp (all, kABCs_, kABCsLen_), 0);
+        EXPECT_EQ (s.GetOffset (), kABCsLen_);
+        EXPECT_EQ (s.Seek (0), 0u);
+        return s;
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Streams, ToSeekableInputStream_ReReadIntoLargerBuffer_)
+    {
+        Debug::TraceContextBumper ctx{"ToSeekableInputStream_ReReadIntoLargerBuffer_"};
+        // A Read must never report more elements than exist, nor read past the end of the cache to produce them.
+        stringstream           backing{kABCs_};
+        InputStream::Ptr<byte> s = MkSeekableOverCachedABCs_ (backing);
+        byte                   tooBig[kABCsLen_ * 4];
+        span<byte>             got = s.ReadBlocking (span{tooBig});
+        EXPECT_EQ (got.size (), kABCsLen_);
+        EXPECT_EQ (std::memcmp (tooBig, kABCs_, kABCsLen_), 0);
+        EXPECT_EQ (s.GetOffset (), kABCsLen_);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Streams, ToSeekableInputStream_ReReadIntoSmallerBuffer_)
+    {
+        Debug::TraceContextBumper ctx{"ToSeekableInputStream_ReReadIntoSmallerBuffer_"};
+        // A Read must never produce more elements than the caller asked for.
+        stringstream           backing{kABCs_};
+        InputStream::Ptr<byte> s = MkSeekableOverCachedABCs_ (backing);
+        byte                   tooSmall[4];
+        span<byte>             got = s.ReadBlocking (span{tooSmall});
+        EXPECT_EQ (got.size (), sizeof (tooSmall));
+        EXPECT_EQ (std::memcmp (tooSmall, kABCs_, sizeof (tooSmall)), 0);
+        EXPECT_EQ (s.GetOffset (), sizeof (tooSmall));
+
+        // and the rest of the cache still reads back correctly after that short read
+        byte       rest[kABCsLen_];
+        span<byte> got2 = s.ReadBlocking (span{rest});
+        EXPECT_EQ (got2.size (), kABCsLen_ - sizeof (tooSmall));
+        EXPECT_EQ (std::memcmp (rest, kABCs_ + sizeof (tooSmall), kABCsLen_ - sizeof (tooSmall)), 0);
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])
