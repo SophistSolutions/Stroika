@@ -14,7 +14,9 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
-   - **AFTER 3.0d24 SHIPS - release build-time work.** Investigated 2026-08-27; all measurements and
+   - verify if valgrind still useful - and look at getting it on Ubuntu 2604 (maybe ask Claude about
+     coverage of various sanitizers - and ask for suggestions)
+   - **release build-time work.** Investigated 2026-08-27; all measurements and
    detail in `.claude/medusa-perf-knobs.md` (gitignored, on protagoras). Headline: host/VM/BIOS
    tuning is a DEAD END - governor, KSM, swappiness, VM socket topology, balloon sizing, EXPO and
    disk each measured at ~0-3%. Do not re-litigate those. Three real items:
