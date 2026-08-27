@@ -20,13 +20,13 @@ Just delete the 'x' in the version#, and save/checkin/commit.
 
 Rebuild and publish latest containers using the github action 'build-v3-Docker-Containers' (and blow away and reload docker containers after build on local systems doing builds or rebuild locally).
 
-## Do most builds on medusa-dev VM
+## Do most builds on medusa-windows-dev VM
 
 see <Regression-Tests.md> for steps to run most regression tests
 
 (more notes to add here)
 (some must be run on non-dev vm - )
-run all builds on hercules-dev except:
+run all builds on medusa-windows-dev except:
     >   vs2k22 builds
     >   docker/wsl windows builds
 (those get run on my laptop)
