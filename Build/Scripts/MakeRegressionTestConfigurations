@@ -153,6 +153,20 @@ basicUnixTestConfigurations_ ()
 		./configure g++-16-debug --config-tag Unix --compiler-driver g++-16 --apply-default-debug-flags --only-if-has-compiler
 		./configure g++-16-release --config-tag Unix --compiler-driver g++-16 --apply-default-release-flags --only-if-has-compiler
 		./configure g++-16-release++23 --config-tag Unix --compiler-driver g++-16 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
+		# Sanitizers
+		# 	nb: TSAN and ASAN don't mix well
+		#	These were 24.04-only until 3.0d25, which meant ALL sanitizer coverage in the whole matrix sat
+		#	on one platform with one compiler - and that compiler (24.04's g++ 13.3) turned out to
+		#	miscompile Tests/47 under '-O3 -flto -fsanitize=thread' (see configure's
+		#	ReconcileLTOWithSanitizers_). 26.04's default g++ is 15.2 and is clean there.
+		./configure g++-debug-sanitize_address_undefined_leak   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable
+		./configure g++-debug-sanitize_thread                   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread
+		./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --sanitize none,address,undefined,leak --trace2file enable
+		./configure g++-release-sanitize_thread                 --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread
+		# VALGRIND - not enabled here yet. valgrind 3.26.0 IS installed on the 26.04 build box, so this is
+		#	just the 24.04 line and ought to work, but it has not been validated on 26.04 (and the 24.04 one
+		#	needs 'ulimit -n 1024'). See the TODO.md item about valgrind's continued usefulness.
+		#       ./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable
 		;;
 
 	*)

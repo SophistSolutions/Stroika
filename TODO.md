@@ -14,8 +14,24 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
-   - verify if valgrind still useful - and look at getting it on Ubuntu 2604 (maybe ask Claude about
-     coverage of various sanitizers - and ask for suggestions)
+   - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
+     deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
+     valgrind still earns its keep, rather than just switching it on somewhere new. Groundwork already
+     done, so start from here:
+       - valgrind **3.26.0 is already installed** on Stroika-Dev-2604. The 26.04 branch of
+         `Build/Scripts/MakeRegressionTestConfigurations` has the `valgrind-release-SSLPurify-NoBlockAlloc`
+         line present but **commented out** - uncommenting is the whole change, but it is unvalidated
+         there. (The 24.04 one needs `ulimit -n 1024`, already handled in `Build/Scripts/RegressionTests`.)
+       - 22.04 disabled valgrind entirely in Aug 2024 ("some tests fail inside valgrind code - looks
+         like bug there"), so it has effectively been a single-platform tool for two years.
+       - sanitizer coverage as of 3.0d24 was 24.04-ONLY (asan+ubsan+leak, tsan, valgrind all on one
+         platform, one compiler) - and that compiler turned out to miscompile Tests/47 under LTO+TSAN.
+         3.0d25 adds the sanitizer configs to 26.04; valgrind is the remaining single-platform one.
+       - **GitHub Actions runs no sanitizer or valgrind job at all** - so dynamic analysis is entirely
+         a local-release-run activity. Worth deciding if that is intentional.
+       - msan is not usable with gcc (clang-only, and needs a specially rebuilt libc++) - see the note
+         near the top of MakeRegressionTestConfigurations. So the realistic menu is asan/ubsan/leak,
+         tsan, and valgrind; the question is whether valgrind still finds anything the first two do not.
    - **release build-time work.** Investigated 2026-08-27; all measurements and
    detail in `.claude/medusa-perf-knobs.md` (gitignored, on protagoras). Headline: host/VM/BIOS
    tuning is a DEAD END - governor, KSM, swappiness, VM socket topology, balloon sizing, EXPO and

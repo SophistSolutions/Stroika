@@ -121,6 +121,7 @@ my $LIBFEATUREFLAG_No = "no";
 
 
 my $ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
+my $ENABLE_LTO_SetExplicitly = false;		# --lto given on the command line, so the sanitizer reconciliation below must not override it
 my $gAssertionsEnabled = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $MACOSX_DEPLOYMENT_TARGET = undef;
@@ -1179,9 +1180,8 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		#	==2050532==ABORTING
 		#
 		# MAYBE add check for only if gcc version < 14 (seen in gcc 13.2)
-		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsGCCOrGPlusPlus_($COMPILER_DRIVER) && IsTargettingSanitizer_ ('address')) {
-			$ENABLE_LTO = false;
-		}
+		#	NB: the actual $ENABLE_LTO=false for this lives in ReconcileLTOWithSanitizers_ (), because
+		#	--sanitize is not parsed until ParseCommandLine_Remaining_ (), which runs AFTER this sub.
 
 		# /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cbb0a.dir/link.txt --verbose=1
 		# /usr/bin/clang-18 -I/Sandbox/Stroika-Dev/Builds/clang++-18-release-libc++23/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-18-release-libc++23/ -I/Sandbox/Stroika-Dev/Builds/clang++-18-release-libc++23/ThirdPartyComponents/include/libxml2/ -DqDebug=0 -DqStroika_HasComponent_ATLMFC=0 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=1 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_WinHTTP=0 -DqStroika_HasComponent_xerces=0 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_Foundation_Debug_TraceToFile=1 -DqStroika_Foundation_Debug_DefaultTracingOn=1 -DLIBXML_STATIC -O3 -g -flto  CMakeFiles/cmTC_cbb0a.dir/testCCompiler.c.o -o cmTC_cbb0a 
@@ -2103,12 +2103,15 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			if ($var eq "enable") {
 				$ENABLE_LTO = true;
+				$ENABLE_LTO_SetExplicitly = true;
 			}
 			elsif ($var eq "disable") {
 				$ENABLE_LTO = false;
+				$ENABLE_LTO_SetExplicitly = true;
 			}
 			elsif ($var eq "default") {
 				$ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
+				$ENABLE_LTO_SetExplicitly = false;
 			}
 			else  {
 				print ("UNRECOGNIZED assertions ARG: $var\n");
@@ -2288,6 +2291,58 @@ sub	CHECK_OPTIONS_
 	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
 
+#	Turn OFF LTO for the gcc sanitizer builds it is known to break. MUST run after
+#	ParseCommandLine_Remaining_ (), since that is where --sanitize is parsed - doing this in
+#	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_ (where it used to live) meant
+#	@sanitizerFlags was still empty and the test never fired.
+sub	ReconcileLTOWithSanitizers_
+{
+	return if ($ApplyReleaseFlags != true or $ENABLE_LTO_SetExplicitly == true);
+	return if (not IsGCCOrGPlusPlus_ ($COMPILER_DRIVER));
+
+	#	https://github.com/SophistSolutions/Stroika/issues/1128 - see the AddressSanitizer
+	#	allocation-size-too-big report quoted in SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
+	#	Restricted to gcc < 14, which is what that comment suggested ("seen in gcc 13.2"). NB: this test
+	#	has never actually run before (see the ordering note above), so asan release builds have had LTO
+	#	on all along - and measured 2026-08-29, g++-release-sanitize_address_undefined_leak WITH LTO
+	#	passes Tests/47 on both 24.04/g++-13.3 and 26.04/g++-15.2. So keep the workaround for the
+	#	compiler family it was reported against, but do not extend it to newer ones.
+	if (IsTargettingSanitizer_ ('address') and GetGCCVersion_ ($COMPILER_DRIVER) < 14.0) {
+		$ENABLE_LTO = false;
+	}
+
+	#	Same story for the thread sanitizer: the Ubuntu 24.04 gcc toolchain generates wrong code for
+	#	Math::Optimization::DownhillSimplexMinimization with '-O3 -flto -fsanitize=thread'. Showed up in
+	#	3.0d24 as Tests/47 Test9_Optimization_DownhillSimplexMinimization_ failing under
+	#	g++-release-sanitize_thread ONLY - the minimizer stops after 12 iterations instead of 72 and
+	#	returns a point nowhere near the minimum. Not a Stroika logic bug, and not FP tolerance: the
+	#	same source passes in every other configuration, an equivalent plain-std::vector transcription
+	#	is bit-identical under -O0/-O1/-O2/-O3/-Ofast/LTO/asan/tsan, ubsan reports nothing, and a single
+	#	printf (or asm memory barrier) anywhere in the iteration loop makes the code correct again.
+	#	Flag bisection on the failing configuration:
+	#			-O3 -flto -fsanitize=thread	FAILS  (as configured)
+	#			-O1 -flto -fsanitize=thread	FAILS
+	#			-O2 -flto -fsanitize=thread	passes
+	#			-O3       -fsanitize=thread	passes  (ie -fno-lto fixes it)
+	#			-O3 -flto                  	passes
+	#			-O0                        	passes
+	#	so LTO is the necessary ingredient, exactly as with the address sanitizer.
+	#	Compiler/platform matrix actually measured (2026-08-29, same source, same probe):
+	#			24.04	g++-13 (13.3.0-6ubuntu2~24.04.1)	FAILS
+	#			24.04	g++-14 (14.2.0-4ubuntu2~24.04.1)	FAILS
+	#			25.04	g++-14 (14.2.0-19ubuntu2)       	passes
+	#			25.04	g++-15 (15-20250404)            	passes
+	#			26.04	g++-14 (14.3.0-14ubuntu1)       	passes
+	#			26.04	g++-15 (15.2.0-16ubuntu1)       	passes
+	#			26.04	g++-16 (16-20260322)            	passes
+	#	ie it tracks the 24.04 TOOLCHAIN, not the gcc version - the same upstream 14.2.0 fails as
+	#	packaged on 24.04 and passes as packaged on 25.04. Kept unconditional rather than keyed to
+	#	$lsb_release: an lsb-version test would rot, and LTO buys little in a sanitizer build anyway.
+	if (IsTargettingSanitizer_ ('thread')) {
+		$ENABLE_LTO = false;
+	}
+}
+
 sub	ParseCommandLine_
 {
 	if (false) {
@@ -2326,6 +2381,8 @@ sub	ParseCommandLine_
 	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_();
 
 	ParseCommandLine_Remaining_ ();
+
+	ReconcileLTOWithSanitizers_ ();
 
 	DoSetThirdPartyComponents_ ($DoSetThirdPartyComponentsParameterFromCommandLine);
 
@@ -2614,11 +2671,11 @@ sub PostProcessOptions_ ()
 			#	/usr/include/c++/13/bits/basic_string.h:1067:16: warning: '<unnamed>.Stroika::Foundation::Time::Duration::<unnamed>.Stroika::Foundation::Time::Duration::._anon_544::fStringRep_.std::__cxx11::basic_string<char>::_M_string_length' may be used uninitialized [-Wmaybe-uninitialized]
 			#	1067 |       { return _M_string_length; }
 			#		|                ^~~~~~~~~~~~~~~~
-			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-maybe-uninitialized ';
+			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . ' -Wno-maybe-uninitialized';
 		}
 		if ($itsVersion < 12) {
 			# With gcc 11 cannot seem to suppress with pragma warning
-			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-stringop-overflow ';
+			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . ' -Wno-stringop-overflow';
 		}
 	}
 

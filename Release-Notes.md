@@ -12,8 +12,8 @@ especially those they need to be aware of when upgrading.
 
 #### TLDR
 
-- Started using Claude to help improve/accelerator stroika development
-- Bidirectional and random-access iterators support, as well as DataStructures (Array/DoublyLinkedList)
+- Started using Claude to help improve/accelerate stroika development
+- Bidirectional and random-access iterators support (including DataStructures (Array/DoublyLinkedList), and containers based on these as appropriate).
 - Large container performance work (e.g. Iterable<T>::_IRep::PeekContiguousStorage () etc)
 - **NOT BACKWARD COMPATIBLE** change to Iterator<>::IRep - More () returns optional<> and AtEnd ()/Current () are now required (only affects code providing its own iterator rep)
 - Debug::AssertExternallySynchronizedMutex renamed to Debug::AssertExternallySynchronizedChecker (old name deprecated)
@@ -82,6 +82,9 @@ especially those they need to be aware of when upgrading.
     - fixed so the test for python does not hang on latest MSYS under docker
     - `-Wno-free-nonheap-object` BWA also needed for g++16; tightened the `-Wno-return-local-addr` BWA to just g++-12
     - lost the `_DISABLE_VECTOR_ANNOTATION` BWA (caused problems, unclear what it helped)
+    - **disable LTO for gcc thread-sanitizer release builds** - the Ubuntu 24.04 gcc toolchain miscompiles `Math::Optimization::DownhillSimplexMinimization` with `-O3 -flto -fsanitize=thread`, which made `Tests/47` `Test9_Optimization_DownhillSimplexMinimization_` fail in `g++-release-sanitize_thread` and no other configuration. `-fno-lto` (or `-O2`) generates correct code; so does adding a single `printf` to the iteration loop. `--lto enable` still overrides. Measured: 24.04 g++-13.3 and g++-14.2 both fail; 25.04 g++-14.2/g++-15 and 26.04 g++-14.3/g++-15.2/g++-16 all pass - so it tracks the 24.04 toolchain rather than the gcc version (the same upstream 14.2.0 fails as packaged on 24.04, passes as packaged on 25.04)
+    - the sanitizer/LTO reconciliation now runs *after* `--sanitize` is parsed (new `ReconcileLTOWithSanitizers_`). It used to run before, so `@sanitizerFlags` was always empty there and the gcc address-sanitizer LTO workaround (issue 1128) had never actually taken effect - asan release configs were still getting `-flto`. That workaround is now live, but restricted to gcc &lt; 14 (the compiler family it was reported against): measured 2026-08-29, asan+LTO passes `Tests/47` on both 24.04/g++-13.3 and 26.04/g++-15.2, so there is no reason to extend it to newer compilers
+    - `-Wno-maybe-uninitialized` / `-Wno-stringop-overflow` were appended without a leading space, so they glued onto the preceding flag (`-Wno-subobject-linkage-Wno-maybe-uninitialized`) and gcc silently accepted and ignored the mess - meaning neither suppression, nor `-Wno-subobject-linkage`, was in effect
   - Makefiles
     - MSVC compile lines no longer swallow the compiler exit status
     - fixed a top-level Makefile bug where bash lines used `;` instead of `&&`, so third-party-component build failures were sometimes ignored
@@ -103,6 +106,7 @@ especially those they need to be aware of when upgrading.
   - Scripts
     - `RegressionTests` - `ulimit -n 1024` when running valgrind, to avoid failures after the host upgrade to 26.04
     - `MakeRegressionTestConfigurations` progress for Ubuntu 26.04; more g++ c++23 configs added; several ubuntu-26.04 clang configs disabled; clang++18 dropped from 2604 (fails to build several third-party components); for clang < 20 on 2604, use libstdc++
+    - **sanitizer configs added for Ubuntu 26.04** (`g++-{debug,release}-sanitize_thread` and `g++-{debug,release}-sanitize_address_undefined_leak`). These were 24.04-only, so every sanitizer config in the entire matrix ran on one platform with one compiler - and that compiler (24.04's g++ 13.3) is the one that miscompiles `Tests/47` under LTO+TSAN. 26.04's default g++ 15.2 is clean: `Tests/47` passes there with `-O3 -flto -fsanitize=thread`. Valgrind is still not enabled on 26.04, though valgrind 3.26.0 is installed on the build box - the commented-out line is in place
     - clang-format: latest run over the code; updated the location lookup in `GetMessageForMissingTool`
   - Third-party component versions
     - boost 1.91.0 then 1.92.0 (1.91 needed for latest Visual Studio 2026); workaround for building 1.92.0 on armhf with gcc < 12
