@@ -97,6 +97,7 @@ especially those they need to be aware of when upgrading.
     - upgraded actions to v7 (including `upload-artifact@v7`) to clear deprecation warnings
     - more log capture on Linux, and mongo-cxx-driver logs copied out on build failure
     - `-Os` on the ubuntu-26.04-g++-14-c++23 config to avoid running out of space
+    - **`fail-fast: false` on the Linux/MacOS/Windows matrices.** They were inheriting the default (`true`), so the first failing job cancelled its siblings - and a cancelled job is not a passing job, which makes a platform-specific failure indistinguishable from a universal one. Measured over 199 runs (2026-07-08..08-27): of 41 failed runs, 13 lost sibling results this way, 13 were broad breakage where cancelling was fine, and 15 were unaffected. The extra compute is ~9 h/week of (free, public-repo) runner time, about 2.4% of CI usage
   - Docker
     - new Ubuntu2604-Small / Ubuntu2604-RegressionTests images, and Stroika-Dev-2604
     - `clean-images` target; assorted cleanups (StroikaRoot usage)

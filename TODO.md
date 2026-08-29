@@ -32,6 +32,16 @@ Generally will track stuff here between releases
        - msan is not usable with gcc (clang-only, and needs a specially rebuilt libc++) - see the note
          near the top of MakeRegressionTestConfigurations. So the realistic menu is asan/ubsan/leak,
          tsan, and valgrind; the question is whether valgrind still finds anything the first two do not.
+   - **`LinearAlgebra::Vector<T>::operator[]` non-const returns a writeback proxy, which is a varargs
+     footgun.** `TMP_` (see `Vector.h`) holds a `Vector<T>&` plus a copy of the element and calls
+     `SetAt ()` in its destructor, with an implicit `operator T& ()`. So on a NON-const Vector,
+     `printf ("%g", v[0])` compiles and passes a class type through varargs - undefined, and it prints
+     garbage rather than the element (cost real debugging time on 2026-08-29; assigning to a `double`
+     first, or taking the Vector by const ref, gives the right answer). Consider hardening: make the
+     conversion explicit, add a `[[nodiscard]]`-ish guard, or drop the proxy in favor of `SetAt ()`
+     (compare `Sequence<T>`, which deliberately does NOT do this - see the note on
+     `Sequence<T>::operator[]` about `TemporaryElementReference_` being too costly).
+
    - **release build-time work.** Investigated 2026-08-27; all measurements and
    detail in `.claude/medusa-perf-knobs.md` (gitignored, on protagoras). Headline: host/VM/BIOS
    tuning is a DEAD END - governor, KSM, swappiness, VM socket topology, balloon sizing, EXPO and

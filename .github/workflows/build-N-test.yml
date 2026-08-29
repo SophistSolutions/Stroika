@@ -77,6 +77,7 @@ jobs:
     needs: LinuxMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
+      fail-fast: false
       matrix: ${{fromJson(needs.LinuxMatrixPrep.outputs.matrix)}}
     env:
       # (HISTORICAL): vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
@@ -266,6 +267,7 @@ jobs:
     needs: MacOSMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
+      fail-fast: false
       matrix: ${{fromJson(needs.MacOSMatrixPrep.outputs.matrix)}}
     env:
       # vm has 3 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing --LGP 2025-05-08
@@ -366,6 +368,7 @@ jobs:
     needs: WindowsMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
+      fail-fast: false
       matrix: ${{fromJson(needs.WindowsMatrixPrep.outputs.matrix)}}
     env:
       # see docker run for --cpus and --memory, and adjust --jobs accodingly (last done 2025-02-07), and QUICK_BUILD avoids some internal testing
