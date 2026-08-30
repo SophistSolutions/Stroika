@@ -32,6 +32,18 @@ Generally will track stuff here between releases
        - msan is not usable with gcc (clang-only, and needs a specially rebuilt libc++) - see the note
          near the top of MakeRegressionTestConfigurations. So the realistic menu is asan/ubsan/leak,
          tsan, and valgrind; the question is whether valgrind still finds anything the first two do not.
+   - **Re-test the Ubuntu 24.04 gcc workarounds when that toolchain updates, and delete them if fixed.**
+     `configure`'s `ApplyCompilerBugWorkarounds_` currently forces `-O2` for sanitizer configs on 24.04
+     and warns about optimizing without LTO there. Both exist purely because gcc 13.3/14.2 *as packaged
+     on 24.04* generate wrong code (measured 2026-08-30; 25.04, 26.04, g++-12 and clang++-18 are all
+     clean). Cheap re-check, ~15 min on stroika-dev-2404:
+       - sanitizer bug:  build `g++-release-sanitize_thread` at `-O3 -flto -fsanitize=thread`, run
+         `Tests/47` - passes means workaround #1 can go
+       - container bug:  build release `-O3` with `--lto disable`, run `Tests/21` and `Tests/51` - clean
+         means workaround #2 (and the warning + the `--only-if-has-compiler` skip) can go
+     Not worth filing upstream - it is confined to one distro's packaging, so Launchpad rather than GCC
+     bugzilla, and it needs a reduced testcase we do not have.
+
    - **GitHub Actions: consider a `concurrency` group with `cancel-in-progress` on v3-Dev.** Deferred
      2026-08-29 at LGP's request - revisit ~mid/late Sep 2026, after other work. Measured over the last
      199 `build-N-test` runs (2026-07-08..08-27, all v3-Dev):
