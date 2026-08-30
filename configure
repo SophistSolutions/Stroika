@@ -2300,18 +2300,23 @@ sub	ReconcileLTOWithSanitizers_
 	return if ($ApplyReleaseFlags != true or $ENABLE_LTO_SetExplicitly == true);
 	return if (not IsGCCOrGPlusPlus_ ($COMPILER_DRIVER));
 
-	#	https://github.com/SophistSolutions/Stroika/issues/1128 - see the AddressSanitizer
-	#	allocation-size-too-big report quoted in SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
-	#	Restricted to gcc < 14, which is what that comment suggested ("seen in gcc 13.2"). NB: this test
-	#	has never actually run before (see the ordering note above), so asan release builds have had LTO
-	#	on all along - and measured 2026-08-29, g++-release-sanitize_address_undefined_leak WITH LTO
-	#	passes Tests/47 on both 24.04/g++-13.3 and 26.04/g++-15.2. So keep the workaround for the
-	#	compiler family it was reported against, but do not extend it to newer ones.
-	if (IsTargettingSanitizer_ ('address') and GetGCCVersion_ ($COMPILER_DRIVER) < 14.0) {
-		$ENABLE_LTO = false;
-	}
+	#	NB: deliberately NOT disabling LTO for the address sanitizer.
+	#	https://github.com/SophistSolutions/Stroika/issues/1128 asked for that (see the
+	#	allocation-size-too-big report quoted in SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_),
+	#	but that test never actually ran - it sat in a sub called before --sanitize was parsed - so asan
+	#	release builds have had LTO on for years and are fine with it. Turning it on for real (tried
+	#	2026-08-29, gcc < 14 only) made things WORSE, not better:
+	#		WITH -flto (as shipped for years): 24.04/g++-13.3 asan run is clean
+	#		WITHOUT -flto (the workaround):    19 NEW failures on g++-13.3, all in
+	#		                                   g++-release-sanitize_address_undefined_leak - wrong VALUES
+	#		                                   (not asan reports) in Containers::Sequence, Traversal, and
+	#		                                   DataExchange, including the new *_ContiguousFastPath_ tests
+	#	So the workaround is not merely unnecessary, it is harmful on the one compiler it targeted. Left
+	#	out entirely rather than re-scoped; if issue 1128 ever recurs, reproduce it first - it was last
+	#	seen on gcc 13.2 and has not been reproducible since.
 
-	#	Same story for the thread sanitizer: the Ubuntu 24.04 gcc toolchain generates wrong code for
+	#	The THREAD sanitizer is the opposite case - there, LTO is what breaks things. The Ubuntu 24.04
+	#	gcc toolchain generates wrong code for
 	#	Math::Optimization::DownhillSimplexMinimization with '-O3 -flto -fsanitize=thread'. Showed up in
 	#	3.0d24 as Tests/47 Test9_Optimization_DownhillSimplexMinimization_ failing under
 	#	g++-release-sanitize_thread ONLY - the minimizer stops after 12 iterations instead of 72 and
