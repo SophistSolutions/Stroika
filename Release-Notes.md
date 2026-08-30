@@ -67,6 +67,7 @@ especially those they need to be aware of when upgrading.
   - New `Documentation/Patterns.md` design-patterns document
   - New `AGENTS.md`/`CLAUDE.md` describing the build and CI traps that cost repeated rediscovery: that a header change never triggers a rebuild, the `.tmp` files `make format-code` leaves beside sources, how to read GitHub Actions results, and the force-rebuild trick for a single test
   - `Building-Stroika.md` - QtCreator section removed; vs2k2026 added to the regression-test docs
+  - `Regression-Tests.md` - the Windows-in-Docker section now covers all four images (cygwin and msys, each on a VS2k22 and a VS2k26 base), not just the two VS2k22 ones
   - Documented the `Build/` folder layout, and the rep-accessor naming plus member-underscore conventions
   - Container docs cleanups; `ProcessRunner` class docs now lead with what the API actually is, and the `Run ()` exception docs corrected
   - `Sequence<T>` - documented why subtracting `begin ()` from an iterator does not compile and what to use instead, and strengthened the note on why `operator[]` cannot return a mutable reference

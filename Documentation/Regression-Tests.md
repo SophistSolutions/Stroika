@@ -165,8 +165,11 @@ checkin from one spot.
 
 Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
+  There are four of these images (see `Build/Docker/Makefile`): cygwin and msys, each on a
+  VisualStudio.Net-2022 and a VisualStudio.Net-2026 base.
+
   ```bash
-  for var in  "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows-${var}-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests ; done
+  for var in  "Cygwin-VS2k22" "MSYS-VS2k22" "Cygwin-VS2k26" "MSYS-VS2k26" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows-${var}-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests ; done
   ```
 
   OR alternatively
@@ -176,6 +179,10 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows-Cygwin-VS2k22-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests
   MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows-MSYS-VS2k22-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
+    CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26 USE_TEST_BASENAME=Windows-Cygwin-VS2k26-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
+    CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26 USE_TEST_BASENAME=Windows-MSYS-VS2k26-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests
   ```
 
 - WSL (tested on Ubuntu 24.04) test
