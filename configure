@@ -1268,8 +1268,34 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
 				$LinkerArgs_ExtraPrefix		.=  ' -Wno-odr';
 				$LinkerArgs_ExtraPrefix		.=  ' -Wno-lto-type-mismatch';
+			}
 
-				### this suppression doesnt seem eneeded for g++-14...--LGP 2024-03-26
+			#	-Wtsan says ThreadSanitizer cannot model atomic_thread_fence, which Execution::SpinLock
+			#	uses - so tsan's view of anything synchronized by SpinLock is approximate (it cannot see
+			#	the happens-before edge, which tends toward FALSE POSITIVE race reports rather than
+			#	missed ones).
+			#	Bounded at < 16 because that is the extent of the evidence: observed on g++-13 (24.04)
+			#	and g++-15 (26.04), and NOT tested on g++-16 - the sanitizer configs use the default g++,
+			#	which is 15.2 on 26.04, so g++-16 + tsan is never built by the regression matrix. Let the
+			#	suppression expire rather than outlive the problem: if g++-16 still warns the noise comes
+			#	back and someone widens this; if it does not, it correctly goes away. Same shape as the
+			#	-Wno-stringop-overflow bound just below.
+			#	(It is a TSAN modelling limitation rather than a bug in any one gcc, so it may well
+			#	persist - but "may well" is not evidence, and an unbounded suppression never gets
+			#	re-examined. See also the TODO about whether SpinLock needs these fences at all.)
+			#	NB: SpinLock.inl ALREADY wraps these calls in DISABLE_COMPILER_GCC_WARNING_START
+			#	("-Wtsan"), and that works for ordinary compiles - but #pragma GCC diagnostic is ignored
+			#	during LTO, which is why a command-line suppression is needed on top of it.
+			#		In function 'atomic_thread_fence',
+			#		    inlined from 'unlock' at .../Foundation/Execution/SpinLock.inl:63:37,
+			#		    inlined from 'Intern' at ../../Library/Sources/Stroika/Foundation/DataExchange/Atom.cpp:112:5:
+			#		/usr/include/c++/15/bits/atomic_base.h:147:26: warning: 'atomic_thread_fence' is not supported with '-fsanitize=thread' [-Wtsan]
+			#	This used to live in the g++-13-only block above ("doesnt seem needed for g++-14"), which
+			#	was true only because no g++-14/15 tsan configuration existed until 3.0d25 added the
+			#	sanitizer configs to Ubuntu 26.04 - whose default g++ is 15.2, and which then produced 284
+			#	of these in one config. Harmless on non-tsan builds, so not conditioned on --sanitize
+			#	(which is not parsed yet at this point anyway).
+			if (13.0 <= $itsVersion && $itsVersion < 16.0) {
 				$LinkerArgs_ExtraPrefix		.= ' -Wno-tsan';
 			}
 			if (14.0 <= $itsVersion && $itsVersion < 14.1) {

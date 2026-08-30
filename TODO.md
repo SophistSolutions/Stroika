@@ -32,6 +32,22 @@ Generally will track stuff here between releases
        - msan is not usable with gcc (clang-only, and needs a specially rebuilt libc++) - see the note
          near the top of MakeRegressionTestConfigurations. So the realistic menu is asan/ubsan/leak,
          tsan, and valgrind; the question is whether valgrind still finds anything the first two do not.
+   - **`Execution::SpinLock` - can the standalone `atomic_thread_fence` calls just go away?** They are
+     the reason for `-Wtsan` ("atomic_thread_fence is not supported with -fsanitize=thread"), which
+     means TSAN cannot see the happens-before edge SpinLock establishes - so anything synchronized by
+     a SpinLock is analyzed only approximately, tending toward FALSE POSITIVE race reports. That is a
+     real coverage hole, not just log noise, and it is suppressed twice over today
+     (`DISABLE_COMPILER_GCC_WARNING_START` in `SpinLock.inl`, plus `-Wno-tsan` in `configure` because
+     pragmas do not survive LTO).
+     Observation worth checking: the fences look REDUNDANT. `try_lock ()` already does
+     `fLock_.test_and_set (memory_order_acquire)` and `unlock ()` already does
+     `fLock_.clear (memory_order_release)`, so for `BarrierType::eReleaseAcquire` the extra fences add
+     nothing; `eMemoryTotalOrder` could use `memory_order_seq_cst` on those same operations instead.
+     If so, deleting them silences `-Wtsan` legitimately AND lets TSAN analyze SpinLock-protected code.
+     BUT: subtle memory-ordering code, and the current shape is deliberate - see
+     https://github.com/SophistSolutions/Stroika/issues/628 (STK-494), and the in-source comment
+     admitting "I don't understand why memory_order_acquire is good enough here". Read that first.
+
    - **Re-test the Ubuntu 24.04 gcc workarounds when that toolchain updates, and delete them if fixed.**
      `configure`'s `ApplyCompilerBugWorkarounds_` currently forces `-O2` for sanitizer configs on 24.04
      and warns about optimizing without LTO there. Both exist purely because gcc 13.3/14.2 *as packaged
