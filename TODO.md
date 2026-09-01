@@ -14,6 +14,77 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
+   - **Update the MSYS and cygwin runtimes on Medusa-Windows-Dev - they are ~16 months stale, and it
+     is the only box that is.** Measured from the 3.0d24 run headers:
+       - Protagoras native: MSYS `3.6.10` (2026-07-31)
+       - the Windows docker images: MSYS `3.6.10` (2026-08-13), cygwin `3.6.10-1` (2026-07-13)
+       - **Medusa-Windows-Dev: MSYS `3.6.1` (2025-04-20), cygwin `3.6.2-1` (2025-05-26)**
+     Two reasons this matters beyond hygiene:
+       - It ran 4 of the 15 3.0d24 platform targets (`Windows_{Cygwin,MSYS}_VS2k{22,26}`), so
+         **native-cygwin was validated ONLY on a 15-month-old runtime** this release; current cygwin
+         3.6.10 got exercised only via the in-Docker images.
+       - cygwin/MSYS `fork()`+spawn cost dominates a make-heavy build, and that is exactly where this
+         box underperforms. Evidence (3.0d24, same target, same `-j5`, matched by test name, both perf
+         dumps at TIME MULTIPLIER 15 pinned to core 0): on CPU-pinned work Medusa-Windows-Dev is
+         **0.75-0.77x** of Protagoras (ie ~1.3x FASTER per core, replicated across VS2k22 and VS2k26),
+         and its test phase is faster too (27 vs 31-34 min) - yet whole-run wall clock is a tie or
+         worse (620 vs 625 min; 797 vs 639 min). All of the loss is in the parallel build phase, which
+         is ~95% of wall clock and almost entirely process spawning. Cheapest untested lever there is.
+     Do NOT read the 797-vs-639 VS2k26 gap as a toolchain effect: sar shows medusa the host was 23.1%
+     busy during the VS2k22 window vs 52.6% during VS2k26, so that pair is confounded by 2.3x load.
+
+   - **START OF CYCLE: re-review the Medusa-Windows-Dev VM config (LGP asked to be reminded here).**
+     Current state from `virsh dumpxml Medusa-Windows-Dev` as of 2026-09-01:
+       - `<vcpu placement='static'>8</vcpu>` - 8 of the host's 32
+       - `<topology sockets='2' dies='1' clusters='1' cores='2' threads='2'/>` - presents 2 SOCKETS
+       - `<memory>24 GiB` max, `<currentMemory>18 GiB` (balloon), guest page file maxes at 28 GB
+       - already done: `<cpu mode='host-passthrough'>`, virtio disk (`qcow2`, `cache='writeback'`,
+         `discard='unmap'`), hyperv enlightenments
+       - not present: hugepages (`<access mode='shared'/>` only), `<numa>`, `cputune`/`vcpupin`
+     **Already measured at ~0-3% and recorded as dead ends - do not re-litigate:** socket topology,
+     balloon sizing, governor, KSM, swappiness, EXPO, disk (see `.claude/medusa-perf-knobs.md`).
+     **Raising vCPUs 8 -> 16 is probably NOT the lever, despite being the long-standing suspect.**
+     Both boxes run `PARALELLMAKEFLAG=-j5`, and the inner cmake builds pass no `--parallel`, so
+     neither box is core-limited: 8 vCPUs is already comfortably more than 5 concurrent jobs. The
+     arithmetic that follows is the real finding - at equal load the build phases tie (462 vs 464 min)
+     while the VM is 1.3x faster per core, so build-shaped work on the VM carries a **~1.3x penalty
+     that exactly cancels its compute advantage**. With `%iowait` at 0.0-0.2% all week that is
+     per-operation cost (process spawn, file metadata), not bandwidth. So attack the penalty, not the
+     core count: newer cygwin/MSYS (above), Windows Defender exclusions for the build tree inside the
+     guest (never checked - worth doing first, it is free), and raising `-j` on the VM to hide
+     per-op latency. Raising vCPUs only helps in combination with a higher `-j`.
+     Whatever is tried, change ONE thing at a time, and take every measurement in a window when the
+     Ubuntu matrix is NOT running on medusa - the 23.1%-vs-52.6% host-load difference between the two
+     3.0d24 windows is larger than any effect being chased.
+     Also in scope at that point (LGP, 2026-09-01, explicitly a next-month item): **can the four
+     `-In-Docker` Windows targets move off Protagoras onto Medusa-Windows-Dev?** He wants it if not
+     too costly; early impression is "very slow", and there are two structural reasons to expect that:
+       - Win11 Pro is a CLIENT SKU so only Hyper-V isolation works, which means a utility VM per
+         container - on the KVM guest that is KVM -> Hyper-V -> utility VM, ie DOUBLE nesting, on top
+         of the ~1.3x build penalty already measured on that box. Protagoras also uses hyperv
+         isolation but is not nested.
+       - Resource math does not fit as configured: `RunLocalWindowsDockerRegressionTests` asks for
+         `CPUS_=6`, `MEMORY_=13G`, `DISK_=175G`, inside a guest with 8 vCPUs / 18 GB and 46.3 GB free
+         of 510.8 GB on C:. Disk is the hard gate (~25-30 GB per VS BuildTools image, four images).
+     Cheap way to decide instead of speculating: run ONE target (`Windows-MSYS-VS2k22-In-Docker`) there
+     and compare against Protagoras' 3.0d24 time of 676 min. Under ~2x, it is viable; at 3x, drop it.
+
+   - **`RegressionTests` expected-pass count is off by one per pass - `Tests/Tests-Description.txt`
+     has no trailing newline.** `NUM_REGTESTS=$(wc -l Tests/Tests-Description.txt)` (line 177) returns
+     **53** while 54 tests exist, because its last line (`[54]\tFrameworks::WebService`) ends without a
+     newline. Two consequences, both of which cost real time during 3.0d24 validation:
+       - `TOTAL_REGTESTS_EXPECTED_TO_PASS` is one-per-pass low, so the `*** WARNING: N tests succeeded
+         and expected M` check at line 502 (`X1 -lt TOTAL`) cannot fire for a single missing test. The
+         3.0d24 Ubuntu2204 run reported `485 items succeeded` / `0 items failed` with Test53 SIGKILLed;
+         true count was 486 and the expectation was 477, so nothing tripped.
+       - `X1 -eq TOTAL` at line 510 is therefore never true, so **every** run prints the weak
+         `items succeeded (expected N * 53)` form and none ever prints the `AS expected` confirmation.
+         That kills the one signal separating "complete" from "close enough" - the wording difference
+         is the whole tell, and it is currently dead on every platform.
+     Fix is one character (newline at EOF), but check nothing else parses that file by `wc -l` and
+     expects 53. Worth also deriving the count from `ls -d Tests/[0-9][0-9]` so adding a test directory
+     cannot silently desync it again.
+
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
      valgrind still earns its keep, rather than just switching it on somewhere new. Groundwork already
