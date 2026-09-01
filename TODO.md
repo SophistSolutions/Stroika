@@ -14,6 +14,20 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
+   - **FIRST THING: fix the Test53 / WebServer ConnectionManager teardown bug - GitHub issue #1165.**
+     Deliberately deferred out of 3.0d24: it is years old (the `#if 0` block in `Tests/53/Test.cpp`
+     records the same teardown path failing in Jan 2026), unrelated to anything that changed this
+     release, and holding 3.0d24 for it would only enlarge an already-large diff.
+     Two linked defects, verify separately - see the issue for full backtraces and the preserved core:
+       1. lost-wakeup race between `Thread` abort's `SIGUSR2` and `::poll` in `WaitForIOReady.cpp:204`
+          -> **hang** (caught live on Ubuntu2204, wedged 21.5h)
+       2. a throw escaping `Thread::CleanupPtr::~CleanupPtr` (implicitly `noexcept`) -> **std::terminate**
+          (Ubuntu2404, `clang++-18-release-libc++23`), leaving no core dump and one log line
+     Rare, and both 3.0d24 hits landed in an unusually loaded week on medusa (56-95% busy) - host load
+     widens the scheduling gap the race needs, so expect recurrence during heavy release weeks rather
+     than uniformly. Local release runs pass no `--trace2file` (CI does); enabling it for Test53 is the
+     cheapest way to make the next occurrence diagnosable.
+
    - **Update the MSYS and cygwin runtimes on Medusa-Windows-Dev - they are ~16 months stale, and it
      is the only box that is.** Measured from the 3.0d24 run headers:
        - Protagoras native: MSYS `3.6.10` (2026-07-31)
