@@ -14,6 +14,26 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
+   - **Make Test45's external-site fetches degrade to a WARNING instead of failing the test.** Cost two
+     full re-runs (~16 hrs) during 3.0d24 validation, and neither failure was a Stroika defect:
+       - 2026-08-31 Ubuntu2404 `valgrind`: `Foundation_IO_Network_Transfer.TestWithCache_` -
+         `Timeout was reached {LibCurl error: 28} ... http://www.cnn.com` after 300415 ms
+       - 2026-09-02 WSL `valgrind`: `Foundation_IO_Network_Transfer.TestWithConnectionPool_` - same
+         exception, same site, 300434 ms
+     Both are the 300s libcurl timeout, both under valgrind (which slows everything enough to make the
+     external fetch marginal). Same shape a third time earlier in the cycle.
+     **The tolerance pattern already exists in the same file** - `Test.cpp:528-532` wraps the
+     badssl.com fetch in `catch (...)` and calls `Stroika::Frameworks::Test::WarnTestIssue (...)`
+     (declared in `Frameworks/Test/TestHarness.cpp`, emits `WARNING: REGRESSION TEST ISSUE: '...'`),
+     and `SimpleFetch_httpbin_` similarly downgrades an HTTP 502 to a warning. So the fix is to apply
+     the same treatment to the two tests that lack it:
+       - `Test_6_TestWithCache_` / `GTEST_TEST (..., TestWithCache_)` - `Tests/45/Test.cpp:583,627`
+       - `Test_7_TestWithConnectionPool_` / `GTEST_TEST (..., TestWithConnectionPool_)` - `:657,689`
+     Both fetch `http://httpbin.org/get`, `http://www.google.com`, `http://www.cnn.com`
+     (`Tests/45/Test.cpp:589,595,663,669`). Catch connection/timeout failures per-URL and warn, while
+     still failing on a real protocol/parse error - the point is to stop a slow or unreachable third
+     party from blocking a release, not to stop testing the code path.
+
    - **FIRST THING: fix the Test53 / WebServer ConnectionManager teardown bug - GitHub issue #1165.**
      Deliberately deferred out of 3.0d24: it is years old (the `#if 0` block in `Tests/53/Test.cpp`
      records the same teardown path failing in Jan 2026), unrelated to anything that changed this
