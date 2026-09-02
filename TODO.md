@@ -14,6 +14,19 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
+   - **`clang++-19` is listed in Release-Notes as tested but is covered nowhere - close the gap or drop
+     the claim.** Found while validating 3.0d24; deliberately left alone for that release. The
+     "Compilers Tested/Supported" line says `Clang++ { unix: 15, 16, 17, 18, 19, 20, 21, 22 }`, but
+     clang++-19 appears in ZERO of the 15 platform result files - the matrix jumps 18 -> 20:
+       - on 24.04 it is simply not installed (`/usr/bin/clang++-1[5-8]` only), so that box tops out at 18
+       - on 26.04 the clang-19 line in `Build/Scripts/MakeRegressionTestConfigurations` (~line 130) is
+         commented out, together with the clang-17 and clang-18 lines - see the 3.0d24 note "clang++18
+         dropped from 2604 (fails to build several third-party components); for clang < 20 on 2604, use
+         libstdc++"
+     So decide which it is: install clang-19 somewhere and give it a config, or uncomment the 26.04 line
+     if it builds now, or remove `19` from the Release-Notes list. Cheap either way, but the list should
+     not claim coverage that does not exist - that is what made the 3.0d24 validation slower to trust.
+
    - **Make Test45's external-site fetches degrade to a WARNING instead of failing the test.** Cost two
      full re-runs (~16 hrs) during 3.0d24 validation, and neither failure was a Stroika defect:
        - 2026-08-31 Ubuntu2404 `valgrind`: `Foundation_IO_Network_Transfer.TestWithCache_` -
