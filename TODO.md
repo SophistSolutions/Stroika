@@ -116,22 +116,6 @@ Generally will track stuff here between releases
      Cheap way to decide instead of speculating: run ONE target (`Windows-MSYS-VS2k22-In-Docker`) there
      and compare against Protagoras' 3.0d24 time of 676 min. Under ~2x, it is viable; at 3x, drop it.
 
-   - **`RegressionTests` expected-pass count is off by one per pass - `Tests/Tests-Description.txt`
-     has no trailing newline.** `NUM_REGTESTS=$(wc -l Tests/Tests-Description.txt)` (line 177) returns
-     **53** while 54 tests exist, because its last line (`[54]\tFrameworks::WebService`) ends without a
-     newline. Two consequences, both of which cost real time during 3.0d24 validation:
-       - `TOTAL_REGTESTS_EXPECTED_TO_PASS` is one-per-pass low, so the `*** WARNING: N tests succeeded
-         and expected M` check at line 502 (`X1 -lt TOTAL`) cannot fire for a single missing test. The
-         3.0d24 Ubuntu2204 run reported `485 items succeeded` / `0 items failed` with Test53 SIGKILLed;
-         true count was 486 and the expectation was 477, so nothing tripped.
-       - `X1 -eq TOTAL` at line 510 is therefore never true, so **every** run prints the weak
-         `items succeeded (expected N * 53)` form and none ever prints the `AS expected` confirmation.
-         That kills the one signal separating "complete" from "close enough" - the wording difference
-         is the whole tell, and it is currently dead on every platform.
-     Fix is one character (newline at EOF), but check nothing else parses that file by `wc -l` and
-     expects 53. Worth also deriving the count from `ls -d Tests/[0-9][0-9]` so adding a test directory
-     cannot silently desync it again.
-
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
      valgrind still earns its keep, rather than just switching it on somewhere new. Groundwork already

@@ -174,7 +174,7 @@ fi
 NUM_CONFIGURATIONS=`Build/Scripts/GetConfigurations --quiet --all-default | wc -w`
 NUM_CROSS_COMPILE_CONFIGURATIONS=`echo $CROSS_COMPILE_CONFIGS | wc -w`
 NUM_REMOTE_CONFIGURATIONS=`echo $RASPBERRYPICONFIGS | wc -w`
-NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
+NUM_REGTESTS=`grep -c '^\[' Tests/Tests-Description.txt`
 NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=`echo $LOCAL_VALGRIND_CONFIGS | wc -w`
 NUM_REMOTE_TEST_VALGRINDCONFIGURATIONS=`echo $RASPBERRYPIVALGRINDCONFIGS | wc -w`
 
