@@ -80,41 +80,45 @@ Generally will track stuff here between releases
      Do NOT read the 797-vs-639 VS2k26 gap as a toolchain effect: sar shows medusa the host was 23.1%
      busy during the VS2k22 window vs 52.6% during VS2k26, so that pair is confounded by 2.3x load.
 
-   - **START OF CYCLE: re-review the Medusa-Windows-Dev VM config (LGP asked to be reminded here).**
-     Current state from `virsh dumpxml Medusa-Windows-Dev` as of 2026-09-01:
-       - `<vcpu placement='static'>8</vcpu>` - 8 of the host's 32
-       - `<topology sockets='2' dies='1' clusters='1' cores='2' threads='2'/>` - presents 2 SOCKETS
-       - `<memory>24 GiB` max, `<currentMemory>18 GiB` (balloon), guest page file maxes at 28 GB
-       - already done: `<cpu mode='host-passthrough'>`, virtio disk (`qcow2`, `cache='writeback'`,
-         `discard='unmap'`), hyperv enlightenments
-       - not present: hugepages (`<access mode='shared'/>` only), `<numa>`, `cputune`/`vcpupin`
-     **Already measured at ~0-3% and recorded as dead ends - do not re-litigate:** socket topology,
-     balloon sizing, governor, KSM, swappiness, EXPO, disk (see `.claude/medusa-perf-knobs.md`).
-     **Raising vCPUs 8 -> 16 is probably NOT the lever, despite being the long-standing suspect.**
-     Both boxes run `PARALELLMAKEFLAG=-j5`, and the inner cmake builds pass no `--parallel`, so
-     neither box is core-limited: 8 vCPUs is already comfortably more than 5 concurrent jobs. The
-     arithmetic that follows is the real finding - at equal load the build phases tie (462 vs 464 min)
-     while the VM is 1.3x faster per core, so build-shaped work on the VM carries a **~1.3x penalty
-     that exactly cancels its compute advantage**. With `%iowait` at 0.0-0.2% all week that is
-     per-operation cost (process spawn, file metadata), not bandwidth. So attack the penalty, not the
-     core count: newer cygwin/MSYS (above), Windows Defender exclusions for the build tree inside the
-     guest (never checked - worth doing first, it is free), and raising `-j` on the VM to hide
-     per-op latency. Raising vCPUs only helps in combination with a higher `-j`.
-     Whatever is tried, change ONE thing at a time, and take every measurement in a window when the
-     Ubuntu matrix is NOT running on medusa - the 23.1%-vs-52.6% host-load difference between the two
-     3.0d24 windows is larger than any effect being chased.
-     Also in scope at that point (LGP, 2026-09-01, explicitly a next-month item): **can the four
-     `-In-Docker` Windows targets move off Protagoras onto Medusa-Windows-Dev?** He wants it if not
-     too costly; early impression is "very slow", and there are two structural reasons to expect that:
-       - Win11 Pro is a CLIENT SKU so only Hyper-V isolation works, which means a utility VM per
-         container - on the KVM guest that is KVM -> Hyper-V -> utility VM, ie DOUBLE nesting, on top
-         of the ~1.3x build penalty already measured on that box. Protagoras also uses hyperv
-         isolation but is not nested.
-       - Resource math does not fit as configured: `RunLocalWindowsDockerRegressionTests` asks for
-         `CPUS_=6`, `MEMORY_=13G`, `DISK_=175G`, inside a guest with 8 vCPUs / 18 GB and 46.3 GB free
-         of 510.8 GB on C:. Disk is the hard gate (~25-30 GB per VS BuildTools image, four images).
-     Cheap way to decide instead of speculating: run ONE target (`Windows-MSYS-VS2k22-In-Docker`) there
-     and compare against Protagoras' 3.0d24 time of 676 min. Under ~2x, it is viable; at 3x, drop it.
+   - **Medusa-Windows-Dev VM: config pass DONE 2026-09-02. Remaining levers listed here.**
+     Applied during a single reboot window: deleted the 13-month-old INTERNAL snapshot
+     `BeforeWin11Upgrade` (~40 min of single-threaded `qemu-img snapshot -d`, freed ~225 GiB),
+     raised the memory CEILING 24 -> 32 GiB while leaving the allocation at 18 GiB, and grew the
+     disk 512 GiB -> 1 TiB capacity (allocation is only 441 GiB - qcow2 is sparse, so this cost
+     zero host bytes). vCPU stayed at 8 and CPU topology was left alone, deliberately.
+     Facts worth not re-deriving:
+       - **There is NO memory pressure on medusa.** `%memused` peaked at 15-26% across the whole
+         3.0d24 release week, ~75 GB sits in reclaimable page cache, and `oom_kill` is 0. Swap
+         showing 100% used is a RED HERRING - an 8 GB swapfile holding idle pages since boot, with
+         swap-out rates of only 200-500 pages/s, and *lowest* during the heavy Ubuntu matrix.
+       - **The virtio balloon works.** The guest reports `<memory>` (the ceiling) as installed RAM and
+         the balloon claws back down to `currentMemory` after the driver loads - verified settling at
+         exactly 18.00 GiB. So `virsh setmem Medusa-Windows-Dev <N>G --live` is a live knob up to
+         32 GiB now, with no reboot. Ballooning UP is reliable; DOWN is not (Windows keeps the cache),
+         so a guest reboot is the dependable way back.
+       - **Host is an AMD Ryzen 9 9950X3D**: 16C/32T, one socket, TWO CCDs of 8 cores with asymmetric
+         L3 (one carries the 3D V-Cache). 8 vCPUs = 4 cores x 2 threads fits inside ONE CCD, which is
+         a positive reason to keep 8 rather than merely a cautious one - 16 would straddle both and,
+         with no `cputune`/`vcpupin` configured, the host scheduler would scatter them.
+       - **On Windows, `-j` is gated by RAM, not cores** (LGP). So `-j5` matches the 18 GiB allocation
+         at ~3.6 GB/job; ~`-j8` only becomes available in windows where the balloon is raised to 32.
+       - `sudo -n` fails on medusa (interactive auth), but `virsh` works via libvirt-group membership -
+         including `vol-resize` through the `default` pool, which is how the offline disk grow was done
+         without root.
+     Still open, in rough value order:
+       1. Windows Defender exclusions for the build tree inside the guest - never checked, free, and
+          plausibly a chunk of the ~1.3x per-operation build penalty. Needs an ELEVATED session (the
+          ssh login there is not elevated), so RDP.
+       2. The stale MSYS/cygwin runtimes on that box - see the separate item.
+       3. Extend C: inside Windows to use the new capacity (`diskpart` -> `select volume C` -> `extend`).
+          Extend only by what is needed (~250 GiB for four VS BuildTools images) rather than the full
+          512 GiB, so host consumption stays bounded. `discard='unmap'` is set, so Windows TRIM does
+          return freed blocks to the host.
+       4. UNTESTED and distinct from the socket-topology knob already measured at ~0-3%: pin the
+          guest's 8 vCPUs to a single CCD (ideally the V-Cache one) via `cputune`/`vcpupin`. Real
+          experiment with a real downside under contention, so not a fire-and-forget change.
+     LGP's priority, stated 2026-09-02: **UNIX performance on medusa matters MORE than Windows.** Do
+     not propose trades that take resources from the Ubuntu containers to speed up the Windows VM.
 
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
