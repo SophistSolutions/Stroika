@@ -8,7 +8,7 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-### 3.0d24 {2026-08-26x} {[diff](../../compare/3.0d23...3.0d24)} - DRAFT
+### 3.0d24 {2026-09-02} {[diff](../../compare/3.0d23...3.0d24)}
 
 #### TLDR
 
@@ -247,6 +247,8 @@ especially those they need to be aware of when upgrading.
   - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
 - Known (minor) issues with regression test output
   - performance-test thresholds needed loosening twice this cycle on slower/virtualized hosts: `Collection_Array<int>` vs `vector<int>` add-one-at-a-time, and the `As<vector<int>>` entry (ratio 1.5 -> 10)
+  - `Tests/53` (`Frameworks::WebServer`) intermittently fails in `ConnectionManager` teardown (issue 1165) - a hang on Ubuntu 22.04, and `std::terminate` on Ubuntu 24.04 / `clang++-18-release-libc++23`. A rare, years-old race in the abort/wait path (the same teardown is recorded failing in Jan 2026 in a comment in `Tests/53/Test.cpp`), unrelated to anything changed this release, and deliberately deferred to 3.0d25 rather than enlarging this release's diff
+  - `Foundation_IO_Network_Transfer.TestWithConnectionPool_` fails in the WSL result, as `TestWithCache_` did on Ubuntu 24.04 earlier in the cycle: a 300s libcurl timeout (error 28) fetching `http://www.cnn.com` under valgrind, which is slow enough to make an external fetch marginal. Not a Stroika defect - the same run already tolerates an unreachable badssl.com as a warning, and `Tests/45` will treat these fetches the same way in 3.0d25. Note the harness reports that single failure as `2 items failed` plus `1 items error`, because it greps for `FAILED` and for `error:` independently
 
 ----------------------------
 
