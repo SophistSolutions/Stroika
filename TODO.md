@@ -61,11 +61,25 @@ Generally will track stuff here between releases
      than uniformly. Local release runs pass no `--trace2file` (CI does); enabling it for Test53 is the
      cheapest way to make the next occurrence diagnosable.
 
-   - **Update the MSYS and cygwin runtimes on Medusa-Windows-Dev - they are ~16 months stale, and it
-     is the only box that is.** Measured from the 3.0d24 run headers:
-       - Protagoras native: MSYS `3.6.10` (2026-07-31)
-       - the Windows docker images: MSYS `3.6.10` (2026-08-13), cygwin `3.6.10-1` (2026-07-13)
-       - **Medusa-Windows-Dev: MSYS `3.6.1` (2025-04-20), cygwin `3.6.2-1` (2025-05-26)**
+   - **DONE 2026-09-03: Medusa-Windows-Dev software currency.** All brought up to date, and the box
+     now matches the in-Docker images exactly rather than trailing them:
+       - MSYS `3.6.1` (2025-04-20) -> **`3.6.10-8fbd9808`** (2026-08-13) via `pacman -Syu`
+       - cygwin `3.6.2-1` (2025-05-26) -> **`3.6.10-1`** (2026-07-13) via a FRESH
+         `setup-x86_64.exe` (the one on the box was from 2017 and too old to work - current is at
+         https://www.cygwin.com/setup-x86_64.exe, and needs `--root C:\cygwin`, NOT the default
+         `C:\cygwin64`, or it installs a second parallel cygwin)
+       - virtio-win drivers `0.1.217` (2021-era) -> **`0.1.302`** / `100.103.104.30200`, all six
+         devices incl. the boot storage controller; booted clean
+       - QEMU guest agent installed, and an `org.qemu.guest_agent.0` channel added to the domain -
+         goes live on the next full domain power cycle (a guest-OS reboot does NOT apply `--config`
+         device changes, since the QEMU process is not recreated)
+     Why the guest agent is worth having: `virsh shutdown` was ignored twice on 2026-09-02 (ACPI
+     blocked by running apps, needed `shutdown /s /t 0 /f` from inside), and the agent makes it work.
+     It also enables `--quiesce` snapshots, so future backups can be LIVE and filesystem-consistent
+     instead of needing ~20 min of downtime, plus `virsh domfsinfo`/`guestinfo` for reading guest
+     state from the host when ssh is down (which happened for hours on 2026-09-02).
+
+   - **Medusa-Windows-Dev: MSYS `3.6.1` (2025-04-20), cygwin `3.6.2-1` (2025-05-26)**
      Two reasons this matters beyond hygiene:
        - It ran 4 of the 15 3.0d24 platform targets (`Windows_{Cygwin,MSYS}_VS2k{22,26}`), so
          **native-cygwin was validated ONLY on a 15-month-old runtime** this release; current cygwin
