@@ -19,6 +19,8 @@ Generally will track stuff here between releases
      "Compilers Tested/Supported" line says `Clang++ { unix: 15, 16, 17, 18, 19, 20, 21, 22 }`, but
      clang++-19 appears in ZERO of the 15 platform result files - the matrix jumps 18 -> 20:
        - on 24.04 it is simply not installed (`/usr/bin/clang++-1[5-8]` only), so that box tops out at 18
+       - **but clang++-19 IS installed on stroika-dev-2604** (`/usr/bin/clang++-19`, verified
+         2026-09-06) - so this is a config change, not an install
        - on 26.04 the clang-19 line in `Build/Scripts/MakeRegressionTestConfigurations` (~line 130) is
          commented out, together with the clang-17 and clang-18 lines - see the 3.0d24 note "clang++18
          dropped from 2604 (fails to build several third-party components); for clang < 20 on 2604, use
@@ -27,26 +29,33 @@ Generally will track stuff here between releases
      if it builds now, or remove `19` from the Release-Notes list. Cheap either way, but the list should
      not claim coverage that does not exist - that is what made the 3.0d24 validation slower to trust.
 
-   - **Make Test45's external-site fetches degrade to a WARNING instead of failing the test.** Cost two
-     full re-runs (~16 hrs) during 3.0d24 validation, and neither failure was a Stroika defect:
-       - 2026-08-31 Ubuntu2404 `valgrind`: `Foundation_IO_Network_Transfer.TestWithCache_` -
-         `Timeout was reached {LibCurl error: 28} ... http://www.cnn.com` after 300415 ms
-       - 2026-09-02 WSL `valgrind`: `Foundation_IO_Network_Transfer.TestWithConnectionPool_` - same
-         exception, same site, 300434 ms
-     Both are the 300s libcurl timeout, both under valgrind (which slows everything enough to make the
-     external fetch marginal). Same shape a third time earlier in the cycle.
-     **The tolerance pattern already exists in the same file** - `Test.cpp:528-532` wraps the
-     badssl.com fetch in `catch (...)` and calls `Stroika::Frameworks::Test::WarnTestIssue (...)`
-     (declared in `Frameworks/Test/TestHarness.cpp`, emits `WARNING: REGRESSION TEST ISSUE: '...'`),
-     and `SimpleFetch_httpbin_` similarly downgrades an HTTP 502 to a warning. So the fix is to apply
-     the same treatment to the two tests that lack it:
-       - `Test_6_TestWithCache_` / `GTEST_TEST (..., TestWithCache_)` - `Tests/45/Test.cpp:583,627`
-       - `Test_7_TestWithConnectionPool_` / `GTEST_TEST (..., TestWithConnectionPool_)` - `:657,689`
-     Both fetch `http://httpbin.org/get`, `http://www.google.com`, `http://www.cnn.com`
-     (`Tests/45/Test.cpp:589,595,663,669`). Catch connection/timeout failures per-URL and warn, while
-     still failing on a real protocol/parse error - the point is to stop a slow or unreachable third
-     party from blocking a release, not to stop testing the code path.
+   - **Make Test45's external-site fetches degrade to a WARNING - the existing tolerance catches the
+     WRONG EXCEPTION TYPE.** Cost two full re-runs (~16 hrs) during 3.0d24 validation, and neither
+     failure was a Stroika defect.
+     **Do NOT "apply the WarnTestIssue pattern" - it is already applied**, and it already wraps the
+     cnn.com fetch. `Test_6_TestWithCache_::SimpleGetFetch_T1` (`Tests/45/Test.cpp:583`) and
+     `Test_7_TestWithConnectionPool_` (`:657`) each put a per-URL `try` around the
+     httpbin/google/cnn loop, catching `IO::Network::HTTP::Exception` (warns on server error or 429)
+     and `TimeOutException` (warns unconditionally), at `:617` and `:722`. That code is unchanged
+     since bccc755c33 on 2026-08-18 - ie it was already in place when the tests failed on 2026-08-31
+     and 2026-09-02, which is the proof it does not cover the failing path.
 
+     **The real defect: a libcurl timeout is not a `TimeOutException`.**
+     `Connection_libcurl.cpp:82` maps `CURLE_OPERATION_TIMEDOUT` to `errc::timed_out` through
+     `LibCurl_error_category_::default_error_condition`, so it surfaces as a **`std::system_error`**
+     in that category - which `catch (const TimeOutException&)` never sees. That matches the observed
+     failures exactly: `Timeout was reached {LibCurl error: 28} ... http://www.cnn.com` after
+     ~300415 ms and ~300434 ms (the 300s libcurl timeout), both under valgrind, which slows things
+     enough to make an external fetch marginal.
+
+     Fix, smallest first:
+       1. In those two loops also `catch (const system_error& e)` and warn when
+          `e.code ().default_error_condition () == errc::timed_out`, rethrowing anything else.
+       2. Better: consider having `Connection_libcurl` throw `Execution::TimeOutException` for
+          `CURLE_OPERATION_TIMEDOUT`, which fixes it for every caller rather than just this test -
+          but check what else depends on seeing the `system_error`.
+     The point is to stop a slow or unreachable third party blocking a release, not to stop testing
+     the code path - so keep failing on real protocol/parse errors.
    - **FIRST THING: fix the Test53 / WebServer ConnectionManager teardown bug - GitHub issue #1165.**
      Deliberately deferred out of 3.0d24: it is years old (the `#if 0` block in `Tests/53/Test.cpp`
      records the same teardown path failing in Jan 2026), unrelated to anything that changed this
@@ -61,78 +70,90 @@ Generally will track stuff here between releases
      than uniformly. Local release runs pass no `--trace2file` (CI does); enabling it for Test53 is the
      cheapest way to make the next occurrence diagnosable.
 
-   - **DONE 2026-09-03: Medusa-Windows-Dev software currency.** All brought up to date, and the box
-     now matches the in-Docker images exactly rather than trailing them:
-       - MSYS `3.6.1` (2025-04-20) -> **`3.6.10-8fbd9808`** (2026-08-13) via `pacman -Syu`
-       - cygwin `3.6.2-1` (2025-05-26) -> **`3.6.10-1`** (2026-07-13) via a FRESH
-         `setup-x86_64.exe` (the one on the box was from 2017 and too old to work - current is at
-         https://www.cygwin.com/setup-x86_64.exe, and needs `--root C:\cygwin`, NOT the default
-         `C:\cygwin64`, or it installs a second parallel cygwin)
-       - virtio-win drivers `0.1.217` (2021-era) -> **`0.1.302`** / `100.103.104.30200`, all six
-         devices incl. the boot storage controller; booted clean
-       - QEMU guest agent installed, and an `org.qemu.guest_agent.0` channel added to the domain -
-         goes live on the next full domain power cycle (a guest-OS reboot does NOT apply `--config`
-         device changes, since the QEMU process is not recreated)
-     Why the guest agent is worth having: `virsh shutdown` was ignored twice on 2026-09-02 (ACPI
-     blocked by running apps, needed `shutdown /s /t 0 /f` from inside), and the agent makes it work.
-     It also enables `--quiesce` snapshots, so future backups can be LIVE and filesystem-consistent
-     instead of needing ~20 min of downtime, plus `virsh domfsinfo`/`guestinfo` for reading guest
-     state from the host when ssh is down (which happened for hours on 2026-09-02).
+   - **medusa desktop: Chrome still software-decodes Frigate video. PARTIALLY FIXED 2026-09-05.**
+     Not a Stroika issue. Everything below is measured - do not re-derive it.
 
-   - **Medusa-Windows-Dev: MSYS `3.6.1` (2025-04-20), cygwin `3.6.2-1` (2025-05-26)**
-     Two reasons this matters beyond hygiene:
-       - It ran 4 of the 15 3.0d24 platform targets (`Windows_{Cygwin,MSYS}_VS2k{22,26}`), so
-         **native-cygwin was validated ONLY on a 15-month-old runtime** this release; current cygwin
-         3.6.10 got exercised only via the in-Docker images.
-       - cygwin/MSYS `fork()`+spawn cost dominates a make-heavy build, and that is exactly where this
-         box underperforms. Evidence (3.0d24, same target, same `-j5`, matched by test name, both perf
-         dumps at TIME MULTIPLIER 15 pinned to core 0): on CPU-pinned work Medusa-Windows-Dev is
-         **0.75-0.77x** of Protagoras (ie ~1.3x FASTER per core, replicated across VS2k22 and VS2k26),
-         and its test phase is faster too (27 vs 31-34 min) - yet whole-run wall clock is a tie or
-         worse (620 vs 625 min; 797 vs 639 min). All of the loss is in the parallel build phase, which
-         is ~95% of wall clock and almost entirely process spawning. Cheapest untested lever there is.
-     Do NOT read the 797-vs-639 VS2k26 gap as a toolchain effect: sar shows medusa the host was 23.1%
-     busy during the VS2k22 window vs 52.6% during VS2k26, so that pair is confounded by 2.3x load.
+     **DONE and working:**
+       - `nomodeset` removed from `/etc/default/grub` (it was blocking `amdgpu` from binding; the
+         module was loaded with zero users and the kernel logged no probe attempt at all). NVIDIA
+         was unaffected only because `nvidia-graphics-drivers-kms.conf` sets `nvidia_drm modeset=1`
+         explicitly. The AMD iGPU `79:00.0` now binds and adds a second DRM node.
+       - Both GPUs now have full VA-API decode, confirmed with `vainfo`:
+         NVIDIA 3090 = H264 / HEVC Main,10,12 / VP9 / AV1 via `nvidia-vaapi-driver` [NVDEC direct];
+         AMD iGPU = H264 / HEVC Main,10 / VP9 / AV1 plus *encode*, via radeonsi (in-tree Mesa).
+       - `nvidia-vaapi-driver` + `vainfo` installed. **On 26.04 the package is `vainfo`, NOT
+         `libva-utils`** - that name no longer exists, and naming it makes apt abort the whole
+         install, silently taking the other packages down with it.
+       - All four `~/.config/autostart/google-chrome-*.desktop` launchers carry
+         `env LIBVA_DRIVER_NAME=nvidia NVD_BACKEND=direct` plus
+         `--enable-features=VaapiVideoDecodeLinuxGL --ignore-gpu-blocklist`
+         (originals saved as `*.bak-vaapi`).
 
-   - **Medusa-Windows-Dev VM: config pass DONE 2026-09-02. Remaining levers listed here.**
-     Applied during a single reboot window: deleted the 13-month-old INTERNAL snapshot
-     `BeforeWin11Upgrade` (~40 min of single-threaded `qemu-img snapshot -d`, freed ~225 GiB),
-     raised the memory CEILING 24 -> 32 GiB while leaving the allocation at 18 GiB, and grew the
-     disk 512 GiB -> 1 TiB capacity (allocation is only 441 GiB - qcow2 is sparse, so this cost
-     zero host bytes). vCPU stayed at 8 and CPU topology was left alone, deliberately.
-     Facts worth not re-deriving:
-       - **There is NO memory pressure on medusa.** `%memused` peaked at 15-26% across the whole
-         3.0d24 release week, ~75 GB sits in reclaimable page cache, and `oom_kill` is 0. Swap
-         showing 100% used is a RED HERRING - an 8 GB swapfile holding idle pages since boot, with
-         swap-out rates of only 200-500 pages/s, and *lowest* during the heavy Ubuntu matrix.
-       - **The virtio balloon works.** The guest reports `<memory>` (the ceiling) as installed RAM and
-         the balloon claws back down to `currentMemory` after the driver loads - verified settling at
-         exactly 18.00 GiB. So `virsh setmem Medusa-Windows-Dev <N>G --live` is a live knob up to
-         32 GiB now, with no reboot. Ballooning UP is reliable; DOWN is not (Windows keeps the cache),
-         so a guest reboot is the dependable way back.
-       - **Host is an AMD Ryzen 9 9950X3D**: 16C/32T, one socket, TWO CCDs of 8 cores with asymmetric
-         L3 (one carries the 3D V-Cache). 8 vCPUs = 4 cores x 2 threads fits inside ONE CCD, which is
-         a positive reason to keep 8 rather than merely a cautious one - 16 would straddle both and,
-         with no `cputune`/`vcpupin` configured, the host scheduler would scatter them.
-       - **On Windows, `-j` is gated by RAM, not cores** (LGP). So `-j5` matches the 18 GiB allocation
-         at ~3.6 GB/job; ~`-j8` only becomes available in windows where the balloon is raised to 32.
-       - `sudo -n` fails on medusa (interactive auth), but `virsh` works via libvirt-group membership -
-         including `vol-resize` through the `default` pool, which is how the offline disk grow was done
-         without root.
-     Still open, in rough value order:
-       1. Windows Defender exclusions for the build tree inside the guest - never checked, free, and
-          plausibly a chunk of the ~1.3x per-operation build penalty. Needs an ELEVATED session (the
-          ssh login there is not elevated), so RDP.
-       2. The stale MSYS/cygwin runtimes on that box - see the separate item.
-       3. Extend C: inside Windows to use the new capacity (`diskpart` -> `select volume C` -> `extend`).
-          Extend only by what is needed (~250 GiB for four VS BuildTools images) rather than the full
-          512 GiB, so host consumption stays bounded. `discard='unmap'` is set, so Windows TRIM does
-          return freed blocks to the host.
-       4. UNTESTED and distinct from the socket-topology knob already measured at ~0-3%: pin the
-          guest's 8 vCPUs to a single CCD (ideally the V-Cache one) via `cputune`/`vcpupin`. Real
-          experiment with a real downside under contention, so not a fire-and-forget change.
-     LGP's priority, stated 2026-09-02: **UNIX performance on medusa matters MORE than Windows.** Do
-     not propose trades that take resources from the Ubuntu containers to speed up the Windows VM.
+     **STILL BROKEN - Chrome does not actually engage VA-API.** After a reboot the flag IS on the
+     command line (`ps` shows `VaapiVideoDecodeLinuxGL`), but NO `*_drv_video.so` appears in any
+     chrome process's `/proc/PID/maps`, so it is still software-decoding at ~1.5 CPUs.
+     **That maps check is the reliable test**, much better than reading chrome://gpu prose:
+     `for p in $(pgrep -f chrome); do grep -o '[a-z0-9_]*_drv_video[.]so' /proc/$p/maps; done | sort -u`
+     Next lead: Chrome's **GPU sandbox** blocking the nvidia-vaapi bridge - a known issue needing
+     more than the feature flag. Check the chrome://gpu "Video Decode" line first.
+     Untried alternative: move the monitor cable to a MOTHERBOARD port so the desktop runs on the
+     iGPU, where radeonsi needs no bridge at all. Check iGPU headroom first, since it now also
+     serves Frigate decode. Note Chrome decodes on whichever GPU drives its display; cross-device
+     (decode on AMD, present on NVIDIA) is not something Chrome does cleanly.
+
+     **Two corrections worth keeping** - the original 2026-09-04 note had both backwards:
+       1. The desktop is on the **RTX 3090, NOT the AMD iGPU**. `card1` is `DRIVER=nvidia
+          PCI_SLOT_NAME=0000:01:00.0` and carries every output; the monitor is on `card1-HDMI-A-3`.
+       2. `modinfo amdgpu | grep 13c0` finding nothing proves NOTHING - amdgpu matches by
+          **wildcard** (`pci:v00001002d*sv*sd*bc03sc00i00*` = any AMD class-0x030000 device),
+          not per-device IDs.
+
+   - **medusa: Frigate CPU cut 217% -> ~129% on 2026-09-05; remaining lever is a GPU detector.**
+     Config is `/Sandbox/frigate/config/config.yaml` (**`.yaml`, not `.yml`**) and is root-owned -
+     edit it through `docker exec frigate ...` rather than hunting for sudo. Backups in place:
+     `config.yaml.bak-2026-09-05` (original) and `config.yaml.bak-presubstream`.
+     What changed:
+       - added a global `ffmpeg: hwaccel_args:` block pinned to `/dev/dri/renderD129` (the AMD
+         iGPU). **Frigate's `preset-vaapi` would be WRONG here** - it defaults to renderD128, which
+         on this box is the NVIDIA card. `privileged: true` already exposes both nodes and
+         `radeonsi_drv_video.so` is present inside the container, so no compose change was needed.
+       - split every camera's inputs: `subtype=1` (704x480) for `detect`, `subtype=0` (3-4K) for
+         `record`. Previously all five fed the MAIN stream to detection - **32.1 Mpix per frame-set
+         decoded just to look for objects, vs 1.69 Mpix now, about 19x less**. Recordings unaffected.
+     Measured: CPU 217% -> 161% (hwaccel alone) -> ~129% settled (after substreams); memory
+     5.35 -> 3.13 GiB; host load 7.31 -> 4.78; amdgpu 99% busy -> near idle.
+     Still open:
+       - **`frigate.detector.cpu` was the single biggest consumer at 77%.** There is **no Coral TPU
+         on this box** - `lsusb` finds no Google/Global Unichip device, despite the compose passing
+         `/dev/bus/usb` - so detection silently falls back to CPU. Moving it to the idle 3090 needs
+         the `stable-tensorrt` image, container GPU access and a model build.
+         `nvidia-container-toolkit` IS now installed (2026-09-05, from NVIDIA's repo), but
+         `docker run --gpus all` still fails `Failed to initialize NVML: Unknown Error` - a cgroups
+         issue to solve before any of that is worth starting.
+       - `WestSoffitCamera` has a stray `detect: enabled: false` block indented *under it* (leftover
+         Frigate template cruft - its comment says "until you have a working camera feed"), so
+         **detection is disabled on that one camera**. Left alone deliberately; confirm intent.
+       - `semantic_search` and `face_recognition` are both `model_size: large`, plus `lpr` and bird
+         classification, all enabled and all running on CPU. Unmeasured, but likely most of what
+         remains after the decode win.
+
+   - **KNOWN QUIRK, do not re-investigate: Medusa-Windows-Dev takes ~168s to boot on a WARM guest
+     reboot, ~11-32s on a cold `virsh start`.** Diagnosed 2026-09-05/06; there is no fix and none is
+     expected. Recorded only so nobody spends another session on it.
+     It freezes inside `bootmgfw.efi` after OVMF prints `starting Boot0003` - zero disk I/O, ~1.6
+     cores spinning, swtpm idle. Warm reboots measured 165.6-169.3s five times with only 3.7s spread
+     and no sensitivity to host load; an A/B on 2026-09-05 gave warm 169.2s vs cold 32s back to back,
+     same config. So it is a fixed timeout in something stateful that survives a warm reset, where a
+     cold start rebuilds QEMU/OVMF/swtpm fresh.
+     `tpm-tis` -> `tpm-crb` made it *worse* (202.8s), which kills the MMIO-polling theory but hints
+     the TPM path is involved; reverted to `tpm-tis`. Untested last idea: detach `<tpm>` and warm
+     reboot (BitLocker is off, so it is safe and a one-line revert).
+     No fix: ovmf/swtpm/qemu are all already newest on 26.04. `<on_reboot>destroy</on_reboot>` would
+     force cold starts but needs a hook to restart the domain, which could strand the VM mid-Windows
+     Update. **Mitigation: use `virsh shutdown` + `virsh start` when you control the reboot.**
+     To measure: gap between Kernel-General event 13 and the next event 12 (Windows' own BootTime
+     starts at kernel init and never sees this phase); for cold starts use `virsh start` wall-clock
+     to event 12 instead, or the gap also counts however long the domain sat powered off.
 
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
@@ -152,6 +173,7 @@ Generally will track stuff here between releases
        - msan is not usable with gcc (clang-only, and needs a specially rebuilt libc++) - see the note
          near the top of MakeRegressionTestConfigurations. So the realistic menu is asan/ubsan/leak,
          tsan, and valgrind; the question is whether valgrind still finds anything the first two do not.
+
    - **`Execution::SpinLock` - can the standalone `atomic_thread_fence` calls just go away?** They are
      the reason for `-Wtsan` ("atomic_thread_fence is not supported with -fsanitize=thread"), which
      means TSAN cannot see the happens-before edge SpinLock establishes - so anything synchronized by
