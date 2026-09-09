@@ -3824,7 +3824,8 @@ TRIED alignas to fix on the array but no luck
 #define qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(__clang__) && !defined(__APPLE__)
 // website says broken in clang 17 - recheck later versions when I run builds
-#define qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+// FAILS on clang++-18
+#define qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
 #else
 #define qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy 0
 #endif
