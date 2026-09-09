@@ -14,73 +14,33 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  Throw this when something (typically a waitable event, but could  be anything code is waiting for) times out.
+     *  \brief  How Stroika reports a timeout.
      *
-     *  \note - Many low level functions map OS / platform exceptions to this type as appropriate (via @see ThrowPOSIXErrNo and @see ThrowSystemErrNo)
-     *
-     *  \note Though you can use
-     *      \code
-     *          catch (const TimeOutException&) {
-     *              ...
-     *          }
-     *      \endcode
-     *
-     *      and that will work for catching nearly any timeout exception thrown by Stroika, it is often
-     *      better to use:
+     *  Stroika has no dedicated timeout exception TYPE. A timeout is reported the way every other error is -
+     *  as a SystemErrorException (which IS a std::system_error) carrying errc::timed_out - so it is caught
+     *  and tested the standard C++ way:
      *
      *      \code
-     *          catch (const system_error& e) {
-     *              if (e.code () == errc::timed_out) { // and maybe check errc::stream_timeout
-     *                  ...
-     *              }
-     *          }
-     *      \endcode
-     *
-     *      since that will catch timeout exceptions thrown by non-Stroika-based components, and this form
-     *      will still work with Activities and UNICODE exception message handling, if you use
-     *      Characters::ToString (e); alternatively you can use:
-     *          catch (const SystemErrorException& e) {
-     *              if (e.code () == errc::timed_out) {
-     *                  ...
-     *              }
-     *              // now directly look at String message and Activies etc...
-     *          }
      *          catch (const system_error& e) {
      *              if (e.code () == errc::timed_out) {
      *                  ...
      *              }
      *          }
+     *      \endcode
      *
+     *  To raise one, say @see ThrowError (errc::timed_out).
+     *
+     *  \note   Test the CONDITION (errc::timed_out), NEVER a particular code such as
+     *          error_code{ETIMEDOUT, system_category ()}. Only the condition matches timeouts from every
+     *          source - libcurl, getaddrinfo, HRESULT, the OS, and Stroika's own waiting primitives.
+     *          @see ThrowError for why, and for what errc::timed_out means to Stroika.
      */
-    class TimeOutException : public Execution::SystemErrorException {
-    public:
-        /**
-         *  when not specified, the error_code defaults to make_error_code (errc::timed_out)
-         */
-        TimeOutException ();
-        TimeOutException (error_code ec);
-        TimeOutException (const Characters::String& message);
-        TimeOutException (error_code ec, const Characters::String& message);
-
-    public:
-        /**
-         *  CAN be used when there is no message argument.
-         */
-        static const TimeOutException kThe;
-    };
-    inline const TimeOutException TimeOutException::kThe;
 
     /**
-     *  \brief  Execution::Throw (Execution::TimeOutException::kThe);
-     *          but can be more easily forward-declared, so no include deadly embrace
-     */
-    void ThrowTimeOutException ();
-
-    /**
-     *  \brief  Throw TimeOutException if the @Time::GetTickCount () is >= the given value.
+     *  \brief  Throw a timeout (@see ThrowError (errc::timed_out)) if @Time::GetTickCount () is >= the given value.
      *
      *  This function facilitates writing code like:
-     *      Time::DurationSeconds timeoutAfter =   Time::GetTickCount () + 1.0;
+     *      Time::TimePointSeconds timeoutAfter =   Time::GetTickCount () + 1.0;
      *      do_someting_dont_know_how_long_it_will_take();
      *      Execution::ThrowTimeoutExceptionAfter (timeoutAfter);
      *
@@ -91,7 +51,8 @@ namespace Stroika::Foundation::Execution {
     void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount);
 
     /**
-     *  Translate timed_mutex, or recursive_timed_mutex try_lock_until () calls which fail into TimeOutException exceptions.
+     *  Translate timed_mutex, or recursive_timed_mutex try_lock_until () calls which fail into a timeout
+     *  exception (@see ThrowError (errc::timed_out)).
      */
     template <typename TIMED_MUTEX, typename EXCEPTION>
     void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw);
@@ -106,7 +67,8 @@ namespace Stroika::Foundation::Execution {
     void ThrowIfTimeout (cv_status conditionVariableStatus);
 
     /**
-     *  Simple wrapper on construction of unique_lock<TIMED_MUTEX> - which translates the timeout into a TimeOutException.
+     *  Simple wrapper on construction of unique_lock<TIMED_MUTEX> - which translates the timeout into a
+     *  timeout exception (@see ThrowError (errc::timed_out)).
      * 
      *  \note if this function returns (doesn't throw) - the required unique_lock<> OWNS the mutex.
      *

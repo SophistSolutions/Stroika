@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 #include "Synchronized.h"
 
@@ -24,3 +25,16 @@ void Execution::Private_::DbgTraceHelper_ (const wchar_t* w1, const optional<std
     }
 }
 #endif
+
+/*
+ ********************************************************************************
+ ************************ Execution::Private_::ThrowTimeout_ ********************
+ ********************************************************************************
+ */
+void Execution::Private_::ThrowTimeout_ ()
+{
+    // Out-of-line purely so Synchronized.inl can declare it: Synchronized.h cannot include Exceptions.h, and
+    // every ThrowError () overload is inline, so a forward declaration of ThrowError would not link. A .cpp has
+    // no such problem. @see the declaration in Synchronized.inl.
+    ThrowError (errc::timed_out);
+}

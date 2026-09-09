@@ -211,8 +211,8 @@ namespace {
             try {
                 sRegTest3Event_T1_.Wait (0.5s); // should timeout
             }
-            catch (const Execution::TimeOutException&) {
-                passed = true;
+            catch (const system_error& e) {
+                passed = (e.code () == errc::timed_out);
             }
             catch (...) {
             }
@@ -251,7 +251,8 @@ namespace {
                 try {
                     t.WaitForDone (kWaitOnAbortFor);
                 }
-                catch (const Execution::TimeOutException&) {
+                catch (const system_error& e) {
+                    EXPECT_TRUE (e.code () == errc::timed_out);
                     caughtExceptAt = Time::GetTickCount ();
                 }
                 Time::TimePointSeconds expectedEndAt = startTestAt + kWaitOnAbortFor;
@@ -300,8 +301,8 @@ namespace {
                 try {
                     t.AbortAndWaitForDone (kWaitOnAbortFor);
                 }
-                catch (const Execution::TimeOutException&) {
-                    EXPECT_TRUE (false); // shouldn't fail to wait cuz we did abort
+                catch (const system_error&) { // any system_error here is a failure; a timeout is the expected-but-wrong one
+                    EXPECT_TRUE (false);      // shouldn't fail to wait cuz we did abort
                     // Note - saw this fail once on raspberry pi but appears the machine was just being slow - nothing looked other than slow - wrong in
                     // the tracelog - so don't worry unless we see again. That machine can be quite slow
                     //  -- LGP 2017-07-05
@@ -526,8 +527,8 @@ namespace {
                 thread.WaitForDone (0.3s); // should timeout
                 EXPECT_TRUE (false);
             }
-            catch (const Execution::TimeOutException&) {
-                // GOOD
+            catch (const system_error& e) {
+                EXPECT_TRUE (e.code () == errc::timed_out); // GOOD
             }
             catch (...) {
                 EXPECT_TRUE (false);
@@ -547,8 +548,8 @@ namespace {
                 thread.WaitForDone (0.3s); // should timeout
                 EXPECT_TRUE (false);
             }
-            catch (const Execution::TimeOutException&) {
-                // GOOD
+            catch (const system_error& e) {
+                EXPECT_TRUE (e.code () == errc::timed_out); // GOOD
             }
             catch (...) {
                 EXPECT_TRUE (false);

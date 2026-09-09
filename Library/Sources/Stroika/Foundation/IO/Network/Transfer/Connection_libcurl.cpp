@@ -77,10 +77,18 @@ const std::error_category& Transfer::LibCurl::error_category () noexcept
         virtual error_condition default_error_condition ([[maybe_unused]] int ev) const noexcept override
         {
             switch (ev) {
+                case CURLE_SSL_ENGINE_NOTFOUND:
+                    return errc::protocol_not_supported; //?
+                case CURLE_USE_SSL_FAILED:
+                    return errc::protocol_error; //?
+                case CURLE_SSL_CONNECT_ERROR:
+                    return errc::protocol_error; //?
                 case CURLE_OUT_OF_MEMORY:
                     return errc::not_enough_memory;
                 case CURLE_OPERATION_TIMEDOUT:
                     return errc::timed_out;
+                case CURLE_AUTH_ERROR:
+                    return errc::permission_denied;
                 case CURLE_LOGIN_DENIED:
                     return errc::permission_denied;
                 case CURLE_SEND_ERROR:

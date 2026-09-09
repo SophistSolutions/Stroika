@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Execution {
         /*
          *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
          *
-         *  \note   Throws TimeOutException () on timeout.
+         *  \note   Throws a timeout on timeout - @see Execution::ThrowError (errc::timed_out).
          *  
          *  \note   ***Cancelation Point***
          *
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Execution {
         /*
          *  Waits until the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
          *
-         *  \note   Throws TimeOutException () on timeout.
+         *  \note   Throws a timeout on timeout - @see Execution::ThrowError (errc::timed_out).
          *
          *  \note   ***Cancelation Point***
          *

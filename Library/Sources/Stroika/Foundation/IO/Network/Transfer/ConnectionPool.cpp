@@ -149,7 +149,7 @@ public:
                 return fOptions.fConnectionFactory ();
             }
             else {
-                Execution::Throw (TimeOutException::kThe);
+                Execution::ThrowError (errc::timed_out);
             }
         }
         // wrap the connection-ptr in an envelope that will restore the connection to the pool

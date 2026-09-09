@@ -8,9 +8,10 @@
 namespace Stroika::Foundation::Execution {
 
     namespace Private_::SystemErrorExceptionPrivate_ {
-        Characters::String    mkMsg_ (error_code errCode);
-        Characters::String    mkCombinedMsg_ (error_code errCode, const Characters::String& message);
-        void                  TranslateException_ (error_code errCode);
+        Characters::String mkMsg_ (error_code errCode);
+        Characters::String mkCombinedMsg_ (error_code errCode, const Characters::String& message);
+        void               TranslateException_ (error_code errCode);
+        void               TranslateException_ (error_code errCode, const Characters::String& message);
     }
 
     // forward declare for use below....to avoid #include of Thread.h
@@ -65,14 +66,14 @@ namespace Stroika::Foundation::Execution {
         , inherited{}
     {
     }
-    template <typename BASE_EXCEPTION>
+    template <derived_from<exception> BASE_EXCEPTION>
     template <typename... BASE_EXCEPTION_ARGS>
     inline Exception<BASE_EXCEPTION>::Exception (const Characters::String& reasonForError, BASE_EXCEPTION_ARGS... baseExceptionArgs)
         : ExceptionStringHelper{reasonForError}
         , inherited{forward<BASE_EXCEPTION_ARGS> (baseExceptionArgs)...}
     {
     }
-    template <typename BASE_EXCEPTION>
+    template <derived_from<exception> BASE_EXCEPTION>
     const char* Exception<BASE_EXCEPTION>::what () const noexcept
     {
         return _PeekAtNarrowSDKString_ ();
@@ -95,9 +96,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline NestedException::NestedException (const Characters::String& msg, const exception_ptr& basedOnException)
-        : RuntimeErrorException<>{
-              msg,
-          }
+        : Execution::Exception<runtime_error>{msg}
         , fBasedOnException{basedOnException}
     {
     }
@@ -140,8 +139,7 @@ namespace Stroika::Foundation::Execution {
 #else
         error_code ec{errNo, generic_category ()};
 #endif
-        Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
-        Throw (SystemErrorException{ec});
+        ThrowError (ec);
     }
 
     /*
@@ -169,10 +167,42 @@ namespace Stroika::Foundation::Execution {
         TraceContenxtBumper tctx{"Execution::ThrowSystemErrNo", "{}"_f, sysErr};
 #endif
         Require (sysErr != 0);
-        error_code ec{sysErr, system_category ()};
-        Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
+        ThrowError (error_code{sysErr, system_category ()});
+    }
+
+    /*
+     ********************************************************************************
+     ************************************ ThrowError ********************************
+     ********************************************************************************
+     */
+    [[noreturn]] inline void ThrowError (error_code ec)
+    {
+        Require (ec != error_code{});
+        Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec); // [[noreturn]] for the promoted conditions
         Throw (SystemErrorException{ec});
     }
+    [[noreturn]] inline void ThrowError (error_code ec, const Characters::String& message)
+    {
+        Require (ec != error_code{});
+        Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec, message); // [[noreturn]] for the promoted conditions
+        Throw (SystemErrorException{ec, message});
+    }
+    [[noreturn]] inline void ThrowError (errc ec)
+    {
+        Require (ec != errc{}); // errc has no zero enumerator, so errc{} is never a real error
+        ThrowError (make_error_code (ec));
+    }
+    [[noreturn]] inline void ThrowError (errc ec, const Characters::String& message)
+    {
+        Require (ec != errc{});
+        ThrowError (make_error_code (ec), message);
+    }
+
+    /*
+     ********************************************************************************
+     ****************************** ThrowSystemErrNo () *****************************
+     ********************************************************************************
+     */
 #if qStroika_Foundation_Common_Platform_POSIX or qStroika_Foundation_Common_Platform_Windows
     [[noreturn]] inline void ThrowSystemErrNo ()
     {

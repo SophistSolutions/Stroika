@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
      *              REACT TO CHANGE ();
      *          }
      *          else {
-     *              Throw (TimeOutException::kThe);
+     *              ThrowError (errc::timed_out);
      *          }
      *      \endcode
      *

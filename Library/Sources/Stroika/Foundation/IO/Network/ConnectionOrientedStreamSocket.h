@@ -110,7 +110,7 @@ namespace Stroika::Foundation::IO::Network {
             /**
              *  \brief Connects to the argument sockAddr;
              *
-             *  If explicit timeout given, and the connection doesn't complete in time, TimeOutException will result.
+             *  If explicit timeout given, and the connection doesn't complete in time, a timeout exception results (@see Execution::ThrowError (errc::timed_out)).
              *  If no explicit timeout is given, the OS default setting for timeouts will be used.
              * 
              *  \note ***Cancelation Point***

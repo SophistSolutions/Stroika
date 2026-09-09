@@ -282,7 +282,7 @@ namespace {
                 DWORD dwSize = 0;
                 do {
                     if (Time::GetTickCount () > endBy) [[unlikely]] {
-                        Execution::Throw (Execution::TimeOutException::kThe);
+                        Execution::ThrowError (errc::timed_out);
                     }
 
                     // Check for available data.
@@ -417,7 +417,7 @@ namespace {
                 }
 
                 if (not fURL_.GetAuthority () or not fURL_.GetAuthority ()->GetHost () or not fURL_.GetAuthority ()->GetHost ()->AsRegisteredName ()) {
-                    static const Execution::RuntimeErrorException kException_{"Cannot validate TLS without a host name"sv};
+                    static const Execution::Exception<runtime_error> kException_{"Cannot validate TLS without a host name"sv};
                     Execution::Throw (kException_);
                 }
                 auto equalsComparer = String::EqualsComparer{eCaseInsensitive};
@@ -503,7 +503,7 @@ namespace {
             RequireNotNull (fSessionHandle_);
             if (fConnectionHandle_ == nullptr) {
                 if (not fURL_.GetAuthority () or not fURL_.GetAuthority ()->GetHost ()) {
-                    static const Execution::RuntimeErrorException kException_{"Cannot connect without a host"sv};
+                    static const Execution::Exception<runtime_error> kException_{"Cannot connect without a host"sv};
                     Execution::Throw (kException_);
                 }
                 // NOT SURE - for IPv6 address - if we want to pass encoded value here?

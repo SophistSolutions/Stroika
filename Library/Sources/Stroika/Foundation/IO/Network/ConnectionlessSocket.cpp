@@ -66,7 +66,7 @@ namespace {
                 auto s = Execution::WaitForIOReady{fSD_}.WaitQuietly (timeout);
                 Execution::Thread::CheckForInterruption ();
                 if (s.empty ()) {
-                    Execution::Throw (Execution::TimeOutException::kThe);
+                    Execution::ThrowError (errc::timed_out);
                 }
             }
 
@@ -87,7 +87,7 @@ namespace {
                 int nresults = Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, timeout_millisecs); });
 #endif
                 if (nresults == 0) [[unlikely]] {
-                    Execution::Throw (Execution::TimeOutException::kThe);
+                    Execution::ThrowError (errc::timed_out);
                 }
             }
 

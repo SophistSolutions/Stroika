@@ -111,36 +111,36 @@ void Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
         DbgTrace ("ThrowIfShellExecError (0x{:x}) - throwing exception"_f, errCode);
         switch (errCode) {
             case 0:
-                Execution::ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY); // The operating system is out of memory or resources.
+                ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY); // The operating system is out of memory or resources.
             case ERROR_FILE_NOT_FOUND:
-                Execution::ThrowSystemErrNo (ERROR_FILE_NOT_FOUND); // The specified file was not found.
+                ThrowSystemErrNo (ERROR_FILE_NOT_FOUND); // The specified file was not found.
             case ERROR_PATH_NOT_FOUND:
-                Execution::ThrowSystemErrNo (ERROR_PATH_NOT_FOUND); //  The specified path was not found.
+                ThrowSystemErrNo (ERROR_PATH_NOT_FOUND); //  The specified path was not found.
             case ERROR_BAD_FORMAT:
-                Execution::ThrowSystemErrNo (ERROR_BAD_FORMAT); //  The .exe file is invalid (non-Microsoft Win32� .exe or error in .exe image).
+                ThrowSystemErrNo (ERROR_BAD_FORMAT); //  The .exe file is invalid (non-Microsoft Win32� .exe or error in .exe image).
             case SE_ERR_ACCESSDENIED:
-                Execution::Throw (SystemErrorException{E_ACCESSDENIED, HRESULT_error_category ()}); //  The operating system denied access to the specified file.
+                ThrowError (error_code{E_ACCESSDENIED, HRESULT_error_category ()}); //  The operating system denied access to the specified file.
             case SE_ERR_ASSOCINCOMPLETE:
-                Execution::ThrowSystemErrNo (ERROR_NO_ASSOCIATION); //  The file name association is incomplete or invalid.
+                ThrowSystemErrNo (ERROR_NO_ASSOCIATION); //  The file name association is incomplete or invalid.
             case SE_ERR_DDEBUSY:
-                Execution::ThrowSystemErrNo (ERROR_DDE_FAIL); //  The Dynamic Data Exchange (DDE) transaction could not be completed because other DDE transactions were being processed.
+                ThrowSystemErrNo (ERROR_DDE_FAIL); //  The Dynamic Data Exchange (DDE) transaction could not be completed because other DDE transactions were being processed.
             case SE_ERR_DDEFAIL:
-                Execution::ThrowSystemErrNo (ERROR_DDE_FAIL); //  The DDE transaction failed.
+                ThrowSystemErrNo (ERROR_DDE_FAIL); //  The DDE transaction failed.
             case SE_ERR_DDETIMEOUT:
-                Execution::ThrowSystemErrNo (ERROR_DDE_FAIL); //  The DDE transaction could not be completed because the request timed out.
+                ThrowSystemErrNo (ERROR_DDE_FAIL); //  The DDE transaction could not be completed because the request timed out.
             case SE_ERR_DLLNOTFOUND:
-                Execution::ThrowSystemErrNo (ERROR_DLL_NOT_FOUND); //  The specified dynamic-link library (DLL) was not found.
+                ThrowSystemErrNo (ERROR_DLL_NOT_FOUND); //  The specified dynamic-link library (DLL) was not found.
             //case  SE_ERR_FNF:             throw (Platform::Windows::Exception (ERROR_FILE_NOT_FOUND));        //  The specified file was not found.
             case SE_ERR_NOASSOC:
-                Execution::ThrowSystemErrNo (ERROR_NO_ASSOCIATION); //  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable.
+                ThrowSystemErrNo (ERROR_NO_ASSOCIATION); //  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable.
             case SE_ERR_OOM:
-                Execution::ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY); //  There was not enough memory to complete the operation.
+                ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY); //  There was not enough memory to complete the operation.
             //case  SE_ERR_PNF:             throw (Platform::Windows::Exception (ERROR_PATH_NOT_FOUND));        //  The specified path was not found.
             case SE_ERR_SHARE:
-                Execution::ThrowSystemErrNo (ERROR_INVALID_SHARENAME); //
+                ThrowSystemErrNo (ERROR_INVALID_SHARENAME); //
             default: {
                 // Not sure what error to report here...
-                Execution::ThrowSystemErrNo (ERROR_NO_ASSOCIATION);
+                ThrowSystemErrNo (ERROR_NO_ASSOCIATION);
             }
         }
     }
@@ -163,7 +163,7 @@ namespace {
         TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
             L"invalid_parameter_handler", L"Func='{}', expr='{}', file='{}', line={}."_f, function, expression, file, line)};
         Assert (false);
-        Execution::ThrowSystemErrNo (ERROR_INVALID_PARAMETER);
+        ThrowSystemErrNo (ERROR_INVALID_PARAMETER);
     }
 }
 void Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ()

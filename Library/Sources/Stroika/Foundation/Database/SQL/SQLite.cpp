@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -46,11 +47,11 @@ namespace {
         switch (errCode) {
             case SQLITE_BUSY: {
                 DbgTrace ("SQLITE_BUSY"_f); //  The database file is locked
-                Throw (system_error{make_error_code (errc::device_or_resource_busy)});
+                ThrowError (errc::device_or_resource_busy);
             } break;
             case SQLITE_LOCKED: {
                 DbgTrace ("SQLITE_LOCKED"_f); //  A table in the database is locked
-                Throw (system_error{make_error_code (errc::device_or_resource_busy)});
+                ThrowError (errc::device_or_resource_busy);
             } break;
             case SQLITE_CONSTRAINT: {
                 if (errMsgDetails) {
@@ -67,7 +68,7 @@ namespace {
             } break;
             case SQLITE_FULL: {
                 DbgTrace ("SQLITE_FULL"_f);
-                Throw (system_error{make_error_code (errc::no_space_on_device)});
+                ThrowError (errc::no_space_on_device);
             } break;
             case SQLITE_READONLY: {
                 static const auto kEx_ = Exception{"SQLITE_READONLY"sv};

@@ -81,7 +81,10 @@ namespace {
                     ReThrow ();
                 }
             }
-            catch (const TimeOutException& e) {
+            catch (const SystemErrorException& e) {
+                if (e.code () != errc::timed_out) {
+                    ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
 #if qStroika_HasComponent_libcurl
@@ -128,7 +131,10 @@ namespace {
                     ReThrow ();
                 }
             }
-            catch (const TimeOutException& e) {
+            catch (const SystemErrorException& e) {
+                if (e.code () != errc::timed_out) {
+                    ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
         }
@@ -314,7 +320,10 @@ namespace {
                     ReThrow ();
                 }
             }
-            catch (const TimeOutException& e) {
+            catch (const SystemErrorException& e) {
+                if (e.code () != errc::timed_out) {
+                    ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
 #if qStroika_HasComponent_libcurl
@@ -398,7 +407,10 @@ namespace {
                     ReThrow ();
                 }
             }
-            catch (const TimeOutException& e) {
+            catch (const SystemErrorException& e) {
+                if (e.code () != errc::timed_out) {
+                    ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
         }
@@ -457,7 +469,10 @@ namespace {
                 ReThrow ();
             }
         }
-        catch (const TimeOutException& e) {
+        catch (const SystemErrorException& e) {
+            if (e.code () != errc::timed_out) {
+                ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+            }
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
         }
         catch (const RequiredComponentMissingException&) {
@@ -614,7 +629,10 @@ namespace {
                         ReThrow ();
                     }
                 }
-                catch (const TimeOutException& e) {
+                catch (const SystemErrorException& e) {
+                    if (e.code () != errc::timed_out) {
+                        ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                    }
                     Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
                 }
             }
@@ -719,7 +737,10 @@ namespace {
                 ReThrow ();
             }
         }
-        catch (const TimeOutException& e) {
+        catch (const SystemErrorException& e) {
+            if (e.code () != errc::timed_out) {
+                ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+            }
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
         }
         catch (const RequiredComponentMissingException&) {
@@ -750,7 +771,10 @@ namespace {
         catch (const IO::Network::HTTP::Exception& e) {
             DbgTrace ("e={}"_f, e);
         }
-        catch (const TimeOutException& e) {
+        catch (const SystemErrorException& e) {
+            if (e.code () != errc::timed_out) {
+                ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+            }
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
         }
         catch (const RequiredComponentMissingException&) {
@@ -764,6 +788,59 @@ namespace {
         }
     }
 }
+
+namespace {
+    /*
+     *  Pins the libcurl end of the error_code -> exception contract. Deliberately needs NO network: what is
+     *  being tested is the CATEGORY's mapping onto std::errc, which is what lets a libcurl error answer to a
+     *  portable condition test.
+     *
+     *  This is the regression test for the defect that cost two release-validation re-runs in 3.0d24.
+     *  CURLE_OPERATION_TIMEDOUT surfaced as a system_error in libcurl's own category, so the timeout tolerance
+     *  elsewhere in THIS file - which caught Execution::TimeOutException - never matched it, and the runs
+     *  failed on an unreachable www.cnn.com rather than warning. @see Execution::ThrowError.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, LibCurlErrors_MapOntoPortableConditions_)
+    {
+        Debug::TraceContextBumper ctx{"LibCurlErrors_MapOntoPortableConditions_"};
+#if qStroika_HasComponent_libcurl
+        // the category must map libcurl's own numbering onto the portable conditions ...
+        EXPECT_TRUE ((error_code{CURLE_OPERATION_TIMEDOUT, LibCurl::error_category ()} == errc::timed_out));
+        EXPECT_TRUE ((error_code{CURLE_OUT_OF_MEMORY, LibCurl::error_category ()} == errc::not_enough_memory));
+
+        // ... and throwing one must surface as something a caller can test portably, WITHOUT knowing it came
+        // from libcurl. Note e.code () still reports the original libcurl code and category.
+        try {
+            ThrowError (error_code{CURLE_OPERATION_TIMEDOUT, LibCurl::error_category ()});
+            EXPECT_TRUE (false);
+        }
+        catch (const system_error& e) {
+            EXPECT_TRUE (e.code () == errc::timed_out);
+            EXPECT_TRUE (e.code ().value () == CURLE_OPERATION_TIMEDOUT);
+            EXPECT_TRUE (e.code ().category () == LibCurl::error_category ());
+        }
+        catch (...) {
+            EXPECT_TRUE (false);
+        }
+
+        // out-of-memory promotes clear out of the system_error hierarchy - see the ThrowError promotion table
+        try {
+            ThrowError (error_code{CURLE_OUT_OF_MEMORY, LibCurl::error_category ()});
+            EXPECT_TRUE (false);
+        }
+        catch (const bad_alloc&) {
+            // Good
+        }
+        catch (...) {
+            EXPECT_TRUE (false);
+        }
+
+        // an unmapped libcurl code must NOT masquerade as a timeout
+        EXPECT_FALSE ((error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()} == errc::timed_out));
+#endif
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])

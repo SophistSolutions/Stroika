@@ -24,7 +24,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *  TODO:
      *      @todo consider adding a 'based-on' field so that original exception gets copied around.
      *
-     *      @todo consider smarter mapping of basedOnInnerException to status codes - like TimeoutException to 408 Request Timeout
+     *      @todo consider smarter mapping of basedOnInnerException to status codes - like a timeout
+     *            (code () == errc::timed_out) to 408 Request Timeout
      */
     class ClientErrorException : public Exception {
     private:

@@ -685,7 +685,7 @@ void Thread::Ptr::Start () const
 
         fRep_->fStartEverInitiated_ = true; //atomic/publish
         if (fRep_->fAbortRequested_) [[unlikely]] {
-            Throw (RuntimeErrorException{"Thread aborted during start"sv}); // check and if aborting now, don't go further
+            Throw (Execution::Exception<runtime_error>{"Thread aborted during start"sv}); // check and if aborting now, don't go further
         }
 
 #if __cpp_lib_jthread >= 201911
@@ -791,7 +791,7 @@ void Thread::Ptr::WaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
     Debug::TraceContextBumper ctx{"Thread::WaitForDoneUntil", "*this={}, timeoutAt={}"_f, ToString (), timeoutAt};
     if (not WaitForDoneUntilQuietly (timeoutAt)) {
-        Throw (TimeOutException::kThe);
+        ThrowError (errc::timed_out);
     }
 }
 
@@ -840,7 +840,7 @@ void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSeconds timeout
     while (GetStatus () != Status::eCompleted) {
         Time::DurationSeconds time2Wait = timeoutAt - Time::GetTickCount ();
         if (time2Wait <= 0s) {
-            Throw (TimeOutException::kThe);
+            ThrowError (errc::timed_out);
         }
         Platform::Windows::WaitAndPumpMessages (nullptr, {thread}, time2Wait);
     }

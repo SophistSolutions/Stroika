@@ -103,7 +103,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
          *        header
          *
          *  Can throw:
-         *      TimeoutException
+         *      a timeout - a std::system_error whose code () == errc::timed_out (@see Execution::ThrowError (errc::timed_out))
          *      InternetProtocol::ICMP::DestinationUnreachableException
          *      InternetProtocol::ICMP::UnknownICMPPacket
          *      InternetProtocol::ICMP::TTLExpiredException

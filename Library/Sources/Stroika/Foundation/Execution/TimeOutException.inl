@@ -14,13 +14,57 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ************************* Execution::TimeOutException **************************
+     ***************************** DEPRECATED (v3.0d25) *****************************
      ********************************************************************************
      */
+    /**
+     *  \deprecated Since Stroika v3.0d25 - use ThrowError (errc::timed_out).
+     */
+    [[deprecated ("Since Stroika v3.0d25 - use ThrowError (errc::timed_out)")]] [[noreturn]] void ThrowTimeOutException ();
+
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    /**
+     *  \deprecated Since Stroika v3.0d25 - catch the CONDITION instead of this type:
+     *      \code
+     *          catch (const system_error& e) {
+     *              if (e.code () == errc::timed_out) { ... }
+     *          }
+     *      \endcode
+     *      That also matches timeouts raised outside Stroika, which catching by type never did.
+     */
+    class [[deprecated ("Since Stroika v3.0d25 - catch (const system_error&) and test e.code () == errc::timed_out")]] TimeOutException
+        : public Execution::SystemErrorException {
+    public:
+        TimeOutException ();
+        TimeOutException (error_code ec);
+        TimeOutException (const Characters::String& message);
+        TimeOutException (error_code ec, const Characters::String& message);
+
+    public:
+        static const TimeOutException kThe;
+    };
+    inline const TimeOutException TimeOutException::kThe;
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+
+    /*
+     ********************************************************************************
+     ******************* Execution::TimeOutException [[deprecated]] *****************
+     ********************************************************************************
+     */
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     inline TimeOutException::TimeOutException (error_code ec, const Characters::String& message)
         : SystemErrorException{ec, message}
     {
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     /*
      ********************************************************************************
@@ -38,7 +82,11 @@ namespace Stroika::Foundation::Execution {
     }
     inline void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount)
     {
-        ThrowTimeoutExceptionAfter (afterTickCount, TimeOutException::kThe);
+        // note the == part important, so the case of TimeoutSeconds == 0s works as 'no blocking'
+        if (Time::GetTickCount () >= afterTickCount) [[unlikely]] {
+            ThrowError (errc::timed_out);
+        }
+        Thread::CheckForInterruption ();
     }
 
     /*
@@ -56,7 +104,9 @@ namespace Stroika::Foundation::Execution {
     template <typename TIMED_MUTEX>
     void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount)
     {
-        TryLockUntil (m, afterTickCount, TimeOutException::kThe);
+        if (not m.try_lock_until (Time::Pin2SafeSeconds (afterTickCount))) {
+            ThrowError (errc::timed_out);
+        }
     }
 
     /*
@@ -73,7 +123,9 @@ namespace Stroika::Foundation::Execution {
     }
     inline void ThrowIfTimeout (cv_status conditionVariableStatus)
     {
-        ThrowIfTimeout (conditionVariableStatus, TimeOutException::kThe);
+        if (conditionVariableStatus == cv_status::timeout) {
+            ThrowError (errc::timed_out);
+        }
     }
 
     /*
@@ -93,7 +145,11 @@ namespace Stroika::Foundation::Execution {
     template <typename TIMED_MUTEX>
     inline unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d)
     {
-        return UniqueLock (m, d, TimeOutException::kThe);
+        unique_lock<TIMED_MUTEX> lock{m, d};
+        if (not lock.owns_lock ()) {
+            ThrowError (errc::timed_out);
+        }
+        return lock;
     }
 
 }

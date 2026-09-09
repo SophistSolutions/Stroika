@@ -9,12 +9,16 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 
 namespace Stroika::Foundation::Execution {
-    void ThrowTimeOutException (); // forward declare to avoid include/deadly include embrace
-
     namespace Private_ {
 #if qStroika_Foundation_Debug_DefaultTracingOn
         void DbgTraceHelper_ (const wchar_t* w1, const optional<std::wstring>& w2);
 #endif
+        /**
+         *  Equivalent to Execution::ThrowError (errc::timed_out), but declarable HERE - Synchronized.h cannot
+         *  include Exceptions.h (deadly embrace), and ThrowError () is inline, so forward-declaring it would
+         *  compile and then fail to link. Defined out-of-line in Synchronized.cpp, like DbgTraceHelper_ above.
+         */
+        [[noreturn]] void ThrowTimeout_ ();
     }
 }
 
@@ -89,7 +93,7 @@ namespace Stroika::Foundation::Execution {
     {
         ReadLockType_ critSec{fMutex_, tryFor};
         if (not critSec) [[unlikely]] {
-            ThrowTimeOutException ();
+            Private_::ThrowTimeout_ ();
         }
         return fProtectedValue_;
     }
@@ -119,7 +123,7 @@ namespace Stroika::Foundation::Execution {
     {
         [[maybe_unused]] unique_lock critSec{fMutex_, tryFor};
         if (not critSec) [[unlikely]] {
-            ThrowTimeOutException ();
+            Private_::ThrowTimeout_ ();
         }
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { NoteLockStateChanged_ (L"Unlocked"); });
         NoteLockStateChanged_ (L"Locked");
@@ -132,7 +136,7 @@ namespace Stroika::Foundation::Execution {
     {
         [[maybe_unused]] unique_lock critSec{fMutex_, tryFor};
         if (not critSec) [[unlikely]] {
-            ThrowTimeOutException ();
+            Private_::ThrowTimeout_ ();
         }
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { NoteLockStateChanged_ (L"Unlocked"); });
         NoteLockStateChanged_ (L"Locked");
@@ -150,7 +154,7 @@ namespace Stroika::Foundation::Execution {
     {
         ReadLockType_ critSec{fMutex_, tryFor};
         if (not critSec) [[unlikely]] {
-            ThrowTimeOutException ();
+            Private_::ThrowTimeout_ ();
         }
         return ReadableReference{this, move (critSec)};
     }
@@ -165,7 +169,7 @@ namespace Stroika::Foundation::Execution {
     {
         [[maybe_unused]] unique_lock critSec{fMutex_, tryFor};
         if (not critSec) [[unlikely]] {
-            ThrowTimeOutException ();
+            Private_::ThrowTimeout_ ();
         }
         return WritableReference{this, move (critSec)};
     }
@@ -335,7 +339,7 @@ namespace Stroika::Foundation::Execution {
                                       Characters::ToString (timeout).c_str ()};
 #endif
         if (not UpgradeLockNonAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) [[unlikely]] {
-            Execution::ThrowTimeOutException (); // @todo a bit of a defect, could be returned false not due to timeout, but do to doWithWriteLock returning false...
+            Execution::Private_::ThrowTimeout_ (); // @todo a bit of a defect, could be returned false not due to timeout, but do to doWithWriteLock returning false...
         }
     }
     template <typename T, typename TRAITS>
@@ -349,7 +353,7 @@ namespace Stroika::Foundation::Execution {
                                       Characters::ToString (timeout).c_str ()};
 #endif
         if (not UpgradeLockNonAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) [[unlikely]] {
-            Execution::ThrowTimeOutException (); // @todo a bit of a defect, could be returned false not due to timeout, but do to doWithWriteLock returning false...
+            Execution::Private_::ThrowTimeout_ (); // @todo a bit of a defect, could be returned false not due to timeout, but do to doWithWriteLock returning false...
         }
     }
     template <typename T, typename TRAITS>
@@ -499,7 +503,7 @@ namespace Stroika::Foundation::Execution {
     {
         RequireNotNull (s);
         if (not fWriteLock_.owns_lock ()) [[unlikely]] {
-            Execution::ThrowTimeOutException ();
+            Execution::Private_::ThrowTimeout_ ();
         }
         this->_NoteLockStateChanged (L"WritableReference Locked");
         ++s->fWriteLockCount_;

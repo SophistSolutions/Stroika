@@ -91,7 +91,7 @@ namespace {
             void T2_TestTimeout_ ()
             {
                 try {
-                    Execution::Throw (Execution::TimeOutException{});
+                    Execution::ThrowError (errc::timed_out);
                 }
                 catch (const system_error& e) {
                     EXPECT_TRUE (e.code () == errc::timed_out);
@@ -102,9 +102,9 @@ namespace {
                     EXPECT_TRUE (false); //oops
                 }
                 try {
-                    Execution::Throw (Execution::TimeOutException{});
+                    Execution::ThrowError (errc::timed_out);
                 }
-                catch (const Execution::TimeOutException& e) {
+                catch (const Execution::SystemErrorException& e) {
                     EXPECT_EQ (e.code (), errc::timed_out);
                     EXPECT_TRUE (e.code () != errc::already_connected);
                 }
@@ -114,7 +114,7 @@ namespace {
                 }
                 const Characters::String kMsg1_ = L"to abcd 123 zß水𝄋";
                 try {
-                    Execution::Throw (Execution::TimeOutException{kMsg1_});
+                    Execution::Throw (Execution::SystemErrorException{make_error_code (errc::timed_out), kMsg1_});
                 }
                 catch (const system_error& e) {
                     EXPECT_EQ (e.code (), errc::timed_out);
@@ -239,8 +239,8 @@ namespace {
                 try {
                     ThrowSystemErrNo (WAIT_TIMEOUT);
                 }
-                catch (const TimeOutException&) {
-                    // Good
+                catch (const system_error& e) {
+                    EXPECT_TRUE (e.code () == errc::timed_out); // the point of the test: the WIN32 code maps to the CONDITION
                 }
                 catch (...) {
                     EXPECT_TRUE (false);
@@ -248,8 +248,8 @@ namespace {
                 try {
                     ThrowSystemErrNo (ERROR_INTERNET_TIMEOUT);
                 }
-                catch (const TimeOutException&) {
-                    // Good
+                catch (const system_error& e) {
+                    EXPECT_TRUE (e.code () == errc::timed_out); // the point of the test: the WIN32 code maps to the CONDITION
                 }
                 catch (...) {
                     EXPECT_TRUE (false);
@@ -311,6 +311,253 @@ namespace {
         Private::ThrowCatchStringException_ ();
     }
 }
+
+namespace {
+    namespace Test7_ThrowError_promotions_and_conditions_ {
+        namespace Private_ {
+
+            /*
+             *  A third-party-style error_category: its own numbering, mapped onto std::errc through
+             *  default_error_condition () - exactly what the LibCurl and getaddrinfo/DNS categories do.
+             *  ThrowError () promises that ANY such category participates automatically; these tests pin that
+             *  promise without dragging IO::Network into an Execution::Exceptions test. The real libcurl
+             *  category is checked where it belongs, in the networking regression tests.
+             */
+            constexpr int kFakeTimedOut_ = 101;
+            constexpr int kFakeNoMemory_ = 102;
+            constexpr int kFakeOther_    = 103;
+
+            const error_category& Fake_error_category_ () noexcept
+            {
+                class FakeCategory_ : public error_category {
+                public:
+                    virtual const char* name () const noexcept override
+                    {
+                        return "Stroika-Test37-third-party-ish";
+                    }
+                    virtual string message (int ev) const override
+                    {
+                        return "fake error " + to_string (ev);
+                    }
+                    virtual error_condition default_error_condition (int ev) const noexcept override
+                    {
+                        switch (ev) {
+                            case kFakeTimedOut_:
+                                return make_error_condition (errc::timed_out);
+                            case kFakeNoMemory_:
+                                return make_error_condition (errc::not_enough_memory);
+                        }
+                        return error_condition{ev, *this};
+                    }
+                };
+                static const FakeCategory_ kInstance_;
+                return kInstance_;
+            }
+
+            /*
+             *  Why the documented advice is "catch system_error, never SystemErrorException": Stroika adds its
+             *  UNICODE-string/Activity support to a std exception type by deriving Exception<THAT_TYPE> from it,
+             *  and any two of those meet only at their common std base. That is not academic -
+             *  IO::FileSystem::Exception is an Exception<filesystem_error>, so a caller catching
+             *  SystemErrorException silently misses every filesystem error.
+             *  (std::ios_base::failure stands in for filesystem_error here purely to avoid dragging <filesystem>
+             *  into this test; they are the only two subclasses of system_error the standard defines.)
+             */
+            static_assert (is_base_of_v<system_error, SystemErrorException>);
+            static_assert (is_base_of_v<system_error, Execution::Exception<ios_base::failure>>);
+            static_assert (not is_base_of_v<SystemErrorException, Execution::Exception<ios_base::failure>>);
+
+            template <typename THROWER>
+            void CheckIsTimeout_ (THROWER&& thrower, const char* label)
+            {
+                try {
+                    thrower ();
+                    EXPECT_TRUE (false) << label << ": expected an exception";
+                }
+                catch (const system_error& e) {
+                    EXPECT_TRUE (e.code () == errc::timed_out) << label << ": got " << e.code ().message ();
+                }
+                catch (...) {
+                    EXPECT_TRUE (false) << label << ": threw something which is not a system_error";
+                }
+            }
+
+            /*
+             *  THE regression test for the defect all of this exists to prevent. Before v3.0d25 a libcurl
+             *  timeout was a plain system_error in libcurl's own category, so catch (const TimeOutException&)
+             *  never matched it - which cost two release-validation re-runs before anyone noticed the
+             *  tolerance code was catching the wrong thing. However a timeout is produced, it must answer to
+             *  ONE portable test.
+             */
+            void TimeoutsFromEverySourceMatchTheCondition_ ()
+            {
+                DISABLE_COMPILER_MSC_WARNING_START (4996);
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+                // deprecated as of v3.0d25, but while it exists it must still answer to the condition
+                CheckIsTimeout_ ([] () { ThrowTimeOutException (); }, "ThrowTimeOutException () [deprecated]");
+                DISABLE_COMPILER_MSC_WARNING_END (4996);
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+                CheckIsTimeout_ ([] () { ThrowError (error_code{kFakeTimedOut_, Fake_error_category_ ()}); },
+                                 "ThrowError (third-party category)");
+                CheckIsTimeout_ ([] () { ThrowError (errc::timed_out); }, "ThrowError (errc::timed_out)");
+                CheckIsTimeout_ ([] () { ThrowError (errc::timed_out, "with a message"sv); }, "ThrowError (errc, message)");
+                CheckIsTimeout_ ([] () { ThrowPOSIXErrNo (ETIMEDOUT); }, "ThrowPOSIXErrNo (ETIMEDOUT)");
+#if qStroika_Foundation_Common_Platform_Windows
+                CheckIsTimeout_ ([] () { ThrowSystemErrNo (WAIT_TIMEOUT); }, "ThrowSystemErrNo (WAIT_TIMEOUT)");
+                CheckIsTimeout_ ([] () { ThrowSystemErrNo (ERROR_INTERNET_TIMEOUT); }, "ThrowSystemErrNo (ERROR_INTERNET_TIMEOUT)");
+#else
+                CheckIsTimeout_ ([] () { ThrowSystemErrNo (ETIMEDOUT); }, "ThrowSystemErrNo (ETIMEDOUT)");
+#endif
+            }
+
+            /*
+             *  bad_alloc is the one promotion which changes what a caller must CATCH, since it does not derive
+             *  from system_error. Before v3.0d25 OS errors did this but third-party-category errors did not.
+             */
+            void OutOfMemoryAlwaysBecomesBadAlloc_ ()
+            {
+                auto check = [] (auto&& thrower, const char* label) {
+                    try {
+                        thrower ();
+                        EXPECT_TRUE (false) << label << ": expected an exception";
+                    }
+                    catch (const bad_alloc&) {
+                        // Good
+                    }
+                    catch (...) {
+                        EXPECT_TRUE (false) << label << ": expected bad_alloc";
+                    }
+                };
+                check ([] () { ThrowError (error_code{kFakeNoMemory_, Fake_error_category_ ()}); }, "ThrowError (third-party category)");
+                check ([] () { ThrowPOSIXErrNo (ENOMEM); }, "ThrowPOSIXErrNo (ENOMEM)");
+            }
+
+            /*
+             *  Promotion changes the TYPE thrown, never the code carried - so e.code () still names where the
+             *  error actually came from. The single documented exception is the Windows WAIT_TIMEOUT
+             *  workaround, whose entire purpose is to substitute a code which compares equal.
+             */
+            void PromotionPreservesTheOriginalErrorCode_ ()
+            {
+                try {
+                    ThrowError (error_code{kFakeTimedOut_, Fake_error_category_ ()});
+                    EXPECT_TRUE (false);
+                }
+                catch (const system_error& e) {
+                    EXPECT_TRUE (e.code () == errc::timed_out);
+                    EXPECT_TRUE (e.code ().value () == kFakeTimedOut_);
+                    EXPECT_TRUE (e.code ().category () == Fake_error_category_ ());
+                }
+            }
+
+            void UnpromotedCodesPassThroughUnchanged_ ()
+            {
+                try {
+                    ThrowError (error_code{kFakeOther_, Fake_error_category_ ()});
+                    EXPECT_TRUE (false);
+                }
+                catch (const system_error& e) {
+                    EXPECT_TRUE (e.code ().value () == kFakeOther_);
+                    EXPECT_TRUE (e.code ().category () == Fake_error_category_ ());
+                    EXPECT_TRUE (e.code () != errc::timed_out);
+                    EXPECT_TRUE (e.code () != errc::not_enough_memory);
+                }
+            }
+
+            /*
+             *  Documentation-as-test. Comparing against a specific error_code matches only the ONE source which
+             *  produced it; comparing against a CONDITION matches every source. Getting this wrong is the
+             *  code-level twin of the type-level mistake (catch (const TimeOutException&)) which hid the
+             *  original defect - it compiles, it reads fine, and it silently misses.
+             */
+            void TestTheConditionNotTheCode_ ()
+            {
+                const error_code kFromThirdParty_ = error_code{kFakeTimedOut_, Fake_error_category_ ()};
+                EXPECT_TRUE (kFromThirdParty_ == errc::timed_out);                             // RIGHT
+                EXPECT_FALSE (kFromThirdParty_ == error_code (ETIMEDOUT, system_category ())); // the trap
+            }
+
+            /*
+             *  Catching the BASE must not cost you the Stroika half of the exception - which is the thing that
+             *  makes the "catch system_error, not SystemErrorException" advice safe to give. Both the UNICODE
+             *  message and the Activity stack come back, because Characters::ToString () cross-casts to
+             *  ExceptionStringHelper and returns GetFullErrorMessage (). Reading e.what () instead is the lossy
+             *  path, and is what this test exists to discourage.
+             */
+            void UnicodeAndActivitiesSurviveABaseClassCatch_ ()
+            {
+                static const Activity    kDoingTheThing_{"doing the thing"sv};
+                const Characters::String kMsg_ = L"context zß水𝄋";
+                try {
+                    DeclareActivity declareActivity{&kDoingTheThing_};
+                    ThrowError (error_code{kFakeTimedOut_, Fake_error_category_ ()}, kMsg_);
+                    EXPECT_TRUE (false);
+                }
+                catch (const system_error& e) { // deliberately the BASE, not SystemErrorException
+                    const Characters::String kGot_ = Characters::ToString (e);
+                    EXPECT_TRUE (kGot_.Contains (kMsg_));             // the UNICODE message survived
+                    EXPECT_TRUE (kGot_.Contains ("doing the thing")); // ... and so did the Activity
+                    EXPECT_TRUE (e.code () == errc::timed_out);       // ... and it is still a timeout
+                }
+                catch (...) {
+                    EXPECT_TRUE (false);
+                }
+            }
+
+            /*
+             *  TRANSITIONAL (v3.0d25): TimeOutException is deprecated, but ThrowError () still promotes to it so
+             *  existing catch clauses keep working. The second case is the interesting one - the deprecated type
+             *  now catches a THIRD-PARTY-category timeout, which is exactly what it never did before.
+             *  When the class and the promotion are removed (they must go together), THIS BLOCK STOPS
+             *  COMPILING - which is the intended reminder to delete it along with them.
+             */
+            DISABLE_COMPILER_MSC_WARNING_START (4996);
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+            void DeprecatedTimeOutExceptionStillCatches_ ()
+            {
+                try {
+                    ThrowTimeOutException ();
+                    EXPECT_TRUE (false);
+                }
+                catch (const TimeOutException&) {
+                    // Good - guaranteed while the type still exists
+                }
+                catch (...) {
+                    EXPECT_TRUE (false);
+                }
+                try {
+                    ThrowError (error_code{kFakeTimedOut_, Fake_error_category_ ()});
+                    EXPECT_TRUE (false);
+                }
+                catch (const TimeOutException&) {
+                    // Good - and THIS is the case which used to silently not match
+                }
+                catch (...) {
+                    EXPECT_TRUE (false);
+                }
+            }
+            DISABLE_COMPILER_MSC_WARNING_END (4996);
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        }
+    }
+    GTEST_TEST (Foundation_Execution_Exceptions, Test7_ThrowError_promotions_and_conditions_)
+    {
+        using namespace Test7_ThrowError_promotions_and_conditions_;
+        Debug::TraceContextBumper ctx{"Test7_ThrowError_promotions_and_conditions_"};
+        Private_::TimeoutsFromEverySourceMatchTheCondition_ ();
+        Private_::OutOfMemoryAlwaysBecomesBadAlloc_ ();
+        Private_::PromotionPreservesTheOriginalErrorCode_ ();
+        Private_::UnpromotedCodesPassThroughUnchanged_ ();
+        Private_::TestTheConditionNotTheCode_ ();
+        Private_::UnicodeAndActivitiesSurviveABaseClassCatch_ ();
+        Private_::DeprecatedTimeOutExceptionStillCatches_ ();
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])

@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -59,11 +60,11 @@ namespace {
         switch (errCode) {
             case SQLITE_BUSY: {
                 DbgTrace ("SQLITE_BUSY"_f); //  The database file is locked
-                Throw (system_error{make_error_code (errc::device_or_resource_busy)});
+                ThrowError (errc::device_or_resource_busy);
             } break;
             case SQLITE_LOCKED: {
                 DbgTrace ("SQLITE_LOCKED"_f); //  A table in the database is locked
-                Throw (system_error{make_error_code (errc::device_or_resource_busy)});
+                ThrowError (errc::device_or_resource_busy);
             } break;
             case SQLITE_CONSTRAINT: {
                 if (errMsgDetails) {
@@ -80,7 +81,7 @@ namespace {
             } break;
             case SQLITE_FULL: {
                 DbgTrace ("SQLITE_FULL"_f);
-                Throw (system_error{make_error_code (errc::no_space_on_device)});
+                ThrowError (errc::no_space_on_device);
             } break;
             case SQLITE_READONLY: {
                 static const auto kEx_ = Exception{"SQLITE_READONLY"sv};
@@ -207,7 +208,7 @@ namespace {
                     // DbgTrace ("extractcoltext col={} ct={}, returning null string for NULL result"_f, col, ::sqlite3_column_type (statement, col));
                     return String{};
                 default:
-                    Throw (RuntimeErrorException{"Expected text column but got column type {}"_f(colType)});
+                    Throw (Execution::Exception<runtime_error>{"Expected text column but got column type {}"_f(colType)});
             }
         }
         // DbgTrace ("extractcolt ext col={} ct={}, returning '{}"_f, col, ::sqlite3_column_type (statement, col), String::FromUTF8 (t));

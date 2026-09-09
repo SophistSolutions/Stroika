@@ -148,9 +148,9 @@ namespace Stroika::Foundation::Execution {
          *  Simple wait. Can use operator HANDLE() to do fancier waits.
          *  timeout can be negative (which triggers an immediate exception).
          *
-         *  TimeOutException throws if the timeout is exceeded.
+         *  Throws a timeout (@see Execution::ThrowError (errc::timed_out)) if the timeout is exceeded.
          *
-         *  \note Wait (0) will always throw TimeOutException regardless of the state of the event/trigger
+         *  \note Wait (0) will always throw a timeout regardless of the state of the event/trigger
          *
          *  @see WaitQuietly ()
          *  @see PeekIsSet ()
@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  TimeOutException throws if the event is not signaled before timeoutAt is
+         *  Throws a timeout (@see Execution::ThrowError (errc::timed_out)) if the event is not signaled before timeoutAt is
          *  exceeded (includes when reached).
          *
          *  @see Wait ()

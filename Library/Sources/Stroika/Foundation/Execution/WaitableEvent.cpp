@@ -43,13 +43,13 @@ using Stroika::Foundation::Time::Duration;
 void WaitableEvent::WE_::WaitUntil (Time::TimePointSeconds timeoutAt)
 {
     if (WaitUntilQuietly (timeoutAt) == WaitStatus::eTimeout) {
-// note - safe use of TimeOutException::kThe because you cannot really wait except when threads are running, so
-// inside 'main' lifetime
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        // only thing Throw() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
-        Throw (TimeOutException::kThe);
+        ThrowError (errc::timed_out);
 #else
-        throw (TimeOutException::kThe);
+        // deliberately NOT ThrowError (): that funnels through Throw (), whose only added value is a DbgTrace ()
+        // which makes traces here hard to read unless you are debugging a timeout/event issue.
+        // Identical exception object, just no trace - keep the two in sync.
+        throw SystemErrorException{make_error_code (errc::timed_out)};
 #endif
     }
 }

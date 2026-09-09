@@ -71,7 +71,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          * Only schemeAndAuthority is looked at from (optional) hint.
          *
          * If timeout allocating connection (because all busy/in use), 
-         *      throw TimeoutException
+         *      throws a timeout - a std::system_error whose code () == errc::timed_out
+         *      (@see Execution::ThrowError (errc::timed_out))
          * UNLESS
          *      If AllocateGloballyIfTimeout given argument, then instead of throwing, allocate a global connection object (Connection::New ())
          *      Caller cannot really tell for the most part, unless they call get, but if they just say what they want, they cannot tell.

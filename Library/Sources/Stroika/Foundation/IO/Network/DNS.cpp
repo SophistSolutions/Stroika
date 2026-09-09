@@ -88,7 +88,7 @@ namespace {
             return string{result, e};
         }
     };
-    const error_category& DNS_error_category () noexcept
+    const error_category& DNS_error_category_ () noexcept
     {
         return Common::Immortalize<getaddrinfo_error_category_> ();
     }
@@ -139,7 +139,7 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([res] () noexcept { ::freeaddrinfo (res); });
     if (errCode != 0) {
         // @todo - I think we need to capture erron as well if errCode == EAI_SYSTEM (see http://man7.org/linux/man-pages/man3/getaddrinfo.3.html)
-        Throw (SystemErrorException (errCode, DNS_error_category ()));
+        Throw (SystemErrorException (errCode, DNS_error_category_ ()));
     }
     AssertNotNull (res); // else would have thrown
 
@@ -205,7 +205,7 @@ optional<String> DNS::ReverseLookup (const InternetAddress& address) const
         case EAI_NONAME:
             return {};
         default:
-            Throw (SystemErrorException{errCode, DNS_error_category ()});
+            ThrowError (error_code{errCode, DNS_error_category_ ()});
     }
 }
 
@@ -266,7 +266,7 @@ Sequence<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress
 #endif
         auto h = GetHostEntry (hostNameOrAddress).fAddressList;
         if (h.empty ()) {
-            Execution::Throw (RuntimeErrorException{"No associated addresses"sv});
+            Execution::Throw (Execution::Exception<runtime_error>{"No associated addresses"sv});
         }
         return h[0];
     }
@@ -283,7 +283,7 @@ Sequence<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress
             }
         }
         if (h.empty ()) {
-            Execution::Throw (RuntimeErrorException{"No associated addresses"sv});
+            Execution::Throw (Execution::Exception<runtime_error>{"No associated addresses"sv});
         }
         return h[0];
     }

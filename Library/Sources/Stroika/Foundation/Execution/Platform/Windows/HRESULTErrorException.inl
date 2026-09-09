@@ -12,7 +12,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     inline void ThrowIfErrorHRESULT (HRESULT hr)
     {
         if (not SUCCEEDED (hr)) {
-            Throw (SystemErrorException{hr, HRESULT_error_category ()});
+            ThrowError (error_code{hr, HRESULT_error_category ()});
         }
     }
 

@@ -64,14 +64,41 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief  identical to builtin C++ 'throw' except that it does helpful, type dependent DbgTrace() messages first
      *
-     *  Utility to call a Trace message (hopefully an appropriate one) for an exception being
-     *  thrown... But this function is also specialized to do call D::Throw() for several types -
-     *  which CAN translate the kind of exception throw. For example, for Platform:Windows::Exception -
-     *  ERROR_OUTOFMEMORY is translated to std::bad_alloc ().
+     *  Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown.
      *
-     *  ONLY the first variation (with no traceMessage) is template specialized. The overloads
-     *  which take an extra message are JUST for convenience, and vector through the 1-arg overload -
-     *  so as to get is specialization.
+     *  \note   **Throw () and ThrowError () are a deliberate pair, and choosing between them is a real
+     *          decision - not a matter of which argument type you happen to have:**
+     *
+     *              o   `ThrowError (ec)` - *"report this error in Stroika's NORMALIZED form."* It may change
+     *                  the type thrown, and may give up part of how the error was represented, so that what
+     *                  arrives can be tested portably. @see ThrowError for exactly what is preserved (the
+     *                  meaning) and what can be given up (the representation).
+     *
+     *              o   `Throw (x)` - *"throw exactly THIS."* No translation, no promotion, nothing lossy. The
+     *                  catcher gets the object you constructed, unchanged. That is a deliberate property, not
+     *                  a shortcoming: Throw (X) throwing something other than X would be a far worse surprise.
+     *
+     *          The consequence is that constructing a SystemErrorException yourself and throwing it here gets
+     *          you NONE of the promotions documented at @see Execution::ThrowError - so a code whose condition
+     *          is errc::not_enough_memory arrives as a SystemErrorException rather than std::bad_alloc, and a
+     *          caller who wrote catch (const bad_alloc&) does not see it.
+     *
+     *          Doing that is perfectly legal, and occasionally what you want. But it is almost never what you
+     *          want when the error_code came from the OS or from a library with its own error_category: there,
+     *          you want ThrowError (ec). This is not a hypothetical - Connection_libcurl did exactly the wrong
+     *          one of these, it read correctly, and the resulting missed timeouts were not diagnosed for years.
+     *          **If you have an error_code, reach for ThrowError () first, and use Throw () only if you have a
+     *          reason to want the promotions suppressed.**
+     *
+     *  \note   What you hand Throw () also decides what the CATCHER gets. Stroika's Exception<> types - and so
+     *          SystemErrorException and everything derived from it - capture the current Activity stack and
+     *          preserve UNICODE message text AT CONSTRUCTION time (@see Exception<>). Throw (system_error{ec})
+     *          carries neither, and neither can be recovered later by whoever catches it. Since
+     *          SystemErrorException IS a std::system_error, throwing the Stroika type costs nothing in
+     *          interoperability - so prefer Throw (SystemErrorException{ec}), or better still ThrowError (ec).
+     *
+     *  \note   The overloads which take an extra trace message are JUST for convenience, and vector through the
+     *          1-arg overload.
      */
     template <typename T>
     [[noreturn]] void Throw (T&& e2Throw);

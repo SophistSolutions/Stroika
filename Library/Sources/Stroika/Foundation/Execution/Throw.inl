@@ -55,7 +55,12 @@ namespace Stroika::Foundation::Execution {
 #if qStroika_Foundation_Debug_DefaultTracingOn
         Private_::JustDbgTrace_ (traceMsg);
 #endif
-        Throw (forward<T> (e2Throw)); // important todo this way to get its template specialization (even though the cost is an extra trace message)
+        // deliberately via the 1-arg overload: that is what emits the "Throwing exception" trace (and backtrace);
+        // throwing directly here would lose it. NB: this used to be about a per-type Throw<> specialization
+        // which translated exception types (Platform::Windows::Exception ERROR_OUTOFMEMORY -> bad_alloc, etc);
+        // no such specialization has existed for some time - @see Execution::ThrowError for where translation
+        // actually happens now.
+        Throw (forward<T> (e2Throw));
     }
     template <typename T>
     [[noreturn]] inline void Throw (T&& e2Throw, [[maybe_unused]] const wchar_t* traceMsg)
@@ -64,7 +69,12 @@ namespace Stroika::Foundation::Execution {
 #if qStroika_Foundation_Debug_DefaultTracingOn
         Private_::JustDbgTrace_ (traceMsg);
 #endif
-        Throw (forward<T> (e2Throw)); // important todo this way to get its template specialization (even though the cost is an extra trace message)
+        // deliberately via the 1-arg overload: that is what emits the "Throwing exception" trace (and backtrace);
+        // throwing directly here would lose it. NB: this used to be about a per-type Throw<> specialization
+        // which translated exception types (Platform::Windows::Exception ERROR_OUTOFMEMORY -> bad_alloc, etc);
+        // no such specialization has existed for some time - @see Execution::ThrowError for where translation
+        // actually happens now.
+        Throw (forward<T> (e2Throw));
     }
 
     /*
