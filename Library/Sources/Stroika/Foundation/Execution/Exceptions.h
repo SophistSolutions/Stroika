@@ -536,7 +536,25 @@ namespace Stroika::Foundation::Execution {
      *      o   `errc::not_enough_memory` becomes `std::bad_alloc`, giving up the error_code entirely - bad_alloc
      *          has no code () - because that is the type C++ has always expected you to catch for allocation
      *          failure. This is also why it needs its own catch handler, and why GetAssociatedErrorCode ()
-     *          returns nullopt for it.
+     *          returns nullopt for it. It gives up the caller's message and the Activity stack too; that is
+     *          deliberate, and the note below says why.
+     *
+     *  \note   **Why the bad_alloc case alone is allowed to be this lossy.** Everywhere else, Stroika works hard
+     *          to carry a UNICODE message and the Activity context (@see Exception<>). Here it deliberately
+     *          does not, and the reason is that the enrichment would need the very resource that just ran out:
+     *          building a message and copying an activity stack means several allocations, performed while
+     *          reporting that an allocation failed. Under genuine memory pressure that can throw from inside
+     *          the throw, turning a clean bad_alloc into something far harder to diagnose. std::bad_alloc is
+     *          specified to be cheap to create for exactly this reason, and wrapping it would throw that away.
+     *
+     *          Little is lost in practice. @see Throw () already traces the message and the activities at the
+     *          throw point, which is where anyone diagnosing this would look; and an out-of-memory failure is
+     *          rarely recoverable, so rich structured context buys less here than anywhere else.
+     *
+     *          Considered and rejected 2026-09-09: making this throw an Exception<bad_alloc> so the message and
+     *          activities survive. It works, and `catch (const bad_alloc&)` would keep matching - but it trades
+     *          a reliable failure for a richer one that is least reliable exactly when it matters. Revisit only
+     *          with a concrete case where the lost context actually mattered.
      *
      *      So: **test what the error means** - `e.code () == errc::whatever`, or `catch (const bad_alloc&)` -
      *      and none of this normalization is visible to you. Test how it is represented -

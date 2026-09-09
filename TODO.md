@@ -26,33 +26,6 @@ Generally will track stuff here between releases
      steers people. Ideas, unevaluated: a `Execution::IsA (e, errc::X)` helper; a `[[nodiscard]]`-ish wrapper;
      or just a documented lint. Cheap to think about, no urgency.
 
-   - **DISAGREEMENT TO RESOLVE: is the `bad_alloc` promotion's losslessness worth fixing?** LGP thinks the
-     current behavior is right; the design review argued otherwise. Both positions below - settle it, then
-     delete this entry.
-       - **The complaint**: `TranslateException_Impl_` does `Throw (bad_alloc{})`, discarding the error_code,
-         any caller-supplied message, AND the Activity stack. It is the only place in the design where goals
-         (1) UNICODE messages and (2) Activity context are abandoned. `ThrowError (ec, "while allocating the
-         frame buffer")` produces something whose `what ()` is just "std::bad_alloc".
-         `GetAssociatedErrorCode ()` also returns `nullopt` for it, so even `catch (...)` + query cannot
-         recover it. **It also breaks the one guarantee ThrowError () makes** - that promotion changes the
-         type but never which conditions the error satisfies - because std::bad_alloc has no `code ()` at
-         all, so there is nothing to test `== errc::not_enough_memory` against. (LGP spotted that hole
-         2026-09-08 while reviewing the guarantee's wording; the header now states the carve-out explicitly.) Proposed fix was `Exception<bad_alloc>` (no ambiguity - `ExceptionStringHelper` does not
-         derive from `std::exception`, so there is exactly one `std::exception` base) plus a one-line
-         `catch (const bad_alloc&) { return make_error_code (errc::not_enough_memory); }` in
-         `GetAssociatedErrorCode`. `catch (const bad_alloc&)` keeps working either way.
-       - **The counterargument (which is strong, and may well win)**: `std::bad_alloc` is deliberately an
-         allocation-free type. Enriching it means allocating several times - String, Stack<Activity>,
-         std::string, then again for the copy `Throw ()` makes - while reporting that allocation failed. Under
-         real memory pressure that can throw from inside the throw path, converting a clean `bad_alloc` into
-         something worse. The information is also not truly lost in practice: `Throw ()` already DbgTrace's the
-         message and activities at the throw point in Debug builds, which is where anyone would look. And OOM
-         is rarely recoverable, so rich diagnostics buy less here than anywhere else.
-       - Worth noting the two sides may not actually conflict: the enrichment is only risky when the heap is
-         genuinely exhausted, whereas this path is reached when a SYSCALL or library (sqlite, xerces, libcurl)
-         reported ENOMEM - which often means a size/quota limit, not process heap exhaustion. A split rule is
-         possible but adds a distinction callers would have to understand.
-
    - **`Execution::TimedLockGuard` vs `Execution::UniqueLock` - decide which should survive, then fix or delete.**
      Deliberately left out of the 3.0d25 exception/TimeOutException change as a separable question.
      Facts established 2026-09-08, so don't re-derive them:

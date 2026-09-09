@@ -250,7 +250,9 @@ namespace {
         }
 #endif
         if (errCode == errc::not_enough_memory) {
-            Throw (bad_alloc{}); // NB: bad_alloc carries no message, so 'message' is necessarily dropped here
+            // Deliberately lossy - 'message' and the Activity stack are both dropped. @see ThrowError () for why
+            // enriching this one is a bad trade.
+            Throw (bad_alloc{});
         }
         DISABLE_COMPILER_MSC_WARNING_START (4996);
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
