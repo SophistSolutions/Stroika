@@ -14,6 +14,141 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
+   - **Build exception messages LAZILY - the eager build is what forced the `static const ...Exception`
+     hack, and that hack is what broke the Activity mechanism.** Design review 2026-09-08; measurements are
+     real, do not re-derive them. Consider migrating to a GitHub issue - this is bigger than a scratch item.
+       - **Every throw materializes FOUR string representations**: `ExceptionStringHelper`'s
+         `fRawErrorMessage_`, `fFullErrorMessage_` and `fSDKCharString_`, plus `std::system_error`'s own copy
+         built from `ec.message ()` inside `runtime_error`. **That fourth one is never read** - `Exception<>::what ()`
+         overrides it away. On Windows it costs a second `FormatMessage` round-trip per throw for a string
+         nobody can observe. (It is also unavoidable while deriving from std::system_error: every standard
+         ctor concatenates `message ()` internally. So it argues for laziness elsewhere, not for a fix here.)
+       - **Measured cost** (g++-15 `-O3`, prebuilt `g++-15-release`, Stroika-Dev-2604): a Stroika exception
+         throw/catch is ~1000 ns vs ~515 ns for a trivial `std::exception` - about **2x** - on a path where
+         most catchers only ever read `e.code ()`.
+       - **The real damage is not the nanoseconds.** That cost provoked ~30 `static const ...Exception kFoo_{...}`
+         instances across the Foundation, and a function-local static freezes the FIRST failure's Activity
+         stack and replays it forever. So the eager-message design caused a correctness bug, through the
+         optimization it provoked, in the feature that is the design's main value-add.
+       - **The fix**: store `error_code` + raw message + activities; materialize `fFullErrorMessage_` and
+         `fSDKCharString_` on first `what ()` / `Characters::ToString ()`. `what ()` must return a stable
+         `const char*`, so it needs a mutable cache (and `what ()` is `noexcept`, so the lazy build must not
+         propagate - fall back to the raw narrow string on failure).
+       - **This SUBSUMES the "move Activity capture to Throw ()" item below** - if constructing an exception is
+         cheap, the statics have no reason to exist, and the stale-activity bug goes with them. Do this one
+         first, and re-read that item before starting.
+
+   - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
+     enforces it.** Raised in the same design review. The condition test is correct and portable; the raw-value
+     test compiles, looks reasonable, and is usually wrong - it only matches if the category happens to be the
+     one you assumed. This is inherited from the standard, not created by Stroika, but Stroika could make the
+     right thing shorter than the wrong thing. Note `Tests/37` already has a regression test naming this exact
+     trap ("the condition-vs-code trap"), so the failure mode is understood - what is missing is an API that
+     steers people. Ideas, unevaluated: a `Execution::IsA (e, errc::X)` helper; a `[[nodiscard]]`-ish wrapper;
+     or just a documented lint. Cheap to think about, no urgency.
+
+   - **DISAGREEMENT TO RESOLVE: is the `bad_alloc` promotion's losslessness worth fixing?** LGP thinks the
+     current behavior is right; the design review argued otherwise. Both positions below - settle it, then
+     delete this entry.
+       - **The complaint**: `TranslateException_Impl_` does `Throw (bad_alloc{})`, discarding the error_code,
+         any caller-supplied message, AND the Activity stack. It is the only place in the design where goals
+         (1) UNICODE messages and (2) Activity context are abandoned. `ThrowError (ec, "while allocating the
+         frame buffer")` produces something whose `what ()` is just "std::bad_alloc".
+         `GetAssociatedErrorCode ()` also returns `nullopt` for it, so even `catch (...)` + query cannot
+         recover it. **It also breaks the one guarantee ThrowError () makes** - that promotion changes the
+         type but never which conditions the error satisfies - because std::bad_alloc has no `code ()` at
+         all, so there is nothing to test `== errc::not_enough_memory` against. (LGP spotted that hole
+         2026-09-08 while reviewing the guarantee's wording; the header now states the carve-out explicitly.) Proposed fix was `Exception<bad_alloc>` (no ambiguity - `ExceptionStringHelper` does not
+         derive from `std::exception`, so there is exactly one `std::exception` base) plus a one-line
+         `catch (const bad_alloc&) { return make_error_code (errc::not_enough_memory); }` in
+         `GetAssociatedErrorCode`. `catch (const bad_alloc&)` keeps working either way.
+       - **The counterargument (which is strong, and may well win)**: `std::bad_alloc` is deliberately an
+         allocation-free type. Enriching it means allocating several times - String, Stack<Activity>,
+         std::string, then again for the copy `Throw ()` makes - while reporting that allocation failed. Under
+         real memory pressure that can throw from inside the throw path, converting a clean `bad_alloc` into
+         something worse. The information is also not truly lost in practice: `Throw ()` already DbgTrace's the
+         message and activities at the throw point in Debug builds, which is where anyone would look. And OOM
+         is rarely recoverable, so rich diagnostics buy less here than anywhere else.
+       - Worth noting the two sides may not actually conflict: the enrichment is only risky when the heap is
+         genuinely exhausted, whereas this path is reached when a SYSCALL or library (sqlite, xerces, libcurl)
+         reported ENOMEM - which often means a size/quota limit, not process heap exhaustion. A split rule is
+         possible but adds a distinction callers would have to understand.
+
+   - **Move the Activity capture from exception CONSTRUCTION to `Execution::Throw ()`.** LGP is ~90% sure this
+     is right but it is unrelated to the 3.0d25 exception/TimeOutException work, so it was parked deliberately.
+     Everything below was MEASURED on 2026-09-08 (g++-15 `-O3`, prebuilt `g++-15-release` Stroika, in
+     Stroika-Dev-2604 on medusa - which was loaded, so absolute ns move run to run; the deltas were stable).
+     Do not re-derive it.
+       - **The problem.** `ExceptionStringHelper`'s ctor calls `CaptureCurrentActivities ()`, and `mkMessage_`
+         bakes the result into `fFullErrorMessage_` right there. There are **~30 `static const ...Exception
+         kFoo_{"msg"sv}` instances** across the Foundation (Version.cpp, URI.cpp, BLOB.cpp, Timezone.cpp,
+         the OpenSSL and ZLib wrappers, the iostream adapters, ...). A function-local static is constructed at
+         the FIRST failure, so it freezes that caller's Activity stack and replays it forever.
+       - **It is worse than "activities are missing" - it reports a confidently WRONG context**, chosen
+         nondeterministically by whichever call site (and thread) failed first. Demonstrated:
+         first failure under "parsing the config file" bakes that in; a later failure under "serving an HTTP
+         request" still prints `... while parsing the config file.`, and so does a failure with NO activity
+         declared at all. An empty activity list would be strictly safer than what happens today.
+       - **The statics are NOT a false optimization** - that was checked, and they earn their keep:
+         `Throw (static)` 749 ns vs `Throw (Exception{msg})` 1009 ns, so ~260 ns / 26% saved per throw
+         (a second run gave 576 vs 859 ns = 283 ns / 33%). With 2 activities live the gap is 708 vs 1375 ns,
+         because `mkMessage_` runs a StringBuilder pass. So do NOT "fix" this by deleting the statics.
+       - **The fix keeps both, for 1.5 ns.** `Activity.h` already exposes `AnyCurrentActivities ()` ("checks if
+         CaptureCurrentActivities() would produce a non-empty stack (but faster)") - measured at **1.5 ns**.
+         Guarding the rebuild on it was measured at 728 ns with no activities (i.e. the static's full win kept)
+         and 1377 ns with activities (2 ns off always-fresh), reporting the correct context in both.
+       - **Where:** inside `Throw ()`, not at the 30 call sites. `Throw (T&&)` already copies the object, so
+         there is no new copy; **all 30 sites go through `Throw ()`** (verified - no bare `throw kFoo_;`
+         anywhere in the tree); and it fixes user code doing the same thing. Sketch:
+         ```cpp
+         if constexpr (derived_from<remove_cvref_t<T>, ExceptionStringHelper>) {
+             if (AnyCurrentActivities ()) [[unlikely]] {
+                 auto tmp = forward<T> (e2Throw);
+                 tmp._RecaptureActivitiesAtThrowPoint_ ();   // re-run mkMessage_ + AsNarrowSDKString
+                 ThrowImpl_ (move (tmp));
+             }
+         }
+         ```
+       - **Known cost, accepted:** for an ordinary `Throw (Exception{msg})` with activities live, the ctor
+         captures and then `Throw` re-captures - double work on that one path. Avoidable by dropping the
+         ctor-side capture entirely and making `Throw ()` the sole capture point, but that silently loses
+         activities for anyone using bare `throw X{}`. Take the double work.
+       - Side benefit: it makes `Activity.h:145` true. That doc says activities are captured "when an
+         ExceptionStringHelper subclass ... is created", but the intent everywhere else is the THROW point;
+         the two coincide for `Throw (Exception{msg})` and diverge exactly at these statics.
+
+   - **`Execution::TimedLockGuard` vs `Execution::UniqueLock` - decide which should survive, then fix or delete.**
+     Deliberately left out of the 3.0d25 exception/TimeOutException change as a separable question.
+     Facts established 2026-09-08, so don't re-derive them:
+       - **`TimedLockGuard` is used NOWHERE.** The only reference in the whole tree is a `\see also` in
+         `TimeOutException.h`. LGP believes it was written with an intended use that never materialized.
+       - **It has never been instantiated, and cannot be.** `TimedLockGuard.inl` has three bugs in the one
+         ctor body: `d <= 0` (no such comparison for `chrono::duration<double>`), `m.try_lock_for ()` missing
+         its argument, and `Exeuction::Throw` (typo). Templates aren't checked until instantiated, so these
+         sat undetected - but gcc 15's `-Wtemplate-body` diagnoses uninstantiated bodies, which means
+         **`TimedLockGuard.h` currently cannot be `#include`d in any gcc-15 TU**. Nothing includes it, so
+         nothing breaks today; it is a live trap for the first person who tries to use it.
+       - **`Execution::UniqueLock (m, d)`** (in `TimeOutException.h`) already does the same job and strictly
+         dominates: the returned `unique_lock` is movable, returnable, can be released early, and is the only
+         form `condition_variable` accepts. `TimedLockGuard` is the `lock_guard` analogue - saves an owns-flag,
+         non-movable, scope-bound - so it is cheaper and nothing else. That is the likely reason for the disuse.
+       - **If kept, its default template arg needs changing**: `FAILURE_EXCEPTION = TimeOutException`, and
+         `TimeOutException` is deprecated as of 3.0d25. Defaulting to a deprecated type would warn at every use.
+     So: fix the three bugs + repoint the default (and find it a use), or delete the class and its two files.
+   - **Settle the `TimeOut` vs `Timeout` capitalization, as its own commit.** Split out of the 3.0d25
+     exception work deliberately - it is a pure rename and does not belong in a behavior diff.
+     `Timeout` is overwhelmingly the house spelling (`ThrowIfTimeout`, `ThrowTimeoutExceptionAfter`,
+     `GetTimeout`/`SetTimeout`, `SetBusyTimeout`, `kDefaultTimeout`, `fPingTimeout_`, `eTimeout`, ~20 more).
+     `TimeOut` survives in only four: `ThrowTimeOutException`, `TimeOutException`, `TimeOutAt`,
+     `measurementTimeOut`.
+     It is already causing real mistakes: **three doc comments refer to a `TimeoutException` that does not
+     exist** - `IO/Network/HTTP/ClientErrorException.h:27`, `IO/Network/Transfer/ConnectionPool.h:74`, and
+     `Frameworks/NetworkMonitor/Ping.h:106`. The two spellings even sit side by side in one header, where
+     `TimeOutException.h` declares `ThrowTimeOutException` next to `ThrowTimeoutExceptionAfter` and
+     `ThrowIfTimeout`.
+     Scope note: `TimeOutException` itself is deprecated as of 3.0d25 and scheduled for removal, so renaming
+     *it* is pointless - the one worth fixing is `ThrowTimeOutException` -> `ThrowTimeoutException` (plus a
+     deprecated forwarder under the old name), and the file/include-guard names that follow from it.
    - **`clang++-19` is listed in Release-Notes as tested but is covered nowhere - close the gap or drop
      the claim.** Found while validating 3.0d24; deliberately left alone for that release. The
      "Compilers Tested/Supported" line says `Clang++ { unix: 15, 16, 17, 18, 19, 20, 21, 22 }`, but
@@ -29,33 +164,6 @@ Generally will track stuff here between releases
      if it builds now, or remove `19` from the Release-Notes list. Cheap either way, but the list should
      not claim coverage that does not exist - that is what made the 3.0d24 validation slower to trust.
 
-   - **Make Test45's external-site fetches degrade to a WARNING - the existing tolerance catches the
-     WRONG EXCEPTION TYPE.** Cost two full re-runs (~16 hrs) during 3.0d24 validation, and neither
-     failure was a Stroika defect.
-     **Do NOT "apply the WarnTestIssue pattern" - it is already applied**, and it already wraps the
-     cnn.com fetch. `Test_6_TestWithCache_::SimpleGetFetch_T1` (`Tests/45/Test.cpp:583`) and
-     `Test_7_TestWithConnectionPool_` (`:657`) each put a per-URL `try` around the
-     httpbin/google/cnn loop, catching `IO::Network::HTTP::Exception` (warns on server error or 429)
-     and `TimeOutException` (warns unconditionally), at `:617` and `:722`. That code is unchanged
-     since bccc755c33 on 2026-08-18 - ie it was already in place when the tests failed on 2026-08-31
-     and 2026-09-02, which is the proof it does not cover the failing path.
-
-     **The real defect: a libcurl timeout is not a `TimeOutException`.**
-     `Connection_libcurl.cpp:82` maps `CURLE_OPERATION_TIMEDOUT` to `errc::timed_out` through
-     `LibCurl_error_category_::default_error_condition`, so it surfaces as a **`std::system_error`**
-     in that category - which `catch (const TimeOutException&)` never sees. That matches the observed
-     failures exactly: `Timeout was reached {LibCurl error: 28} ... http://www.cnn.com` after
-     ~300415 ms and ~300434 ms (the 300s libcurl timeout), both under valgrind, which slows things
-     enough to make an external fetch marginal.
-
-     Fix, smallest first:
-       1. In those two loops also `catch (const system_error& e)` and warn when
-          `e.code ().default_error_condition () == errc::timed_out`, rethrowing anything else.
-       2. Better: consider having `Connection_libcurl` throw `Execution::TimeOutException` for
-          `CURLE_OPERATION_TIMEDOUT`, which fixes it for every caller rather than just this test -
-          but check what else depends on seeing the `system_error`.
-     The point is to stop a slow or unreachable third party blocking a release, not to stop testing
-     the code path - so keep failing on real protocol/parse errors.
    - **FIRST THING: fix the Test53 / WebServer ConnectionManager teardown bug - GitHub issue #1165.**
      Deliberately deferred out of 3.0d24: it is years old (the `#if 0` block in `Tests/53/Test.cpp`
      records the same teardown path failing in Jan 2026), unrelated to anything that changed this
