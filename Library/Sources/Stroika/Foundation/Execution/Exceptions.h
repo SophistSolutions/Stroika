@@ -9,6 +9,7 @@
 #include <cerrno>
 #include <exception>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <system_error>
 
@@ -153,20 +154,40 @@ namespace Stroika::Foundation::Execution {
      *          }
      *      \endcode
      */
-    template <typename BASE_EXCEPTION = exception>
+    template <derived_from<exception> BASE_EXCEPTION = exception>
     class Exception : public ExceptionStringHelper, public BASE_EXCEPTION {
-    private:
-        static_assert (derived_from<BASE_EXCEPTION, exception>);
-
     private:
         using inherited = BASE_EXCEPTION;
 
     public:
         /**
+         *  \brief construct with just a message - BASE_EXCEPTION gets whatever it minimally needs.
+         *
+         *  Two overloads with mutually exclusive constraints, because the std exception types split into two
+         *  groups and NEITHER spelling covers both: some are default-constructible, and some instead require
+         *  a what_arg (and have no default ctor). The latter get "" - they need *some* string and do not care
+         *  which, since @see what () is overridden to return the Stroika message regardless.
+         *
+         *  \note Satisfies:
+         *      o   Exception<std::exception>{msg}          - default-constructible
+         *      o   Exception<std::bad_alloc>{msg}          - default-constructible
+         *      o   Exception<std::runtime_error>{msg}      - requires a what_arg
+         *      o   Exception<std::logic_error>{msg}        - requires a what_arg
+         *      o   Exception<std::out_of_range>{msg}       - requires a what_arg
+         *
+         *  \note   Deliberately NOT std::system_error: it needs an error_code, not a string, so it satisfies
+         *          neither constraint and must use the protected delegating ctor below - @see
+         *          SystemErrorException. (No static_assert for this one, because it is not portable: libstdc++
+         *          declares `system_error (error_code = error_code ())`, so THERE it is default-constructible
+         *          and this ctor does match, yielding a useless empty code. MSVC has no such default. Do not
+         *          rely on either behaviour.)
          */
         Exception ()                 = delete;
         Exception (const Exception&) = default;
-        Exception (const Characters::String& reasonForError);
+        Exception (const Characters::String& reasonForError)
+            requires (default_initializable<BASE_EXCEPTION>);
+        Exception (const Characters::String& reasonForError)
+            requires (not default_initializable<BASE_EXCEPTION> and constructible_from<BASE_EXCEPTION, const char*>);
 
     protected:
         /**
@@ -183,6 +204,12 @@ namespace Stroika::Foundation::Execution {
          */
         virtual const char* what () const noexcept override;
     };
+    static_assert (constructible_from<Exception<exception>, Characters::String>);                // see Satisfies
+    static_assert (constructible_from<Exception<bad_alloc>, Characters::String>);                // ""
+    static_assert (constructible_from<Execution::Exception<runtime_error>, Characters::String>); // ""
+    static_assert (constructible_from<Exception<logic_error>, Characters::String>);              // ""
+    static_assert (constructible_from<Exception<out_of_range>, Characters::String>);             // ""
+
     /**
      *  A wrapper on std::runtime_error, which adds Stroika UNICODE string support.
      *

@@ -60,10 +60,18 @@ namespace Stroika::Foundation::Execution {
      ********************************** Exception ***********************************
      ********************************************************************************
      */
-    template <typename BASE_EXCEPTION>
+    template <derived_from<exception> BASE_EXCEPTION>
     inline Exception<BASE_EXCEPTION>::Exception (const Characters::String& reasonForError)
+        requires (default_initializable<BASE_EXCEPTION>)
         : ExceptionStringHelper{reasonForError}
         , inherited{}
+    {
+    }
+    template <derived_from<exception> BASE_EXCEPTION>
+    inline Exception<BASE_EXCEPTION>::Exception (const Characters::String& reasonForError)
+        requires (not default_initializable<BASE_EXCEPTION> and constructible_from<BASE_EXCEPTION, const char*>)
+        : ExceptionStringHelper{reasonForError}
+        , inherited{""} // BASE needs a what_arg; its value is irrelevant since what () is overridden
     {
     }
     template <derived_from<exception> BASE_EXCEPTION>
