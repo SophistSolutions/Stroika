@@ -736,7 +736,7 @@ namespace Stroika::Foundation::Time {
     static_assert (sizeof (Date) == sizeof (year_month_day)); // generally 4 bytes
     static_assert (totally_ordered<Date>);
 
-    class Date::FormatException : public Execution::RuntimeErrorException<> {
+    class Date::FormatException : public Execution::Exception<runtime_error> {
     public:
         FormatException ();
 

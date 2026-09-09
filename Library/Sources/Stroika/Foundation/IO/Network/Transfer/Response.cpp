@@ -84,7 +84,7 @@ DataExchange::VariantValue Response::GetBodyVariantValue ()
             return DataExchange::Variant::JSON::Reader{}.Read (GetData ());
         }
     }
-    static const auto kExcept_ = Execution::RuntimeErrorException{"Unrecognized content type"sv};
+    static const auto kExcept_ = Execution::Exception<runtime_error>{"Unrecognized content type"sv};
     Execution::Throw (kExcept_);
 }
 

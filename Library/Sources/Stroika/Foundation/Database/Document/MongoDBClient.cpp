@@ -509,7 +509,7 @@ namespace {
                         catch (...) {
                             DoReThrow_ ();
                         }
-                        Throw (RuntimeErrorException{"failed to add document"sv});
+                        Throw (Execution::Exception<runtime_error>{"failed to add document"sv});
                     },
                     cvt2String_ (fCollection_.name ()), true);
             }
@@ -607,12 +607,12 @@ namespace {
                                 if (auto o = fCollection_.update_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))),
                                                                       make_document (kvp ("$set", bsonDoc.view ())))) {
                                     if (o->modified_count () == 0) {
-                                        static const auto kExcept_ = RuntimeErrorException{"failed to update doc - not modified"sv};
+                                        static const auto kExcept_ = Execution::Exception<runtime_error>{"failed to update doc - not modified"sv};
                                         Throw (kExcept_);
                                     }
                                 }
                                 else {
-                                    static const auto kExcept_ = RuntimeErrorException{"failed to update doc"sv};
+                                    static const auto kExcept_ = Execution::Exception<runtime_error>{"failed to update doc"sv};
                                     Throw (kExcept_);
                                 }
                             }
@@ -620,12 +620,12 @@ namespace {
                                 if (auto o = fCollection_.replace_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))),
                                                                        bsonDoc.view ())) {
                                     if (o->modified_count () == 0) {
-                                        static const auto kExcept_ = RuntimeErrorException{"failed to replace doc - not modified"sv};
+                                        static const auto kExcept_ = Execution::Exception<runtime_error>{"failed to replace doc - not modified"sv};
                                         Throw (kExcept_);
                                     }
                                 }
                                 else {
-                                    static const auto kExcept_ = RuntimeErrorException{"failed to replace doc"sv};
+                                    static const auto kExcept_ = Execution::Exception<runtime_error>{"failed to replace doc"sv};
                                     Throw (kExcept_);
                                 }
                             }
@@ -649,7 +649,7 @@ namespace {
                             filterDoc.append (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))); // kMongoID_
                             auto result = fCollection_.delete_one (filterDoc.view ());
                             if (result && result->deleted_count () == 0) {
-                                Throw (RuntimeErrorException{"failed to delete doc"sv});
+                                Throw (Execution::Exception<runtime_error>{"failed to delete doc"sv});
                             }
                         }
                         catch (...) {

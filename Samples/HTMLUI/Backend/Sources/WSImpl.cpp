@@ -97,9 +97,10 @@ namespace {
         Debug::TimingTrace ttx{"GetInternallySynchronizedUserAuthFetcher_", 100ns};
 #endif
         using namespace Stroika::Frameworks::Auth::OAuth;
-        static auto sFetcher_ = make_shared<Fetcher> (ProviderConfiguration{kDefaultProviderConfigurations.LookupChecked (
-                                                          GetUseProvider_ (wsi), RuntimeErrorException{"Unrecognized provider name"sv})},
-                                                      Fetcher::Options{.fCaching = true, .fInternallySyncrhonized = eInternallySynchronized});
+        static auto sFetcher_ =
+            make_shared<Fetcher> (ProviderConfiguration{kDefaultProviderConfigurations.LookupChecked (
+                                      GetUseProvider_ (wsi), Execution::Exception<runtime_error>{"Unrecognized provider name"sv})},
+                                  Fetcher::Options{.fCaching = true, .fInternallySyncrhonized = eInternallySynchronized});
         return sFetcher_;
     }
 }
@@ -167,12 +168,12 @@ namespace {
                     }
                 }
             }
-            Throw (RuntimeErrorException{"No matching applicationId found for OAuth request"sv});
+            Throw (Execution::Exception<runtime_error>{"No matching applicationId found for OAuth request"sv});
         };
-        static const auto     kExcept_ = RuntimeErrorException{"Unrecognized provider name"sv};
+        static const auto     kExcept_ = Execution::Exception<runtime_error>{"Unrecognized provider name"sv};
         ProviderConfiguration pc = Stroika::Frameworks::Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (oauthProvider, kExcept_);
         ClientConfiguration   cc = lookupClientSecret (oauthProvider, appIDOrAny);
-        static const auto     kExceptNOClientSecret_ = RuntimeErrorException{"No client secret found for OAuth request"sv};
+        static const auto     kExceptNOClientSecret_ = Execution::Exception<runtime_error>{"No client secret found for OAuth request"sv};
         Memory::ValueOfOrThrow (cc.fClientSecret, kExceptNOClientSecret_);
         return make_tuple (pc, cc);
     }

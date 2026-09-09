@@ -19,7 +19,7 @@ using namespace Stroika::Frameworks::Modbus;
  ********************************************************************************
  */
 Modbus::Exception::Exception (ExceptionCode exceptionCode)
-    : Execution::RuntimeErrorException<>{"Modbus Exception: {}"_f(static_cast<int> (exceptionCode))}
+    : Execution::Exception<runtime_error>{"Modbus Exception: {}"_f(static_cast<int> (exceptionCode))}
     , fExceptionCode{exceptionCode}
 {
 }

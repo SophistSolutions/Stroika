@@ -54,7 +54,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName
     //WRONG BUT NOT GROSSLY - @todo fix -- AssertNotImplemented (); // size of file - compute -- must check for overlflow and throw...
     //  offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE). from http://linux.die.net/man/2/mmap
     if (fileLength >= numeric_limits<size_t>::max ()) {
-        Execution::Throw (Execution::RuntimeErrorException{"file too large to be memory mapped"sv});
+        Execution::Throw (Execution::Exception<runtime_error>{"file too large to be memory mapped"sv});
     }
     fSpan_ = span{reinterpret_cast<const byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0)), static_cast<size_t> (fileLength)};
     ::close (fd); //http://linux.die.net/man/2/mmap says don't need to keep FD open while mmapped

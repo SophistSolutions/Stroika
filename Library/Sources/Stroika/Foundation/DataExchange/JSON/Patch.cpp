@@ -48,7 +48,7 @@ VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
                 //DbgTrace ("oMa={}"_f, oMatch);
                 Context c = get<Context> (*oMatch);
                 if (c.fStack.empty ()) {
-                    Execution::Throw (Execution::RuntimeErrorException{"? maybe sb assert"sv});
+                    Execution::Throw (Execution::Exception<runtime_error>{"? maybe sb assert"sv});
                 }
                 auto         stackTop = c.fStack.Pop ();
                 VariantValue vv       = get<VariantValue> (*oMatch); // not sure what this means? IGNORE?
@@ -69,7 +69,7 @@ VariantValue JSON::Patch::OperationItemType::Apply (const VariantValue& v) const
                 //DbgTrace ("result={}"_f, result);
             }
             else {
-                Execution::Throw (Execution::RuntimeErrorException{"operator add target not found"sv});
+                Execution::Throw (Execution::Exception<runtime_error>{"operator add target not found"sv});
             }
         } break;
         case OperationType::eRemove: {

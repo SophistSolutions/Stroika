@@ -126,7 +126,7 @@ URI URI::Parse (const String& rawURL)
                    UniformResourceIdentification::PCTDecode2String (path.value_or (String{})), emptyStr2Missing (query), emptyStr2Missing (fragment)};
     }
     else {
-        static const Execution::RuntimeErrorException kException_{"Ill-formed URI"sv};
+        static const Execution::Exception<runtime_error> kException_{"Ill-formed URI"sv};
         Execution::Throw (kException_); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
     }
 }
@@ -157,7 +157,7 @@ URI URI::ParseRelative (const String& rawRelativeURL)
                    emptyStr2Missing (fragment)};
     }
     else {
-        static const Execution::RuntimeErrorException kException_{"Ill-formed relative URI"sv};
+        static const Execution::Exception<runtime_error> kException_{"Ill-formed relative URI"sv};
         Execution::Throw (kException_); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
     }
 }
@@ -182,7 +182,7 @@ String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
 
     if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith ("/"sv))) {
         // NOT SURE HOW TO HANDLE
-        static const Execution::RuntimeErrorException kException_{"This is not a legal URI to encode (authority present, but path not empty or absolute)"sv};
+        static const Execution::Exception<runtime_error> kException_{"This is not a legal URI to encode (authority present, but path not empty or absolute)"sv};
         Execution::Throw (kException_);
     }
 
@@ -292,7 +292,7 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
      *      must either be empty or begin with a slash ("/") character
      */
     if (authority and (not path.empty () and not path.StartsWith ("/"sv))) {
-        static const Execution::RuntimeErrorException kException_{"A URI with an authority must have an empty path, or an absolute path"sv};
+        static const Execution::Exception<runtime_error> kException_{"A URI with an authority must have an empty path, or an absolute path"sv};
         Execution::Throw (kException_);
     }
 }
@@ -321,7 +321,7 @@ URI URI::Combine (const URI& overridingURI) const
      */
     URI baseURI = Normalize ();
     if (not baseURI.GetScheme ()) {
-        static const Execution::RuntimeErrorException kException_{"Scheme is required in base URI to combine with another URI"sv};
+        static const Execution::Exception<runtime_error> kException_{"Scheme is required in base URI to combine with another URI"sv};
         Execution::Throw (kException_);
     }
     auto merge = [&] (const String& base, const String& rhs) -> String {

@@ -123,30 +123,30 @@ void Stroika::Samples::SQL::ComputerNetworksModel (const std::function<Connectio
     const Device kDevice1_ = Device{GUID::GenerateNew (), Set<int>{33}, "myLaptop"sv, Set<String>{"ff:33:aa:da:ff:33"}};
     const Device kDevice2_ = Device{GUID::GenerateNew (), Set<int>{123, 145}, "some machine"sv, Set<String>{"33:aa:dd:ad:af:11"}};
     if (not getAllDevices ().empty ()) {
-        Execution::Throw (Execution::RuntimeErrorException{"database should start empty"});
+        Execution::Throw (Execution::Exception<runtime_error>{"database should start empty"});
     }
     addDevice (kDevice1_);
     addDevice (kDevice2_);
     {
         auto devices = getAllDevices ();
         if (devices.size () != 2) {
-            Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added"sv});
+            Execution::Throw (Execution::Exception<runtime_error>{"we should have the ones we just added"sv});
         }
         if (not devices.Contains (kDevice1_)) {
-            Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added{1}"sv});
+            Execution::Throw (Execution::Exception<runtime_error>{"we should have the ones we just added{1}"sv});
         }
         if (not devices.Contains (kDevice2_)) {
-            Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added{2}"sv});
+            Execution::Throw (Execution::Exception<runtime_error>{"we should have the ones we just added{2}"sv});
         }
     }
     removeDevice (kDevice2_.id);
     {
         auto devices = getAllDevices ();
         if (devices.size () != 1) {
-            Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added"});
+            Execution::Throw (Execution::Exception<runtime_error>{"we should have the ones we just added"});
         }
         if (not devices.Contains (kDevice1_)) {
-            Execution::Throw (Execution::RuntimeErrorException{"we should have kDevice1_"});
+            Execution::Throw (Execution::Exception<runtime_error>{"we should have kDevice1_"});
         }
     }
 }

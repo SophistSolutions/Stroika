@@ -65,8 +65,8 @@ String ProviderConfiguration::ToString () const
 
 ProviderConfiguration ProviderConfiguration::FetchAdditionsFromOpenIDConfigurationURI () const
 {
-    static const String kSUFFIX_  = "/.well-known/openid-configuration"sv;
-    URI                 configURI = ValueOfOrThrow (openid_configuration_uri, RuntimeErrorException{"no openid_configuration_uri"sv});
+    static const String kSUFFIX_ = "/.well-known/openid-configuration"sv;
+    URI configURI = ValueOfOrThrow (openid_configuration_uri, Execution::Exception<runtime_error>{"no openid_configuration_uri"sv});
     if (not configURI.GetAbsPath<optional<String>> ().value_or (String{}).EndsWith (kSUFFIX_)) {
         configURI = configURI.Combine (URI{nullopt, nullopt, kSUFFIX_});
     }

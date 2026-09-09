@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 case AddOrExtendOrReplaceMode::eDuplicatesRejected: {
                     for (auto i : fBuckets_[hashVal].fElements) {
                         if (this->fKeyComparer_ (i.fKey, t.fKey)) {
-                            static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
+                            static const auto kExcept_ = Execution::Exception<logic_error>{"Duplicates not allowed"sv};
                             Execution::Throw (kExcept_);
                         }
                     }

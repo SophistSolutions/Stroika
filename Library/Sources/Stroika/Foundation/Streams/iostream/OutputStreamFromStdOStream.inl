@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
                 using StreamElementType = BASIC_OSTREAM_ELEMENT_TYPE;
                 fOriginalStreamRef_.write (reinterpret_cast<const StreamElementType*> (elts.data ()), elts.size ());
                 if (fOriginalStreamRef_.fail ()) [[unlikely]] {
-                    static const Execution::RuntimeErrorException kException_{"Failed to write from ostream"sv};
+                    static const Execution::Exception<runtime_error> kException_{"Failed to write from ostream"sv};
                     Execution::Throw (kException_);
                 }
             }
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
                 Require (IsOpenWrite ());
                 fOriginalStreamRef_.flush ();
                 if (fOriginalStreamRef_.fail ()) [[unlikely]] {
-                    static const Execution::RuntimeErrorException kException_{"Failed to flush ostream"sv};
+                    static const Execution::Exception<runtime_error> kException_{"Failed to flush ostream"sv};
                     Execution::Throw (kException_);
                 }
             }

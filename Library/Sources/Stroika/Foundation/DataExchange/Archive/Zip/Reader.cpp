@@ -31,7 +31,7 @@ namespace {
     void ThrowIfMinizipErr_ (int err, const String& doing)
     {
         if (err != UNZ_OK) [[unlikely]] {
-            Throw (RuntimeErrorException{Format ("error {} with zipfile in {}"_f, err, doing)});
+            Throw (Execution::Exception<runtime_error>{Format ("error {} with zipfile in {}"_f, err, doing)});
         }
     }
 }
@@ -136,7 +136,7 @@ namespace {
             , fZipFile_{unzOpen2_64 ("", &fInSeekStream_)}
         {
             if (fZipFile_ == nullptr) [[unlikely]] {
-                static const RuntimeErrorException kException_{"failed to open zipfile"sv};
+                static const Execution::Exception<runtime_error> kException_{"failed to open zipfile"sv};
                 Throw (kException_);
             }
         }
@@ -251,7 +251,7 @@ namespace {
         {
             // See comments in GetContainedFiles about filename character encoding
             if (unzLocateFile_ (fZipFile_, fileName.AsUTF8<string> ().c_str (), 1) != UNZ_OK) [[unlikely]] {
-                Throw (RuntimeErrorException{Format ("File '{}' not found"_f, fileName)});
+                Throw (Execution::Exception<runtime_error>{Format ("File '{}' not found"_f, fileName)});
             }
             const char*             password = nullptr;
             int                     err      = unzOpenCurrentFilePassword (fZipFile_, password);
@@ -261,7 +261,7 @@ namespace {
                 byte buf[10 * 1024];
                 err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (std::size (buf)));
                 if (err < 0) [[unlikely]] {
-                    Throw (RuntimeErrorException{Format (L"File '{}' error {} extracting"_f, fileName, err)});
+                    Throw (Execution::Exception<runtime_error>{Format (L"File '{}' error {} extracting"_f, fileName, err)});
                 }
                 else if (err > 0) {
                     Assert (static_cast<size_t> (err) <= std::size (buf));

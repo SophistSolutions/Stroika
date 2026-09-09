@@ -348,9 +348,9 @@ namespace Stroika::Foundation::Time {
     };
     static_assert (totally_ordered<Duration>);
 
-    class Duration::FormatException : public Execution::RuntimeErrorException<> {
+    class Duration::FormatException : public Execution::Exception<runtime_error> {
     private:
-        using inherited = Execution::RuntimeErrorException<>;
+        using inherited = Execution::Exception<runtime_error>;
 
     public:
         FormatException ();

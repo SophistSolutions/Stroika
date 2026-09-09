@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                 Assert (n <= maxToRead);
                 // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
                 if (not fOriginalStreamRef_.eof () and fOriginalStreamRef_.fail ()) [[unlikely]] {
-                    static const Execution::RuntimeErrorException kException_{"Failed to read from istream"sv};
+                    static const Execution::Exception<runtime_error> kException_{"Failed to read from istream"sv};
                     Execution::Throw (kException_);
                 }
                 return intoBuffer.subspan (0, n);

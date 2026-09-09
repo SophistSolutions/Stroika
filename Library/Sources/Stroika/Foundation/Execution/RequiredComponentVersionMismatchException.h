@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Execution {
 
     using Characters::String;
 
-    class RequiredComponentVersionMismatchException : public Execution::RuntimeErrorException<> {
+    class RequiredComponentVersionMismatchException : public Execution::Exception<runtime_error> {
     public:
         RequiredComponentVersionMismatchException (const wstring& component, const wstring& requiredVersion = wstring{});
     };

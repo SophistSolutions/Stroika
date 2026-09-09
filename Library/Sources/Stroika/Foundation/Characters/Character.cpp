@@ -21,7 +21,7 @@ static_assert (regular<Character>);
  */
 void Characters::Private_::ThrowSurrogatesOutOfRange_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException<out_of_range>{"UNICODE char16_t surrogates out of range"sv};
+    static const auto kException_ = Execution::Exception<out_of_range>{"UNICODE char16_t surrogates out of range"sv};
     Execution::Throw (kException_);
 }
 
@@ -32,7 +32,7 @@ void Characters::Private_::ThrowSurrogatesOutOfRange_ ()
  */
 void Characters::Private_::ThrowNotIsASCII_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException<out_of_range>{"Argument not valid ASCII"sv};
+    static const auto kException_ = Execution::Exception<out_of_range>{"Argument not valid ASCII"sv};
     Execution::Throw (kException_);
 }
 
@@ -43,7 +43,7 @@ void Characters::Private_::ThrowNotIsASCII_ ()
  */
 void Characters::Private_::ThrowNotIsLatin1_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException<out_of_range>{"Argument not valid Latin1 (UNICODE code point > U+00ff)"sv};
+    static const auto kException_ = Execution::Exception<out_of_range>{"Argument not valid Latin1 (UNICODE code point > U+00ff)"sv};
     Execution::Throw (kException_);
 }
 

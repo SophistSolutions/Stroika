@@ -54,7 +54,7 @@ Memory::BLOB Specification::As (const DataExchange::InternetMediaType& mediaType
         return DataExchange::Variant::JSON::Writer{}.WriteAsBLOB (fValue_);
     }
     else {
-        Execution::Throw (Execution::RuntimeErrorException{"Type not supported"sv});
+        Execution::Throw (Execution::Exception<runtime_error>{"Type not supported"sv});
     }
 }
 

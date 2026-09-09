@@ -415,7 +415,7 @@ namespace {
             xmlBufferPtr            xmlBuf  = xmlBufferCreate ();
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { ::xmlBufferFree (xmlBuf); });
             if (int dumpRes = ::xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, options.fPrettyPrint); dumpRes == -1) {
-                Execution::Throw (Execution::RuntimeErrorException{"failed dumping node to text"sv});
+                Execution::Throw (Execution::Exception<runtime_error>{"failed dumping node to text"sv});
             }
             const xmlChar* t = xmlBufferContent (xmlBuf);
             AssertNotNull (t);
@@ -575,7 +575,7 @@ namespace {
                     fResultNodeList = xmlXPathEvalExpression (BAD_CAST e.GetExpression ().AsUTF8 ().c_str (), fCtx);
                     if (fCtx->lastError.level != XML_ERR_NONE and fCtx->lastError.level != XML_ERR_WARNING) {
                         // lookup domain in xmlErrorDomain, and lastError.code in xmlParserErrors
-                        Execution::ThrowIfNull (fResultNodeList, Execution::RuntimeErrorException{"Error parsing xpath {}: (domain {}, code {})"_f(
+                        Execution::ThrowIfNull (fResultNodeList, Execution::Exception<runtime_error>{"Error parsing xpath {}: (domain {}, code {})"_f(
                                                                      e, fCtx->lastError.domain, fCtx->lastError.code)});
                     }
                     Execution::ThrowIfNull (fResultNodeList);
@@ -663,8 +663,8 @@ namespace {
 
 namespace {
     struct MyLibXML2StructuredErrGrabber_ final {
-        xmlParserCtxtPtr                               fCtx;
-        shared_ptr<Execution::RuntimeErrorException<>> fCapturedException;
+        xmlParserCtxtPtr                                fCtx;
+        shared_ptr<Execution::Exception<runtime_error>> fCapturedException;
 
         MyLibXML2StructuredErrGrabber_ (xmlParserCtxtPtr ctx)
             : fCtx{ctx}
@@ -836,7 +836,7 @@ namespace {
                 to.Write (span{reinterpret_cast<const byte*> (xmlBufferContent (xmlBuf)), static_cast<size_t> (xmlBufferLength (xmlBuf))});
             }
             else {
-                Execution::Throw (Execution::RuntimeErrorException{"failed dumping documented to text"});
+                Execution::Throw (Execution::Exception<runtime_error>{"failed dumping documented to text"});
                 return;
             }
         }

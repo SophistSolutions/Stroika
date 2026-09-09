@@ -31,21 +31,21 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
         if (err != Z_OK) [[unlikely]] {
             switch (err) {
                 case Z_VERSION_ERROR: {
-                    static const Execution::RuntimeErrorException kException_{"ZLIB Z_VERSION_ERROR"sv};
+                    static const Execution::Exception<runtime_error> kException_{"ZLIB Z_VERSION_ERROR"sv};
                     Execution::Throw (kException_);
                 }
                 case Z_DATA_ERROR: {
-                    static const Execution::RuntimeErrorException kException_{"ZLIB Z_DATA_ERROR"sv};
+                    static const Execution::Exception<runtime_error> kException_{"ZLIB Z_DATA_ERROR"sv};
                     Execution::Throw (kException_);
                 }
                 case Z_STREAM_ERROR: {
-                    static const Execution::RuntimeErrorException kException_{"ZLIB Z_STREAM_ERROR"sv};
+                    static const Execution::Exception<runtime_error> kException_{"ZLIB Z_STREAM_ERROR"sv};
                     Execution::Throw (kException_);
                 }
                 case Z_ERRNO:
-                    Execution::Throw (Execution::RuntimeErrorException{"ZLIB Z_ERRNO (errno={})"_f(errno)});
+                    Execution::Throw (Execution::Exception<runtime_error>{"ZLIB Z_ERRNO (errno={})"_f(errno)});
                 default:
-                    Execution::Throw (Execution::RuntimeErrorException{"ZLIB ERR {}"_f(err)});
+                    Execution::Throw (Execution::Exception<runtime_error>{"ZLIB ERR {}"_f(err)});
             }
         }
     }

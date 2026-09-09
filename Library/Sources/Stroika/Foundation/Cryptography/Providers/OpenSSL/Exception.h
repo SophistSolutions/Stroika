@@ -19,9 +19,9 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
 #if qStroika_HasComponent_OpenSSL
     /**
      */
-    class Exception : public Execution::RuntimeErrorException<> {
+    class Exception : public Execution::Exception<runtime_error> {
     private:
-        using inherited = Execution::RuntimeErrorException<>;
+        using inherited = Execution::Exception<runtime_error>;
 
     public:
         /**

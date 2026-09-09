@@ -211,31 +211,13 @@ namespace Stroika::Foundation::Execution {
     static_assert (constructible_from<Exception<out_of_range>, Characters::String>);             // ""
 
     /**
-     *  A wrapper on std::runtime_error, which adds Stroika UNICODE string support.
-     *
-     *  According to https://en.cppreference.com/w/cpp/error/runtime_error
-     *      It reports errors that are due to events beyond the scope of the
-     *      program and can not be easily predicted.
-     *
-     *  This isn't super clear, but Stroika interprets this to mean external conditions - files, networks, memory etc - essentially
-     *  ALL the things Stroika treats as exceptions.
-     */
-    template <typename BASE_EXCEPTION = runtime_error>
-    class RuntimeErrorException : public Exception<BASE_EXCEPTION> {
-    public:
-        /**
-         */
-        RuntimeErrorException (const Characters::String& msg);
-    };
-
-    /**
      *  \brief NestedException contains a new higher level error message (typically based on argument basedOnException)
      *         and preserves the original exception (which you can use to get its message, with Characters::ToString (fBasedOnException)
      * 
      *  This also can be used to wrap third-party libraries exceptions, which don't know about 'DeclareActivity' - and incorporating
      *  that into an error message.
      */
-    class NestedException : public RuntimeErrorException<> {
+    class NestedException : public Execution::Exception<runtime_error> {
     public:
         /**
          */

@@ -82,7 +82,7 @@ void Stroika::Samples::Document::ComputerNetworksModel (const function<Connectio
     ObjectCollection::Ptr<Device> deviceConnection = ObjectCollection::New<Device> (dbConnection.CreateCollection ("Networks"), Device::kMapper);
 
     if (not deviceConnection.GetAll ().empty ()) {
-        Throw (RuntimeErrorException{"database should start empty"});
+        Throw (Execution::Exception<runtime_error>{"database should start empty"});
     }
 
     /*
@@ -95,23 +95,23 @@ void Stroika::Samples::Document::ComputerNetworksModel (const function<Connectio
     {
         auto devices = deviceConnection.GetAll ();
         if (devices.size () != 2) {
-            Throw (RuntimeErrorException{"we should have the ones we just added"sv});
+            Throw (Execution::Exception<runtime_error>{"we should have the ones we just added"sv});
         }
         if (not devices.Contains (device1_)) {
-            Throw (RuntimeErrorException{"we should have the ones we just added{1}"sv});
+            Throw (Execution::Exception<runtime_error>{"we should have the ones we just added{1}"sv});
         }
         if (not devices.Contains (device2_)) {
-            Throw (RuntimeErrorException{"we should have the ones we just added{2}"sv});
+            Throw (Execution::Exception<runtime_error>{"we should have the ones we just added{2}"sv});
         }
     }
     deviceConnection.Remove (Memory::ValueOf (device2_.id));
     {
         auto devices = deviceConnection.GetAll ();
         if (devices.size () != 1) {
-            Throw (RuntimeErrorException{"we should have the ones we just added"});
+            Throw (Execution::Exception<runtime_error>{"we should have the ones we just added"});
         }
         if (not devices.Contains (device1_)) {
-            Throw (RuntimeErrorException{"we should have kDevice1_"});
+            Throw (Execution::Exception<runtime_error>{"we should have kDevice1_"});
         }
     }
 }

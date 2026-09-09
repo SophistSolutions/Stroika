@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
     {
         auto r = this->GetAll (filter, projection);
         if (r.size () > 1) {
-            static auto kTooManyResultsException_ = Execution::RuntimeErrorException{"too many results from DocumentDB Get() call"sv};
+            static auto kTooManyResultsException_ = Execution::Exception<runtime_error>{"too many results from DocumentDB Get() call"sv};
             Execution::Throw (kTooManyResultsException_);
         }
         if (r.size () == 0) {
@@ -70,12 +70,12 @@ namespace Stroika::Foundation::Database::Document::Collection {
     }
     inline Document Ptr::GetOrThrow (const IDType& id, const optional<Projection>& projection) const
     {
-        static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"no such id"sv};
         return Memory::ValueOfOrThrow (Get (id, projection), kExcept_);
     }
     inline Document Ptr::GetOrThrow (const Filter& filter, const optional<Projection>& projection) const
     {
-        static const auto kExcept_ = Execution::RuntimeErrorException{"no such document"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"no such document"sv};
         return Memory::ValueOfOrThrow (Get (filter, projection), kExcept_);
     }
     inline Sequence<Document> Ptr::GetAll (const optional<Filter>& filter, const optional<Projection>& projection) const
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
     inline Sequence<IDType> Ptr::GetAllIDs (const optional<Filter>& filter) const
     {
         return this->GetAll (filter, kOnlyIDs).Map<Sequence<IDType>> ([] (const Document& d) -> IDType {
-            static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"sv};
+            static const auto kExcept_ = Execution::Exception<runtime_error>{"no such id"sv};
             return d.LookupChecked (kID, kExcept_).As<String> ();
         });
     }

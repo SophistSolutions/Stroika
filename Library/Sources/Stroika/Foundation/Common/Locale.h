@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Common {
 
     /**
      */
-    class LocaleNotFoundException : public Execution::RuntimeErrorException<> {
+    class LocaleNotFoundException : public Execution::Exception<runtime_error> {
     public:
         LocaleNotFoundException (const optional<Characters::String>& iso2LetterLanguageCode  = {},
                                  const optional<Characters::String>& iso2LetterTerritoryCode = {});

@@ -75,7 +75,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         /**
          *  For example, Xerces 3.2 doesn't support [] in expressions
          */
-        struct XPathExpressionNotSupported : Execution::RuntimeErrorException<> {
+        struct XPathExpressionNotSupported : Execution::Exception<runtime_error> {
             XPathExpressionNotSupported ();
             static const XPathExpressionNotSupported kThe;
         };

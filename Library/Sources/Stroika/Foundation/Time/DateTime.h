@@ -575,7 +575,7 @@ namespace Stroika::Foundation::Time {
         }
     };
 
-    class DateTime::FormatException : public Execution::RuntimeErrorException<> {
+    class DateTime::FormatException : public Execution::Exception<runtime_error> {
     public:
         FormatException ();
 

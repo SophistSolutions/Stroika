@@ -115,7 +115,7 @@ namespace Stroika::Frameworks::WebServer {
          *                  WriteResponse (m.rwResponse (), kHR_, kMapper.FromObject (fWSImpl_->HR_POST (*ct, m->rwRequest().GetBody ())));
          *              }
          *              else {
-         *                  Execution::Throw (Execution::RuntimeErrorException{"expected Content-Type HTTP Request header"});
+         *                  Execution::Throw (Execution::Exception<runtime_error>{"expected Content-Type HTTP Request header"});
          *              }
          *          }},
          *      \endcode

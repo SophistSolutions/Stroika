@@ -38,7 +38,7 @@ namespace {
     inline void ThrowIfZStdErr_ (size_t rc) // CHECK_ZSTD
     {
         if (ZSTD_isError (rc)) {
-            Execution::Throw (Execution::RuntimeErrorException{"ZStd error: {}"_f(String::FromNarrowSDKString (::ZSTD_getErrorName (rc)))});
+            Execution::Throw (Execution::Exception<runtime_error>{"ZStd error: {}"_f(String::FromNarrowSDKString (::ZSTD_getErrorName (rc)))});
         }
     }
 

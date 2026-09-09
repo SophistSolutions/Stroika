@@ -83,15 +83,15 @@ const ObjectVariantMapper TokenRequest::kMapper = [] () {
 TypedBLOB TokenRequest::ToWireFormat () const
 {
     if (not code and not refresh_token) {
-        static const auto kExcept_ = RuntimeErrorException{"Missing authorization code/refresh_token"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Missing authorization code/refresh_token"sv};
         Throw (kExcept_);
     }
     if (code and refresh_token) {
-        static const auto kExcept_ = RuntimeErrorException{"Cannot combine authorization code/refresh_token"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Cannot combine authorization code/refresh_token"sv};
         Throw (kExcept_);
     }
     if (client_id.empty ()) {
-        static const auto kExcept_ = RuntimeErrorException{"Missing client_id"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Missing client_id"sv};
         Throw (kExcept_);
     }
     BLOB reqBody = [&] () {
@@ -122,21 +122,21 @@ TypedBLOB TokenRequest::ToWireFormat () const
 TokenRequest TokenRequest::FromWireFormat (const TypedBLOB& src)
 {
     if (not src.fType or not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kWWWFormURLEncoded, *src.fType)) {
-        static const auto kExcept_ = RuntimeErrorException{"Expected {}"_f(InternetMediaTypes::kWWWFormURLEncoded)};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Expected {}"_f(InternetMediaTypes::kWWWFormURLEncoded)};
         Throw (kExcept_);
     }
     Association<String, String> params              = Variant::FormURLEncoded::Reader{}.ReadAssociation (src.fData);
-    static const auto           kExcept_clientid_   = RuntimeErrorException{"Missing client_id"sv};
-    static const auto           kExcept_authCode_   = RuntimeErrorException{"Missing authentication code"sv};
-    static const auto           kExcept_grant_type_ = RuntimeErrorException{"Missing grant_type"sv};
+    static const auto           kExcept_clientid_   = Execution::Exception<runtime_error>{"Missing client_id"sv};
+    static const auto           kExcept_authCode_   = Execution::Exception<runtime_error>{"Missing authentication code"sv};
+    static const auto           kExcept_grant_type_ = Execution::Exception<runtime_error>{"Missing grant_type"sv};
     auto                        code                = params.LookupOne ("code"sv);
     auto                        refresh_token       = params.LookupOne ("refresh_token"sv);
     if (not code and not refresh_token) {
-        static const auto kExcept_ = RuntimeErrorException{"Missing authorization code/refresh_token"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Missing authorization code/refresh_token"sv};
         Throw (kExcept_);
     }
     if (code and refresh_token) {
-        static const auto kExcept_ = RuntimeErrorException{"Cannot combine authorization code/refresh_token"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Cannot combine authorization code/refresh_token"sv};
         Throw (kExcept_);
     }
     return TokenRequest{.client_id     = params.LookupOneChecked ("client_id"sv, kExcept_clientid_),
@@ -215,7 +215,7 @@ TypedBLOB TokenResponse::ToWireFormat () const
 TokenResponse TokenResponse::FromWireFormat (const TypedBLOB& src)
 {
     if (not src.fType or not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *src.fType)) {
-        static const auto kExcept_ = RuntimeErrorException{"Expected JSON"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Expected JSON"sv};
         Throw (kExcept_);
     }
     return kMapper.ToObject<TokenResponse> (Variant::JSON::Reader{}.Read (src.fData));
@@ -260,7 +260,7 @@ const ObjectVariantMapper TokenRevocationRequest::kMapper = [] () {
 TypedBLOB TokenRevocationRequest::ToWireFormat () const
 {
     if (access_token.empty ()) {
-        static const auto kExcept_ = RuntimeErrorException{"Missing access_token"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Missing access_token"sv};
         Throw (kExcept_);
     }
     BLOB reqBody = [&] () {
@@ -329,7 +329,7 @@ TypedBLOB TokenIntrospectionResponse::ToWireFormat () const
 TokenIntrospectionResponse TokenIntrospectionResponse::FromWireFormat (const TypedBLOB& src)
 {
     if (not src.fType or not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *src.fType)) {
-        static const auto kExcept_ = RuntimeErrorException{"Expected JSON"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Expected JSON"sv};
         Throw (kExcept_);
     }
     return kMapper.ToObject<TokenIntrospectionResponse> (Variant::JSON::Reader{}.Read (src.fData));
@@ -382,7 +382,7 @@ const ObjectVariantMapper UserInfo::kMapper = [] () {
 UserInfo UserInfo::FromWireFormat (const TypedBLOB& src)
 {
     if (not src.fType or not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *src.fType)) {
-        static const auto kExcept_ = RuntimeErrorException{"Expected JSON"sv};
+        static const auto kExcept_ = Execution::Exception<runtime_error>{"Expected JSON"sv};
         Throw (kExcept_);
     }
     return kMapper.ToObject<UserInfo> (Variant::JSON::Reader{}.Read (src.fData));
@@ -414,8 +414,8 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
 #endif
     auto nonCachingFetcher = [&] () -> TokenResponse {
         using namespace IO::Network::Transfer;
-        URI  tokenRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.token_uri, RuntimeErrorException{"no token_uri"sv});
-        auto connection      = Connection::New ();
+        URI tokenRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.token_uri, Execution::Exception<runtime_error>{"no token_uri"sv});
+        auto connection = Connection::New ();
         try {
             //DbgTrace ("Sending={}"_f, Streams::BinaryToText::Convert (tr.ToWireFormat ().fData));
             Response r = connection.POST (tokenRequestURI, tr.ToWireFormat ());
@@ -492,7 +492,8 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
         Debug::TraceContextBumper ctx2{"upstream oauth provider fetcher"};
 #endif
         using namespace IO::Network::Transfer;
-        URI userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
+        URI userInfoRequestURI =
+            Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, Execution::Exception<runtime_error>{"no userinfo_endpoint"sv});
         auto authInfo   = Connection::Options::Authentication{"Bearer "sv + accessToken};
         auto connection = Connection::New (Connection::Options{.fAuthentication = authInfo});
         try {

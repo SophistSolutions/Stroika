@@ -162,7 +162,7 @@ namespace {
             String argsAsString               = DataExchange::Variant::JSON::Reader{}
                                                     .Read (message.rwRequest ().GetBody ())
                                                     .As<Mapping<String, DataExchange::VariantValue>> ()
-                                                    .LookupChecked ("AppState", RuntimeErrorException{"oops"})
+                                                    .LookupChecked ("AppState", Execution::Exception<runtime_error>{"oops"})
                                                     .As<String> ();
             message.rwResponse ().write (argsAsString);
         }

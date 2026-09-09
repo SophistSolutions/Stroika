@@ -89,14 +89,24 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     **************************** RuntimeErrorException *****************************
+     ******************* RuntimeErrorException [[deprecated]] ***********************
      ********************************************************************************
      */
-    template <typename BASE_EXCEPTION>
-    inline RuntimeErrorException<BASE_EXCEPTION>::RuntimeErrorException (const Characters::String& msg)
-        : Exception<BASE_EXCEPTION>{msg, ""}
-    {
-    }
+    /**
+     *  \deprecated Since Stroika v3.0d25 - say Execution::Exception<runtime_error>, or whichever std exception type you
+     *              actually mean (Exception<logic_error>, Exception<out_of_range>, ...). Since v3.0d25
+     *              Exception<> supplies the base's what_arg itself, so this added nothing but a name - and a
+     *              misleading one whenever BASE_EXCEPTION was not in fact a runtime_error.
+     */
+    template <derived_from<exception> BASE_EXCEPTION = runtime_error>
+    class [[deprecated ("Since Stroika v3.0d25 - use Execution::Exception<runtime_error>")]] RuntimeErrorException
+        : public Exception<BASE_EXCEPTION> {
+    public:
+        RuntimeErrorException (const Characters::String& msg)
+            : Exception<BASE_EXCEPTION>{msg}
+        {
+        }
+    };
 
     /*
      ********************************************************************************

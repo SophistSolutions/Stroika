@@ -121,7 +121,7 @@ namespace Stroika::Foundation::IO::Network {
             if (auto op = GetAbsPath<optional<String>> ()) {
                 return *op;
             }
-            static const auto kException_ = Execution::RuntimeErrorException{"This URI does not have an absolute path"sv};
+            static const auto kException_ = Execution::Exception<runtime_error>{"This URI does not have an absolute path"sv};
             Execution::Throw (kException_);
         }
         if constexpr (same_as<RETURN_VALUE, optional<String>>) {

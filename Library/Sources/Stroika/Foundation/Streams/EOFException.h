@@ -22,9 +22,9 @@ namespace Stroika::Foundation::Streams {
      *  This is NOT thrown when the data is not just available yet. This is thrown when the data is known to
      *  never be available.
      */
-    class EOFException : public Execution::RuntimeErrorException<> {
+    class EOFException : public Execution::Exception<runtime_error> {
     private:
-        using inherited = Execution::RuntimeErrorException<>;
+        using inherited = Execution::Exception<runtime_error>;
 
     public:
         EOFException (bool partialReadCompleted = false);

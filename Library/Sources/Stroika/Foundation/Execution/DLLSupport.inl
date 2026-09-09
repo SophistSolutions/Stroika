@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Execution {
     }
 #if !qStroika_Foundation_Common_Platform_Windows
     inline DLLException::DLLException (const char* message)
-        : Execution::RuntimeErrorException<>{Characters::String::FromNarrowSDKString (message)}
+        : Execution::Exception<runtime_error>{Characters::String::FromNarrowSDKString (message)}
     {
     }
 #endif

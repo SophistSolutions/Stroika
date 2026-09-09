@@ -21,9 +21,9 @@ namespace Stroika::Foundation::Streams {
      * 
      *  \see NoDataAvailableHandling
      */
-    class EWouldBlock : public Execution::RuntimeErrorException<> {
+    class EWouldBlock : public Execution::Exception<runtime_error> {
     private:
-        using inherited = Execution::RuntimeErrorException<>;
+        using inherited = Execution::Exception<runtime_error>;
 
     public:
         EWouldBlock ();

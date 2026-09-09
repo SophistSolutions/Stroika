@@ -908,7 +908,7 @@ void UTFConvert::Throw (ConversionStatusFlag cr, size_t errorAtSourceOffset)
 {
     switch (cr) {
         case ConversionStatusFlag::sourceExhausted: {
-            static const auto kException_ = Execution::RuntimeErrorException{"Invalid UNICODE source string (incomplete UTF character)"sv};
+            static const auto kException_ = Execution::Exception<runtime_error>{"Invalid UNICODE source string (incomplete UTF character)"sv};
             Execution::Throw (kException_);
         }
         case ConversionStatusFlag::sourceIllegal: {

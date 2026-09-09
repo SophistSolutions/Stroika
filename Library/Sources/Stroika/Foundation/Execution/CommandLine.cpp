@@ -26,15 +26,15 @@ using namespace Stroika::Foundation::Traversal;
  ********************************************************************************
  */
 InvalidCommandLineArgument::InvalidCommandLineArgument ()
-    : RuntimeErrorException<>{"Invalid Command Argument"sv}
+    : Execution::Exception<runtime_error>{"Invalid Command Argument"sv}
 {
 }
 InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message)
-    : RuntimeErrorException<>{message}
+    : Execution::Exception<runtime_error>{message}
 {
 }
 InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message, const String& argument)
-    : RuntimeErrorException<>{message}
+    : Execution::Exception<runtime_error>{message}
     , fArgument{argument}
 {
 }

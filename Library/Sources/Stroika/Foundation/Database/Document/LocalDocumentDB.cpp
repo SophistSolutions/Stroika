@@ -155,8 +155,8 @@ namespace {
                         if (onlyTheseFields) {
                             uploadDoc.RetainAll (*onlyTheseFields);
                         }
-                        static const auto  kExcept1_           = RuntimeErrorException{"no such table"sv};
-                        static const auto  kNoSuchIDException_ = RuntimeErrorException{"no such id"sv};
+                        static const auto  kExcept1_           = Execution::Exception<runtime_error>{"no such table"sv};
+                        static const auto  kNoSuchIDException_ = Execution::Exception<runtime_error>{"no such id"sv};
                         CollectionRep_     collection          = fConnectionRep_->fCollections_.LookupChecked (fTableName_, kExcept1_);
                         Document::Document d2Update = onlyTheseFields ? collection.LookupChecked (id, kNoSuchIDException_) : uploadDoc;
                         // any fields listed in onlyTheseFields, but not present in newV need to be removed
@@ -679,7 +679,7 @@ namespace {
                 fDBRep_->WrapExecute_ (
                     [&] () {
                         Document::Document updatedDoc =
-                            onlyTheseFields ? Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"sv}) : newV;
+                            onlyTheseFields ? Memory::ValueOfOrThrow (DoReadFromFS_ (id), Execution::Exception<runtime_error>{"no such id"sv}) : newV;
                         Document::Document updateWithDoc = newV;
                         if (onlyTheseFields) {
                             updateWithDoc.RetainAll (*onlyTheseFields);

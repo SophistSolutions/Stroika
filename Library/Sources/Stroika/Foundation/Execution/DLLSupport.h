@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Execution {
 #endif
 
 #if !qStroika_Foundation_Common_Platform_Windows
-    class DLLException : public Execution::RuntimeErrorException<> {
+    class DLLException : public Execution::Exception<runtime_error> {
     public:
         DLLException (const char* message);
     };

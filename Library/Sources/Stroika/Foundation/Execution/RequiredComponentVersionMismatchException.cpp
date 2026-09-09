@@ -27,6 +27,6 @@ namespace {
     }
 }
 RequiredComponentVersionMismatchException::RequiredComponentVersionMismatchException (const wstring& component, const wstring& requiredVersion)
-    : Execution::RuntimeErrorException<> (mkMsg (component, requiredVersion))
+    : Execution::Exception<runtime_error> (mkMsg (component, requiredVersion))
 {
 }

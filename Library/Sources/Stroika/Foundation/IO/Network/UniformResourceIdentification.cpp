@@ -27,7 +27,7 @@ using namespace Stroika::Foundation::IO::Network::UniformResourceIdentification;
 namespace {
     inline uint8_t ConvertReadSingleHexDigit_ (char digit)
     {
-        static const auto kException_ = Execution::RuntimeErrorException{"illegal hex digit"sv};
+        static const auto kException_ = Execution::Exception<runtime_error>{"illegal hex digit"sv};
         if (isupper (digit)) {
             digit = static_cast<char> (tolower (digit));
         }
@@ -62,7 +62,7 @@ void SchemeType::Validate () const
     // https://tools.ietf.org/html/rfc3986#appendix-A  -- scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
     for (Characters::Character c : *this) {
         if (not c.IsASCII () or not(c.IsAlphabetic () or c.IsDigit () or c == '-' or c == '.' or c == '+')) [[unlikely]] {
-            static const auto kException_ = Execution::RuntimeErrorException{"bad character in URI scheme"sv};
+            static const auto kException_ = Execution::Exception<runtime_error>{"bad character in URI scheme"sv};
             Execution::Throw (kException_);
         }
     }
@@ -113,7 +113,7 @@ pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String&
         // must be ipv6 address
         // must be surrounded with []
         if (raw.Last () != ']') {
-            static const auto kException_ = Execution::RuntimeErrorException{"IPV6 hostname in URL must be surrounded with []"sv};
+            static const auto kException_ = Execution::Exception<runtime_error>{"IPV6 hostname in URL must be surrounded with []"sv};
             Execution::Throw (kException_);
         }
         return pair<optional<String>, optional<InternetAddress>>{nullopt, InternetAddress{raw.SubString (1, -1), InternetAddress::AddressFamily::V6}};
@@ -232,7 +232,7 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
             }
             else {
                 ;
-                static const Execution::RuntimeErrorException kException_{"no closing bracket in host part of authority of URI"sv};
+                static const Execution::Exception<runtime_error> kException_{"no closing bracket in host part of authority of URI"sv};
                 Execution::Throw (kException_);
             }
         }
@@ -538,7 +538,7 @@ u8string UniformResourceIdentification::PCTDecode (const u8string& s)
                     result += (newC);
                 }
                 else {
-                    static const auto kException_ = Execution::RuntimeErrorException{"incomplete % encoded character in URI"sv};
+                    static const auto kException_ = Execution::Exception<runtime_error>{"incomplete % encoded character in URI"sv};
                     Execution::Throw (kException_);
                 }
             } break;

@@ -89,7 +89,7 @@ namespace {
  ********************************************************************************
  */
 TimeOfDay::FormatException::FormatException ()
-    : Execution::RuntimeErrorException<>{"Invalid Time Format"sv}
+    : Execution::Exception<runtime_error>{"Invalid Time Format"sv}
 {
 }
 

@@ -23,7 +23,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *
      *  @see ClientErrorException
      */
-    class Exception : public Execution::RuntimeErrorException<> {
+    class Exception : public Execution::Exception<runtime_error> {
     public:
         // If no reason is given, a default is generated based on the status code
         Exception (Status status, const String& reason = {});

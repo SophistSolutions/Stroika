@@ -408,7 +408,7 @@ namespace {
         constexpr Execution::Activity kActivityINNER_{"INNER"sv};
         Execution::DeclareActivity    declareActivity2{&kActivityINNER_};
         try {
-            Execution::Throw (Execution::RuntimeErrorException{"oops"});
+            Execution::Throw (Execution::Exception<runtime_error>{"oops"});
         }
         catch (...) {
             DbgTrace ("error={}"_f, current_exception ());

@@ -37,7 +37,7 @@ using Memory::MakeSharedPtr;
  ********************************************************************************
  */
 XPath::XPathExpressionNotSupported::XPathExpressionNotSupported ()
-    : Execution::RuntimeErrorException<> ("XPath implementation doesn't support that XML expression"_k)
+    : Execution::Exception<runtime_error> ("XPath implementation doesn't support that XML expression"_k)
 {
 }
 

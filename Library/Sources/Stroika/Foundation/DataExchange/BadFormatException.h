@@ -15,9 +15,9 @@ namespace Stroika::Foundation::DataExchange {
     /**
      * Use when reading from a structured stream the data is ill-formed
      */
-    class BadFormatException : public Execution::RuntimeErrorException<> {
+    class BadFormatException : public Execution::Exception<runtime_error> {
     private:
-        using inherited = Execution::RuntimeErrorException<>;
+        using inherited = Execution::Exception<runtime_error>;
 
     public:
         /**

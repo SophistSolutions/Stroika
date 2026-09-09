@@ -612,7 +612,7 @@ String String::FromNarrowString (span<const char> s, const locale& l)
     codecvt_base::result         result =
         cvt.in (mbstate, s.data (), s.data () + s.size (), from_next, targetBuf.data (), targetBuf.data () + targetBuf.size (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
-        static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
+        static const auto kException_ = Execution::Exception<runtime_error>{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
     }
     return String{span<const wchar_t>{targetBuf.data (), static_cast<size_t> (to_next - targetBuf.data ())}};
@@ -1288,7 +1288,7 @@ Sequence<String> String::Tokenize (const RegularExpression& isSeparator) const
             Assert (ofi->first <= ofi->second);
             if (ofi->first == ofi->second) [[unlikely]] {
                 static const auto kException_ =
-                    Execution::RuntimeErrorException{"separator regular expression argument to Tokenize must be non-empty or not match"sv};
+                    Execution::Exception<runtime_error>{"separator regular expression argument to Tokenize must be non-empty or not match"sv};
                 Execution::Throw (kException_);
             }
             if (ofi->first > startAt) {
@@ -1866,7 +1866,7 @@ string String::AsNarrowString (const locale& l) const
     codecvt_base::result      result =
         cvt.out (mbstate, thisData.data (), thisData.data () + thisData.size (), from_next, into.data (), into.end (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
-        static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
+        static const auto kException_ = Execution::Exception<runtime_error>{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
     }
     return string{into.data (), to_next};
@@ -1948,7 +1948,7 @@ const wchar_t* String::c_str ()
 
 [[noreturn]] void String::ThrowInvalidAsciiException_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException{"Error converting non-ascii text to string"sv};
+    static const auto kException_ = Execution::Exception<runtime_error>{"Error converting non-ascii text to string"sv};
     Execution::Throw (kException_);
 }
 

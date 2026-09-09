@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \see also FeatureNotSupportedException
      */
-    class OperationNotSupportedException : public Execution::RuntimeErrorException<> {
+    class OperationNotSupportedException : public Execution::Exception<runtime_error> {
     public:
         OperationNotSupportedException ();
         OperationNotSupportedException (const String& operationName);

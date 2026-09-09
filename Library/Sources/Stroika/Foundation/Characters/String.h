@@ -1222,7 +1222,7 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type.
          * Only specifically specialized variants are supported (right now just <string> supported).
-         * The source string MUST be valid ascii characters - throw RuntimeErrorException<>
+         * The source string MUST be valid ascii characters - throw Execution::Exception<runtime_error>
          *
          *  \par Example Usage:
          *      \code

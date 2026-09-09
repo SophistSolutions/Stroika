@@ -205,7 +205,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                 return;
             }
         }
-        static const auto kException_ = Execution::RuntimeErrorException<> ("Node not found relative to given element"sv);
+        static const auto kException_ = Execution::Exception<runtime_error> ("Node not found relative to given element"sv);
         Execution::Throw (kException_);
     }
     template <same_as<VariantValue> VV>

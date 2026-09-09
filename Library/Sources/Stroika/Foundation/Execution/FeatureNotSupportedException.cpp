@@ -17,12 +17,12 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 FeatureNotSupportedException::FeatureNotSupportedException ()
-    : Execution::RuntimeErrorException<>{"Feature Not Supported"sv}
+    : Execution::Exception<runtime_error>{"Feature Not Supported"sv}
 {
 }
 
 FeatureNotSupportedException::FeatureNotSupportedException (const String& featureName)
-    : Execution::RuntimeErrorException<>{"Feature '"sv + featureName + "' Not Supported"sv}
+    : Execution::Exception<runtime_error>{"Feature '"sv + featureName + "' Not Supported"sv}
     , fFeature_{featureName}
 {
 }

@@ -29,7 +29,7 @@ namespace {
     void ThrowIfMinizipErr_ (int err, const String& doing)
     {
         if (err != UNZ_OK) [[unlikely]] {
-            Throw (RuntimeErrorException{Format ("error {} with zipfile in {}"_f, err, doing)});
+            Throw (Execution::Exception<runtime_error>{Format ("error {} with zipfile in {}"_f, err, doing)});
         }
     }
     struct MyZipLibOutStream_ final : zlib_filefunc64_def {
@@ -130,7 +130,7 @@ namespace {
             , fZipFile_{zipOpen2_64 ("", APPEND_STATUS_CREATE, nullptr, &fOutZipStream_)}
         {
             if (fZipFile_ == nullptr) [[unlikely]] {
-                static const RuntimeErrorException kException_{"failed to open zipfile"sv};
+                static const Execution::Exception<runtime_error> kException_{"failed to open zipfile"sv};
                 Throw (kException_);
             }
         }

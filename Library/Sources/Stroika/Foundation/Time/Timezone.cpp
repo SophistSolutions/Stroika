@@ -96,7 +96,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const char* tzStr)
             int16_t n = (isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn);
             return Timezone{n, DataExchange::ValidationStrategy::eThrow};
         }
-        static const Execution::RuntimeErrorException kException_{"invalid timezone offset"sv};
+        static const Execution::Exception<runtime_error> kException_{"invalid timezone offset"sv};
         Execution::Throw (kException_);
     }
 }
@@ -125,7 +125,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const wchar_t* tzStr)
             int16_t n = (isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn);
             return Timezone{n, DataExchange::ValidationStrategy::eThrow};
         }
-        static const Execution::RuntimeErrorException kException_{"invalid timezone offset"sv};
+        static const Execution::Exception<runtime_error> kException_{"invalid timezone offset"sv};
         Execution::Throw (kException_);
     }
 }

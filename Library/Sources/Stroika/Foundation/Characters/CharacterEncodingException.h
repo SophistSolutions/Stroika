@@ -25,9 +25,9 @@ namespace Stroika::Foundation::Characters {
      *      @todo Do more to construct these with valid 'encoding' - so calls / failures can see what not only the character offset, but the
      *      encoding converting to/from where there is a problem (like turkish, or UTF-8, etc).
      */
-    class CharacterEncodingException : public Execution::RuntimeErrorException<> {
+    class CharacterEncodingException : public Execution::Exception<runtime_error> {
     private:
-        using inherited = Execution::RuntimeErrorException<>;
+        using inherited = Execution::Exception<runtime_error>;
 
     public:
         enum EncodingOrDecoding {

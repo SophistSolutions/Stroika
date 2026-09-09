@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \todo Perhaps refactor slightly, so easy to tell one kind of issue from another.
      */
-    class InvalidCommandLineArgument : public Execution::RuntimeErrorException<> {
+    class InvalidCommandLineArgument : public Execution::Exception<runtime_error> {
     public:
         InvalidCommandLineArgument ();
         InvalidCommandLineArgument (const String& message);

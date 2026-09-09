@@ -46,9 +46,9 @@ namespace Stroika::Foundation::Containers {
 
     class Bijection_Base {
     public:
-        class InjectivityViolation : public Execution::RuntimeErrorException<> {
+        class InjectivityViolation : public Execution::Exception<runtime_error> {
         private:
-            using inherited = Execution::RuntimeErrorException<>;
+            using inherited = Execution::Exception<runtime_error>;
 
         public:
             InjectivityViolation ();

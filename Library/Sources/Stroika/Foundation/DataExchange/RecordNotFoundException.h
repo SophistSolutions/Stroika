@@ -15,9 +15,9 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      */
-    class RecordNotFoundException : public Execution::RuntimeErrorException<> {
+    class RecordNotFoundException : public Execution::Exception<runtime_error> {
     private:
-        using inherited = Execution::RuntimeErrorException<>;
+        using inherited = Execution::Exception<runtime_error>;
 
     public:
         /**

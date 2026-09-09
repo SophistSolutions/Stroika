@@ -147,7 +147,7 @@ void Execution::SetCPUAffinity ([[maybe_unused]] const LogicalCPUCoreSet& cores)
     // portably either - the ceiling is 32, 64 or 1024 depending on platform and word size - so it belongs
     // in the same channel as any other refusal rather than in an assertion.
     if (kCPUAffinitySupported and not cores.All ([] (unsigned int c) { return c < kMaxRepresentableCore_; })) {
-        Throw (RuntimeErrorException{"CPU core number is too large for this platform's affinity mask"sv});
+        Throw (Execution::Exception<runtime_error>{"CPU core number is too large for this platform's affinity mask"sv});
     }
 #if qStroika_Foundation_Common_Platform_Windows
     if (::SetProcessAffinityMask (::GetCurrentProcess (), mkMask_ (cores)) == 0) {

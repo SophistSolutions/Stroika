@@ -382,7 +382,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     return true;
                 }
                 case AddOrExtendOrReplaceMode::eDuplicatesRejected:
-                    static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
+                    static const auto kExcept_ = Execution::Exception<logic_error>{"Duplicates not allowed"sv};
                     Execution::Throw (kExcept_);
             }
             AssertNotReached ();
@@ -443,7 +443,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     return true;
                 }
                 case AddOrExtendOrReplaceMode::eDuplicatesRejected:
-                    static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
+                    static const auto kExcept_ = Execution::Exception<logic_error>{"Duplicates not allowed"sv};
                     Execution::Throw (kExcept_);
             }
             AssertNotReached ();

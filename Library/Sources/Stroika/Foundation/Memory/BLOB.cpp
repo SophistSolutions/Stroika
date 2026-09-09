@@ -159,7 +159,7 @@ BLOB BLOB::FromHex (span<const char> s)
         if ('a' <= c and c <= 'f') [[likely]] {
             return static_cast<byte> ((c - 'a') + 10);
         }
-        static const Execution::RuntimeErrorException kException_{"Invalid HEX character in BLOB::Hex"sv};
+        static const Execution::Exception<runtime_error> kException_{"Invalid HEX character in BLOB::Hex"sv};
         Execution::Throw (kException_);
     };
     StackBuffer<byte> buf;
@@ -171,7 +171,7 @@ BLOB BLOB::FromHex (span<const char> s)
         byte b = HexChar2Num_ (*i);
         ++i;
         if (i == e) [[unlikely]] {
-            static const Execution::RuntimeErrorException kException_{"Invalid partial HEX character in BLOB::Hex"sv};
+            static const Execution::Exception<runtime_error> kException_{"Invalid partial HEX character in BLOB::Hex"sv};
             Execution::Throw (kException_);
         }
         b = byte (uint8_t (b << 4) + uint8_t (HexChar2Num_ (*i)));

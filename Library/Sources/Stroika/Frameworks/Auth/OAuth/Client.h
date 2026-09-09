@@ -248,7 +248,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *      \code
          *          // rarely used, no caching
          *          ProviderConfiguration providerConfiguration{Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (
-         *                                                      GetUseProvider_ (wsi), RuntimeErrorException{"Unrecognized provider name"sv})};
+         *                                                      GetUseProvider_ (wsi), Execution::Exception<runtime_error>{"Unrecognized provider name"sv})};
          *          if (wsi and wsi->fBearerToken) {
          *              Auth::OAuth::Fetcher  f{providerConfiguration};
          *              Auth::OAuth::UserInfo clientUserInfo = f.GetUserInfo (wsi->fBearerToken.value_or (String{}));

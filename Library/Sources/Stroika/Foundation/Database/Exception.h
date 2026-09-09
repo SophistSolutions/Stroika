@@ -25,9 +25,9 @@ namespace Stroika::Foundation::Database {
     /**
      *  An exception reported by the (typically remote) database.
      */
-    class Exception : public Execution::RuntimeErrorException<> {
+    class Exception : public Execution::Exception<runtime_error> {
     private:
-        using inherited = Execution::RuntimeErrorException<>;
+        using inherited = Execution::Exception<runtime_error>;
 
     public:
         Exception (const String& message);

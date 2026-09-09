@@ -13,5 +13,5 @@ using namespace Stroika::Foundation;
 
 void Math::Private_::ThrowTruncOfNAN_ ()
 {
-    Execution::Throw (Execution::RuntimeErrorException{"trunc (nan)"sv});
+    Execution::Throw (Execution::Exception<runtime_error>{"trunc (nan)"sv});
 }

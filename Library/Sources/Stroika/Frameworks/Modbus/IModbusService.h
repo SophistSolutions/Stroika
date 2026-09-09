@@ -88,7 +88,7 @@ namespace Stroika::Frameworks::Modbus {
 
     /**
      */
-    struct Exception : Execution::RuntimeErrorException<> {
+    struct Exception : Execution::Exception<runtime_error> {
         Exception (ExceptionCode exceptionCode);
 
         ExceptionCode fExceptionCode;
