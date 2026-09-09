@@ -3826,6 +3826,7 @@ TRIED alignas to fix on the array but no luck
 // website says broken in clang 17 - recheck later versions when I run builds
 // FAILS on clang++-18
 // FAILS on clang++-19
+// Appears fixed in clang++-20
 #define qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
 #else
 #define qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy 0
