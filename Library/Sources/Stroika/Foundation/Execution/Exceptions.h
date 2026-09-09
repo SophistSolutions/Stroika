@@ -204,6 +204,23 @@ namespace Stroika::Foundation::Execution {
          */
         virtual const char* what () const noexcept override;
     };
+
+#if qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy
+    /**
+     *  \brief explicit deduction guide so 'Exception{msg}' (no explicit template argument) deduces
+     *         Exception<exception>, rather than being ambiguous.
+     *
+     *  Without this, CTAD on 'Exception{msg}' has to choose between the two implicitly-generated guides
+     *  for the two constructors above, which differ only in their requires-clause (mutually exclusive, but
+     *  only once BASE_EXCEPTION is known - a chicken-and-egg problem for a purely argument-driven deduction).
+     *  This explicit guide is a non-template exact match, so ordinary overload resolution picks it over
+     *  either implicit (function-template) guide outright, without needing to evaluate their constraints.
+     *
+     *  @see qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy
+     */
+    Exception (const Characters::String&) -> Exception<exception>;
+#endif
+
     static_assert (constructible_from<Exception<exception>, Characters::String>);                // see Satisfies
     static_assert (constructible_from<Exception<bad_alloc>, Characters::String>);                // ""
     static_assert (constructible_from<Execution::Exception<runtime_error>, Characters::String>); // ""

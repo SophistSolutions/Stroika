@@ -3792,6 +3792,46 @@ TRIED alignas to fix on the array but no luck
 #endif
 
 /*
+    https://github.com/llvm/llvm-project/issues/62141   ("Class Template Argument Deduction ignores requires clause")
+
+    Given a class template with TWO constructors taking the same argument types but mutually-exclusive
+    trailing requires-clauses (constrained on the class template parameter, which does not otherwise appear
+    in the constructor's parameter list), clang fails to apply those requires-clauses when checking the
+    implicitly-generated deduction guides against each other, and reports the call as ambiguous - even though
+    only one of the two guides' constraints is satisfiable once the (possibly DEFAULTED) class template
+    argument is known. GCC and MSVC both get this right.
+
+    SQLite.cpp:71:28: error: ambiguous deduction for template arguments of 'Exception'
+       71 |                     Throw (Exception{"SQLITE_CONSTRAINT: {}"_f(errMsgDetails)});
+          |                            ^
+    Exceptions.h:187:9: note: candidate function [with BASE_EXCEPTION = std::exception]
+      187 |         Exception (const Characters::String& reasonForError)
+          |         ^
+    Exceptions.h:189:9: note: candidate function [with BASE_EXCEPTION = std::exception]
+      189 |         Exception (const Characters::String& reasonForError)
+          |         ^
+
+    Workaround used (@see Execution::Exception<>): add an explicit, non-template deduction guide for the
+    plain 'Exception{msg}' call - being a non-template exact match, it wins overload resolution outright
+    over the two implicit (constrained, template) guides, without clang ever needing to evaluate their
+    (mishandled) constraints.
+*/
+#ifndef qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// broken in apple clang 16 (Xcode 16.4)
+// broken in apple clang 17 (Xcode 26.3)
+#define qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+#elif defined(__clang__) && !defined(__APPLE__)
+// website says broken in clang 17 - recheck later versions when I run builds
+#define qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+#else
+#define qCompilerAndStdLib_CTADIgnoresConstructorRequiresClause_Buggy 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_Support__PRETTY_FUNCTION__
 @DESCRIPTION:   <p>FOR ASSERT</p>
 */
