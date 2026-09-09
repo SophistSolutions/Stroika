@@ -232,6 +232,14 @@ namespace Stroika::Foundation::Execution {
      *          missing exceptions from non-Stroika sources (which will just throw system_error) or subclasses of system_error such as
      *          filesystem_error.
      *
+     *  \note   ***Changed in Stroika v3.0d25*** - this is no longer a template; spell it without the `<>`.
+     *          It exists only to add error_code-shaped constructors to Exception<system_error>, and those
+     *          constructors are meaningful ONLY for system_error - no other standard system_error subclass has
+     *          a constructor taking a bare error_code (filesystem_error, for one, requires a what_arg). The old
+     *          `SystemErrorException<BASE_EXCEPTION>` therefore offered a generality it could not deliver.
+     *          To mix Stroika's string/Activity support into a DIFFERENT system_error subclass, derive from
+     *          @see Exception<THAT_TYPE> directly - which is what IO::FileSystem::Exception now does.
+     *
      *  \par Example Usage
      *      \code
      *          try {
@@ -250,7 +258,7 @@ namespace Stroika::Foundation::Execution {
      *          try {
      *          const Characters::String kMsgWithUnicode_ = L"zß水𝄋"; // this works even if using a code page / locale which doesn't support UNICODE/Chinese
      *          try {
-     *              Execution::Throw (SystemErrorException<> (make_error_code (errc::bad_address), kMsgWithUnicode_));
+     *              Execution::Throw (SystemErrorException (make_error_code (errc::bad_address), kMsgWithUnicode_));
      *          }
      *          catch (const std::system_error& e) {
      *              Assert (Characters::ToString (e).Contains (kMsgWithUnicode_));  // message also includes the number for bad_address
@@ -277,13 +285,9 @@ namespace Stroika::Foundation::Execution {
      *
      *  @see also GetAssociatedErrorCode ()
      */
-    template <typename BASE_EXCEPTION = system_error>
-    class SystemErrorException : public Exception<BASE_EXCEPTION> {
+    class SystemErrorException : public Exception<system_error> {
     private:
-        static_assert (derived_from<BASE_EXCEPTION, system_error>);
-
-    private:
-        using inherited = Exception<BASE_EXCEPTION>;
+        using inherited = Exception<system_error>;
 
     public:
         /**
@@ -292,16 +296,6 @@ namespace Stroika::Foundation::Execution {
         SystemErrorException (error_code errCode, const Characters::String& message);
         SystemErrorException (int ev, const error_category& ecat);
         SystemErrorException (int ev, const error_category& ecat, const Characters::String& message);
-
-    protected:
-        /**
-         * For BASE_EXCEPTION classes with constructors OTHER than just 'message' - you cannot use a 'using X = Exception(x)' but a subclass
-         * which uses this delegating method.
-         *
-         *  \note - _PeekAtSDKString_ () will probably have to be among the baseExceptionArgs.
-         */
-        template <typename... BASE_EXCEPTION_ARGS>
-        explicit SystemErrorException (const Characters::String& reasonForError, BASE_EXCEPTION_ARGS... baseExceptionArgs);
     };
 
     /**

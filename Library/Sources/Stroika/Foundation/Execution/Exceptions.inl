@@ -108,30 +108,20 @@ namespace Stroika::Foundation::Execution {
      ***************************** SystemErrorException *****************************
      ********************************************************************************
      */
-    template <typename BASE_EXCEPTION>
-    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (error_code errCode)
+    inline SystemErrorException::SystemErrorException (error_code errCode)
         : SystemErrorException{errCode, Private_::SystemErrorExceptionPrivate_::mkMsg_ (errCode)}
     {
     }
-    template <typename BASE_EXCEPTION>
-    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (error_code errCode, const Characters::String& message)
+    inline SystemErrorException::SystemErrorException (error_code errCode, const Characters::String& message)
         : inherited{Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (errCode, message), errCode}
     {
     }
-    template <typename BASE_EXCEPTION>
-    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (int ev, const std::error_category& ecat)
+    inline SystemErrorException::SystemErrorException (int ev, const std::error_category& ecat)
         : SystemErrorException{error_code{ev, ecat}}
     {
     }
-    template <typename BASE_EXCEPTION>
-    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message)
+    inline SystemErrorException::SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message)
         : SystemErrorException{error_code{ev, ecat}, message}
-    {
-    }
-    template <typename BASE_EXCEPTION>
-    template <typename... BASE_EXCEPTION_ARGS>
-    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (const Characters::String& reasonForError, BASE_EXCEPTION_ARGS... baseExceptionArgs)
-        : inherited{reasonForError, forward<BASE_EXCEPTION_ARGS> (baseExceptionArgs)...}
     {
     }
 

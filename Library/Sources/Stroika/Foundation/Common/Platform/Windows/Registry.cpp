@@ -98,7 +98,7 @@ namespace {
             return VariantValue{}; // @todo reconsider if we should throw here or not??? -- LGP 2020-07-04
         }
         else {
-            Execution::Throw (Execution::SystemErrorException<> (lResult, system_category ()));
+            Execution::Throw (Execution::SystemErrorException (lResult, system_category ()));
         }
     }
 }

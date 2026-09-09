@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Execution {
      *          }
      *
      */
-    class TimeOutException : public Execution::SystemErrorException<> {
+    class TimeOutException : public Execution::SystemErrorException {
     public:
         /**
          *  when not specified, the error_code defaults to make_error_code (errc::timed_out)

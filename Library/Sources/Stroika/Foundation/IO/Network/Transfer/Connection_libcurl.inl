@@ -16,7 +16,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::LibCurl {
     inline void ThrowIfError (CURLcode status)
     {
         if (status != CURLE_OK) [[unlikely]] {
-            Execution::Throw (Execution::SystemErrorException<>{status, error_category ()});
+            Execution::Throw (Execution::SystemErrorException{status, error_category ()});
         }
     }
 

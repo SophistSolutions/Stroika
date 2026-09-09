@@ -52,9 +52,9 @@ namespace Stroika::Foundation::IO::FileSystem {
      *      \endcode
      *
      */
-    class Exception : public Execution::SystemErrorException<filesystem_error> {
+    class Exception : public Execution::Exception<filesystem_error> {
     private:
-        using inherited = Execution::SystemErrorException<filesystem_error>;
+        using inherited = Execution::Exception<filesystem_error>;
 
     public:
         /**
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  \pre if (p1.empty() then require (p2.empty ()); but neither is required
          *
          *  See:
-         *      @see SystemErrorException<>::ThrowSystemErrNo ();
+         *      @see Execution::ThrowSystemErrNo ();
          *      @see ThrowPOSIXErrNo ();
          *
          */
