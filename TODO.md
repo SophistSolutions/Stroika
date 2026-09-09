@@ -14,20 +14,8 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
-   - **LOW PRIORITY: split the two lazy message stages, so `Characters::ToString ()` need not pay the charset
-     conversion.** Exception messages are now built lazily - but that came out of the v3.0d25 activity-capture
-     work (activities may be imbued after construction, so the message CANNOT be computed in the ctor), not out
-     of a performance push. What is left is a pure tuning knob, behind an API that is already right, so it can
-     be done any time. Consider migrating to a GitHub issue.
-     The two cached values form a chain, and only the second is expensive-unconditionally:
-       `raw + activities` --mkMessage_--> `fFullErrorMessage_` --AsNarrowSDKString--> `fSDKCharString_`
-     `mkMessage_` returns its input unchanged when there are no activities (~free); `AsNarrowSDKString` always
-     converts and allocates - measured 2026-09-09 at 49.6ns of 77.6ns total construction, i.e. about 64%.
-     Only `what ()` ever reads `fSDKCharString_`; Stroika-idiomatic code calls `Characters::ToString (e)`, which
-     needs only the first stage. Splitting the build into two independently-cached stages would let the common
-     path skip the conversion entirely. Caveat measured the same day: in a TRACING build `Throw ()` renders
-     every exception via `Private_::ToString_`, which is `t.what ()` - so Debug builds force stage 2 regardless
-     until that is changed too (separable, and LGP is not concerned with Debug logging cost).
+   - **Exceptions: split the two lazy message stages** - moved to GitHub issue #1166. Lowest priority;
+     pure tuning knob behind an API that is already right. Measurements are in the issue.
 
    - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
      enforces it.** Raised in the same design review. The condition test is correct and portable; the raw-value
