@@ -48,6 +48,26 @@ namespace Stroika::Foundation::Execution {
      *              uses this, but hides it - mostly).
      *          o   EINTR handling (POSIX only)
      *
+     *  \note   ***Which standard libraries actually have jthread/stop_token***
+     *
+     *          Much of the Stroika thread code checks (__cpp_lib_jthread >= 201911);
+     *          Where it fails, Thread holds a std::thread rather than a
+     *          std::jthread, has no stop_source, and Abort () does not call request_stop () - leaving only
+     *          the interrupt signal (POSIX) or APC (Windows) to break into a blocking call.
+     *
+     *              o   libstdc++ - has jthread/stop_token, since GCC 10, so every gcc Stroika supports is fine
+     *              o   MS Visual Studio - has jthread/stop_token
+     *              o   libc++ - implemented jthread/stop_token in LLVM 18, but guarded behind -fexperimental-library until
+     *                  LLVM 20, and Stroika passes that flag nowhere. So EVERY --stdlib libc++ build with
+     *                  clang < 20 lacks it - today that is the clang++-15/16/17/18-*-libc++ regression
+     *                  configurations. @see https://libcxx.llvm.org/Status/Cxx20.html
+     *              o   Apple XCode - 15 confirmed lacking; later XCodes ship a pre-LLVM-20 libc++ so
+     *                  probably also lack it, but that is unverified
+     *
+     *          Anywhere this matters, prefer a mechanism that does not depend on it - @see
+     *          qStroika_Foundation_Execution_WaitForIOReady_UsePPoll for a worked example.
+     *              -- checked against libc++ upstream status 2026-09-09
+     *
      *  as well as a couple modestly helpful features (that can be done other ways directly with std::thread):
      *          o   Copyability (using Thread::Ptr)
      *          o   Better lifetime management (the thread envelope - object you create - can go away, but
