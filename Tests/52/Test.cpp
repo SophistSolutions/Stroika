@@ -2635,8 +2635,58 @@ namespace {
 
         Tester ("Test of simple locking strategies (mutex v shared_ptr copy)", Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, "mutex",
                 Test_MutexVersusSharedPtrCopy_shared_ptr_copy, "shared_ptr<> copy", 24500, 1.7, &failedTests);
-        Tester ("Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, "mutex",
-                Test_MutexVersusSpinLock_SPIN_LOCK, "SpinLock", 24500, 0.83, &failedTests);
+        {
+            /*
+             *  Same comparison as the other Tester () calls, but this one also cross-checks
+             *  Execution::kSpinLock_IsFasterThan_mutex against what this machine actually measured.
+             *
+             *  That constant is a compile-time guess (keyed on which standard library is in use), and it is not
+             *  cosmetic - it is what selects SpinLock over std::mutex in BlockAllocator, SharedPtr,
+             *  SharedStaticData and Synchronized_Fast. A new toolchain can silently invalidate it, and nothing
+             *  else would notice; see the measured table in SpinLock.h for how much it already varies by platform.
+             */
+            optional<double> measuredRatio;
+            optional<double> measuredBaselineSeconds;
+            Tester ("Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, "mutex",
+                    Test_MutexVersusSpinLock_SPIN_LOCK, "SpinLock", 24500, 0.83, &failedTests,
+                    [&] (const String& testName, const String& baselineTName, const String& compareWithTName,
+                         double warnIfPerformanceScoreHigherThan, Duration baselineTime, Duration compareWithTime) {
+                        if (baselineTime != 0s) {
+                            measuredRatio           = compareWithTime.count () / baselineTime.count ();
+                            measuredBaselineSeconds = baselineTime.count ();
+                        }
+                        DEFAULT_TEST_PRINTER (testName, baselineTName, compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
+                    });
+            /*
+             *  Only judge when the measurement can actually mean something:
+             *
+             *      o   NOT a debug or instrumented build. SpinLock is header-only code that stops being inlined
+             *          with assertions on, while std::mutex stays a prebuilt library call - which reverses the
+             *          answer, not merely blurs it: Windows measures 0.49 in Release and 1.69 in Debug. Judging
+             *          there would report a disagreement that says nothing about kSpinLock_IsFasterThan_mutex,
+             *          whose whole purpose is which lock to pick in an optimized build.
+             *      o   and the run long enough to clear the clock. An ordinary `make run-tests` pass uses a tiny
+             *          TIME MULTIPLIER, where both sides land on the timer's resolution and every ratio reads 1.0.
+             */
+            constexpr double kMinBaselineSecondsToJudge_{0.05};
+            constexpr double kNearTieSlop_{0.05}; // a near-tie is not a disagreement either way
+            constexpr bool   kBuildCanBeJudged_ = not qStroika_Foundation_Debug_AssertionsChecked and
+                                                  not Debug::kBuiltWithAddressSanitizer and not Debug::kBuiltWithThreadSanitizer;
+            if (kBuildCanBeJudged_ and not Debug::IsRunningUnderValgrind () and measuredRatio and *measuredBaselineSeconds >= kMinBaselineSecondsToJudge_) {
+                bool measuredSaysSpinLockFaster = *measuredRatio < 1.0 - kNearTieSlop_;
+                bool measuredSaysMutexFaster    = *measuredRatio > 1.0 + kNearTieSlop_;
+                if (kSpinLock_IsFasterThan_mutex and measuredSaysMutexFaster) {
+                    Stroika::Frameworks::Test::WarnTestIssue (
+                        "kSpinLock_IsFasterThan_mutex is true here, but mutex measured FASTER (SpinLock/mutex={}); "
+                        "see the measured table in Execution/SpinLock.h"_f(*measuredRatio));
+                }
+                else if (not kSpinLock_IsFasterThan_mutex and measuredSaysSpinLockFaster) {
+                    Stroika::Frameworks::Test::WarnTestIssue (
+                        "kSpinLock_IsFasterThan_mutex is false here, but SpinLock measured FASTER (SpinLock/mutex={}); "
+                        "see the measured table in Execution/SpinLock.h"_f(*measuredRatio));
+                }
+            }
+        }
         Tester ("Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, "wstring",
                 Test_StructWithStringsFillingAndCopying<String>, "Characters::String", 65000, 0.6, &failedTests);
         Tester ("Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, "wstring",

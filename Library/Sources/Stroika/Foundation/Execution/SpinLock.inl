@@ -10,39 +10,26 @@ namespace Stroika::Foundation::Execution {
      ******************************** Execution::SpinLock ***************************
      ********************************************************************************
      */
-    inline SpinLock::SpinLock (BarrierType barrier)
-        : fBarrierFlag_{barrier}
-    {
-    }
     inline bool SpinLock::try_lock ()
     {
         /*
-         *  NOTE: I don't understand why memory_order_acquire is good enough here since if
-         *  we make change we need to make sure its published to other threads.
+         *  Acquire on the flag itself is all this does, and all a lock needs.
          *
-         *  But - the example on http://en.cppreference.com/w/cpp/atomic/atomic_flag_test_and_set shows
-         *      while (atomic_flag_test_and_set_explicit (&lock, memory_order_acquire))
-         *          ; // spin until the lock is acquired
+         *  When test_and_set () returns false we took the lock, so this read-modify-write read the value written
+         *  by the previous holder's unlock () - a release store. An acquire that reads from a release store
+         *  synchronizes-with it, making everything the previous holder did before unlocking happen-before
+         *  everything this thread does after locking. That is exactly what the data under the lock needs, and a
+         *  separate fence would add nothing to it.
+         *  @see https://github.com/SophistSolutions/Stroika/issues/628 (STK-494), where that was settled.
+         *
+         *  \note   A FAILED try_lock () acquires nothing, so it needs no ordering at all - but atomic_flag has no
+         *          separate failure order (unlike compare_exchange_xxx), so the acquire is paid either way. Free
+         *          on x86-64, not on weakly ordered hardware. Avoiding it means spinning on a relaxed test () and
+         *          only attempting this RMW once the flag reads clear, which would also stop the spin dirtying
+         *          the cache line every iteration. Not done here: it changes the contended path, so it wants its
+         *          own measurement.
          */
-        bool result = not fLock_.test_and_set (memory_order_acquire);
-        if (result) {
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wtsan\""); // Needed in g++-13 and later, it appears, with --sanitize=thread, but so far no obvious real problems
-            /*
-             *  See https://github.com/SophistSolutions/Stroika/issues/628 (STK-494) for notes on why this is right (using eReleaseAcquire/memory_order_acquire)
-             */
-            switch (fBarrierFlag_) {
-                case BarrierType::eReleaseAcquire:
-                    atomic_thread_fence (memory_order_acquire);
-                    break;
-                case BarrierType::eMemoryTotalOrder:
-                    atomic_thread_fence (memory_order_seq_cst);
-                    break;
-                default:
-                    break;
-            }
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wtsan\"");
-        }
-        return result;
+        return not fLock_.test_and_set (memory_order_acquire);
     }
     inline void SpinLock::lock ()
     {
@@ -53,20 +40,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline void SpinLock::unlock ()
     {
-        // See notes in try_lock () for cooresponding thread_fence calls()
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wtsan\""); // Needed in g++-13 and later, it appears, with --sanitize=thread, but so far no obvious real problems
-        switch (fBarrierFlag_) {
-            case BarrierType::eReleaseAcquire:
-                atomic_thread_fence (memory_order_release);
-                break;
-            case BarrierType::eMemoryTotalOrder:
-                atomic_thread_fence (memory_order_seq_cst);
-                break;
-            default:
-                break;
-        }
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wtsan\""); // Needed in g++-13 and later, it appears, with --sanitize=thread, but so far no obvious real problems
-        // release lock
+        // Release on the flag itself - this is the store the next locker's acquire reads. @see try_lock ()
         fLock_.clear (memory_order_release);
     }
 

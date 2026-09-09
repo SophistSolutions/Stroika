@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/TimingTrace.h"
@@ -887,6 +888,62 @@ namespace {
 }
 
 namespace {
+    void RegressionTest14b_SpinLock_PublishesWhatItProtects_ ()
+    {
+        Debug::TraceContextBumper ctx{"RegressionTest14b_SpinLock_PublishesWhatItProtects_"};
+        Debug::TimingTrace        tt;
+        /*
+         *  RegressionTest14_SpinLock_ (just above) checks only that a SpinLock EXCLUDES. But a lock must also
+         *  PUBLISH: whatever a thread wrote while holding it must be visible to the next thread that takes it.
+         *  That is the acquire on SpinLock::try_lock () pairing with the release on SpinLock::unlock ().
+         *
+         *  payload and generation below are deliberately plain ints - not atomics - so the SpinLock is the
+         *  only thing making them safe to touch. Each holder must see the FULL generation its predecessor
+         *  published (every slot, not some of them), then publish the next one.
+         *
+         *  \note   This can pass on x86 even if the ordering were weakened, because the hardware is strongly
+         *          ordered enough to hide it. It earns its keep in two other places: on the weakly-ordered arm64
+         *          macOS CI runners, and under ThreadSanitizer - which could not analyze SpinLock-protected code
+         *          at all until v3.0d25, because tsan cannot model the atomic_thread_fence () SpinLock used to
+         *          call. @see Execution::SpinLock::try_lock ()
+         */
+        constexpr int                       kSlots_   = 64;
+        constexpr int                       kRounds_  = 1000;
+        constexpr unsigned                  kThreads_ = 4;
+        SpinLock                            lock;
+        int                                 payload[kSlots_]{};
+        int                                 generation{};
+        unsigned                            tornPublicationsSeen{}; // all three guarded by 'lock'
+        Containers::Collection<Thread::Ptr> threads;
+        for (unsigned i = 0; i < kThreads_; ++i) {
+            threads.Add (Thread::New (
+                [&] () {
+                    for (int r = 0; r < kRounds_; ++r) {
+                        lock_guard<SpinLock> critSec{lock};
+                        for (int si = 0; si < kSlots_; ++si) {
+                            if (payload[si] != generation) [[unlikely]] {
+                                ++tornPublicationsSeen;
+                            }
+                        }
+                        ++generation;
+                        for (int si = 0; si < kSlots_; ++si) {
+                            payload[si] = generation;
+                        }
+                    }
+                },
+                "SpinLockPublish{}"_f(i)));
+        }
+        threads.Apply ([] (Thread::Ptr t) { t.Start (); });
+        threads.Apply ([] (Thread::Ptr t) { t.WaitForDone (); });
+        EXPECT_TRUE (tornPublicationsSeen == 0);
+        EXPECT_TRUE (generation == static_cast<int> (kThreads_) * kRounds_);
+        for (int si = 0; si < kSlots_; ++si) {
+            EXPECT_TRUE (payload[si] == generation);
+        }
+    }
+}
+
+namespace {
     void RegressionTest15_ThreadPoolStarvationBug_ ()
     {
         //?? DO WE NEED TO ADD
@@ -1464,6 +1521,7 @@ namespace {
         RegressionTest12_WaitAny_ ();
         RegressionTest13_WaitAll_ ();
         RegressionTest14_SpinLock_ ();
+        RegressionTest14b_SpinLock_PublishesWhatItProtects_ ();
         RegressionTest15_ThreadPoolStarvationBug_ ();
         RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests ();
         RegressionTest18_RWSynchronized_::DoIt ();
