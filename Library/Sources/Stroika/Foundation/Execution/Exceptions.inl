@@ -11,7 +11,6 @@ namespace Stroika::Foundation::Execution {
         Characters::String    mkMsg_ (error_code errCode);
         Characters::String    mkCombinedMsg_ (error_code errCode, const Characters::String& message);
         void                  TranslateException_ (error_code errCode);
-        unique_ptr<exception> TranslateExceptionQuietly_ (error_code errCode);
     }
 
     // forward declare for use below....to avoid #include of Thread.h

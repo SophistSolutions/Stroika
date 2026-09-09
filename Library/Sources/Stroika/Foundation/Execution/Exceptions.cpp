@@ -168,7 +168,6 @@ Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombined
 
 void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (error_code errCode)
 {
-    // SEE - SystemErrorExceptionPrivate_::TranslateExceptionQuietly_
     if (errCode == errc::not_enough_memory) {
         Throw (bad_alloc{});
     }
@@ -200,32 +199,6 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
         }
     }
 #endif
-}
-
-/*
- ********************************************************************************
- ***** SystemErrorExceptionPrivate_::TranslateExceptionQuietly_ *****************
- ********************************************************************************
- */
-unique_ptr<exception> Execution::Private_::SystemErrorExceptionPrivate_::TranslateExceptionQuietly_ (error_code errCode)
-{
-    // MIMIC - SystemErrorExceptionPrivate_::TranslateException_
-    if (errCode == errc::not_enough_memory) {
-        return make_unique<bad_alloc> ();
-    }
-    if (errCode == errc::timed_out) {
-        return make_unique<TimeOutException> (errCode);
-    }
-#if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
-    if (errCode.category () == system_category ()) {
-        switch (errCode.value ()) {
-            case WAIT_TIMEOUT:
-            case ERROR_INTERNET_TIMEOUT:
-                return make_unique<TimeOutException> ();
-        }
-    }
-#endif
-    return nullptr;
 }
 
 /*
