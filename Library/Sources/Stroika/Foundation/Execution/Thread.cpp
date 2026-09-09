@@ -771,6 +771,10 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) co
     RequireNotNull (*this);
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
 
+    /*
+     *  One Abort () is enough, and this deliberately does not re-send - @see the note on
+     *  Thread::Ptr::AbortAndWaitForDoneUntil () in Thread.h for why. Stroika before v3 re-sent; removed on purpose.
+     */
     Abort ();
     WaitForDoneUntil (timeoutAt);
 }

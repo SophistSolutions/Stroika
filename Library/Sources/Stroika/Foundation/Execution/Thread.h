@@ -576,7 +576,7 @@ namespace Stroika::Foundation::Execution {
 
         public:
             /**
-             *  \brief  Abort () the thread, and then WaitForDone () - but if doesn't finish fast enough, send extra aborts (aka AbortAndWaitForDoneUntil (timeout + GetTickCount))
+             *  \brief  Abort () the thread, and then WaitForDone () (aka AbortAndWaitForDoneUntil (timeout + GetTickCount))
              *
              *  \note   This frequently (and nearly always in a destructor) - should be preceded by:
              *      \code
@@ -593,7 +593,16 @@ namespace Stroika::Foundation::Execution {
 
         public:
             /**
-             *  \brief  Abort () the thread, and then WaitForDone () - but if doesn't finish fast enough, send extra aborts
+             *  \brief  Abort () the thread, and then WaitForDone ()
+             *
+             *  \note   ONE Abort () suffices, by design: this waits, and deliberately never re-sends.
+             *          Abort () sets a durable interruption flag; the signal (POSIX) or APC (Windows) it also
+             *          delivers exists only to break a blocking call already in flight. A thread that fails to
+             *          notice a single Abort () is therefore a defect in the interruption mechanism - not
+             *          something a caller can legitimately paper over by aborting again, and re-sending would
+             *          only hide it. Nor would repeating be harmless: on POSIX the wakeup IS the EINTR, so a
+             *          thread shutting down inside third-party code would see a stream of EINTRs it may not
+             *          handle. Stroika before v3 did re-send; that was removed on purpose.
              *
              *   \note  Note that its legal to call AbortAndWaitForDone on a thread in any state.
              *          Some may just have no effect
