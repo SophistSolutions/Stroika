@@ -859,6 +859,17 @@ void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSeconds timeout
  */
 Thread::CleanupPtr::~CleanupPtr ()
 {
+    /*
+     *  The wait below is deliberately unbounded (@see the kInfinity default on AbortAndWaitForDone). The
+     *  entire point of this class is to guarantee the thread is finished before whatever it holds pointers
+     *  into gets destroyed; a bounded wait would trade that guarantee for a still-running thread and no way
+     *  left to recover from it.
+     *
+     *  So if this appears to hang - or dies in std::terminate, destructors being noexcept, which makes any
+     *  throw out of the wait fatal - the fault is NOT here. It means the thread did not stop when it was
+     *  asked to. Look upstream, at what the thread was blocked in and at whether the abort actually reached
+     *  it; do not look at this destructor, and do not "fix" it by bounding the wait.
+     */
     if (*this != nullptr) {
         SuppressInterruptionInContext suppressInterruption;
         if (fAbort_) {
