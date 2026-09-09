@@ -5,6 +5,17 @@
 
 namespace Stroika::Foundation::Execution {
 
+    /*
+     *  Forward declared, not included: Exceptions.h includes THIS file, and reaching the activity API from here
+     *  would close the loop (Activity.h -> Characters/String.h -> String.inl -> Throw.h). Both helpers take only
+     *  an ExceptionStringHelper&, so a forward declaration is enough; they are defined in Exceptions.cpp.
+     */
+    class ExceptionStringHelper;
+    namespace Private_ {
+        bool ShouldImbueActivities_ (const ExceptionStringHelper& e) noexcept;
+        void ImbueCurrentActivities_ (ExceptionStringHelper* e);
+    }
+
     namespace Private_ {
 // avoid header dependencies on Debug/BackTrace and no Characters/String
 #if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
@@ -43,6 +54,17 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] inline void Throw (T&& e2Throw)
     {
         static_assert (is_convertible_v<remove_cvref_t<T>*, exception*>);
+        if constexpr (derived_from<remove_cvref_t<T>, ExceptionStringHelper>) {
+            // Use the current Activity stack if not already specified in the e2Throw
+            if (Private_::ShouldImbueActivities_ (e2Throw)) [[unlikely]] {
+                remove_cvref_t<T> tmp = e2Throw;
+                Private_::ImbueCurrentActivities_ (&tmp);
+#if qStroika_Foundation_Debug_DefaultTracingOn
+                Private_::ThrowingExceptionDbgTrace_ (Private_::ToString_ (tmp));
+#endif
+                throw tmp;
+            }
+        }
 #if qStroika_Foundation_Debug_DefaultTracingOn
         Private_::ThrowingExceptionDbgTrace_ (Private_::ToString_ (forward<T> (e2Throw)));
 #endif

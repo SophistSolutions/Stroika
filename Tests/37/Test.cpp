@@ -186,6 +186,98 @@ namespace {
 }
 
 namespace {
+    namespace Test4b_ActivitiesImbuedAtThrowPoint_ {
+        namespace Private_ {
+
+            static const Activity kParsingConfig_{"parsing the config file"sv};
+            static const Activity kServingRequest_{"serving an HTTP request"sv};
+
+            [[noreturn]] void ThrowTheSharedStatic_ ()
+            {
+                // deliberately a shared static: constructed ONCE, thrown many times. This is a common Stroika
+                // idiom, and before v3.0d25 it froze whatever Activity stack was live at the FIRST throw.
+                static const Exception<> kException_{"Invalid Version String"sv};
+                Throw (kException_);
+            }
+            Characters::String ThrowAndDescribe_ ()
+            {
+                try {
+                    ThrowTheSharedStatic_ ();
+                }
+                catch (...) {
+                    return Characters::ToString (current_exception ());
+                }
+                return "DID-NOT-THROW"sv;
+            }
+
+            /*
+             *  Activities are imbued at the THROW point (@see Throw), so every throw of the same shared object
+             *  reports its own context. The 'second' case below is the actual regression: it used to report the
+             *  first throw's context, confidently and wrongly.
+             */
+            void EachThrowReportsItsOwnContext_ ()
+            {
+                Characters::String first;
+                {
+                    DeclareActivity a{&kParsingConfig_};
+                    first = ThrowAndDescribe_ ();
+                }
+                Characters::String second;
+                {
+                    DeclareActivity a{&kServingRequest_};
+                    second = ThrowAndDescribe_ ();
+                }
+                Characters::String third = ThrowAndDescribe_ (); // no activity declared at all
+
+                EXPECT_TRUE (first.Contains ("Invalid Version String"));
+                EXPECT_TRUE (first.Contains ("parsing the config file"));
+                EXPECT_TRUE (not first.Contains ("serving an HTTP request"));
+
+                EXPECT_TRUE (second.Contains ("serving an HTTP request"));
+                EXPECT_TRUE (not second.Contains ("parsing the config file")); // <- the regression
+
+                EXPECT_TRUE (third.Contains ("Invalid Version String"));
+                EXPECT_TRUE (not third.Contains ("parsing the config file"));
+                EXPECT_TRUE (not third.Contains ("serving an HTTP request"));
+            }
+
+            /*
+             *  Activities specified deliberately are never overwritten: @see Throw imbues only when
+             *  GetActivities () == nullopt, which is what makes nullopt ("not specified") meaningfully different
+             *  from an empty stack ("specified, and there were none").
+             */
+            void DeliberatelySpecifiedActivitiesSurviveThrow_ ()
+            {
+                static const Activity         kExplicit_{"an explicitly recorded activity"sv};
+                Containers::Stack<Activity<>> explicitStack;
+                {
+                    DeclareActivity a{&kExplicit_};
+                    explicitStack = CaptureCurrentActivities ();
+                }
+                try {
+                    DeclareActivity a{&kParsingConfig_}; // current context - must NOT win
+                    Exception<>     e{"boom"sv};
+                    e.ImbueActivities (explicitStack);
+                    EXPECT_TRUE (e.GetActivities () != nullopt);
+                    Throw (e);
+                }
+                catch (...) {
+                    Characters::String msg = Characters::ToString (current_exception ());
+                    EXPECT_TRUE (msg.Contains ("an explicitly recorded activity"));
+                    EXPECT_TRUE (not msg.Contains ("parsing the config file"));
+                }
+            }
+        }
+    }
+    GTEST_TEST (Foundation_Execution_Exceptions, Test4b_ActivitiesImbuedAtThrowPoint_)
+    {
+        Debug::TraceContextBumper ctx{"Test4b_ActivitiesImbuedAtThrowPoint_"};
+        Test4b_ActivitiesImbuedAtThrowPoint_::Private_::EachThrowReportsItsOwnContext_ ();
+        Test4b_ActivitiesImbuedAtThrowPoint_::Private_::DeliberatelySpecifiedActivitiesSurviveThrow_ ();
+    }
+}
+
+namespace {
     namespace Test5_error_code_condition_compares_ {
         namespace Private {
             void Bug1_ ()

@@ -62,7 +62,8 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     /**
-     *  \brief  identical to builtin C++ 'throw' except that it does helpful, type dependent DbgTrace() messages first
+     *  \brief  like the builtin C++ 'throw', but stamps in the current Activity context and does helpful,
+     *          type dependent DbgTrace () messages first
      *
      *  Utility to call a Trace message (hopefully an appropriate one) for an exception being thrown.
      *
@@ -74,9 +75,12 @@ namespace Stroika::Foundation::Execution {
      *                  arrives can be tested portably. @see ThrowError for exactly what is preserved (the
      *                  meaning) and what can be given up (the representation).
      *
-     *              o   `Throw (x)` - *"throw exactly THIS."* No translation, no promotion, nothing lossy. The
-     *                  catcher gets the object you constructed, unchanged. That is a deliberate property, not
-     *                  a shortcoming: Throw (X) throwing something other than X would be a far worse surprise.
+     *              o   `Throw (x)` - *"throw exactly THIS."* No translation, no promotion, nothing lossy: the
+     *                  catcher gets the object you constructed, with its TYPE and its MESSAGE unchanged. That
+     *                  is a deliberate property, not a shortcoming: Throw (X) throwing something other than X
+     *                  would be a far worse surprise. (It does fill in the Activity context when the exception
+     *                  did not specify one - see below - which adds to what the exception reports without
+     *                  changing what it is.)
      *
      *          The consequence is that constructing a SystemErrorException yourself and throwing it here gets
      *          you NONE of the promotions documented at @see Execution::ThrowError - so a code whose condition
@@ -90,9 +94,18 @@ namespace Stroika::Foundation::Execution {
      *          **If you have an error_code, reach for ThrowError () first, and use Throw () only if you have a
      *          reason to want the promotions suppressed.**
      *
+     *  \note   ***Changed in Stroika v3.0d25*** Throw () stamps the CURRENT Activity stack into the exception -
+     *          but only when the exception did not specify one (GetActivities () == nullopt). It imbues a COPY,
+     *          so the object you passed is not modified. That is what lets a `static const` exception - built
+     *          once and thrown many times - report each throw's own context instead of freezing whichever
+     *          context happened to be live the first time. Activities specified deliberately (passed to the
+     *          constructor, or set with ImbueActivities ()) are never overwritten, and an exception thrown with
+     *          a bare `throw X{}` gets no Activity context at all.
+     *          @see ExceptionStringHelper::ImbueActivities.
+     *
      *  \note   What you hand Throw () also decides what the CATCHER gets. Stroika's Exception<> types - and so
-     *          SystemErrorException and everything derived from it - capture the current Activity stack and
-     *          preserve UNICODE message text AT CONSTRUCTION time (@see Exception<>). Throw (system_error{ec})
+     *          SystemErrorException and everything derived from it - preserve UNICODE message text, and can
+     *          carry the Activity context described above (@see Exception<>). Throw (system_error{ec})
      *          carries neither, and neither can be recovered later by whoever catches it. Since
      *          SystemErrorException IS a std::system_error, throwing the Stroika type costs nothing in
      *          interoperability - so prefer Throw (SystemErrorException{ec}), or better still ThrowError (ec).

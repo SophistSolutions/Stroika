@@ -62,12 +62,56 @@ namespace {
  ****************************** ExceptionStringHelper ***************************
  ********************************************************************************
  */
-ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonForError, const Containers::Stack<Activity<>>& activities)
+ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonForError, const optional<Containers::Stack<Activity<>>>& activities)
     : fActivities_{activities}
     , fRawErrorMessage_{reasonForError}
-    , fFullErrorMessage_{mkMessage_ (reasonForError, activities)}
-    , fSDKCharString_{fFullErrorMessage_.AsNarrowSDKString (eIgnoreErrors)}
 {
+}
+
+ExceptionStringHelper::ExceptionStringHelper (const ExceptionStringHelper& src)
+    : fActivities_{src.fActivities_}
+    , fRawErrorMessage_{src.fRawErrorMessage_}
+{
+    lock_guard lk{src.fBuildMutex_};
+    fBuilt_            = src.fBuilt_;
+    fFullErrorMessage_ = src.fFullErrorMessage_;
+    fSDKCharString_    = src.fSDKCharString_;
+}
+
+bool Execution::Private_::ShouldImbueActivities_ (const ExceptionStringHelper& e) noexcept
+{
+    // cheap first: an exception which specified activities is never overwritten. AnyCurrentActivities () is
+    // inexpensive, and is only consulted when there is actually a decision to make.
+    return e.GetActivities () == nullopt and AnyCurrentActivities ();
+}
+
+void Execution::Private_::ImbueCurrentActivities_ (ExceptionStringHelper* e)
+{
+    RequireNotNull (e);
+    e->ImbueActivities (CaptureCurrentActivities ());
+}
+
+void ExceptionStringHelper::ImbueActivities (const optional<Containers::Stack<Activity<>>>& activities)
+{
+    lock_guard lk{fBuildMutex_};
+    fActivities_ = activities;
+    fBuilt_      = false; // the message merges these in, so anything already built is stale and gets rebuilt
+}
+
+void ExceptionStringHelper::EnsureBuilt_ () const noexcept
+{
+    try {
+        lock_guard lk{fBuildMutex_};
+        if (not fBuilt_) {
+            fFullErrorMessage_ = mkMessage_ (fRawErrorMessage_, fActivities_.value_or (Containers::Stack<Activity<>>{}));
+            fSDKCharString_    = fFullErrorMessage_.AsNarrowSDKString (eIgnoreErrors);
+            fBuilt_            = true;
+        }
+    }
+    catch (...) {
+        // Only reachable if formatting an error message itself fails (allocation). Leave the cache empty rather
+        // than propagate - callers are noexcept, and an empty what () beats std::terminate.
+    }
 }
 
 /*

@@ -8,6 +8,7 @@
 
 #include <cerrno>
 #include <exception>
+#include <mutex>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -63,12 +64,18 @@ namespace Stroika::Foundation::Execution {
     class ExceptionStringHelper {
     public:
         /**
-         *  If the current activities are NOT provided explicitly, they are copied from Execution::CaptureCurrentActivities ().
+         *  \brief   activities default to NULLOPT - meaning "not specified" - which is different from "specified,
+         *           and there were none".
+         *
+         *  Nothing is captured at construction. @see Throw () fills them in at the point of throw, but only for
+         *  an exception which has not specified them - so an exception built once and thrown many times (e.g. a
+         *  `static const`) reports the context of each throw rather than freezing the first one.
+         *
+         *  Pass them explicitly here, or @see ImbueActivities (), if you are not going through Throw ().
          */
-        ExceptionStringHelper ()                             = delete;
-        ExceptionStringHelper (const ExceptionStringHelper&) = default;
-        ExceptionStringHelper (const Characters::String& reasonForError);
-        ExceptionStringHelper (const Characters::String& reasonForError, const Containers::Stack<Activity<>>& activities);
+        ExceptionStringHelper () = delete;
+        ExceptionStringHelper (const ExceptionStringHelper& src);
+        ExceptionStringHelper (const Characters::String& reasonForError, const optional<Containers::Stack<Activity<>>>& activities = nullopt);
 
     public:
         /**
@@ -87,7 +94,31 @@ namespace Stroika::Foundation::Execution {
          *  Return the activity stack from when the exception was thrown. NOTE - see @Activity<>. This has little
          *  todo with the thread runtime stack. It refers to a logical stack of declared Activity<> objects.
          */
-        nonvirtual Containers::Stack<Activity<>> GetActivities () const;
+        nonvirtual optional<Containers::Stack<Activity<>>> GetActivities () const;
+
+    public:
+        /**
+         *  \brief   Set, replace, or clear the activity stack. Any already-computed message text is
+         *           discarded, since it depends on these.
+         *
+         *  Takes an optional for symmetry with the constructor and @see GetActivities (), so that every
+         *  state is reachable. Passing nullopt returns the exception to "not specified", after which
+         *  @see Throw () will stamp in the context of the throw - which is what you want when forwarding
+         *  an exception you did not construct.
+         *
+         *  \note   ***This invalidates any pointer previously returned by what ().*** That is allowed, and is
+         *          why this is deliberately a NON-const member: the standard guarantees what ()'s result only
+         *          "until the exception object is destroyed, or until a non-const member function on the
+         *          exception object is called". Do not hold a what () pointer across a call to this.
+         *
+         *          @see Throw () - which imbues a COPY it is about to throw, so nobody can be holding a
+         *          what () pointer into it - is the normal caller, and is unaffected.
+         *
+         *  \note   Replacing is allowed on purpose: a caller doing this explicitly knows what it wants.
+         *          @see Throw () is the one that will not overwrite - it imbues only when GetActivities () is
+         *          nullopt, so deliberately-specified context always survives being thrown.
+         */
+        nonvirtual void ImbueActivities (const optional<Containers::Stack<Activity<>>>& activities);
 
     public:
         /**
@@ -108,13 +139,29 @@ namespace Stroika::Foundation::Execution {
          *  in a std::string. And this function returns the pointer to that string. This object is
          *  immutable, so that the lifetime of the underlying return const char* is as long as this object.
          */
-        nonvirtual const char* _PeekAtNarrowSDKString_ () const;
+        nonvirtual const char* _PeekAtNarrowSDKString () const;
 
     private:
-        Containers::Stack<Activity<>> fActivities_;
-        Characters::String            fRawErrorMessage_;
-        Characters::String            fFullErrorMessage_;
-        string                        fSDKCharString_; // important declared after others cuz mem-initializer refers back
+        /**
+         *  Builds fFullErrorMessage_/fSDKCharString_ if not already built. Cheap and safe to call repeatedly,
+         *  and safe to call concurrently (an exception object can be shared via exception_ptr).
+         *
+         *  \note   These CANNOT be computed at construction: activities may be supplied afterwards by
+         *          @see ImbueActivities (), and the full message merges them in. Computing eagerly would mean
+         *          either baking in the wrong context or recomputing.
+         *
+         *  \note   noexcept because its callers are - notably what (). If formatting fails (allocation), the
+         *          cache is left empty rather than propagating.
+         */
+        nonvirtual void EnsureBuilt_ () const noexcept;
+
+    private:
+        optional<Containers::Stack<Activity<>>> fActivities_;
+        Characters::String                      fRawErrorMessage_;
+        mutable mutex                           fBuildMutex_;
+        mutable bool                            fBuilt_{false};
+        mutable Characters::String              fFullErrorMessage_;
+        mutable string                          fSDKCharString_;
     };
     template <>
     wstring ExceptionStringHelper::As () const;
@@ -153,6 +200,20 @@ namespace Stroika::Foundation::Execution {
      *              Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());       // exception e while building thingy...
      *          }
      *      \endcode
+     *
+     *  \note Satisfies:
+     *      o   Exception<std::exception>{msg}          - default-constructible
+     *      o   Exception<std::bad_alloc>{msg}          - default-constructible
+     *      o   Exception<std::runtime_error>{msg}      - requires a what_arg
+     *      o   Exception<std::logic_error>{msg}        - requires a what_arg
+     *      o   Exception<std::out_of_range>{msg}       - requires a what_arg
+     *
+     *  \note   Deliberately NOT std::system_error: it needs an error_code, not a string, so it satisfies
+     *          neither constraint and must use the protected delegating ctor below - @see
+     *          SystemErrorException. (No static_assert for this one, because it is not portable: libstdc++
+     *          declares `system_error (error_code = error_code ())`, so THERE it is default-constructible
+     *          and this ctor does match, yielding a useless empty code. MSVC has no such default. Do not
+     *          rely on either behaviour.)
      */
     template <derived_from<exception> BASE_EXCEPTION = exception>
     class Exception : public ExceptionStringHelper, public BASE_EXCEPTION {
@@ -167,20 +228,6 @@ namespace Stroika::Foundation::Execution {
          *  groups and NEITHER spelling covers both: some are default-constructible, and some instead require
          *  a what_arg (and have no default ctor). The latter get "" - they need *some* string and do not care
          *  which, since @see what () is overridden to return the Stroika message regardless.
-         *
-         *  \note Satisfies:
-         *      o   Exception<std::exception>{msg}          - default-constructible
-         *      o   Exception<std::bad_alloc>{msg}          - default-constructible
-         *      o   Exception<std::runtime_error>{msg}      - requires a what_arg
-         *      o   Exception<std::logic_error>{msg}        - requires a what_arg
-         *      o   Exception<std::out_of_range>{msg}       - requires a what_arg
-         *
-         *  \note   Deliberately NOT std::system_error: it needs an error_code, not a string, so it satisfies
-         *          neither constraint and must use the protected delegating ctor below - @see
-         *          SystemErrorException. (No static_assert for this one, because it is not portable: libstdc++
-         *          declares `system_error (error_code = error_code ())`, so THERE it is default-constructible
-         *          and this ctor does match, yielding a useless empty code. MSVC has no such default. Do not
-         *          rely on either behaviour.)
          */
         Exception ()                 = delete;
         Exception (const Exception&) = default;
@@ -259,9 +306,9 @@ namespace Stroika::Foundation::Execution {
      *          IO::FileSystem::Exception (an @see Exception<filesystem_error>).
      *
      *  \note   The reverse applies when THROWING: prefer SystemErrorException over a plain std::system_error.
-     *          The Activity stack and the UNICODE message are captured when the exception object is CONSTRUCTED
-     *          (@see Exception<>), so a plain system_error permanently loses both - the catcher cannot recover
-     *          what was never captured. And since SystemErrorException IS a system_error, throwing the
+     *          It preserves the UNICODE message, and carries the Activity stack that @see Throw () stamps in
+     *          (@see Exception<>); a plain system_error can hold neither, and the catcher cannot recover what
+     *          was never there. And since SystemErrorException IS a system_error, throwing the
      *          richer type costs nothing. In short: catch broadly (system_error), throw richly
      *          (SystemErrorException, or let @see ThrowError () build it for you).
      *

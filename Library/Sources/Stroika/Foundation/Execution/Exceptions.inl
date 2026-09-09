@@ -24,34 +24,34 @@ namespace Stroika::Foundation::Execution {
      ******************************** ExceptionStringHelper *************************
      ********************************************************************************
      */
-    inline ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonForError)
-        : ExceptionStringHelper{reasonForError, CaptureCurrentActivities ()}
-    {
-    }
     inline Characters::String ExceptionStringHelper::GetBasicErrorMessage () const
     {
         return fRawErrorMessage_;
     }
     inline Characters::String ExceptionStringHelper::GetFullErrorMessage () const
     {
+        EnsureBuilt_ ();
         return fFullErrorMessage_;
     }
-    inline Containers::Stack<Activity<>> ExceptionStringHelper::GetActivities () const
+    inline optional<Containers::Stack<Activity<>>> ExceptionStringHelper::GetActivities () const
     {
         return fActivities_;
     }
     template <>
     inline wstring ExceptionStringHelper::As () const
     {
+        EnsureBuilt_ ();
         return fFullErrorMessage_.As<wstring> ();
     }
     template <>
     inline Characters::String ExceptionStringHelper::As () const
     {
+        EnsureBuilt_ ();
         return fFullErrorMessage_;
     }
-    inline const char* ExceptionStringHelper::_PeekAtNarrowSDKString_ () const
+    inline const char* ExceptionStringHelper::_PeekAtNarrowSDKString () const
     {
+        EnsureBuilt_ ();
         return fSDKCharString_.c_str ();
     }
 
@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Execution {
     template <derived_from<exception> BASE_EXCEPTION>
     const char* Exception<BASE_EXCEPTION>::what () const noexcept
     {
-        return _PeekAtNarrowSDKString_ ();
+        return _PeekAtNarrowSDKString ();
     }
 
     /*

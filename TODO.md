@@ -14,29 +14,20 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
-   - **Build exception messages LAZILY - the eager build is what forced the `static const ...Exception`
-     hack, and that hack is what broke the Activity mechanism.** Design review 2026-09-08; measurements are
-     real, do not re-derive them. Consider migrating to a GitHub issue - this is bigger than a scratch item.
-       - **Every throw materializes FOUR string representations**: `ExceptionStringHelper`'s
-         `fRawErrorMessage_`, `fFullErrorMessage_` and `fSDKCharString_`, plus `std::system_error`'s own copy
-         built from `ec.message ()` inside `runtime_error`. **That fourth one is never read** - `Exception<>::what ()`
-         overrides it away. On Windows it costs a second `FormatMessage` round-trip per throw for a string
-         nobody can observe. (It is also unavoidable while deriving from std::system_error: every standard
-         ctor concatenates `message ()` internally. So it argues for laziness elsewhere, not for a fix here.)
-       - **Measured cost** (g++-15 `-O3`, prebuilt `g++-15-release`, Stroika-Dev-2604): a Stroika exception
-         throw/catch is ~1000 ns vs ~515 ns for a trivial `std::exception` - about **2x** - on a path where
-         most catchers only ever read `e.code ()`.
-       - **The real damage is not the nanoseconds.** That cost provoked ~30 `static const ...Exception kFoo_{...}`
-         instances across the Foundation, and a function-local static freezes the FIRST failure's Activity
-         stack and replays it forever. So the eager-message design caused a correctness bug, through the
-         optimization it provoked, in the feature that is the design's main value-add.
-       - **The fix**: store `error_code` + raw message + activities; materialize `fFullErrorMessage_` and
-         `fSDKCharString_` on first `what ()` / `Characters::ToString ()`. `what ()` must return a stable
-         `const char*`, so it needs a mutable cache (and `what ()` is `noexcept`, so the lazy build must not
-         propagate - fall back to the raw narrow string on failure).
-       - **This SUBSUMES the "move Activity capture to Throw ()" item below** - if constructing an exception is
-         cheap, the statics have no reason to exist, and the stale-activity bug goes with them. Do this one
-         first, and re-read that item before starting.
+   - **LOW PRIORITY: split the two lazy message stages, so `Characters::ToString ()` need not pay the charset
+     conversion.** Exception messages are now built lazily - but that came out of the v3.0d25 activity-capture
+     work (activities may be imbued after construction, so the message CANNOT be computed in the ctor), not out
+     of a performance push. What is left is a pure tuning knob, behind an API that is already right, so it can
+     be done any time. Consider migrating to a GitHub issue.
+     The two cached values form a chain, and only the second is expensive-unconditionally:
+       `raw + activities` --mkMessage_--> `fFullErrorMessage_` --AsNarrowSDKString--> `fSDKCharString_`
+     `mkMessage_` returns its input unchanged when there are no activities (~free); `AsNarrowSDKString` always
+     converts and allocates - measured 2026-09-09 at 49.6ns of 77.6ns total construction, i.e. about 64%.
+     Only `what ()` ever reads `fSDKCharString_`; Stroika-idiomatic code calls `Characters::ToString (e)`, which
+     needs only the first stage. Splitting the build into two independently-cached stages would let the common
+     path skip the conversion entirely. Caveat measured the same day: in a TRACING build `Throw ()` renders
+     every exception via `Private_::ToString_`, which is `t.what ()` - so Debug builds force stage 2 regardless
+     until that is changed too (separable, and LGP is not concerned with Debug logging cost).
 
    - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
      enforces it.** Raised in the same design review. The condition test is correct and portable; the raw-value
@@ -73,49 +64,6 @@ Generally will track stuff here between releases
          genuinely exhausted, whereas this path is reached when a SYSCALL or library (sqlite, xerces, libcurl)
          reported ENOMEM - which often means a size/quota limit, not process heap exhaustion. A split rule is
          possible but adds a distinction callers would have to understand.
-
-   - **Move the Activity capture from exception CONSTRUCTION to `Execution::Throw ()`.** LGP is ~90% sure this
-     is right but it is unrelated to the 3.0d25 exception/TimeOutException work, so it was parked deliberately.
-     Everything below was MEASURED on 2026-09-08 (g++-15 `-O3`, prebuilt `g++-15-release` Stroika, in
-     Stroika-Dev-2604 on medusa - which was loaded, so absolute ns move run to run; the deltas were stable).
-     Do not re-derive it.
-       - **The problem.** `ExceptionStringHelper`'s ctor calls `CaptureCurrentActivities ()`, and `mkMessage_`
-         bakes the result into `fFullErrorMessage_` right there. There are **~30 `static const ...Exception
-         kFoo_{"msg"sv}` instances** across the Foundation (Version.cpp, URI.cpp, BLOB.cpp, Timezone.cpp,
-         the OpenSSL and ZLib wrappers, the iostream adapters, ...). A function-local static is constructed at
-         the FIRST failure, so it freezes that caller's Activity stack and replays it forever.
-       - **It is worse than "activities are missing" - it reports a confidently WRONG context**, chosen
-         nondeterministically by whichever call site (and thread) failed first. Demonstrated:
-         first failure under "parsing the config file" bakes that in; a later failure under "serving an HTTP
-         request" still prints `... while parsing the config file.`, and so does a failure with NO activity
-         declared at all. An empty activity list would be strictly safer than what happens today.
-       - **The statics are NOT a false optimization** - that was checked, and they earn their keep:
-         `Throw (static)` 749 ns vs `Throw (Exception{msg})` 1009 ns, so ~260 ns / 26% saved per throw
-         (a second run gave 576 vs 859 ns = 283 ns / 33%). With 2 activities live the gap is 708 vs 1375 ns,
-         because `mkMessage_` runs a StringBuilder pass. So do NOT "fix" this by deleting the statics.
-       - **The fix keeps both, for 1.5 ns.** `Activity.h` already exposes `AnyCurrentActivities ()` ("checks if
-         CaptureCurrentActivities() would produce a non-empty stack (but faster)") - measured at **1.5 ns**.
-         Guarding the rebuild on it was measured at 728 ns with no activities (i.e. the static's full win kept)
-         and 1377 ns with activities (2 ns off always-fresh), reporting the correct context in both.
-       - **Where:** inside `Throw ()`, not at the 30 call sites. `Throw (T&&)` already copies the object, so
-         there is no new copy; **all 30 sites go through `Throw ()`** (verified - no bare `throw kFoo_;`
-         anywhere in the tree); and it fixes user code doing the same thing. Sketch:
-         ```cpp
-         if constexpr (derived_from<remove_cvref_t<T>, ExceptionStringHelper>) {
-             if (AnyCurrentActivities ()) [[unlikely]] {
-                 auto tmp = forward<T> (e2Throw);
-                 tmp._RecaptureActivitiesAtThrowPoint_ ();   // re-run mkMessage_ + AsNarrowSDKString
-                 ThrowImpl_ (move (tmp));
-             }
-         }
-         ```
-       - **Known cost, accepted:** for an ordinary `Throw (Exception{msg})` with activities live, the ctor
-         captures and then `Throw` re-captures - double work on that one path. Avoidable by dropping the
-         ctor-side capture entirely and making `Throw ()` the sole capture point, but that silently loses
-         activities for anyone using bare `throw X{}`. Take the double work.
-       - Side benefit: it makes `Activity.h:145` true. That doc says activities are captured "when an
-         ExceptionStringHelper subclass ... is created", but the intent everywhere else is the THROW point;
-         the two coincide for `Throw (Exception{msg})` and diverge exactly at these statics.
 
    - **`Execution::TimedLockGuard` vs `Execution::UniqueLock` - decide which should survive, then fix or delete.**
      Deliberately left out of the 3.0d25 exception/TimeOutException change as a separable question.
