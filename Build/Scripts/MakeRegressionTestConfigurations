@@ -135,6 +135,16 @@ basicUnixTestConfigurations_ ()
 		./configure clang++-21-debug --config-tag Unix --compiler-driver clang++-21 --apply-default-debug-flags  --only-if-has-compiler
 		# clang-22
 		./configure clang++-22-debug --config-tag Unix --compiler-driver clang++-22 --apply-default-debug-flags --only-if-has-compiler
+		#	NO RELEASE CLANG ON 26.04 - and these two lines do not work yet, so they stay commented out.
+		#	Tried 2026-09-09: both configure fine and both build libstroika-*.a fine (~5 min each), but every
+		#	TEST fails to link - Tests/52 on boost::json symbols (from_chars, stack::reserve_impl,
+		#	throw_system_error) even though libboost_json.a is present in the config, and Tests/40 on a
+		#	Stroika Foundation symbol. So this is a link-line/LTO problem, not a missing component, and it is
+		#	very likely why 26.04 never had release clang in the first place. Uncommenting these without
+		#	fixing that would break run-tests for the whole 26.04 matrix.
+		#	Worth fixing: it means the clang optimizer and LTO are untested on 26.04.
+		# ./configure clang++-22-release-libstdc++ --config-tag Unix --compiler-driver clang++-22 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
+		# ./configure clang++-22-release-libc++ --config-tag Unix --compiler-driver clang++-22 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
 		# g++-12
 		./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler
 		./configure g++-12-release --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler
