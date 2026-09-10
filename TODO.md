@@ -31,13 +31,6 @@ Generally will track stuff here between releases
      DOES define `__cpp_lib_jthread`, so it takes mechanism 1 and cannot exercise this. Not verifiable with
      the hardware on hand; decide whether that is acceptable or whether the fallback should just go.
 
-   - **`make check-prerequisite-tools` cannot tell BSD `realpath` from GNU, so a macOS build fails far from
-     its cause.** The check only runs `type realpath`, which finds `/bin/realpath` and passes. The build then
-     dies building third-party components (`zstd`, `zlib`, `gtest`) with `realpath: illegal option -- -`,
-     followed by a runaway recursive make (`make[522]`, `"Debug" is not a valid configuration`). Stroika
-     already ships the stand-in (`Build/Tools/Src/realpath.cpp`, target `install-realpath`) - the check just
-     never verifies the flavour. Cost real time 2026-09-09.
-
    - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
      enforces it.** Raised in the same design review. The condition test is correct and portable; the raw-value
      test compiles, looks reasonable, and is usually wrong - it only matches if the category happens to be the
