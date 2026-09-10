@@ -14,6 +14,11 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
+   - **2026-09-10: close https://github.com/SophistSolutions/Stroika/issues/1165 once the libc++ run
+     passes.** Left open on purpose: the fix is in (feff64174b) and verified on mechanism 1 (Windows/MSVC
+     and 2604 g++/libstdc++) and on mechanism 2 with the macro forced, but no real libc++ toolchain has
+     compiled it - see the next item. Run `clang++-18-debug-libc++`, then close the issue.
+
    - **No `--stdlib libc++` build has compiled the new WaitForIOReady wakeup.** Those configurations take
      mechanism 2 (`ppoll` + blocked signal mask), because `__cpp_lib_jthread` is undefined for every libc++
      before LLVM 20 - implemented in 18, but behind `-fexperimental-library` until 20, which Stroika passes
