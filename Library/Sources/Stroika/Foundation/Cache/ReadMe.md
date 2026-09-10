@@ -33,7 +33,6 @@ Other:
   Cache (expensive) computation results transparently, using one of the Stroika cache types as a backend/plugin.
 
 - [Statistics.h](Statistics.h)
-- [SynchronizedLRUCache.h](SynchronizedLRUCache.h)
 
 TODO:
 
