@@ -17,7 +17,6 @@
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
-#include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"

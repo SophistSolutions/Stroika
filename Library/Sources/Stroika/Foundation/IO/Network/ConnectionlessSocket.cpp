@@ -6,7 +6,6 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Thread.h"
-#include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 

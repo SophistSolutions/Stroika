@@ -7,11 +7,6 @@
 
 namespace Stroika::Foundation::Execution {
 
-    //redeclare to avoid having to #include Thread.h
-    namespace Thread {
-        void CheckForInterruption ();
-    }
-
     /*
      ********************************************************************************
      ***************************** DEPRECATED (v3.0d25) *****************************
@@ -65,91 +60,5 @@ namespace Stroika::Foundation::Execution {
     DISABLE_COMPILER_MSC_WARNING_END (4996);
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-
-    /*
-     ********************************************************************************
-     ******************* Execution::ThrowTimeoutExceptionAfter **********************
-     ********************************************************************************
-     */
-    template <typename EXCEPTION>
-    inline void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw)
-    {
-        // note the == part important, so the case of TimeoutSeconds == 0s works as 'no blocking'
-        if (Time::GetTickCount () >= afterTickCount) [[unlikely]] {
-            Throw (forward<EXCEPTION> (exception2Throw));
-        }
-        Thread::CheckForInterruption ();
-    }
-    inline void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount)
-    {
-        // note the == part important, so the case of TimeoutSeconds == 0s works as 'no blocking'
-        if (Time::GetTickCount () >= afterTickCount) [[unlikely]] {
-            ThrowError (errc::timed_out);
-        }
-        Thread::CheckForInterruption ();
-    }
-
-    /*
-     ********************************************************************************
-     ************************* Execution::TryLockUntil ******************************
-     ********************************************************************************
-     */
-    template <typename TIMED_MUTEX, typename EXCEPTION>
-    inline void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw)
-    {
-        if (not m.try_lock_until (Time::Pin2SafeSeconds (afterTickCount))) {
-            Throw (forward<EXCEPTION> (exception2Throw));
-        }
-    }
-    template <typename TIMED_MUTEX>
-    void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount)
-    {
-        if (not m.try_lock_until (Time::Pin2SafeSeconds (afterTickCount))) {
-            ThrowError (errc::timed_out);
-        }
-    }
-
-    /*
-     ********************************************************************************
-     ************************* Execution::ThrowIfTimeout ****************************
-     ********************************************************************************
-     */
-    template <typename EXCEPTION>
-    inline void ThrowIfTimeout (cv_status conditionVariableStatus, EXCEPTION& exception2Throw)
-    {
-        if (conditionVariableStatus == cv_status::timeout) {
-            Throw (forward<EXCEPTION> (exception2Throw));
-        }
-    }
-    inline void ThrowIfTimeout (cv_status conditionVariableStatus)
-    {
-        if (conditionVariableStatus == cv_status::timeout) {
-            ThrowError (errc::timed_out);
-        }
-    }
-
-    /*
-     ********************************************************************************
-     ***************************** Execution::UniqueLock ****************************
-     ********************************************************************************
-     */
-    template <typename TIMED_MUTEX, typename EXCEPTION>
-    inline unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d, EXCEPTION&& exception2Throw)
-    {
-        unique_lock<TIMED_MUTEX> lock{m, d};
-        if (not lock.owns_lock ()) {
-            Throw (forward<EXCEPTION> (exception2Throw));
-        }
-        return lock;
-    }
-    template <typename TIMED_MUTEX>
-    inline unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d)
-    {
-        unique_lock<TIMED_MUTEX> lock{m, d};
-        if (not lock.owns_lock ()) {
-            ThrowError (errc::timed_out);
-        }
-        return lock;
-    }
 
 }

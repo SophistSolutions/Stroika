@@ -6,84 +6,26 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <condition_variable> // for cv_status
+_DeprecatedFile_ ("DEPRECATED TimeOutException.h - since v3.0d25 - catch (const system_error&) and test "
+                  "e.code () == errc::timed_out; for the non-deprecated helpers that were here, use "
+                  "Execution/Timeout.h and Execution/TimedLock.h");
 
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/TimedLock.h"
+#include "Stroika/Foundation/Execution/Timeout.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  \brief  How Stroika reports a timeout.
+     *  \note   This entire header is DEPRECATED (Stroika v3.0d25) - the TimeOutException type and
+     *          ThrowTimeOutException (), both removed at the next release-stage transition.
      *
-     *  Stroika has no dedicated timeout exception TYPE. A timeout is reported the way every other error is -
-     *  as a SystemErrorException (which IS a std::system_error) carrying errc::timed_out - so it is caught
-     *  and tested the standard C++ way:
-     *
-     *      \code
-     *          catch (const system_error& e) {
-     *              if (e.code () == errc::timed_out) {
-     *                  ...
-     *              }
-     *          }
-     *      \endcode
-     *
-     *  To raise one, say @see ThrowError (errc::timed_out).
-     *
-     *  \note   Test the CONDITION (errc::timed_out), NEVER a particular code such as
-     *          error_code{ETIMEDOUT, system_category ()}. Only the condition matches timeouts from every
-     *          source - libcurl, getaddrinfo, HRESULT, the OS, and Stroika's own waiting primitives.
-     *          @see ThrowError for why, and for what errc::timed_out means to Stroika.
+     *          Everything that is NOT deprecated has moved out: @see Execution/Timeout.h for how
+     *          Stroika reports a timeout and for ThrowTimeoutExceptionAfter () / ThrowIfTimeout (),
+     *          and @see Execution/TimedLock.h for TryLockUntil () / UniqueLock (). This file includes
+     *          both, so code that included this one keeps compiling unchanged.
      */
-
-    /**
-     *  \brief  Throw a timeout (@see ThrowError (errc::timed_out)) if @Time::GetTickCount () is >= the given value.
-     *
-     *  This function facilitates writing code like:
-     *      Time::TimePointSeconds timeoutAfter =   Time::GetTickCount () + 1.0;
-     *      do_someting_dont_know_how_long_it_will_take();
-     *      Execution::ThrowTimeoutExceptionAfter (timeoutAfter);
-     *
-     *  \note   ***Cancelation Point***
-     */
-    template <typename EXCEPTION>
-    void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw);
-    void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount);
-
-    /**
-     *  Translate timed_mutex, or recursive_timed_mutex try_lock_until () calls which fail into a timeout
-     *  exception (@see ThrowError (errc::timed_out)).
-     */
-    template <typename TIMED_MUTEX, typename EXCEPTION>
-    void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw);
-    template <typename TIMED_MUTEX>
-    void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount);
-
-    /**
-     *  \note - this function may not be called outside the context of a running main.
-     */
-    template <typename EXCEPTION>
-    void ThrowIfTimeout (cv_status conditionVariableStatus, EXCEPTION&& exception2Throw);
-    void ThrowIfTimeout (cv_status conditionVariableStatus);
-
-    /**
-     *  Simple wrapper on construction of unique_lock<TIMED_MUTEX> - which translates the timeout into a
-     *  timeout exception (@see ThrowError (errc::timed_out)).
-     * 
-     *  \note if this function returns (doesn't throw) - the required unique_lock<> OWNS the mutex.
-     *
-     *  \note   ALIAS - TimedLockGuard. If you are hunting for a "timed lock guard" - a scope-bound guard over
-     *          a timed_mutex that throws rather than quietly failing to lock - UniqueLock is that thing under
-     *          a less obvious name. Execution::TimedLockGuard existed until Stroika v3.0d25, and was removed
-     *          because unique_lock<> dominates any lock_guard analogue here: it is movable, returnable, can
-     *          be released early, and is the only form condition_variable accepts.
-     *
-     *  \see also TryLockUntil
-     */
-    template <typename TIMED_MUTEX, typename EXCEPTION>
-    unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d, EXCEPTION&& exception2Throw);
-    template <typename TIMED_MUTEX>
-    unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d);
 
 }
 

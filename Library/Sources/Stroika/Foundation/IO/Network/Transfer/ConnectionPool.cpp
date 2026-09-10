@@ -5,7 +5,6 @@
 
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/ConditionVariable.h"
-#include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "ConnectionPool.h"

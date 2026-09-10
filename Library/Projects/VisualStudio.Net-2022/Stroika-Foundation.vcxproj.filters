@@ -1887,6 +1887,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Throw.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimedLock.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Timeout.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -3427,6 +3433,12 @@
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Throw.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLock.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Timeout.inl">
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl">

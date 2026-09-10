@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
-#include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/Execution/Timeout.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "ThreadPool.h"

@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "TimeOutException.h"
+#include "Timeout.h"
 
 namespace Stroika::Foundation::Execution {
 

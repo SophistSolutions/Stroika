@@ -23,7 +23,6 @@
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
-#include "Stroika/Foundation/Execution/TimeOutException.h"
 #if qStroika_HasComponent_libcurl
 #include "Stroika/Foundation/IO/Network/Transfer/Connection_libcurl.h"
 #endif

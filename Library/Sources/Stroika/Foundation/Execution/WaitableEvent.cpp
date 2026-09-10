@@ -6,7 +6,6 @@
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "Common.h"
-#include "TimeOutException.h"
 
 #include "WaitableEvent.h"
 

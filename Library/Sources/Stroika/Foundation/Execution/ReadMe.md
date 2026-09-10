@@ -41,7 +41,8 @@ Execution pattern classes (external process runner, exception handling support, 
 - [Synchronized.h](Synchronized.h) - very useful pattern - like java/c# synchronized/lock - wrap object with its lock
 - [Thread.h](Thread.h) - very helpful wrapper on std::thread supporting cancelation
 - [ThreadPool.h](ThreadPool.h) - queue tasks and run them on a fixed size set of threads as the threads become ready
-- [TimeOutException.h](TimeOutException.h)
+- [TimedLock.h](TimedLock.h) - acquire a lock with a deadline, throwing on timeout
+- [Timeout.h](Timeout.h) - how Stroika reports a timeout, and the helpers that raise one
 - [UpdatableWaitForIOReady.h](UpdatableWaitForIOReady.h)
 - [UserCanceledException.h](UserCanceledException.h)
 - [Users.h](Users.h)

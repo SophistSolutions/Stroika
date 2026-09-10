@@ -26,7 +26,6 @@
 #include "DLLSupport.h"
 #include "Exceptions.h"
 #include "Synchronized.h"
-#include "TimeOutException.h"
 
 #if qStroika_Foundation_Common_Platform_POSIX
 #include "Platform/POSIX/SignalBlock.h"

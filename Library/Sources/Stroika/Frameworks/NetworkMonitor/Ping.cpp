@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
-#include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/Execution/Timeout.h"
 #include "Stroika/Foundation/IO/Network/InternetProtocol/ICMP.h"
 #include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
 #include "Stroika/Foundation/IO/Network/Socket.h"
