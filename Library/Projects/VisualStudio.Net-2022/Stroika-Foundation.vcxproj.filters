@@ -828,6 +828,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Locale.cpp">
       <Filter>Sources\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\StdCompat.cpp">
+      <Filter>Sources\Common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\StroikaConfig.cpp">
       <Filter>Sources\Common</Filter>
     </ClCompile>

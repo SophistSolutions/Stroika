@@ -9,6 +9,7 @@ vpath %cpp $(SrcDir)
 Objs	:=	\
 	$(ObjDir)GUID${OBJ_SUFFIX}\
 	$(ObjDir)Locale${OBJ_SUFFIX}\
+	$(ObjDir)StdCompat${OBJ_SUFFIX}\
 	$(ObjDir)StroikaConfig${OBJ_SUFFIX}\
 	$(ObjDir)SystemConfiguration${OBJ_SUFFIX}\
 	$(ObjDir)Version${OBJ_SUFFIX}

@@ -84,6 +84,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\GUID.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Locale.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\StdCompat.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\StroikaConfig.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\SystemConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Version.cpp" />

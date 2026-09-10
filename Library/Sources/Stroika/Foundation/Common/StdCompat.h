@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <bit>
+#include <chrono>
 #include <cmath>
 #include <compare>
 #include <concepts>
@@ -57,7 +58,16 @@ namespace Stroika::Foundation::Common::StdCompat {
 
     /**
      * \brief Logically the C++ standard BasicLockable named requirement, but that was not included in std c++ library
-     * 
+     *
+     *  Must be satisfied by:       std::mutex, std::recursive_mutex, std::timed_mutex, std::shared_mutex,
+     *                              std::unique_lock<std::mutex>
+     *  NOT satisfied by:           std::lock_guard<std::mutex> - it is a scope guard, and exposes no
+     *                              lock ()/unlock () of its own
+     *
+     *  \note   The examples above, and that this concept is not vacuously true, are asserted in
+     *          StdCompat.cpp. They live in a .cpp so the <mutex>/<shared_mutex> needed to name the types
+     *          costs one translation unit rather than every one that includes this header.
+     *
      * \see https://en.cppreference.com/w/cpp/named_req/BasicLockable.html
      */
     template <typename T>
@@ -70,13 +80,58 @@ namespace Stroika::Foundation::Common::StdCompat {
 
     /**
      * \brief Logically the C++ standard Lockable named requirement, but that was not included in std c++ library
-     * 
+     *
+     *  Must be satisfied by:       std::mutex, std::recursive_mutex, std::timed_mutex, std::shared_mutex
+     *
+     *  \note   Asserted in StdCompat.cpp - including the check that matters most, that this concept is
+     *          STRICTLY STRONGER than BasicLockable. That needs a purpose-built type: every std lockable
+     *          type offers try_lock () too, so no standard type could ever tell the two apart.
+     *
      * \see https://en.cppreference.com/w/cpp/named_req/Lockable.html
      */
     template <typename T>
     concept Lockable = BasicLockable<T> and requires (T lo) {
         { lo.try_lock () } -> std::same_as<bool>;
     };
+
+    /**
+     * \brief Logically the C++ standard TimedLockable named requirement, but that was not included in std c++ library
+     * 
+     * The TimedMutex requirements extend the TimedLockable requirements to include inter-thread synchronization
+     *
+     *  Must be satisfied by:       std::timed_mutex, std::recursive_timed_mutex
+     *  NOT satisfied by:           std::mutex - it has no try_lock_for ()/try_lock_until ()
+     *
+     *  \note   Asserted in StdCompat.cpp, along with the check that this is strictly stronger than
+     *          Lockable. @see the note on BasicLockable for why those live in a .cpp.
+     *
+     * \see https://en.cppreference.com/w/cpp/named_req/TimedLockable.html
+     */
+    template <typename T>
+    concept TimedLockable = Lockable<T> and requires (T lo, const chrono::milliseconds& d, const chrono::time_point<chrono::steady_clock>& tp) {
+        // Requires a public try_lock_for() taking a duration
+        { lo.try_lock_for (d) } -> std::same_as<bool>;
+        // Requires a public try_lock_until() taking a time_point
+        { lo.try_lock_until (tp) } -> std::same_as<bool>;
+    };
+
+    /**
+     * \brief Logically the C++ standard TimedMutex named requirement, but that was not included in std c++ library
+     *
+     *  A TimedMutex is a Mutex which also satisfies TimedLockable - it adds to TimedLockable that the type
+     *  is default-constructible and neither copyable nor movable, as every std mutex type is.
+     *
+     *  Must be satisfied by:       std::timed_mutex, std::recursive_timed_mutex
+     *  NOT satisfied by:           std::mutex (it is not TimedLockable)
+     *
+     *  \note   Asserted in StdCompat.cpp, together with 'not TimedMutex<int>' - which is there to prove
+     *          the concept is not vacuously true, the way a botched requires-clause silently would be.
+     *
+     * \see https://en.cppreference.com/w/cpp/named_req/TimedMutex.html
+     */
+    template <typename T>
+    concept TimedMutex =
+        TimedLockable<T> and default_initializable<T> and destructible<T> and not copy_constructible<T> and not move_constructible<T>;
 
     namespace Private_ {
         template <class _Ty>
