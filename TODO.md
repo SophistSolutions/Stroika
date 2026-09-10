@@ -14,8 +14,24 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
-   - **Exceptions: split the two lazy message stages** - moved to GitHub issue #1166. Lowest priority;
-     pure tuning knob behind an API that is already right. Measurements are in the issue.
+   - **No `--stdlib libc++` build has compiled the new WaitForIOReady wakeup.** Those configurations take
+     mechanism 2 (`ppoll` + blocked signal mask), because `__cpp_lib_jthread` is undefined for every libc++
+     before LLVM 20 - implemented in 18, but behind `-fexperimental-library` until 20, which Stroika passes
+     nowhere. The #1165 fix (feff64174b) is verified on mechanism 1 (Windows/MSVC, and 2604 g++/libstdc++)
+     and on mechanism 2 with the macro forced on 2604 - but no actual libc++ toolchain has seen it. One
+     `clang++-18-debug-libc++` run closes this, and overlaps the clang++-19 gap below.
+
+   - **Mechanism 3 of the WaitForIOReady wakeup (chunked `poll`) has never been compiled anywhere.** It is
+     selected only where neither jthread nor `ppoll` exists - i.e. old XCode. lewis-Mac2 is XCode 17, which
+     DOES define `__cpp_lib_jthread`, so it takes mechanism 1 and cannot exercise this. Not verifiable with
+     the hardware on hand; decide whether that is acceptable or whether the fallback should just go.
+
+   - **`make check-prerequisite-tools` cannot tell BSD `realpath` from GNU, so a macOS build fails far from
+     its cause.** The check only runs `type realpath`, which finds `/bin/realpath` and passes. The build then
+     dies building third-party components (`zstd`, `zlib`, `gtest`) with `realpath: illegal option -- -`,
+     followed by a runaway recursive make (`make[522]`, `"Debug" is not a valid configuration`). Stroika
+     already ships the stand-in (`Build/Tools/Src/realpath.cpp`, target `install-realpath`) - the check just
+     never verifies the flavour. Cost real time 2026-09-09.
 
    - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
      enforces it.** Raised in the same design review. The condition test is correct and portable; the raw-value
@@ -72,20 +88,6 @@ Generally will track stuff here between releases
      So decide which it is: install clang-19 somewhere and give it a config, or uncomment the 26.04 line
      if it builds now, or remove `19` from the Release-Notes list. Cheap either way, but the list should
      not claim coverage that does not exist - that is what made the 3.0d24 validation slower to trust.
-
-   - **FIRST THING: fix the Test53 / WebServer ConnectionManager teardown bug - GitHub issue #1165.**
-     Deliberately deferred out of 3.0d24: it is years old (the `#if 0` block in `Tests/53/Test.cpp`
-     records the same teardown path failing in Jan 2026), unrelated to anything that changed this
-     release, and holding 3.0d24 for it would only enlarge an already-large diff.
-     Two linked defects, verify separately - see the issue for full backtraces and the preserved core:
-       1. lost-wakeup race between `Thread` abort's `SIGUSR2` and `::poll` in `WaitForIOReady.cpp:204`
-          -> **hang** (caught live on Ubuntu2204, wedged 21.5h)
-       2. a throw escaping `Thread::CleanupPtr::~CleanupPtr` (implicitly `noexcept`) -> **std::terminate**
-          (Ubuntu2404, `clang++-18-release-libc++23`), leaving no core dump and one log line
-     Rare, and both 3.0d24 hits landed in an unusually loaded week on medusa (56-95% busy) - host load
-     widens the scheduling gap the race needs, so expect recurrence during heavy release weeks rather
-     than uniformly. Local release runs pass no `--trace2file` (CI does); enabling it for Test53 is the
-     cheapest way to make the next occurrence diagnosable.
 
    - **medusa desktop: Chrome still software-decodes Frigate video. PARTIALLY FIXED 2026-09-05.**
      Not a Stroika issue. Everything below is measured - do not re-derive it.
@@ -153,24 +155,6 @@ Generally will track stuff here between releases
        - `semantic_search` and `face_recognition` are both `model_size: large`, plus `lpr` and bird
          classification, all enabled and all running on CPU. Unmeasured, but likely most of what
          remains after the decode win.
-
-   - **KNOWN QUIRK, do not re-investigate: Medusa-Windows-Dev takes ~168s to boot on a WARM guest
-     reboot, ~11-32s on a cold `virsh start`.** Diagnosed 2026-09-05/06; there is no fix and none is
-     expected. Recorded only so nobody spends another session on it.
-     It freezes inside `bootmgfw.efi` after OVMF prints `starting Boot0003` - zero disk I/O, ~1.6
-     cores spinning, swtpm idle. Warm reboots measured 165.6-169.3s five times with only 3.7s spread
-     and no sensitivity to host load; an A/B on 2026-09-05 gave warm 169.2s vs cold 32s back to back,
-     same config. So it is a fixed timeout in something stateful that survives a warm reset, where a
-     cold start rebuilds QEMU/OVMF/swtpm fresh.
-     `tpm-tis` -> `tpm-crb` made it *worse* (202.8s), which kills the MMIO-polling theory but hints
-     the TPM path is involved; reverted to `tpm-tis`. Untested last idea: detach `<tpm>` and warm
-     reboot (BitLocker is off, so it is safe and a one-line revert).
-     No fix: ovmf/swtpm/qemu are all already newest on 26.04. `<on_reboot>destroy</on_reboot>` would
-     force cold starts but needs a hook to restart the domain, which could strand the VM mid-Windows
-     Update. **Mitigation: use `virsh shutdown` + `virsh start` when you control the reboot.**
-     To measure: gap between Kernel-General event 13 and the next event 12 (Windows' own BootTime
-     starts at kernel init and never sees this phase); for cold starts use `virsh start` wall-clock
-     to event 12 instead, or the gap also counts however long the domain sat powered off.
 
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
