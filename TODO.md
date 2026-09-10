@@ -14,17 +14,15 @@ Generally will track stuff here between releases
   host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
 
 - v3.0d25
-   - **2026-09-10: close https://github.com/SophistSolutions/Stroika/issues/1165 once the libc++ run
-     passes.** Left open on purpose: the fix is in (feff64174b) and verified on mechanism 1 (Windows/MSVC
-     and 2604 g++/libstdc++) and on mechanism 2 with the macro forced, but no real libc++ toolchain has
-     compiled it - see the next item. Run `clang++-18-debug-libc++`, then close the issue.
-
-   - **No `--stdlib libc++` build has compiled the new WaitForIOReady wakeup.** Those configurations take
-     mechanism 2 (`ppoll` + blocked signal mask), because `__cpp_lib_jthread` is undefined for every libc++
-     before LLVM 20 - implemented in 18, but behind `-fexperimental-library` until 20, which Stroika passes
-     nowhere. The #1165 fix (feff64174b) is verified on mechanism 1 (Windows/MSVC, and 2604 g++/libstdc++)
-     and on mechanism 2 with the macro forced on 2604 - but no actual libc++ toolchain has seen it. One
-     `clang++-18-debug-libc++` run closes this, and overlaps the clang++-19 gap below.
+   - **One `clang++-18-debug-libc++` run closes out
+     https://github.com/SophistSolutions/Stroika/issues/1165 - then close the issue.** No `--stdlib
+     libc++` build has ever compiled the new WaitForIOReady wakeup. Those configurations take mechanism 2
+     (`ppoll` + blocked signal mask), because `__cpp_lib_jthread` is undefined for every libc++ before
+     LLVM 20 - implemented in 18, but behind `-fexperimental-library` until 20, which Stroika passes
+     nowhere. The fix (feff64174b) is verified on mechanism 1 (Windows/MSVC, and 2604 g++/libstdc++) and
+     on mechanism 2 with the macro forced on 2604 - but no real libc++ toolchain has seen it, which is
+     why #1165 was left open. **Note a 2604 run cannot close this: 2604 has NO libc++ configs at all**
+     (the clang-17/18/19 lines are commented out) - so it needs 2404. Overlaps the clang++-19 gap below.
 
    - **Mechanism 3 of the WaitForIOReady wakeup (chunked `poll`) has never been compiled anywhere.** It is
      selected only where neither jthread nor `ppoll` exists - i.e. old XCode. lewis-Mac2 is XCode 17, which
@@ -40,20 +38,14 @@ Generally will track stuff here between releases
      steers people. Ideas, unevaluated: a `Execution::IsA (e, errc::X)` helper; a `[[nodiscard]]`-ish wrapper;
      or just a documented lint. Cheap to think about, no urgency.
 
-   - **`TimeOut` vs `Timeout`: settled 2026-09-10 - the only survivors are deprecated, so this dies with
-     them.** `Timeout` is the house spelling and every live identifier now uses it. What is left spelling it
-     `TimeOut` is exactly the deprecated `TimeOutException` family: the class itself, `ThrowTimeOutException`
-     (also `[[deprecated]]` as of 3.0d25), the include guard, the test that checks the deprecated name still
-     catches, and the `TimeOutException.{h,inl,cpp}` filenames. Rename nothing - **when the deprecated class
-     is removed, move the survivors (`ThrowTimeoutExceptionAfter`, `ThrowIfTimeout`, `UniqueLock`) to a
-     `TimeoutException.h` and the spelling problem is gone with it.**
-     Two things the old entry asserted that were NOT true when checked, so do not re-derive them:
-       - the "three doc comments referring to a `TimeoutException` that does not exist" are already fixed -
-         those lines now read `errc::timed_out`, `AllocateGloballyIfTimeout` and `kDefaultTimeout`.
-       - **`measurementTimeOut` was never a timeout at all** - it was `measurementTime` + `Out`, an out-param
-         for the measured-at range (`*measurementTimeOut = ms.fMeasuredAt`), and the layer below it already
-         called the same parameter `outMeasuredAt`. Renamed to match that, NOT to `measurementTimeout`, which
-         would have made a correct name wrong.
+   - **When the deprecated `TimeOutException` is finally removed, move the survivors into a
+     `TimeoutException.h`.** The `TimeOut` vs `Timeout` spelling itself was settled 2026-09-10
+     (c84311d6da): every live identifier uses `Timeout`, and what still spells it `TimeOut` is exactly
+     the deprecated `TimeOutException` family - the class, `ThrowTimeOutException`, the include guard,
+     its regression test, and the filenames. So rename nothing now; when the class goes, move
+     `ThrowTimeoutExceptionAfter`, `ThrowIfTimeout` and `UniqueLock` across and the spelling problem
+     leaves with it.
+
    - **`clang++-19` is listed in Release-Notes as tested but is covered nowhere - close the gap or drop
      the claim.** Found while validating 3.0d24; deliberately left alone for that release. The
      "Compilers Tested/Supported" line says `Clang++ { unix: 15, 16, 17, 18, 19, 20, 21, 22 }`, but
@@ -68,73 +60,6 @@ Generally will track stuff here between releases
      So decide which it is: install clang-19 somewhere and give it a config, or uncomment the 26.04 line
      if it builds now, or remove `19` from the Release-Notes list. Cheap either way, but the list should
      not claim coverage that does not exist - that is what made the 3.0d24 validation slower to trust.
-
-   - **medusa desktop: Chrome still software-decodes Frigate video. PARTIALLY FIXED 2026-09-05.**
-     Not a Stroika issue. Everything below is measured - do not re-derive it.
-
-     **DONE and working:**
-       - `nomodeset` removed from `/etc/default/grub` (it was blocking `amdgpu` from binding; the
-         module was loaded with zero users and the kernel logged no probe attempt at all). NVIDIA
-         was unaffected only because `nvidia-graphics-drivers-kms.conf` sets `nvidia_drm modeset=1`
-         explicitly. The AMD iGPU `79:00.0` now binds and adds a second DRM node.
-       - Both GPUs now have full VA-API decode, confirmed with `vainfo`:
-         NVIDIA 3090 = H264 / HEVC Main,10,12 / VP9 / AV1 via `nvidia-vaapi-driver` [NVDEC direct];
-         AMD iGPU = H264 / HEVC Main,10 / VP9 / AV1 plus *encode*, via radeonsi (in-tree Mesa).
-       - `nvidia-vaapi-driver` + `vainfo` installed. **On 26.04 the package is `vainfo`, NOT
-         `libva-utils`** - that name no longer exists, and naming it makes apt abort the whole
-         install, silently taking the other packages down with it.
-       - All four `~/.config/autostart/google-chrome-*.desktop` launchers carry
-         `env LIBVA_DRIVER_NAME=nvidia NVD_BACKEND=direct` plus
-         `--enable-features=VaapiVideoDecodeLinuxGL --ignore-gpu-blocklist`
-         (originals saved as `*.bak-vaapi`).
-
-     **STILL BROKEN - Chrome does not actually engage VA-API.** After a reboot the flag IS on the
-     command line (`ps` shows `VaapiVideoDecodeLinuxGL`), but NO `*_drv_video.so` appears in any
-     chrome process's `/proc/PID/maps`, so it is still software-decoding at ~1.5 CPUs.
-     **That maps check is the reliable test**, much better than reading chrome://gpu prose:
-     `for p in $(pgrep -f chrome); do grep -o '[a-z0-9_]*_drv_video[.]so' /proc/$p/maps; done | sort -u`
-     Next lead: Chrome's **GPU sandbox** blocking the nvidia-vaapi bridge - a known issue needing
-     more than the feature flag. Check the chrome://gpu "Video Decode" line first.
-     Untried alternative: move the monitor cable to a MOTHERBOARD port so the desktop runs on the
-     iGPU, where radeonsi needs no bridge at all. Check iGPU headroom first, since it now also
-     serves Frigate decode. Note Chrome decodes on whichever GPU drives its display; cross-device
-     (decode on AMD, present on NVIDIA) is not something Chrome does cleanly.
-
-     **Two corrections worth keeping** - the original 2026-09-04 note had both backwards:
-       1. The desktop is on the **RTX 3090, NOT the AMD iGPU**. `card1` is `DRIVER=nvidia
-          PCI_SLOT_NAME=0000:01:00.0` and carries every output; the monitor is on `card1-HDMI-A-3`.
-       2. `modinfo amdgpu | grep 13c0` finding nothing proves NOTHING - amdgpu matches by
-          **wildcard** (`pci:v00001002d*sv*sd*bc03sc00i00*` = any AMD class-0x030000 device),
-          not per-device IDs.
-
-   - **medusa: Frigate CPU cut 217% -> ~129% on 2026-09-05; remaining lever is a GPU detector.**
-     Config is `/Sandbox/frigate/config/config.yaml` (**`.yaml`, not `.yml`**) and is root-owned -
-     edit it through `docker exec frigate ...` rather than hunting for sudo. Backups in place:
-     `config.yaml.bak-2026-09-05` (original) and `config.yaml.bak-presubstream`.
-     What changed:
-       - added a global `ffmpeg: hwaccel_args:` block pinned to `/dev/dri/renderD129` (the AMD
-         iGPU). **Frigate's `preset-vaapi` would be WRONG here** - it defaults to renderD128, which
-         on this box is the NVIDIA card. `privileged: true` already exposes both nodes and
-         `radeonsi_drv_video.so` is present inside the container, so no compose change was needed.
-       - split every camera's inputs: `subtype=1` (704x480) for `detect`, `subtype=0` (3-4K) for
-         `record`. Previously all five fed the MAIN stream to detection - **32.1 Mpix per frame-set
-         decoded just to look for objects, vs 1.69 Mpix now, about 19x less**. Recordings unaffected.
-     Measured: CPU 217% -> 161% (hwaccel alone) -> ~129% settled (after substreams); memory
-     5.35 -> 3.13 GiB; host load 7.31 -> 4.78; amdgpu 99% busy -> near idle.
-     Still open:
-       - **`frigate.detector.cpu` was the single biggest consumer at 77%.** There is **no Coral TPU
-         on this box** - `lsusb` finds no Google/Global Unichip device, despite the compose passing
-         `/dev/bus/usb` - so detection silently falls back to CPU. Moving it to the idle 3090 needs
-         the `stable-tensorrt` image, container GPU access and a model build.
-         `nvidia-container-toolkit` IS now installed (2026-09-05, from NVIDIA's repo), but
-         `docker run --gpus all` still fails `Failed to initialize NVML: Unknown Error` - a cgroups
-         issue to solve before any of that is worth starting.
-       - `WestSoffitCamera` has a stray `detect: enabled: false` block indented *under it* (leftover
-         Frigate template cruft - its comment says "until you have a working camera feed"), so
-         **detection is disabled on that one camera**. Left alone deliberately; confirm intent.
-       - `semantic_search` and `face_recognition` are both `model_size: large`, plus `lpr` and bird
-         classification, all enabled and all running on CPU. Unmeasured, but likely most of what
-         remains after the decode win.
 
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
