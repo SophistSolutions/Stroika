@@ -41,7 +41,6 @@ Execution pattern classes (external process runner, exception handling support, 
 - [Synchronized.h](Synchronized.h) - very useful pattern - like java/c# synchronized/lock - wrap object with its lock
 - [Thread.h](Thread.h) - very helpful wrapper on std::thread supporting cancelation
 - [ThreadPool.h](ThreadPool.h) - queue tasks and run them on a fixed size set of threads as the threads become ready
-- [TimedLockGuard.h](TimedLockGuard.h)
 - [TimeOutException.h](TimeOutException.h)
 - [UpdatableWaitForIOReady.h](UpdatableWaitForIOReady.h)
 - [UserCanceledException.h](UserCanceledException.h)

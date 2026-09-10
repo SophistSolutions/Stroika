@@ -47,24 +47,6 @@ Generally will track stuff here between releases
      steers people. Ideas, unevaluated: a `Execution::IsA (e, errc::X)` helper; a `[[nodiscard]]`-ish wrapper;
      or just a documented lint. Cheap to think about, no urgency.
 
-   - **`Execution::TimedLockGuard` vs `Execution::UniqueLock` - decide which should survive, then fix or delete.**
-     Deliberately left out of the 3.0d25 exception/TimeOutException change as a separable question.
-     Facts established 2026-09-08, so don't re-derive them:
-       - **`TimedLockGuard` is used NOWHERE.** The only reference in the whole tree is a `\see also` in
-         `TimeOutException.h`. LGP believes it was written with an intended use that never materialized.
-       - **It has never been instantiated, and cannot be.** `TimedLockGuard.inl` has three bugs in the one
-         ctor body: `d <= 0` (no such comparison for `chrono::duration<double>`), `m.try_lock_for ()` missing
-         its argument, and `Exeuction::Throw` (typo). Templates aren't checked until instantiated, so these
-         sat undetected - but gcc 15's `-Wtemplate-body` diagnoses uninstantiated bodies, which means
-         **`TimedLockGuard.h` currently cannot be `#include`d in any gcc-15 TU**. Nothing includes it, so
-         nothing breaks today; it is a live trap for the first person who tries to use it.
-       - **`Execution::UniqueLock (m, d)`** (in `TimeOutException.h`) already does the same job and strictly
-         dominates: the returned `unique_lock` is movable, returnable, can be released early, and is the only
-         form `condition_variable` accepts. `TimedLockGuard` is the `lock_guard` analogue - saves an owns-flag,
-         non-movable, scope-bound - so it is cheaper and nothing else. That is the likely reason for the disuse.
-       - **If kept, its default template arg needs changing**: `FAILURE_EXCEPTION = TimeOutException`, and
-         `TimeOutException` is deprecated as of 3.0d25. Defaulting to a deprecated type would warn at every use.
-     So: fix the three bugs + repoint the default (and find it a use), or delete the class and its two files.
    - **`TimeOut` vs `Timeout`: settled 2026-09-10 - the only survivors are deprecated, so this dies with
      them.** `Timeout` is the house spelling and every live identifier now uses it. What is left spelling it
      `TimeOut` is exactly the deprecated `TimeOutException` family: the class itself, `ThrowTimeOutException`

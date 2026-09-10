@@ -72,8 +72,13 @@ namespace Stroika::Foundation::Execution {
      * 
      *  \note if this function returns (doesn't throw) - the required unique_lock<> OWNS the mutex.
      *
+     *  \note   ALIAS - TimedLockGuard. If you are hunting for a "timed lock guard" - a scope-bound guard over
+     *          a timed_mutex that throws rather than quietly failing to lock - UniqueLock is that thing under
+     *          a less obvious name. Execution::TimedLockGuard existed until Stroika v3.0d25, and was removed
+     *          because unique_lock<> dominates any lock_guard analogue here: it is movable, returnable, can
+     *          be released early, and is the only form condition_variable accepts.
+     *
      *  \see also TryLockUntil
-     *  \see also TimedLockGuard
      */
     template <typename TIMED_MUTEX, typename EXCEPTION>
     unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d, EXCEPTION&& exception2Throw);
