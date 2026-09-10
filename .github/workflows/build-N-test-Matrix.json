@@ -169,7 +169,7 @@
         "config_name": "Release",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
         "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
-        "run_on_branch": "v3-Release"
+        "run_on_branch": "never"
     },
     {
         "build_job": "Linux",
@@ -181,7 +181,7 @@
         "config_name": "Debug",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
-        "run_on_branch": "v3-Release"
+        "run_on_branch": "never"
     },
     {
         "build_job": "Linux",
@@ -193,7 +193,7 @@
         "config_name": "Release",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
         "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
-        "run_on_branch": "v3-Release"
+        "run_on_branch": "never"
     },
     {
         "build_job": "Linux",
@@ -207,7 +207,7 @@
         "#": "try avoid runs out of disk space (-Os, and debug symbols false); ALSO needed --boost no cuz -Os wasn't enuf (and extra_apt_remove_packages didn't work cuz of how layers work)",
         "extra_apt_remove_packages": [],
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no",
-        "run_on_branch": "v3-Release"
+        "run_on_branch": "never"
     },
     {
         "build_job": "Linux",
@@ -221,7 +221,7 @@
         "extra_apt_add_packages": ["g++-15"],
         "extra_apt_remove_packages": [],
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
-        "run_on_branch": "always"
+        "run_on_branch": "never"
     },
     {
         "build_job": "Linux",
@@ -271,7 +271,7 @@
         "cpp_version": "c++20",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "always"
+        "run_on_branch": "v3-Release"
     },
     {
         "build_job": "Linux",
@@ -295,7 +295,7 @@
         "config_name": "Debug",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
         "extra_config_args": "--apply-default-debug-flags --stdlib libstdc++ --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
-        "run_on_branch": "never"
+        "run_on_branch": "v3-Release"
     },
     {
         "build_job": "Linux",
@@ -306,7 +306,7 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
-        "run_on_branch": "never"
+        "run_on_branch": "v3-Release"
     },
     {
         "build_job": "Linux",
@@ -317,7 +317,83 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
-        "run_on_branch": "never"
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-26.04-clang++-22-debug",
+        "compiler": "clang++-22",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Debug",
+        "#": "canary - newest clang, and the only clang job that runs on v3-Dev",
+        "extra_config_args": "--apply-default-debug-flags --debug-symbols false",
+        "run_on_branch": "always"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-26.04-g++-16",
+        "compiler": "g++-16",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "#": "canary - newest g++",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "always"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-26.04-g++-16-c++23",
+        "compiler": "g++-16",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests",
+        "cpp_version": "c++23",
+        "config_name": "Release",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-26.04-g++-15",
+        "compiler": "g++-15",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-26.04-g++-15-debug-regtest-container",
+        "compiler": "g++-15",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests",
+        "#container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Debug",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false); ALSO needed --boost no cuz -Os wasn't enuf (and extra_apt_remove_packages didn't work cuz of how layers work)",
+        "extra_apt_remove_packages": [],
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-26.04-g++-15-debug-smaller-container",
+        "compiler": "g++-15",
+        "runs_on": "ubuntu-latest",
+        "#": "try avoid runs out of disk space ubuntu2504-small container and add g++ with extra_apt_add_packages",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-small",
+        "cpp_version": "c++20",
+        "config_name": "Debug",
+        "extra_apt_add_packages": ["g++-15"],
+        "extra_apt_remove_packages": [],
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "run_on_branch": "v3-Release"
     },
     {
         "#": "MacOS"

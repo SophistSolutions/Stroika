@@ -127,8 +127,8 @@ basicUnixTestConfigurations_ ()
 		# ./configure clang++-18-release-libstdc++ --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 		# ./configure clang++-18-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23
 		# ./configure clang++-18-release-libc++23 --config-tag Unix --compiler-driver clang++-18 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23
-		# # clang-19
-		# ./configure clang++-19-debug --config-tag Unix --compiler-driver clang++-19 --apply-default-debug-flags  --only-if-has-compiler
+		# clang-19
+		./configure clang++-19-debug --config-tag Unix --compiler-driver clang++-19 --apply-default-debug-flags --only-if-has-compiler
 		# clang-20
 		./configure clang++-20-debug --config-tag Unix --compiler-driver clang++-20 --apply-default-debug-flags --only-if-has-compiler
 		# clang-21

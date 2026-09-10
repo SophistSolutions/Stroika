@@ -31,21 +31,6 @@ Generally will track stuff here between releases
      `ThrowTimeoutExceptionAfter`, `ThrowIfTimeout` and `UniqueLock` across and the spelling problem
      leaves with it.
 
-   - **`clang++-19` is listed in Release-Notes as tested but is covered nowhere - close the gap or drop
-     the claim.** Found while validating 3.0d24; deliberately left alone for that release. The
-     "Compilers Tested/Supported" line says `Clang++ { unix: 15, 16, 17, 18, 19, 20, 21, 22 }`, but
-     clang++-19 appears in ZERO of the 15 platform result files - the matrix jumps 18 -> 20:
-       - on 24.04 it is simply not installed (`/usr/bin/clang++-1[5-8]` only), so that box tops out at 18
-       - **but clang++-19 IS installed on stroika-dev-2604** (`/usr/bin/clang++-19`, verified
-         2026-09-06) - so this is a config change, not an install
-       - on 26.04 the clang-19 line in `Build/Scripts/MakeRegressionTestConfigurations` (~line 130) is
-         commented out, together with the clang-17 and clang-18 lines - see the 3.0d24 note "clang++18
-         dropped from 2604 (fails to build several third-party components); for clang < 20 on 2604, use
-         libstdc++"
-     So decide which it is: install clang-19 somewhere and give it a config, or uncomment the 26.04 line
-     if it builds now, or remove `19` from the Release-Notes list. Cheap either way, but the list should
-     not claim coverage that does not exist - that is what made the 3.0d24 validation slower to trust.
-
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
      valgrind still earns its keep, rather than just switching it on somewhere new. Groundwork already
@@ -64,6 +49,10 @@ Generally will track stuff here between releases
        - msan is not usable with gcc (clang-only, and needs a specially rebuilt libc++) - see the note
          near the top of MakeRegressionTestConfigurations. So the realistic menu is asan/ubsan/leak,
          tsan, and valgrind; the question is whether valgrind still finds anything the first two do not.
+       - **every sanitizer configuration is a `g++-*` one - there is no clang asan/tsan/ubsan anywhere**
+         (noted 2026-09-10 during the compiler-coverage audit). clang's sanitizers are the better-supported
+         ones upstream and diagnose somewhat different things, so this is a real second axis of the same
+         single-platform problem, not a duplicate of it.
 
    - **Re-test the Ubuntu 24.04 gcc workarounds when that toolchain updates, and delete them if fixed.**
      `configure`'s `ApplyCompilerBugWorkarounds_` currently forces `-O2` for sanitizer configs on 24.04

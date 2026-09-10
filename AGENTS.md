@@ -103,6 +103,33 @@ ubuntu-26.04's g++-14 was clean.
 This is NOT the only place regression tests are run, just the most frequent and the easiest to reach;
 a green run here is good evidence, not proof of full coverage.
 
+#### Which platforms and compilers get tested
+
+Standing policy, applied to both `build-N-test-Matrix.json` and
+`Build/Scripts/MakeRegressionTestConfigurations`:
+
+- **Support every LTS Ubuntu we reasonably can** (22.04, 24.04, 26.04 as of late 2026). These carry
+  the bulk of the coverage, and each keeps several g++ and clang versions.
+- **Support the latest non-LTS release, whatever it currently is** - its value is the newer compiler
+  versions that are awkward to get elsewhere, plus a basic check that the newest Ubuntu still works.
+  An interim release earns its slot only while it is the newest; when the next one ships the coverage
+  moves to it, and the outgoing interim keeps just a config or two to confirm it still functions.
+  This comes due periodically - normal maintenance, not a per-release task.
+- **A compiler with only ONE home is the thing to watch for.** CI and the medusa regression runs
+  cover different sets, so it is easy for a compiler to be claimed under "Compilers Tested/Supported"
+  in Release-Notes while living in exactly one commented-out line. Cross-check both lists against
+  that claim, not against each other.
+
+Matrix mechanics worth knowing before editing it:
+
+- `"run_on_branch"` takes `"always"`, a branch name (usually `"v3-Release"`), or `"never"`.
+  **`"never"` really does mean never** - the jq in `build-N-test.yml` reads
+  `A or B or (run_all and not-never)`, so even a manually forced `run_all` build skips it. Its use is
+  to PARK an entry: kept as a template for the next platform, costing nothing.
+- `"always"` entries run on every push, so keep that set small - about one canary per platform,
+  favouring the newest compiler on the newest LTS, since that is where new-standard and
+  new-diagnostic breakage surfaces first.
+
 ### Formatting
 ```bash
 make format-code
