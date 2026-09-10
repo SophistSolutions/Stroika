@@ -6,7 +6,7 @@ This folder contains all the Stroika Library [Foundation](../)::Math source code
 
 - [Angle.h](Angle.h)
 - [Common.h](Common.h)
-- [LinearAlgebra/](LinearAlgebra/)
+- [LinearAlgebra/](LinearAlgebra/) - WEAK; major revision or removal in 3.1, see [#1168](https://github.com/SophistSolutions/Stroika/issues/1168)
 - [Optimization/](Optimization/)
 - [ReBin.h](ReBin.h)
 - [Statistics.h](Statistics.h)
