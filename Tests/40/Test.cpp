@@ -21,6 +21,7 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -1481,6 +1482,102 @@ namespace {
 }
 
 namespace {
+    namespace RegressionTest26_AbortDuringWaitForIOReady_ {
+        /*
+         *  Aborting a thread that is blocked in WaitForIOReady () must wake it up promptly - a single Abort ()
+         *  must be enough. @see https://github.com/SophistSolutions/Stroika/issues/1165
+         *
+         *  ***What this does and does not catch.*** This is a PROPERTY test, not a reproducer for the race
+         *  that motivated it. The bug was that aborting delivers a signal whose handler deliberately does
+         *  nothing - the wakeup IS the EINTR it causes in the blocking call - so a signal arriving in the
+         *  window between checking for interruption and entering the wait interrupted nothing and was simply
+         *  lost, leaving the thread to sleep out its whole timeout.
+         *
+         *  That window was measured at 15-54us, and trying to land an abort inside it from a test turned out
+         *  to be impractical: with the window artificially widened to 200us the hit rate was already only
+         *  1 in 500, and at its true width nothing was caught in thousands of attempts across four different
+         *  timing strategies. Scheduling jitter simply swamps it. So do not expect this test to fail if the
+         *  race comes back - it will not, reliably.
+         *
+         *  What it does do is assert the property cheaply and stably, on a code path that had NO direct test
+         *  coverage at all before it.
+         *
+         *  \note   ***Which mechanism this exercises.*** WaitForIOReady () compiles in exactly one of three
+         *          wakeup mechanisms depending on the toolchain, so this test does not exercise the same
+         *          code everywhere - @see the qStroika_Foundation_Execution_WaitForIOReady_* macros. The
+         *          property asserted is the same in all three; only the machinery under it differs.
+         *
+         *  \note   Evidence, such as it is: the signal-blocking ppoll () mechanism was verified by
+         *          temporarily widening the window in WaitForIOReady.cpp, where the failure becomes
+         *          deterministic - every widened attempt lost the wakeup before the fix, none after. The
+         *          stop_token/EventFD mechanism has had no equivalent harness run against it; it rests on
+         *          std::stop_callback's guarantee to run during its own construction when stop has already
+         *          been requested, which leaves no window to widen.
+         *
+         *  \note   The sweep below still varies when the abort lands, which costs almost nothing and can only
+         *          help; just do not mistake it for a reliable detector.
+         */
+        using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
+
+        // The victim asks to wait far longer than this test would tolerate, so that a lost wakeup shows up as
+        // a failure instead of as a slow pass.
+        constexpr Time::DurationSeconds kVictimWaitsFor_{60.0};
+        constexpr Time::DurationSeconds kMustWakeWithin_{5.0};
+
+        void Test ()
+        {
+            Debug::TraceContextBumper traceCtx{"RegressionTest26_AbortDuringWaitForIOReady_"};
+            Debug::TimingTrace        tt;
+            // instrumented builds are slow enough that the full sweep is not worth its wall-clock there
+            const unsigned kIterations_ =
+                (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? 60u : 200u;
+            constexpr unsigned kSweepStepNanoseconds_ = 20000; // so the sweep covers 0 .. kIterations_*200ns
+            unsigned           lostWakeups{};
+            unsigned           iterations{};
+            for (unsigned i = 0; i < kIterations_; ++i) {
+                auto eventFD  = mkEventFD (); // never Set (), so never ready - only the abort can end this wait
+                auto waitInfo = eventFD->GetWaitInfo ();
+                // Anchor the abort to the moment the victim is about to enter the wait. Anchoring on Start ()
+                // instead does not work: thread startup jitter (milliseconds, in an instrumented debug build)
+                // dwarfs the window being aimed at, so every abort lands before the victim runs at all and
+                // takes the safe CheckForInterruption path.
+                atomic<bool> aboutToWait{false};
+                Thread::Ptr  victim = Thread::New (
+                    [&] () {
+                        WaitForIOReady<SDKPollableType> waiter{waitInfo.first, waitInfo.second};
+                        aboutToWait = true; // set as late as possible before the blocking call
+                        (void)waiter.Wait (kVictimWaitsFor_);
+                    },
+                    "WaitForIOReadyAbortVictim");
+                victim.Start ();
+                // Busy-spin, NOT yield (): sched_yield is a syscall, and on a loaded box the main thread can
+                // fail to notice the flag for tens of microseconds - already past the window being aimed at.
+                while (not aboutToWait.load ()) {
+                }
+                // Spin, do not sleep: the window is microseconds wide and Linux timer slack is ~50us, so
+                // sleep_for cannot resolve it - every "short" sleep would land well after poll () was already
+                // entered, where the signal does interrupt it and nothing is lost.
+                auto spinUntil = chrono::steady_clock::now () + chrono::nanoseconds{i * kSweepStepNanoseconds_};
+                while (chrono::steady_clock::now () < spinUntil) {
+                }
+                victim.Abort (); // exactly ONE abort - that it suffices is the property under test
+                ++iterations;
+                if (not victim.WaitForDoneUntilQuietly (Time::GetTickCount () + kMustWakeWithin_)) {
+                    ++lostWakeups;
+                    // Do not leak a thread that would otherwise sleep out kVictimWaitsFor_. Re-aborting finds it
+                    // settled inside poll () by now, where the signal does interrupt it.
+                    while (not victim.WaitForDoneUntilQuietly (Time::GetTickCount () + kMustWakeWithin_)) {
+                        victim.Abort ();
+                    }
+                }
+            }
+            DbgTrace ("RegressionTest26: lostWakeups={} of {} iterations"_f, lostWakeups, iterations);
+            EXPECT_TRUE (lostWakeups == 0);
+        }
+    }
+}
+
+namespace {
 #if 1
     // No longer legal since Stroika v3.0d5
     namespace RegressionTest25_AbortNotYetStartedThread_ {
@@ -1532,6 +1629,7 @@ namespace {
         RegressionTest23_SycnhonizedWithTimeout_ ();
         RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ();
         RegressionTest25_AbortNotYetStartedThread_::Test ();
+        RegressionTest26_AbortDuringWaitForIOReady_::Test ();
     }
 }
 #endif

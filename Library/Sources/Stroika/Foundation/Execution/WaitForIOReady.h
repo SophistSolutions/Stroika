@@ -6,6 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <version>
+
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -20,37 +22,96 @@
  *      WaitForIOReady utility - portably provide facility to check a bunch of file descriptors/sockets
  *      if input is ready (like select, epoll, WaitForMutlipleObjects, etc)
  *
- *  TODO:
- *      @todo   THINK OUT signal flags/params to ppoll()
- *
- *      @todo   Consider using Mapping<> for fPollData_;
- *
- *      @todo   See if some way to make WaitForIOReady work with stuff other than sockets - on windows
- *              (WaitFormUltipleEventsEx didnt work well at all)
+ *  \note   ***Windows takes sockets and nothing else.*** The underlying WSAPoll () accepts no other kind
+ *          of handle, and WaitForMultipleObjectsEx () was tried instead and worked poorly. This is not just
+ *          a restriction on callers: it is why the wakeup channel EventFD hands out has to be a loopback
+ *          socket pair there, where a pipe or an event HANDLE would be cheaper. @see
+ *          https://github.com/SophistSolutions/Stroika/issues/843
  */
 
 namespace Stroika::Foundation::Execution {
 
-    /**
-     *  \note see https://github.com/SophistSolutions/Stroika/issues/788 (STK-653)
-     *
-     *  WSAPoll is not (fully/mostly) alertable, in the Windows API. So for Windows, this trick is needed to make
-     *  WaitForIOReady::Wait* a ***Cancelation Point***.
-     *
-     *  Set qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks to a number of milliseconds between WSAPoll
-     *  forced wakeups. A smaller value means more responsive, but more wasted CPU time.
-     *
-     *  \note Since Stroika 2.1a5, we no longer (generally use but still support) using Thread::Interrupt() to break the sleep.
-     *        So this doesn't need to be quite as rapid. Changed from 1000ms to 3000ms --LGP 2020-04-09
-     *        STILL NEEDED however, due to aborting threads (and cuz some users may still choose to use the thread interruption approach to wakeup)
-     */
-#ifndef qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks
-#if qStroika_Foundation_Common_Platform_Windows
-#define qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks 3000
+/**
+ *  Wake a pending wait through the waiting thread's std::stop_token, instead of depending on the
+ *  thread-interrupt signal (POSIX) or APC (Windows) to interrupt the underlying poll () call.
+ *
+ *  The interrupt signal cannot carry this reliably. Its whole effect is the EINTR it causes in a call that
+ *  is already in flight, so a signal delivered while the thread is still setting up its poll set runs the
+ *  (deliberately empty) handler and is spent, having interrupted nothing - and the thread then sleeps out
+ *  its entire timeout. A std::stop_callback has the property the signal lacks: it is guaranteed to run, and
+ *  to run DURING ITS OWN CONSTRUCTION if stop was already requested. Registering one to Set () a pollable
+ *  EventFD, with that EventFD in the poll set, therefore leaves no window - however the abort and the wait
+ *  are ordered, the descriptor ends up readable and poll () returns.
+ *
+ *  Thread::Abort () already calls stop_source::request_stop (), so nothing on the aborting side changes.
+ *
+ *  FIRST choice of three, because it is the only one that is portable - it covers Windows and macOS as well
+ *  as Linux. @see qStroika_Foundation_Execution_WaitForIOReady_UsePPoll for the fallback used where the
+ *  standard library has no jthread, and _BreakPollIntoTimedMillisecondChunks for the last resort.
+ *
+ *  @see https://github.com/SophistSolutions/Stroika/issues/1165
+ */
+#ifndef qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup
+#if __cpp_lib_jthread >= 201911
+#define qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup 1
+#else
+#define qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup 0
+#endif
+#endif
+
+/**
+ *  SECOND choice, where the stop_token wakeup is unavailable: use ppoll () rather than poll (), blocking the
+ *  thread-interrupt signal across the setup window and handing the original mask to the wait, which unblocks
+ *  it atomically for exactly the duration of the wait. An abort arriving anywhere in the window then leaves
+ *  the signal PENDING rather than spending it, and it fires the instant ppoll () unblocks it.
+ *
+ *  This closes the race just as completely as the stop_token wakeup does, and it is worth having as well
+ *  because the two are available in DIFFERENT configurations: ppoll () is glibc, so it does not care which
+ *  C++ standard library is in use, while __cpp_lib_jthread is undefined for every libc++ before LLVM 20. So
+ *  the clang++-NN-*-libc++ configurations get this one and not the stop_token path. @see the note on which
+ *  standard libraries have jthread/stop_token, in Thread.h.
+ *
+ *  Defined as 0 whenever the stop_token wakeup is available, so that exactly one mechanism is in play.
+ */
+#ifndef qStroika_Foundation_Execution_WaitForIOReady_UsePPoll
+#if !qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup && defined(__linux__)
+#define qStroika_Foundation_Execution_WaitForIOReady_UsePPoll 1
+#else
+#define qStroika_Foundation_Execution_WaitForIOReady_UsePPoll 0
 #endif
 #endif
 
     namespace WaitForIOReady_Support {
+
+#if !qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup && !qStroika_Foundation_Execution_WaitForIOReady_UsePPoll
+        /**
+         *  LAST choice of the three wakeup mechanisms, used only where neither the stop_token wakeup nor
+         *  ppoll () is available - old XCode (no jthread before LLVM 20's libc++) and any other POSIX
+         *  without ppoll (). There, the wait is broken into chunks this long, re-checking for thread
+         *  interruption between them.
+         *
+         *  Unlike the other two, this only BOUNDS a lost wakeup rather than preventing one: an abort whose
+         *  signal was spent before the wait began costs one chunk instead of the whole timeout. Nothing
+         *  better is available in that configuration. It is deliberately NOT used when either other
+         *  mechanism is in play - there, waking early could only mask a failure of the mechanism that is
+         *  supposed to be doing the work, which is exactly how such a failure goes unnoticed.
+         *
+         *  Smaller means an abort is noticed sooner, at the cost of more wakeups. Must be > 0.
+         *
+         *  \note   Deliberately not even DECLARED where one of the other mechanisms is available - which is
+         *          every platform Stroika currently builds on except old XCode - so that it cannot be set
+         *          somewhere it would have no effect.
+         *
+         *  \note   ***Set this before creating any threads.*** It is a variable rather than a macro on
+         *          purpose: a macro could only be changed by rebuilding Stroika, whereas this lets an
+         *          application tune it. But it is not synchronized, so changing it once threads are running
+         *          is a data race.
+         *
+         *  @see ConditionVariable's sConditionVariableWaitChunkTime, which this mirrors.
+         */
+        static inline Time::DurationSeconds sPollWaitChunkTime{3s};
+#endif
+
         /**
          *  This is the underlying native type 'HighLevelType objects must be converted to in order to
          *  be used with the operating-system poll/select feature.
@@ -305,8 +366,9 @@ namespace Stroika::Foundation::Execution {
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
-        const Traversal::Iterable<pair<T, TypeOfMonitorSet>>                                    fPollData_;
-        const optional<pair<SDKPollableType, TypeOfMonitorSet>>                                 fPollable2Wakeup_;
+        // @todo   Consider Mapping<T, TypeOfMonitorSet> here instead of an Iterable of pairs
+        const Traversal::Iterable<pair<T, TypeOfMonitorSet>>    fPollData_;
+        const optional<pair<SDKPollableType, TypeOfMonitorSet>> fPollable2Wakeup_;
     };
 
 }
