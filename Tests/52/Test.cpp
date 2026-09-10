@@ -2669,12 +2669,35 @@ namespace {
              *          TIME MULTIPLIER, where both sides land on the timer's resolution and every ratio reads 1.0.
              */
             constexpr double kMinBaselineSecondsToJudge_{0.05};
-            constexpr double kNearTieSlop_{0.05}; // a near-tie is not a disagreement either way
+            /*
+             *  The two bounds are deliberately NOT symmetric, because the error this check is exposed to is
+             *  not symmetric.
+             *
+             *  Host load does not blur this ratio, it SHIFTS it, always the same way. Under load the mutex
+             *  side inflates far more than the SpinLock side: a spinlock keeps spinning on the core it
+             *  already holds, while a mutex sleeps and must be woken, and that wakeup gets dearer exactly
+             *  when the box is oversubscribed. Measured on one machine on one day, same library and same
+             *  commit, this ratio read 1.24 in the pinned/niced run against 0.92 in the ordinary in-suite
+             *  one (x0.74); in a release run where the whole box was ~1.4x slow across 67 unrelated tests
+             *  in this file, it read 0.78 against 1.25 the release before (x0.63).
+             *
+             *  So a LOW ratio is the direction load manufactures, and needs a margin wider than the shift:
+             *  worst measured shift (x0.63) applied to the lowest true value expected anywhere the constant
+             *  says false (libc++ on Linux, close to a tie) lands near 0.62 - hence 0.60. A HIGH ratio is
+             *  the direction load argues against, so an observation there understates if anything, and a
+             *  near-tie slop is margin enough.
+             *
+             *  Do not instead reach for a bigger -x. The run-to-run noise that would average away is
+             *  already negligible - macOS holds 0.702..0.717 across 15 releases and 4 XCode versions - and
+             *  a longer run only widens the window for load to drift in.
+             */
+            constexpr double kWarnIfRatioBelow_{0.60}; // SpinLock won by more than load bias can fake
+            constexpr double kWarnIfRatioAbove_{1.05}; // mutex won at all (a near-tie is not a disagreement)
             constexpr bool   kBuildCanBeJudged_ = not qStroika_Foundation_Debug_AssertionsChecked and
                                                   not Debug::kBuiltWithAddressSanitizer and not Debug::kBuiltWithThreadSanitizer;
             if (kBuildCanBeJudged_ and not Debug::IsRunningUnderValgrind () and measuredRatio and *measuredBaselineSeconds >= kMinBaselineSecondsToJudge_) {
-                bool measuredSaysSpinLockFaster = *measuredRatio < 1.0 - kNearTieSlop_;
-                bool measuredSaysMutexFaster    = *measuredRatio > 1.0 + kNearTieSlop_;
+                bool measuredSaysSpinLockFaster = *measuredRatio < kWarnIfRatioBelow_;
+                bool measuredSaysMutexFaster    = *measuredRatio > kWarnIfRatioAbove_;
                 if (kSpinLock_IsFasterThan_mutex and measuredSaysMutexFaster) {
                     Stroika::Frameworks::Test::WarnTestIssue (
                         "kSpinLock_IsFasterThan_mutex is true here, but mutex measured FASTER (SpinLock/mutex={}); "
