@@ -183,7 +183,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  Specialization to improve performance
      */
     template <>
-    Instruments::Network::Info Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut);
+    Instruments::Network::Info Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* outMeasuredAt);
 
 }
 

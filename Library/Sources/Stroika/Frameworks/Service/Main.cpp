@@ -193,8 +193,8 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream::Ptr<Charac
             if (out != nullptr) {
                 out.Write ("Starting..."sv);
             }
-            constexpr Time::DurationSeconds kTimeOut_{30.0s}; // a vaguely reasonable default - apps can override by handling before calling Run
-            Start (kTimeOut_);
+            constexpr Time::DurationSeconds kTimeout_{30.0s}; // a vaguely reasonable default - apps can override by handling before calling Run
+            Start (kTimeout_);
             if (out != nullptr) {
                 out.Write ("done\n"sv);
             }
@@ -203,8 +203,8 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream::Ptr<Charac
             if (out != nullptr) {
                 out.Write ("Stopping..."sv);
             }
-            constexpr Time::DurationSeconds kTimeOut_{30.0s}; // a vaguely reasonable default - apps can override by handling before calling Run
-            Stop (kTimeOut_);
+            constexpr Time::DurationSeconds kTimeout_{30.0s}; // a vaguely reasonable default - apps can override by handling before calling Run
+            Stop (kTimeout_);
             if (out != nullptr) {
                 out.Write ("done\n"sv);
             }
@@ -217,8 +217,8 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream::Ptr<Charac
             if (out != nullptr) {
                 out.Write ("Restarting..."sv);
             }
-            constexpr Time::DurationSeconds kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
-            Restart (kTimeOut_);
+            constexpr Time::DurationSeconds kTimeout_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
+            Restart (kTimeout_);
             if (out != nullptr) {
                 out.Write ("done\n"sv);
             }

@@ -1791,10 +1791,10 @@ Instruments::Process::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::Process::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
+Instruments::Process::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* outMeasuredAt)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Process::Info>"};
     ProcessInstrumentRep_*    myCap = dynamic_cast<ProcessInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
-    return myCap->Capture_Raw (measurementTimeOut);
+    return myCap->Capture_Raw (outMeasuredAt);
 }

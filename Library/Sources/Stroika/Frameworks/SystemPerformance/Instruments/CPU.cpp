@@ -467,10 +467,10 @@ Instruments::CPU::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::CPU::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
+Instruments::CPU::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* outMeasuredAt)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<CPU::Info>"};
     CPUInstrumentRep_*        myCap = dynamic_cast<CPUInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
-    return myCap->Capture_Raw (measurementTimeOut);
+    return myCap->Capture_Raw (outMeasuredAt);
 }

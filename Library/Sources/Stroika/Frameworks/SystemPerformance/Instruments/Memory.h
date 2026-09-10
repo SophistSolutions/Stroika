@@ -340,7 +340,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  Specialization to improve performance
      */
     template <>
-    Instruments::Memory::Info Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut);
+    Instruments::Memory::Info Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* outMeasuredAt);
 }
 
 /*

@@ -1051,10 +1051,10 @@ Instruments::Filesystem::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::Filesystem::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
+Instruments::Filesystem::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* outMeasuredAt)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement"};
     FilesystemInstrumentRep_* myCap = dynamic_cast<FilesystemInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
-    return myCap->Capture_Raw (measurementTimeOut);
+    return myCap->Capture_Raw (outMeasuredAt);
 }

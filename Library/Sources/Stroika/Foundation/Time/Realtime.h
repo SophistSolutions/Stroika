@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Time {
      * 
      *  \note - WHY is it so important Stroika uses a 'floating point' version of duration.
      *      Consider this code:
-     *          TimeOutAt t = now + REALLY_BIG_TIMOUT;
+     *          TimeoutAt t = now + REALLY_BIG_TIMOUT;
      *      say we define REALLY_BIG_TIMEOUT = DURUATION::max();
      *          if we used fixed point numbers, REALLY_BIG_TIMOUT + tiny number wraps - basically back to zero.
      *          with floating point numbers, max + small number remains max.

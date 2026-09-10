@@ -498,10 +498,10 @@ Instruments::Memory::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::Memory::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
+Instruments::Memory::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* outMeasuredAt)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Memory::Info>"};
     MemoryInstrumentRep_*     myCap = dynamic_cast<MemoryInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
-    return myCap->Capture_Raw (measurementTimeOut);
+    return myCap->Capture_Raw (outMeasuredAt);
 }

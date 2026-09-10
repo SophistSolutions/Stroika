@@ -631,10 +631,10 @@ Instruments::Network::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::Network::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
+Instruments::Network::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* outMeasuredAt)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Network::Info>"};
     NetworkInstrumentRep_*    myCap = dynamic_cast<NetworkInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
-    return myCap->Capture_Raw (measurementTimeOut);
+    return myCap->Capture_Raw (outMeasuredAt);
 }

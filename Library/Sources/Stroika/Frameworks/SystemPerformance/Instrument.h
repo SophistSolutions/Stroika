@@ -119,7 +119,7 @@ namespace Stroika::Frameworks::SystemPerformance {
          *  doing a sequence of measurements (so they come in regularly spaced time intervals).
          */
         template <typename T>
-        nonvirtual T CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut = nullptr);
+        nonvirtual T CaptureOneMeasurement (Range<TimePointSeconds>* outMeasuredAt = nullptr);
 
     public:
         /**

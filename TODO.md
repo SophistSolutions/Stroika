@@ -65,20 +65,20 @@ Generally will track stuff here between releases
        - **If kept, its default template arg needs changing**: `FAILURE_EXCEPTION = TimeOutException`, and
          `TimeOutException` is deprecated as of 3.0d25. Defaulting to a deprecated type would warn at every use.
      So: fix the three bugs + repoint the default (and find it a use), or delete the class and its two files.
-   - **Settle the `TimeOut` vs `Timeout` capitalization, as its own commit.** Split out of the 3.0d25
-     exception work deliberately - it is a pure rename and does not belong in a behavior diff.
-     `Timeout` is overwhelmingly the house spelling (`ThrowIfTimeout`, `ThrowTimeoutExceptionAfter`,
-     `GetTimeout`/`SetTimeout`, `SetBusyTimeout`, `kDefaultTimeout`, `fPingTimeout_`, `eTimeout`, ~20 more).
-     `TimeOut` survives in only four: `ThrowTimeOutException`, `TimeOutException`, `TimeOutAt`,
-     `measurementTimeOut`.
-     It is already causing real mistakes: **three doc comments refer to a `TimeoutException` that does not
-     exist** - `IO/Network/HTTP/ClientErrorException.h:27`, `IO/Network/Transfer/ConnectionPool.h:74`, and
-     `Frameworks/NetworkMonitor/Ping.h:106`. The two spellings even sit side by side in one header, where
-     `TimeOutException.h` declares `ThrowTimeOutException` next to `ThrowTimeoutExceptionAfter` and
-     `ThrowIfTimeout`.
-     Scope note: `TimeOutException` itself is deprecated as of 3.0d25 and scheduled for removal, so renaming
-     *it* is pointless - the one worth fixing is `ThrowTimeOutException` -> `ThrowTimeoutException` (plus a
-     deprecated forwarder under the old name), and the file/include-guard names that follow from it.
+   - **`TimeOut` vs `Timeout`: settled 2026-09-10 - the only survivors are deprecated, so this dies with
+     them.** `Timeout` is the house spelling and every live identifier now uses it. What is left spelling it
+     `TimeOut` is exactly the deprecated `TimeOutException` family: the class itself, `ThrowTimeOutException`
+     (also `[[deprecated]]` as of 3.0d25), the include guard, the test that checks the deprecated name still
+     catches, and the `TimeOutException.{h,inl,cpp}` filenames. Rename nothing - **when the deprecated class
+     is removed, move the survivors (`ThrowTimeoutExceptionAfter`, `ThrowIfTimeout`, `UniqueLock`) to a
+     `TimeoutException.h` and the spelling problem is gone with it.**
+     Two things the old entry asserted that were NOT true when checked, so do not re-derive them:
+       - the "three doc comments referring to a `TimeoutException` that does not exist" are already fixed -
+         those lines now read `errc::timed_out`, `AllocateGloballyIfTimeout` and `kDefaultTimeout`.
+       - **`measurementTimeOut` was never a timeout at all** - it was `measurementTime` + `Out`, an out-param
+         for the measured-at range (`*measurementTimeOut = ms.fMeasuredAt`), and the layer below it already
+         called the same parameter `outMeasuredAt`. Renamed to match that, NOT to `measurementTimeout`, which
+         would have made a correct name wrong.
    - **`clang++-19` is listed in Release-Notes as tested but is covered nowhere - close the gap or drop
      the claim.** Found while validating 3.0d24; deliberately left alone for that release. The
      "Compilers Tested/Supported" line says `Clang++ { unix: 15, 16, 17, 18, 19, 20, 21, 22 }`, but
