@@ -9,16 +9,6 @@ Generally will track stuff here between releases
 ## Open
 
 - v3.0d25
-   - **One `clang++-18-debug-libc++` run closes out
-     https://github.com/SophistSolutions/Stroika/issues/1165 - then close the issue.** No `--stdlib
-     libc++` build has ever compiled the new WaitForIOReady wakeup. Those configurations take mechanism 2
-     (`ppoll` + blocked signal mask), because `__cpp_lib_jthread` is undefined for every libc++ before
-     LLVM 20 - implemented in 18, but behind `-fexperimental-library` until 20, which Stroika passes
-     nowhere. The fix (feff64174b) is verified on mechanism 1 (Windows/MSVC, and 2604 g++/libstdc++) and
-     on mechanism 2 with the macro forced on 2604 - but no real libc++ toolchain has seen it, which is
-     why #1165 was left open. **Note a 2604 run cannot close this: 2604 has NO libc++ configs at all**
-     (the clang-17/18/19 lines are commented out) - so it needs 2404. Overlaps the clang++-19 gap below.
-
    - **Mechanism 3 of the WaitForIOReady wakeup (chunked `poll`) has never been compiled anywhere.** It is
      selected only where neither jthread nor `ppoll` exists - i.e. old XCode. lewis-Mac2 is XCode 17, which
      DOES define `__cpp_lib_jthread`, so it takes mechanism 1 and cannot exercise this. Not verifiable with
