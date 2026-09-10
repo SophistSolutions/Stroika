@@ -61,8 +61,11 @@ namespace Stroika::Foundation::Execution {
      *                  LLVM 20, and Stroika passes that flag nowhere. So EVERY --stdlib libc++ build with
      *                  clang < 20 lacks it - today that is the clang++-15/16/17/18-*-libc++ regression
      *                  configurations. @see https://libcxx.llvm.org/Status/Cxx20.html
-     *              o   Apple XCode - 15 confirmed lacking; later XCodes ship a pre-LLVM-20 libc++ so
-     *                  probably also lack it, but that is unverified
+     *              o   Apple XCode - 15 and 16 lack it, 26.3 has it (measured 2026-09-10 with each SDK
+     *                  pinned via -isysroot; note DEVELOPER_DIR alone does NOT steer the headers, so a
+     *                  probe without it silently measures the CommandLineTools libc++ instead). Apple
+     *                  renumbered Xcode 16 -> 26, so there is no Xcode 17-25; Xcode 26.3 reports itself
+     *                  as Apple clang 17.0.0, which is a compiler version, not an Xcode one.
      *
      *          Anywhere this matters, prefer a mechanism that does not depend on it - @see
      *          qStroika_Foundation_Execution_WaitForIOReady_UsePPoll for a worked example.

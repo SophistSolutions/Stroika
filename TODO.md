@@ -9,11 +9,6 @@ Generally will track stuff here between releases
 ## Open
 
 - v3.0d25
-   - **Mechanism 3 of the WaitForIOReady wakeup (chunked `poll`) has never been compiled anywhere.** It is
-     selected only where neither jthread nor `ppoll` exists - i.e. old XCode. lewis-Mac2 is XCode 17, which
-     DOES define `__cpp_lib_jthread`, so it takes mechanism 1 and cannot exercise this. Not verifiable with
-     the hardware on hand; decide whether that is acceptable or whether the fallback should just go.
-
    - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
      enforces it.** Raised in the same design review. The condition test is correct and portable; the raw-value
      test compiles, looks reasonable, and is usually wrong - it only matches if the category happens to be the

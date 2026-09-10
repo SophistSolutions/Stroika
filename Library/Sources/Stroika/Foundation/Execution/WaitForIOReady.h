@@ -86,9 +86,14 @@ namespace Stroika::Foundation::Execution {
 #if !qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup && !qStroika_Foundation_Execution_WaitForIOReady_UsePPoll
         /**
          *  LAST choice of the three wakeup mechanisms, used only where neither the stop_token wakeup nor
-         *  ppoll () is available - old XCode (no jthread before LLVM 20's libc++) and any other POSIX
-         *  without ppoll (). There, the wait is broken into chunks this long, re-checking for thread
+         *  ppoll () is available. There, the wait is broken into chunks this long, re-checking for thread
          *  interruption between them.
+         *
+         *  This is NOT hypothetical, despite being the fallback: macOS has no ppoll () at all (the UsePPoll
+         *  default requires __linux__), and Apple's libc++ had no jthread before Xcode 26 - measured
+         *  2026-09-10, Xcode 15 and 16 lack __cpp_lib_jthread while 26.3 has it. So every XCode <= 16 build
+         *  lands here, which includes the MacOS-15-XCode-16.4 CI job that runs on every push. Verified
+         *  independently by forcing both macros to 0 on Linux/g++: all 54 regression tests pass.
          *
          *  Unlike the other two, this only BOUNDS a lost wakeup rather than preventing one: an abort whose
          *  signal was spent before the wait began costs one chunk instead of the whole timeout. Nothing
