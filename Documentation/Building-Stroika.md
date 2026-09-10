@@ -87,7 +87,8 @@ It takes a while to build all of Stroika (10-20 minutes per configuration), so a
 This mostly conists of the standard UNIX build tools.
 
 Roughly:
-- c++ compiler supporting C++20 or later
+- c++ compiler supporting C++20 or later - see
+  [Supported Platforms and Compilers](SupportedPlatformsAndCompilers.md)
 - bash (sh)
 - make (gnu make), patch, perl, pkg-config, realpath, sed, tar, tr, wget, unzip
 - 7za, cmake (optionally - for building some optional components)

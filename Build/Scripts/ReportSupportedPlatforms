@@ -1,0 +1,327 @@
+#!/usr/bin/env python3
+#
+#   Generate the compiler/platform coverage tables in
+#   Documentation/SupportedPlatformsAndCompilers.md.
+#
+#   The point of generating them is that the facts already live in machine-readable form, and a
+#   hand-typed copy drifts. It has drifted before: Release-Notes listed clang++-19 and g++-16 as
+#   tested when one had no regression-test configuration and the other had no CI job at all.
+#
+#   Sources of truth read here:
+#       .github/workflows/build-N-test-Matrix.json    - what GitHub Actions covers, and on which branch
+#       Build/Scripts/MakeRegressionTestConfigurations - what the release regression runs cover, per
+#                                                        platform, INCLUDING commented-out (parked) lines
+#       Documentation/Regression-Tests.md              - the list of release regression run targets
+#
+#   Everything outside the generated block in the .md is hand-written and is never touched.
+#
+#   Usage:
+#       Build/Scripts/ReportSupportedPlatforms            # rewrite the generated block
+#       Build/Scripts/ReportSupportedPlatforms --check    # exit 1 if the block is out of date
+#       Build/Scripts/ReportSupportedPlatforms --stdout   # print the block, change nothing
+#
+import json
+import os
+import re
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
+
+MATRIX = os.path.join(ROOT, ".github", "workflows", "build-N-test-Matrix.json")
+MAKECONFIGS = os.path.join(ROOT, "Build", "Scripts", "MakeRegressionTestConfigurations")
+REGTESTDOC = os.path.join(ROOT, "Documentation", "Regression-Tests.md")
+OUTDOC = os.path.join(ROOT, "Documentation", "SupportedPlatformsAndCompilers.md")
+
+BEGIN = "<!-- BEGIN GENERATED TABLES - regenerate with Build/Scripts/ReportSupportedPlatforms -->"
+END = "<!-- END GENERATED TABLES -->"
+
+
+# ---------------------------------------------------------------------------------------------
+#   Caveat rules. These are NOT guesses - each cites where the rule is written down. Update them
+#   here when the underlying fact changes, and every table row picks the change up.
+# ---------------------------------------------------------------------------------------------
+def _ver(compiler):
+    """Numeric version out of 'g++-14', 'clang++-18', 'XCode 16.4'."""
+    m = re.search(r"(\d+(?:\.\d+)?)", compiler or "")
+    return float(m.group(1)) if m else None
+
+
+def needs_fmtlib(compiler):
+    """True where std::format is not usable and the fmtlib polyfill gets pulled in.
+    Rule mirrors NeedsFmtLib_ () in ./configure."""
+    v = _ver(compiler)
+    if v is None:
+        return False
+    if compiler.startswith("XCode"):
+        return v < 15.5
+    if "clang" in compiler:
+        return v < 16.0
+    if "g++" in compiler:
+        return v < 13.0
+    return False  # MSVC
+
+
+def has_jthread(compiler, stdlib):
+    """True where std::jthread/stop_token exist. Rule recorded in Execution/Thread.h; the libc++
+    and XCode halves were measured 2026-09-10 (libc++ 18.1.0, and XCode 15/16/17 with each SDK
+    pinned - note DEVELOPER_DIR alone does not steer the headers, -isysroot does)."""
+    v = _ver(compiler)
+    if compiler.startswith("XCode"):
+        return v is not None and v >= 17
+    if stdlib == "libc++":
+        return v is not None and v >= 20  # behind -fexperimental-library before LLVM 20
+    return True  # libstdc++ (gcc >= 10) and MSVC STL
+
+
+NOTE_TEXT = {
+    "f": "requires the **fmtlib** polyfill - no usable `<format>` (see `NeedsFmtLib_ ()` in `configure`)",
+    "j": "**no `std::jthread`/`stop_token`** - `Thread::Abort ()` cannot `request_stop ()`, so only the "
+         "POSIX interrupt signal / Windows APC breaks into a blocking call, and code that waits has to "
+         "fall back on lesser mechanisms (see `Execution/Thread.h`)",
+}
+
+
+def notes_for(compiler, stdlib):
+    out = []
+    if needs_fmtlib(compiler):
+        out.append("f")
+    if not has_jthread(compiler, stdlib):
+        out.append("j")
+    return out
+
+
+# ---------------------------------------------------------------------------------------------
+#   Readers
+# ---------------------------------------------------------------------------------------------
+def short_platform(entry):
+    img = entry.get("container_image", "") or ""
+    if "ubuntu" in img:
+        m = re.search(r"ubuntu(\d\d)(\d\d)", img)
+        if m:
+            return "ubuntu-%s.%s" % (m.group(1), m.group(2))
+    if "windows" in img:
+        return img.split("buildvm-")[-1]
+    return entry.get("runs_on", "?")
+
+
+def read_ci():
+    """-> list of dicts: platform, compiler, stdlib, branch."""
+    with open(MATRIX, encoding="utf-8") as f:
+        data = json.load(f)
+    rows = []
+    for e in data:
+        if "displayTargetName" not in e:
+            continue
+        args = e.get("extra_config_args", "") or ""
+        stdlib = "libc++" if "--stdlib libc++" in args else ("libstdc++" if "--stdlib libstdc++" in args else "")
+        job = e.get("build_job", "")
+        if job == "MacOS":
+            compiler = "XCode " + str(e.get("xcode", "?"))
+            stdlib = stdlib or "libc++"
+            platform = e.get("runs_on", "?")
+        elif job == "Windows":
+            compiler = "MSVC (%s)" % ("VS2k26" if "vs2k26" in e["displayTargetName"] else "VS2k22")
+            stdlib = stdlib or "MSVC STL"
+            platform = "windows"
+        else:
+            compiler = e.get("compiler", "?")
+            stdlib = stdlib or "libstdc++"
+            platform = short_platform(e)
+        rows.append({"platform": platform, "compiler": compiler, "stdlib": stdlib,
+                     "branch": e.get("run_on_branch", "?"), "name": e["displayTargetName"]})
+    return rows
+
+
+def read_regtest_configs():
+    """Parse MakeRegressionTestConfigurations -> list of dicts: platform, compiler, stdlib, active."""
+    rows = []
+    platform = None
+    with open(MAKECONFIGS, encoding="utf-8") as f:
+        for raw in f:
+            s = raw.strip()
+            m = re.match(r"^(\d\d\.\d\d)\)$", s)
+            if m:
+                platform = "ubuntu-" + m.group(1)
+                continue
+            if "./configure " in s:
+                active = not s.startswith("#")
+                body = s[s.index("./configure "):]
+                toks = body.split()
+                name = toks[1] if len(toks) > 1 else "?"
+                compiler = None
+                stdlib = ""
+                for i, t in enumerate(toks):
+                    if t == "--compiler-driver" and i + 1 < len(toks):
+                        compiler = toks[i + 1]
+                    if t == "--stdlib" and i + 1 < len(toks):
+                        stdlib = toks[i + 1]
+                if compiler is None:
+                    continue  # DEFAULT_CONFIG / no-third-party-components etc - not a compiler axis
+                compiler = compiler.strip("'\"")
+                if "/" in compiler:
+                    continue  # an absolute path is somebody's private compiler build, not a supported one
+                if compiler in ("g++", "clang++", "cc", "c++"):
+                    compiler = compiler + " (distro default)"
+                if name.startswith("raspberrypi"):
+                    plat = "raspberrypi (cross)"
+                else:
+                    plat = platform or "?"
+                rows.append({"platform": plat, "compiler": compiler,
+                             "stdlib": stdlib or "libstdc++", "active": active, "name": name})
+    return rows
+
+
+def read_release_targets():
+    """The release regression-run targets, from Documentation/Regression-Tests.md."""
+    out = []
+    with open(REGTESTDOC, encoding="utf-8") as f:
+        for line in f:
+            if line.startswith("- ") and "TEST_TARGET=" in line:
+                out.append(line.split("TEST_TARGET=")[1].strip())
+    return out
+
+
+def macos_windows_regtest_rows(targets):
+    """MakeRegressionTestConfigurations only describes the Linux configurations - macOS and Windows
+    release runs use the built-in Debug/Release configs instead. So derive those rows from the
+    release target names, or those platforms would read as having no regression coverage at all."""
+    rows = []
+    for t in targets:
+        if "XCode" in t:
+            m = re.search(r"XCode(\d+)", t)
+            rows.append({"platform": t, "compiler": "XCode %s" % (m.group(1) if m else "?"),
+                         "stdlib": "libc++", "active": True, "name": t})
+        elif "VS2k" in t:
+            m = re.search(r"(VS2k\d\d)", t)
+            rows.append({"platform": t, "compiler": "MSVC (%s)" % m.group(1),
+                         "stdlib": "MSVC STL", "active": True, "name": t})
+    return rows
+
+
+# ---------------------------------------------------------------------------------------------
+#   Rendering
+# ---------------------------------------------------------------------------------------------
+def compiler_sort_key(c):
+    fam = 0 if c.startswith("g++") else 1 if "clang" in c else 2 if c.startswith("XCode") else 3
+    return (fam, _ver(c) or 0, c)
+
+
+def render():
+    ci = read_ci()
+    rt = read_regtest_configs()
+    targets = read_release_targets()
+
+    combos = {}
+    for r in ci:
+        k = (r["compiler"], r["stdlib"])
+        d = combos.setdefault(k, {"ci": [], "rt": []})
+        d["ci"].append(r)
+    for r in rt:
+        k = (r["compiler"], r["stdlib"])
+        d = combos.setdefault(k, {"ci": [], "rt": []})
+        d["rt"].append(r)
+    # macOS/Windows: fold into the CI row for the same compiler family rather than making a second
+    # row - CI names the XCode point release (16.4), the release target only the major (XCode26).
+    for r in macos_windows_regtest_rows(targets):
+        key = (r["compiler"], r["stdlib"])
+        if key not in combos:
+            fam = r["compiler"].split(".")[0]
+            match = [k for k in combos if k[1] == r["stdlib"] and k[0].startswith(fam)]
+            if match:
+                key = match[0]
+        combos.setdefault(key, {"ci": [], "rt": []})["rt"].append(r)
+
+    L = [BEGIN, ""]
+    L.append("### Compiler / platform combinations")
+    L.append("")
+    L.append("Which compiler is built against which standard library, and where each combination is "
+             "actually exercised. `always` runs on every push; `v3-Release` runs on the release branch "
+             "and on a manually forced all-configurations build; `parked` is defined but disabled.")
+    L.append("")
+    L.append("| compiler | stdlib | GitHub Actions | release regression runs | notes |")
+    L.append("|---|---|---|---|---|")
+
+    used_notes = set()
+    for (compiler, stdlib) in sorted(combos, key=lambda k: (compiler_sort_key(k[0]), k[1])):
+        d = combos[(compiler, stdlib)]
+        # one entry per platform, showing its strongest gating (always > branch > parked)
+        rank = {"always": 2, "never": 0}
+        best = {}
+        for r in d["ci"]:
+            p = r["platform"].replace("ubuntu-", "")
+            if rank.get(r["branch"], 1) >= rank.get(best.get(p, "never"), 1) or p not in best:
+                if p not in best or rank.get(r["branch"], 1) > rank.get(best[p], 1):
+                    best[p] = r["branch"]
+        cis = ["%s %s" % (p, {"always": "**always**", "never": "parked"}.get(b, b))
+               for p, b in sorted(best.items())]
+        # one entry per platform: parked only if EVERY config for that platform is parked
+        anyactive = {}
+        for r in d["rt"]:
+            p = r["platform"].replace("ubuntu-", "")
+            anyactive[p] = anyactive.get(p, False) or r["active"]
+        rts = ["%s%s" % (p, "" if a else " (parked)") for p, a in sorted(anyactive.items())]
+        ns = notes_for(compiler, stdlib)
+        used_notes.update(ns)
+        L.append("| `%s` | %s | %s | %s | %s |" % (
+            compiler, stdlib,
+            ", ".join(sorted(set(cis))) or "-",
+            ", ".join(sorted(set(rts))) or "-",
+            " ".join("[^%s]" % n for n in ns) or ""))
+
+    L.append("")
+    L.append("### Release regression-run targets")
+    L.append("")
+    L.append("Run by hand for each release (see [Regression-Tests.md](Regression-Tests.md)); these are "
+             "whole-platform runs, each building many configurations.")
+    L.append("")
+    for t in targets:
+        L.append("- `%s`" % t)
+
+    if used_notes:
+        L.append("")
+        L.append("### Notes")
+        L.append("")
+        # blank line between each - consecutive footnote definitions otherwise run together into
+        # one paragraph when rendered
+        for n in sorted(used_notes):
+            L.append("[^%s]: %s" % (n, NOTE_TEXT[n]))
+            L.append("")
+        L.pop()  # the trailing blank; the caller adds its own
+
+    L.append("")
+    L.append(END)
+    return "\n".join(L)
+
+
+def main():
+    block = render()
+    if "--stdout" in sys.argv:
+        print(block)
+        return 0
+    with open(OUTDOC, encoding="utf-8", newline="") as f:
+        doc = f.read()
+    if BEGIN not in doc or END not in doc:
+        sys.stderr.write("%s: missing the generated-block markers\n" % OUTDOC)
+        return 2
+    nl = "\r\n" if "\r\n" in doc else "\n"
+    pre = doc[:doc.index(BEGIN)]
+    post = doc[doc.index(END) + len(END):]
+    newdoc = pre + block.replace("\n", nl) + post
+    if "--check" in sys.argv:
+        if newdoc != doc:
+            sys.stderr.write("%s is out of date - rerun Build/Scripts/ReportSupportedPlatforms\n" % OUTDOC)
+            return 1
+        print("%s is up to date" % os.path.basename(OUTDOC))
+        return 0
+    if newdoc == doc:
+        print("%s already up to date" % os.path.basename(OUTDOC))
+        return 0
+    with open(OUTDOC, "w", encoding="utf-8", newline="") as f:
+        f.write(newdoc)
+    print("updated %s" % os.path.basename(OUTDOC))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -7,10 +7,11 @@
 - [Git named Tags and Branches](Git-Tags-and-Branches.md)
 
 ## Building and Debugging
-- [Building Stroika](Building-Stroika.md) - Getting started and troubleshooting builds
-- [Using Docker to Build Stroika](../Build/Docker/ReadMe.md) - Often a good way to quickstart
+- [Supported Platforms and Compilers](SupportedPlatformsAndCompilers.md) - which are supported, where each is tested, and their caveats
+- [Building Stroika](Building-Stroika.md) - getting started and troubleshooting builds
+- [Using Docker to Build Stroika](../Build/Docker/ReadMe.md) - often a good way to quickstart
 - [Debugging](Debugging.md) - helpful hints
-- [Upgrading](Upgrading.md) - How to upgrade Stroika-based code from older versions
+- [Upgrading](Upgrading.md) - how to upgrade Stroika-based code from older versions
 - [Setup RaspberryPi Target](SetupRaspberryPiTarget.md)
 - [Release Process](Release-Process.md)
 

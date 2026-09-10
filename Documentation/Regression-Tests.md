@@ -5,6 +5,10 @@
 This is the test script I use to test each release. It assumes appropriately setup machines on
 my local network.
 
+For what these runs cover - which compilers and standard libraries, and how that compares with what
+GitHub Actions covers - see
+[Supported Platforms and Compilers](SupportedPlatformsAndCompilers.md).
+
 To simply run the regression tests on your system, use (on that sysmtem)
 
 ```bash
