@@ -10,9 +10,9 @@ Generally will track stuff here between releases
 
 - v3.0d25
    - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
-     enforces it.** Raised in the same design review. The condition test is correct and portable; the raw-value
-     test compiles, looks reasonable, and is usually wrong - it only matches if the category happens to be the
-     one you assumed. This is inherited from the standard, not created by Stroika, but Stroika could make the
+     enforces it.** The condition test is correct and portable; the raw-value test compiles, looks
+     reasonable, and is usually wrong - it only matches if the category happens to be the one you
+     assumed. This is inherited from the standard, not created by Stroika, but Stroika could make the
      right thing shorter than the wrong thing. Note `Tests/37` already has a regression test naming this exact
      trap ("the condition-vs-code trap"), so the failure mode is understood - what is missing is an API that
      steers people. Ideas, unevaluated: a `Execution::IsA (e, errc::X)` helper; a `[[nodiscard]]`-ish wrapper;
@@ -80,20 +80,10 @@ Generally will track stuff here between releases
      Related: no `timeout-minutes` is set on any job, so GitHub's 6 h/job default is the only bound -
      worth setting alongside this (cf. that 30 h run).
 
-   - **`LinearAlgebra::Vector<T>::operator[]` non-const returns a writeback proxy, which is a varargs
-     footgun.** `TMP_` (see `Vector.h`) holds a `Vector<T>&` plus a copy of the element and calls
-     `SetAt ()` in its destructor, with an implicit `operator T& ()`. So on a NON-const Vector,
-     `printf ("%g", v[0])` compiles and passes a class type through varargs - undefined, and it prints
-     garbage rather than the element (cost real debugging time on 2026-08-29; assigning to a `double`
-     first, or taking the Vector by const ref, gives the right answer). Consider hardening: make the
-     conversion explicit, add a `[[nodiscard]]`-ish guard, or drop the proxy in favor of `SetAt ()`
-     (compare `Sequence<T>`, which deliberately does NOT do this - see the note on
-     `Sequence<T>::operator[]` about `TemporaryElementReference_` being too costly).
-
    - **release build-time work.** Investigated 2026-08-27; all measurements and
-   detail in `.claude/medusa-perf-knobs.md` (gitignored, on protagoras). Headline: host/VM/BIOS
-   tuning is a DEAD END - governor, KSM, swappiness, VM socket topology, balloon sizing, EXPO and
-   disk each measured at ~0-3%. Do not re-litigate those. Three real items:
+     detail in `.claude/medusa-perf-knobs.md` (gitignored, on protagoras). Headline: host/VM/BIOS
+     tuning is a DEAD END - governor, KSM, swappiness, VM socket topology, balloon sizing, EXPO and
+     disk each measured at ~0-3%. Do not re-litigate those. Three real items:
       1. **Third-party builds are 471 of 627 min of a platform run; the tests themselves are 33 min.**
          Per-component caching (keyed version+toolchain+flags) keeps the guaranteed-clean-Stroika
          property a release run exists to prove, while cutting ~75% of wall clock. Biggest win by far.
@@ -111,7 +101,7 @@ Generally will track stuff here between releases
          VM is already past it. Measured: load 28 -> 604 min, load 34 -> 612 min, load 39 -> 961 min
          for the SAME work - a cliff at ~32 runnable. Staggering runs, or moving the Ubuntu matrix to
          hercules, beats every tuning knob. (hercules = older/slower twin of medusa, currently off.)
-   Still open: medusa-windows-dev measured only ~1.04x protagoras despite ~2x hardware. Best
-   remaining suspects are the guest's 8 vCPUs and VM per-file-operation overhead (NOT disk bandwidth
-   - `%iowait` was 0.0-0.2% all week). Raise guest vCPUs at some restart and re-measure.
+     Still open: medusa-windows-dev measured only ~1.04x protagoras despite ~2x hardware. Best
+     remaining suspects are the guest's 8 vCPUs and VM per-file-operation overhead (NOT disk bandwidth
+     - `%iowait` was 0.0-0.2% all week). Raise guest vCPUs at some restart and re-measure.
 
