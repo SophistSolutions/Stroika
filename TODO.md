@@ -8,11 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- **Update the per-target runtime estimates in `Documentation/Regression-Tests.md`** - Lewis says
-  they are stale and highly in doubt. Every run writes its own `Finished at ... (N minutes)`, and
-  sar on medusa keeps 10-min CPU history, so real durations can be recovered AND annotated with the
-  host contention they ran under (which varied 56-95% busy across the 3.0d24 release week).
-
 - v3.0d25
    - **One `clang++-18-debug-libc++` run closes out
      https://github.com/SophistSolutions/Stroika/issues/1165 - then close the issue.** No `--stdlib

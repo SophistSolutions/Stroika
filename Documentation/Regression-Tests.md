@@ -59,9 +59,16 @@ These can all be run at the same time (each in a separate bash shell window). Mo
 do work remotely on other machines (MACHINE=ARG), and then copy back results to this machine where I can
 checkin from one spot.
 
+Times below are approximate, from what the runs actually recorded - every run ends with a
+`Finished at ... (N minutes)` line in `Tests/HistoricalRegressionTestResults`. To recompute:
+
+  ```bash
+  grep -h 'Finished at' Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-OUT.txt
+  ```
+
 - \$TEST_TARGET=MacOS_XCode26_m1
 
-  (takes about 2 HRs)
+  (takes about 2 h)
 
   ```bash
   MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode26_m1 PARALELLMAKEFLAG=-j5 \
@@ -71,7 +78,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Windows_VS2k22
 
-  (on windows bash shell run; takes about 6 HRs on medusa-windows-dev vm)
+  (on windows bash shell run; takes about 9 h on medusa-windows-dev vm)
 
   ```bash
   USE_TEST_BASENAME=Windows_`./Build/Scripts/DetectedHostOS`_VS2k22 PLATFORM=VisualStudio.Net-2022 \
@@ -81,7 +88,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Windows_VS2k26
 
-  (on windows bash shell run; takes about 6 HRs on medusa-windows-dev vm)
+  (on windows bash shell run; takes about 10 h on medusa-windows-dev vm)
 
   ```bash
   USE_TEST_BASENAME=Windows_`./Build/Scripts/DetectedHostOS`_VS2k26 PLATFORM=VisualStudio.Net-2026 \
@@ -91,7 +98,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Ubuntu2204_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 5 HRs)
+  (remote execute on machine medusa using docker and copy back results; takes about 5 h)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -105,7 +112,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Ubuntu2404_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 10 HRs)
+  (remote execute on machine medusa using docker and copy back results; takes about 9 h)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -119,7 +126,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Ubuntu2504_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 4 HRs)
+  (remote execute on machine medusa using docker and copy back results; takes about 4 h)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -133,7 +140,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Ubuntu2604_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 10 HRs)
+  (remote execute on machine medusa using docker and copy back results; takes about 9 h)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -147,7 +154,8 @@ checkin from one spot.
 
 - \$TEST_TARGET=Ubuntu2204-Cross-Compile2RaspberryPi
 
-  (remote execute on machine medusa (and then that will test on raspberrypi) - using docker and copy back results; takes about 4 HRs).
+  (remote execute on machine medusa (and then that will test on raspberrypi) - using docker and copy back
+  results; takes about 1.5 h - much the cheapest of these, despite long being listed at 4 h).
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -162,6 +170,8 @@ checkin from one spot.
 
 
 - Docker windows tests
+
+  (takes about 12 h each, and there are four of them - much the most expensive target)
 
 Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
@@ -188,7 +198,7 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
 - WSL (tested on Ubuntu 24.04) test
   (inside WSL2 bash prompt)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
-  [[apx 7 hrs]]
+  (takes about 8 h)
 
 On WINDOWS:
 
