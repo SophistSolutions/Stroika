@@ -9,14 +9,6 @@ Generally will track stuff here between releases
 ## Open
 
 - v3.0d25
-   - **RaspberryPi is stuck on old compilers - see about supporting more recent ones.** The
-     cross-compile target builds only `arm-linux-gnueabihf-g++-11/12/13`, so it is the oldest
-     toolchain set Stroika still tests, and g++-11/12 there are two of the few configurations still
-     needing the fmtlib polyfill (no usable `<format>` before g++ 13). Worth checking what newer
-     `arm-linux-gnueabihf-g++` versions are available for the build container, and whether the Pi's
-     own OS release supports them.
-     @see Documentation/SupportedPlatformsAndCompilers.md for the current matrix.
-
    - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
      enforces it.** The condition test is correct and portable; the raw-value test compiles, looks
      reasonable, and is usually wrong - it only matches if the category happens to be the one you
@@ -25,6 +17,14 @@ Generally will track stuff here between releases
      trap ("the condition-vs-code trap"), so the failure mode is understood - what is missing is an API that
      steers people. Ideas, unevaluated: a `Execution::IsA (e, errc::X)` helper; a `[[nodiscard]]`-ish wrapper;
      or just a documented lint. Cheap to think about, no urgency.
+
+   - **RaspberryPi is stuck on old compilers - see about supporting more recent ones.** The
+     cross-compile target builds only `arm-linux-gnueabihf-g++-11/12/13`, so it is the oldest
+     toolchain set Stroika still tests, and g++-11/12 there are two of the few configurations still
+     needing the fmtlib polyfill (no usable `<format>` before g++ 13). Worth checking what newer
+     `arm-linux-gnueabihf-g++` versions are available for the build container, and whether the Pi's
+     own OS release supports them.
+     @see Documentation/SupportedPlatformsAndCompilers.md for the current matrix.
 
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
@@ -79,6 +79,8 @@ Generally will track stuff here between releases
      2026-08-29), which costs only ~9 h/week.
      Related: no `timeout-minutes` is set on any job, so GitHub's 6 h/job default is the only bound -
      worth setting alongside this (cf. that 30 h run).
+
+   - https://github.com/SophistSolutions/Stroika/issues/843
 
    - **release build-time work.** Investigated 2026-08-27; all measurements and
      detail in `.claude/medusa-perf-knobs.md` (gitignored, on protagoras). Headline: host/VM/BIOS
