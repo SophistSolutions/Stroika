@@ -39,7 +39,6 @@ Objs	:=	\
 	$(ObjDir)Thread${OBJ_SUFFIX}\
 	$(ObjDir)ThreadPool${OBJ_SUFFIX}\
 	$(ObjDir)Throw${OBJ_SUFFIX}\
-	$(ObjDir)TimeOutException${OBJ_SUFFIX}\
 	$(ObjDir)Users${OBJ_SUFFIX}\
 	$(ObjDir)WaitableEvent${OBJ_SUFFIX}\
 	$(ObjDir)WaitForIOReady${OBJ_SUFFIX}\

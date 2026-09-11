@@ -648,7 +648,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Throw.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimedLock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Timeout.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UpdatableWaitForIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h" />

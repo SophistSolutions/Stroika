@@ -10,8 +10,13 @@ namespace Stroika::Foundation::Execution {
     namespace Private_::SystemErrorExceptionPrivate_ {
         Characters::String mkMsg_ (error_code errCode);
         Characters::String mkCombinedMsg_ (error_code errCode, const Characters::String& message);
-        void               TranslateException_ (error_code errCode);
-        void               TranslateException_ (error_code errCode, const Characters::String& message);
+
+        /*
+         *  Shared by both TranslateException_ overloads - message is nullptr when the caller had none.
+         *  The set of promotions implemented here is the one DOCUMENTED as guaranteed in Exceptions.h
+         *  (@see ThrowError) - keep the two in sync.
+         */
+        void ThrowTranslatedExceptionIfNeeded_ (error_code errCode, const Characters::String* message = nullptr);
     }
 
     // forward declare for use below....to avoid #include of Thread.h
@@ -196,13 +201,13 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] inline void ThrowError (error_code ec)
     {
         Require (ec != error_code{});
-        Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec); // [[noreturn]] for the promoted conditions
+        Private_::SystemErrorExceptionPrivate_::ThrowTranslatedExceptionIfNeeded_ (ec); // [[noreturn]] for the promoted conditions
         Throw (SystemErrorException{ec});
     }
     [[noreturn]] inline void ThrowError (error_code ec, const Characters::String& message)
     {
         Require (ec != error_code{});
-        Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec, message); // [[noreturn]] for the promoted conditions
+        Private_::SystemErrorExceptionPrivate_::ThrowTranslatedExceptionIfNeeded_ (ec, &message); // [[noreturn]] for the promoted conditions
         Throw (SystemErrorException{ec, message});
     }
     [[noreturn]] inline void ThrowError (errc ec)

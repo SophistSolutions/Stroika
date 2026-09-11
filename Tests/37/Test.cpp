@@ -18,7 +18,6 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
-#include "Stroika/Foundation/Execution/TimeOutException.h"
 #if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif

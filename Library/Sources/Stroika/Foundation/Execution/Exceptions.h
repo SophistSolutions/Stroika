@@ -452,7 +452,7 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     /**
-     *  \brief throw the given error_code as a Stroika exception, applying the standard type promotions documented below.
+     *  \brief throw a SystemErrorException with the given error_code, applying the standard type promotions documented below.
      *
      *  \par This throws EITHER a SystemErrorException (a subclass of system_error), OR std::bad_alloc.
      *
@@ -559,7 +559,7 @@ namespace Stroika::Foundation::Execution {
      *      So: **test what the error means** - `e.code () == errc::whatever`, or `catch (const bad_alloc&)` -
      *      and none of this normalization is visible to you. Test how it is represented -
      *      `e.code ().value () == SOME_PLATFORM_CONSTANT` - and it is.
-     *      @see TranslateException_Impl_ in Exceptions.cpp for the mechanism.
+     *      @see ThrowTranslatedExceptionIfNeeded_ in Exceptions.cpp for the mechanism.
      *
      *      **If you do not want any of that** - if you want the exception object you constructed delivered to
      *      the catcher unchanged - then say so by using @see Throw () instead. That is the whole distinction

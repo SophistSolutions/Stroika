@@ -26,14 +26,56 @@ namespace Stroika::Foundation::Execution {
      *          and @see Execution/TimedLock.h for TryLockUntil () / UniqueLock (). This file includes
      *          both, so code that included this one keeps compiling unchanged.
      */
+    /*
+     ********************************************************************************
+     ***************************** DEPRECATED (v3.0d25) *****************************
+     ********************************************************************************
+     */
+    inline [[deprecated ("Since Stroika v3.0d25 - use ThrowError (errc::timed_out)")]] [[noreturn]] void ThrowTimeOutException ()
+    {
+        ThrowError (errc::timed_out);
+    }
+
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    /**
+     *  \deprecated Since Stroika v3.0d25 - catch the CONDITION instead of this type:
+     *      \code
+     *          catch (const system_error& e) {
+     *              if (e.code () == errc::timed_out) { ... }
+     *          }
+     *      \endcode
+     *      That also matches timeouts raised outside Stroika, which catching by type never did.
+     */
+    class [[deprecated ("Since Stroika v3.0d25 - catch (const system_error&) and test e.code () == errc::timed_out")]] TimeOutException
+        : public Execution::SystemErrorException {
+    public:
+        TimeOutException ()
+            : TimeOutException{"Timeout Expired"sv}
+        {
+        }
+        TimeOutException (error_code ec)
+            : TimeOutException{ec, "Timeout Expired"sv}
+        {
+        }
+        TimeOutException (const Characters::String& message)
+            : TimeOutException{make_error_code (errc::timed_out), message}
+        {
+        }
+        TimeOutException (error_code ec, const Characters::String& message)
+            : SystemErrorException{ec, message}
+        {
+        }
+
+    public:
+        static const TimeOutException kThe;
+    };
+    inline const TimeOutException TimeOutException::kThe;
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 }
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include "TimeOutException.inl"
 
 #endif /*_Stroika_Foundation_Execution_TimeOutException_h_*/

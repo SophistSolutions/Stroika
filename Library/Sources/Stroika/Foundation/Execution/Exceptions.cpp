@@ -12,12 +12,10 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Linguistics/MessageUtilities.h"
 
-#include "Throw.h"
-
 #include "Exceptions.h"
-#include "TimeOutException.h"
 
 using namespace Stroika::Foundation;
 using namespace Characters;
@@ -225,79 +223,47 @@ Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombined
     return sb;
 }
 
-namespace {
-    /*
-     *  Shared by both TranslateException_ overloads - message is nullptr when the caller had none.
-     *  The set of promotions implemented here is the one DOCUMENTED as guaranteed in Exceptions.h
-     *  (@see ThrowError) - keep the two in sync.
-     */
-    void TranslateException_Impl_ (error_code errCode, const String* message)
-    {
+void Execution::Private_::SystemErrorExceptionPrivate_::ThrowTranslatedExceptionIfNeeded_ (error_code errCode, const String* message)
+{
 #if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
-        // Normalize FIRST, so every condition test below - and the caller's own e.code () == errc::timed_out -
-        // sees a code which actually compares equal. MSVC's system_category does not map these onto
-        // errc::timed_out, so without this a genuine timeout satisfies no timeout test at all.
-        // The raw Windows value is dropped from code (), but survives in the message text; and unlike the
-        // pre-v3.0d25 workaround (which threw a shared static TimeOutException) a caller-supplied message
-        // survives too.
-        if (errCode.category () == system_category ()) {
-            switch (errCode.value ()) {
-                case WAIT_TIMEOUT:           // errc::timed_out
-                case ERROR_INTERNET_TIMEOUT: // ""
-                    errCode = make_error_code (errc::timed_out);
-                    break;
-            }
+    // Normalize FIRST, so every condition test below - and the caller's own e.code () == errc::timed_out -
+    // sees a code which actually compares equal. MSVC's system_category does not map these onto
+    // errc::timed_out, so without this a genuine timeout satisfies no timeout test at all.
+    // The raw Windows value is dropped from code (), but survives in the message text; and unlike the
+    // pre-v3.0d25 workaround (which threw a shared static TimeOutException) a caller-supplied message
+    // survives too.
+    if (errCode.category () == system_category ()) {
+        switch (errCode.value ()) {
+            case WAIT_TIMEOUT:           // errc::timed_out
+            case ERROR_INTERNET_TIMEOUT: // ""
+                if (message == nullptr) {
+                    ThrowError (make_error_code (errc::timed_out));
+                }
+                else {
+                    ThrowError (make_error_code (errc::timed_out), *message);
+                }
         }
-#endif
-        if (errCode == errc::not_enough_memory) {
-            // Deliberately lossy - 'message' and the Activity stack are both dropped. @see ThrowError () for why
-            // enriching this one is a bad trade.
-            Throw (bad_alloc{});
-        }
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        if (errCode == errc::timed_out) {
-            // DEPRECATED promotion (v3.0d25): kept ONLY so existing catch (const TimeOutException&) clauses keep
-            // matching. Remove this together with the TimeOutException class - and they MUST go together:
-            // keeping the class while dropping this would leave those catch clauses compiling and silently
-            // never firing, which is strictly worse than a compile error. @see TimeOutException.
-            if (message == nullptr) {
-                Throw (TimeOutException{errCode});
-            }
-            else {
-                Throw (TimeOutException{errCode, *message});
-            }
-        }
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-
-        // double check the compare-with-conditions code working the way I think its supposed to...  matching multiple error codes -- LGP 2019-02-04
-#if qStroika_Foundation_Common_Platform_Windows && qStroika_Foundation_Debug_AssertionsChecked
-        if (errCode.category () == system_category ()) {
-            switch (errCode.value ()) {
-                case ERROR_NOT_ENOUGH_MEMORY: // errc::not_enough_memory
-                case ERROR_OUTOFMEMORY:       // ""
-                case WAIT_TIMEOUT:            // errc::timed_out
-                case ERROR_INTERNET_TIMEOUT:  // ""
-                    AssertNotReached (); // should have been caught above in if (ec == errc::... checks) - so thats not working - maybe need to add this switch or debug
-                    // qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy???
-                    break;
-            }
-        }
-#endif
     }
-}
-
-void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (error_code errCode)
-{
-    TranslateException_Impl_ (errCode, nullptr);
-}
-
-void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (error_code errCode, const String& message)
-{
-    TranslateException_Impl_ (errCode, &message);
+#endif
+    if (errCode == errc::not_enough_memory) {
+        // Deliberately lossy - 'message' and the Activity stack are both dropped. @see ThrowError () for why
+        // enriching this one is a bad trade.
+        Throw (bad_alloc{});
+    }
+    // double check the compare-with-conditions code working the way I think its supposed to...  matching multiple error codes -- LGP 2019-02-04
+#if qStroika_Foundation_Common_Platform_Windows && qStroika_Foundation_Debug_AssertionsChecked
+    if (errCode.category () == system_category ()) {
+        switch (errCode.value ()) {
+            case ERROR_NOT_ENOUGH_MEMORY: // errc::not_enough_memory
+            case ERROR_OUTOFMEMORY:       // ""
+            case WAIT_TIMEOUT:            // errc::timed_out
+            case ERROR_INTERNET_TIMEOUT:  // ""
+                AssertNotReached (); // should have been caught above in if (ec == errc::... checks) - so thats not working - maybe need to add this switch or debug
+                // qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy???
+                break;
+        }
+    }
+#endif
 }
 
 /*
