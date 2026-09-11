@@ -9,8 +9,9 @@ Generally will track stuff here between releases
 ## Open
 
 - v3.0d25
-   - Consider losing SystemErrorException - a bit of a footgun (someone could catch it)
+   - Consider losing SystemErrorException - a bit of a footgun (someone could catch it - like TimeOutException)
      Instead - all it does can easily be done just with Exception<system_error> {};
+     
    - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
      enforces it.** The condition test is correct and portable; the raw-value test compiles, looks
      reasonable, and is usually wrong - it only matches if the category happens to be the one you
