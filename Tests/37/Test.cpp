@@ -482,14 +482,6 @@ namespace {
              */
             void TimeoutsFromEverySourceMatchTheCondition_ ()
             {
-                DISABLE_COMPILER_MSC_WARNING_START (4996);
-                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-                // deprecated as of v3.0d25, but while it exists it must still answer to the condition
-                CheckIsTimeout_ ([] () { ThrowTimeOutException (); }, "ThrowTimeOutException () [deprecated]");
-                DISABLE_COMPILER_MSC_WARNING_END (4996);
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
                 CheckIsTimeout_ ([] () { ThrowError (error_code{kFakeTimedOut_, Fake_error_category_ ()}); },
                                  "ThrowError (third-party category)");
                 CheckIsTimeout_ ([] () { ThrowError (errc::timed_out); }, "ThrowError (errc::timed_out)");
@@ -596,43 +588,6 @@ namespace {
                     EXPECT_TRUE (false);
                 }
             }
-
-            /*
-             *  TRANSITIONAL (v3.0d25): TimeOutException is deprecated, but ThrowError () still promotes to it so
-             *  existing catch clauses keep working. The second case is the interesting one - the deprecated type
-             *  now catches a THIRD-PARTY-category timeout, which is exactly what it never did before.
-             *  When the class and the promotion are removed (they must go together), THIS BLOCK STOPS
-             *  COMPILING - which is the intended reminder to delete it along with them.
-             */
-            DISABLE_COMPILER_MSC_WARNING_START (4996);
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-            void DeprecatedTimeOutExceptionStillCatches_ ()
-            {
-                try {
-                    ThrowTimeOutException ();
-                    EXPECT_TRUE (false);
-                }
-                catch (const TimeOutException&) {
-                    // Good - guaranteed while the type still exists
-                }
-                catch (...) {
-                    EXPECT_TRUE (false);
-                }
-                try {
-                    ThrowError (error_code{kFakeTimedOut_, Fake_error_category_ ()});
-                    EXPECT_TRUE (false);
-                }
-                catch (const TimeOutException&) {
-                    // Good - and THIS is the case which used to silently not match
-                }
-                catch (...) {
-                    EXPECT_TRUE (false);
-                }
-            }
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         }
     }
     GTEST_TEST (Foundation_Execution_Exceptions, Test7_ThrowError_promotions_and_conditions_)
@@ -645,7 +600,6 @@ namespace {
         Private_::UnpromotedCodesPassThroughUnchanged_ ();
         Private_::TestTheConditionNotTheCode_ ();
         Private_::UnicodeAndActivitiesSurviveABaseClassCatch_ ();
-        Private_::DeprecatedTimeOutExceptionStillCatches_ ();
     }
 }
 
