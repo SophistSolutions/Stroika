@@ -619,6 +619,20 @@ sub     HasStdLib_
 	return system("printf \"#include <ciso646>\nint main () {}\" | $compilerDriver -E -stdlib=$stdLib -x c++ -dM - 2>/dev/null > /dev/null") == 0;
 }
 
+#	libc++ names the oldest clang it supports in a #warning in its own headers (libc++ 22 wants clang
+#	20 or later). That matters because a distro ships ONE unversioned libc++ while keeping several clang
+#	versions installed, so an older clang silently picks up a libc++ that disowns it - ubuntu 26.04 pairs
+#	clang++-19 with libc++ 22, and ubuntu 24.04 paired clang++-15 with libc++ 18. Ask the library which
+#	compilers it supports rather than keeping those pairs in a table here: a table has to be revisited
+#	whenever either side ships a release, and says nothing about a machine whose libc++ came from
+#	somewhere else. MacOS needs no special case - Apple's libc++ always matches Apple's clang.
+sub     StdLibSupportsCompiler_
+{
+	my $compilerDriver = trim(shift(@_));
+	my $stdLib = trim(shift(@_));
+	return system("printf \"#include <version>\nint main () {}\" | $compilerDriver -stdlib=$stdLib -fsyntax-only '-Werror=#warnings' -x c++ - 2>/dev/null > /dev/null") == 0;
+}
+
 
 sub     IsMSVCCompiler_
 {
@@ -1075,7 +1089,15 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			$STDCXXLIB = "libstdc++";
 		}
 		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			#	clang's own libc++ is the better default, but only where the installed libc++ supports this
+			#	clang - otherwise every compile carries 'Libc++ only supports Clang NN and later'. libstdc++ is
+			#	a working toolchain and a libc++ that disowns the compiler is not, so default to the one that
+			#	builds. Only the DEFAULT bends: an explicit --stdlib is honored as given (and refused, for a
+			#	configuration marked --only-if-has-compiler).
 			$STDCXXLIB = "libc++";
+			if (!StdLibSupportsCompiler_ ($COMPILER_DRIVER_CPlusPlus, "libc++") and HasStdLib_ ($COMPILER_DRIVER_CPlusPlus, "libstdc++")) {
+				$STDCXXLIB = "libstdc++";
+			}
 		}
 	}
 	if ($ApplyDebugFlags == true) {
@@ -3468,9 +3490,10 @@ if ($onlyGenerateIfCompilerExists) {
 			$generate = false;
 			$generateBecause = "clang++-16/17 with libstdc++ doesn't support c++23 mode";
 		}
-		if ($generate && $itsVersion < 16.0 && $STDCXXLIB eq "libc++" && $ubuntuVersion == 24.04) {
+		if ($generate && $STDCXXLIB eq "libc++" && !StdLibSupportsCompiler_ ($COMPILER_DRIVER_CPlusPlus, "libc++")) {
+			#	only reached when libc++ was asked for explicitly - the default would already have fallen back
 			$generate = false;
-			$generateBecause = "Libc++ only supports Clang 16 and later on ubuntu 24.04";
+			$generateBecause = "the installed libc++ says it does not support $COMPILER_DRIVER_CPlusPlus";
 		}
 		if ($generate && !HasStdLib_ ($COMPILER_DRIVER_CPlusPlus, $STDCXXLIB)) {
 			$generate = false;
