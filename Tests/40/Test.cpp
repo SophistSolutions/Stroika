@@ -1530,9 +1530,9 @@ namespace {
             // instrumented builds are slow enough that the full sweep is not worth its wall-clock there
             const unsigned kIterations_ =
                 (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? 60u : 200u;
-            constexpr unsigned kSweepStepNanoseconds_ = 20000; // so the sweep covers 0 .. kIterations_*200ns
-            unsigned           lostWakeups{};
-            unsigned           iterations{};
+            constexpr unsigned        kSweepStepNanoseconds_ = 20000; // so the sweep covers 0 .. kIterations_*200ns
+            unsigned                  lostWakeups{};
+            [[maybe_unused]] unsigned iterations{};
             for (unsigned i = 0; i < kIterations_; ++i) {
                 auto eventFD  = mkEventFD (); // never Set (), so never ready - only the abort can end this wait
                 auto waitInfo = eventFD->GetWaitInfo ();
@@ -1551,14 +1551,14 @@ namespace {
                 victim.Start ();
                 // Busy-spin, NOT yield (): sched_yield is a syscall, and on a loaded box the main thread can
                 // fail to notice the flag for tens of microseconds - already past the window being aimed at.
-                while (not aboutToWait.load ()) {
-                }
+                while (not aboutToWait.load ())
+                    ;
                 // Spin, do not sleep: the window is microseconds wide and Linux timer slack is ~50us, so
                 // sleep_for cannot resolve it - every "short" sleep would land well after poll () was already
                 // entered, where the signal does interrupt it and nothing is lost.
                 auto spinUntil = chrono::steady_clock::now () + chrono::nanoseconds{i * kSweepStepNanoseconds_};
-                while (chrono::steady_clock::now () < spinUntil) {
-                }
+                while (chrono::steady_clock::now () < spinUntil)
+                    ;
                 victim.Abort (); // exactly ONE abort - that it suffices is the property under test
                 ++iterations;
                 if (not victim.WaitForDoneUntilQuietly (Time::GetTickCount () + kMustWakeWithin_)) {
