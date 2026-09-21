@@ -25,7 +25,11 @@
             "windows": {
                 "options": {
                     "env": {
-                        "CHERE_INVOKING": "1"
+                        "CHERE_INVOKING": "1",
+                        // VS Code shell tasks run bash NON-interactively, so ~/.bashrc is never
+                        // read - without this, MSYS2 creates COPIES instead of symlinks and
+                        // Build/Scripts/MakeSymbolicLink steps misbehave.
+                        "MSYS": "winsymlinks:nativestrict"
                     }
                 }
             }
@@ -64,7 +68,11 @@
             "windows": {
                 "options": {
                     "env": {
-                        "CHERE_INVOKING": "1"
+                        "CHERE_INVOKING": "1",
+                        // VS Code shell tasks run bash NON-interactively, so ~/.bashrc is never
+                        // read - without this, MSYS2 creates COPIES instead of symlinks and
+                        // Build/Scripts/MakeSymbolicLink steps misbehave.
+                        "MSYS": "winsymlinks:nativestrict"
                     }
                 }
             }
@@ -95,7 +103,11 @@
             "windows": {
                 "options": {
                     "env": {
-                        "CHERE_INVOKING": "1"
+                        "CHERE_INVOKING": "1",
+                        // VS Code shell tasks run bash NON-interactively, so ~/.bashrc is never
+                        // read - without this, MSYS2 creates COPIES instead of symlinks and
+                        // Build/Scripts/MakeSymbolicLink steps misbehave.
+                        "MSYS": "winsymlinks:nativestrict"
                     }
                 }
             }
@@ -121,7 +133,11 @@
             "windows": {
                 "options": {
                     "env": {
-                        "CHERE_INVOKING": "1"
+                        "CHERE_INVOKING": "1",
+                        // VS Code shell tasks run bash NON-interactively, so ~/.bashrc is never
+                        // read - without this, MSYS2 creates COPIES instead of symlinks and
+                        // Build/Scripts/MakeSymbolicLink steps misbehave.
+                        "MSYS": "winsymlinks:nativestrict"
                     }
                 }
             }
