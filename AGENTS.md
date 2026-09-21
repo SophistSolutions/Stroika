@@ -183,6 +183,12 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
 - `make project-files` regenerates IDE project files (Visual Studio, VS Code); needed after
   installing a new compiler/IDE version, or run `make reconfigure` if a configuration's absolute
   compiler paths go stale.
+- **VS Code over Remote-SSH to a Windows host: open the folder with its drive letter**
+  (`/c:/Sandbox/Stroika/DevRoot`, not `/Sandbox/Stroika/DevRoot`). The Recent list can hold both and
+  they look nearly identical. VS Code passes the workspace folder as each task’s `cwd`, so without
+  the drive letter every task shell spawns into a nonexistent directory and exits instantly - no
+  output, no error anywhere in the UI. Interactive terminals fall back on a bad cwd and work fine,
+  so **"terminals work but tasks do nothing" means suspect the cwd.**
 - **A HEADER CHANGE NEVER TRIGGERS A REBUILD. After editing any `.h`/`.inl`, you must
   `make CONFIGURATION=X library-clobber` before the build means anything.** There is no header
   dependency tracking: the build generates no `.d` files, and the compile rule is
