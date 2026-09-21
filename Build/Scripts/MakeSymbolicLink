@@ -3,6 +3,14 @@
 #   Maps to ln -s, but to work on Windoze - must do some environment variable magic to
 #   make it really work.
 #
+#   ...and on Windoze even that is not always enough. Thanks to MSFT craziness, a symlink created
+#   by a process without SeCreateSymbolicLinkPrivilege is marked UNTRUSTED, and native tools
+#   (MSVC's LINK.exe among them) flatly refuse to follow it - while ls and cat see nothing at all
+#   wrong with it. So we VERIFY the new link actually works for a native process, and if it does
+#   not, we warn and fall back to a HARD LINK. If even that is impossible - notably for a
+#   directory, which cannot be hard linked - we fail, loudly, rather than leave a link that only
+#   half the world can follow.
+#
 # EXAMPLES:
 #       ${StroikaRoot}Build/Scripts/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 #       ${StroikaRoot}Build/Scripts/MakeSymbolicLink "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
@@ -48,10 +56,90 @@ if [ $FORCE_FILE_EXISTS_FIRST == 1 ] ; then
     touch $TARGET
 fi
 if [ $# == 2 ] ; then
-    ln -s $TARGET $ALIASPATH
+    LINKPATH_="$ALIASPATH"
 else
-    ln -s $TARGET
+    LINKPATH_="./`basename $TARGET`"
 fi
+#   Replace whatever is already there (a stale symlink, or a hard link left by the fallback below);
+#   otherwise ln -s just fails on the second and subsequent builds. Never touch a directory.
+if [ ! -d "$LINKPATH_" ] ; then
+    rm -f "$LINKPATH_"
+fi
+ln -s $TARGET $LINKPATH_ || exit $?
 if [ $FORCE_FILE_EXISTS_FIRST == 1 ] ; then
     rm $TARGET
+fi
+
+#
+#   Return 0 iff a NATIVE (non-Cygwin/MSYS) process can actually traverse $1. See the header
+#   comment: an untrusted symlink looks perfect from here and fails only much later, inside
+#   whatever native tool finally tries to open it.
+#
+VerifyNativelyTraversable_ () {
+    local link_="$1"
+    local winPath_
+    winPath_=`cygpath -w "$link_" 2> /dev/null` || return 0     # cannot check - do not block the build
+    local probe_
+    if [ -d "$link_" ] ; then
+        probe_="[IO.Directory]::GetFileSystemEntries(\$p) | Out-Null"
+    else
+        probe_="[IO.File]::Open(\$p,'Open','Read','Read').Close()"
+    fi
+    #   Report FAILURE only for the one specific condition this is about - Windows refusing to
+    #   traverse an untrusted link. Anything else (probe could not run, no powershell, a locked or
+    #   unreadable file, an ACL quirk) must NOT fail the build: we are not trying to be a general
+    #   health check, and a false alarm here would be worse than the problem.
+    local verdict_
+    #   NB: $(...) not backticks - backticks would eat the \$ and let bash expand $p itself.
+    verdict_=$(powershell -NoProfile -Command "\$p='$winPath_'; try { $probe_; 'OK' } catch { \$_.Exception.Message }" 2> /dev/null)
+    case "$verdict_" in
+        *untrusted*|*UNTRUSTED*|*Untrusted*)  return 1 ;;
+        *)                                    return 0 ;;
+    esac
+}
+
+PrivilegeAdvice_ () {
+    cat 1>&2 <<EOF
+    To get real symbolic links, grant the "Create symbolic links" right to the account the build
+    runs as (`whoami`): secpol.msc -> Local Policies -> User Rights Assignment. Privileges are
+    fixed at logon, so log that account off and back on afterwards (for SSH, reconnect).
+    This is optional - it is NOT a prerequisite for building Stroika.
+EOF
+}
+
+#
+#   Only meaningful on Windows, and only when the target really exists - a deliberately dangling
+#   link (FORCE_FILE_EXISTS_FIRST, used by Skel) has nothing to traverse to.
+#
+if [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] && [ $FORCE_FILE_EXISTS_FIRST == 0 ] ; then
+    if ! VerifyNativelyTraversable_ "$LINKPATH_" ; then
+        rm -f "$LINKPATH_"
+        if [ -d "$TARGET" ] ; then
+            cat 1>&2 <<EOF
+ERROR: MakeSymbolicLink: Windows will not let native tools follow the symlink just created for
+       the DIRECTORY:
+           $TARGET
+       and a directory cannot be hard linked, so there is no fallback.
+EOF
+            PrivilegeAdvice_
+            exit 1
+        fi
+        cat 1>&2 <<EOF
+WARNING: MakeSymbolicLink: Windows will not let native tools follow symlinks created by this
+         account, so falling back to a HARD LINK for:
+             $LINKPATH_
+EOF
+        PrivilegeAdvice_
+        if ! ln "$TARGET" "$LINKPATH_" 2> /dev/null || ! VerifyNativelyTraversable_ "$LINKPATH_" ; then
+            rm -f "$LINKPATH_"
+            cat 1>&2 <<EOF
+ERROR: MakeSymbolicLink: the symlink was unusable and the hard-link fallback also failed for:
+           link:   $LINKPATH_
+           target: $TARGET
+       A hard link requires both names to live on the SAME volume, and the target to exist.
+EOF
+            PrivilegeAdvice_
+            exit 1
+        fi
+    fi
 fi
