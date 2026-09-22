@@ -239,6 +239,44 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
   live under `ThirdPartyComponents/` and are fetched/built automatically, or can be pointed at
   system-installed versions via configure flags/feature flags.
 
+## Commits
+
+**Write the commit message to `.claude/COMMIT_MSG.txt` and hand it over for review - do not run the
+commit yourself** (unless explicitly asked to). LGP edits the message and commits. After writing the
+file, open it in the editor if you can, and always give a clickable link to it rather than only
+describing what it says. `.claude/` is gitignored, so the file never lands in a commit.
+
+**Carry proto upgrade notes in the commit message.** Anything downstream code would have to change,
+or would want to know about - applications built on Stroika, especially ones scaffolded with `Skel`,
+which carry hand-copied forks of pieces of the build - goes in the commit message under an
+`UPGRADE NOTE:` heading. At release time (v3-Dev merges back to v3-Release, roughly monthly) these
+are gathered and combined into that release’s `#### Upgrade Notes (X to Y)` section in
+`Release-Notes.md`. Writing them at commit time is the only thing that makes this work: a month
+later nobody can reconstruct which of ~100 commits had downstream impact.
+
+**One commit at a time.** `.claude/COMMIT_MSG.txt` holds exactly ONE message, and the index holds
+exactly the files that message describes - so the whole thing is just:
+
+```bash
+git commit -F .claude/COMMIT_MSG.txt
+```
+
+with no pathspec to get wrong and nothing to review twice. When a session's work naturally splits
+into several commits, write the rest to `.claude/COMMIT_MSG-remaining.txt` (numbered, each with the
+`git add` line it needs) and promote them into `COMMIT_MSG.txt` one at a time as each is committed.
+Staging the files is the agent's job, not LGP's.
+
+Two things that quietly break that on Windows:
+
+- **`core.filemode` is false**, so a newly added script commits as 100644 and loses its executable
+  bit - which breaks the build on UNIX while still appearing to work here (MSYS/Cygwin fake the
+  mode). Stage new files under `Build/Scripts/` with
+  `git update-index --add --chmod=+x <path>` rather than `git add`, and confirm with
+  `git ls-files -s <path>` showing 100755.
+- **`git reset` throws that away.** If a staged script gets unstaged for any reason, the `--chmod`
+  has to be redone - `git add` alone will not bring it back.
+
+
 ## Architecture
 
 - `Library/Sources/Stroika/Foundation/` — building blocks with no dependencies outside the
