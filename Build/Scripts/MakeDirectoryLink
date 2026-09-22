@@ -32,8 +32,8 @@
 #   If two accounts do share a checkout on Windows - which is exactly what MakeBuildRoot invites, and
 #   what an RDP-plus-Remote-SSH setup makes easy to drift into - the link has to be RE-CREATED by
 #   whichever account is about to use it, and even that stands on a Microsoft policy rather than on
-#   anything we control. The real fix is to not need a directory link at all; @see the
-#   StroikaOutputRoot entry in TODO.md.
+#   anything we control. The real fix is to not need a directory link at all;
+#   @see https://github.com/SophistSolutions/Stroika/issues/1170.
 #
 #   WHY, on Windows - and why there is no fallback here
 #

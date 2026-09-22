@@ -401,12 +401,18 @@ programs can follow.
 
 Granting the account the **Create symbolic links** right (`secpol.msc` -> Local Policies -> User
 Rights Assignment, then log off and back on - for SSH, reconnect) makes it work for *that account*.
-But it needs administrator setup, it appears to be per-account - switching Windows accounts means
+But it needs administrator setup, it has to be repeated per account - switching Windows accounts means
 re-running `MakeBuildRoot` - and it is a Microsoft policy that can change. So treat it as a local
 convenience, not something to build a workflow on, and note that membership in Administrators is
 not sufficient: UAC filters that privilege out of a non-elevated shell.
 
 None of this applies on UNIX or macOS.
+
+The real fix is to stop needing a directory link at all - deriving the three output roots from a
+`StroikaOutputRoot` make variable, so relocating output is a variable rather than filesystem
+trickery. Tracked as [issue 1170](https://github.com/SophistSolutions/Stroika/issues/1170); the
+Windows symbolic-link background is consolidated in
+[issue 1075](https://github.com/SophistSolutions/Stroika/issues/1075).
 
 ---
 

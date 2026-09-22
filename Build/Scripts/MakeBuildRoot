@@ -32,9 +32,10 @@
 #   needs no privilege but is blocked by that same mitigation. MakeDirectoryLink verifies what it
 #   made and fails loudly rather than leaving a tree only half the toolchain can see, so this script
 #   stops with a real error instead of producing a checkout that mysteriously will not link.
-#   @see Documentation/Building-Stroika.md "Relocating build output", and the TODO entry on deriving
-#   the three output roots from a StroikaOutputRoot make variable - which is the actual fix, works
-#   for every account on every platform, and is how CMake does it natively.
+#   @see Documentation/Building-Stroika.md "Relocating build output", and
+#   https://github.com/SophistSolutions/Stroika/issues/1170 - deriving the three output roots from a
+#   StroikaOutputRoot make variable, which is the actual fix: works for every account on every
+#   platform, and is how CMake does it natively.
 #
 ROOT=$1
 
