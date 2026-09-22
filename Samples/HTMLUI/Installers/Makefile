@@ -201,7 +201,7 @@ ifeq ($(CONFIGURATION),)
 endif
 	@rm -rf $(WIX_WORKDIR) $(WIX_BUILD_OUT)
 	@mkdir -p $(WIX_WORKDIR)
-	@MAKEFLAGS= $(MAKE) doBld_ 2>&1 >> $(WIX_BUILD_OUT)
+	@MAKEFLAGS= $(MAKE) doBld_ >> $(WIX_BUILD_OUT) 2>&1
 	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_WIX)"`
 
 
@@ -233,7 +233,7 @@ doBld_:
 		-dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) \
 		Installer.wix $(WIXHTMLFRAGFILE_WINDOWPATH) $(WIXDLLSFRAGFILE_WINDOWPATH) \
 		-out "$(WIX_OUT_OBJ_DIR_WIN)"
-	$(WIX_PATH_PREFIX) light.exe \
+	$(WIX_PATH_PREFIX) $(StroikaRoot)Build/Scripts/RunWIXLight \
 		$(shell cygpath --mixed $(WIX_OUT_OBJ_DIR)Installer.wixobj)  \
 		$(shell cygpath --mixed $(WIX_OUT_OBJ_DIR)html.wixobj) \
 		$(shell cygpath --mixed $(WIX_OUT_OBJ_DIR)dlls.wixobj) \

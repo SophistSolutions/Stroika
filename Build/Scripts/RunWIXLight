@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+#   Wrapper for WIX's light.exe.
+#
+#   light.exe runs ICE validation over the MSI it has just produced, and ICE validation needs the
+#   Windows Installer service. A standard (non-administrator) account cannot reach it, and light
+#   then fails with a wall of
+#
+#       light.exe : error LGHT0217 : Error executing ICE action 'ICE01' ...
+#           "The Windows Installer Service could not be accessed."
+#
+#   none of which mentions the actual cause. The MSI itself is perfectly good - it is only the
+#   validation pass that cannot run.
+#
+#   So: run light.exe normally, and if it fails for THAT specific reason, say so plainly and retry
+#   once with -sval (suppress validation), so an unprivileged build still produces a usable
+#   installer. Any other failure is a real failure and is passed straight through, untouched.
+#
+#   UPGRADE PATH for applications built on Stroika that have their own Installers/Makefile (copied
+#   at some point from Samples/Service or Samples/HTMLUI): replace
+#           light.exe
+#   with
+#           $(StroikaRoot)Build/Scripts/RunWIXLight
+#   Changing nothing keeps today's behavior exactly - you simply do not get the fallback.
+#
+#   NB: this is a WRAPPER, not a replacement - it takes exactly light.exe's arguments and returns
+#   light.exe's exit status, and it relies on light.exe being on the PATH just as before (the
+#   callers set that up via WIX_PATH_PREFIX).
+#
+
+OUT_=`mktemp`
+trap 'rm -f "$OUT_"' EXIT
+
+light.exe "$@" > "$OUT_" 2>&1
+STATUS_=$?
+
+if [ $STATUS_ -ne 0 ] && grep -q 'LGHT0217' "$OUT_" ; then
+	WARNMSG_="WARNING: RunWIXLight: ICE validation could not be run - the Windows Installer service is not
+         reachable from this account (typically because it is not an administrator). The MSI is
+         fine; only the validation pass failed. Retrying with -sval, so the installer IS BUILT
+         BUT NOT VALIDATED. Build it from an elevated/administrator shell to get validation."
+	echo "$WARNMSG_" 1>&2
+	#   Callers redirect stderr into the WIX log, which would bury this - and a fallback nobody sees
+	#   is barely better than a silent one. So when stderr is NOT the terminal, also say it on the
+	#   terminal. When stderr IS the terminal, the line above already did, so do not repeat it.
+	if [ ! -t 2 ] && [ -w /dev/tty ] ; then
+		echo "$WARNMSG_" > /dev/tty 2> /dev/null
+	fi
+	light.exe -sval "$@" > "$OUT_" 2>&1
+	STATUS_=$?
+fi
+
+cat "$OUT_"
+exit $STATUS_
