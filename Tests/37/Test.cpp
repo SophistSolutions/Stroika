@@ -93,7 +93,7 @@ namespace {
                     Execution::ThrowError (errc::timed_out);
                 }
                 catch (const system_error& e) {
-                    EXPECT_TRUE (e.code () == errc::timed_out);
+                    EXPECT_TRUE (Execution::IsA (e, errc::timed_out));
                     EXPECT_TRUE (e.code () != errc::already_connected);
                 }
                 catch (...) {
@@ -285,8 +285,14 @@ namespace {
                     throw std::system_error (ENOENT, std::system_category ());
                 }
                 catch (std::system_error const& e) {
-                    EXPECT_TRUE (e.code ().value () == static_cast<int> (std::errc::no_such_file_or_directory)); // workaround?
-                    EXPECT_TRUE (e.code () == std::errc::no_such_file_or_directory);                             // <- FAILS!?
+                    //  Deliberately raw comparisons here - this is the test that DEMONSTRATES the difference,
+                    //  so it must not be written with Execution::IsA ().
+                    //  Both pass, but only the second is the form to copy. Comparing .value () to a number asks
+                    //  how the error is REPRESENTED, and is right only if you guessed the category; it survives
+                    //  here purely because ENOENT and ERROR_FILE_NOT_FOUND are both 2. Comparing to a CONDITION
+                    //  asks what the error MEANS, and holds whatever category it arrived in.
+                    EXPECT_TRUE (e.code ().value () == static_cast<int> (std::errc::no_such_file_or_directory));
+                    EXPECT_TRUE (e.code () == std::errc::no_such_file_or_directory);
                 }
                 catch (...) {
                     EXPECT_TRUE (false);
@@ -347,12 +353,40 @@ namespace {
                 }
             }
 #endif
+            void IsA_overloads_ ()
+            {
+                //  Execution::IsA () is the recommended way to ask the question the rest of this test is about.
+                const error_code kTimedOutCode_ = make_error_code (errc::timed_out);
+                EXPECT_TRUE (IsA (kTimedOutCode_, errc::timed_out));
+                EXPECT_FALSE (IsA (kTimedOutCode_, errc::permission_denied));
+
+                const system_error kTimedOut_{kTimedOutCode_};
+                EXPECT_TRUE (IsA (kTimedOut_, errc::timed_out));
+                EXPECT_FALSE (IsA (kTimedOut_, errc::permission_denied));
+
+                //  ... via the base-class overload, which must find the system_error inside
+                const exception& asException = kTimedOut_;
+                EXPECT_TRUE (IsA (asException, errc::timed_out));
+                EXPECT_FALSE (IsA (runtime_error{"carries no error code"}, errc::timed_out));
+
+                //  ... and the overload that is more than sugar: the standard gives no way to interrogate an
+                //  exception_ptr without rethrowing it.
+                EXPECT_TRUE (IsA (make_exception_ptr (kTimedOut_), errc::timed_out));
+                EXPECT_FALSE (IsA (make_exception_ptr (kTimedOut_), errc::permission_denied));
+                EXPECT_FALSE (IsA (make_exception_ptr (runtime_error{"no code"}), errc::timed_out));
+                EXPECT_FALSE (IsA (exception_ptr{}, errc::timed_out)); // null - must answer false, not crash
+
+                //  A code arriving in the PLATFORM's category still answers to the portable condition - which is
+                //  the entire point, and what comparing .value () to a number would get wrong.
+                EXPECT_TRUE (IsA (error_code{ENOENT, generic_category ()}, errc::no_such_file_or_directory));
+            }
         }
     }
     GTEST_TEST (Foundation_Execution_Exceptions, Test5_error_code_condition_compares_)
     {
         Debug::TraceContextBumper ctx{"Test5_error_code_condition_compares_"};
         Test5_error_code_condition_compares_::Private::Bug1_ ();
+        Test5_error_code_condition_compares_::Private::IsA_overloads_ ();
 #if qStroika_Foundation_Common_Platform_Windows
         Test5_error_code_condition_compares_::Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
 #endif
@@ -466,7 +500,7 @@ namespace {
                     EXPECT_TRUE (false) << label << ": expected an exception";
                 }
                 catch (const system_error& e) {
-                    EXPECT_TRUE (e.code () == errc::timed_out) << label << ": got " << e.code ().message ();
+                    EXPECT_TRUE (Execution::IsA (e, errc::timed_out)) << label << ": got " << e.code ().message ();
                 }
                 catch (...) {
                     EXPECT_TRUE (false) << label << ": threw something which is not a system_error";
@@ -529,7 +563,7 @@ namespace {
                     EXPECT_TRUE (false);
                 }
                 catch (const system_error& e) {
-                    EXPECT_TRUE (e.code () == errc::timed_out);
+                    EXPECT_TRUE (Execution::IsA (e, errc::timed_out));
                     EXPECT_TRUE (e.code ().value () == kFakeTimedOut_);
                     EXPECT_TRUE (e.code ().category () == Fake_error_category_ ());
                 }
@@ -580,9 +614,9 @@ namespace {
                 }
                 catch (const system_error& e) { // deliberately the BASE, not SystemErrorException
                     const Characters::String kGot_ = Characters::ToString (e);
-                    EXPECT_TRUE (kGot_.Contains (kMsg_));             // the UNICODE message survived
-                    EXPECT_TRUE (kGot_.Contains ("doing the thing")); // ... and so did the Activity
-                    EXPECT_TRUE (e.code () == errc::timed_out);       // ... and it is still a timeout
+                    EXPECT_TRUE (kGot_.Contains (kMsg_));              // the UNICODE message survived
+                    EXPECT_TRUE (kGot_.Contains ("doing the thing"));  // ... and so did the Activity
+                    EXPECT_TRUE (Execution::IsA (e, errc::timed_out)); // ... and it is still a timeout
                 }
                 catch (...) {
                     EXPECT_TRUE (false);

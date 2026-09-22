@@ -88,7 +88,7 @@ namespace {
                     handled = true;
                 }
                 catch (const system_error& e) {
-                    if (e.code () == errc::no_such_file_or_directory) {
+                    if (Execution::IsA (e, errc::no_such_file_or_directory)) {
                         Assert (not handled);
                         handled = false; // Router itself will issue Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
                     }

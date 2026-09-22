@@ -213,7 +213,7 @@ namespace {
                 sRegTest3Event_T1_.Wait (0.5s); // should timeout
             }
             catch (const system_error& e) {
-                passed = (e.code () == errc::timed_out);
+                passed = (Execution::IsA (e, errc::timed_out));
             }
             catch (...) {
             }
@@ -260,7 +260,7 @@ namespace {
                         t.WaitForDone (kWaitOnAbortFor);
                     }
                     catch (const system_error& e) {
-                        EXPECT_TRUE (e.code () == errc::timed_out);
+                        EXPECT_TRUE (Execution::IsA (e, errc::timed_out));
                         caughtExceptAt = Time::GetTickCount ();
                     }
                     maxClockGap_ = clockCheck_.GetMaxObservedGap ();
@@ -553,7 +553,7 @@ namespace {
                 EXPECT_TRUE (false);
             }
             catch (const system_error& e) {
-                EXPECT_TRUE (e.code () == errc::timed_out); // GOOD
+                EXPECT_TRUE (Execution::IsA (e, errc::timed_out)); // GOOD
             }
             catch (...) {
                 EXPECT_TRUE (false);
@@ -574,7 +574,7 @@ namespace {
                 EXPECT_TRUE (false);
             }
             catch (const system_error& e) {
-                EXPECT_TRUE (e.code () == errc::timed_out); // GOOD
+                EXPECT_TRUE (Execution::IsA (e, errc::timed_out)); // GOOD
             }
             catch (...) {
                 EXPECT_TRUE (false);

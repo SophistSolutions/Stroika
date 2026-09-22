@@ -283,3 +283,38 @@ optional<error_code> Execution::GetAssociatedErrorCode (const exception_ptr& e) 
         return nullopt;
     }
 }
+
+/*
+ ********************************************************************************
+ ******************************** Execution::IsA ********************************
+ ********************************************************************************
+ */
+bool Execution::IsA (const error_code& ec, error_condition cond) noexcept
+{
+    return ec == cond;
+}
+
+bool Execution::IsA (const system_error& e, error_condition cond) noexcept
+{
+    return e.code () == cond;
+}
+
+bool Execution::IsA (const exception& e, error_condition cond) noexcept
+{
+    if (const system_error* se = dynamic_cast<const system_error*> (&e)) {
+        return se->code () == cond;
+    }
+    return false;
+}
+
+bool Execution::IsA (const exception_ptr& e, error_condition cond) noexcept
+{
+    //  No way to ask an exception_ptr anything without rethrowing it - @see GetAssociatedErrorCode,
+    //  which is where that (comparatively costly) dance lives, so it exists once rather than at each
+    //  call site.
+    if (e == nullptr) {
+        return false;
+    }
+    optional<error_code> ec = GetAssociatedErrorCode (e);
+    return ec.has_value () and *ec == cond;
+}

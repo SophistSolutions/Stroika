@@ -230,7 +230,7 @@ int main (int argc, const char* argv[])
         WaitableEvent{}.Wait (quitAfter);     // wait quitAfter seconds, or til user hits ctrl-c
     }
     catch (const system_error& e) {
-        if (e.code () == errc::timed_out) {
+        if (Execution::IsA (e, errc::timed_out)) {
             cerr << "Timed out - so - exiting..." << endl;
             return EXIT_SUCCESS;
         }

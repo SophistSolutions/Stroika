@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Execution {
      *  \deprecated Since Stroika v3.0d25 - catch the CONDITION instead of this type:
      *      \code
      *          catch (const system_error& e) {
-     *              if (e.code () == errc::timed_out) { ... }
+     *              if (Execution::IsA (e, errc::timed_out)) { ... }
      *          }
      *      \endcode
      *      That also matches timeouts raised outside Stroika, which catching by type never did.

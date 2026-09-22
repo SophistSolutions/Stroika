@@ -814,7 +814,7 @@ namespace {
             EXPECT_TRUE (false);
         }
         catch (const system_error& e) {
-            EXPECT_TRUE (e.code () == errc::timed_out);
+            EXPECT_TRUE (Execution::IsA (e, errc::timed_out));
             EXPECT_TRUE (e.code ().value () == CURLE_OPERATION_TIMEDOUT);
             EXPECT_TRUE (e.code ().category () == LibCurl::error_category ());
         }

@@ -351,7 +351,7 @@ namespace Stroika::Foundation::Execution {
      *              s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
      *          }
      *          catch (const std::system_error& e) {
-     *              if (e.code () == errc::no_such_device) {
+     *              if (Execution::IsA (e, errc::no_such_device)) {
      *                  // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
      *                  DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again");
      *                  Execution::Sleep (1);
@@ -473,7 +473,7 @@ namespace Stroika::Foundation::Execution {
      *          }
      *          catch (const system_error& e) {
      *              // everything except memory exhaustion; always test the CONDITION, not the value
-     *              if (e.code () == errc::timed_out) { ... }
+     *              if (Execution::IsA (e, errc::timed_out)) { ... }
      *              DbgTrace ("{}"_f, Characters::ToString (e)); // NB: ToString (e), NOT e.what () - see below
      *          }
      *          catch (const bad_alloc&) {
@@ -724,6 +724,54 @@ namespace Stroika::Foundation::Execution {
      *      \endcode
      */
     optional<error_code> GetAssociatedErrorCode (const exception_ptr& e) noexcept;
+
+    /**
+     *  \brief Does this error MEAN the given condition - regardless of how it happens to be represented?
+     *
+     *  This is the recommended way to test an error in Stroika code. It is `e.code () == cond` with the
+     *  question asked once, correctly, and with overloads for the things you actually hold - including
+     *  exception_ptr, which the standard gives you no way to interrogate without rethrowing.
+     *
+     *  \note basically same as e.code () == cond, but safer (less error prone and not MATCHES on differnt error_category, etc)
+     * 
+     *  \par Example Usage
+     *      \code
+     *          try {
+     *              t.WaitForDone (1s);
+     *          }
+     *          catch (const system_error& e) {
+     *              if (Execution::IsA (e, errc::timed_out)) {
+     *                  ...
+     *              }
+     *          }
+     *      \endcode
+     *
+     *  \note   ***Why this exists, and why it takes an error_condition***
+     *
+     *          std::error_code and std::error_condition look interchangeable and are not. A CODE is a
+     *          concrete value in some category - `errno`, a Win32 error, a libcurl status. A CONDITION is
+     *          the portable meaning those map onto. Comparing a code to a condition asks what the error
+     *          MEANS and works whatever category it arrived in. Comparing `e.code ().value ()` to a number
+     *          asks how it is REPRESENTED, and is right only if you guessed the category correctly - it
+     *          compiles, it looks reasonable, and it is usually wrong.
+     *
+     *          That trap is inherited from the c++ standard and Stroika cannot remove it. What it can do is
+     *          make the recommended form incapable of expressing it: the second parameter is an
+     *          error_condition BY VALUE, so `IsA (e, errc::timed_out)` converts implicitly and compiles,
+     *          while `IsA (e, ERROR_FILE_NOT_FOUND)` and `IsA (e, someErrorCode)` do not compile at all.
+     *
+     *          `e.code () == errc::X` remains perfectly correct, and existing code using it is fine.
+     *
+     *  \note   The exception_ptr and exception overloads answer false for anything that carries no error
+     *          code, which includes a null exception_ptr. They never throw.
+     *
+     *  @see GetAssociatedErrorCode
+     *  @see Tests/37, Test5_error_code_condition_compares_ - which demonstrates the trap directly.
+     */
+    bool IsA (const error_code& ec, error_condition cond) noexcept;
+    bool IsA (const system_error& e, error_condition cond) noexcept;
+    bool IsA (const exception& e, error_condition cond) noexcept;
+    bool IsA (const exception_ptr& e, error_condition cond) noexcept;
 
     /**
      *  Wrap the the argument function (typically a lambda) in an OPTIONAL of the argument type, and return nullopt - dropping the exception

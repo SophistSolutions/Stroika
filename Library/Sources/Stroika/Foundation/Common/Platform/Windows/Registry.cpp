@@ -155,7 +155,7 @@ VariantValue RegistryKey::Lookup (const String& valuePath) const
             }
             catch (const system_error& e) {
                 // catch/translate because the part not found could be in the PATH and then RegistryKey would throw
-                if (e.code () == errc::no_such_file_or_directory) { // windows error ERROR_FILE_NOT_FOUND
+                if (Execution::IsA (e, errc::no_such_file_or_directory)) { // windows error ERROR_FILE_NOT_FOUND
                     return VariantValue{};
                 }
                 Execution::ReThrow ();
