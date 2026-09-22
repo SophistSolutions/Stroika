@@ -43,8 +43,12 @@ if [ $STATUS_ -ne 0 ] && grep -q 'LGHT0217' "$OUT_" ; then
 	#   Callers redirect stderr into the WIX log, which would bury this - and a fallback nobody sees
 	#   is barely better than a silent one. So when stderr is NOT the terminal, also say it on the
 	#   terminal. When stderr IS the terminal, the line above already did, so do not repeat it.
-	if [ ! -t 2 ] && [ -w /dev/tty ] ; then
-		echo "$WARNMSG_" > /dev/tty 2> /dev/null
+	#   NB: test /dev/tty by actually OPENING it. It exists and passes -w even with no
+	#   controlling terminal (eg. under `make ... >> LOG 2>&1`), where the open then fails
+	#   ENXIO - and a redirection error is reported by the shell BEFORE any 2>/dev/null on
+	#   that same command can suppress it, so it leaks into the build log.
+	if [ ! -t 2 ] && { : > /dev/tty ; } 2> /dev/null ; then
+		echo "$WARNMSG_" > /dev/tty
 	fi
 	light.exe -sval "$@" > "$OUT_" 2>&1
 	STATUS_=$?

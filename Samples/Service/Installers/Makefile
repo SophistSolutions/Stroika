@@ -194,10 +194,20 @@ endif
 	@rm -rf $(WIX_WORKDIR) $(WIX_BUILD_OUT)
 	@#Make directories to be created by the installer
 	@mkdir -p $(WIX_WORKDIR)
-	@cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)$(BASIC_NAME)-Service.exe >> $(WIX_BUILD_OUT) 2>&1
-	@echo WIX_PATH_PREFIX = $(WIX_PATH_PREFIX) >> $(WIX_BUILD_OUT)
-	@echo candle.exe -v -arch $(CANDLE_ARCH) -dARCH=$(ARCH) -dCONFIGURATION=$(CONFIGURATION) -dDISPLAY_FULL_VERSION=$(WIX_VERSION) -dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) Installer.wix -out "$(WIX_OUT_OBJ_WIN)" >> $(WIX_BUILD_OUT)
-	@$(WIX_PATH_PREFIX) candle.exe -v -arch $(CANDLE_ARCH) -dARCH=$(ARCH) -dCONFIGURATION=$(CONFIGURATION) -dDISPLAY_FULL_VERSION=$(WIX_VERSION) -dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) Installer.wix -out "$(WIX_OUT_OBJ_WIN)" >> $(WIX_BUILD_OUT) 2>&1
-	@echo $(StroikaRoot)Build/Scripts/RunWIXLight "$(WIX_OUT_OBJ_WIN)" -ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)'  >> $(WIX_BUILD_OUT)
-	@$(WIX_PATH_PREFIX) $(StroikaRoot)Build/Scripts/RunWIXLight "$(WIX_OUT_OBJ_WIN)" -ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)' >> $(WIX_BUILD_OUT) 2>&1
+	@MAKEFLAGS= $(MAKE) doBld_ >> $(WIX_BUILD_OUT) 2>&1
 	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_WIX)"`
+
+
+# Broken out into a separate rule (as Samples/HTMLUI does) so MAKE ITSELF echoes each command
+# into WIX_BUILD_OUT. The previous form hand-wrote an `echo` of every line before running it,
+# which has to be kept in sync by hand and had already drifted - the echoed light.exe line was
+# missing WIX_PATH_PREFIX, and the cp had no echo at all - so the log read as an authoritative
+# transcript while not quite being one. One redirection also means one place to get the order
+# right; `2>&1 >> LOG` (stdout to the log, stderr to the console) crept in here three times.
+# MAKEFLAGS= so an inherited -s does not suppress that echoing; command line variables still
+# reach the sub-make, since those travel in MAKEOVERRIDES rather than MAKEFLAGS.
+.PHONY: doBld_
+doBld_:
+	cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)$(BASIC_NAME)-Service.exe
+	$(WIX_PATH_PREFIX) candle.exe -v -arch $(CANDLE_ARCH) -dARCH=$(ARCH) -dCONFIGURATION=$(CONFIGURATION) -dDISPLAY_FULL_VERSION=$(WIX_VERSION) -dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) Installer.wix -out "$(WIX_OUT_OBJ_WIN)"
+	$(WIX_PATH_PREFIX) $(StroikaRoot)Build/Scripts/RunWIXLight "$(WIX_OUT_OBJ_WIN)" -ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)'

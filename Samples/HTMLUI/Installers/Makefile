@@ -209,7 +209,7 @@ endif
 .PHONY: doBld_
 doBld_:
 	mkdir -p $(WIX_WORKDIR)
-	cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)HTMLUI.exe 2>&1
+	cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)HTMLUI.exe
 	mkdir -p $(WIX_WORKDIR)dlls
 	/bin/find $(TARGET_OUT_DIR)Backend -name "*.dll" -exec cp '{}' $(WIX_WORKDIR)/dlls \;
 	cp -r $(BUILT_HTML_DIR) $(WIX_WORKDIR)html
