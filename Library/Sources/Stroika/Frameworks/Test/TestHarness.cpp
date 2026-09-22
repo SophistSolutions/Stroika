@@ -168,3 +168,36 @@ void Test::WarnTestIssue (const Foundation::Characters::String& issue)
 {
     WarnTestIssue (issue.As<wstring> ().c_str ());
 }
+
+/*
+ ********************************************************************************
+ ******************* Test::ClockContinuitySampler *******************************
+ ********************************************************************************
+ */
+Test::ClockContinuitySampler::ClockContinuitySampler (Time::DurationSeconds sampleEvery)
+    : fSampler_{[this, sampleEvery] () {
+        Time::TimePointSeconds prev = Time::GetTickCount ();
+        while (not fDone_.load ()) {
+            this_thread::sleep_for (sampleEvery);
+            Time::TimePointSeconds now = Time::GetTickCount ();
+            double                 gap = (now - prev).count ();
+            prev                       = now;
+            // no compare_exchange loop needed - single writer
+            if (gap > fMaxGapSeconds_.load ()) {
+                fMaxGapSeconds_.store (gap);
+            }
+        }
+    }}
+{
+}
+
+Test::ClockContinuitySampler::~ClockContinuitySampler ()
+{
+    fDone_.store (true);
+    fSampler_.join ();
+}
+
+Time::DurationSeconds Test::ClockContinuitySampler::GetMaxObservedGap () const
+{
+    return Time::DurationSeconds{fMaxGapSeconds_.load ()};
+}

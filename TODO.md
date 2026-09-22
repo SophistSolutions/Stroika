@@ -18,10 +18,13 @@ Generally will track stuff here between releases
       Library and Tools 57.1/56.6, Build Samples 20.4/20.3, Build Tests 35.7/35.4 - and
       **Run-Tests 5.7/13.2**. ~113 min of compiling at identical throughput. Test52 PERFORMANCE was
       actually FASTER in the failing run.
-    - **Not the wait logic, and not a clock step.** `Time::RealtimeClock` is `steady_clock`
-      (`static_assert (is_steady)`). `ConditionVariable` re-waits in 0.25s chunks
-      (`sConditionVariableWaitChunkTime`), so 32s is ~129 consecutive missed wakeups - the thread
-      was not scheduled, rather than a lost notify or a bad deadline. Path is
+    - **Not a clock step; the wait logic NOT fully ruled out.** `Time::RealtimeClock` is `steady_clock`
+      (`static_assert (is_steady)`). NB: the 0.25s `sConditionVariableWaitChunkTime` path is NOT in
+      play here - `kSupportsStopToken` is TRUE on MSVC (`ConditionVariable<>` defaults to
+      `condition_variable_any`, and MSVC defines `__cpp_lib_jthread 201911L`), so this is a single
+      `condition_variable_any::wait_until` on the real deadline with the stop_token overload. One
+      wait oversleeping by 31s is therefore easier to credit than the earlier "129 missed chunked
+      wakeups" framing suggested, so Stroika's wait is not fully ruled out. Path is
       `WaitForDoneUntil` -> `WaitableEvent::WaitUntilQuietly` -> `ConditionVariable::wait_until`;
       no sockets, no poll. So issue 843 (UpdatableWaitForIOEvents socketpair -> pipe/eventfd, POSIX
       only) is NOT related. Issue 788 (windows WaitForIOReady busy-wait) does share the chunking

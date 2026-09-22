@@ -6,7 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <atomic>
 #include <string>
+#include <thread>
 #include <vector>
 
 #if qStroika_HasComponent_googletest
@@ -21,6 +23,7 @@ DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wcharacter-conv
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 namespace Stroika::Foundation::Characters {
     class String;
@@ -76,6 +79,49 @@ namespace Stroika::Frameworks::Test {
     void WarnTestIssue (const char* issue);
     void WarnTestIssue (const wchar_t* issue);
     void WarnTestIssue (const Foundation::Characters::String& issue);
+
+    /**
+     *  Samples a steady clock on its own thread for this object's lifetime, and reports the largest
+     *  gap it saw between consecutive samples.
+     *
+     *  A gap far larger than the sampling interval means the PROCESS did not run for that long - so
+     *  any timing measured across it says nothing about the code under test. Use it to tell "this
+     *  wait misbehaved" apart from "this machine stopped for half a minute", which look identical
+     *  from a single elapsed-time number. CI runners do the latter routinely, ~30s at a stretch.
+     *
+     *  Deliberately std::thread, not Execution::Thread: this is used to judge Stroika's own
+     *  thread/wait machinery, so it must not depend on it.
+     *
+     *  
+ote It cannot say WHY the time was lost - VM paused, host oversubscribed, process
+     *        descheduled all read the same. For deciding whether a measurement is trustworthy that
+     *        distinction does not matter.
+     *
+     *  \par Example Usage
+     *      \code
+     *          ClockContinuitySampler clockCheck;
+     *          ... time something ...
+     *          if (clockCheck.GetMaxObservedGap () > 2s) {  // host stalled; measurement is junk
+     *      \endcode
+     */
+    class ClockContinuitySampler {
+    public:
+        ClockContinuitySampler (Foundation::Time::DurationSeconds sampleEvery = Foundation::Time::DurationSeconds{0.05});
+        ClockContinuitySampler (const ClockContinuitySampler&) = delete;
+        ~ClockContinuitySampler ();
+        ClockContinuitySampler& operator= (const ClockContinuitySampler&) = delete;
+
+    public:
+        /**
+         *  Largest gap between consecutive samples so far. Safe to call while still running.
+         */
+        nonvirtual Foundation::Time::DurationSeconds GetMaxObservedGap () const;
+
+    private:
+        atomic<bool>   fDone_{false};
+        atomic<double> fMaxGapSeconds_{0};
+        thread         fSampler_;
+    };
 
 }
 #endif /*_Stroika_TestHarness_h_*/

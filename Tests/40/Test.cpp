@@ -249,14 +249,22 @@ namespace {
                 Time::TimePointSeconds          startTestAt             = Time::GetTickCount ();
                 Time::TimePointSeconds          caughtExceptAt          = Time::TimePointSeconds{};
 
-                try {
-                    t.WaitForDone (kWaitOnAbortFor);
-                }
-                catch (const system_error& e) {
-                    EXPECT_TRUE (e.code () == errc::timed_out);
-                    caughtExceptAt = Time::GetTickCount ();
-                }
+                //  Sample the clock alongside the wait. A 1s wait taking 30s looks the same whether the
+                //  WAIT misbehaved or the whole PROCESS stopped running - and CI runners do stop, ~30s at
+                //  a stretch (see Tests/40 notes in TODO.md). The max gap tells the two apart.
+                Time::DurationSeconds  maxClockGap_{};
                 Time::TimePointSeconds expectedEndAt = startTestAt + kWaitOnAbortFor;
+                {
+                    Test::ClockContinuitySampler clockCheck_;
+                    try {
+                        t.WaitForDone (kWaitOnAbortFor);
+                    }
+                    catch (const system_error& e) {
+                        EXPECT_TRUE (e.code () == errc::timed_out);
+                        caughtExceptAt = Time::GetTickCount ();
+                    }
+                    maxClockGap_ = clockCheck_.GetMaxObservedGap ();
+                }
                 if (not(expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_)) {
                     DbgTrace ("expectedEndAt={}, caughtExceptAt={}"_f, expectedEndAt.time_since_epoch ().count (),
                               caughtExceptAt.time_since_epoch ().count ());
@@ -280,7 +288,9 @@ namespace {
                 //
                 // Got another warning 2019-08-12 on raspberrypi - but no change cuz about to upgrade to faster raspberrypi
                 //
-                EXPECT_LE (caughtExceptAt, expectedEndAt + kMarginOfErrorHi_Error_);
+                EXPECT_LE (caughtExceptAt, expectedEndAt + kMarginOfErrorHi_Error_)
+                    << "largest clock gap observed during the wait = " << maxClockGap_.count ()
+                    << "s (seconds here means the PROCESS stopped running, so this measures the host, not Stroika)";
                 VerifyTestResultWarning (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_);
             }
 
