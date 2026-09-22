@@ -8,48 +8,15 @@ Generally will track stuff here between releases
 
 ## Open
 
-- **Tests/40 timing failures on Windows CI are the RUNNER FREEZING, not Stroika - decide what to do
-  about the test** (2026-09-22, follow up within a day or so). Analysis done; only the decision is
-  left, so do not re-derive it.
-  Symptom: `Thread::WaitForDone (1.0s)` threw `timed_out` after **32.26 s**, blowing
-  `kMarginOfErrorHi_Error_` (15s) at `Tests/40/Test.cpp:283`. Seen in runs 35642238573 (BOTH
-  vs2k22 and vs2k26, msys-x86_64-Release) and 35647403489.
-    - **Not a slow runner.** Same job, passing run vs failing run: docker pull 7.8/7.7 min, Build
-      Library and Tools 57.1/56.6, Build Samples 20.4/20.3, Build Tests 35.7/35.4 - and
-      **Run-Tests 5.7/13.2**. ~113 min of compiling at identical throughput. Test52 PERFORMANCE was
-      actually FASTER in the failing run.
-    - **Not a clock step; the wait logic NOT fully ruled out.** `Time::RealtimeClock` is `steady_clock`
-      (`static_assert (is_steady)`). NB: the 0.25s `sConditionVariableWaitChunkTime` path is NOT in
-      play here - `kSupportsStopToken` is TRUE on MSVC (`ConditionVariable<>` defaults to
-      `condition_variable_any`, and MSVC defines `__cpp_lib_jthread 201911L`), so this is a single
-      `condition_variable_any::wait_until` on the real deadline with the stop_token overload. One
-      wait oversleeping by 31s is therefore easier to credit than the earlier "129 missed chunked
-      wakeups" framing suggested, so Stroika's wait is not fully ruled out. Path is
-      `WaitForDoneUntil` -> `WaitableEvent::WaitUntilQuietly` -> `ConditionVariable::wait_until`;
-      no sockets, no poll. So issue 843 (UpdatableWaitForIOEvents socketpair -> pipe/eventfd, POSIX
-      only) is NOT related. Issue 788 (windows WaitForIOReady busy-wait) does share the chunking
-      idiom - `WaitForIOReady.h:115` says it "mirrors" `sConditionVariableWaitChunkTime`.
-    - **The tell** (from the `Log Data (<job>)` artifacts' `TRACE_LOGS/`): gaps >25s land inside
-      code that cannot block - Test02 `LocaleUNICODEConversions_`, Test31 mid AES/SHAKE loop,
-      Test43 `TestHostParsing_`, Test50 timezone arithmetic, Test52 string-append benchmark.
-      Counted: failing job **13 gaps >25s totalling 509s**; passing job **1 gap of 39s**. That 509s
-      accounts for the +450s Run-Tests gained. Sizes quantize tightly at 32-36s.
-      So the host freezes ~30-35s at a time and always has; the test fails when a freeze happens to
-      land inside that particular 1s wait.
-    - **Decide between:** (1) a watchdog sampling `steady_clock` (~50ms) across the wait - if the
-      largest inter-sample gap is itself seconds, the HOST stalled, so report warning/skip rather
-      than failure; keeps the assertion tight and is reusable by the other timing-sensitive tests;
-      (2) demote this one assertion to warning on CI and rely on the medusa regression runs for the
-      real signal; (3) keep recording occurrences.
-      **NOT: raise the margin again.** The 2 -> 5 -> 7 -> 10 -> 15s history in that file was for
-      genuinely slow hardware (raspberrypi, asan, docker-on-laptop) where a bigger margin still
-      tested something. No margin that survives a 32s freeze can still detect a real regression in a
-      1s timeout.
-    - Probably also worth reporting the freezes to GitHub - 13 discrete ~32s host stalls inside a
-      13 minute window is theirs, not ours.
-    - To redo the measurement: fetch job logs + the `Log Data (<job>)` artifact (see AGENTS.md for
-      the credential recipe), then scan `TRACE_LOGS/*` for consecutive-timestamp deltas using the
-      line prefix regex `^\[[^\]]+\]\[(\d+\.\d+)\]`.
+- **Tests/40 timing failures - decide what to do, once there is data** (2026-09-22). Tests/40
+  intermittently fails on Windows CI with a 1s `WaitForDone` taking ~32s. `ClockContinuitySampler`
+  now reports, in the failure text, the largest gap in which the process was not running - a healthy
+  machine reads ~0.06s, so a reading of seconds means the HOST stalled and the measurement says
+  nothing about Stroika. Full analysis is in the commit message for 118e1e2b88; do not re-derive it.
+  Next: wait for a CI failure, read that number, then decide - demote the assertion to a warning when
+  the host stalled, or investigate Stroika's wait for real. Do NOT just raise the margin again (it has
+  gone 2 -> 5 -> 7 -> 10 -> 15s already, each time without knowing which cause was being accommodated).
+  Note LGP has never seen this on medusa-windows-dev's own regression runs - only in CI.
 
 - MakeBuildRoot / out-of-source builds: moved to
   https://github.com/SophistSolutions/Stroika/issues/1170 - too big for this list. The Windows
@@ -116,7 +83,7 @@ Generally will track stuff here between releases
   account, WMI security descriptor, files/ACLs) survives a restart - since it's all disk-backed, it
   should, but verify the checklist above still holds after any future reboot too, just in case.
 
-- **[PARTIALLY FIXED 2026-09-19] Pasting into any MSYS2 bash session on medusa-windows-dev was slow,
+- **[FIX SINCE BACKED OUT - see 2026-09-22 note at the end] Pasting into any MSYS2 bash session on medusa-windows-dev was slow,
   proportional to paste length** (a few chars: instant; a few lines: up to ~1 min). Isolated
   2026-09-19 while setting up the `stroika-dev` non-admin SSH account; root-caused the same day once
   other work reached a good breaking point. Root cause: an upstream Cygwin/MSYS2 regression
@@ -158,6 +125,15 @@ Generally will track stuff here between releases
   (Aside, not acted on: the separate `C:\cygwin` install is still on the unpatched `3.6.10-1` and would
   need its own upgrade if anyone actually uses it day-to-day - it isn't part of the standard MSYS2-based
   dev setup this TODO entry is about.)
+  **2026-09-22: medusa-windows-dev is back on `msys2-runtime 3.6.9-2`**, so everything above that
+  describes the box as running `3.6.10-4` is stale (`pacman -Q` and `uname -r` agree on 3.6.9-2, so
+  it is a real package downgrade, not the single-DLL swap). Paste is unaffected by the downgrade:
+  3.6.9 predates the regression entirely, and 3.6.10-4 only restored what 3.6.9 already had - so
+  either way you get the ~7s architectural baseline described above, not the ~1min regression.
+  The reason to be down there is instead
+  https://github.com/SophistSolutions/Stroika/issues/1169 - the parallel-build hang, which affects
+  3.6.10-1 through 3.6.10-4 with no fixed release, so 3.6.9 is the only version that avoids it.
+  Revisit when upstream ships one with both the hang fix and 3.6.10's other changes.
 
 - v3.0d25
    - Consider losing SystemErrorException - a bit of a footgun (someone could catch it - like TimeOutException)
