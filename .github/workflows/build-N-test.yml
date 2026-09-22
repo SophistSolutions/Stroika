@@ -44,9 +44,6 @@ permissions:
 #   is most of this matrix, and the reason CI exists here - that history is the only bisect data there
 #   is. Faster answers about the tip are not worth losing the ability to attribute a failure.
 #
-#   The queueing is real but self-correcting: obsolete runs finish, slots free, every run still
-#   reports. timeout-minutes below addresses the one case cancel-in-progress could never have helped
-#   with anyway - a WEDGED run, which nothing supersedes.
 
 jobs:
   LinuxMatrixPrep:
