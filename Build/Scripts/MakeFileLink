@@ -1,0 +1,158 @@
+#!/bin/bash
+#
+#   Create an alias - a second name - for an existing FILE, using the best mechanism the host
+#   platform can actually deliver.
+#
+#   @see MakeDirectoryLink for directories. They are deliberately separate scripts: the two cases
+#   have different mechanisms, different failure modes, and on Windows different answers to whether
+#   they can work at all. One script branching on whether the target happens to be a directory just
+#   picks a mode for you silently, which is how this class of bug hides.
+#
+#   That split is not merely tidiness. Windows records file-vs-directory at symlink CREATION time, so
+#   when the target does not exist yet there is nothing to infer from - only the CALLER knows which
+#   was meant, and guessing wrong produces a link that is broken for good. Which script you invoke IS
+#   that answer. @see https://github.com/SophistSolutions/Stroika/issues/1075, whose title is exactly
+#   this: "bug with windows symbolic links when target not present".
+#
+#   WHAT YOU ACTUALLY GET
+#
+#       UNIX / macOS        symbolic link (ln -s)
+#       Windows             HARD link
+#
+#   WHY, on Windows
+#
+#   A symbolic link created by a process that does not hold SeCreateSymbolicLinkPrivilege - which is
+#   what you get whenever Developer Mode supplies the fallback creation path, ie. the normal case for
+#   an ordinary developer account - is marked UNTRUSTED. Windows Redirection Guard then stops native
+#   tools traversing it, reporting STATUS_UNTRUSTED_MOUNT_POINT, which surfaces from MSVC as
+#   "LNK1104: cannot open file ...". Nothing in the MSYS/Cygwin world notices: ls shows a perfect
+#   symlink and cat reads straight through it, so the failure lands far from its cause.
+#
+#   Granting that privilege does make it work for that account, but it needs administrator setup, it
+#   appears to be per-account, and it is a Microsoft policy that can change - so Stroika does not
+#   build on it. A hard link needs no privilege, has no reparse point for Redirection Guard to have
+#   an opinion about, and works for every account. It also carries no security concern of its own:
+#   unlike a symlink it has no target path, so it cannot redirect anybody anywhere - which is exactly
+#   why Windows never gated it.
+#
+#   KNOW THAT THE TWO PLATFORMS DO NOT MEAN THE SAME THING BY "link". Neither behavior is wrong -
+#   they are two reasonable answers to a genuine question - but they ARE different, and this script
+#   now hands you one or the other depending on the host, so it is worth having straight.
+#
+#   A SYMBOLIC link names a PATH. There is a primary: the target is the file, the link is an alias
+#   that resolves to whatever lives at that path right now. Replace the target and the alias follows
+#   to the new contents. Replace the link itself and the link is simply gone.
+#
+#   A HARD link names the file DATA. There is no primary - the two names are equally real peers.
+#   Replace either name (as opposed to writing through it) and that name becomes a different file
+#   while the other goes on referring to the original. The two paths stop being the same file, and
+#   nothing reports it; you notice as content that stopped tracking.
+#
+#   Which of those you WANT is genuinely situational. The reason it matters in practice is that
+#   "replace" is the normal way to save a file on Windows: saving ATOMICALLY means write a temp file
+#   then rename it over the original (ReplaceFile/MoveFileEx). git does it when checking out a new
+#   version, and so do editors and IDEs - including Visual Studio's property-page editor writing a
+#   .props file, which is one of the very files aliased this way. Writing IN PLACE
+#   (open/truncate/write) keeps one inode and so keeps a hard link together; that is what Stroika's
+#   own generators happen to do, but what an external tool does is not ours to choose.
+#
+#   Practical upshot: re-run this after anything that could have replaced EITHER name. An
+#   application's `make project-files` does exactly that for the Stroika .props files.
+#   @see https://github.com/SophistSolutions/Stroika/issues/1075
+#
+# EXAMPLES:
+#       ${StroikaRoot}Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+#       ${StroikaRoot}Build/Scripts/MakeFileLink "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
+#
+
+TARGET=$1
+ALIASPATH=$2
+
+get_script_dir () {
+     #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
+     SOURCE="${BASH_SOURCE[0]}"
+     # While $SOURCE is a symlink, resolve it
+     while [ -h "$SOURCE" ]; do
+          DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+          SOURCE="$( readlink "$SOURCE" )"
+          # If $SOURCE was a relative symlink (so no "/" as prefix, need to resolve it relative to the symlink base directory
+          [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+     done
+     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+     echo "$DIR"
+}
+MY_PATH=$(get_script_dir)
+
+DETECTED_HOST_OS=$(${MY_PATH}/DetectedHostOS)
+
+if [ $# == 2 ] ; then
+    LINKPATH_="$ALIASPATH"
+else
+    LINKPATH_="./$(basename $TARGET)"
+fi
+
+if [ -d "$TARGET" ] ; then
+    echo "ERROR: MakeFileLink: target is a DIRECTORY - use MakeDirectoryLink instead: $TARGET" 1>&2
+    exit 1
+fi
+
+#   Replace whatever is already there (a stale link of either kind); otherwise ln just fails on the
+#   second and subsequent builds. Never touch a directory.
+if [ ! -d "$LINKPATH_" ] ; then
+    rm -f "$LINKPATH_"
+fi
+
+IsWindowsHost_ () {
+    [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]]
+}
+
+MakeSymLink_ () {
+    #   The target must exist for a native Windows symlink (Windows records file-vs-directory at
+    #   creation time), but we do not want to leave an empty one behind. Comes up in the Skel script.
+    local forced_=0
+    if IsWindowsHost_ && [ ! -e "$TARGET" ] ; then
+        forced_=1
+        touch "$TARGET"
+    fi
+    if [[ "$DETECTED_HOST_OS" == "Cygwin" ]] ; then
+        export CYGWIN="winsymlinks:nativestrict;$CYGWIN"
+    fi
+    if [[ "$DETECTED_HOST_OS" == "MSYS" ]] ; then
+        export MSYS="winsymlinks:nativestrict;$MSYS"
+    fi
+    ln -s "$TARGET" "$LINKPATH_"
+    local status_=$?
+    if [ $forced_ == 1 ] ; then
+        rm "$TARGET"
+    fi
+    return $status_
+}
+
+if ! IsWindowsHost_ ; then
+    #   Everywhere except Windows, a symbolic link is simply the right answer.
+    MakeSymLink_ || exit $?
+    exit 0
+fi
+
+if [ ! -e "$TARGET" ] ; then
+    #   Nothing to hard link TO yet, so fall back to a symlink. It cannot be usefully verified (there
+    #   is nothing to traverse to) and is known-fragile on Windows - @see Stroika issue 1075.
+    MakeSymLink_ || exit $?
+    exit 0
+fi
+
+#   Windows, and the target exists: hard link, deterministically. Same result for every account,
+#   with no privilege and no trust semantics to go wrong.
+if ! ln "$TARGET" "$LINKPATH_" 2> /dev/null ; then
+    cat 1>&2 <<EOF
+ERROR: MakeFileLink: could not create a hard link
+           link:   $LINKPATH_
+           target: $TARGET
+       A hard link requires both names to live on the SAME volume, and the target to be readable.
+       A Windows symbolic link is not a dependable substitute (see the header of this script), so
+       this is a hard failure rather than a silent downgrade to something native tools may refuse
+       to follow.
+EOF
+    exit 1
+fi
+exit 0

@@ -8,6 +8,24 @@ Generally will track stuff here between releases
 
 ## Open
 
+- **Make the build output roots relocatable by VARIABLE, so MakeBuildRoot stops needing directory
+  symlinks** (2026-09-22). `MakeBuildRoot` hand-rolls an out-of-source build by replacing
+  `Builds/`, `IntermediateFiles/` and `ConfigurationFiles/` with directory symbolic links. On
+  Windows that cannot be made to work for an arbitrary account: links created without
+  `SeCreateSymbolicLinkPrivilege` are UNTRUSTED and Redirection Guard stops MSVC traversing them
+  (`STATUS_UNTRUSTED_MOUNT_POINT`), a directory cannot be hard linked, and a junction is blocked by
+  the same mitigation (all three measured 2026-09-22). `MakeDirectoryLink` now fails loudly rather
+  than leaving links only some tools can follow - but that makes MakeBuildRoot unusable on Windows
+  for a non-privileged account rather than fixing it.
+  The real fix is a `StroikaOutputRoot ?= $(StroikaRoot)` variable that those three paths derive
+  from, so relocating output is a make variable instead of filesystem trickery - works everywhere,
+  for every account, and is not at Microsoft’s discretion. Measured scope: **163 lines across 127
+  files** reference `$(StroikaRoot)Builds/`, `$(StroikaRoot)IntermediateFiles/` or
+  `$(StroikaRoot)ConfigurationFiles/` - mostly mechanical.
+  This is the same out-of-source model CMake provides natively, so it likely belongs WITH the CMake
+  conversion (https://github.com/SophistSolutions/Stroika/issues/1157) rather than as separate
+  churn that conversion would obsolete. Decide which.
+
 - **New non-admin `stroika-dev` account set up on medusa-windows-dev for Remote-SSH dev work**
   (2026-09-19), to avoid Win32-OpenSSH granting an unfiltered admin token to Administrators-group
   SSH logons (root cause + full analysis: see git history / prior session around this date if this

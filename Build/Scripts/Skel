@@ -127,9 +127,9 @@ mkMyApp_()
 mkFinish_()
 {
   echo "Genericly adjusting $APP_ROOT contents for skel produced app..."
-  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/Build/Scripts/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
-  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/Build/Scripts/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
-  (cd $APP_ROOT; $StroikaRoot/Build/Scripts/MakeSymbolicLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
+  (cd $APP_ROOT; $StroikaRoot/Build/Scripts/MakeFileLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
   
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/../Shared/Skel-Templates/Common/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/../Shared/Skel-Templates/Common/.vscode/settings.json > $APP_ROOT/.vscode/settings.json

@@ -1,0 +1,171 @@
+#!/bin/bash
+#
+#   Create an alias - a second name - for an existing DIRECTORY.
+#
+#   @see MakeFileLink for files. They are deliberately separate scripts: the two cases have
+#   different mechanisms, different failure modes, and on Windows different answers to whether they
+#   can work at all.
+#
+#   WHAT YOU ACTUALLY GET
+#
+#       UNIX / macOS        symbolic link (ln -s), as always - dependable
+#       Windows             symbolic link, verified FOR THE CREATING ACCOUNT AT THIS MOMENT, and a
+#                           hard error if even that much does not hold
+#
+#   ON WINDOWS, TREAT A DIRECTORY LINK AS FRAGILE. That is the honest summary, and it is a worse
+#   story than the file case in MakeFileLink, which at least has a mechanism that works for everyone:
+#
+#       one account on one machine .................. usually fine
+#       a checkout SHARED BY MORE THAN ONE ACCOUNT .. expect it to break
+#
+#   Whether a symbolic link is TRUSTED is decided by how, and by whom, it was created, and
+#   Redirection Guard applies that verdict PER ACCOUNT. A link one account can traverse is not
+#   thereby a link another account can traverse - and the account that hits the wall is not the one
+#   that made it, so the error surfaces somewhere unrelated, as a build failure with no visible
+#   connection to a link.
+#
+#   Note what that means for the check below: it runs in THIS process, as THIS user, moments after
+#   creation. Passing it proves the link works here and now. It proves nothing whatsoever about the
+#   next account to open this tree, and there is no way for a script to ask on their behalf. So a
+#   silent success here is a narrower claim than it looks.
+#
+#   If two accounts do share a checkout on Windows - which is exactly what MakeBuildRoot invites, and
+#   what an RDP-plus-Remote-SSH setup makes easy to drift into - the link has to be RE-CREATED by
+#   whichever account is about to use it, and even that stands on a Microsoft policy rather than on
+#   anything we control. The real fix is to not need a directory link at all; @see the
+#   StroikaOutputRoot entry in TODO.md.
+#
+#   WHY, on Windows - and why there is no fallback here
+#
+#   A symbolic link created by a process that does not hold SeCreateSymbolicLinkPrivilege - which is
+#   what you get whenever Developer Mode supplies the fallback creation path, ie. the normal case for
+#   an ordinary developer account - is marked UNTRUSTED. Windows Redirection Guard then stops native
+#   tools traversing it, reporting STATUS_UNTRUSTED_MOUNT_POINT. For a relocated build directory that
+#   means MSVC cannot see the tree at all, while ls and cat are perfectly happy - so the failure
+#   lands far from its cause.
+#
+#   Unlike the file case there is nothing to fall back to:
+#       - a directory cannot be hard linked, on any Windows filesystem
+#       - a junction (mklink /J) needs no privilege, but junctions are precisely what Redirection
+#         Guard was built to block - "mount point" in STATUS_UNTRUSTED_MOUNT_POINT IS the junction.
+#         Measured, not assumed: an unprivileged junction fails identically.
+#
+#   So this verifies the link it just made, and FAILS if a native process cannot traverse it, rather
+#   than leaving one that only half the world can follow. Granting the account the "Create symbolic
+#   links" right makes it work for that account, but that needs administrator setup, has to be
+#   repeated per account, and is a Microsoft policy that can change - so do not build a workflow on
+#   it.
+#   @see Documentation/Building-Stroika.md, and Build/Scripts/MakeBuildRoot which is the main caller.
+#
+# EXAMPLES:
+#       ${StroikaRoot}Build/Scripts/MakeDirectoryLink /fastdisk/StroikaBuilds/Builds
+#       ${StroikaRoot}Build/Scripts/MakeDirectoryLink /fastdisk/StroikaBuilds/Builds ./Builds
+#
+
+TARGET=$1
+ALIASPATH=$2
+
+get_script_dir () {
+     #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
+     SOURCE="${BASH_SOURCE[0]}"
+     # While $SOURCE is a symlink, resolve it
+     while [ -h "$SOURCE" ]; do
+          DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+          SOURCE="$( readlink "$SOURCE" )"
+          # If $SOURCE was a relative symlink (so no "/" as prefix, need to resolve it relative to the symlink base directory
+          [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+     done
+     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+     echo "$DIR"
+}
+MY_PATH=$(get_script_dir)
+
+DETECTED_HOST_OS=$(${MY_PATH}/DetectedHostOS)
+
+if [ $# == 2 ] ; then
+    LINKPATH_="$ALIASPATH"
+else
+    LINKPATH_="./$(basename $TARGET)"
+fi
+
+if [ -e "$TARGET" ] && [ ! -d "$TARGET" ] ; then
+    echo "ERROR: MakeDirectoryLink: target is not a directory - use MakeFileLink instead: $TARGET" 1>&2
+    exit 1
+fi
+if [ ! -e "$TARGET" ] ; then
+    #   Deliberately NOT guessing. Windows records file-vs-directory at symlink CREATION time, so a
+    #   link made before its target exists is stamped with whichever kind we assumed - and if we
+    #   assume wrong it is broken for good, in the way Stroika issue 1075 describes. The caller knows
+    #   which it meant; the filesystem does not. MakeBuildRoot mkdir -p's the target first.
+    echo "ERROR: MakeDirectoryLink: target directory does not exist - create it first: $TARGET" 1>&2
+    exit 1
+fi
+
+IsWindowsHost_ () {
+    [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]]
+}
+
+#
+#   Return 0 iff a NATIVE (non-Cygwin/MSYS) process can traverse $1. Reports FAILURE only for the one
+#   specific condition this is about - Windows refusing an untrusted link. Anything else (no
+#   powershell to probe with, an ACL quirk, a locked directory) counts as fine: a false alarm here
+#   would be worse than the problem being guarded against.
+#
+VerifyNativelyTraversable_ () {
+    local link_="$1"
+    local winPath_
+    winPath_=$(cygpath -w "$link_" 2> /dev/null) || return 0    # cannot check - do not block the build
+    local verdict_
+    #   NB: $(...) not backticks - inside backticks bash would eat the \$ and expand $p itself.
+    verdict_=$(powershell -NoProfile -Command "\$p='$winPath_'; try { [IO.Directory]::GetFileSystemEntries(\$p) | Out-Null; 'OK' } catch { \$_.Exception.Message }" 2> /dev/null)
+    case "$verdict_" in
+        *untrusted*|*UNTRUSTED*|*Untrusted*)  return 1 ;;
+        *)                                    return 0 ;;
+    esac
+}
+
+if [[ "$DETECTED_HOST_OS" == "Cygwin" ]] ; then
+    export CYGWIN="winsymlinks:nativestrict;$CYGWIN"
+fi
+if [[ "$DETECTED_HOST_OS" == "MSYS" ]] ; then
+    export MSYS="winsymlinks:nativestrict;$MSYS"
+fi
+
+#   Replace a stale link if one is already there. Note rm -f on a symlink removes the LINK, not what
+#   it points at - so re-running this never destroys relocated build output.
+if [ -L "$LINKPATH_" ] ; then
+    rm -f "$LINKPATH_"
+fi
+
+ln -s "$TARGET" "$LINKPATH_" || exit $?
+
+if ! IsWindowsHost_ ; then
+    exit 0
+fi
+
+if ! VerifyNativelyTraversable_ "$LINKPATH_" ; then
+    rm -f "$LINKPATH_"
+    cat 1>&2 <<EOF
+ERROR: MakeDirectoryLink: Windows will not let native tools follow the directory symlink just
+       created, so it has been removed rather than left to break the build later and elsewhere:
+
+           link:   $LINKPATH_
+           target: $TARGET
+
+       There is no fallback for a directory: it cannot be hard linked, and a junction is blocked by
+       the same mitigation.
+
+       Windows marks a link UNTRUSTED when the creating process does not hold
+       SeCreateSymbolicLinkPrivilege, and Redirection Guard then stops native tools (MSVC link.exe,
+       cl.exe, PowerShell, ...) from traversing it. To make this work for the account running the
+       build ($(whoami)), grant it "Create symbolic links":
+
+           secpol.msc -> Local Policies -> User Rights Assignment -> Create symbolic links
+
+       then log that account off and back on - privileges are fixed at logon, so for an SSH session
+       that means reconnecting. Note this is per-account: switching Windows accounts means
+       re-running whatever created these links. @see Documentation/Building-Stroika.md.
+EOF
+    exit 1
+fi
+exit 0

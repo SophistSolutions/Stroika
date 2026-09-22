@@ -380,6 +380,34 @@ Final build products (libraries and executables) go into
 
 - **Builds/{CONFIGURATION-NAME}**.
 
+### Relocating build output - MakeBuildRoot
+
+`Build/Scripts/MakeBuildRoot <ROOT>` redirects **Builds/**, **IntermediateFiles/** and
+**ConfigurationFiles/** somewhere else - a faster disk, or off a shared or network path - by
+replacing them with directory symbolic links. Re-running it recreates those links; `rm -rf` on a
+symbolic link removes the link and not what it points at, so relocated build output is not lost.
+
+**On Windows this is not dependable, and that is not something Stroika can fix.** Windows marks a
+symbolic link created without `SeCreateSymbolicLinkPrivilege` as UNTRUSTED, and its Redirection
+Guard mitigation then stops native tools - MSVC’s `cl.exe` and `link.exe` among them - from
+traversing it, reporting `STATUS_UNTRUSTED_MOUNT_POINT`. For a relocated build directory that means
+the compiler cannot see the tree at all, while `ls` and `cat` are perfectly happy, so the failure
+surfaces far from its cause.
+
+There is no workaround for a *directory*: directories cannot be hard linked, and a junction
+(`mklink /J`) needs no privilege but is exactly what Redirection Guard was built to block. So
+`MakeBuildRoot` verifies the links it creates and **fails** rather than leaving ones only some
+programs can follow.
+
+Granting the account the **Create symbolic links** right (`secpol.msc` -> Local Policies -> User
+Rights Assignment, then log off and back on - for SSH, reconnect) makes it work for *that account*.
+But it needs administrator setup, it appears to be per-account - switching Windows accounts means
+re-running `MakeBuildRoot` - and it is a Microsoft policy that can change. So treat it as a local
+convenience, not something to build a workflow on, and note that membership in Administrators is
+not sufficient: UAC filters that privilege out of a non-elevated shell.
+
+None of this applies on UNIX or macOS.
+
 ---
 
 ## The Build folder
@@ -420,6 +448,14 @@ A few are meant to be run by hand:
 - `FormatCode` - what `make format-code` runs (clang-format)
 - `RegressionTests`, `RunLocalWSLRegressionTests`, `RunRemoteRegressionTests` - test drivers
 - `RunInDockerEnvironment` - start a dev container with useful options preset
+- `MakeBuildRoot` - relocate build output; see [Relocating build output](#relocating-build-output---makebuildroot)
+
+Two that callers pick between deliberately: **`MakeFileLink`** and **`MakeDirectoryLink`** create an
+alias for a file / for a directory. They are separate because the two cases need different
+mechanisms and, on Windows, have different answers to whether they can work at all - and because
+Windows stamps file-vs-directory into a symbolic link at creation time, so when the target does not
+exist yet only the caller knows which was meant. The older `MakeSymbolicLink` still works, warns,
+and forwards.
 
 ### Build/Lib
 

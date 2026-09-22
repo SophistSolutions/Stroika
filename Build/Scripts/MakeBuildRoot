@@ -1,4 +1,41 @@
 #!/bin/bash
+#
+#   This is mainly used for building apps on top of Stroika and having those apps share
+#   a common build root with Stroika itself (and common ConfigurationFiles).
+#
+# build-root:
+# 	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Making BuildRoot...
+# 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./Build/Scripts/MakeBuildRoot ../../../
+#
+#   USAGE
+#
+#       Build/Scripts/MakeBuildRoot <root-directory>
+#
+#   Run it from the TOP of the checkout - it operates on ./Builds, ./IntermediateFiles and
+#   ./ConfigurationFiles relative to the current directory. <root-directory> must already exist;
+#   the three subdirectories under it are created if needed.
+#
+#   EXAMPLES
+#
+#       Build/Scripts/MakeBuildRoot /scratch/stroika-out
+#       Build/Scripts/MakeBuildRoot ../../../
+#
+#   DESTRUCTIVE: it does `rm -rf Builds ConfigurationFiles IntermediateFiles` first, so any existing
+#   output AND any existing configurations in this checkout are discarded. Re-run
+#   `make default-configurations` (or your own configure lines) afterwards.
+#
+#   WINDOWS - EXPECT THIS TO FAIL for an ordinary (non-administrator) account, by design as of
+#   2026-09. There is no working mechanism for aliasing a DIRECTORY there: a symbolic link made
+#   without SeCreateSymbolicLinkPrivilege is marked UNTRUSTED and Redirection Guard stops native
+#   tools traversing it (STATUS_UNTRUSTED_MOUNT_POINT - from MSVC that surfaces as an unrelated-
+#   looking "LNK1104: cannot open file"), directories cannot be hard linked at all, and a junction
+#   needs no privilege but is blocked by that same mitigation. MakeDirectoryLink verifies what it
+#   made and fails loudly rather than leaving a tree only half the toolchain can see, so this script
+#   stops with a real error instead of producing a checkout that mysteriously will not link.
+#   @see Documentation/Building-Stroika.md "Relocating build output", and the TODO entry on deriving
+#   the three output roots from a StroikaOutputRoot make variable - which is the actual fix, works
+#   for every account on every platform, and is how CMake does it natively.
+#
 ROOT=$1
 
 MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
@@ -18,10 +55,10 @@ TARGET_BUILDS=$ROOT/Builds
 TARGET_CONFIGURATIONFILES=$ROOT/ConfigurationFiles
 
 mkdir -p $TARGET_INTERMEDIATEFILES
-Build/Scripts/MakeSymbolicLink $TARGET_INTERMEDIATEFILES
+Build/Scripts/MakeDirectoryLink $TARGET_INTERMEDIATEFILES || exit $?
 
 mkdir -p $TARGET_BUILDS
-Build/Scripts/MakeSymbolicLink $TARGET_BUILDS
+Build/Scripts/MakeDirectoryLink $TARGET_BUILDS || exit $?
 
 mkdir -p $TARGET_CONFIGURATIONFILES
-Build/Scripts/MakeSymbolicLink $TARGET_CONFIGURATIONFILES
+Build/Scripts/MakeDirectoryLink $TARGET_CONFIGURATIONFILES || exit $?
