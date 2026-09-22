@@ -615,6 +615,31 @@ Using SSH, it&#39;s also helpful to setup ssh keys to avoid re-entering password
 
 ---
 
+## Windows gotchas
+
+Two that cost real time to diagnose, because neither is hinted at by the error.
+
+**"Permission denied" on a build product, with a permissive DACL.** Check for a Mandatory Integrity
+Control label before assuming an ACL or ownership problem:
+
+```bash
+icacls Builds/Debug/Samples-HTMLUI/*.msi    # look for: Mandatory Label\High Mandatory Level:(NW)
+```
+
+A file is stamped High only if an elevated process wrote it - in practice, test-installing a built
+`.msi` in place, since `msiexec /i` (or double-clicking Install) elevates and labels the file it
+installs *from*. "No-Write-Up" then blocks every Medium-integrity process from writing or deleting
+it, so `make distclean` fails no matter what the DACL says. Being in Administrators does not help:
+UAC leaves an ordinary shell at Medium integrity too.
+
+Fix from an elevated shell with `icacls "<path>" /setintegritylevel Medium`, or just delete the file.
+Avoid it by copying a built `.msi` somewhere like `%TEMP%` before test-installing, so the elevated
+`msiexec` never touches anything inside the checkout.
+
+**MSYS2 resolves HOME two different ways.** bash's own `$HOME` is normally `C:\Users\<account>`, but
+`ssh.exe` and git's bundled ssh resolve home through nsswitch to `C:\msys64\home\<account>` instead.
+If something depending on dotfiles, `known_hosts` or keys mysteriously cannot see them, check both.
+
 ## Integration with IDEs
 
 ### Using Visual Studio.net
