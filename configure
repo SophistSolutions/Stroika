@@ -862,7 +862,7 @@ sub     FillInToolsPathAdditionsIfNeeded_
 	if ($includeAutomaticDependencies) {
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("TOOLS_PATH_ADDITIONS");
-			$TOOLS_PATH_ADDITIONS =  trim (`cygpath --mixed --path \"$x)\"`);
+			$TOOLS_PATH_ADDITIONS =  trim (`cygpath --mixed --path \"$x\"`);
 			$VSVARS_VSINSTALLDIR = GetMSVCVarName_('VSINSTALLDIR');
 			$VSVARS_WindowsSdkDir = GetMSVCVarName_('WindowsSdkDir');
 			if ($VSVARS_WindowsSdkDir eq "") {
