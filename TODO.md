@@ -8,16 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- **Tests/40 timing failures - decide what to do, once there is data** (2026-09-22). Tests/40
-  intermittently fails on Windows CI with a 1s `WaitForDone` taking ~32s. `ClockContinuitySampler`
-  now reports, in the failure text, the largest gap in which the process was not running - a healthy
-  machine reads ~0.06s, so a reading of seconds means the HOST stalled and the measurement says
-  nothing about Stroika. Full analysis is in the commit message for 118e1e2b88; do not re-derive it.
-  Next: wait for a CI failure, read that number, then decide - demote the assertion to a warning when
-  the host stalled, or investigate Stroika's wait for real. Do NOT just raise the margin again (it has
-  gone 2 -> 5 -> 7 -> 10 -> 15s already, each time without knowing which cause was being accommodated).
-  Note LGP has never seen this on medusa-windows-dev's own regression runs - only in CI.
-
 - MakeBuildRoot / out-of-source builds: moved to
   https://github.com/SophistSolutions/Stroika/issues/1170 - too big for this list. The Windows
   symbolic-link background it came out of is consolidated in

@@ -288,6 +288,20 @@ namespace {
                 //
                 // Got another warning 2019-08-12 on raspberrypi - but no change cuz about to upgrade to faster raspberrypi
                 //
+                // IF YOU ARE READING THIS BECAUSE THE ASSERTION BELOW JUST FIRED - read the clock-gap number in
+                // its message first, and do NOT simply raise the margin again (the list above is what that
+                // habit produces: 2 -> 5 -> 7 -> 10 -> 15s, each bump made without knowing what was being
+                // accommodated).
+                //      gap of SECONDS   the host stopped running the process - measured on Windows CI runners
+                //                       at ~32s, a dozen times in one 13 minute test phase. The number says
+                //                       nothing about Stroika; demote this to VerifyTestResultWarning for that
+                //                       case rather than loosening the bound for everyone.
+                //      gap of ~0.06s    the machine was healthy and the WAIT really did oversleep. That is a
+                //                       real bug in Thread::WaitForDone / WaitableEvent / ConditionVariable,
+                //                       and worth chasing.
+                // Full analysis in the commit message for 118e1e2b88. Never yet seen on medusa-windows-dev's
+                // own regression runs - only in GitHub Actions. -- LGP 2026-09-22
+                //
                 EXPECT_LE (caughtExceptAt, expectedEndAt + kMarginOfErrorHi_Error_)
                     << "largest clock gap observed during the wait = " << maxClockGap_.count ()
                     << "s (seconds here means the PROCESS stopped running, so this measures the host, not Stroika)";
