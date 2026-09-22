@@ -32,9 +32,10 @@ elif [ `uname -s` == "Darwin"  ] ; then
     PSUEDONAME="Darwin - MacOSX"
     REV=""
 fi
-case `uname` in
-   CYGWIN*)  DistroBasedOn='cygwin' ;;
-   MSYS*)  DistroBasedOn='msys' ;;
+MY_DIR_="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+case "$("${MY_DIR_}/DetectedHostOS")" in
+   Cygwin)  DistroBasedOn='cygwin' ;;
+   MSYS)    DistroBasedOn='msys' ;;
 esac
 
 echo -n "Missing component $TOOL"

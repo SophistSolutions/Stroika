@@ -109,7 +109,12 @@ sub isHostMSYS_
 	}
 	if ("$^O" eq "cygwin") {
 		# Crazy but sometimes this returns cygwin on msys?
-		return substr(trim(`uname -s`),0,4) eq "MSYS";
+		# ... and in a MINGW64/MINGW32/UCRT64 shell (which is what MSYSTEM=MINGW64 gives you, and what
+		# VSCode terminal profiles commonly set) uname says "MINGW64_NT-..." - still MSYS2, but the old
+		# 4-character "MSYS" test said no. Build/Scripts/DetectedHostOS maps MINGW -> MSYS for exactly
+		# this reason; keep the two in agreement or they disagree about what host this is.
+		my $unameS_ = trim(`uname -s`);
+		return (substr($unameS_,0,4) eq "MSYS") || (substr($unameS_,0,5) eq "MINGW");
 	}
 	return false;
 }
