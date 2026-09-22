@@ -345,5 +345,25 @@ Two things that quietly break that on Windows:
   T = ...` over `typedef`. `New()` static methods return smart pointers, not raw allocations.
   `Parse()` static methods return `optional<T>` instead of throwing, for expected-failure parsing.
   A `Quietly` suffix variant returns `nullopt`/empty instead of throwing.
+- **Document every overload, with a trailing `///<`.** Doxygen and the VS Code C/C++ extension both
+  attach a comment to the *immediately following* declaration only, so one block above a group of
+  overloads documents the first and leaves the rest with nothing - and the common
+  ```
+        /**
+         */
+        Foo (error_code);
+        Foo (error_code, const String&);
+  ```
+  gives both tools nothing, for all of them. Put the full explanation on the first declaration and a
+  trailing one-liner on each sibling, which costs no extra lines and hovers correctly (measured
+  2026-09-22 against the extension; clang-format aligns them):
+  ```
+    bool IsA (const error_code& ec, error_condition cond) noexcept;   // ... full /** */ block above
+    bool IsA (const system_error& e, error_condition cond) noexcept;  ///< \brief Does this error MEAN the given condition?
+  ```
+  Keep `\brief` explicit - `JAVADOC_AUTOBRIEF` is NO in `Documentation/Doxygen/Stroika-Library.cfg`.
+  Do NOT use `@copydoc` for this: doxygen expands it, the extension does not, so hover shows the raw
+  `@copydoc ...` text. `@see` is dropped by the extension entirely. Apply this opportunistically when
+  touching a header; a whole-tree sweep would bury real changes.
 - Run `make format-code` (clang-format) before committing C++ changes; it's the only supported
   formatting workflow.

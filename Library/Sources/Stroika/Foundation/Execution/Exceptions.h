@@ -783,20 +783,9 @@ namespace Stroika::Foundation::Execution {
      *  @see Tests/37, Test5_error_code_condition_compares_ - which demonstrates the trap directly.
      */
     bool IsA (const error_code& ec, error_condition cond) noexcept;
-    /**
-     *  \brief Does this error MEAN the given condition? @see IsA (const error_code&, error_condition)
-     */
-    bool IsA (const system_error& e, error_condition cond) noexcept;
-    /**
-     *  \brief Does this error MEAN the given condition - false if it carries no error code at all?
-     *         @see IsA (const error_code&, error_condition)
-     */
-    bool IsA (const exception& e, error_condition cond) noexcept;
-    /**
-     *  \brief Does this error MEAN the given condition - without you having to rethrow it to find out?
-     *         False for a null exception_ptr, or one carrying no error code. @see IsA (const error_code&, error_condition)
-     */
-    bool IsA (const exception_ptr& e, error_condition cond) noexcept;
+    bool IsA (const system_error& e, error_condition cond) noexcept;  ///< \brief Does this error MEAN the given condition?
+    bool IsA (const exception& e, error_condition cond) noexcept;     ///< \brief ...and false if it carries no error code at all
+    bool IsA (const exception_ptr& e, error_condition cond) noexcept; ///< \brief ...without having to rethrow it to find out
 
     /**
      *  Wrap the the argument function (typically a lambda) in an OPTIONAL of the argument type, and return nullopt - dropping the exception
