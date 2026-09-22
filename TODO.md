@@ -8,27 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- **ACTIVE ON EVERY WINDOWS BOX: msys2-runtime 3.6.10 hangs parallel builds.**
-  https://github.com/SophistSolutions/Stroika/issues/1169 - not a Stroika bug, upstream regression,
-  no fixed release yet (the fix, msys2/msys2-runtime#366, is an unmerged draft). Symptom is an
-  absence: no `cl.exe`, nothing new under `IntermediateFiles/`, `make.exe`/`sh.exe` still there,
-  Ctrl+C does nothing. Recorded 2026-09-22 in `Build/Scripts/CheckPrerequisiteTools` (warns on an
-  affected runtime, so `make check-prerequisite-tools` says so),
-  `Documentation/Building-Stroika.md` (Windows gotchas) and `AGENTS.md`.
-  Per-box status - keep this current, it is the whole point of the entry:
-    - **medusa-windows-dev: FIXED** - pinned back to msys2-runtime 3.6.9-2 (`uname -r` says
-      `3.6.9-01d6c708`), builds completing again.
-    - **protagoras: FIXED** 2026-09-22 - downgraded 3.6.10-4 -> 3.6.9-2 (`uname -r` =
-      `3.6.9-01d6c708`), and `msys2-runtime` added to `IgnorePkg` in `/etc/pacman.conf` so a
-      later `pacman -Syu` cannot silently undo it. Do the same on any new Windows box.
-    - cygwin everywhere: UNMEASURED. protagoras is on 3.6.10-1 (updated 2026-09-22) and
-      medusa-windows-dev on 3.6.10-1, both inside the affected range by version, but nobody has
-      tested whether Cygwin actually carries the bug. Do not treat it as the escape hatch until
-      someone does.
-  When a fixed runtime ships: relax the `>= 3.6.10` bound in
-  `Build/Scripts/CheckPrerequisiteTools`'s `WarnIfAffectedMSYS2Runtime_ ()`, unpin the boxes, close
-  1169, and delete this entry.
-
 - MakeBuildRoot / out-of-source builds: moved to
   https://github.com/SophistSolutions/Stroika/issues/1170 - too big for this list. The Windows
   symbolic-link background it came out of is consolidated in
