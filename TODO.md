@@ -19,6 +19,26 @@ Generally will track stuff here between releases
   copy taken at setup time, not synced. Appending to it must be done as `lewis`, elevated: its ACL
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
+- **Pick a convention for documenting OVERLOAD SETS - the current one gives VS Code nothing**
+  (2026-09-22). Stroika documents a group of overloads with one comment block (often an empty
+  `/** */`) above the whole group:
+  ```
+        /**
+         */
+        SystemErrorException (error_code errCode);
+        SystemErrorException (error_code errCode, const Characters::String& message);
+  ```
+  Both doxygen and the VS Code C/C++ extension attach a comment to the IMMEDIATELY FOLLOWING
+  declaration only, so every overload after the first has no documentation at all - hover shows
+  nothing. An empty block is worse still: nothing for either tool, for any of them.
+  There is no sharing mechanism for hover - cpptools is not a doxygen engine, so `@overload`,
+  `//@{ ... //@}` grouping and `@copydoc` all work for generated docs and do nothing here.
+  The only pattern that serves both is full text on the first, plus a one-line `rief` and an
+  `@see` back to it on each sibling - as now done for `Execution::IsA`.
+  Decide whether to adopt that as the convention (and note it in AGENTS.md), then apply it
+  opportunistically as headers get touched. A whole-tree sweep is a big mechanical diff and probably
+  not worth it as its own change.
+
 - v3.0d25
    - **RaspberryPi is stuck on old compilers - see about supporting more recent ones.** The
      cross-compile target builds only `arm-linux-gnueabihf-g++-11/12/13`, so it is the oldest

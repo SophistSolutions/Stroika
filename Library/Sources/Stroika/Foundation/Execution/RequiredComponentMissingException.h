@@ -14,6 +14,9 @@ namespace Stroika::Foundation::Execution {
 
     using Characters::String;
 
+    /**
+     * RequiredComponentMissingException is thrown when a component is required for some operation, but is not available. This is used to indicate that the operation cannot be performed because of a missing component.   
+     */
     class RequiredComponentMissingException : public Execution::Exception<runtime_error> {
     public:
         static constexpr string_view kJava                   = "Java"sv;
