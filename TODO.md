@@ -75,25 +75,6 @@ Generally will track stuff here between releases
      Not worth filing upstream - it is confined to one distro's packaging, so Launchpad rather than GCC
      bugzilla, and it needs a reduced testcase we do not have.
 
-   - **GitHub Actions: consider a `concurrency` group with `cancel-in-progress` on v3-Dev.** Deferred
-     2026-08-29 at LGP's request - revisit ~mid/late Sep 2026, after other work. Measured over the last
-     199 `build-N-test` runs (2026-07-08..08-27, all v3-Dev):
-       - median run wall-clock **145 min** (max 1827 min = 30 h)
-       - **146 of 199 runs (73%) were superseded** by a newer push while still running, and ran to
-         completion anyway; those obsolete runs kept going for **418 h of wall-clock**
-     There is no `concurrency:` key in the workflow at all today. Proposed (scope to the dev branch so
-     release-branch runs always finish):
-     ```yaml
-     concurrency:
-       group: ${{ github.workflow }}-${{ github.ref }}
-       cancel-in-progress: ${{ github.ref == 'refs/heads/v3-Dev' }}
-     ```
-     Trade-off: you lose CI results for intermediate commits when pushes come faster than 145 min -
-     which matters for bisecting. Note this dwarfs the `fail-fast: false` change (committed
-     2026-08-29), which costs only ~9 h/week.
-     Related: no `timeout-minutes` is set on any job, so GitHub's 6 h/job default is the only bound -
-     worth setting alongside this (cf. that 30 h run).
-
    - https://github.com/SophistSolutions/Stroika/issues/843
 
    - **release build-time work.** Investigated 2026-08-27; all measurements and

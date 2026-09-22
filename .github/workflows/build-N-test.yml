@@ -29,6 +29,25 @@ permissions:
   pages: write
   id-token: write
 
+#   There is deliberately no `concurrency:` group with cancel-in-progress here. Considered and
+#   declined 2026-09-22.
+#
+#   The case for it: a run fans out to 16 jobs, so two overlapping runs contend for the account's
+#   concurrent-job allowance, and jobs then queue. Measured 2026-09-22 - 26 to 44 minutes of queue
+#   wait per job while runs overlapped, versus 0.1 min for a run that had the place to itself. Pushes
+#   routinely land 2-5 minutes apart against runs that take 86-152 minutes, so this is the normal
+#   case, not an edge one.
+#
+#   Why not, anyway: cancelling superseded runs would throw away the per-commit red/green history.
+#   Push five changes and have the second break something, and it is precisely which run turns red
+#   that tells you which commit did it. For the compilers and platforms no single dev box has - which
+#   is most of this matrix, and the reason CI exists here - that history is the only bisect data there
+#   is. Faster answers about the tip are not worth losing the ability to attribute a failure.
+#
+#   The queueing is real but self-correcting: obsolete runs finish, slots free, every run still
+#   reports. timeout-minutes below addresses the one case cancel-in-progress could never have helped
+#   with anyway - a WEDGED run, which nothing supersedes.
+
 jobs:
   LinuxMatrixPrep:
     runs-on: ubuntu-latest
@@ -76,6 +95,10 @@ jobs:
   Linux:
     needs: LinuxMatrixPrep
     runs-on: ${{ matrix.runs_on }}
+    #   GitHub's only bound otherwise is 6h/job, which is how a wedged run reached 30h (2026-08).
+    #   A hung run is never superseded, so it just sits holding runner slots. Longest legitimate
+    #   job measured is ~135min, so this is ~1.8x headroom. @see issue 1169 for one live cause.
+    timeout-minutes: 240
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.LinuxMatrixPrep.outputs.matrix)}}
@@ -266,6 +289,10 @@ jobs:
   MacOS:
     needs: MacOSMatrixPrep
     runs-on: ${{ matrix.runs_on }}
+    #   GitHub's only bound otherwise is 6h/job, which is how a wedged run reached 30h (2026-08).
+    #   A hung run is never superseded, so it just sits holding runner slots. Longest legitimate
+    #   job measured is ~135min, so this is ~1.8x headroom. @see issue 1169 for one live cause.
+    timeout-minutes: 240
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.MacOSMatrixPrep.outputs.matrix)}}
@@ -367,6 +394,10 @@ jobs:
   Windows:
     needs: WindowsMatrixPrep
     runs-on: ${{ matrix.runs_on }}
+    #   GitHub's only bound otherwise is 6h/job, which is how a wedged run reached 30h (2026-08).
+    #   A hung run is never superseded, so it just sits holding runner slots. Longest legitimate
+    #   job measured is ~135min, so this is ~1.8x headroom. @see issue 1169 for one live cause.
+    timeout-minutes: 240
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.WindowsMatrixPrep.outputs.matrix)}}
