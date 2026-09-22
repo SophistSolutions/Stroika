@@ -8,6 +8,46 @@ Generally will track stuff here between releases
 
 ## Open
 
+- **Tests/40 timing failures on Windows CI are the RUNNER FREEZING, not Stroika - decide what to do
+  about the test** (2026-09-22, follow up within a day or so). Analysis done; only the decision is
+  left, so do not re-derive it.
+  Symptom: `Thread::WaitForDone (1.0s)` threw `timed_out` after **32.26 s**, blowing
+  `kMarginOfErrorHi_Error_` (15s) at `Tests/40/Test.cpp:283`. Seen in runs 35642238573 (BOTH
+  vs2k22 and vs2k26, msys-x86_64-Release) and 35647403489.
+    - **Not a slow runner.** Same job, passing run vs failing run: docker pull 7.8/7.7 min, Build
+      Library and Tools 57.1/56.6, Build Samples 20.4/20.3, Build Tests 35.7/35.4 - and
+      **Run-Tests 5.7/13.2**. ~113 min of compiling at identical throughput. Test52 PERFORMANCE was
+      actually FASTER in the failing run.
+    - **Not the wait logic, and not a clock step.** `Time::RealtimeClock` is `steady_clock`
+      (`static_assert (is_steady)`). `ConditionVariable` re-waits in 0.25s chunks
+      (`sConditionVariableWaitChunkTime`), so 32s is ~129 consecutive missed wakeups - the thread
+      was not scheduled, rather than a lost notify or a bad deadline. Path is
+      `WaitForDoneUntil` -> `WaitableEvent::WaitUntilQuietly` -> `ConditionVariable::wait_until`;
+      no sockets, no poll. So issue 843 (UpdatableWaitForIOEvents socketpair -> pipe/eventfd, POSIX
+      only) is NOT related. Issue 788 (windows WaitForIOReady busy-wait) does share the chunking
+      idiom - `WaitForIOReady.h:115` says it "mirrors" `sConditionVariableWaitChunkTime`.
+    - **The tell** (from the `Log Data (<job>)` artifacts' `TRACE_LOGS/`): gaps >25s land inside
+      code that cannot block - Test02 `LocaleUNICODEConversions_`, Test31 mid AES/SHAKE loop,
+      Test43 `TestHostParsing_`, Test50 timezone arithmetic, Test52 string-append benchmark.
+      Counted: failing job **13 gaps >25s totalling 509s**; passing job **1 gap of 39s**. That 509s
+      accounts for the +450s Run-Tests gained. Sizes quantize tightly at 32-36s.
+      So the host freezes ~30-35s at a time and always has; the test fails when a freeze happens to
+      land inside that particular 1s wait.
+    - **Decide between:** (1) a watchdog sampling `steady_clock` (~50ms) across the wait - if the
+      largest inter-sample gap is itself seconds, the HOST stalled, so report warning/skip rather
+      than failure; keeps the assertion tight and is reusable by the other timing-sensitive tests;
+      (2) demote this one assertion to warning on CI and rely on the medusa regression runs for the
+      real signal; (3) keep recording occurrences.
+      **NOT: raise the margin again.** The 2 -> 5 -> 7 -> 10 -> 15s history in that file was for
+      genuinely slow hardware (raspberrypi, asan, docker-on-laptop) where a bigger margin still
+      tested something. No margin that survives a 32s freeze can still detect a real regression in a
+      1s timeout.
+    - Probably also worth reporting the freezes to GitHub - 13 discrete ~32s host stalls inside a
+      13 minute window is theirs, not ours.
+    - To redo the measurement: fetch job logs + the `Log Data (<job>)` artifact (see AGENTS.md for
+      the credential recipe), then scan `TRACE_LOGS/*` for consecutive-timestamp deltas using the
+      line prefix regex `^\[[^\]]+\]\[(\d+\.\d+)\]`.
+
 - **Make the build output roots relocatable by VARIABLE, so MakeBuildRoot stops needing directory
   symlinks** (2026-09-22). `MakeBuildRoot` hand-rolls an out-of-source build by replacing
   `Builds/`, `IntermediateFiles/` and `ConfigurationFiles/` with directory symbolic links. On
