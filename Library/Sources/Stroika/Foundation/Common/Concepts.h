@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Common {
     static_assert (not ITimePoint<float>);
 
     /**
-     *  \brief concept - trivial shorthand for variadic same_as A or same_as B, or ...
+     *  \brief Concept: trivial shorthand for variadic same_as A or same_as B, or ...
      * 
      *  \par Example Usage
      *      \code
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Common {
     concept IAnyOf = (same_as<T, U> or ...);
 
     /**
-     *  \brief concept version of std::is_trivially_copyable_v
+     *  \brief Concept: std::is_trivially_copyable_v
      */
     template <typename T>
     concept trivially_copyable = is_trivially_copyable_v<T>;
