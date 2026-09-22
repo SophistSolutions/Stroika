@@ -617,7 +617,42 @@ Using SSH, it&#39;s also helpful to setup ssh keys to avoid re-entering password
 
 ## Windows gotchas
 
-Two that cost real time to diagnose, because neither is hinted at by the error.
+Three that cost real time to diagnose, because none of them is hinted at by the error.
+
+**MSYS2 parallel builds can HANG - `msys2-runtime` 3.6.10 regression.** `make -jN` under MSYS2 stops
+part way through, at any stage, and never recovers. This is not a Stroika bug; it is an unfixed
+regression in `msys-2.0.dll`. The signature is that **no compiler processes remain and no new files
+appear** - several `make.exe`/`sh.exe` persist, but no `cl.exe` does, and nothing has been written
+under `IntermediateFiles/` or `Builds/` for minutes. CPU is misleading (the wedged `make` may sit at
+0% or spin at ~2%), so check for compilers and file writes instead. **Ctrl+C will not break it.**
+
+Recover by closing the terminal tab - that tears down the whole wedged process group - or with
+`taskkill /F /IM make.exe /T` and then the same for `sh.exe`. Re-running make **resumes where it
+stopped**, so nothing already built is lost; a few such kicks will usually get a build through.
+
+| `msys2-runtime` | |
+|---|---|
+| <= 3.6.9-2 | not affected - what a working box should be on |
+| 3.6.10-1 ... 3.6.10-4 | affected |
+
+The build warns when it sees an affected runtime, from `Build/Scripts/CheckPrerequisiteTools` - so
+`make check-prerequisite-tools` says so, as does any build whose `IntermediateFiles/` has been
+clobbered. It is stamp-gated though, so an established tree that has already been checked will NOT
+re-warn on its own; run `make check-prerequisite-tools` after a `pacman -Syu`.
+
+Workarounds, cheapest first:
+
+1. Keep stdout/stderr off a console, which only the top-level make needs since every sub-make and
+   compiler inherits it: `set -o pipefail; make CONFIGURATION=Debug all -j8 2>&1 | tee build.txt`
+   (`pipefail` matters - without it the pipeline returns `tee`'s status and a failed build reports
+   success).
+2. Lower `-jN`. The bug is specific to parallel builds.
+3. Copy `msys-2.0.dll` from a 3.6.9 MSYS2 install over `msys64/usr/bin/msys-2.0.dll` - a single-file
+   swap, not a package downgrade. It costs you the 3.6.10 fixes, including the slow-paste one.
+
+Whether Cygwin shares this bug has NOT been measured, so do not assume it is the escape hatch.
+See [issue #1169](https://github.com/SophistSolutions/Stroika/issues/1169).
+
 
 **"Permission denied" on a build product, with a permissive DACL.** Check for a Mandatory Integrity
 Control label before assuming an ACL or ownership problem:

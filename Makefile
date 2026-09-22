@@ -370,32 +370,7 @@ endif
 
 
 check-prerequisite-tools-common:
-	@# used to check with "type X 2> /dev/null" and still do sometimes, but trouble is on WSL, this prints it finds file, if it finds non-functional cygwin version - so best to check if it actually runs
-	@Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking for installed tools:"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type sed 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool sed && exit 1)"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type wget 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool wget && exit 1)"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type perl 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool perl && exit 1)"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type python3 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool python3 && exit 1)"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type tar 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool tar && exit 1)"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type patch 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool patch && exit 1)"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type tr 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool tr && exit 1)"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(pkg-config --version 1> /dev/null 2> /dev/null && type pkg-config 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool pkg-config && exit 1)"
-	@#realpath must be the GNU one, not just present: ApplyConfiguration emits "realpath --canonicalize-missing"
-	@#into every generated configuration makefile, and the BSD realpath macOS ships rejects long options. Probe
-	@#the flag rather than the binary, or that failure surfaces much later, inside the third-party builds.
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(realpath --canonicalize-missing . 1> /dev/null 2> /dev/null && type realpath 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool realpath && exit 1)"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type jq 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool jq && exit 1)"
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type xxd 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool xxd && exit 1)"
-	@if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(DETECTED_HOST_OS)" = "MSYS" ]] ; then\
-		$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type dos2unix 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool dos2unix && exit 1)";\
-		$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type unix2dos 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool unix2dos && exit 1)";\
-	fi
-ifneq (,$(findstring Darwin,$(DETECTED_HOST_OS)))
-	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type gsed 2> /dev/null) || (Build/Scripts/GetMessageForMissingTool gsed && exit 1)"
-endif
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@$(StroikaRoot)Build/Scripts/WarnIfNotWindowsDeveloperMode
-endif
+	@$(StroikaRoot)Build/Scripts/CheckPrerequisiteTools $(MAKE_INDENT_LEVEL)
 	@mkdir -p IntermediateFiles; touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON
 
 

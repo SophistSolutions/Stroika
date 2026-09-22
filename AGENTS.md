@@ -180,6 +180,15 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
 `git status` for `.tmp` before committing.
 
 ### Notes
+- **A Windows build that stops dead is probably the MSYS2 bug, not your change.** `msys2-runtime`
+  3.6.10 regressed console handling and parallel builds hang at any stage and never recover. Tell it
+  apart by what is MISSING: no `cl.exe` running, nothing new under `IntermediateFiles/` for minutes,
+  while `make.exe`/`sh.exe` persist. CPU proves nothing (0% or a ~2% spin, both seen) and Ctrl+C will
+  not break it. Kill the tree (`taskkill /F /IM make.exe /T`, then `sh.exe`) and re-run - make resumes
+  where it stopped, losing nothing. To avoid it, keep stdout/stderr off a console:
+  `set -o pipefail; make ... 2>&1 | tee build.txt`. `make check-prerequisite-tools` warns on an
+  affected runtime; 3.6.9-2 is the last good one. Do NOT spend time bisecting Stroika for this.
+  @see https://github.com/SophistSolutions/Stroika/issues/1169
 - `make project-files` regenerates IDE project files (Visual Studio, VS Code); needed after
   installing a new compiler/IDE version, or run `make reconfigure` if a configuration's absolute
   compiler paths go stale.

@@ -1,0 +1,124 @@
+#!/bin/bash
+#
+#	Check the host tools Stroika's build needs are installed and FUNCTIONAL.
+#
+#	Usage:
+#		CheckPrerequisiteTools [MAKE_INDENT_LEVEL]
+#
+#	This is the body of the Makefile's check-prerequisite-tools-common target. The Makefile keeps
+#	only the stamp-file mechanics (IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON) that make
+#	this run once per tree; everything that is actually CHECKED lives here, where it can use plain
+#	shell instead of recipe-line quoting and make-parse-time conditionals.
+#
+#	Exits non-zero, having printed an install hint, on the first tool that is missing or broken.
+#	Warnings (things that do not stop a build) print and carry on.
+#
+
+MY_DIR_="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+LEVEL_=${1:-0}
+SUBLEVEL_=$((LEVEL_ + 1))
+
+DETECTED_HOST_OS_="$("${MY_DIR_}/DetectedHostOS")"
+
+#	Check one tool, and abort with an install hint if it is not usable.
+#
+#	With extra arguments, those are a FUNCTIONAL probe run (silently) before the presence test.
+#	Presence alone is not enough in two known cases, and on WSL "type X" cheerfully reports a
+#	non-functional cygwin build of X sitting on the PATH - so prefer a probe wherever one is cheap.
+CheckTool_ ()
+{
+	local tool_="$1"
+	shift
+	"${MY_DIR_}/PrintProgressLine" $SUBLEVEL_ -n
+	if [ $# -gt 0 ] ; then
+		if ! "$@" > /dev/null 2>&1 ; then
+			"${MY_DIR_}/GetMessageForMissingTool" "$tool_"
+			exit 1
+		fi
+	fi
+	if ! type "$tool_" 2> /dev/null ; then
+		"${MY_DIR_}/GetMessageForMissingTool" "$tool_"
+		exit 1
+	fi
+}
+
+"${MY_DIR_}/PrintProgressLine" $LEVEL_ "Checking for installed tools:"
+
+CheckTool_ sed
+CheckTool_ wget
+CheckTool_ perl
+CheckTool_ python3
+CheckTool_ tar
+CheckTool_ patch
+CheckTool_ tr
+CheckTool_ pkg-config pkg-config --version
+#	realpath must be the GNU one, not just present: ApplyConfiguration emits
+#	"realpath --canonicalize-missing" into every generated configuration makefile, and the BSD
+#	realpath macOS ships rejects long options. Probe the flag rather than the binary, or that
+#	failure surfaces much later, inside the third-party builds.
+CheckTool_ realpath realpath --canonicalize-missing .
+CheckTool_ jq
+CheckTool_ xxd
+
+case "$DETECTED_HOST_OS_" in
+	Cygwin|MSYS)
+		CheckTool_ dos2unix
+		CheckTool_ unix2dos
+		;;
+	Darwin)
+		CheckTool_ gsed
+		;;
+esac
+
+#	msys2-runtime 3.6.10 regressed console/pty handling, and parallel builds under MSYS2 can hang part
+#	way through and never recover. Not a Stroika bug - an unfixed upstream regression - but the symptom
+#	is an ABSENCE (no cl.exe running, nothing new under IntermediateFiles/, Ctrl+C inert), so it reads
+#	as "my change broke the build" and costs an hour to recognize the first time. 3.6.9-2 is the last
+#	good one. @see https://github.com/SophistSolutions/Stroika/issues/1169
+#
+#	Checked here rather than in configure: configure runs when a box is first set up, and the case that
+#	actually happens is a box configured months ago whose msys2 moved under it in a routine
+#	pacman -Syu. Not foolproof here either - the stamp file means this runs once per tree - but a
+#	long-lived box at least has a chance of hearing about it.
+WarnIfAffectedMSYS2Runtime_ ()
+{
+	#	DetectedHostOS folds MSYS_NT-* and MINGW*_NT-* together into "MSYS" and reports CYGWIN_NT-* as
+	#	"Cygwin" - the distinction that matters, since cygwin is a separate runtime and is UNMEASURED
+	#	for this bug. (uname -s is the test; MSYS2's own perl reports $^O as "cygwin", so the obvious
+	#	test is dead code - see isHostMSYS_ () in ApplyConfiguration, which documents the same trap.)
+	if [ "$DETECTED_HOST_OS_" != "MSYS" ] ; then
+		return 0
+	fi
+	local unameR_
+	unameR_=$(uname -r)		# eg "3.6.10-8fbd9808" (affected), "3.6.9-01d6c708" (last good)
+	if [[ ! "$unameR_" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] ; then
+		return 0
+	fi
+	local maj_=${BASH_REMATCH[1]} min_=${BASH_REMATCH[2]} rev_=${BASH_REMATCH[3]}
+	#	">= 3.6.10" with no upper bound: no fixed runtime has shipped (the fix,
+	#	msys2/msys2-runtime#366, is an unmerged draft). Bound this when one does, and unpin the boxes.
+	if [ "$maj_" -gt 3 ] || { [ "$maj_" -eq 3 ] && { [ "$min_" -gt 6 ] || { [ "$min_" -eq 6 ] && [ "$rev_" -ge 10 ] ; } ; } ; } ; then
+		echo "CONFIGURATION-WARNING: msys2-runtime $unameR_ can HANG parallel builds (3.6.10 regression; 3.6.9-2 is the last good one)."
+		echo "CONFIGURATION-WARNING:    Symptom: make stops part way, no cl.exe running, nothing new under IntermediateFiles/; Ctrl+C will not break it."
+		echo "CONFIGURATION-WARNING:    Workaround - keep stdout/stderr off a console:   set -o pipefail; make ... 2>&1 | tee build.txt"
+		echo "CONFIGURATION-WARNING:    Details/recovery: https://github.com/SophistSolutions/Stroika/issues/1169"
+	fi
+	#	Deliberately a WARNING, not a failure: the build still works when its output is redirected, so
+	#	refusing to build would be worse than the bug.
+	return 0
+}
+
+#
+#	Warnings - host configuration that degrades or breaks a build, but which we do not refuse to
+#	build over. These run on every tree that has not yet been checked, NOT just at configure time,
+#	because the interesting case is a box that was set up long ago and whose OS moved underneath it.
+#
+case "$DETECTED_HOST_OS_" in
+	Cygwin|MSYS)
+		"${MY_DIR_}/WarnIfNotWindowsDeveloperMode"
+		WarnIfAffectedMSYS2Runtime_
+		;;
+esac
+
+exit 0
