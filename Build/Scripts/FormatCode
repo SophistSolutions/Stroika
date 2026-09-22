@@ -21,10 +21,6 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-#   Plain `find` is fine. This used to be special-cased for Cygwin (FIND=/bin/find) to avoid
-#   Windows' System32 find.exe shadowing it, but both Cygwin and MSYS2 put their own bin ahead
-#   of System32, so `find` resolves to /usr/bin/find in either (verified 2026-09-22). Please do
-#   not reintroduce the special case without a PATH that actually demonstrates the problem.
 FIND=find
 
 get_script_dir () {
