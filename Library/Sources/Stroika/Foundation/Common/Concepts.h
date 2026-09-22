@@ -63,9 +63,11 @@ namespace Stroika::Foundation::Common {
     concept ClassNotFinal = not is_final_v<T>;
 
     /**
-     *  \brief concept true if integral or floating-point type 'T'. Not sure why not provided by std c++
+     *  \brief concept true if integral or floating-point type 'T'.
      *
-     *  Also note - NOT marked true for arithmetic-like types, like big-num package (perhaps provide another concept for this).
+     *  \note NOT marked true for arithmetic-like types, like big-num package (perhaps provide another concept for this).
+     * 
+     *  \note Not sure why not provided by std c++
      */
     template <typename T>
     concept IBuiltinArithmetic = is_arithmetic_v<T>;
