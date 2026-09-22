@@ -182,8 +182,13 @@ endif
 # PATH_FOR_TOOLPATH_ADDITION_IF_NEED
 #
 ifneq ($(TOOLS_PATH_ADDITIONS),)
+# Guarded so this happens exactly ONCE. Without the guard every nested make re-prepends
+# TOOLS_PATH_ADDITIONS to the PATH it inherited, so six levels down (where the installers live)
+# PATH carries six copies of it - ~9K of duplicated environment handed to every child process,
+# and build logs nobody can read. STROIKA_TOOLS_PATH_ADDED_ is exported, so sub-makes see it and
+# skip; $(if ...) evaluates at CALL time, which also covers being called twice within one make.
 PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED=\
-$(eval export PATH=$(shell cygpath --unix --path "${TOOLS_PATH_ADDITIONS}"):${shell echo $$PATH})
+$(if $(STROIKA_TOOLS_PATH_ADDED_),,$(eval export STROIKA_TOOLS_PATH_ADDED_=1)$(eval export PATH=$(shell cygpath --unix --path "${TOOLS_PATH_ADDITIONS}"):${shell echo $$PATH}))
 endif
 
 
