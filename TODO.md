@@ -20,18 +20,6 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - Consider losing SystemErrorException - a bit of a footgun (someone could catch it - like TimeOutException)
-     Instead - all it does can easily be done just with Exception<system_error> {};
-     
-   - **`e.code () == errc::X` vs `e.code ().value () == SOME_CONSTANT` - the right form is subtle and nothing
-     enforces it.** The condition test is correct and portable; the raw-value test compiles, looks
-     reasonable, and is usually wrong - it only matches if the category happens to be the one you
-     assumed. This is inherited from the standard, not created by Stroika, but Stroika could make the
-     right thing shorter than the wrong thing. Note `Tests/37` already has a regression test naming this exact
-     trap ("the condition-vs-code trap"), so the failure mode is understood - what is missing is an API that
-     steers people. Ideas, unevaluated: a `Execution::IsA (e, errc::X)` helper; a `[[nodiscard]]`-ish wrapper;
-     or just a documented lint. Cheap to think about, no urgency.
-
    - **RaspberryPi is stuck on old compilers - see about supporting more recent ones.** The
      cross-compile target builds only `arm-linux-gnueabihf-g++-11/12/13`, so it is the oldest
      toolchain set Stroika still tests, and g++-11/12 there are two of the few configurations still

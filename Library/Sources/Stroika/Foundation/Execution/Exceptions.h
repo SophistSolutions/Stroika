@@ -368,6 +368,20 @@ namespace Stroika::Foundation::Execution {
      *          string instead - notably errc::timed_out, which glibc renders "Connection timed out" even for a
      *          mutex or event wait. @see ThrowError for the full rule and rationale.
      *
+     *  \note   ***Considered and declined 2026-09-22: removing this type altogether.*** The argument was that it
+     *          is a footgun - someone can catch it, and thereby silently miss every error Stroika raises over a
+     *          DIFFERENT system_error subclass - and that anything it does could be had from Exception<system_error>
+     *          directly.
+     *
+     *          The first half is true, which is why the advice above exists. The second is not: these constructors
+     *          synthesize the message from the error_code (@see Private_::SystemErrorExceptionPrivate_), including
+     *          the substitutions described below, and that machinery is private. Removing the class would push
+     *          message synthesis onto every throw site, or replace it with a factory function that is the same
+     *          thing without a name - neither simpler.
+     *
+     *          In practice the exposure is small: @see ThrowError () is the normal path and builds this for you,
+     *          and direct construction is rare. So the type stays, and the rule stays: throw richly, catch broadly.
+     *
      *  @see also GetAssociatedErrorCode ()
      */
     class SystemErrorException : public Exception<system_error> {

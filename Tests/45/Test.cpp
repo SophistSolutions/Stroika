@@ -80,8 +80,8 @@ namespace {
                     ReThrow ();
                 }
             }
-            catch (const SystemErrorException& e) {
-                if (e.code () != errc::timed_out) {
+            catch (const system_error& e) {
+                if (not Execution::IsA (e, errc::timed_out)) {
                     ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
@@ -130,8 +130,8 @@ namespace {
                     ReThrow ();
                 }
             }
-            catch (const SystemErrorException& e) {
-                if (e.code () != errc::timed_out) {
+            catch (const system_error& e) {
+                if (not Execution::IsA (e, errc::timed_out)) {
                     ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
@@ -319,8 +319,8 @@ namespace {
                     ReThrow ();
                 }
             }
-            catch (const SystemErrorException& e) {
-                if (e.code () != errc::timed_out) {
+            catch (const system_error& e) {
+                if (not Execution::IsA (e, errc::timed_out)) {
                     ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
@@ -406,8 +406,8 @@ namespace {
                     ReThrow ();
                 }
             }
-            catch (const SystemErrorException& e) {
-                if (e.code () != errc::timed_out) {
+            catch (const system_error& e) {
+                if (not Execution::IsA (e, errc::timed_out)) {
                     ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
@@ -468,8 +468,8 @@ namespace {
                 ReThrow ();
             }
         }
-        catch (const SystemErrorException& e) {
-            if (e.code () != errc::timed_out) {
+        catch (const system_error& e) {
+            if (not Execution::IsA (e, errc::timed_out)) {
                 ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
             }
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
@@ -628,8 +628,8 @@ namespace {
                         ReThrow ();
                     }
                 }
-                catch (const SystemErrorException& e) {
-                    if (e.code () != errc::timed_out) {
+                catch (const system_error& e) {
+                    if (not Execution::IsA (e, errc::timed_out)) {
                         ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
                     }
                     Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
@@ -736,8 +736,8 @@ namespace {
                 ReThrow ();
             }
         }
-        catch (const SystemErrorException& e) {
-            if (e.code () != errc::timed_out) {
+        catch (const system_error& e) {
+            if (not Execution::IsA (e, errc::timed_out)) {
                 ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
             }
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
@@ -770,8 +770,8 @@ namespace {
         catch (const IO::Network::HTTP::Exception& e) {
             DbgTrace ("e={}"_f, e);
         }
-        catch (const SystemErrorException& e) {
-            if (e.code () != errc::timed_out) {
+        catch (const system_error& e) {
+            if (not Execution::IsA (e, errc::timed_out)) {
                 ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
             }
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
