@@ -768,6 +768,47 @@ sub ToFullPathEXE_($)
 	return $e;
 }
 
+#
+#   Map (compiler, ARCH, host) onto the vscode C/C++ extension's intelliSenseMode vocabulary:
+#   <os>-<toolset>-<arch>, where os is windows|linux|macos, toolset is msvc|gcc|clang, and arch is
+#   x86|x64|arm|arm64 - note NOT the "x86_64" spelling Stroika uses everywhere else.
+#
+#   This matters more than it looks: without a VALID intelliSenseMode the extension cannot configure
+#   IntelliSense at all, and quietly does nothing - no hover text, no completion, no go-to-definition,
+#   across the whole workspace. We used to write no intelliSenseMode at all and let the extension fill
+#   one in; it wrote "None", which is not a legal value, and everything silently stopped working
+#   (found 2026-09-22).
+#
+sub IntelliSenseModeFor_
+{
+	my $compilerDriver = shift;
+	my $os = "linux";
+	if ("$^O" eq "darwin") {
+		$os = "macos";
+	}
+	elsif (isHostMSYS_ () or "$^O" eq "cygwin" or "$^O" eq "msys") {
+		$os = "windows";
+	}
+	my $toolSet = "gcc";
+	if (index (lc ($compilerDriver), "cl.exe") != -1) {
+		$toolSet = "msvc";
+	}
+	elsif (index (lc ($compilerDriver), "clang") != -1) {
+		$toolSet = "clang";
+	}
+	my $arch = trim (GetConfigurationParameter ($activeConfiguration, "ARCH"));
+	if ($arch eq "" or $arch eq "x86_64") {
+		$arch = "x64";
+	}
+	elsif ($arch eq "aarch64") {
+		$arch = "arm64";
+	}
+	elsif (index ($arch, "arm") == 0 and not ($arch eq "arm64")) {
+		$arch = "arm";
+	}
+	return "$os-$toolSet-$arch";
+}
+
 sub WriteVSCodeCPPExtensionConfigFile
 {
 	local $jq = `which jq`;
@@ -906,6 +947,10 @@ sub WriteVSCodeCPPExtensionConfigFile
 	{
 		my $showPath = ToFullPathEXE_($COMPILER_DRIVER_CPlusPlus);
 		$newCfgObj .= " ,compilerPath: \\\"$showPath\\\"";
+		#   @see IntelliSenseModeFor_ - omitting this lets the extension invent one, and the one it
+		#   invented ("None") disables IntelliSense for the entire workspace, silently.
+		my $isMode = IntelliSenseModeFor_ ($COMPILER_DRIVER_CPlusPlus);
+		$newCfgObj .= " ,intelliSenseMode: \\\"$isMode\\\"";
 	}
 
 	$newCfgObj .= "}";
