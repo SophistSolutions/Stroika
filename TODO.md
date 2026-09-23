@@ -20,13 +20,10 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **RaspberryPi is stuck on old compilers - see about supporting more recent ones.** The
-     cross-compile target builds only `arm-linux-gnueabihf-g++-11/12/13`, so it is the oldest
-     toolchain set Stroika still tests, and g++-11/12 there are two of the few configurations still
-     needing the fmtlib polyfill (no usable `<format>` before g++ 13). Worth checking what newer
-     `arm-linux-gnueabihf-g++` versions are available for the build container, and whether the Pi's
-     own OS release supports them.
-     @see Documentation/SupportedPlatformsAndCompilers.md for the current matrix.
+   - RaspberryPi is stuck on old compilers (only g++-11/12 actually run): moved to
+     https://github.com/SophistSolutions/Stroika/issues/1171 - too big for this list. Root cause
+     measured 2026-09-22: the Pi's bookworm libstdc++ (3.4.30) and glibc (2.36) are just short of
+     what the 24.04+ cross toolchains emit, not a build-container problem. Trixie clears both.
 
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
