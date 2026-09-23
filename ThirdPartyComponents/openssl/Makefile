@@ -77,6 +77,10 @@ ifeq (armhf,$(ARCH))
 # OpenSSL 3.0 automatically considers the TARGETMACHINE to be this HOST compiling machine and generates -m64 lines that break
 # the compile - this works around that issue for at least this configuration
 CONFIG_ARGS+=	linux-generic32
+else ifeq (aarch64,$(ARCH))
+# Same problem cross-compiling to 64-bit ARM: with no target it configures for the HOST (eg linux-x86_64, adding
+# -m64). linux-aarch64 is OpenSSL's own target for it. (macOS reports ARCH=arm64, so the Darwin case is unaffected.)
+CONFIG_ARGS+=	linux-aarch64
 else ifeq ($(DETECTED_HOST_OS),Darwin)
 CONFIG_ARGS+=	darwin64-$(ARCH)-cc
 endif

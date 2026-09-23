@@ -61,6 +61,10 @@ CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 
 
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
+# BUILD_SHARED_LIBS covers mongo-cxx-driver only; the mongo-c-driver it pulls in has its own ENABLE_SHARED
+# (default ON), so it was also building bson_shared/mongoc_shared, which nothing here uses. On aarch64 that
+# fails to link as well: our static libcrypto's ARMv8 assembly (poly1305_blocks_sve2) cannot go into a shared object.
+CMAKE_ARGS+= -DENABLE_SHARED:BOOL=OFF
 
 # fails to compile with no openssl
 ifeq (${qFeatureFlag_OpenSSL},no)
