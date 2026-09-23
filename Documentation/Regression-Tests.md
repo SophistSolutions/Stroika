@@ -165,8 +165,9 @@ Times below are approximate, from what the runs actually recorded - every run en
   compiler built against, whatever OS the Pi itself runs: a binary built on Ubuntu N can need up to
   Ubuntu N's glibc (26.04's Test02 needs `GLIBC_2.43`). Drop `RASPBERRYPI_REMOTE_DOCKER_IMAGE` to run
   natively on the Pi instead. The Pi needs docker (Raspberry Pi OS 13, 64-bit kernel - see
-  https://github.com/SophistSolutions/Stroika/issues/1171). Not yet timed on these hosts; allow several
-  hours - about 35 min of Pi test time per configuration, on top of the builds.
+  https://github.com/SophistSolutions/Stroika/issues/1171). Pi test time, measured 2026-09-23 in the
+  26.04 containers: about 11 min per release configuration, 13 for release-sanitize_address
+  (debug-sanitize_undefined not yet timed) - small next to the builds.
 
 - \$TEST_TARGET=Ubuntu2204-Cross-Compile2RaspberryPi
 

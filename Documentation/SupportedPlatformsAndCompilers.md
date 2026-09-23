@@ -90,6 +90,8 @@ Which compiler is built against which standard library, and where each combinati
 | `arm-linux-gnueabihf-g++-11` | libstdc++ | - | raspberrypi (cross) | [^f] |
 | `arm-linux-gnueabihf-g++-12` | libstdc++ | - | raspberrypi (cross) | [^f] |
 | `arm-linux-gnueabihf-g++-13` | libstdc++ | - | raspberrypi (cross) |  |
+| `arm-linux-gnueabihf-g++-14` | libstdc++ | - | raspberrypi (cross) |  |
+| `arm-linux-gnueabihf-g++-15` | libstdc++ | - | raspberrypi (cross) |  |
 
 ### Release regression-run targets
 
