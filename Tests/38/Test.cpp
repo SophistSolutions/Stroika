@@ -323,6 +323,11 @@ namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, MakeVersionViaAwkPipe)
     {
         Debug::TraceContextBumper ctx{"MakeVersionViaAwkPipe"};
+        // Needs real make and awk, which a minimal environment (e.g. a bare test container) may lack.
+        if (not FindExecutableInPath ("make") or not FindExecutableInPath ("awk")) {
+            Stroika::Frameworks::Test::WarnTestIssue ("MakeVersionViaAwkPipe skipped: needs make and awk, which are not both in path ({})"_f(kPath ()));
+            return;
+        }
         {
             // using bash appears to work on all supported platforms
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "\"{}\" -version | \"{}\" 'NR == 1 {{print $3}}'"_f("make"_k, "awk"_k)}};
