@@ -1,0 +1,112 @@
+#!/bin/bash
+#
+#	Run ONE regression test executable - locally, or on another machine over ssh (optionally inside a
+#	docker container there) - and report it the way 'make run-tests' always has:
+#
+#		{PREFIX_} [NN] {TestName} - {what is being run}
+#		{PREFIX_}      {each line of the test's stdout}
+#
+#	Usage:
+#		RunTest NN EXE [TEST-ARGS...]
+#
+#	Exits with the test's own status, or non-zero if it could not be run at all (e.g. the copy to REMOTE
+#	failed - reported as such, rather than running whatever stale file was left there). The test's stderr
+#	passes straight through, as it always has.
+#
+#	Environment - normally exported by Tests/Makefile; all optional:
+#		PREFIX_					indentation leader for the report lines
+#		RunPrefix				per-configuration command prefix for the test (from the configuration file)
+#		VALGRIND				if non-empty, run under valgrind with VALGRIND_OPTIONS; remotely, the *.supp
+#								suppression files are copied alongside
+#		REMOTE					user@host: copy EXE there and run it over ssh
+#		REMOTE_DIR				parent directory on REMOTE (default /tmp). Each test gets its own subdirectory,
+#								used as its working directory and REMOVED afterwards - so a small RAM-backed /tmp
+#								(Debian 13's default) only ever holds one test at a time
+#		REMOTE_DOCKER_IMAGE		run the test on REMOTE inside this docker image, so its runtime (glibc etc) can
+#								match the BUILD host rather than whatever REMOTE's own OS happens to be
+#		REMOTE_DOCKER_ARGS		extra 'docker run' arguments - e.g. --security-opt seccomp=unconfined, which an
+#								arm64 image needs under an armhf docker daemon
+#		SSH_REMOTE_WARNINGS_OFF	options passed to ssh
+#		StroikaPlatformTargetBuildDir	where a PerformanceDump.txt written by the test is moved to
+#
+if [ $# -lt 2 ] ; then
+	echo "Usage: RunTest NN EXE [TEST-ARGS...]" >&2
+	exit 2
+fi
+NN_=$1
+EXE_=$2
+shift 2
+ARGS_="$*"
+
+MY_DIR_="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+TESTNAME_=$("${MY_DIR_}/PrintTestName" "$NN_")
+SHOWN_EXE_=$("${StroikaRoot}Build/Scripts/SubstituteBackVariables" "$EXE_")
+
+VALPREFIX_=
+if [ -n "$VALGRIND" ] ; then
+	VALPREFIX_="valgrind $VALGRIND_OPTIONS"
+fi
+
+report_ () {
+	# echo unquoted, to collapse the gaps an empty RunPrefix/VALGRIND leaves
+	echo "${PREFIX_} [${NN_}] ${TESTNAME_} - $(echo $1)"
+}
+
+if [ -z "$REMOTE" ] ; then
+	if [ -n "$REMOTE_DOCKER_IMAGE" ] ; then
+		echo "RunTest: REMOTE_DOCKER_IMAGE requires REMOTE" >&2
+		exit 2
+	fi
+	report_ "$RunPrefix $VALPREFIX_ $SHOWN_EXE_ $ARGS_"
+	# eval, so RunPrefix and VALGRIND_OPTIONS are shell-parsed exactly as when make expanded them in place
+	OUTPUT_=$(eval "$RunPrefix $VALPREFIX_ \"\$EXE_\" $ARGS_")
+	RESULT_=$?
+else
+	SSH_="ssh $SSH_REMOTE_WARNINGS_OFF"
+	BASE_=$(basename "$EXE_")
+	DIR_="${REMOTE_DIR:-/tmp}/stroika-test-${NN_}"
+
+	# A fresh directory holding just this test. The copy goes over ssh's stdin, so a failure to write it
+	# (e.g. a full /tmp) is a failed command we can see, not a partial file we then try to run.
+	if ! $SSH_ "$REMOTE" "rm -rf '$DIR_' && mkdir -p '$DIR_' && cat > '$DIR_/$BASE_' && chmod +x '$DIR_/$BASE_'" < "$EXE_" ; then
+		report_ "COPY of $SHOWN_EXE_ to $REMOTE:$DIR_ FAILED - not run"
+		$SSH_ "$REMOTE" "rm -rf '$DIR_'" > /dev/null 2>&1
+		exit 1
+	fi
+	if [ -n "$VALGRIND" ] && ls ./*.supp > /dev/null 2>&1 ; then
+		scp $SSH_REMOTE_WARNINGS_OFF -q ./*.supp "$REMOTE:$DIR_/"
+	fi
+
+	# TMPDIR too: a test's temp files go in an app temp dir named after the executable (see AppTmpFileManager),
+	# which would otherwise be left behind as /tmp/TestNN - where an older harness, one that copies the test
+	# binary to exactly /tmp/TestNN, then collides with it ("Is a directory").
+	CMD_="$RunPrefix $VALPREFIX_ ./$BASE_ $ARGS_"
+	if [ -n "$REMOTE_DOCKER_IMAGE" ] ; then
+		# Same path inside the container, so ./$BASE_, the .supp files and PerformanceDump.txt all line up.
+		# --user: as REMOTE's own user, like a native run - as root, a test that checks permissions behaves
+		# differently, and whatever it writes (eg Test36's trivialdb dirs) is root-owned and cannot be cleaned
+		# up below. That uid has no home in the image, hence HOME. $(id ...) is evaluated on REMOTE.
+		REMOTE_CMD_="docker run --rm --network host --user \$(id -u):\$(id -g) $REMOTE_DOCKER_ARGS -v $DIR_:$DIR_ -w $DIR_ -e TMPDIR=$DIR_ -e HOME=$DIR_ $REMOTE_DOCKER_IMAGE $CMD_"
+	else
+		REMOTE_CMD_="cd $DIR_ && TMPDIR=$DIR_ $CMD_"
+	fi
+	report_ "copy $SHOWN_EXE_ to $REMOTE:$DIR_; ssh $REMOTE $REMOTE_CMD_"
+	OUTPUT_=$($SSH_ "$REMOTE" "$REMOTE_CMD_")
+	RESULT_=$?
+
+	# Bring back any PerformanceDump.txt (it is written into the test's working directory - which used to
+	# be REMOTE's home, where it was never collected), and remove the directory: one round trip for both.
+	$SSH_ "$REMOTE" "cat '$DIR_/PerformanceDump.txt' 2>/dev/null; rm -rf '$DIR_'" > PerformanceDump.txt.remote 2> /dev/null
+	if [ -s PerformanceDump.txt.remote ] ; then
+		mv PerformanceDump.txt.remote PerformanceDump.txt
+	else
+		rm -f PerformanceDump.txt.remote
+	fi
+fi
+
+echo "$OUTPUT_" | sed -e "s/^/${PREFIX_}      /" | tr -d "\r"
+
+if [ -e PerformanceDump.txt ] ; then
+	mv PerformanceDump.txt "${StroikaPlatformTargetBuildDir}PerformanceDump.txt" 2> /dev/null
+fi
+exit $RESULT_

@@ -57,29 +57,9 @@ endif
 
 
 
-RUNTEST_REMOTECOPYSETUP=true
-RUNTEST_REMOTECOPYSETUP2=true
-ifneq (,$(REMOTE))
-RUNTEST_REMOTECOPYSETUP=scp $(SSH_REMOTE_WARNINGS_OFF) -q $(EXEPATTERN) $(REMOTE):/tmp/$(BASEEXEPATTERN)
-VALEXTRARUN_=
-ifneq (,$(VALGRIND))
-VALEXTRARUN_= cd /tmp && valgrind $(VALGRIND_OPTIONS)
-RUNTEST_REMOTECOPYSETUP2=  scp $(SSH_REMOTE_WARNINGS_OFF) -q *.supp $(REMOTE):/tmp/
-endif
-RUNTEST_EXE_RUN=ssh $(SSH_REMOTE_WARNINGS_OFF) $(REMOTE) ${RunPrefix} "$(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN) ${GTEST_ARGS_}"
-RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) ${RunPrefix} $(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN) ${GTEST_ARGS_}
-else ifeq (memcheck,$(VALGRIND))
-RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN) ${GTEST_ARGS_}
-RUNTEST_EXE_RUN_PRINTLINE=`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(RUNTEST_EXE_RUN)` ${GTEST_ARGS_}
-else
-ifeq (${RunPrefix},)
-RUNTEST_EXE_RUN=$(EXEPATTERN) ${GTEST_ARGS_}
-RUNTEST_EXE_RUN_PRINTLINE=`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(EXEPATTERN)` ${GTEST_ARGS_}
-else
-RUNTEST_EXE_RUN=${RunPrefix} $(EXEPATTERN) ${GTEST_ARGS_}
-RUNTEST_EXE_RUN_PRINTLINE=${RunPrefix} `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(EXEPATTERN)` ${GTEST_ARGS_}
-endif
-endif
+# Each test is run by Scripts/RunTest - locally, on REMOTE over ssh, or in a docker container there - which
+# takes its settings from these (see the top of that script for what each one means).
+export REMOTE REMOTE_DIR REMOTE_DOCKER_IMAGE REMOTE_DOCKER_ARGS RunPrefix VALGRIND VALGRIND_OPTIONS SSH_REMOTE_WARNINGS_OFF StroikaPlatformTargetBuildDir PREFIX_
 
 
 
@@ -96,6 +76,8 @@ help:
 	@$(ECHO) "                                 [VALGRIND=memcheck, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "                                 OR VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp\""
 	@$(ECHO) "                                 EG: VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp\" make VALGRIND=memcheck run-tests"
+	@$(ECHO) "                                 [REMOTE_DOCKER_IMAGE=] with REMOTE=, run each test in that image on REMOTE (eg. arm32v7/ubuntu:26.04)"
+	@$(ECHO) "                                 [REMOTE_DOCKER_ARGS=] extra 'docker run' args; [REMOTE_DIR=] where on REMOTE tests go (default /tmp)"
 
 
 all:		tests 
@@ -189,19 +171,7 @@ endif
 	else\
 		FAILED=0;\
 		for i in $(TESTS); do\
-			TESTNAME=`Scripts/PrintTestName $$i`;\
-			$(RUNTEST_REMOTECOPYSETUP);\
-			$(RUNTEST_REMOTECOPYSETUP2);\
-			$(ECHO) "${PREFIX_} [$$i] $$TESTNAME - $(RUNTEST_EXE_RUN_PRINTLINE)";\
-			EXEOUTPUT=`$(RUNTEST_EXE_RUN)`;\
-			EXERESULT=$$?; \
-			$(ECHO) "$$EXEOUTPUT" | sed -e 's/^/${PREFIX_}      /g' | tr -d "\r"; \
-			if [ "$$EXERESULT" -ne 0 ]; then\
-			    FAILED=1;\
-			fi;\
-			if [ -e PerformanceDump.txt ]; then\
-			  mv PerformanceDump.txt ${StroikaPlatformTargetBuildDir}PerformanceDump.txt 2>/dev/null;\
-			fi;\
+			Scripts/RunTest $$i $(EXEPATTERN) ${GTEST_ARGS_} || FAILED=1;\
 		done;\
 		if [ "$$FAILED" -ne 0 ]; then\
 			if [ "$${TEST_FAILURES_CAUSE_FAILED_MAKE:-1}" -ne 0 ]; then\
