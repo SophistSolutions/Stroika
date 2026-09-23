@@ -70,16 +70,9 @@ Generally will track stuff here between releases
          Per-component caching (keyed version+toolchain+flags) keeps the guaranteed-clean-Stroika
          property a release run exists to prove, while cutting ~75% of wall clock. Biggest win by far.
          This is the cmake work.
-      2. **Windows builds the cmake components serially** - `cmake --build .` passes no `--parallel`,
-         `/MP` is nowhere, and MSBuild cannot join make's jobserver. Measured 2026-09-23, Debug
-         mongo-cxx-driver on protagoras (VS2026): 501 s -> 362 s with `/MP` added to its
-         CFLAGS/CXXFLAGS. MSBuild `/m` would add little: mongo is a 4-library chain. ~100 s of every
-         mongo build is cmake configure, including a fresh `git clone` of mongo-c-driver
-         (FetchContent) - cacheable, like Origs-Cache.
-         UNIX is already parallel: the `@+` recipe prefix hands the jobserver down (26.04, make 4.4.1:
-         Debug mongo 578 s CPU in 182 s wall). Unmeasured on 2204/2404's make 4.3, which is where the
-         commented-out 2025-03-19 experiment (`Build/Lib/Make/Makefile-CMake-Common.mk:68`) saw none.
-         Do NOT add a fixed job count on UNIX: outer `-j` already runs several components at once.
+      2. **Windows builds the cmake components serially** (no `-MP`; MSBuild cannot join make's
+         jobserver): moved to https://github.com/SophistSolutions/Stroika/issues/1173, with the
+         measurements. UNIX is already parallel via the `@+` recipe prefix.
       3. **Stop oversubscribing medusa.** 32 threads, and five Ubuntu runs at `-j8` plus the Windows
          VM is already past it. Measured: load 28 -> 604 min, load 34 -> 612 min, load 39 -> 961 min
          for the SAME work - a cliff at ~32 runnable. Staggering runs, or moving the Ubuntu matrix to
