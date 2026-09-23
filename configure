@@ -3058,6 +3058,18 @@ sub PostProcessOptions_ ()
 		}
 	}
 
+	# Under LTO, gcc generates the code - and so emits every middle/back-end diagnostic - at LINK time, and
+	# LTRANS honours only the link command's -W flags: compile-time warning options are not carried in the
+	# LTO objects (checked 2026-09-23 with a two-file repro), and '#pragma GCC diagnostic' does not survive
+	# into LTRANS either. So the compile warning policy must be repeated on the link line, or whatever it
+	# suppresses comes back at link - e.g. hundreds of armhf "parameter passing for argument of type 'struct
+	# wformat_args' changed in GCC 9.1" notes despite -Wno-psabi. Done HERE, after the last change to
+	# $CXXWARNING_FLAGS above (-Wno-maybe-uninitialized is exactly the kind of late warning that fires at an
+	# LTO link) and after ApplyCompilerBugWorkarounds_ () has settled $ENABLE_LTO. Prepended, so the link-only
+	# suppressions already in $LinkerArgs_ExtraPrefix (-Wno-odr etc) still come after it and win.
+	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER) && $ENABLE_LTO == true) {
+		$LinkerArgs_ExtraPrefix = $CXXWARNING_FLAGS . ' ' . $LinkerArgs_ExtraPrefix;
+	}
 }
 
 
