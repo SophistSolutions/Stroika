@@ -103,6 +103,8 @@ Run by hand for each release (see [Regression-Tests.md](Regression-Tests.md)); t
 - `Ubuntu2504_x86_64`
 - `Ubuntu2604_x86_64`
 - `Ubuntu2204-Cross-Compile2RaspberryPi`
+- `Ubuntu2404-Cross-Compile2RaspberryPi`
+- `Ubuntu2604-Cross-Compile2RaspberryPi`
 
 ### Notes
 
