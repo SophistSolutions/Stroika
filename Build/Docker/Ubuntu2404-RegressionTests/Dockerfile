@@ -37,8 +37,15 @@ RUN apt-get -qq install -y valgrind; \
     apt-get -qq clean -y;
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
+#     arm-linux-gnueabihf = 32-bit ARM (armhf), aarch64-linux-gnu = 64-bit ARM (arm64)
 RUN apt-get -qq install -y g++-13-arm-linux-gnueabihf g++-14-arm-linux-gnueabihf iputils-ping; \
     apt-get -qq clean -y;
+# Uses && (unlike the line above) so a missing package fails the image build - a cross compiler absent
+# from the image fails nothing later, --only-if-has-compiler just skips its configurations. Refreshes the
+# package lists itself because earlier layers may come from cache, with lists too stale to install from.
+RUN apt-get -qq update && \
+    apt-get -qq install -y g++-13-aarch64-linux-gnu g++-14-aarch64-linux-gnu && \
+    apt-get -qq clean -y
 
 ## Because whatever comes with 24.04 stopped working with quasar 2024-12-18
 ARG NODE_MAJOR=24
