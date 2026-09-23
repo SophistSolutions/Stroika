@@ -114,7 +114,8 @@ endif
 
 
 #
-# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix
+# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix (on unix, only
+# for projects that pick a CMAKE_BUILD_TYPE themselves - see the -O3 note below)
 # No matter - set them all to the same thing
 #
 #	With Xerces, we get link errors if we don't include the _DEBUG and _RELEASE versions
@@ -134,6 +135,7 @@ endif
 #	NOTE CMAKE_BUILD_TYPE only defined if BuildPlatform is VisualStudio
 #
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
+# Windows:
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE=Debug
 CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
@@ -169,8 +171,26 @@ CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
 endif
 else
+# UNIX:
 # it appears cmake doesn't need these for windows cmake makefiles, and for mongodb-cxx-driver, it causes problems
 # https://jira.mongodb.org/browse/CXX-3505
 CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
+#
+#	We pass no CMAKE_BUILD_TYPE here, but some projects (mongo-cxx-driver, zlib, zstd) pick Release for
+#	themselves when none is given - and cmake then appends CMAKE_<LANG>_FLAGS_RELEASE (-O3 -DNDEBUG) AFTER
+#	the CFLAGS above, so the last -O wins and the configuration's optimization level is silently lost.
+#	So when the configuration asks for an -O of its own, keep the -DNDEBUG those projects have always been
+#	built with and drop the -O3.
+#
+#	...but NOT when it asks for none (or -O0), as debug configurations do: those keep cmake's -O3, as before.
+#	mongo-c-driver treats a Release build type as a promise of optimization - its mlib/cmp.h asserts, at link
+#	time, that a function was inlined and a dead branch deleted - and fails to link at -O0. Telling cmake the
+#	truth (a Debug build type) is the real fix for that, but changes more than the flags (GoogleTest's library
+#	names gain a 'd', zstd turns on its own asserts).
+#
+#	Deferred ($(if) inside a recursively-expanded variable), since the including makefile sets CFLAGS after this.
+#
+CMAKE_ARGS+= $(if $(filter-out -O0,$(filter -O%,$(CFLAGS))),-DCMAKE_C_FLAGS_RELEASE=-DNDEBUG)
+CMAKE_ARGS+= $(if $(filter-out -O0,$(filter -O%,$(CXXFLAGS))),-DCMAKE_CXX_FLAGS_RELEASE=-DNDEBUG)
 endif
