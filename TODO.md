@@ -70,15 +70,16 @@ Generally will track stuff here between releases
          Per-component caching (keyed version+toolchain+flags) keeps the guaranteed-clean-Stroika
          property a release run exists to prove, while cutting ~75% of wall clock. Biggest win by far.
          This is the cmake work.
-      2. **`cmake --build .` passes no `--parallel`, and `/MP` is nowhere** - so mongo-cxx-driver,
-         Xerces, libxml2, GoogleTest, zstd and zlib build serially on both axes. Do NOT just add a
-         job count: outer `-j5` already runs up to 5 components at once, so a per-cmake number
-         multiplies into sludge. Right fix is GNU make's jobserver (globally bounded, no hardwired
-         value) - see the commented-out 2025-03-19 experiment at
-         `Build/Lib/Make/Makefile-CMake-Common.mk:68`. That probably failed because make 4.3 passed
-         the jobserver by FD; make 4.4 uses a named FIFO. Caveats to test first: only Ubuntu2604 has
-         make 4.4.1 (2204/2404 are 4.3, Windows/MSBuild has no jobserver at all), and openssl/curl
-         deliberately `--unset=MAKEFLAGS`. Deferred from 3.0d24 as too risky mid-release.
+      2. **Windows builds the cmake components serially** - `cmake --build .` passes no `--parallel`,
+         `/MP` is nowhere, and MSBuild cannot join make's jobserver. Measured 2026-09-23, Debug
+         mongo-cxx-driver on protagoras (VS2026): 501 s -> 362 s with `/MP` added to its
+         CFLAGS/CXXFLAGS. MSBuild `/m` would add little: mongo is a 4-library chain. ~100 s of every
+         mongo build is cmake configure, including a fresh `git clone` of mongo-c-driver
+         (FetchContent) - cacheable, like Origs-Cache.
+         UNIX is already parallel: the `@+` recipe prefix hands the jobserver down (26.04, make 4.4.1:
+         Debug mongo 578 s CPU in 182 s wall). Unmeasured on 2204/2404's make 4.3, which is where the
+         commented-out 2025-03-19 experiment (`Build/Lib/Make/Makefile-CMake-Common.mk:68`) saw none.
+         Do NOT add a fixed job count on UNIX: outer `-j` already runs several components at once.
       3. **Stop oversubscribing medusa.** 32 threads, and five Ubuntu runs at `-j8` plus the Windows
          VM is already past it. Measured: load 28 -> 604 min, load 34 -> 612 min, load 39 -> 961 min
          for the SAME work - a cliff at ~32 runnable. Staggering runs, or moving the Ubuntu matrix to
@@ -86,4 +87,13 @@ Generally will track stuff here between releases
      Still open: medusa-windows-dev measured only ~1.04x protagoras despite ~2x hardware. Best
      remaining suspects are the guest's 8 vCPUs and VM per-file-operation overhead (NOT disk bandwidth
      - `%iowait` was 0.0-0.2% all week). Raise guest vCPUs at some restart and re-measure.
+
+   - **UNIX cmake third-party builds: `CMAKE_BUILD_TYPE=None` (Debian's approach), `-DNDEBUG` iff
+     `AssertionsEnabled=0`.** 43303d8f08 took Fedora's approach (`-DCMAKE_<LANG>_FLAGS_RELEASE=-DNDEBUG`)
+     as the quick fix for projects that pick Release themselves (mongo-cxx-driver, zlib, zstd). `None`
+     gives ONE rule for every component - built with the configuration's flags, nothing else - where
+     today mongo/zlib/zstd always get `NDEBUG` and GoogleTest/libxml2/Xerces never do. Bonus: Debug
+     mongo builds at its real `-O0` (mongo's mlib then keys off `__OPTIMIZE__`, not the build type):
+     578 -> 216 s CPU measured. Needs a Debug+Release pass on Linux and macOS - third-party asserts
+     come ON in Debug. Windows is unaffected (multi-config; already passes Debug/Release explicitly).
 
