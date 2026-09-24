@@ -525,9 +525,11 @@ TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS))
 
 X1=`cat $TEST_OUT_FILE | grep -F "[  PASSED  ]" | wc -l`
 NTSANS=`cat $TEST_OUT_FILE | grep -F "because sudo sysctl vm.mmap_rnd_bits" | wc -l`
-### Dont count fFailConnectionIfSSLCertificateInvalid as an error or failure - its a warning
-XF=`cat $TEST_OUT_FILE | grep -i FAILED | grep -v TEST_FAILURES_CAUSE_FAILED_MAKE | grep -v fFailConnectionIfSSLCertificateInvalid | wc -l`
-XE=`cat $TEST_OUT_FILE | grep -v fFailConnectionIfSSLCertificateInvalid | grep -E -i "error[ \t]*:" | wc -l`
+### A WARNING: line is never a failure or an error, even when its text says so (e.g. "REGRESSION TEST ISSUE: ... Child
+### process failed", "mirror failed, so retrying", "SSL connect error {LibCurl error: 35}") - it is already counted as a
+### warning, below.
+XF=`cat $TEST_OUT_FILE | grep -i FAILED | grep -v TEST_FAILURES_CAUSE_FAILED_MAKE | grep -v -E '^[[:space:]]*WARNING:' | wc -l`
+XE=`cat $TEST_OUT_FILE | grep -v -E '^[[:space:]]*WARNING:' | grep -E -i "error[ \t]*:" | wc -l`
 XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
 VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep "^==" | wc -l`
 XW=`cat $TEST_OUT_FILE | grep -E -i "warning.*:" | wc -l`

@@ -23,9 +23,8 @@ Generally will track stuff here between releases
    - **Raspberry Pi / ARM testing** - https://github.com/SophistSolutions/Stroika/issues/1171 (the checklist
      at the end of it is current). Still open there:
        - a fuller arm test image (make/openssl/locales/ca-certificates) - several tests skip in the bare
-         ubuntu ones, and its missing `openssl` makes a run's "items failed" count nonzero. Until then, audit
-         a Pi run by counting `[  PASSED  ]` per configuration against 54: a build failure or silent crash
-         shows up ONLY as a missing PASSED.
+         ubuntu ones. Audit a Pi run by counting `[  PASSED  ]` per configuration against 54: a build
+         failure or silent crash shows up ONLY as a missing PASSED, not in "items failed".
        - Test31's stale expected-failure cipher list under armhf asan.
        - qemu-based local ARM testing.
 
