@@ -2747,9 +2747,11 @@ sub PostProcessOptions_ ()
 			# 	/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2604_x86_64/ThirdPartyComponents/Xerces/CURRENT/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp: In member function 'substringData':
 			# 	/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2604_x86_64/ThirdPartyComponents/Xerces/CURRENT/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
 			# 	319 |     return retString;
-			# MAYBE only needed for g++-12?
+			# Bogus: getPooledString () returns a string-pool entry (or 0), never its argument, so retString cannot point at
+			# the local temp[]. g++-11 needs it too (seen 2026-09-24, 22.04 g++-11-release++2b and raspberrypi-g++-11-release);
+			# g++-13 and later are quiet.
 			my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
-			if (12.0 <= $itsVersion && $itsVersion < 13) {
+			if ($itsVersion < 13) {
 				$LinkerArgs_ExtraPrefix = $LinkerArgs_ExtraPrefix  . " -Wno-return-local-addr";
 			}
 		}
