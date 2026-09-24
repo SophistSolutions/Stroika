@@ -217,23 +217,36 @@ raspberryPiCrossCompileTestConfigurations_ ()
 	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://github.com/SophistSolutions/Stroika/issues/1150 (no-sanitize=alignment no longer sufficient in g++-12 raspberry pi - not sure why
 	# ./configure raspberrypi-g++-12-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-12' --cross-compiling true
 	#
+	# g++-13 and g++-14 are cross compilers on BOTH 24.04 and 26.04. Their release configurations are built on both
+	# hosts, but their sanitizer configurations on 26.04 (the newer) only - every configuration's tests run on the one
+	# Pi, one after another, so a second host's copy of a sanitizer run costs more Pi time than it finds.
+	local sanitizerHost_=0
+	[ "$(lsb_release -rs 2>/dev/null)" == "26.04" ] && sanitizerHost_=1
+	#
 	# gcc-13 ARM raspberrypi compiler
 	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://github.com/SophistSolutions/Stroika/issues/1150
 	#### NOTE to get this working on current raspbi/debian - see https://github.com/SophistSolutions/Stroika/issues/1149
 	./configure raspberrypi-g++-13-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true
-	./configure raspberrypi-g++-13-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-13' --sanitize none,address --cross-compiling true
-	./configure raspberrypi-g++-13-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true
+	#### DISABLED for https://github.com/SophistSolutions/Stroika/issues/1174 - gcc ICEs building mongo-c-driver under asan
+	#### ./configure raspberrypi-g++-13-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-13' --sanitize none,address --cross-compiling true
+	if [ $sanitizerHost_ -eq 1 ]; then
+		./configure raspberrypi-g++-13-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-13' --cross-compiling true
+	fi
 	#
 	# gcc-14 ARM raspberrypi compiler
 	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://github.com/SophistSolutions/Stroika/issues/1150
 	./configure raspberrypi-g++-14-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-14' --cross-compiling true
-	./configure raspberrypi-g++-14-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-14' --sanitize none,address --cross-compiling true
-	./configure raspberrypi-g++-14-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-14' --cross-compiling true
+	if [ $sanitizerHost_ -eq 1 ]; then
+		# the only armhf asan configuration left - 26.04's gcc 14.3 is the one armhf compiler that builds mongo-c-driver under asan (see #1174)
+		./configure raspberrypi-g++-14-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-14' --sanitize none,address --cross-compiling true
+		./configure raspberrypi-g++-14-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-14' --cross-compiling true
+	fi
 	#
 	# gcc-15 ARM raspberrypi compiler
 	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://github.com/SophistSolutions/Stroika/issues/1150
 	./configure raspberrypi-g++-15-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-15' --cross-compiling true
-	./configure raspberrypi-g++-15-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-15' --sanitize none,address --cross-compiling true
+	#### DISABLED for https://github.com/SophistSolutions/Stroika/issues/1174 - gcc ICEs building mongo-c-driver under asan
+	#### ./configure raspberrypi-g++-15-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-15' --sanitize none,address --cross-compiling true
 	./configure raspberrypi-g++-15-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-15' --cross-compiling true
 	#
 	# aarch64 (64-bit ARM) compilers - also tested on the Pi, which runs a 64-bit kernel; RegressionTests runs these
@@ -245,8 +258,8 @@ raspberryPiCrossCompileTestConfigurations_ ()
 	# OMITTED - gcc's aarch64 AddressSanitizer cannot run on the Pi at all, even for hello world (measured 2026-09-23,
 	# arm64v8/ubuntu:26.04): gcc-13 stops at "CHECK failed: sanitizer_allocator_primary64.h:131" - its allocator wants
 	# a fixed region at 0x500000000000, which needs a 48-bit-VA kernel, and Raspberry Pi kernels are 39-bit VA; gcc-14
-	# and 15 die of SIGSEGV even earlier, in __asan_init's interceptor setup. The armhf asan configurations above are
-	# the ARM asan coverage.
+	# and 15 die of SIGSEGV even earlier, in __asan_init's interceptor setup. The armhf asan configuration above
+	# (g++-14, 26.04 only - see https://github.com/SophistSolutions/Stroika/issues/1174) is the ARM asan coverage.
 	#### ./configure raspberrypi-aarch64-g++-15-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'aarch64-linux-gnu-g++-15' --sanitize none,address --cross-compiling true
 	#### NOTE -fno-sanitize=vptr: otherwise every test dies of infinite recursion during static init, silently.
 	#### On aarch64 std::type_info::operator== is inline, so with -static-libstdc++ libstdc++'s own __dynamic_cast

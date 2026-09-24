@@ -170,7 +170,10 @@ Times below are approximate, from what the runs actually recorded - every run en
   64-bit kernel - see https://github.com/SophistSolutions/Stroika/issues/1171). Pi test time,
   measured 2026-09-23 in the 26.04 containers: about 11 min per release configuration (armhf or
   aarch64), 13 for release-sanitize_address, 23 for debug-sanitize_undefined - small next to the
-  builds.
+  builds. A compiler both 24.04 and 26.04 have (armhf g++-13/14) gets its release configuration on both
+  but its sanitizer configurations on 26.04 only, and the only armhf asan configuration is g++-14
+  (https://github.com/SophistSolutions/Stroika/issues/1174). So the Pi time per run is about 20 min for
+  22.04, 45 min for 24.04, and 3 hours for 26.04.
 
 - \$TEST_TARGET=Ubuntu2204-Cross-Compile2RaspberryPi
 

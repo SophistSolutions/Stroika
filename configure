@@ -2427,14 +2427,12 @@ sub	ApplyCompilerBugWorkarounds_
 	##	}
 
 	#	armhf gcc (the Ubuntu cross compilers) crashes - "internal compiler error: Segmentation fault" -
-	#	compiling mongo-c-driver's bson_get_monotonic_time () (libbson/src/bson/bson-clock.c) at
-	#	-O3 -fsanitize=address. Measured 2026-09-23 with the 26.04 arm-linux-gnueabihf gcc-13, 14 and 15:
-	#		-O3 -fsanitize=address	crashes, every time, all three versions
-	#		-O2 -fsanitize=address	compiles
-	#		-O1 -fsanitize=address	compiles
-	#		-O3 (no sanitizer)		compiles
-	#	So drop to -O2 for armhf address-sanitizer builds - the same cure as the 24.04 case above, for an
-	#	unrelated bug. Without it these configurations cannot even build their third-party components.
+	#	compiling mongo-c-driver (e.g. bson_get_monotonic_time () in libbson/src/bson/bson-clock.c) under
+	#	-fsanitize=address. Dropping to -O2 is what lets 26.04's gcc 14.3 build it (it crashes at -O3).
+	#	That is the ONLY armhf compiler it helps: in real builds (2026-09-24) 26.04's gcc 13.4 and 15.2 and
+	#	24.04's gcc 13.3 and 14.2 crash at -O2 and at -O0 alike - and which files crash shifts with the exact
+	#	preprocessed source, so -O2 working for 14.3 is luck, not a fix. The other armhf asan regression
+	#	configurations are disabled for it: https://github.com/SophistSolutions/Stroika/issues/1174
 	#	(This only reaches mongo because Makefile-CMake-Common.mk stops cmake appending its own -O3.)
 	if ($ARCH eq "armhf" and IsTargettingSanitizer_ ('address')) {
 		$COPTIMIZE_FLAGS = "-O2";
