@@ -24,8 +24,8 @@
 #								(Debian 13's default) only ever holds one test at a time
 #		REMOTE_DOCKER_IMAGE		run the test on REMOTE inside this docker image, so its runtime (glibc etc) can
 #								match the BUILD host rather than whatever REMOTE's own OS happens to be
-#		REMOTE_DOCKER_ARGS		extra 'docker run' arguments - e.g. --security-opt seccomp=unconfined, which an
-#								arm64 image needs under an armhf docker daemon
+#		REMOTE_DOCKER_ARGS		extra 'docker run' arguments - e.g. --platform=linux/arm64 --security-opt=seccomp=unconfined,
+#								which an arm64 image needs under an armhf docker daemon
 #		SSH_REMOTE_WARNINGS_OFF	options passed to ssh
 #		StroikaPlatformTargetBuildDir	where a PerformanceDump.txt written by the test is moved to
 #

@@ -33,6 +33,9 @@ fi
 # If set, each raspberrypi test runs on the Pi inside this docker image (eg. arm32v7/ubuntu:26.04), so its runtime
 # matches the BUILD host's release rather than the Pi's own OS - see Tests/Scripts/RunTest. Empty = run natively.
 : ${RASPBERRYPI_REMOTE_DOCKER_IMAGE:=}
+# The same for the aarch64 (64-bit ARM) raspberrypi configurations (eg. arm64v8/ubuntu:26.04). These have no native
+# option - the Pi's userland is armhf and cannot load an aarch64 binary - so when this is empty they are skipped.
+: ${RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64:=}
 
 
 VER=`Build/Scripts/ExtractVersionInformation STROIKA_VERSION FullVersionString`
@@ -106,6 +109,7 @@ echo "$PREFIX_OUT_LABEL" "    CONTINUE=$CONTINUE" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    BUILD_EXTRA_COMPILERS_IF_MISSING=$BUILD_EXTRA_COMPILERS_IF_MISSING" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_WITH_LOGIN=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_DOCKER_IMAGE=$RASPBERRYPI_REMOTE_DOCKER_IMAGE" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64=$RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    DETECTED_HOST_OS=$DETECTED_HOST_OS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    uname -a=`uname -a`" >>$TEST_OUT_FILE 2>&1
@@ -301,18 +305,43 @@ echo "</Run-Tests ALL-Local>" >>$TEST_OUT_FILE 2>&1
 echo >>$TEST_OUT_FILE 2>&1
 echo >>$TEST_OUT_FILE 2>&1
 echo "<Run-Tests-REMOTE>" >>$TEST_OUT_FILE 2>&1
+# Set PI_DOCKER_IMAGE_ / PI_DOCKER_ARGS_ to where raspberrypi configuration $1's tests run, per its ARCH; fails
+# if there is nowhere to run it. The Pi's docker daemon is armhf, so an aarch64 container needs two things said
+# explicitly: --platform (else it pulls, or looks for, the daemon's own linux/arm variant - which an arm64v8/ image
+# does not have), and seccomp=unconfined (the default profile only knows 32-bit ARM syscalls: SIGSYS otherwise).
+raspberryPiRunArgs_ ()
+{
+	if [ "`Build/Scripts/GetConfigurationParameter $1 ARCH`" == "aarch64" ]; then
+		[ "$RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64" != "" ] || return 1
+		PI_DOCKER_IMAGE_=$RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64
+		PI_DOCKER_ARGS_="--platform=linux/arm64 --security-opt=seccomp=unconfined"
+	else
+		PI_DOCKER_IMAGE_=$RASPBERRYPI_REMOTE_DOCKER_IMAGE
+		PI_DOCKER_ARGS_=
+	fi
+}
 if [ $INCLUDE_RASPBERRYPI_TESTS -eq 1 ]; then
 	echo -n "Run-Tests raspberrypi remote..."
 	echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
-	for i in $RASPBERRYPICONFIGS; do 
-		echo "$PREFIX_OUT_LABEL" "make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN REMOTE_DOCKER_IMAGE=$RASPBERRYPI_REMOTE_DOCKER_IMAGE" >>$TEST_OUT_FILE 2>&1
-		make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN REMOTE_DOCKER_IMAGE=$RASPBERRYPI_REMOTE_DOCKER_IMAGE >>$TEST_OUT_FILE 2>&1
-	done; 
-	for i in $RASPBERRYPIVALGRINDCONFIGS; do 
-		echo "$PREFIX_OUT_LABEL" "make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN REMOTE_DOCKER_IMAGE=$RASPBERRYPI_REMOTE_DOCKER_IMAGE VALGRIND=memcheck" >>$TEST_OUT_FILE 2>&1
-		make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN REMOTE_DOCKER_IMAGE=$RASPBERRYPI_REMOTE_DOCKER_IMAGE VALGRIND=memcheck >>$TEST_OUT_FILE 2>&1
-	done; 
+	for i in $RASPBERRYPICONFIGS; do
+		if ! raspberryPiRunArgs_ $i; then
+			echo -n "(SKIPPED $i: no RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64)..."
+			echo "$PREFIX_OUT_LABEL" "SKIPPED $i: aarch64, and RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64 is not set" >>$TEST_OUT_FILE 2>&1
+			continue
+		fi
+		echo "$PREFIX_OUT_LABEL" "make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN REMOTE_DOCKER_IMAGE=$PI_DOCKER_IMAGE_ REMOTE_DOCKER_ARGS=\"$PI_DOCKER_ARGS_\"" >>$TEST_OUT_FILE 2>&1
+		make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN REMOTE_DOCKER_IMAGE="$PI_DOCKER_IMAGE_" REMOTE_DOCKER_ARGS="$PI_DOCKER_ARGS_" >>$TEST_OUT_FILE 2>&1
+	done;
+	for i in $RASPBERRYPIVALGRINDCONFIGS; do
+		if ! raspberryPiRunArgs_ $i; then
+			echo -n "(SKIPPED $i: no RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64)..."
+			echo "$PREFIX_OUT_LABEL" "SKIPPED $i: aarch64, and RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64 is not set" >>$TEST_OUT_FILE 2>&1
+			continue
+		fi
+		echo "$PREFIX_OUT_LABEL" "make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN REMOTE_DOCKER_IMAGE=$PI_DOCKER_IMAGE_ REMOTE_DOCKER_ARGS=\"$PI_DOCKER_ARGS_\" VALGRIND=memcheck" >>$TEST_OUT_FILE 2>&1
+		make run-tests TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN REMOTE_DOCKER_IMAGE="$PI_DOCKER_IMAGE_" REMOTE_DOCKER_ARGS="$PI_DOCKER_ARGS_" VALGRIND=memcheck >>$TEST_OUT_FILE 2>&1
+	done;
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1

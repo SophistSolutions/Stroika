@@ -156,18 +156,21 @@ Times below are approximate, from what the runs actually recorded - every run en
       ./Build/Scripts/RunRemoteRegressionTests
   ```
 
-- Raspberry Pi (armhf) - one run per Ubuntu LTS build host. The 22.04 run is the only home of the
-  oldest armhf compilers (g++-11/12), so it is not redundant with the other two.
+- Raspberry Pi (armhf, and aarch64 from 24.04 on) - one run per Ubuntu LTS build host. The 22.04 run is
+  the only home of the oldest armhf compilers (g++-11/12), so it is not redundant with the other two.
 
   Remote execute on machine medusa: the cross-compile happens in docker there, then each test is copied
   to raspberrypi and run INSIDE an arm container of the build host's own Ubuntu release
   (`RASPBERRYPI_REMOTE_DOCKER_IMAGE`). That makes the test's runtime match the sysroot the cross
   compiler built against, whatever OS the Pi itself runs: a binary built on Ubuntu N can need up to
   Ubuntu N's glibc (26.04's Test02 needs `GLIBC_2.43`). Drop `RASPBERRYPI_REMOTE_DOCKER_IMAGE` to run
-  natively on the Pi instead. The Pi needs docker (Raspberry Pi OS 13, 64-bit kernel - see
-  https://github.com/SophistSolutions/Stroika/issues/1171). Pi test time, measured 2026-09-23 in the
-  26.04 containers: about 11 min per release configuration, 13 for release-sanitize_address
-  (debug-sanitize_undefined not yet timed) - small next to the builds.
+  natively on the Pi instead. The aarch64 configurations run the same way in
+  `RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64`, and have no native option (the Pi's userland is armhf):
+  left unset, they are built but their tests are skipped. The Pi needs docker (Raspberry Pi OS 13,
+  64-bit kernel - see https://github.com/SophistSolutions/Stroika/issues/1171). Pi test time,
+  measured 2026-09-23 in the 26.04 containers: about 11 min per release configuration (armhf or
+  aarch64), 13 for release-sanitize_address, 23 for debug-sanitize_undefined - small next to the
+  builds.
 
 - \$TEST_TARGET=Ubuntu2204-Cross-Compile2RaspberryPi
 
@@ -190,6 +193,7 @@ Times below are approximate, from what the runs actually recorded - every run en
       USE_TEST_BASENAME=Ubuntu2404-Cross-Compile2RaspberryPi \
       RASPBERRYPI_REMOTE_MACHINE=raspberrypi.lan \
       RASPBERRYPI_REMOTE_DOCKER_IMAGE=arm32v7/ubuntu:24.04 \
+      RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64=arm64v8/ubuntu:24.04 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
@@ -204,6 +208,7 @@ Times below are approximate, from what the runs actually recorded - every run en
       USE_TEST_BASENAME=Ubuntu2604-Cross-Compile2RaspberryPi \
       RASPBERRYPI_REMOTE_MACHINE=raspberrypi.lan \
       RASPBERRYPI_REMOTE_DOCKER_IMAGE=arm32v7/ubuntu:26.04 \
+      RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64=arm64v8/ubuntu:26.04 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests \

@@ -235,6 +235,24 @@ raspberryPiCrossCompileTestConfigurations_ ()
 	./configure raspberrypi-g++-15-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-15' --cross-compiling true
 	./configure raspberrypi-g++-15-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-15' --sanitize none,address --cross-compiling true
 	./configure raspberrypi-g++-15-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-15' --cross-compiling true
+	#
+	# aarch64 (64-bit ARM) compilers - also tested on the Pi, which runs a 64-bit kernel; RegressionTests runs these
+	# in RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64, since the Pi's own userland is armhf. A release build per compiler,
+	# and ubsan on the newest only.
+	./configure raspberrypi-aarch64-g++-13-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'aarch64-linux-gnu-g++-13' --cross-compiling true
+	./configure raspberrypi-aarch64-g++-14-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'aarch64-linux-gnu-g++-14' --cross-compiling true
+	./configure raspberrypi-aarch64-g++-15-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'aarch64-linux-gnu-g++-15' --cross-compiling true
+	# OMITTED - gcc's aarch64 AddressSanitizer cannot run on the Pi at all, even for hello world (measured 2026-09-23,
+	# arm64v8/ubuntu:26.04): gcc-13 stops at "CHECK failed: sanitizer_allocator_primary64.h:131" - its allocator wants
+	# a fixed region at 0x500000000000, which needs a 48-bit-VA kernel, and Raspberry Pi kernels are 39-bit VA; gcc-14
+	# and 15 die of SIGSEGV even earlier, in __asan_init's interceptor setup. The armhf asan configurations above are
+	# the ARM asan coverage.
+	#### ./configure raspberrypi-aarch64-g++-15-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'aarch64-linux-gnu-g++-15' --sanitize none,address --cross-compiling true
+	#### NOTE -fno-sanitize=vptr: otherwise every test dies of infinite recursion during static init, silently.
+	#### On aarch64 std::type_info::operator== is inline, so with -static-libstdc++ libstdc++'s own __dynamic_cast
+	#### binds to OUR instrumented copy - whose vptr check calls __dynamic_cast again. (armhf keeps it out of line.)
+	#### (-fno-sanitize=alignment NOT needed: #1150 is armhf-only - ubsan misreading odd Thumb function addresses.)
+	./configure raspberrypi-aarch64-g++-15-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=vptr --compiler-driver 'aarch64-linux-gnu-g++-15' --cross-compiling true
 }
 
 
