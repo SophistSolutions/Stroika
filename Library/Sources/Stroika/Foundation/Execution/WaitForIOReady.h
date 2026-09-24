@@ -246,6 +246,10 @@ namespace Stroika::Foundation::Execution {
      *  \note   An optional pollable2Wakeup descriptor lets another thread make a pending wait return early, without
      *          timing out and without ending the thread - @see the constructor.
      *
+     *  \note   Poll-based, so every wait costs time linear in the number of descriptors watched. For how that compares
+     *          with other libraries and APIs, and what would scale better: @see UpdatableWaitForIOReady and
+     *          https://github.com/SophistSolutions/Stroika/issues/1176
+     *
      *  \par Example Usage
      *      \code
      *          Execution::WaitForIOReady waiter{fd};
@@ -408,7 +412,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
-        // @todo   Consider Mapping<T, TypeOfMonitorSet> here instead of an Iterable of pairs
+        // @todo   Consider Mapping<T, TypeOfMonitorSet> here instead of an Iterable of pairs - @see https://github.com/SophistSolutions/Stroika/issues/1176
         const Traversal::Iterable<pair<T, TypeOfMonitorSet>>    fPollData_;
         const optional<pair<SDKPollableType, TypeOfMonitorSet>> fPollable2Wakeup_;
     };

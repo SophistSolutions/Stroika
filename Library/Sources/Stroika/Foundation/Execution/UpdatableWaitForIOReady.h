@@ -49,7 +49,16 @@ namespace Stroika::Foundation::Execution {
      *
      *      \endcode
      *
+     *  \note   ***Performance: linear in the number of descriptors, on EVERY wait.*** Each wait snapshots the whole
+     *          list and polls all of it, and each Add/Remove wakes the waiter to do that again - fine for tens of
+     *          descriptors, not for thousands. epoll (Linux) and kqueue (macOS/BSD) keep the list in the kernel
+     *          instead, so a wait costs only what is ready, and could go behind this same API.
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *
+     *  \todo   @todo Back this with epoll/kqueue (and perhaps an optional one-shot mode), should anything need it to
+     *          scale. Design and performance evaluation, comparison with other libraries and APIs, and the options:
+     *          https://github.com/SophistSolutions/Stroika/issues/1176
      *
      *  \todo @todo DECIDE IF T is a KEY - that is - if allowed to appear more than once in the list.
      *        Update the logic for Add/Remove and constructors accordingly!!!
