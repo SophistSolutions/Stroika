@@ -32,6 +32,11 @@ using namespace Stroika::Frameworks;
 
 using Stroika::Foundation::Debug::TraceContextBumper;
 
+#if qCompilerAndStdLib_arm_isConstantEvaluatedInCtor_UnusedValueWarning_Buggy
+// Wraps all the tests, not each line: constructing a Date or DateTime triggers it, and there are too many to wrap one by one
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-value\"");
+#endif
+
 #if qStroika_HasComponent_googletest
 namespace {
     GTEST_TEST (Foundation_Time, AssumptionsAboutUnderlyingTimeLocaleLibrary_)
@@ -1193,6 +1198,10 @@ namespace {
         }
     }
 }
+#endif
+
+#if qCompilerAndStdLib_arm_isConstantEvaluatedInCtor_UnusedValueWarning_Buggy
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-value\"");
 #endif
 
 int main (int argc, const char* argv[])

@@ -455,6 +455,27 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 
 #endif
 
+/**
+ *  Spurious - fires on a call to a constexpr constructor that runs if (not is_constant_evaluated ()) {...}, directly or via a constexpr
+ *  function it calls (e.g. Duration, Date), and only when optimizing. The warning points at the constructor call, so it must be
+ *  suppressed at each call site, not in the library.
+ *
+Test.cpp: In function 'void {anonymous}::DoRegressionTests_DurationsDateTime_6_()':
+Test.cpp:372:31: warning: value computed is not used [-Wunused-value]
+  372 |         SharedContactsConfig_ tmp;
+      |                               ^~~
+ */
+#ifndef qCompilerAndStdLib_arm_isConstantEvaluatedInCtor_UnusedValueWarning_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
+// broken in GCC 14.2 (ubuntu 24.04 cross-compile); fixed in GCC 14.3 (ubuntu 26.04 cross-compile) and GCC 15; aarch64 not affected
+#define qCompilerAndStdLib_arm_isConstantEvaluatedInCtor_UnusedValueWarning_Buggy (__GNUC__ == 14 and __GNUC_MINOR__ < 3)
+#else
+#define qCompilerAndStdLib_arm_isConstantEvaluatedInCtor_UnusedValueWarning_Buggy 0
+#endif
+
+#endif
+
 #ifndef qCompilerAndStdLib_illunderstood_ispan_Buggy
 
 #if defined(__clang__)

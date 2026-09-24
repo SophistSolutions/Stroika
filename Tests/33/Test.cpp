@@ -369,7 +369,13 @@ namespace {
             {"fTimeOfDay1", &SharedContactsConfig_::fTimeOfDay1},
         });
 
+#if qCompilerAndStdLib_arm_isConstantEvaluatedInCtor_UnusedValueWarning_Buggy
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-value\"");
+#endif
         SharedContactsConfig_ tmp;
+#if qCompilerAndStdLib_arm_isConstantEvaluatedInCtor_UnusedValueWarning_Buggy
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-value\"");
+#endif
         tmp.fDate1 = DateTime{Date{Time::Year{2001}, Time::February, Time::day{12}}};
         tmp.fDateTime1 = DateTime{Date{Time::Year{2001}, Time::February, Time::day{12}}, Time::TimeOfDay::Parse ("3pm", locale::classic ())};
         tmp.fTimeOfDay1 = tmp.fDateTime1->GetTimeOfDay ();
