@@ -20,12 +20,6 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **`Tests/Scripts/RunTest`: a test that dies silently is easy to miss.** One that crashes before the
-     test framework installs its signal handler prints NOTHING (the `FAILED: SIGNAL=` line comes from
-     that handler) - only a missing `[  PASSED  ]` and the end-of-suite `SOME TESTS FAILED` show it. Hit
-     twice on 2026-09-23 (aarch64 ubsan, docker platform mismatch). Option: print a line when a test
-     exits non-zero with no output - changes the byte-compatible output, so LGP's call.
-
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
      valgrind still earns its keep, rather than just switching it on somewhere new. Groundwork already
@@ -61,7 +55,7 @@ Generally will track stuff here between releases
      Not worth filing upstream - it is confined to one distro's packaging, so Launchpad rather than GCC
      bugzilla, and it needs a reduced testcase we do not have.
 
-   - https://github.com/SophistSolutions/Stroika/issues/843
+   - https://github.com/SophistSolutions/Stroika/issues/843 (UpdatableWaitforIOEvents pipe/eventfd)
 
    - **release build-time work.** Investigated 2026-08-27; all measurements and
      detail in `.claude/medusa-perf-knobs.md` (gitignored, on protagoras). Headline: host/VM/BIOS

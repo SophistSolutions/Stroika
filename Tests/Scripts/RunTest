@@ -5,6 +5,8 @@
 #
 #		{PREFIX_} [NN] {TestName} - {what is being run}
 #		{PREFIX_}      {each line of the test's stdout}
+#		{PREFIX_} [NN] {TestName} - FAILED: exit status ...	- ONLY if it exited non-zero without reporting a
+#															  failure of its own (see the end of this script)
 #
 #	Usage:
 #		RunTest NN EXE [TEST-ARGS...]
@@ -105,6 +107,19 @@ else
 fi
 
 echo "$OUTPUT_" | sed -e "s/^/${PREFIX_}      /" | tr -d "\r"
+
+# A test that dies before the test framework installs its signal handler - in static initialization, in the
+# dynamic loader, or because docker could not even start it - prints nothing, and neither does one that crashes
+# after its [  PASSED  ] (e.g. in a static destructor). Without this line, all the log shows is a missing
+# PASSED and one '***SOME TESTS FAILED***' for the whole configuration. Only when the test said nothing itself:
+# its own FAILED lines are not repeated, and a passing run's output is unchanged.
+if [ $RESULT_ -ne 0 ] && ! echo "$OUTPUT_" | grep -q -F FAILED ; then
+	WHY_="exit status $RESULT_"
+	if [ $RESULT_ -gt 128 ] && SIG_=$(kill -l $((RESULT_ - 128)) 2> /dev/null) ; then
+		WHY_="$WHY_ (SIG${SIG_#SIG})"
+	fi
+	report_ "FAILED: $WHY_, with no failure reported by the test itself"
+fi
 
 if [ -e PerformanceDump.txt ] ; then
 	mv PerformanceDump.txt "${StroikaPlatformTargetBuildDir}PerformanceDump.txt" 2> /dev/null
