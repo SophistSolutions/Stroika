@@ -21,19 +21,13 @@ Generally will track stuff here between releases
 
 - v3.0d25
    - **Raspberry Pi / ARM testing** - https://github.com/SophistSolutions/Stroika/issues/1171 (the checklist
-     at the end of it is current). Done 2026-09-23: Pi on trixie + 64-bit kernel + docker; tests run in a
-     container matching the build host; armhf g++-11..15, and arm64 g++-13..15 (cc448b21a8).
-     Done 2026-09-24: configurations trimmed 23 -> 17. Sanitizers of the compilers on both 24.04 and 26.04
-     (armhf g++-13/14) are now built on 26.04 only, and armhf asan is cut to g++-14 alone - the other armhf
-     compilers ICE building mongo under asan (https://github.com/SophistSolutions/Stroika/issues/1174, low
-     priority; retest on the next mongo release - its body has a 5-minute recipe).
-     Audit a Pi run by counting `[  PASSED  ]` per configuration against 54: a build failure or silent crash
-     shows up ONLY as a missing PASSED (see the RunTest item below). The summary's "items failed" is NOT
-     reliable - the bare arm image's missing `openssl` alone makes it nonzero.
-     Still open there: a fuller arm test image (make/openssl/locales/ca-certificates - several tests skip in
-     the bare ubuntu ones, and it would end that false "failed" count), Test31's stale expected-failure cipher
-     list under armhf asan, and qemu-based local ARM testing. aarch64 asan is NOT possible on the Pi
-     (39-bit-VA kernel) - see #1171.
+     at the end of it is current). Still open there:
+       - a fuller arm test image (make/openssl/locales/ca-certificates) - several tests skip in the bare
+         ubuntu ones, and its missing `openssl` makes a run's "items failed" count nonzero. Until then, audit
+         a Pi run by counting `[  PASSED  ]` per configuration against 54: a build failure or silent crash
+         shows up ONLY as a missing PASSED.
+       - Test31's stale expected-failure cipher list under armhf asan.
+       - qemu-based local ARM testing.
 
    - **`Tests/Scripts/RunTest`: a test that dies silently is easy to miss.** One that crashes before the
      test framework installs its signal handler prints NOTHING (the `FAILED: SIGNAL=` line comes from
