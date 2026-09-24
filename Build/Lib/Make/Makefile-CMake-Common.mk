@@ -114,8 +114,8 @@ endif
 
 
 #
-# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix (on unix, only
-# for projects that pick a CMAKE_BUILD_TYPE themselves - see the -O3 note below)
+# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix (on unix, with
+# CMAKE_BUILD_TYPE=None - see below - they are never used)
 # No matter - set them all to the same thing
 #
 #	With Xerces, we get link errors if we don't include the _DEBUG and _RELEASE versions
@@ -172,25 +172,27 @@ CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFL
 endif
 else
 # UNIX:
-# it appears cmake doesn't need these for windows cmake makefiles, and for mongodb-cxx-driver, it causes problems
-# https://jira.mongodb.org/browse/CXX-3505
-CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
 #
-#	We pass no CMAKE_BUILD_TYPE here, but some projects (mongo-cxx-driver, zlib, zstd) pick Release for
-#	themselves when none is given - and cmake then appends CMAKE_<LANG>_FLAGS_RELEASE (-O3 -DNDEBUG) AFTER
-#	the CFLAGS above, so the last -O wins and the configuration's optimization level is silently lost.
-#	So when the configuration asks for an -O of its own, keep the -DNDEBUG those projects have always been
-#	built with and drop the -O3.
+#	CMAKE_BUILD_TYPE=None (Debian's packaging convention): every component is built with exactly the configuration's
+#	flags, and nothing else. There is no CMAKE_<LANG>_FLAGS_NONE, so cmake appends nothing - whereas with no build type
+#	at all, projects that pick Release for themselves (mongo-cxx-driver, zlib, zstd) got cmake's -O3 -DNDEBUG after our
+#	flags, overriding the configuration's -O, while the rest (GoogleTest, libxml2, Xerces, fmtlib) got neither. It also
+#	keeps mongo-c-driver's mlib honest: it treats a Release build type as a promise of optimization (a link-time
+#	inlining assertion), but with None it goes by __OPTIMIZE__ - i.e. by the flags actually used.
 #
-#	...but NOT when it asks for none (or -O0), as debug configurations do: those keep cmake's -O3, as before.
-#	mongo-c-driver treats a Release build type as a promise of optimization - its mlib/cmp.h asserts, at link
-#	time, that a function was inlined and a dead branch deleted - and fails to link at -O0. Telling cmake the
-#	truth (a Debug build type) is the real fix for that, but changes more than the flags (GoogleTest's library
-#	names gain a 'd', zstd turns on its own asserts).
+#	-DNDEBUG iff the configuration has assertions off: one rule for every component, rather than NDEBUG exactly where a
+#	project happened to choose Release.
 #
-#	Deferred ($(if) inside a recursively-expanded variable), since the including makefile sets CFLAGS after this.
+#	Only the cmake variable: the MAKE variable CMAKE_BUILD_TYPE stays unset on UNIX - zlib's and zstd's makefiles test
+#	it for empty.
 #
-CMAKE_ARGS+= $(if $(filter-out -O0,$(filter -O%,$(CFLAGS))),-DCMAKE_C_FLAGS_RELEASE=-DNDEBUG)
-CMAKE_ARGS+= $(if $(filter-out -O0,$(filter -O%,$(CXXFLAGS))),-DCMAKE_CXX_FLAGS_RELEASE=-DNDEBUG)
+#	(CMAKE_<LANG>_FLAGS only - it appears cmake doesn't need these for windows, and for mongodb-cxx-driver there they
+#	cause problems: https://jira.mongodb.org/browse/CXX-3505)
+#
+CMAKE_ARGS+= -DCMAKE_BUILD_TYPE=None
+ifeq (0,$(AssertionsEnabled))
+CMAKE_NDEBUG_FLAG_:= -DNDEBUG
+endif
+CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS) $(CMAKE_NDEBUG_FLAG_)"
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS) $(CMAKE_NDEBUG_FLAG_)"
 endif

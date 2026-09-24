@@ -53,21 +53,6 @@ CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
-# mongo-c-driver's mlib asserts at LINK time that mlib_cmp () was inlined whenever it thinks the build is optimized - and a
-# cmake Release build type (which mongo picks for itself when given none) counts, whatever the -O. So a Release
-# configuration actually compiled at -O0 (e.g. --append-CXXFLAGS -O0, as the codeql-analyze CI job does) fails with
-#	undefined reference to `__assert_that_mlib_cmp_was_inlined()'
-# This drops only that self-check, a branch that never runs either way.
-#
-# Upstream flaw, so likely to be fixed: mlib/config.h trusts the build type on every compiler, when it only needs to for
-# MSVC (gcc/clang have __OPTIMIZE__, which mlib also checks). Seen in mongo-cxx-driver r4.5.0, which fetches
-# mongo-c-driver 2.3.3. Deliberately applied only up to that version, so a bump drops it and the codeql-analyze job
-# re-tests: if that error comes back, raise the version below.
-ifneq (1,$(shell ${StroikaRoot}Build/Scripts/VersionCompare $(patsubst r%,%,${MONGOCXXDRIRVER_VERSION_}) 4.5.0; echo $$?))
-CFLAGS 		+= 	-DMLIB_DISABLE_INLINING_ASSERTIONS=1
-CXXFLAGS 	+= 	-DMLIB_DISABLE_INLINING_ASSERTIONS=1
-endif
-
 
 ## Crazy but mongo build script depends on python, needs to know version, and provides very long elaborate script to find the
 ## version, but it sometimes doesn't work --LGP 2025-03-10

@@ -76,12 +76,3 @@ Generally will track stuff here between releases
      remaining suspects are the guest's 8 vCPUs and VM per-file-operation overhead (NOT disk bandwidth
      - `%iowait` was 0.0-0.2% all week). Raise guest vCPUs at some restart and re-measure.
 
-   - **UNIX cmake third-party builds: `CMAKE_BUILD_TYPE=None` (Debian's approach), `-DNDEBUG` iff
-     `AssertionsEnabled=0`.** 43303d8f08 took Fedora's approach (`-DCMAKE_<LANG>_FLAGS_RELEASE=-DNDEBUG`)
-     as the quick fix for projects that pick Release themselves (mongo-cxx-driver, zlib, zstd). `None`
-     gives ONE rule for every component - built with the configuration's flags, nothing else - where
-     today mongo/zlib/zstd always get `NDEBUG` and GoogleTest/libxml2/Xerces never do. Bonus: Debug
-     mongo builds at its real `-O0` (mongo's mlib then keys off `__OPTIMIZE__`, not the build type):
-     578 -> 216 s CPU measured. Needs a Debug+Release pass on Linux and macOS - third-party asserts
-     come ON in Debug. Windows is unaffected (multi-config; already passes Debug/Release explicitly).
-
