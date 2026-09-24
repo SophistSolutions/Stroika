@@ -24,8 +24,8 @@
  *
  *  \note   ***Windows takes sockets and nothing else.*** The underlying WSAPoll () accepts no other kind
  *          of handle, and WaitForMultipleObjectsEx () was tried instead and worked poorly. This is not just
- *          a restriction on callers: it is why the wakeup channel EventFD hands out has to be a loopback
- *          socket pair there, where a pipe or an event HANDLE would be cheaper. @see
+ *          a restriction on callers: it is why the wakeup channel EventFD hands out has to be a (loopback
+ *          UDP) socket there, where an event HANDLE would be cheaper. @see mkEventFD () and
  *          https://github.com/SophistSolutions/Stroika/issues/843
  */
 
@@ -237,18 +237,12 @@ namespace Stroika::Foundation::Execution {
     }
 
     /**
-     *  Simple portable wrapper on OS select/2, pselect/2, poll/2, epoll (), and/or WaitForMultipleEvents(), etc
+     *  Simple portable wrapper on OS select/2, pselect/2, poll/2, epoll (), and/or WaitForMultipleEvents(), etc, 
+     *  except you construct it with the 'select' arguments (file descriptors to watch), and then call wait
+     *  on the 'waitable' object.
      *
-     *  \note   pollable2Wakeup specifies an OPTIONAL file descriptor, which, if signalled (written to or whatever signal sent to it
-     *          depending on the POLL arg to this field) - any pending waits will return prematurely.
-     *
-     *          This can be used to trigger premature wakeup (without being treated as a timeout) - like if the list of file descriptors to watch
-     *          changes.
-     *
-     *          Alternatively, users may interrupt Execution::WaitForIOReady portably using 
-     *          Thread::Interrupt () (which is what Stroika generally did until v2.1a5) - but this is less efficient, and generates
-     *          lots of log noise (dbgtrace). Also, interrupt means if there were real answers mixed with 
-     *          non-answers we would miss the real answers and this way captures them too)
+     *  \note   An optional pollable2Wakeup descriptor lets another thread make a pending wait return early, without
+     *          timing out and without ending the thread - @see the constructor.
      *
      *  \par Example Usage
      *      \code
@@ -280,7 +274,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note pointless to ever create ObjectVariantMapper and not use, so [[nodiscard]] appropriate
+     *  \note pointless to ever create a WaitForIOReady and not use it, so [[nodiscard]] appropriate
      */
     template <typename T = WaitForIOReady_Support::SDKPollableType, typename TRAITS = WaitForIOReady_Support::WaitForIOReady_Traits<T>>
     class [[nodiscard]] WaitForIOReady : public WaitForIOReady_Support::WaitForIOReady_Base {
@@ -289,15 +283,56 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief Watch each of fds for the events paired with it - or, in the other overloads, all of fds (or the one fd) for flags.
+         *
+         *  fds is copied, so later changes to the container it came from have no effect here. For a descriptor set
+         *  that can change while a wait is in progress, @see UpdatableWaitForIOReady.
+         *
+         *  \par pollable2Wakeup
+         *  An optional extra descriptor, and the events to watch it for (normally just eRead), whose becoming ready
+         *  makes a pending Wait* return early. That is how another thread gets a wait to return WITHOUT ending it -
+         *  to pick up a changed descriptor set, say. Aborting the waiting thread needs no such help: every Wait* is
+         *  a cancelation point, and Thread::Ptr::Abort () ends it by itself.
+         *
+         *  It is a raw SDKPollableType, not a T, so TRAITS does not map it and it never appears in a result: a wait
+         *  it ends returns just the fds that happened to be ready too - often none. So:
+         *      -   WaitQuietly/WaitQuietlyUntil can return an empty set BEFORE the timeout, which from the result
+         *          alone looks just like a timeout. To tell them apart, ask the wakeup (e.g. EventFD::IsSet ()).
+         *      -   Wait/WaitUntil throw only once the timeout has really passed, so they too can return an empty set.
+         *
+         *  This class only ever polls it - it never reads, resets, or closes it. And poll () is level-triggered, so
+         *  once ready it stays ready until its owner resets it, and until then EVERY wait returns at once. So:
+         *      -   Reset it BEFORE each wait, not after. Then a wakeup that races with the reset is not lost - at
+         *          worst it makes the wait return at once.
+         *      -   Keep it open for as long as any Wait* on this object can run - including on copies, which share
+         *          it rather than duplicate it.
+         *
+         *  The usual choice is an EventFD, from WaitForIOReady_Support::mkEventFD (): pass its GetWaitInfo (),
+         *  Set () it to wake the wait, and Clear () it to reset. That is what UpdatableWaitForIOReady does.
+         *
+         *  \par Example Usage
+         *      \code
+         *          auto wakeup = WaitForIOReady_Support::mkEventFD (); // other threads call wakeup->Set () to end the wait early
+         *          while (...) {
+         *              wakeup->Clear (); // before the wait, not after - @see above
+         *              WaitForIOReady waiter{fds, WaitForIOReady_Base::kDefaultTypeOfMonitor, wakeup->GetWaitInfo ()};
+         *              for (auto fd : waiter.WaitQuietly (30s)) {
+         *                  ...
+         *              }
+         *              // if wakeup->IsSet (), a wakeup ended the wait - so recheck what fds should be
+         *          }
+         *      \endcode
+         *
+         *  \note   On Windows, like fds, pollable2Wakeup must be a socket - @see the note at the top of this file.
          */
-        WaitForIOReady (WaitForIOReady&&) noexcept = default;
-        WaitForIOReady (const WaitForIOReady&)     = default;
         WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds,
                         optional<pair<SDKPollableType, TypeOfMonitorSet>>     pollable2Wakeup = nullopt);
         WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor,
-                        optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
+                        optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt); ///< \brief Watch all of fds for flags
         WaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor,
-                        optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
+                        optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt); ///< \brief Watch just fd, for flags
+        WaitForIOReady (WaitForIOReady&&) noexcept = default; ///< \brief Copies and moves share the descriptors - none is duplicated
+        WaitForIOReady (const WaitForIOReady&)     = default; ///< \brief Copies and moves share the descriptors - none is duplicated
 
     public:
         ~WaitForIOReady () = default;
@@ -312,7 +347,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Traversal::Iterable<pair<T, TypeOfMonitorSet>> GetDescriptors () const;
 
     public:
-        /*
+        /**
          *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set).
          *
          *  \note   Throws a timeout on timeout - @see Execution::ThrowError (errc::timed_out).
@@ -326,7 +361,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Containers::Set<T> Wait (Time::DurationSeconds waitFor = Time::kInfinity);
 
     public:
-        /*
+        /**
          *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
          *
          *   Returns set of file descriptors which are ready, or empty set if timeout, or if signaled by pollable2Wakeup.
@@ -340,7 +375,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Containers::Set<T> WaitQuietly (Time::DurationSeconds waitFor = Time::kInfinity);
 
     public:
-        /*
+        /**
          *  Waits until the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set)..
          *
          *  \note   Throws a timeout on timeout - @see Execution::ThrowError (errc::timed_out).
@@ -354,7 +389,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Containers::Set<T> WaitUntil (Time::TimePointSeconds timeoutAt = Time::TimePointSeconds{Time::kInfinity});
 
     public:
-        /*
+        /**
          *  Waits until the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set)..
          *
          *  Returns set of file descriptors which are ready, or an empty set if time expired before any became ready.

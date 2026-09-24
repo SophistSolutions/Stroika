@@ -11,9 +11,13 @@
 
 #if qStroika_Foundation_Common_Platform_POSIX
 #include <csignal>
+#include <fcntl.h>
 #include <poll.h>
 #include <pthread.h>
 #include <unistd.h>
+#if qStroika_Foundation_Common_Platform_Linux
+#include <sys/eventfd.h>
+#endif
 #elif qStroika_Foundation_Common_Platform_Windows
 #include <Windows.h>
 
@@ -23,7 +27,6 @@
 #endif
 
 #include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
@@ -34,8 +37,10 @@
 #include "Platform/Windows/WaitSupport.h"
 #endif
 
-#include "Stroika/Foundation/IO/Network/ConnectionOrientedMasterSocket.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
+#if qStroika_Foundation_Common_Platform_Windows
+#include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
+#endif
 
 #include "WaitForIOReady.h"
 
@@ -48,7 +53,6 @@ using namespace Stroika::Foundation::IO::Network;
 
 using std::byte;
 
-using Memory::BLOB;
 using Memory::StackBuffer;
 using Time::DurationSeconds;
 using Time::TimePointSeconds;
@@ -92,14 +96,182 @@ namespace {
         atomic<bool> fIsSet_{false}; // cuz called from multiple threads - sync
     };
 
+#if qStroika_Foundation_Common_Platform_Linux
     /*
-     *  This strategy may not be the most efficient (esp to construct) but it should work
-     *  portably, so implemented first.
+     *  Linux: an eventfd (2) - ONE descriptor, one syscall to create, and no network stack involved. In its default
+     *  (non-semaphore) mode a write adds to a 64-bit counter and a single read returns it and resets it to zero, so
+     *  _ReadAllAvail () is one read however many Set () calls raced.
+     *
+     *  Non-blocking, so neither call can wait, and hence neither can see EINTR: a read of a zero counter is EAGAIN,
+     *  and a write only blocks at a counter of 2^64-2, unreachable at one write per Set ().
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     */
+    struct EventFD_Based_eventfd_ : EventFD_Based_ {
+        EventFD_Based_eventfd_ ()
+            : fFD_{ThrowPOSIXErrNoIfNegative (::eventfd (0, EFD_NONBLOCK | EFD_CLOEXEC))}
+        {
+        }
+        ~EventFD_Based_eventfd_ ()
+        {
+            ::close (fFD_);
+        }
+        virtual pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet> GetWaitInfo () override
+        {
+            return pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet>{
+                fFD_, WaitForIOReady_Base::TypeOfMonitorSet{WaitForIOReady_Base::TypeOfMonitor::eRead}};
+        }
+        virtual void _ReadAllAvail () override
+        {
+            uint64_t counter;
+            if (::read (fFD_, &counter, sizeof (counter)) < 0 and errno != EAGAIN) {
+                ThrowPOSIXErrNo ();
+            }
+        }
+        virtual void _WriteOne () override
+        {
+            constexpr uint64_t kOne_{1};
+            ThrowPOSIXErrNoIfNegative (::write (fFD_, &kOne_, sizeof (kOne_)));
+        }
+        const int fFD_;
+    };
+#elif qStroika_Foundation_Common_Platform_POSIX
+    /*
+     *  Other POSIX (macOS, BSD): a pipe. Two descriptors, but no network stack - where a TCP socket pair would also
+     *  need a loopback connection set up.
+     *
+     *  Both ends non-blocking, so neither call can wait (and hence see EINTR). A write cannot fill the pipe in
+     *  practice - Set () writes once per Set/Clear cycle - and if it ever did, EAGAIN is harmless: the pipe is
+     *  then readable, which is all Set () has to achieve.
+     *
+     *  \note   Not pipe2 (): macOS lacks it, so O_NONBLOCK and FD_CLOEXEC are set after the fact.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     */
+    struct EventFD_Based_Pipe_ : EventFD_Based_ {
+        EventFD_Based_Pipe_ ()
+        {
+            int fds[2];
+            ThrowPOSIXErrNoIfNegative (::pipe (fds));
+            for (int fd : fds) {
+                if (::fcntl (fd, F_SETFL, ::fcntl (fd, F_GETFL) | O_NONBLOCK) < 0 or ::fcntl (fd, F_SETFD, FD_CLOEXEC) < 0) {
+                    int e = errno;
+                    ::close (fds[0]);
+                    ::close (fds[1]);
+                    ThrowPOSIXErrNo (e);
+                }
+            }
+            fReadFD_  = fds[0];
+            fWriteFD_ = fds[1];
+        }
+        ~EventFD_Based_Pipe_ ()
+        {
+            ::close (fReadFD_);
+            ::close (fWriteFD_);
+        }
+        virtual pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet> GetWaitInfo () override
+        {
+            return pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet>{
+                fReadFD_, WaitForIOReady_Base::TypeOfMonitorSet{WaitForIOReady_Base::TypeOfMonitor::eRead}};
+        }
+        virtual void _ReadAllAvail () override
+        {
+            byte    buf[64];
+            ssize_t n;
+            while ((n = ::read (fReadFD_, buf, sizeof (buf))) > 0)
+                ;
+            if (n < 0 and errno != EAGAIN) {
+                ThrowPOSIXErrNo ();
+            }
+        }
+        virtual void _WriteOne () override
+        {
+            constexpr byte kOne_{1};
+            if (::write (fWriteFD_, &kOne_, 1) < 0 and errno != EAGAIN) {
+                ThrowPOSIXErrNo ();
+            }
+        }
+        int fReadFD_;
+        int fWriteFD_;
+    };
+#elif qStroika_Foundation_Common_Platform_Windows
+    /*
+     *  Windows: WSAPoll () takes sockets and nothing else - no pipe, no event HANDLE (@see WaitForIOReady.h) - and
+     *  only I/O on one of its sockets can wake it. The cheapest such socket is ONE loopback UDP socket connected to
+     *  itself: the obvious alternative, a TCP socket pair, costs two sockets plus a listener while it connects, and a
+     *  handshake, where this is a few local calls. Being connected, it also only accepts datagrams from itself, so
+     *  nothing else on the machine can wake it.
+     *
+     *  Non-blocking, so neither call can wait. A datagram to one's own loopback address is only lost to a full
+     *  receive buffer, and Set () sends at most one per Set/Clear cycle.
+     *
+     *  \note   WSA_FLAG_NO_HANDLE_INHERIT - the Windows equivalent of CLOEXEC - so child processes do not get it.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     */
+    struct EventFD_Based_UDPLoopback_ : EventFD_Based_ {
+        EventFD_Based_UDPLoopback_ ()
+        {
+            IO::Network::Platform::Windows::WinSock::AssureStarted ();
+            fSocket_ = ::WSASocketW (AF_INET, SOCK_DGRAM, IPPROTO_UDP, nullptr, 0, WSA_FLAG_OVERLAPPED | WSA_FLAG_NO_HANDLE_INHERIT);
+            if (fSocket_ == INVALID_SOCKET) {
+                ThrowSystemErrNo (::WSAGetLastError ());
+            }
+            sockaddr_in addr{};
+            addr.sin_family      = AF_INET;
+            addr.sin_addr.s_addr = ::htonl (INADDR_LOOPBACK);
+            addr.sin_port        = 0; // any free port - getsockname () says which
+            int    addrLen       = sizeof (addr);
+            u_long nonBlocking   = 1;
+            if (::bind (fSocket_, reinterpret_cast<const sockaddr*> (&addr), sizeof (addr)) == SOCKET_ERROR or
+                ::getsockname (fSocket_, reinterpret_cast<sockaddr*> (&addr), &addrLen) == SOCKET_ERROR or
+                ::connect (fSocket_, reinterpret_cast<const sockaddr*> (&addr), sizeof (addr)) == SOCKET_ERROR or // to itself
+                ::ioctlsocket (fSocket_, FIONBIO, &nonBlocking) == SOCKET_ERROR) {
+                int e = ::WSAGetLastError ();
+                ::closesocket (fSocket_);
+                ThrowSystemErrNo (e);
+            }
+        }
+        ~EventFD_Based_UDPLoopback_ ()
+        {
+            ::closesocket (fSocket_);
+        }
+        virtual pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet> GetWaitInfo () override
+        {
+            return pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet>{
+                fSocket_, WaitForIOReady_Base::TypeOfMonitorSet{WaitForIOReady_Base::TypeOfMonitor::eRead}};
+        }
+        virtual void _ReadAllAvail () override
+        {
+            char buf[64];
+            while (::recv (fSocket_, buf, sizeof (buf), 0) != SOCKET_ERROR)
+                ;
+            if (int e = ::WSAGetLastError (); e != WSAEWOULDBLOCK) {
+                ThrowSystemErrNo (e);
+            }
+        }
+        virtual void _WriteOne () override
+        {
+            constexpr char kOne_{1};
+            if (::send (fSocket_, &kOne_, 1, 0) == SOCKET_ERROR) {
+                if (int e = ::WSAGetLastError (); e != WSAEWOULDBLOCK) {
+                    ThrowSystemErrNo (e);
+                }
+            }
+        }
+        SOCKET fSocket_;
+    };
+#endif
+
+    /*
+     *  The portable fallback: works anywhere with sockets, at the cost of two sockets and a loopback TCP connection
+     *  to set up. No platform Stroika supports today selects it (@see mkEventFD) - it was the only implementation
+     *  until https://github.com/SophistSolutions/Stroika/issues/843 - but it is kept compiled everywhere, as the
+     *  reference implementation and for any platform Stroika might someday support that has none of the above.
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     struct EventFD_Based_SocketPair_ : EventFD_Based_ {
-        static const inline BLOB sSingleEltDatum{BLOB ({1})};
-
         EventFD_Based_SocketPair_ ()
         {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("EventFD_Based_SocketPair_::CTOR")};
@@ -126,7 +298,8 @@ namespace {
         virtual void _WriteOne () override
         {
             // thread safety OK cuz only reading from Ptr (nobody writes) and socket rep internally synchronized
-            fWriteSocket_.Write (sSingleEltDatum);
+            constexpr byte kOne_{1};
+            fWriteSocket_.Write (span{&kOne_, 1});
         }
     };
 
@@ -140,10 +313,16 @@ namespace {
 unique_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
 {
     Debug::TraceContextBumper ctx{"WaitForIOReady_Support::mkEventFD"};
-    // @todo - See https://github.com/SophistSolutions/Stroika/issues/843 (STK-709)
-    // to support eventfd and pipe based helper classes
-    /// need ifdefs to allow build based on eventfd, or pipe
+    // the cheapest pollable channel each platform offers - https://github.com/SophistSolutions/Stroika/issues/843
+#if qStroika_Foundation_Common_Platform_Linux
+    return make_unique<EventFD_Based_eventfd_> ();
+#elif qStroika_Foundation_Common_Platform_POSIX
+    return make_unique<EventFD_Based_Pipe_> ();
+#elif qStroika_Foundation_Common_Platform_Windows
+    return make_unique<EventFD_Based_UDPLoopback_> ();
+#else
     return make_unique<EventFD_Based_SocketPair_> ();
+#endif
 }
 
 #if qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup
@@ -151,8 +330,7 @@ namespace {
     /*
      *  The wakeup channel a thread's abort writes to. One per thread, created on first wait and kept for the
      *  life of the thread: a thread can only be inside one of these waits at a time, so one suffices, and
-     *  creating one is not cheap - the portable implementation is a loopback socket pair (@see
-     *  https://github.com/SophistSolutions/Stroika/issues/843 for the cheaper eventfd/pipe versions).
+     *  it costs descriptors for as long as it lives - @see mkEventFD () for what each platform uses.
      */
     EventFD& GetThreadAbortWakeupEventFD_ ()
     {
@@ -165,14 +343,14 @@ namespace {
      *
      *  ***This must not throw, and that is not automatic.*** It runs on whichever thread called Abort () -
      *  or, when stop was already requested, on the WAITING thread from inside the stop_callback constructor.
-     *  Either of those can itself be mid-abort, and EventFD::Set () writes to a socket, which is a
-     *  cancelation point - so without suppressing interruption it throws Thread::AbortException here, and a
-     *  throw out of a stop_callback is std::terminate, both by this function's noexcept and by the
-     *  standard's own rules for stop_callback. That is not theoretical: it terminated Tests/40 in 4 runs
-     *  out of 6 before the suppression below was added.
+     *  Either of those can itself be mid-abort, and EventFD::Set () may be a cancelation point - the socket pair
+     *  fallback writes through a Stroika socket - so without suppressing interruption it can throw
+     *  Thread::AbortException here, and a throw out of a stop_callback is std::terminate, both by this
+     *  function's noexcept and by the standard's own rules for stop_callback. That is not theoretical: it
+     *  terminated Tests/40 in 4 runs out of 6 before the suppression below was added.
      *
      *  It also cannot block: EventFD::Set () writes at most one byte, and only when not already set, so it
-     *  cannot stall on a full socket buffer.
+     *  cannot stall on a full buffer.
      */
     struct SetEventFD_ {
         EventFD* fEventFD;

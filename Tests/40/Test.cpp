@@ -1601,6 +1601,60 @@ namespace {
 }
 
 namespace {
+    namespace RegressionTest27_EventFD_ {
+        /*
+         *  The EventFD contract WaitForIOReady's abort wakeup and UpdatableWaitForIOReady both rely on: readable
+         *  exactly while Set (), with Set () and Clear () each idempotent. mkEventFD () picks a different backend per
+         *  platform, so each platform's regression run checks its own.
+         */
+        using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
+
+        bool IsReadable_ (EventFD& e, Time::DurationSeconds waitUpTo)
+        {
+            auto waitInfo = e.GetWaitInfo ();
+            return not WaitForIOReady<SDKPollableType>{waitInfo.first, waitInfo.second}.WaitQuietly (waitUpTo).empty ();
+        }
+
+        void Test ()
+        {
+            Debug::TraceContextBumper traceCtx{"RegressionTest27_EventFD_"};
+            // generous, since a readable descriptor returns at once - it only matters if the contract is broken
+            constexpr Time::DurationSeconds kReadableWithin_{10.0};
+            {
+                auto e = mkEventFD ();
+                EXPECT_FALSE (e->IsSet ());
+                EXPECT_FALSE (IsReadable_ (*e, 0s));
+                // several cycles: a Clear () that fails to drain shows up as a still-readable descriptor on the next one
+                for (int i = 0; i < 3; ++i) {
+                    e->Set ();
+                    e->Set (); // idempotent
+                    EXPECT_TRUE (e->IsSet ());
+                    EXPECT_TRUE (IsReadable_ (*e, kReadableWithin_));
+                    e->Clear ();
+                    e->Clear (); // idempotent
+                    EXPECT_FALSE (e->IsSet ());
+                    EXPECT_FALSE (IsReadable_ (*e, 0s));
+                }
+                // a Set () from another thread wakes a wait already in progress
+                Thread::Ptr setter = Thread::New (
+                    [&] () {
+                        Sleep (100ms);
+                        e->Set ();
+                    },
+                    "EventFDSetter");
+                setter.Start ();
+                EXPECT_TRUE (IsReadable_ (*e, kReadableWithin_));
+                setter.Join ();
+            }
+            // each one owns descriptors, so a leak would exhaust a 1024-descriptor limit well before this ends
+            for (int i = 0; i < 1100; ++i) {
+                (void)mkEventFD ();
+            }
+        }
+    }
+}
+
+namespace {
 #if 1
     // No longer legal since Stroika v3.0d5
     namespace RegressionTest25_AbortNotYetStartedThread_ {
@@ -1653,6 +1707,7 @@ namespace {
         RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ();
         RegressionTest25_AbortNotYetStartedThread_::Test ();
         RegressionTest26_AbortDuringWaitForIOReady_::Test ();
+        RegressionTest27_EventFD_::Test ();
     }
 }
 #endif
