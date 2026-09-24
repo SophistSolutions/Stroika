@@ -20,10 +20,37 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - RaspberryPi is stuck on old compilers (only g++-11/12 actually run): moved to
-     https://github.com/SophistSolutions/Stroika/issues/1171 - too big for this list. Root cause
-     measured 2026-09-22: the Pi's bookworm libstdc++ (3.4.30) and glibc (2.36) are just short of
-     what the 24.04+ cross toolchains emit, not a build-container problem. Trixie clears both.
+   - **Raspberry Pi / ARM testing** - https://github.com/SophistSolutions/Stroika/issues/1171 (the checklist
+     at the end of it is current). Done 2026-09-23: Pi on trixie + 64-bit kernel + docker; tests run in a
+     container matching the build host; armhf g++-11..15, and arm64 g++-13..15 (cc448b21a8).
+     **NEXT: trim the Pi configurations**, from the 2026-09-23 overnight runs (the first with all of the above):
+       - Results: `Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Ubuntu{2204,2404,2604}-Cross-Compile2RaspberryPi-*-OUT.txt`.
+         Audit by counting `[  PASSED  ]` per configuration against 54 - a silent crash shows up ONLY as a
+         missing PASSED (see the RunTest item below). Per-configuration Pi time:
+         `grep -E 'CONFIGURATION=|Tests-Done|Run-Done'` on each file.
+       - What there is now (23): 22.04 = armhf g++-11/12 release (2). 24.04 = armhf g++-13/14 x
+         release/asan/ubsan, aarch64 g++-13/14 release (8). 26.04 = armhf g++-13/14/15 x release/asan/ubsan,
+         aarch64 g++-13/14/15 release + g++-15 ubsan (13). Measured Pi time per configuration: ~11 min
+         release, 13 asan, 23 debug ubsan (aarch64).
+       - Suggested rule: every compiler's release on two hosts, its sanitizers on one. Biggest cut: armhf
+         g++-13/14 asan + ubsan are built on BOTH 24.04 and 26.04 - one copy of each saves 4 configurations
+         (~1 h of Pi time, plus their builds).
+       - Mechanism: `raspberryPiCrossCompileTestConfigurations_` (Build/Scripts/MakeRegressionTestConfigurations)
+         has NO per-host case - which host builds what is decided only by which cross compilers each
+         Dockerfile installs (`--only-if-has-compiler`). To keep a configuration on one host, add an
+         `lsb_release` case as `basicUnixTestConfigurations_` does, or drop that compiler from the other
+         host's Dockerfile (smaller image, but an image rebuild).
+       - Then: `Build/Scripts/ReportSupportedPlatforms` (regenerates SupportedPlatformsAndCompilers.md), the
+         Pi time estimate in Documentation/Regression-Tests.md, and tick #1171's checklist.
+     Also still open there: a fuller arm test image (make/openssl/locales/ca-certificates - several tests
+     skip in the bare ubuntu ones), Test31's stale expected-failure cipher list under armhf asan, and
+     qemu-based local ARM testing. aarch64 asan is NOT possible on the Pi (39-bit-VA kernel) - see #1171.
+
+   - **`Tests/Scripts/RunTest`: a test that dies silently is easy to miss.** One that crashes before the
+     test framework installs its signal handler prints NOTHING (the `FAILED: SIGNAL=` line comes from
+     that handler) - only a missing `[  PASSED  ]` and the end-of-suite `SOME TESTS FAILED` show it. Hit
+     twice on 2026-09-23 (aarch64 ubsan, docker platform mismatch). Option: print a line when a test
+     exits non-zero with no output - changes the byte-compatible output, so LGP's call.
 
    - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
      deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
