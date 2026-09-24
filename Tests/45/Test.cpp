@@ -81,31 +81,17 @@ namespace {
                 }
             }
             catch (const system_error& e) {
+#if qStroika_HasComponent_libcurl && !qStroika_HasComponent_OpenSSL
+                if (e.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()}) {
+                    DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl"_f);
+                    return;
+                }
+#endif
                 if (not Execution::IsA (e, errc::timed_out)) {
                     ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
-#if qStroika_HasComponent_libcurl
-            catch (const system_error& lce) {
-#if !qStroika_HasComponent_OpenSSL
-                if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()}) {
-                    DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl"_f);
-                    return;
-                }
-#endif
-                // //https://github.com/SophistSolutions/Stroika/issues/814 (STK-679)
-                // if (lce.code () == error_code{CURLE_SSL_CONNECT_ERROR, LibCurl::error_category ()} and Debug::IsRunningUnderValgrind ()) {
-                //     DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see qCompilerAndStdLib_openssl3_helgrind_Buggy"_f);
-                //     return;
-                // }
-                // if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl::error_category ()} and Debug::IsRunningUnderValgrind ()) {
-                //     DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see https://github.com/SophistSolutions/Stroika/issues/814 (STK-679)"_f);
-                //     return;
-                // }
-                ReThrow ();
-            }
-#endif
             catch (...) {
                 ReThrow ();
             }
@@ -114,13 +100,7 @@ namespace {
         {
             try {
                 Test_1_SimpleFetch_Google_C_ (factory ());
-#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-                if (not Debug::IsRunningUnderValgrind ()) {
-                    Test_2_SimpleFetch_SSL_Google_C_ (factory ());
-                }
-#else
                 Test_2_SimpleFetch_SSL_Google_C_ (factory ());
-#endif
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
@@ -320,23 +300,18 @@ namespace {
                 }
             }
             catch (const system_error& e) {
+#if qStroika_HasComponent_libcurl && !qStroika_HasComponent_OpenSSL
+                // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
+                if (e.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()}) {
+                    DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl"_f);
+                    return;
+                }
+#endif
                 if (not Execution::IsA (e, errc::timed_out)) {
                     ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
-#if qStroika_HasComponent_libcurl
-            // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
-            catch (const system_error& lce) {
-#if !qStroika_HasComponent_OpenSSL
-                if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()}) {
-                    DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl"_f);
-                    return;
-                }
-#endif
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-            }
-#endif
             catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
