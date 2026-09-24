@@ -20,13 +20,6 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **Raspberry Pi / ARM testing** - https://github.com/SophistSolutions/Stroika/issues/1171 (the checklist
-     at the end of it is current). Audit a Pi run by counting `[  PASSED  ]` per configuration against 54: a
-     build failure or silent crash shows up ONLY as a missing PASSED, not in "items failed". Still open there:
-       - Test31's stale expected-failure cipher list under armhf asan.
-     Considered and dropped 2026-09-24, both redundant with coverage elsewhere until a compelling need: a
-     fuller arm test image (make/openssl/locales), and qemu-based local ARM testing.
-
    - **`Tests/Scripts/RunTest`: a test that dies silently is easy to miss.** One that crashes before the
      test framework installs its signal handler prints NOTHING (the `FAILED: SIGNAL=` line comes from
      that handler) - only a missing `[  PASSED  ]` and the end-of-suite `SOME TESTS FAILED` show it. Hit

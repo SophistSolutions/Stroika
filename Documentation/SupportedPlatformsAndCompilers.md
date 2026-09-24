@@ -21,7 +21,9 @@ them alone.
 
 - **Linux** - Ubuntu LTS releases: **22.04**, **24.04**, **26.04**. Plus whichever non-LTS release is
   currently newest, kept at a config or two. x86_64.
-- **Linux / ARM** - Raspberry Pi, via cross-compile from Ubuntu 22.04.
+- **Linux / ARM** - Raspberry Pi, **armhf** and **aarch64**, cross-compiled from Ubuntu 22.04, 24.04 and
+  26.04, and tested on the Pi inside an arm container matching the build host's release (see
+  [Regression-Tests.md](Regression-Tests.md)).
 - **Windows 11** - Visual Studio.Net **2022** and **2026**, x86 and x86_64, under **cygwin** and
   **MSYS**, natively and in docker.
 - **macOS** - arm64 (m1), **XCode 16.4** and **XCode 26.3**.

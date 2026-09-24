@@ -574,6 +574,7 @@ namespace {
             unsigned int                  nCipherTests{};
             unsigned int                  nFailures{};
             MultiSet<String>              failingCiphers;
+            Set<String>                   skippedCiphers; // never tested, so neither failing nor passing
             [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.availableDigestAlgorithms ().size ();
             for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.availableCipherAlgorithms ()) {
                 // No idea why, but we get a hard fail (uncatchable exception from ASAN) - if we test these on raspi with ASAN (maybe rethrow of execpt caught to print it?) -- LGP 2023-11-07
@@ -597,6 +598,7 @@ namespace {
                         // clang-format on
                         )) {
                     DbgTrace ("Skipping ci='{}' on raspi/asan"_f, ci.name ());
+                    skippedCiphers.Add (ci.name ());
                     continue;
                 }
                 DISABLE_COMPILER_MSC_WARNING_END (4127)
@@ -646,15 +648,16 @@ namespace {
             if (nFailures != 0) {
                 Set<String> allCiphers{
                     OpenSSL::LibraryContext::sDefault.availableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.name (); })};
-                Set<String> passingCiphers = allCiphers - failingCiphers.Elements ();
-                if (kLastSeenAllFailingCiphers_ != Set<String>{failingCiphers.Elements ()}) {
+                Set<String> passingCiphers = allCiphers - failingCiphers.Elements () - skippedCiphers;
+                // A skipped cipher cannot fail, so do not report a known-failing one as fixed ("remove-failures") just for being skipped
+                Set<String> expectedFailingCiphers = kLastSeenAllFailingCiphers_ - skippedCiphers;
+                if (expectedFailingCiphers != Set<String>{failingCiphers.Elements ()}) {
                     // Look at why each failed - but if innocuous, then add to list of known failures. This generally comes up only
                     // when we upgrade to new major openssl release.
                     Stroika::Frameworks::Test::WarnTestIssue (
                         "For provider={}, nCipherTests={}, nFailures={}, new-failures={}, remove-failures={}, "
-                        "failingCiphers={}, passing-ciphrs={}"_f(
-                            provider, nCipherTests, nFailures, Set<String>{failingCiphers.Elements ()} - kLastSeenAllFailingCiphers_,
-                            kLastSeenAllFailingCiphers_ - failingCiphers.Elements (), failingCiphers, passingCiphers));
+                        "failingCiphers={}, passing-ciphrs={}"_f(provider, nCipherTests, nFailures, Set<String>{failingCiphers.Elements ()} - expectedFailingCiphers,
+                                                                 expectedFailingCiphers - failingCiphers.Elements (), failingCiphers, passingCiphers));
                 }
                 static const Set<String> kStandardCipherAlgorithmNames{
                     OpenSSL::LibraryContext::sDefault.standardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.name (); })};
