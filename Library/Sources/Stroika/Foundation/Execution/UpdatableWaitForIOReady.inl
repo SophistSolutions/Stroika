@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietly (const Time::Duration& waitFor) -> Containers::Set<T>
     {
-        return WaitQuietly (waitFor);
+        return WaitQuietlyUntil (waitFor + Time::GetTickCount ());
     }
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::Add (T fd, const TypeOfMonitorSet& flags)

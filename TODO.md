@@ -55,11 +55,6 @@ Generally will track stuff here between releases
      Not worth filing upstream - it is confined to one distro's packaging, so Launchpad rather than GCC
      bugzilla, and it needs a reduced testcase we do not have.
 
-   - **NEXT: EventFD Set ()/Clear () race** - https://github.com/SophistSolutions/Stroika/issues/1175. Found
-     while documenting pollable2Wakeup for #843: concurrent Set/Clear can leave the flag and the descriptor
-     disagreeing - a spin, or a lost wakeup in UpdatableWaitForIOReady (WebServer's ConnectionManager). Plan
-     (in the issue): regression test first in Tests/40, then a mutex over the Set/Clear bodies.
-
    - **release build-time work.** Investigated 2026-08-27; all measurements and
      detail in `.claude/medusa-perf-knobs.md` (gitignored, on protagoras). Headline: host/VM/BIOS
      tuning is a DEAD END - governor, KSM, swappiness, VM socket topology, balloon sizing, EXPO and

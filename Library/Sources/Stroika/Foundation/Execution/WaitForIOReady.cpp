@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <mutex>
 #include <optional>
 #include <version>
 #if __cpp_lib_jthread >= 201911
@@ -63,6 +64,27 @@ using Time::TimePointSeconds;
 namespace {
 
     /*
+     *  The flag (IsSet ()) must agree with the descriptor's readability, and Set () and Clear () each change BOTH -
+     *  so each must be ONE step, hence fMutex_. Two atomic steps are not an atomic pair: one call landing between
+     *  the other's two steps leaves them disagreeing, for good - @see https://github.com/SophistSolutions/Stroika/issues/1175
+     *      -   "set" with nothing to read: every later Set () is a no-op, so a wait in progress is never woken
+     *      -   "clear" but readable: every later Clear () skips the drain, so every wait returns at once - a spin
+     *
+     *  Holding fMutex_ across the syscall is safe, because no backend's _WriteOne () or _ReadAllAvail () can WAIT:
+     *      -   eventfd, pipe, UDP socket: the descriptors are non-blocking, so a read with nothing to read, or a
+     *          write with no room, fails at once (EAGAIN / WSAEWOULDBLOCK, which they treat as done) instead of
+     *          waiting. Not that a write ever finds no room: the flag allows only ONE unread write between drains.
+     *      -   socket pair: the read is ReadNonBlocking (). The write is an ordinary blocking Write (), but it
+     *          could only block on a full socket buffer, and again there is at most one unread byte.
+     *  So a Set () waits for a concurrent Clear () (or vice versa) for at most one such syscall - which matters,
+     *  since Set () runs inside a std::stop_callback (@see SetEventFD_). Nor can holding it deadlock: nothing
+     *  acquired while it is held (the socket pair's sockets take their own internal locks) ever waits on an EventFD.
+     *
+     *  The syscall comes first, the flag second, so that one which throws leaves the two still agreeing.
+     *
+     *  Clear ()'s drain also assumes a write that has returned is readable at once, so that it cannot arrive after
+     *  the drain and leave "clear" but readable. Guaranteed for eventfd and pipe; what loopback sockets do in practice.
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     struct EventFD_Based_ : public EventFD {
@@ -74,17 +96,19 @@ namespace {
         }
         virtual void Set () override
         {
-            // If already set, nothing todo. To set, we set flag, and write so anybody selecting will wakeup
-            if (not IsSet ()) {
-                fIsSet_ = true;
+            // If already set, nothing todo. To set, write so anybody selecting will wakeup, and set flag
+            scoped_lock critSec{fMutex_};
+            if (not fIsSet_) {
                 _WriteOne (); // so select calls wake
+                fIsSet_ = true;
             }
         }
         virtual void Clear () override
         {
-            if (IsSet ()) {
-                fIsSet_ = false;
+            scoped_lock critSec{fMutex_};
+            if (fIsSet_) {
                 _ReadAllAvail (); // so select calls don't prematurely wake
+                fIsSet_ = false;
             }
         }
 
@@ -93,14 +117,15 @@ namespace {
         virtual void _WriteOne ()     = 0;
 
     private:
-        atomic<bool> fIsSet_{false}; // cuz called from multiple threads - sync
+        mutex        fMutex_;        // makes Set () and Clear () each one step - flag and descriptor together
+        atomic<bool> fIsSet_{false}; // atomic only so IsSet () need not lock
     };
 
 #if qStroika_Foundation_Common_Platform_Linux
     /*
      *  Linux: an eventfd (2) - ONE descriptor, one syscall to create, and no network stack involved. In its default
      *  (non-semaphore) mode a write adds to a 64-bit counter and a single read returns it and resets it to zero, so
-     *  _ReadAllAvail () is one read however many Set () calls raced.
+     *  _ReadAllAvail () is one read.
      *
      *  Non-blocking, so neither call can wait, and hence neither can see EINTR: a read of a zero counter is EAGAIN,
      *  and a write only blocks at a counter of 2^64-2, unreachable at one write per Set ().
@@ -349,8 +374,8 @@ namespace {
      *  function's noexcept and by the standard's own rules for stop_callback. That is not theoretical: it
      *  terminated Tests/40 in 4 runs out of 6 before the suppression below was added.
      *
-     *  It also cannot block: EventFD::Set () writes at most one byte, and only when not already set, so it
-     *  cannot stall on a full buffer.
+     *  It also cannot block for long: EventFD::Set () writes at most one byte, and only when not already set, so it
+     *  cannot stall on a full buffer - and its lock is only ever held for one such non-blocking syscall.
      */
     struct SetEventFD_ {
         EventFD* fEventFD;

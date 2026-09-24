@@ -192,8 +192,10 @@ namespace Stroika::Foundation::Execution {
          *  (Private) utility to allow select() to wakeup without sending EINTR such signals...
          *  
          *  \note idea originally from https://stackoverflow.com/questions/12050072/how-to-wake-up-a-thread-being-blocked-by-select-poll-poll-function-from-anothe/22239521
-         * 
+         *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+         *          Set () and Clear () may race, from any threads: each is one step, so whatever the interleaving,
+         *          IsSet () and the readiness of GetWaitInfo ()'s descriptor agree once they return.
          */
         class EventFD {
         public:

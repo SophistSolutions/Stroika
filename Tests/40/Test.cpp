@@ -20,6 +20,7 @@
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
+#include "Stroika/Foundation/Execution/UpdatableWaitForIOReady.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 
@@ -1655,6 +1656,117 @@ namespace {
 }
 
 namespace {
+    namespace RegressionTest28_EventFDSetClearRace_ {
+        /*
+         *  Set () and Clear () racing on two threads must still leave IsSet () and the descriptor's readability
+         *  agreeing - https://github.com/SophistSolutions/Stroika/issues/1175. Each call is a flag change plus a
+         *  syscall, and unless the pair is atomic one call can land between the other's two steps:
+         *      -   a Set () inside a Clear () leaves "set" with nothing to read. Every later Set () is then a no-op,
+         *          so a wait already in progress is never woken.
+         *      -   a Clear () inside a Set () leaves "clear" but readable. Every later Clear () then skips the drain,
+         *          so every wait returns at once - a spin.
+         *  Each round sets up one of those, makes ONE call on one thread, and repeats the other call on the other
+         *  thread until it returns. That aims many attempts at the window, and neither broken state is repaired by
+         *  more of the repeated call, so it is still there to be seen once both stop.
+         *
+         *  Probabilistic, like RegressionTest26: passing cannot prove the race gone, but failing proves it present.
+         */
+        using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
+        using RegressionTest27_EventFD_::IsReadable_;
+
+        void Test ()
+        {
+            Debug::TraceContextBumper traceCtx{"RegressionTest28_EventFDSetClearRace_"};
+            Debug::TimingTrace        tt;
+            // Enough that the rarer case (Clear inside Set) shows reliably - still cheap under asan/ubsan, but not under
+            // tsan or valgrind, which slow every syscall and atomic far more. Neither loses anything by it: this race
+            // is not a data race, so tsan cannot flag it, and valgrind serializes the threads so could hardly hit it.
+            const unsigned kRounds_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer) ? 2000u : 20000u;
+            // generous, since a readable descriptor returns at once - and only paid on a failure
+            constexpr Time::DurationSeconds kReadableWithin_{10.0};
+            auto                            e = mkEventFD ();
+            // odd rounds: helper calls Clear () once, main repeats Set (). Even rounds: main calls Set () once, helper repeats Clear ().
+            atomic<unsigned> go{0};         // main -> helper: start this round
+            atomic<unsigned> mainDone{0};   // main -> helper: this round's one Set () returned
+            atomic<unsigned> helperDone{0}; // helper -> main: this round's Clear ()s returned
+            atomic<bool>     stop{false};   // main -> helper: no more rounds
+            Thread::Ptr      helper = Thread::New (
+                [&] () {
+                    for (unsigned round = 1; round <= kRounds_; ++round) {
+                        // Busy-spin, NOT yield (), for the same reason as RegressionTest26: the window is microseconds wide
+                        while (go.load () < round) {
+                            if (stop) {
+                                return;
+                            }
+                        }
+                        if (round % 2 == 1) {
+                            e->Clear ();
+                        }
+                        else {
+                            do {
+                                e->Clear ();
+                            } while (mainDone.load () < round);
+                        }
+                        helperDone = round;
+                    }
+                },
+                "EventFDSetClearRace");
+            helper.Start ();
+            [[maybe_unused]] auto&&   cleanup = Finally ([&] () noexcept {
+                stop = true;
+                helper.Join ();
+            });
+            [[maybe_unused]] unsigned rounds{};
+            bool                      agreed = true;
+            for (unsigned round = 1; round <= kRounds_ and agreed; ++round) {
+                e->Set ();
+                e->Clear (); // clear with nothing to read, from ANY state - including the previous round's mismatch
+                if (round % 2 == 1) {
+                    e->Set ();
+                }
+                go = round;
+                if (round % 2 == 1) {
+                    do {
+                        e->Set ();
+                    } while (helperDone.load () < round);
+                }
+                else {
+                    e->Set ();
+                    mainDone = round;
+                    while (helperDone.load () < round)
+                        ;
+                }
+                ++rounds;
+                bool isSet = e->IsSet ();
+                agreed     = isSet == IsReadable_ (*e, isSet ? kReadableWithin_ : 0s);
+                if (not agreed) {
+                    DbgTrace ("RegressionTest28: round {} ({}) left IsSet ()={}, but readable={}"_f, round,
+                              round % 2 == 1 ? "Set inside Clear"_k : "Clear inside Set"_k, isSet, not isSet);
+                }
+            }
+            DbgTrace ("RegressionTest28: {} rounds, agreed={}"_f, rounds, agreed);
+            EXPECT_TRUE (agreed);
+        }
+    }
+}
+
+namespace {
+    namespace RegressionTest29_UpdatableWaitForIOReadyDurationOverload_ {
+        /*
+         *  WaitQuietly (const Time::Duration&) used to call itself - overload resolution prefers the exact match
+         *  over converting to DurationSeconds - so it recursed until the stack overflowed (or, with tail calls
+         *  optimized, spun forever). Nothing called it, which is how it went unnoticed.
+         */
+        void Test ()
+        {
+            Debug::TraceContextBumper traceCtx{"RegressionTest29_UpdatableWaitForIOReadyDurationOverload_"};
+            UpdatableWaitForIOReady<> poller;
+            EXPECT_TRUE (poller.WaitQuietly (Time::Duration{0.1}).empty ()); // nothing to wait on, so this just times out
+        }
+    }
+}
+
+namespace {
 #if 1
     // No longer legal since Stroika v3.0d5
     namespace RegressionTest25_AbortNotYetStartedThread_ {
@@ -1708,6 +1820,8 @@ namespace {
         RegressionTest25_AbortNotYetStartedThread_::Test ();
         RegressionTest26_AbortDuringWaitForIOReady_::Test ();
         RegressionTest27_EventFD_::Test ();
+        RegressionTest28_EventFDSetClearRace_::Test ();
+        RegressionTest29_UpdatableWaitForIOReadyDurationOverload_::Test ();
     }
 }
 #endif
