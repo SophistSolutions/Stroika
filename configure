@@ -60,13 +60,6 @@ sub indexOf
 	return -1;
 }
 
-sub hasPython_
-{
-	## python sometimes called python, sometimes called python3
-	`(python -c "import sys; sys.exit()" 2>/dev/null ) || (python3 -c "import sys; sys.exit()" 2>/dev/null )`;
-	return $? eq 0;
-}
-
 
 my $PATH_SEPERATOR=":";
 if ("$^O" eq "cygwin" or "$^O" eq "msys") {
@@ -236,6 +229,41 @@ my $DoSetThirdPartyComponentsParameterFromCommandLine = 'fill-in-defaults';
 
 
 #
+#	Whether mongo-cxx-driver defaults ON - only where it will build successfully. An explicit --mongo-cxx-driver on
+#	the command line always wins (the flag is already defined, so this is never consulted).
+#
+my $sMongoArmhfAsanNoted_ = false;
+sub	MongoCXXDriverDefaultsOn_
+{
+	# # if require dodcument why
+	# #	- (for gcc) gcc 12 or later.
+	# #
+	# if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and GetGCCVersion_ ($COMPILER_DRIVER) < 12.0) {
+	# 	return false;
+	# }
+
+	#	- NOT armhf + address sanitizer: the armhf gcc cross compilers crash - "internal compiler error: Segmentation
+	#	  fault" - compiling mongo-c-driver under -fsanitize=address (e.g. in libbson/src/bson/bson-clock.c). Measured
+	#	  2026-09-24: gcc 13.3/14.2 (Ubuntu 24.04) and 13.4/15.2 (26.04) crash at -O2 AND -O0; 26.04's 14.3 built it in
+	#	  one container and crashed in the regression-test image - which file crashes shifts with the exact headers, so a
+	#	  passing combination is luck. The other third-party components built fine under asan, so these configurations
+	#	  just go without mongo (it is still tested on armhf by the release and ubsan configurations).
+	#	  TO RETEST on a newer mongo-cxx-driver or compiler: configure the armhf asan configuration WITH
+	#	  --mongo-cxx-driver use, then build only 'make -C ThirdPartyComponents CONFIGURATION=<it> mongo-cxx-driver' (a
+	#	  few minutes - no Pi needed). Re-enabled and still broken looks like that ICE in that component's BUILD-OUT.txt,
+	#	  and the whole configuration failing to build. If it builds, delete this case.
+	#	  https://github.com/SophistSolutions/Stroika/issues/1174
+	if ($ARCH eq "armhf" and IsTargettingSanitizer_ ('address')) {
+		if (!$sMongoArmhfAsanNoted_) {
+			print ("NOTE: mongo-cxx-driver defaults OFF for armhf + address sanitizer (armhf gcc crashes compiling it - see #1174); --mongo-cxx-driver use to force it\n");
+			$sMongoArmhfAsanNoted_ = true;
+		}
+		return false;
+	}
+	return true;
+}
+
+#
 # DoSetThirdPartyComponents_ ('all-available')
 # DoSetThirdPartyComponents_ ('default')
 # DoSetThirdPartyComponents_ ('fill-in-defaults')
@@ -254,20 +282,9 @@ sub	DoSetThirdPartyComponents_
 		if (!$xercesAlreadySet) {
 			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 		}
-		if (!$mongoAlreadySet) {
-			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
-			if (hasPython_()) {
-				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
-					my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER);
-					# Builtin supports works for gcc as of gcc 13
-					if ($itsVersion >= 12.0) {
-						$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
-					}
-				}
-				else {
-					$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
-				}
-			}
+		if (!$mongoAlreadySet and MongoCXXDriverDefaultsOn_ ()) {
+			## if not explicitly listed on command-line, only default-on if will build successfully
+			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
 		}
 	}
 	elsif ($x eq "default") {
@@ -338,20 +355,8 @@ sub	DoSetThirdPartyComponents_
 			$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 		}
 		if (!defined $FEATUREFLAG_mongocxxdriver) {
-			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
-			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_No;
-			if (hasPython_()) {
-				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
-					my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER);
-					# Builtin supports works for gcc as of gcc 13
-					if ($itsVersion >= 12.0) {
-						$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
-					}
-				}
-				else {
-					$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
-				}
-			}
+			## if not explicitly listed on command-line, only default-on if will build successfully
+			$FEATUREFLAG_mongocxxdriver = MongoCXXDriverDefaultsOn_ () ? $LIBFEATUREFLAG_UseStaticTPP : $LIBFEATUREFLAG_No;
 		}
 		if (!defined $FEATUREFLAG_WinHTTP) {
 			if ("$^O" eq "cygwin" or "$^O" eq "msys") {
@@ -2431,9 +2436,11 @@ sub	ApplyCompilerBugWorkarounds_
 	#	-fsanitize=address. Dropping to -O2 is what lets 26.04's gcc 14.3 build it (it crashes at -O3).
 	#	That is the ONLY armhf compiler it helps: in real builds (2026-09-24) 26.04's gcc 13.4 and 15.2 and
 	#	24.04's gcc 13.3 and 14.2 crash at -O2 and at -O0 alike - and which files crash shifts with the exact
-	#	preprocessed source, so -O2 working for 14.3 is luck, not a fix. The other armhf asan regression
-	#	configurations are disabled for it: https://github.com/SophistSolutions/Stroika/issues/1174
-	#	(This only reaches mongo because Makefile-CMake-Common.mk stops cmake appending its own -O3.)
+	#	preprocessed source, so -O2 working for 14.3 is luck, not a fix - even 14.3 crashed in the regression
+	#	image. So mongo now defaults OFF for armhf asan (see MongoCXXDriverDefaultsOn_); -O2 stays for when it is
+	#	forced on to retest, and because armhf asan has only been validated at -O2.
+	#	https://github.com/SophistSolutions/Stroika/issues/1174
+	#	(Makefile-CMake-Common.mk makes sure the configuration's -O is what reaches the cmake-built components.)
 	if ($ARCH eq "armhf" and IsTargettingSanitizer_ ('address')) {
 		$COPTIMIZE_FLAGS = "-O2";
 	}

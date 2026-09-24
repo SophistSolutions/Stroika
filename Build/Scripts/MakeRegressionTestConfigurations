@@ -237,7 +237,7 @@ raspberryPiCrossCompileTestConfigurations_ ()
 	#### NOTE --append-CXXFLAGS -fno-sanitize=alignment for https://github.com/SophistSolutions/Stroika/issues/1150
 	./configure raspberrypi-g++-14-release --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler  --compiler-driver 'arm-linux-gnueabihf-g++-14' --cross-compiling true
 	if [ $sanitizerHost_ -eq 1 ]; then
-		# the only armhf asan configuration left - 26.04's gcc 14.3 is the one armhf compiler that builds mongo-c-driver under asan (see #1174)
+		# the only armhf asan configuration left - see https://github.com/SophistSolutions/Stroika/issues/1174
 		./configure raspberrypi-g++-14-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-14' --sanitize none,address --cross-compiling true
 		./configure raspberrypi-g++-14-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --append-CXXFLAGS -fno-sanitize=alignment --compiler-driver 'arm-linux-gnueabihf-g++-14' --cross-compiling true
 	fi
