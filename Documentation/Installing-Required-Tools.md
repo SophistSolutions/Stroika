@@ -108,7 +108,7 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
 - pacman -Syu
   
   Note - this closes the shell window when its done, so start a new shell window when it completes
-- pacman --noconfirm -S --needed base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq
+- pacman --noconfirm -S --needed base-devel git unzip p7zip doxygen jq
 
 ---
 

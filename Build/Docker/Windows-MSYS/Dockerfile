@@ -47,14 +47,19 @@ ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/downloa
 ARG MSYS_20251213=https://github.com/msys2/msys2-installer/releases/download/2025-12-13/msys2-base-x86_64-20251213.sfx.exe
 
 SHELL ["powershell"]
+# msys () throws on a non-zero exit, failing the RUN - and so the image build. PowerShell alone would not:
+# a native command's exit code never triggers $ErrorActionPreference, and a RUN's status is only its LAST
+# command's, so one failed pacman line mid-RUN would be silently ignored. The first two bash calls are left
+# unchecked on purpose: on a fresh install the first -Syuu updates the MSYS2 core and exits, which is why it
+# runs twice.
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
   $ErrorActionPreference = 'Stop'; \
   Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20251213" -OutFile msys2.exe; \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ;\
-  function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
-  msys ' '; \
-  msys 'pacman --noconfirm -Syuu'; \
+  function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; if ($LASTEXITCODE -ne 0) { throw ('msys failed, exit code ' + $LASTEXITCODE + ': ' + $Args) } } \
+  C:\msys64\usr\bin\bash.exe -lc ' '; \
+  C:\msys64\usr\bin\bash.exe -lc 'pacman --noconfirm -Syuu'; \
   msys 'pacman --noconfirm -Syuu'; \
   cmd /c del /f /s /q 'C:\$Recycle.Bin'
 #### </MSYS_INSTALLER>
@@ -76,7 +81,7 @@ ENV MSYS=winsymlinks:lnk
 #
 # Add MSYS bin directory to the path
 #
-# Setup path to include msys tools (and mingw dir for jq)
+# Setup path to include msys tools (and the mingw64 dir, for mingw-w64-x86_64-python)
 # ENV PATH="${PATH};${MSYS_ASDOS_DIR}\usr\bin;${MSYS_ASDOS_DIR}\mingw64\bin"
 #
 # NOTE - instead of doing this here, you could do it in the .bash_profile for just the mingw directory and
@@ -92,9 +97,10 @@ RUN  \
 
 # Install a bunch of components - mostly that Stroika builds will find handy
 # xxd for 'resource' strategy (currently just in Tests - as of 2023-12-16) - weirdly in vim package
+# jq is MSYS's own (in /usr/bin) - MSYS2 no longer builds mingw-w64-x86_64-jq, only ucrt/clang variants.
 RUN \
-    function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
-    msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen pkg-config mingw-w64-x86_64-jq vim mingw-w64-x86_64-python'; \
+    function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; if ($LASTEXITCODE -ne 0) { throw ('msys failed, exit code ' + $LASTEXITCODE + ': ' + $Args) } } \
+    msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen pkg-config jq vim mingw-w64-x86_64-python'; \
     msys 'pacman --noconfirm -Syuu'
 
 COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR/home/
@@ -129,6 +135,7 @@ CMD ["bash.exe", "--login"]
 #       Missing component jq: try pacman -S mingw-w64-x86_64-jq; and maybe add export PATH="$PATH:/mingw64/bin" to ~/.bashrc
 #       make[1]: *** [Makefile:363: check-prerequisite-tools-common] Error 1
 # when I try to build Stroika inside a container (following the instructions in Getting-Started-With-Stroika.md)
+# (jq was the mingw64 one then; it is now MSYS's own, in /usr/bin - but mingw64's python still needs this.)
 ENV MSYS2_PATH_TYPE=inherit
 
 
