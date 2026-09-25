@@ -128,7 +128,17 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 CONFIG_ARGS+=	-no-asm
 endif
 
-ifeq ($(QUICK_BUILD), 1)
+#
+# Whether to build (and, unless cross compiling, run) openssl's own test suite. Off by default: its result never
+# fails the build (on UNIX it is only diffed against REFERENCE_TEST_OUTPUT.txt and the count printed; on Windows,
+# where nearly all of it fails - see the @todo at the test step - it is discarded), while building its test and fuzz
+# programs and running them is most of the time openssl takes on Windows. Stroika's own regression tests cover the
+# openssl paths Stroika uses. Pass OPENSSL_TESTS=1 to run them anyway, e.g. when upgrading openssl or when a new
+# compiler is suspected of miscompiling it.
+#
+OPENSSL_TESTS?=0
+
+ifneq ($(OPENSSL_TESTS), 1)
 CONFIG_ARGS+=	-no-tests
 endif
 
@@ -442,7 +452,7 @@ endif
 	@
 	@#Run Regression Tests (unless cross compiling)
 	@
-ifneq ($(QUICK_BUILD), 1)
+ifeq ($(OPENSSL_TESTS), 1)
 ifeq (false,$(CrossCompiling))
 	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "openssl ${VERSION} - Running tests (see ${OUTPUT_WORKDIR_PRETTYNAME}TEST-OUT.txt)"` "...";
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
