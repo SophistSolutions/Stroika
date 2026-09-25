@@ -2732,9 +2732,11 @@ sub PostProcessOptions_ ()
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-flto";
 			push @CXXFLAGS, "-flto";
-			# As of 2023-10-26:
-			# 	-flto=auto tends to spin up too many processes, and -flto=0 or 1 or missing produces warnings (lto-wrapper: warning: using serial compilation of 13 LTRANS jobs)
-			$LinkerArgs_ExtraPrefix .= " -flto=2";
+			# -flto=auto runs the LTRANS jobs under make's jobserver, so they share the -j budget. It used to spin up too
+			# many processes (2023-10-26, when -flto=2 was chosen instead): with make before 4.4 a plain recipe line gets no
+			# jobserver, so gcc starts one job per CPU. DEFAULT_LINK_LINE now marks LTO links '+' there, which fixes that.
+			# (-flto=0, 1 or missing produce warnings: lto-wrapper: warning: using serial compilation of 13 LTRANS jobs)
+			$LinkerArgs_ExtraPrefix .= " -flto=auto";
 		}
 		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-flto";

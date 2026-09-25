@@ -394,6 +394,9 @@ endif
 #
 #	\note delayed evaluation
 #	\note does NOT use Platform_LDFLAGS or LDFLAGS (takes as argumements basically)
+#	\note it is a recipe LINE, not just a command: it must begin its recipe line (after any @ or -), as in
+#		  @$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)
+#		  because it may start with make's '+' prefix (see DEFAULT_LINK_LINE_JOBSERVER_PREFIX_)
 #
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 # WEIRD - need to use $(shell instead of $$() for MSYS else fails - probably due to my not knowing how to fully enuf disable path covnersions
@@ -407,8 +410,15 @@ DEFAULT_LINK_LINE=\
 		$4 \
 		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_, $1)
 else
+#
+# gcc -flto=auto runs a link's LTRANS jobs under make's jobserver when it can reach it, and otherwise starts one per
+# CPU - in every link running in parallel. GNU make before 4.4 hands its jobserver (inherited file descriptors) only to
+# recipe lines marked '+', so such links get that prefix there (which also makes 'make -n' run them). make 4.4's
+# jobserver is a named fifo any child can open, so it needs none.
+#
+DEFAULT_LINK_LINE_JOBSERVER_PREFIX_=$(if $(and $(findstring -flto=auto,$(Platform_LinkerArgs_ExtraPrefix)),$(filter 3.% 4.0% 4.1% 4.2% 4.3%,$(MAKE_VERSION))),+)
 DEFAULT_LINK_LINE=\
-	"$(LINKER)" \
+	$(DEFAULT_LINK_LINE_JOBSERVER_PREFIX_)"$(LINKER)" \
 		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
