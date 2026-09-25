@@ -310,9 +310,18 @@ endif
 
 
 #
-# NB: Attempted to figure out how to pass along the -j JOBS flag to b2, and had some tricky code for a while (til Stroika 2.1b14)
-# but that code never worked, was complex, and didn't improve performance, so KISS, and do nothing.
+# b2 cannot use make's jobserver, and given no -j it runs one job per CPU - every CPU, whatever make's -j says (in a
+# docker container, every CPU of the host). So on UNIX, hand it make's own -jN, which GNU make puts in MAKEFLAGS (since
+# 4.2 - before that it held a bare -j, which is why the old attempt here, removed in 2.1b14, had to hardwire a count).
+# Read at recipe time (B2_CONFIGURATION_ARGS is recursively expanded), since MAKEFLAGS is not reliable while makefiles
+# are parsed. b2's jobs are outside make's accounting, so while boost builds the total can briefly approach twice -j.
+# No -jN (serial make, or a bare -j): b2 keeps its default. Windows is left alone - there boost is off the critical
+# path and b2's default (the machine's CPU count) is modest.
 #
+ifeq (Unix,$(BuildPlatform))
+B2_JOBS_=$(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS)))
+B2_CONFIGURATION_ARGS +=	$(if $(B2_JOBS_),-j$(B2_JOBS_))
+endif
 
 
 
