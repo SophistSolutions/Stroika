@@ -2695,6 +2695,7 @@ namespace {
             constexpr double kWarnIfRatioAbove_{1.05}; // mutex won at all (a near-tie is not a disagreement)
             constexpr bool   kBuildCanBeJudged_ = not qStroika_Foundation_Debug_AssertionsChecked and
                                                   not Debug::kBuiltWithAddressSanitizer and not Debug::kBuiltWithThreadSanitizer;
+            DISABLE_COMPILER_MSC_WARNING_START (4127) // conditional expression is constant - kBuildCanBeJudged_ and kSpinLock_IsFasterThan_mutex are constexpr by design
             if (kBuildCanBeJudged_ and not Debug::IsRunningUnderValgrind () and measuredRatio and *measuredBaselineSeconds >= kMinBaselineSecondsToJudge_) {
                 bool measuredSaysSpinLockFaster = *measuredRatio < kWarnIfRatioBelow_;
                 bool measuredSaysMutexFaster    = *measuredRatio > kWarnIfRatioAbove_;
@@ -2709,6 +2710,7 @@ namespace {
                         "see the measured table in Execution/SpinLock.h"_f(*measuredRatio));
                 }
             }
+            DISABLE_COMPILER_MSC_WARNING_END (4127)
         }
         Tester ("Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, "wstring",
                 Test_StructWithStringsFillingAndCopying<String>, "Characters::String", 65000, 0.6, &failedTests);
