@@ -142,10 +142,18 @@ ifneq ($(OPENSSL_TESTS), 1)
 CONFIG_ARGS+=	-no-tests
 endif
 
-ifeq ($(QUICK_BUILD), 1)
-INSTALL_TARGET=install_sw install_ssldirs
-else
+#
+# Whether to build and install openssl's documentation (manual pages, html). Off by default: nothing in Stroika or its
+# build reads it, while installing it is a real share of the time openssl takes on Windows. Pass OPENSSL_DOCS=1 to
+# get it.
+#
+OPENSSL_DOCS?=0
+
+ifeq ($(OPENSSL_DOCS), 1)
 INSTALL_TARGET=install
+else
+CONFIG_ARGS+=	-no-docs
+INSTALL_TARGET=install_sw install_ssldirs
 endif
 
 # autoconfigure sometimes (linux) detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
