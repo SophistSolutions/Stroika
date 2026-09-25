@@ -86,6 +86,19 @@ CFLAGS	+= -wd4724
 endif
 endif
 
+#
+# Windows: compile two files at once within each cl invocation (-MP2). MSBuild otherwise compiles one file at a time
+# and cannot use make's jobserver, and mongo is on the critical path of each configuration's third-party build (it
+# waits for openssl, then builds largely alone). A fixed 2 rather than plain -MP (one compiler per CPU), so the extra
+# cost is the same small amount on every machine, container and CI runner - -MP's memory grows with the CPU count.
+# SHORT-TERM, until the build moves to CMake (https://github.com/SophistSolutions/Stroika/issues/1157); measurements
+# and alternatives in https://github.com/SophistSolutions/Stroika/issues/1173
+#
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+CFLAGS	+= -MP2
+CXXFLAGS	+= -MP2
+endif
+
 # Avoid warnings like these:
 # 	In function 'bson_free',
 #     	inlined from 'bson_destroy' at /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/IntermediateFiles/g++-14-release++23/ThirdPartyComponents/mongo-cxx-driver/_deps/mongo-c-driver-src/src/libbson/src/bson/bson.c:2213:7,
