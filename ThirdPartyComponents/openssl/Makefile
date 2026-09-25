@@ -447,7 +447,7 @@ else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@#The prefix= line is windows format and refers to intermediatefiles - so not good - replace it with pcfiledir relative name
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
 	@mkdir -p ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig
-	@cd ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}; cp *.pc ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig
+	@cd ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}; cp -f *.pc ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig
 	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libcrypto.pc"
 	@sed -i "s/-lcrypto/-llibcrypto/g" "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/libcrypto.pc
 	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/libcrypto.pc
