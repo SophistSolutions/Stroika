@@ -55,22 +55,3 @@ Generally will track stuff here between releases
      Not worth filing upstream - it is confined to one distro's packaging, so Launchpad rather than GCC
      bugzilla, and it needs a reduced testcase we do not have.
 
-   - **release build-time work.** Investigated 2026-08-27; all measurements and
-     detail in `.claude/medusa-perf-knobs.md` (gitignored, on protagoras). Headline: host/VM/BIOS
-     tuning is a DEAD END - governor, KSM, swappiness, VM socket topology, balloon sizing, EXPO and
-     disk each measured at ~0-3%. Do not re-litigate those. Three real items:
-      1. **Third-party builds are 471 of 627 min of a platform run; the tests themselves are 33 min.**
-         Per-component caching (keyed version+toolchain+flags) keeps the guaranteed-clean-Stroika
-         property a release run exists to prove, while cutting ~75% of wall clock. Biggest win by far.
-         This is the cmake work.
-      2. **Windows builds the cmake components serially** (no `-MP`; MSBuild cannot join make's
-         jobserver): moved to https://github.com/SophistSolutions/Stroika/issues/1173, with the
-         measurements. UNIX is already parallel via the `@+` recipe prefix.
-      3. **Stop oversubscribing medusa.** 32 threads, and five Ubuntu runs at `-j8` plus the Windows
-         VM is already past it. Measured: load 28 -> 604 min, load 34 -> 612 min, load 39 -> 961 min
-         for the SAME work - a cliff at ~32 runnable. Staggering runs, or moving the Ubuntu matrix to
-         hercules, beats every tuning knob. (hercules = older/slower twin of medusa, currently off.)
-     Still open: medusa-windows-dev measured only ~1.04x protagoras despite ~2x hardware. Best
-     remaining suspects are the guest's 8 vCPUs and VM per-file-operation overhead (NOT disk bandwidth
-     - `%iowait` was 0.0-0.2% all week). Raise guest vCPUs at some restart and re-measure.
-
