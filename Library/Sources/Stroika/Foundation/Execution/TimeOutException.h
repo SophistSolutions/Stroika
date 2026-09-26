@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Execution {
      ***************************** DEPRECATED (v3.0d25) *****************************
      ********************************************************************************
      */
-    inline [[deprecated ("Since Stroika v3.0d25 - use ThrowError (errc::timed_out)")]] [[noreturn]] void ThrowTimeOutException ()
+    [[deprecated ("Since Stroika v3.0d25 - use ThrowError (errc::timed_out)")]] [[noreturn]] inline void ThrowTimeOutException ()
     {
         ThrowError (errc::timed_out);
     }
