@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Memory {
             return strong_ordering::equal;
         }
         else {
-            if (count == 0) {
+            if (count == 0) [[unlikely]] {
                 return strong_ordering::equal;
             }
             return Common::CompareResultNormalizer (::memcmp (lhs, rhs, count));
