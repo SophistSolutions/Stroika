@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
+#include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/Neighbors.h"
@@ -571,6 +572,31 @@ GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
 #endif
                 Execution::ReThrow ();
             }
+        }
+    }
+}
+
+GTEST_TEST (Foundation_IO_Network, MulticastOptions_)
+{
+    Debug::TraceContextBumper ctx{"MulticastOptions_"};
+    // set each multicast option, then read it back - on an IPv4 and an IPv6 UDP socket
+    for (auto [family, name] :
+         initializer_list<pair<SocketAddress::FamilyType, string_view>>{{SocketAddress::INET, "IPv4"sv}, {SocketAddress::INET6, "IPv6"sv}}) {
+        optional<ConnectionlessSocket::Ptr> s;
+        try {
+            s = ConnectionlessSocket::New (family, Socket::DGRAM);
+        }
+        catch (const system_error&) {
+            SkipTestPart (string{"no "} + string{name} + " UDP socket on this host");
+            continue;
+        }
+        for (bool loop : {false, true}) {
+            s->SetMulticastLoopMode (loop);
+            EXPECT_EQ (s->GetMulticastLoopMode (), loop) << name;
+        }
+        for (uint8_t ttl : {uint8_t{3}, uint8_t{1}, uint8_t{64}}) {
+            s->SetMulticastTTL (ttl);
+            EXPECT_EQ (s->GetMulticastTTL (), ttl) << name;
         }
     }
 }

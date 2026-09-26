@@ -170,7 +170,9 @@ namespace {
                     return getsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL);
                 }
                 case SocketAddress::INET6: {
-                    return getsockopt<uint8_t> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS);
+                    // IPv6's multicast options are an int (hops) and an unsigned int (loop) - RFC 3493 5.2 - and Linux and macOS
+                    // reject anything shorter, with EINVAL. (IPv4's traditionally take a byte, which all accept.)
+                    return static_cast<uint8_t> (getsockopt<int> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS));
                 }
                 default:
                     RequireNotReached (); // only legal for IP sockets
@@ -188,23 +190,7 @@ namespace {
                     break;
                 }
                 case SocketAddress::INET6: {
-                    constexpr bool kIPV6LoophackMulticastTTLLinuxBug_{qStroika_Foundation_Common_Platform_Linux}; // https://github.com/SophistSolutions/Stroika/issues/714 (STK-578)
-                    if (kIPV6LoophackMulticastTTLLinuxBug_) {
-                        try {
-                            setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS, ttl);
-                        }
-                        catch (const std::system_error& e) {
-                            // I've dug into this, and have no idea why its failing - with EINVAL
-                            if (Execution::IsA (e, errc::invalid_argument)) {
-                                DbgTrace ("IPV6_MULTICAST_HOPS: For now ignoring what is probably a very small, minor bug, but one "
-                                          "where I have no idea why this is happening - but I saw reliably on Ubuntu/Linux"_f);
-                            }
-                            // @todo - fix this code - almost certainly wrong...
-                        }
-                    }
-                    else {
-                        setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS, ttl);
-                    }
+                    setsockopt<int> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS, ttl); // an int: @see GetMulticastTTL
                     break;
                 }
                 default:
@@ -219,7 +205,7 @@ namespace {
                     return !!getsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP);
                 }
                 case SocketAddress::INET6: {
-                    return !!getsockopt<char> (IPPROTO_IPV6, IP_MULTICAST_LOOP);
+                    return !!getsockopt<unsigned int> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP); // an unsigned int: @see GetMulticastTTL
                 }
                 default:
                     RequireNotReached (); // only legal for IP sockets
@@ -237,23 +223,7 @@ namespace {
                     break;
                 }
                 case SocketAddress::INET6: {
-                    constexpr bool kIPV6LoophackMulticastModeLinuxBug_{qStroika_Foundation_Common_Platform_Linux}; // https://github.com/SophistSolutions/Stroika/issues/714 (STK-578)
-                    if (kIPV6LoophackMulticastModeLinuxBug_) {
-                        try {
-                            setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode);
-                        }
-                        catch (const std::system_error& e) {
-                            // I've dug into this, and have no idea why its failing - with EINVAL
-                            if (Execution::IsA (e, errc::invalid_argument)) {
-                                DbgTrace ("IPV6_MULTICAST_LOOP: For now ignoring what is probably a very small, minor bug, but one "
-                                          "where I have no idea why this is happening - but I saw reliably on Ubuntu/Linux"_f);
-                            }
-                            // @todo - fix this code - almost certainly wrong...
-                        }
-                    }
-                    else {
-                        setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode);
-                    }
+                    setsockopt<unsigned int> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode); // an unsigned int: @see GetMulticastTTL
                     break;
                 }
                 default:
