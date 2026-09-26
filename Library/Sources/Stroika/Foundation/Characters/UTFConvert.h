@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Characters {
      *  \note Byte Order Markers
      *      UTFConvert does NOT support byte order marks (BOM) - for that - see Streams::BinaryToText::Reader, and Streams::TextToBinary::Writer or TextConvert
      *      The reason is - the conversion methods are templated on the char8_t, char16_t e etc char TYPE, and this doesn't work well with
-     *      dynamically deteecting the character type at runtime.
+     *      dynamically detecting the character type at runtime.
      *
      *  \notes about mbstate_t
      *      mbstate_t is used by the std::codecvt apis and nothing else, and seems opaque and not any obvious use, so just
@@ -138,6 +138,8 @@ namespace Stroika::Foundation::Characters {
         /**
          *  As of Stroika v3.0d2, if options.fInvalidCharacterReplacement specified, options.fPreferredImplementation must be null or eStroikaPortable.
          *  That limitation could be lifted in the future.
+         * 
+         * A converter is copyable (but thats not super helpful). It maintains essentially no state, except for the options its constructed with.
          */
 #if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
         constexpr UTFConvert ();
@@ -145,6 +147,7 @@ namespace Stroika::Foundation::Characters {
 #else
         constexpr UTFConvert (const Options& options = Options{});
 #endif
+        constexpr UTFConvert (const UTFConvert&) noexcept = default;
 
     public:
         /**
