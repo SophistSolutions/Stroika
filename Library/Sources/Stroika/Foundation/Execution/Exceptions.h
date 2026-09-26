@@ -586,7 +586,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   ***DEPRECATED since v3.0d25: the errc::timed_out row.*** @see TimeOutException. It is retained
      *          purely so existing `catch (const TimeOutException&)` clauses keep matching; nothing in Stroika
-     *          names that type any more. Write `e.code () == errc::timed_out` instead - that also catches
+     *          names that type any more. Write `Execution::IsA (e, errc::timed_out)` instead - that also catches
      *          timeouts raised OUTSIDE Stroika, which catching by type never did (libcurl's
      *          CURLE_OPERATION_TIMEDOUT being the case that forced the issue).
      *
@@ -597,7 +597,7 @@ namespace Stroika::Foundation::Execution {
      *      **Stroika treats errc::timed_out as the generic "the time limit for this operation expired"
      *      condition** - nothing connection-specific. Every Stroika timeout answers to it: a Synchronized<>
      *      lock acquisition, Thread::WaitForDone (), a WaitableEvent, a socket read, a libcurl transfer. That
-     *      uniformity is what makes `e.code () == errc::timed_out` the one portable timeout test.
+     *      uniformity is what makes `Execution::IsA (e, errc::timed_out)` the one portable timeout test.
      *
      *      That is the condition's actual meaning, not a Stroika invention. POSIX specifies ETIMEDOUT - which
      *      std::errc::timed_out names - as the result of pthread_mutex_timedlock (), pthread_cond_timedwait (),

@@ -6,8 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-_DeprecatedFile_ ("DEPRECATED TimeOutException.h - since v3.0d25 - catch (const system_error&) and test "
-                  "e.code () == errc::timed_out; for the non-deprecated helpers that were here, use "
+_DeprecatedFile_ ("DEPRECATED TimeOutException.h - since v3.0d25 - catch (const system_error& e) and test "
+                  "Execution::IsA (e, errc::timed_out); for the non-deprecated helpers that were here, use "
                   "Execution/Timeout.h and Execution/TimedLock.h");
 
 #include "Stroika/Foundation/Execution/Exceptions.h"
@@ -48,8 +48,8 @@ namespace Stroika::Foundation::Execution {
      *      \endcode
      *      That also matches timeouts raised outside Stroika, which catching by type never did.
      */
-    class [[deprecated ("Since Stroika v3.0d25 - catch (const system_error&) and test e.code () == errc::timed_out")]] TimeOutException
-        : public Execution::SystemErrorException {
+    class [[deprecated ("Since Stroika v3.0d25 - catch (const system_error& e) and test Execution::IsA (e, errc::timed_out)")]]
+    TimeOutException : public Execution::SystemErrorException {
     public:
         TimeOutException ()
             : TimeOutException{"Timeout Expired"sv}
