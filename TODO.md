@@ -8,6 +8,19 @@ Generally will track stuff here between releases
 
 ## Open
 
+  - **Re-test the Ubuntu 24.04 gcc workarounds when that toolchain updates, and delete them if fixed.**
+    `configure`'s `ApplyCompilerBugWorkarounds_` currently forces `-O2` for sanitizer configs on 24.04
+    and warns about optimizing without LTO there. Both exist purely because gcc 13.3/14.2 *as packaged
+    on 24.04* generate wrong code (measured 2026-08-30; 25.04, 26.04, g++-12 and clang++-18 are all
+    clean). Cheap re-check, ~15 min on stroika-dev-2404:
+      - sanitizer bug:  build `g++-release-sanitize_thread` at `-O3 -flto -fsanitize=thread`, run
+        `Tests/47` - passes means workaround #1 can go
+      - container bug:  build release `-O3` with `--lto disable`, run `Tests/21` and `Tests/51` - clean
+        means workaround #2 (and the warning + the `--only-if-has-compiler` skip) can go
+    Not worth filing upstream - it is confined to one distro's packaging, so Launchpad rather than GCC
+    bugzilla, and it needs a reduced testcase we do not have.
+    - NOTE WORKING NOW - this became https://github.com/SophistSolutions/Stroika/issues/1177
+
 - MakeBuildRoot / out-of-source builds: moved to
   https://github.com/SophistSolutions/Stroika/issues/1170 - too big for this list. The Windows
   symbolic-link background it came out of is consolidated in
@@ -43,18 +56,6 @@ Generally will track stuff here between releases
          ones upstream and diagnose somewhat different things, so this is a real second axis of the same
          single-platform problem, not a duplicate of it.
 
-   - **Re-test the Ubuntu 24.04 gcc workarounds when that toolchain updates, and delete them if fixed.**
-     `configure`'s `ApplyCompilerBugWorkarounds_` currently forces `-O2` for sanitizer configs on 24.04
-     and warns about optimizing without LTO there. Both exist purely because gcc 13.3/14.2 *as packaged
-     on 24.04* generate wrong code (measured 2026-08-30; 25.04, 26.04, g++-12 and clang++-18 are all
-     clean). Cheap re-check, ~15 min on stroika-dev-2404:
-       - sanitizer bug:  build `g++-release-sanitize_thread` at `-O3 -flto -fsanitize=thread`, run
-         `Tests/47` - passes means workaround #1 can go
-       - container bug:  build release `-O3` with `--lto disable`, run `Tests/21` and `Tests/51` - clean
-         means workaround #2 (and the warning + the `--only-if-has-compiler` skip) can go
-     Not worth filing upstream - it is confined to one distro's packaging, so Launchpad rather than GCC
-     bugzilla, and it needs a reduced testcase we do not have.
-
 - DO PLANNING for CMAKE change
   - discuss staging
   - Maybe first step is the MACRO for the build root(discuss if that is done in a way to mirror fit with cmake)
@@ -62,4 +63,3 @@ Generally will track stuff here between releases
   - then later can think about remaining stroika usage steps (using it internally to build/specify, and GENERATING making consumable from cmake, and skel/examples using it)
 
   - Review UTFConvert and CodeCvt APIs (advice, performance, API choice).
-  
