@@ -85,9 +85,14 @@ else
 fi
 
 
-# -v $HOME/.ssh:$HOME/.ssh:ro so connect to raspberrypi can use ssh keys
+# -v $HOME/.ssh:$HOME/.ssh:ro so connect to raspberrypi can use ssh keys, and (Stroika-Dev containers) so sshd
+# can read authorized_keys.
+# READ-ONLY: containers run third-party build scripts, and a writable ~/.ssh would let anything in one append to the
+# host's authorized_keys - and so log into the host. It was read-write from 2018 only so ssh could record each new
+# DHCP IP of the raspberrypi (CheckHostIP); OpenSSH 8.5 made that off by default. Cost: ssh inside a container cannot
+# remember a NEW host's key (it warns, and connects).
 PERSONAL_FILE_MOUNTS="\
-	-v $HOME/.ssh:$HOME/.ssh \
+	-v $HOME/.ssh:$HOME/.ssh:ro \
 "
 if [ $INCLUDE_EXTRA_PERSONAL_MOUNT_FILES -eq 1 ]; then
 PERSONAL_FILE_MOUNTS="${PERSONAL_FILE_MOUNTS} \
