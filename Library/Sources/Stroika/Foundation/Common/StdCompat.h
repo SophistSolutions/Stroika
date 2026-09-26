@@ -225,7 +225,8 @@ namespace Stroika::Foundation::Common::StdCompat {
 #endif
 
     /**
-     *  Workaround absence of byteswap gcc up to version 12, and clang (up to 14).
+     *  std::byteswap where the standard library has it (it is C++23), else an equivalent - so every C++20 build uses
+     *  the version below.
      */
 #if __cpp_lib_byteswap >= 202110L
     using std::byteswap;
@@ -233,14 +234,12 @@ namespace Stroika::Foundation::Common::StdCompat {
     template <class T>
     inline T byteswap (T n) noexcept
     {
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Warray-bounds\"");
         static_assert (std::has_unique_object_representations_v<T>, "T may not have padding bits");
         auto value_representation = bit_cast<array<byte, sizeof (T)>> (n);
         for (size_t i = 0; i < value_representation.size () / 2; ++i) {
-            swap (value_representation[i], value_representation[value_representation.size () - i]);
+            swap (value_representation[i], value_representation[value_representation.size () - 1 - i]);
         }
         return bit_cast<T> (value_representation);
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Warray-bounds\"");
     }
 #endif
 

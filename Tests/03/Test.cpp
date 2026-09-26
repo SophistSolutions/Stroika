@@ -320,6 +320,22 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Common, ByteSwap_)
+    {
+        Debug::TraceContextBumper ctx{"{}::ByteSwap_"};
+        // Common::StdCompat::byteswap is std::byteswap in C++23, and Stroika's own implementation before that
+        using Common::StdCompat::byteswap;
+        EXPECT_EQ (byteswap (uint8_t{0xAB}), uint8_t{0xAB});
+        EXPECT_EQ (byteswap (uint16_t{0xAABB}), uint16_t{0xBBAA});
+        EXPECT_EQ (byteswap (uint32_t{0xAABBCCDD}), uint32_t{0xDDCCBBAA});
+        EXPECT_EQ (byteswap (uint64_t{0x0102030405060708}), uint64_t{0x0807060504030201});
+        EXPECT_EQ (byteswap (byteswap (uint32_t{0x12345678})), uint32_t{0x12345678});
+        EXPECT_EQ (static_cast<uint32_t> (byteswap (char16_t{0x0041})), 0x4100u);
+        EXPECT_EQ (static_cast<uint32_t> (byteswap (char32_t{0x00000041})), 0x41000000u);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Common, SystemConfigruation_)
     {
         using namespace Characters::Literals;
