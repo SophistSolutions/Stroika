@@ -1269,60 +1269,6 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 
 #endif
 
-/**
-         [==========] 6 tests from 1 test suite ran. (9 ms total)         [  PASSED  ] 6 tests.
-    [36] Foundation::Database - ../Builds/Release/Tests/Test36  --gtest_brief
-FAILED: SIGNAL= SIGSEGV
-*/
-#ifndef qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy
-
-#if defined(__clang__)
-/**
- * 
-Noticed broken in xcode 16
-Noticed broken in clang++-15 on ubuntu, and other issue with clang++16 makes it hard to tell
-    [36] Foundation::Database - ../Builds/clang++-debug/Tests/Test36 --gtest_brief clang++-20 ubuntu 24.04
-AssertExternallySynchronizedChecker.cpp:75:28: runtime error: member access within null pointer of type 'SharedContext'
-    #0 0x653f59068ff6 in Stroika::Foundation::Debug::AssertExternallySynchronizedChecker::lock_shared_() const /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.cpp:75:28
-    #1 0x653f57c5a424 in Stroika::Foundation::Debug::AssertExternallySynchronizedChecker::lock_shared() const /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.inl:164:9
-    #2 0x653f57c59f6a in std::__1::shared_lock<Stroika::Foundation::Debug::AssertExternallySynchronizedChecker const>::shared_lock[abi:ne200100](Stroika::Foundation::Debug::AssertExternallySynchronizedChecker const&) /usr/lib/llvm-20/bin/../include/c++/v1/shared_mutex:325:11
-    #3 0x653f57cd6a2a in Stroika::Foundation::Debug::AssertExternallySynchronizedChecker::AssertExternallySynchronizedChecker(Stroika::Foundation::Debug::AssertExternallySynchronizedChecker const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.inl:112:21
-    #4 0x653f57cc61f9 in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::Iterable(Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character> const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:271:9
-    #5 0x653f57c36896 in Stroika::Foundation::Characters::String::String(Stroika::Foundation::Characters::String const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Characters/String.h:259:9
-    #6 0x653f57a03076 in __cxx_global_var_init.87 /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Database/Document/Projection.h:103:71
-    #7 0x720633492473 in call_init csu/../csu/libc-start.c:145:3
-    #8 0x720633492473 in __libc_start_main csu/../csu/libc-start.c:347:5
-    #9 0x653f57a19874 in _start (/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Builds/clang++-debug/Tests/Test36+0x3f65874) (BuildId: 407732a0bee50d0835bc59fe690dea65f5958757)
-
-
-AssertExternallySynchronizedChecker.cpp:105:28: runtime error: member access within null pointer of type 'SharedContext'
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior AssertExternallySynchronizedChecker.cpp:105:28 
-AssertExternallySynchronizedChecker.cpp:105:13: runtime error: member call on null pointer of type 'std::__atomic_base<unsigned long, false>'
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior AssertExternallySynchronizedChecker.cpp:105:13 
-/usr/include/c++/v1/__atomic/atomic.h:75:25: runtime error: member call on null pointer of type 'const std::__atomic_base<unsigned long, false> *'
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /usr/include/c++/v1/__atomic/atomic.h:75:25 
-/usr/include/c++/v1/__atomic/atomic.h:70:47: runtime error: member call on null pointer of type 'const std::__atomic_base<unsigned long, false> *'
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /usr/include/c++/v1/__atomic/atomic.h:70:47 
-/usr/include/c++/v1/__atomic/support/c11.h:82:50: runtime error: member access within null pointer of type 'const __cxx_atomic_base_impl<unsigned long>'
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /usr/include/c++/v1/__atomic/support/c11.h:82:50 
-AddressSanitizer:DEADLYSIGNAL
-=================================================================
-==363461==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x55f077b08ec4 bp 0x7fff2111aae0 sp 0x7fff2111aab0 T0)
-==363461==The signal is caused by a READ memory access.
-==363461==Hint: address points to the zero page.
-    #0 0x55f077b08ec4 in unsigned long std::__1::__cxx_atomic_load[abi:nqe220102]<unsigned long>(std::__1::__cxx_atomic_base_impl<unsigned long> const*, std::__1::memory_order) /usr/include/c++/v1/__atomic/support/c11.h:81:10
-    #1 0x55f077b08de4 in std::__1::__atomic_base<unsigned long, false>::load[abi:nqe220102](std::__1::memory_order) const /usr/include/c++/v1/__atomic/atomic.h:72:12
-    #2 0x55f077b08c29 in std::__1::__atomic_base<unsigned long, false>::operator unsign
-
- */
-
-#define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 22))
-#else
-#define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy 0
-#endif
-
-#endif
-
 /*
 Stack dump:
 0.      Program arguments: clang++-16 -D_GLIBCXX_DEBUG -DqStroika_Foundation_Debug_AssertionsChecked=1 -DqStroika_HasComponent_ATLMFC=0 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=1 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_mongocxxdriver=1 -DqStroika_HasComponent_WinHTTP=0 -DqStroika_HasComponent_xerces=0 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_Foundation_Debug_TraceToFile=1 -DqStroika_Foundation_Debug_DefaultTracingOn=1 -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-16-debug-libc++/ -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libxml2 -DMONGOCXX_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/mongocxx/v_noabi -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include -DBSONCXX_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/bsoncxx/v_noabi -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libbson-1.0 -fPIC -DMONGOC_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libmongoc-1.0 -DBSON_STATIC -DCURL_STATICLIB -DGTEST_HAS_PTHREAD=1 --std=c++20 -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-psabi -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -g -fsanitize=address,undefined -stdlib=libc++ -c Test.cpp -o /Sandbox/Stroika-Dev/IntermediateFiles/clang++-16-debug-libc++/Tests/36/Test.o

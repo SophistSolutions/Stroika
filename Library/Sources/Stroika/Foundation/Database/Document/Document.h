@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Database::Document {
      *  \note dont want to hardwire queer choice of mongodb, but dont want to have todo a lot of needless mapping/translation later.
      *  \note the VALUE associated with this key is of type IDType.
      */
-    static inline const String kID = "id"sv;
+    inline const String kID = "id"sv;
 
 }
 
