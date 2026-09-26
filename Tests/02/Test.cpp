@@ -1282,7 +1282,7 @@ namespace {
             runLocaleIndepTest ();
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+            SkipTestPart ("en_US locale not installed");
         }
         {
             EXPECT_EQ (String2Int ("0587:c413:5500:0000:0000:0000:0001]:60000"), 0);
@@ -1518,7 +1518,8 @@ namespace {
                 // if no such locale, just skip the test...
                 DbgTrace ("e={}"_f, Characters::ToString (current_exception ()));
 #if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
-// sigh - fails to convert unicode characters
+                // sigh - fails to convert unicode characters
+                SkipTestPart ("round trip not checked (qCompilerAndStdLib_locale_utf8_string_convert_Buggy)");
 #else
                 EXPECT_TRUE (not initializedLocale); // else means throw from conversion which would be bad
 #endif

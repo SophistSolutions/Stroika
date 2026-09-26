@@ -74,6 +74,8 @@ namespace {
             auto              thrower  = [] () { Execution::Throw (kExcept_); };
             EXPECT_THROW (RunAll (thrower, [] () { return 3; }), Execution::Exception<>);
         }
+#else
+        GTEST_SKIP () << "RunAll not tested with this compiler (qCompilerAndStdLib_tsubst_pack_expansion_Buggy)";
 #endif
     }
 }

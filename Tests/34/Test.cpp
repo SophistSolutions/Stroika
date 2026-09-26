@@ -1843,6 +1843,13 @@ namespace {
         });
     }
 }
+#else
+namespace {
+    GTEST_TEST (Foundation_DataExchange_XML, Parsing_)
+    {
+        GTEST_SKIP () << "built without XML parsing (qStroika_Foundation_DataExchange_XML_SupportParsing)";
+    }
+}
 #endif
 #endif
 

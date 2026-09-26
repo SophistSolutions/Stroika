@@ -474,6 +474,8 @@ namespace {
                 defaultContextStandardDigestAlgorithms - defaultContextAvailableDigestAlgorithms));
         }
         // for openssl v3 could also check with legacy provider loaded...
+#else
+        GTEST_SKIP () << "built without OpenSSL";
 #endif
     }
 }
@@ -645,6 +647,9 @@ namespace {
              *      (2) is this a standard algorithm failing (usually more serious, but sometimes even these get deprecated
              *          in new openssl releases).
              */
+            if (not skippedCiphers.empty ()) {
+                SkipTestPart ("{} ciphers not tested on arm with ASAN (see kArm_), for provider {}"_f(skippedCiphers.size (), provider));
+            }
             if (nFailures != 0) {
                 Set<String> allCiphers{
                     OpenSSL::LibraryContext::sDefault.availableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.name (); })};
@@ -667,6 +672,8 @@ namespace {
                 }
             }
         }
+#else
+        GTEST_SKIP () << "built without OpenSSL";
 #endif
     }
 }
@@ -726,6 +733,8 @@ namespace {
         //      iv =35F1A763D974A002DB1721B8F25498E6
         checkWithSalt (OpenSSL::CipherAlgorithms::kAES_128_OFB, OpenSSL::DigestAlgorithms::kSHA1, "mypass", BLOB::FromHex ("1122334455667788"),
                        DerivedKey{BLOB::FromHex ("36237DC4B90DD237329731E85EE5BB5A"), BLOB::FromHex ("35F1A763D974A002DB1721B8F25498E6")});
+#else
+        GTEST_SKIP () << "built without OpenSSL";
 #endif
     }
 }
@@ -787,6 +796,8 @@ namespace {
         //      0000000 6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53
         checkNoSalt (OpenSSL::CipherAlgorithms::kAES_128_CBC, OpenSSL::DigestAlgorithms::kMD5, "aaa",
                      BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a"sv), BLOB::FromHex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
+#else
+        GTEST_SKIP () << "built without OpenSSL";
 #endif
     }
 }
@@ -819,6 +830,8 @@ namespace {
             // @todo - FIX
             EXPECT_TRUE (EncodeAES (kDerivedKey, srcText, AESOptions::e256_CBC) == encResult);
             EXPECT_TRUE (DecodeAES (kDerivedKey, encResult, AESOptions::e256_CBC) == srcText);
+#else
+            GTEST_SKIP () << "built without OpenSSL";
 #endif
         }
     }
@@ -827,6 +840,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Cryptography, SelfSignedCert)
     {
+#if qStroika_HasComponent_OpenSSL
         using namespace Cryptography::PKI;
         using Time::DateTime;
         using Traversal::Range;
@@ -842,12 +856,16 @@ namespace {
         EXPECT_EQ (cert.GetSubject ().fOrganization, "MyCompany Inc."sv);
         EXPECT_EQ (cert.GetValidDates ().GetLowerBound (), now);
         EXPECT_TRUE (cert.GetValidDates ().Contains (now));
+#else
+        GTEST_SKIP () << "built without OpenSSL";
+#endif
     }
 }
 
 namespace {
     GTEST_TEST (Foundation_Cryptography, PEMFileIO)
     {
+#if qStroika_HasComponent_OpenSSL
         using namespace Cryptography::PKI;
         using Time::DateTime;
         using Traversal::Range;
@@ -909,12 +927,16 @@ namespace {
         catch (...) {
             Stroika::Frameworks::Test::WarnTestIssue ("openssl commandline tool failure (installed?): {}"_f(current_exception ()));
         }
+#else
+        GTEST_SKIP () << "built without OpenSSL";
+#endif
     }
 }
 
 namespace {
     GTEST_TEST (Foundation_Cryptography, BasicSSLStream)
     {
+#if qStroika_HasComponent_OpenSSL
         Debug::TraceContextBumper ctx{"::BasicSSLStream"};
         using namespace Cryptography::SSL;
         using namespace Cryptography::PKI;
@@ -1020,6 +1042,9 @@ namespace {
         writesInClient = true;
         swapSockets    = true;
         runTest ();
+#else
+        GTEST_SKIP () << "built without OpenSSL";
+#endif
     }
 }
 #endif

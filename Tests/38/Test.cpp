@@ -326,7 +326,7 @@ namespace {
         // Needs real make and awk, which a minimal environment (e.g. a bare test container) may lack.
         if (not FindExecutableInPath ("make") or not FindExecutableInPath ("awk")) {
             Stroika::Frameworks::Test::WarnTestIssue ("MakeVersionViaAwkPipe skipped: needs make and awk, which are not both in path ({})"_f(kPath ()));
-            return;
+            GTEST_SKIP () << "needs make and awk, which are not both in PATH";
         }
         {
             // using bash appears to work on all supported platforms

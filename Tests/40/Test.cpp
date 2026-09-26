@@ -44,8 +44,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
-            return;
+            GTEST_SKIP () << "too slow under valgrind";
         }
         struct FRED {
             static void DoIt ([[maybe_unused]] void* ignored)
@@ -71,8 +70,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
-            return;
+            GTEST_SKIP () << "too slow under valgrind";
         }
 
         // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
@@ -413,8 +411,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
-            return;
+            GTEST_SKIP () << "too slow under valgrind";
         }
         WAITABLE_EVENTS_::NOTIMEOUTS_ ();
         WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
@@ -518,8 +515,7 @@ namespace {
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
             if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
                 // Test passes, but takes hours and adds insufficient value to wait
-                DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
-                return;
+                GTEST_SKIP () << "too slow under valgrind";
             }
             Private_::Test1_ ();
             Private_::Test2_LongWritesBlock_ ();
@@ -535,8 +531,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
-            return;
+            GTEST_SKIP () << "too slow under valgrind";
         }
         {
             struct FRED {
@@ -594,8 +589,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes a while under valgrind.
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
-            return;
+            GTEST_SKIP () << "too slow under valgrind";
         }
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
@@ -675,8 +669,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
             // Test passes, but takes a while under valgrind.
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
-            return;
+            GTEST_SKIP () << "too slow under valgrind";
         }
         recursive_mutex useCritSection;
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
@@ -984,8 +977,7 @@ namespace {
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_) {
             // Test passes, but takes hour with valgrind/memcheck. Not without valgrind however
-            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
-            return;
+            GTEST_SKIP () << "too slow under valgrind";
         }
         {
             Time::TimePointSeconds    testStartedAt       = Time::GetTickCount ();
@@ -1177,8 +1169,7 @@ namespace {
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
             if (kRunningValgrind_) {
                 // Test passes, but takes 8 HRs on ubuntu 20.04 ; and quite a while (hours) on other ubuntu releases. Not without valgrind however
-                DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
-                return;
+                GTEST_SKIP () << "too slow under valgrind";
             }
             Private_::TEST_ ();
         }

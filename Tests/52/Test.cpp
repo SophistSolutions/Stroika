@@ -1593,6 +1593,7 @@ namespace {
             GetOutStream_ () << testName << ": " << p << endl;
             if (not filesystem::exists (p)) {
                 GetOutStream_ () << "\t\t***SKIPPED CUZ TEST FILE MISSING: " << p << endl;
+                SkipTestPart ("JSON test data missing - these benchmarks need the source tree");
                 return;
             }
             std::string data2ParseAsString = [&p] () {
@@ -2612,9 +2613,7 @@ namespace {
 
 #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
-            Stroika::Frameworks::Test::WarnTestIssue ("qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy and "
-                                                      "Debug::kBuiltWithUndefinedBehaviorSanitizer so skipping test");
-            return;
+            GTEST_SKIP () << "not run with UBSan on this compiler (qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy)";
         }
 #endif
 

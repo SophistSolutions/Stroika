@@ -207,6 +207,8 @@ namespace {
                 // good
             }
         }
+#else
+        GTEST_SKIP () << "built without LZMA";
 #endif
     }
 }
@@ -398,6 +400,8 @@ namespace {
                 EXPECT_EQ (reader.GetData ("file-a.zip"), Memory::BLOB{ksample_zip_});
             }
         }
+#else
+        GTEST_SKIP () << "built without zlib";
 #endif
     }
 }
@@ -871,7 +875,7 @@ namespace {
                 EXPECT_EQ (jsonExampleWithUpdatedMaxFilesReference, tmpStrm.As<string> ());
             }
             catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-                Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+                SkipTestPart ("en_US locale not installed");
             }
         }
     }
@@ -902,7 +906,7 @@ namespace {
             f ();
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+            SkipTestPart ("en_US locale not installed");
         }
     }
 }
@@ -982,7 +986,7 @@ namespace {
             doAll ();
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+            SkipTestPart ("en_US locale not installed");
         }
     }
 }
@@ -1021,6 +1025,7 @@ namespace {
                         "JSONONLY_Test_09_ReadWriteNANShouldNotFail_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, encodedRep={}, vOut={}"_f(
                             v, String::FromUTF8 (encodedRep), vOut)
                             .ReplaceAll ("[\\r\\n]"_RegEx, ""));
+                    SkipTestPart ("NaN round trip not checked under valgrind (qCompilerAndStdLib_isinf_Valgrind_Buggy)");
                     return;
                 }
                 EXPECT_EQ (vOut, v);
@@ -1135,6 +1140,15 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, CompressionTests_)
     {
+        if constexpr (not Compression::Deflate::kSupported) {
+            SkipTestPart ("Deflate not built in");
+        }
+        if constexpr (not Compression::GZip::kSupported) {
+            SkipTestPart ("GZip not built in");
+        }
+        if constexpr (not Compression::ZStd::kSupported) {
+            SkipTestPart ("ZStd not built in");
+        }
         auto RoundTripCompressTest_ = [] (const Memory::BLOB& b) {
             // Compression::Deflate
             if constexpr (Compression::Deflate::kSupported) {

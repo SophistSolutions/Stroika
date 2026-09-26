@@ -80,6 +80,30 @@ namespace Stroika::Frameworks::Test {
     void WarnTestIssue (const wchar_t* issue);
     void WarnTestIssue (const Foundation::Characters::String& issue);
 
+#if qStroika_HasComponent_googletest
+    /**
+     *  \brief Report that PART of the current test cannot run here, and why - so gtest reports the test SKIPPED, not PASSED
+     *
+     *  A check that silently does not run looks just like one that passed. To skip a whole test, use GTEST_SKIP () << reason,
+     *  which returns. To skip just part of one, use this: it does NOT return, so the rest of the test still runs. Either way the
+     *  test is reported SKIPPED, with the file:line and reason, and counted in gtest's '[  SKIPPED ] N tests' summary - and it
+     *  is still reported FAILED if any of its checks fail.
+     *
+     *  \note Keep the reason clear of the words "failed", "error:" and "warning": Build/Scripts/RegressionTests counts every
+     *        log line containing them. Put variable detail, such as an exception's text, in a WarnTestIssue () instead.
+     *
+     *  \par Example Usage
+     *      \code
+     *          #if qStroika_HasComponent_OpenSSL
+     *              ... checks needing OpenSSL ...
+     *          #else
+     *              SkipTestPart ("built without OpenSSL");
+     *          #endif
+     *      \endcode
+     */
+#define SkipTestPart(reason) [&] { GTEST_SKIP () << (reason); }()
+#endif
+
     /**
      *  Samples a steady clock on its own thread for this object's lifetime, and reports the largest
      *  gap it saw between consecutive samples.

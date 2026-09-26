@@ -533,6 +533,8 @@ XE=`cat $TEST_OUT_FILE | grep -v -E '^[[:space:]]*WARNING:' | grep -E -i "error[
 XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
 VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep "^==" | wc -l`
 XW=`cat $TEST_OUT_FILE | grep -E -i "warning.*:" | wc -l`
+### each test executable that skipped any (GTEST_SKIP, SkipTestPart) ends with '[  SKIPPED ] N test(s).' - sum the N's
+XS=`cat $TEST_OUT_FILE | grep -oE '\[  SKIPPED \] [0-9]+ tests?' | awk '{ s += $4 } END { print s + 0 }'`
 
 if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
@@ -549,6 +551,8 @@ else
 	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
 	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
 fi
+echo "   $XS tests skipped (see '[  SKIPPED ]' for which, and the 'Skipped' lines above them for why)"
+echo "   $XS tests skipped (see '[  SKIPPED ]' for which, and the 'Skipped' lines above them for why)">>$TEST_OUT_FILE 2>&1
 echo "   $XF items failed (expected 0)"
 echo "   $XF items failed (expected 0)">>$TEST_OUT_FILE 2>&1
 echo "   $XE items error (expected 0)"

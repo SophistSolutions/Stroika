@@ -83,8 +83,7 @@ namespace {
             catch (const system_error& e) {
 #if qStroika_HasComponent_libcurl && !qStroika_HasComponent_OpenSSL
                 if (e.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()}) {
-                    DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl"_f);
-                    return;
+                    GTEST_SKIP () << "libcurl built without SSL support";
                 }
 #endif
                 if (not Execution::IsA (e, errc::timed_out)) {
@@ -131,7 +130,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
-            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+            SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #else
             ReThrow ();
 #endif
@@ -316,7 +315,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+                SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #else
                 Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
 #endif
@@ -339,7 +338,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
-            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+            SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #else
             ReThrow ();
 #endif
@@ -402,7 +401,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
-            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+            SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #else
             ReThrow ();
 #endif
@@ -453,7 +452,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
-            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+            SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #else
             ReThrow ();
 #endif
@@ -487,7 +486,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
                 // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+                SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #else
                 ReThrow ();
 #endif
@@ -511,7 +510,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
-            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+            SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #endif
         }
         catch (...) {
@@ -527,7 +526,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
-            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+            SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #endif
         }
         catch (...) {
@@ -557,7 +556,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
                 // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+                SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #endif
             }
             catch (...) {
@@ -701,7 +700,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
-            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+            SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #else
             ReThrow ();
 #endif
@@ -735,7 +734,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
-            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+            SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
 #else
             ReThrow ();
 #endif

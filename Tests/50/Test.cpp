@@ -57,8 +57,7 @@ namespace {
             catch (...) {
                 // suppress macOS warn here - just not such locale installed
 #if !qStroika_Foundation_Common_Platform_MacOS
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale {}"_f(localeName));
+                SkipTestPart ("test_locale_time_get_date_order_no_order_Buggy not checked: locale {} not installed"_f(localeName));
 #endif
             }
         };
@@ -88,8 +87,7 @@ namespace {
                 localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
             }
             catch (...) {
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US missing locale");
+                SkipTestPart ("localetimeputPCTX_CHECK_StdCPctxTraits not checked: en_US locale not installed");
             }
             try {
                 localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US.utf8"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
@@ -97,8 +95,7 @@ namespace {
             catch (...) {
                 // suppress macos warn here - just not such locale installed
 #if !qStroika_Foundation_Common_Platform_MacOS
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US.utf8 missing locale");
+                SkipTestPart ("localetimeputPCTX_CHECK_StdCPctxTraits not checked: en_US.utf8 locale not installed");
 #endif
             }
         };
@@ -199,7 +196,7 @@ namespace {
                 if ((state & ios::badbit) or (state & ios::failbit)) {
 #if !_LIBCPP_VERSION
                     // Known that _LIBCPP_VERSION (clang libc++) treats this as an error and quite reasonable - so only warn for other cases so I can add exclusions here
-                    Stroika::Frameworks::Test::WarnTestIssue ("Skipping tmget_dot_get_locale_date_order_buggy_test_ cuz parse failure");
+                    SkipTestPart ("tmget_dot_get_locale_date_order_buggy_test_ not checked: this library would not parse its test date");
 #endif
                 }
                 else {
@@ -225,8 +222,7 @@ namespace {
             }
             catch (...) {
 #if !qStroika_Foundation_Common_Platform_MacOS
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
+                SkipTestPart ("tmget_dot_get_locale_date_order_buggy_test_ not checked: locale not installed");
 #endif
             }
         };
@@ -252,7 +248,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Common::FindNamedLocale ("en", "us"));
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+            SkipTestPart ("en_US locale not installed");
         }
         // should add test like this...
         //EXPECT_TRUE (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
@@ -368,7 +364,7 @@ namespace {
 #endif
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+            SkipTestPart ("en_US locale not installed");
         }
         {
             EXPECT_EQ (TimeOfDay{101}.Format (locale{}), "00:01:41");
@@ -469,7 +465,7 @@ namespace {
             EXPECT_EQ (d.Format (Date::eCurrentLocale_WithZerosStripped), "4/5/1903");
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+            SkipTestPart ("en_US locale not installed");
         }
         {
             Date d = Date{1903y, April, 5d};
@@ -574,7 +570,7 @@ namespace {
             //TOFIX!EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == "4/4/1903 12:01 AM");
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+            SkipTestPart ("en_US locale not installed");
         }
         {
             Date d = Date{1903y, April, 6d};

@@ -523,8 +523,7 @@ namespace {
         GTEST_TEST (Foundation_Database, RegressionTest2_SQL_sqlite_EmployeesDB_with_threads_)
         {
             if (Debug::IsRunningUnderValgrind () and qStroika_Foundation_Debug_AssertionsChecked) {
-                DbgTrace ("Skipping remaining tests cuz too slow"_f);
-                return;
+                GTEST_SKIP () << "too slow under valgrind, in builds with assertions";
             }
             TraceContextBumper ctx{"RegressionTest2_SQL_sqlite_EmployeesDB_with_threads_::DoIt"};
             using namespace Database::SQL::SQLite;
@@ -766,8 +765,7 @@ namespace {
         {
             TraceContextBumper ctx{"RegressionTest3_SQL_sqlite_EmployeesDB_with_ORM_and_threads_::DoIt"};
             if (Debug::IsRunningUnderValgrind () and qStroika_Foundation_Debug_AssertionsChecked) {
-                DbgTrace ("Skipping remaining tests cuz too slow"_f);
-                return;
+                GTEST_SKIP () << "too slow under valgrind, in builds with assertions";
             }
             using namespace Database::SQL::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-and-orm-test.db";
@@ -800,7 +798,7 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
             catch (...) {
                 // test warning no mongo on address X so test skipped
                 Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-                return; // skip rest of tests
+                GTEST_SKIP () << "could not connect to the mongo server";
             }
         }
 
@@ -826,8 +824,11 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
             DbgTrace ("rrs  get value={}"_f, rrs);
         }
         catch (...) {
-            // test warning no mongo on address X so test skipped
+            SkipTestPart ("the mongo server threw on the test operations");
         }
+    }
+    else {
+        GTEST_SKIP () << "no mongo server to test against: set MONGO_CONNECTION_STRING or pass --mongoConnectionString";
     }
 }
 #endif
@@ -985,6 +986,9 @@ namespace {
                         TestAddNewWithExternalKeysProvided_ (p);
                     }
                 }
+            }
+            else {
+                GTEST_SKIP () << "no mongo server to test against: set MONGO_CONNECTION_STRING or pass --mongoConnectionString";
             }
         }
 #endif
@@ -1176,6 +1180,9 @@ namespace {
                     });
                 }
             }
+            else {
+                GTEST_SKIP () << "no mongo server to test against: set MONGO_CONNECTION_STRING or pass --mongoConnectionString";
+            }
         }
 #endif
 
@@ -1251,6 +1258,19 @@ namespace {
         }
     }
 }
+
+#if !qStroika_HasComponent_sqlite
+GTEST_TEST (Foundation_Database, SQLite_)
+{
+    GTEST_SKIP () << "built without sqlite";
+}
+#endif
+#if !qStroika_HasComponent_mongocxxdriver
+GTEST_TEST (Foundation_Database, MongoDB_)
+{
+    GTEST_SKIP () << "built without mongocxxdriver";
+}
+#endif
 #endif
 
 int main (int argc, const char* argv[])

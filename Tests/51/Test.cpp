@@ -773,7 +773,7 @@ namespace {
                 "[4/4/1903 ... 4/5/1903]");
         }
         else {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing en-us locale");
+            SkipTestPart ("en_US locale not installed");
         }
         {
             EXPECT_EQ ((Range<int>{3, nullopt}.ToString ()), "[3 ... ]");
@@ -1061,6 +1061,8 @@ namespace {
 #if !qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
             EXPECT_EQ (c.Join (), "localhost, INADDR_ANY");
             EXPECT_EQ (c.Join ("; "), "localhost; INADDR_ANY");
+#else
+            SkipTestPart ("Join not checked (qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy)");
 #endif
         }
         {
@@ -1075,6 +1077,8 @@ namespace {
             EXPECT_EQ (kT1_.Join (" "), "a b");
             EXPECT_EQ (kT1_.Join (", ", " and "), "a and b");
             EXPECT_EQ (kT2_.Join (", ", " and "), "a, b and c");
+#else
+            SkipTestPart ("Join not checked (qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy)");
 #endif
             EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }), "A, B, C");
             EXPECT_EQ (kT2_.Join<String> ([] (auto i) { return i.ToUpperCase (); }, "; "sv, " and "sv), "A; B and C");
