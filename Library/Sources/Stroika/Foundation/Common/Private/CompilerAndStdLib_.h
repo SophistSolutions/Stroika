@@ -1181,16 +1181,6 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../includ
 
 #endif
 
-#ifndef qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy
-#if defined(__clang__)
-// Seen on clang++-18 on ubuntu
-// appears fixed for clang++19
-#define qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy (__clang_major__ <= 18)
-#else
-#define qCompilerAndStdLib_ITimepointConfusesFormatWithFloats_Buggy 0
-#endif
-#endif
-
 /**
  *      Compiling Library/Sources/Stroika/Foundation/Execution/SpinLock.cpp ... 
 In file included from SignalHandlers.cpp:27:
@@ -2517,22 +2507,6 @@ In file included from ../Execution/../Characters/../Containers/Sequence.h:16,
 #endif
 
 /*
-@todo LOSE DEPRECATED DEFINE qCompilerAndStdLib_to_chars_FP_Buggy - no longer used as of 2024-07-14
-*/
-#ifndef qCompilerAndStdLib_to_chars_FP_Buggy
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
-#elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
-#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 199999))
-#else
-#define qCompilerAndStdLib_to_chars_FP_Buggy 0
-#endif
-#endif
-// #if (!!__cpp_lib_to_chars) != (!qCompilerAndStdLib_to_chars_FP_Buggy)
-// #warning "BUGGY BUT __cpp_lib_to_chars vs qCompilerAndStdLib_to_chars_FP_Buggy defs differ "
-// #endif
-
-/*
 #include <cassert>
 #include <charconv>
 #include <cstdlib>
@@ -3467,34 +3441,6 @@ TRIED alignas to fix on the array but no luck
 #endif
 
 /*
- *     Running Stroka Tests {g++-valgrind-debug-SSLPurify-NoBlockAlloc}:
- *      [Succeeded]  (3  seconds)  [01]  Foundation::Caching  (valgrind -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  ../Builds/g++-valgrind-debug-SSLPurify-NoBlockAlloc/Test01)
- *              FAILED: Assert; !isinf (f);Stroika::Foundation::Characters::String {anonymous}::Float2String_(FLOAT_TYPE, const Stroika::Foundation::Characters::Float2StringOptions&) [with FLOAT_TYPE = long double];FloatConversion.cpp: 200
- *      []  (28 seconds)  [02]  Foundation::Characters::Strings  (valgrind -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  ../Builds/g++-valgrind-debug-SSLPurify-NoBlockAlloc/Test02)
- *
- *      Under VALGRIND, 
- *                                  DbgTrace ("fpclassify (%f) = %d", (double)f, fpclassify (f));
- *          prints:
- *                [-------MAIN-------][0022.587]  fpclassify (inf) = 4
- *                [-------MAIN-------][0022.595]  fpclassify (-inf) = 4
- * and from math.h:
- *              # define FP_NORMAL 4
- *
- *  \note - This maybe just a known valgrind bug/feature:
- *              https://stackoverflow.com/questions/44316523/wrong-result-of-stdfpclassify-for-long-double-using-valgrind
- */
-#ifndef qCompilerAndStdLib_valgrind_fpclassify_check_Buggy
-
-#if defined(__GNUC__)
-// tested and fails gcc8 on Ubuntu 1804 (could be OS config/valgrind version)
-#define qCompilerAndStdLib_valgrind_fpclassify_check_Buggy 1
-#else
-#define qCompilerAndStdLib_valgrind_fpclassify_check_Buggy 0
-#endif
-
-#endif
-
-/*
     https://github.com/llvm/llvm-project/issues/62141   ("Class Template Argument Deduction ignores requires clause")
 
     Given a class template with TWO constructors taking the same argument types but mutually-exclusive
@@ -3656,11 +3602,6 @@ TRIED alignas to fix on the array but no luck
 #pragma warning(disable : 4702)
 #endif
 
-// Not quite the same thing as original bug define but seems a second/related issue that only apperars with clang
-#if qCompilerAndStdLib_CompareOpReverse_Buggy && defined(__clang__)
-#pragma clang diagnostic ignored "-Wambiguous-reversed-operator"
-#endif
-
 // doesn't seem any portable way todo this, and not defined in C++ language
 // Note - this doesn't appear in http://en.cppreference.com/w/cpp/language/attributes - as of 2016-06-22
 #if defined(__clang__) || defined(__GNUC__)
@@ -3788,10 +3729,6 @@ TRIED alignas to fix on the array but no luck
 #include <bits/c++config.h>
 #undef _PSTL_PRAGMA_MESSAGE
 #define _PSTL_PRAGMA_MESSAGE(x)
-#endif
-
-#if qCompilerAndStdLib_need_ciso646_Buggy
-#include <ciso646>
 #endif
 
 #endif /*_Stroika_Foundation_Common_Private_CompilerAndStdLib_h_*/
