@@ -148,6 +148,23 @@ CXXFLAGS:=$(filter-out -fsanitize=undefined, $(CXXFLAGS))
 endif
 endif
 
+# GCC (every version tried, 11 through 16) wrongly reports 'control reaches end of non-void function' at -O0 when
+# -fsanitize=thread is on, for a function ending in a statement like
+#		if (1) { ...; return x; } else (void)0;
+# which mongo-c-driver's macros (bson_array_builder_append_impl, require_with_error in libbson) expand to. mongo-c-driver
+# makes that warning a hard error (-Werror=return-type, after our flags, so we cannot turn it back off), and the build
+# fails. -O1 is enough for GCC to see the dead branch. Until CMAKE_BUILD_TYPE=None, mongo picked Release for itself and
+# got -O3, which hid this. Remove when a GCC release compiles this cleanly with 'gcc -O0 -fsanitize=thread -c':
+#		int f (int x) { if (1) { return x; } else (void)0; }
+ifneq ($(shell ${StroikaRoot}Build/Scripts/GetGCCVersion ${CC}),)
+ifneq ($(findstring -fsanitize=thread,$(CFLAGS)),)
+ifeq ($(filter-out -O0,$(filter -O%,$(CFLAGS))),)
+CFLAGS		+= -O1
+CXXFLAGS	+= -O1
+endif
+endif
+endif
+
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 CMAKE_ARGS +=  -DCMAKE_CONFIGURATION_TYPES="${CMAKE_BUILD_TYPE}"
