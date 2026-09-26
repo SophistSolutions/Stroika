@@ -89,7 +89,7 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     static_assert (copyable<OnlyCopyableMoveableAndTotallyOrdered>);
     static_assert (move_constructible<OnlyCopyableMoveableAndTotallyOrdered>);
     static_assert (equality_comparable<OnlyCopyableMoveableAndTotallyOrdered>);
-    static_assert (totally_ordered<OnlyCopyableMoveableAndTotallyOrdered>); // @todo allow this to be totally ordered...
+    static_assert (totally_ordered<OnlyCopyableMoveableAndTotallyOrdered>);
     static_assert (not semiregular<OnlyCopyableMoveableAndTotallyOrdered>);
     static_assert (not regular<OnlyCopyableMoveableAndTotallyOrdered>);
     static_assert (IINTeroperable<OnlyCopyableMoveableAndTotallyOrdered>);
@@ -129,7 +129,7 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     static_assert (copyable<OnlyCopyableMoveable>);
     static_assert (move_constructible<OnlyCopyableMoveable>);
     static_assert (not equality_comparable<OnlyCopyableMoveable>);
-    static_assert (not totally_ordered<OnlyCopyableMoveable>); // @todo allow this to be totally ordered...
+    static_assert (not totally_ordered<OnlyCopyableMoveable>);
     static_assert (not semiregular<OnlyCopyableMoveable>);
     static_assert (not regular<OnlyCopyableMoveable>);
     static_assert (IINTeroperable<OnlyCopyableMoveable>);
