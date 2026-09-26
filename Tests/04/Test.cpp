@@ -163,6 +163,22 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Containers_DataStructures_Array, RandomAccessIteratorArithmetic_)
+    {
+        // random_access_iterator (static_assert-ed in Array.h) requires n + it as well as it + n - and a mere declaration satisfies it
+        Array<int> a;
+        a.SetLength (5, 0);
+        for (size_t i = 0; i < a.size (); ++i) {
+            a[i] = static_cast<int> (i);
+        }
+        auto it = a.begin ();
+        EXPECT_EQ (*(it + 2), 2);
+        EXPECT_EQ (*(2 + it), 2);
+        EXPECT_EQ ((it + 3) - it, 3);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_Array, Cleanup)
     {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check

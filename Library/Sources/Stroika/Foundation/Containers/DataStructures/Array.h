@@ -501,19 +501,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool            operator== (const ForwardIterator& rhs) const;
         nonvirtual strong_ordering operator<=> (const ForwardIterator& rhs) const;
 
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
     public:
         /**
-         * @brief addition of iterator and int is commutative.
+         * @brief addition of iterator and int is commutative (random_access_iterator requires n + it as well as it + n).
+         *
+         *  \note defined here, as a hidden friend: a friend declared in a class template but defined outside it is a different
+         *        (non-template) function, and nothing defines that. Nor can a template defined outside stand in for it: T,
+         *        appearing only in Array<T>::ForwardIterator, cannot be deduced. So keep it a one-line trampoline to the member
+         *        operator+ (defined in the .inl) - and never suppress -Wnon-template-friend, which warns of exactly this.
          */
-        friend ForwardIterator operator+ (difference_type i, const ForwardIterator& it);
-
-    public:
-        /**
-         * @brief difference of int and iterator is anti-commutative (so - (it - i))
-         */
-        friend ForwardIterator operator- (difference_type i, const ForwardIterator& it);
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wnon-template-friend\""); //  very tricky to avoid this- tried
+        friend ForwardIterator operator+ (difference_type i, const ForwardIterator& it)
+        {
+            return it + i;
+        }
 
     private:
         /**

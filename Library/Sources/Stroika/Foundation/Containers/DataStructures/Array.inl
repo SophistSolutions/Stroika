@@ -829,18 +829,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return this->_fCurrentIdx <=> rhs._fCurrentIdx;
     }
     template <typename T>
-    inline typename Array<T>::ForwardIterator operator+ (typename Array<T>::ForwardIterator::difference_type i,
-                                                         const typename Array<T>::ForwardIterator&           it)
-    {
-        return it + i; // commutative
-    }
-    template <typename T>
-    inline typename Array<T>::ForwardIterator operator- (typename Array<T>::ForwardIterator::difference_type i,
-                                                         const typename Array<T>::ForwardIterator&           it)
-    {
-        return -(it - i); // anti-commutative
-    }
-    template <typename T>
     auto Array<T>::ForwardIterator::OPERATOR_MINUS_BWA_ (const ForwardIterator& lhs, const ForwardIterator& rhs) -> difference_type
     {
         using difference_type = typename Array<T>::ForwardIterator::difference_type;

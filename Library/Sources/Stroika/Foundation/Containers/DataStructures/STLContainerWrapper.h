@@ -325,8 +325,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual strong_ordering operator<=> (const RandomAccessIterator& rhs) const;
 
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\"");
-
     public:
         friend RandomAccessIterator operator+ (difference_type i, const RandomAccessIterator& it)
         {
@@ -354,7 +352,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 return static_cast<difference_type> (lhs._fStdIterator - rhs._fStdIterator);
             }
         }
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wnon-template-friend\"");
     };
 
     // see Satisfies Concepts
