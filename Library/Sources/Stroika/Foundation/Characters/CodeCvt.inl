@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include <algorithm>
 #include <bit>
 
 #include "Stroika/Foundation/Characters/TextConvert.h"
@@ -211,34 +212,34 @@ namespace Stroika::Foundation::Characters {
             : inherited{o}
         {
         }
+        /*
+         *  What is in the other byte order is each SERIALIZED_CHAR_T code unit - not each resulting CHAR_T, which can be a
+         *  different size (e.g. UTF-16 bytes into char32_t) - so swap the bytes, and leave decoding/encoding to inherited.
+         */
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
             RequireNotNull (from);
             Require (to.size () >= this->ComputeTargetCharacterBufferSize (*from));
-            auto r = inherited::Bytes2Characters (from, to);
-            for (CHAR_T& i : to) {
-                if constexpr (same_as<CHAR_T, Character>) {
-                    i = Character{Common::StdCompat::byteswap (i.template As<char32_t> ())};
-                }
-                else {
-                    i = Common::StdCompat::byteswap (i);
-                }
-            }
+            Memory::StackBuffer<byte> nativeOrderBytes{*from};
+            SwapEachCodeUnit_ (span<byte>{nativeOrderBytes.data (), nativeOrderBytes.size ()});
+            span<const byte> remaining{nativeOrderBytes.data (), nativeOrderBytes.size ()};
+            span<CHAR_T>     r = inherited::Bytes2Characters (&remaining, to);
+            *from              = from->subspan (from->size () - remaining.size ()); // from updated to remaining data, if any
             return r;
         }
         virtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const override
         {
             Require (to.size () >= this->ComputeTargetByteBufferSize (from));
-            Memory::StackBuffer<CHAR_T> buf{from};
-            for (CHAR_T& i : buf) {
-                if constexpr (same_as<CHAR_T, Character>) {
-                    i = Character{Common::StdCompat::byteswap (i.template As<char32_t> ())};
-                }
-                else {
-                    i = Common::StdCompat::byteswap (i);
-                }
+            span<byte> r = inherited::Characters2Bytes (from, to);
+            SwapEachCodeUnit_ (r);
+            return r;
+        }
+        static void SwapEachCodeUnit_ (span<byte> bytes)
+        {
+            // a trailing partial code unit is left alone - Bytes2Characters leaves it unconsumed, for the next call
+            for (size_t i = 0; i + sizeof (SERIALIZED_CHAR_T) <= bytes.size (); i += sizeof (SERIALIZED_CHAR_T)) {
+                reverse (bytes.begin () + i, bytes.begin () + i + sizeof (SERIALIZED_CHAR_T));
             }
-            return inherited::Characters2Bytes (span<const CHAR_T>{buf.begin (), buf.size ()}, to);
         }
     };
 

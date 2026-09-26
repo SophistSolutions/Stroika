@@ -2089,6 +2089,53 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Characters, CodeCvt_UTF16_32_ByteOrders_)
+    {
+        Debug::TraceContextBumper ctx{"CodeCvt_UTF16_32_ByteOrders_"};
+        // 'A', U+00E9 (e acute), U+1F600 (a surrogate pair in UTF-16) - in both byte orders, one of which is non-native on
+        // any machine, and so goes through CodeCvt's byte-swapping rep
+        const String kText      = U"A\u00E9\U0001F600";
+        const byte   kUTF16BE[] = {byte{0x00}, byte{0x41}, byte{0x00}, byte{0xE9}, byte{0xD8}, byte{0x3D}, byte{0xDE}, byte{0x00}};
+        const byte   kUTF16LE[] = {byte{0x41}, byte{0x00}, byte{0xE9}, byte{0x00}, byte{0x3D}, byte{0xD8}, byte{0x00}, byte{0xDE}};
+        const byte   kUTF32BE[] = {byte{0x00}, byte{0x00}, byte{0x00}, byte{0x41}, byte{0x00}, byte{0x00},
+                                   byte{0x00}, byte{0xE9}, byte{0x00}, byte{0x01}, byte{0xF6}, byte{0x00}};
+        const byte   kUTF32LE[] = {byte{0x41}, byte{0x00}, byte{0x00}, byte{0x00}, byte{0xE9}, byte{0x00},
+                                   byte{0x00}, byte{0x00}, byte{0x00}, byte{0xF6}, byte{0x01}, byte{0x00}};
+        auto         check      = [&]<typename STRING> (UnicodeExternalEncodings e, span<const byte> bytes) {
+            using CHAR_T = typename STRING::value_type;
+            SCOPED_TRACE ("encoding=" + to_string (static_cast<int> (e)) + ", sizeof (CHAR_T)=" + to_string (sizeof (CHAR_T)));
+            try {
+                CodeCvt<CHAR_T> cvt{e};
+                STRING          s = cvt.template Bytes2String<STRING> (bytes);
+                EXPECT_EQ (String{s}, kText);
+                EXPECT_EQ ((cvt.template String2Bytes<vector<byte>> (span<const CHAR_T>{s})), (vector<byte>{bytes.begin (), bytes.end ()}));
+            }
+            catch (...) {
+                ADD_FAILURE () << Characters::ToString (current_exception ());
+            }
+        };
+        for (auto [e, bytes] :
+             initializer_list<pair<UnicodeExternalEncodings, span<const byte>>>{{UnicodeExternalEncodings::eUTF16_BE, span{kUTF16BE}},
+                                                                                {UnicodeExternalEncodings::eUTF16_LE, span{kUTF16LE}},
+                                                                                {UnicodeExternalEncodings::eUTF32_BE, span{kUTF32BE}},
+                                                                                {UnicodeExternalEncodings::eUTF32_LE, span{kUTF32LE}}}) {
+            check.template operator()<u16string> (e, bytes);
+            check.template operator()<u32string> (e, bytes);
+            check.template operator()<wstring> (e, bytes);
+            SCOPED_TRACE ("encoding=" + to_string (static_cast<int> (e)) + ", Character");
+            try {
+                CodeCvt<>         cvt{e};
+                vector<Character> buf (cvt.ComputeTargetCharacterBufferSize (bytes));
+                EXPECT_EQ (String{cvt.Bytes2Characters (bytes, span{buf})}, kText);
+            }
+            catch (...) {
+                ADD_FAILURE () << Characters::ToString (current_exception ());
+            }
+        }
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Characters, New_Format)
     {
         Debug::TraceContextBumper ctx{"New_Format"};
