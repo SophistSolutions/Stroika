@@ -60,3 +60,6 @@ Generally will track stuff here between releases
   - Maybe first step is the MACRO for the build root(discuss if that is done in a way to mirror fit with cmake)
   - MAYBE get all MY THIRDPARTYCOMPUNTENTS built using a single cmake build line. That seems doable, and a big step towards being able to USE conan (or similar).
   - then later can think about remaining stroika usage steps (using it internally to build/specify, and GENERATING making consumable from cmake, and skel/examples using it)
+
+  - Review UTFConvert and CodeCvt APIs (advice, performance, API choice).
+  
