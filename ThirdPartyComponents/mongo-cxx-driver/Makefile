@@ -149,12 +149,15 @@ endif
 endif
 
 # GCC (every version tried, 11 through 16) wrongly reports 'control reaches end of non-void function' at -O0 when
-# -fsanitize=thread is on, for a function ending in a statement like
+# -fsanitize=thread is on - https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59922 (open since 2014: tsan's function-exit
+# hook wraps the body in try/finally, and at -O0/-Os the dead code is not removed before the check) - for a function
+# ending in a statement like
 #		if (1) { ...; return x; } else (void)0;
 # which mongo-c-driver's macros (bson_array_builder_append_impl, require_with_error in libbson) expand to. mongo-c-driver
 # makes that warning a hard error (-Werror=return-type, after our flags, so we cannot turn it back off), and the build
 # fails. -O1 is enough for GCC to see the dead branch. Until CMAKE_BUILD_TYPE=None, mongo picked Release for itself and
-# got -O3, which hid this. Remove when a GCC release compiles this cleanly with 'gcc -O0 -fsanitize=thread -c':
+# got -O3, which hid this. Remove when GCC bug 59922 is fixed - a GCC release that compiles this cleanly with
+# 'gcc -O0 -fsanitize=thread -Werror=return-type -c':
 #		int f (int x) { if (1) { return x; } else (void)0; }
 ifneq ($(shell ${StroikaRoot}Build/Scripts/GetGCCVersion ${CC}),)
 ifneq ($(findstring -fsanitize=thread,$(CFLAGS)),)
