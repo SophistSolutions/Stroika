@@ -72,7 +72,17 @@ namespace Stroika::Foundation::Debug {
 #endif
 
 #if not defined(qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled)
-#if qStroika_Foundation_Debug_AssertionsChecked and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
+// off when built with the thread sanitizer - this is the compile-time test documented at Debug::kBuiltWithThreadSanitizer
+#if defined(__SANITIZE_THREAD__)
+#define qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled 0
+#elif defined(__has_feature)
+#if __has_feature(thread_sanitizer)
+#define qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled 0
+#endif
+#endif
+#endif
+#if not defined(qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled)
+#if qStroika_Foundation_Debug_AssertionsChecked
 #define qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled 1
 #else
 #define qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled 0

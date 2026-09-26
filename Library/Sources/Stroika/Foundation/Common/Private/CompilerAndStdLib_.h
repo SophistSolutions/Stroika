@@ -697,22 +697,6 @@ If they did not, the library archives will be missing from your system entirely.
 
 #endif
 
-/*
- Symptom if broken - is that for sanitizer=undefined builds, we still get kBuiltWithUndefinedBehaviorSanitizer == false
- especially relevant in tests for qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy workarounds!
- */
-#ifndef qCompilerAndStdLib_undefined_behavior_macro_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// FIRST SEEN BROKEN IN GCC 11
-// Still broken in GCC 12
-#define qCompilerAndStdLib_undefined_behavior_macro_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
-#else
-#define qCompilerAndStdLib_undefined_behavior_macro_Buggy 0
-#endif
-
-#endif
-
 /***
  GCC compiler gcrash on Ubuntu gcc11 on WSL
  */

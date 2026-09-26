@@ -161,8 +161,7 @@ auto Debug::Private_::Emitter::Get () noexcept -> Emitter&
         sModuleData_->fEmitter.EmitTraceMessage ("<debug-state>"_f);
         sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithAddressSanitizer = {}"_f, Debug::kBuiltWithAddressSanitizer);
         sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithThreadSanitizer = {}"_f, Debug::kBuiltWithThreadSanitizer);
-        sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithUndefinedBehaviorSanitizer = {}(?)"_f,
-                                                 Debug::kBuiltWithUndefinedBehaviorSanitizer); // warning maybe falsely reported as false on gcc
+        sModuleData_->fEmitter.EmitTraceMessage ("  Debug::kBuiltWithUndefinedBehaviorSanitizer = {}"_f, Debug::kBuiltWithUndefinedBehaviorSanitizer);
         sModuleData_->fEmitter.EmitTraceMessage ("  Debug::IsRunningUnderValgrind () = {}"_f, Debug::IsRunningUnderValgrind ());
         sModuleData_->fEmitter.EmitTraceMessage ("</debug-state>"_f);
     };

@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Execution {
     {
         return fThread_.native_handle ();
     }
-    // [[nosanitize thread]] because PeekIsSet () - intentionally - reads without a lock
+    // Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD because PeekIsSet () - intentionally - reads without a lock
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD inline Thread::Status Thread::Ptr::Rep_::PeekStatusForToString_ () const noexcept
     {
         if (fThreadDoneAndCanJoin_.PeekIsSet ()) {

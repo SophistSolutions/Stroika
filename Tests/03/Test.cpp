@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Common/Version.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
@@ -332,6 +333,41 @@ namespace {
         EXPECT_EQ (byteswap (byteswap (uint32_t{0x12345678})), uint32_t{0x12345678});
         EXPECT_EQ (static_cast<uint32_t> (byteswap (char16_t{0x0041})), 0x4100u);
         EXPECT_EQ (static_cast<uint32_t> (byteswap (char32_t{0x00000041})), 0x41000000u);
+    }
+}
+
+#if defined(__ELF__)
+// each defined exactly when that sanitizer's runtime is linked in - an independent check of Debug::kBuiltWith*Sanitizer
+extern "C" void __attribute__ ((weak)) __asan_init ();
+extern "C" void __attribute__ ((weak)) __tsan_init ();
+extern "C" void __attribute__ ((weak)) __ubsan_handle_builtin_unreachable ();
+#endif
+namespace {
+    GTEST_TEST (Foundation_Common, SanitizerDetection_)
+    {
+        Debug::TraceContextBumper ctx{"{}::SanitizerDetection_"};
+#if defined(__ELF__)
+        EXPECT_EQ (Debug::kBuiltWithAddressSanitizer, &__asan_init != nullptr);
+        EXPECT_EQ (Debug::kBuiltWithThreadSanitizer, &__tsan_init != nullptr);
+#if defined(__clang__)
+        // clang's asan and tsan runtimes include ubsan's handlers (g++'s do not, as of g++ 16), so with them this says nothing about ubsan
+        const bool ubsanCheckable = not(Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer);
+#else
+        const bool ubsanCheckable = true;
+#endif
+        if (ubsanCheckable) {
+            EXPECT_EQ (Debug::kBuiltWithUndefinedBehaviorSanitizer, &__ubsan_handle_builtin_unreachable != nullptr);
+        }
+        else {
+            SkipTestPart ("kBuiltWithUndefinedBehaviorSanitizer not checked: clang's asan and tsan runtimes include ubsan's");
+        }
+#elif defined(_MSC_VER)
+        // MSVC has no thread or undefined behavior sanitizer, and no weak symbols to check the address sanitizer with (as of MSVC 19.51)
+        EXPECT_FALSE (Debug::kBuiltWithThreadSanitizer);
+        EXPECT_FALSE (Debug::kBuiltWithUndefinedBehaviorSanitizer);
+#else
+        GTEST_SKIP () << "no independent check on this platform";
+#endif
     }
 }
 
