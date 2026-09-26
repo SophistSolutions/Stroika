@@ -652,6 +652,35 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Memory_, CompareBytes_)
+    {
+        Debug::TraceContextBumper ctx{"CompareBytes_"};
+        // CompareBytes has a compile-time implementation and a run-time one (memcmp) - check both, and that bytes compare unsigned
+        static constexpr uint8_t kA[] = {1, 2, 0x7F};
+        static constexpr uint8_t kB[] = {1, 2, 0x80};
+        static_assert (CompareBytes (kA, kA, size (kA)) == strong_ordering::equal);
+        static_assert (CompareBytes (kA, kB, size (kA)) == strong_ordering::less);
+        static_assert (CompareBytes (kB, kA, size (kA)) == strong_ordering::greater);
+        static_assert (CompareBytes (kA, kB, 2) == strong_ordering::equal);
+        static_assert (CompareBytes<uint8_t> (nullptr, nullptr, 0) == strong_ordering::equal);
+        EXPECT_EQ (CompareBytes (kA, kA, size (kA)), strong_ordering::equal);
+        EXPECT_EQ (CompareBytes (kA, kB, size (kA)), strong_ordering::less);
+        EXPECT_EQ (CompareBytes (kB, kA, size (kA)), strong_ordering::greater);
+        EXPECT_EQ (CompareBytes (kA, kB, 2), strong_ordering::equal);
+        EXPECT_EQ (CompareBytes<uint8_t> (nullptr, nullptr, 0), strong_ordering::equal);
+        {
+            vector<byte> l (1000, byte{0x55});
+            vector<byte> r = l;
+            EXPECT_EQ (CompareBytes (span{l}, span{r}), strong_ordering::equal);
+            r.back () = byte{0xFF};
+            EXPECT_EQ (CompareBytes (span{l}, span{r}), strong_ordering::less);
+            EXPECT_EQ (CompareBytes (span{r}, span{l}), strong_ordering::greater);
+            EXPECT_EQ (CompareBytes (span{l}.subspan (0, 999), span{r}.subspan (0, 999)), strong_ordering::equal);
+        }
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Memory_, InlineBufferZeroPreDefined_)
     {
         Debug::TraceContextBumper ctx{"InlineBufferZeroPreDefined_"};

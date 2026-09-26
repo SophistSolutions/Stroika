@@ -29,10 +29,7 @@ namespace Stroika::Foundation::Memory {
     template <>
     constexpr strong_ordering CompareBytes (const uint8_t* lhs, const uint8_t* rhs, size_t count)
     {
-        DISABLE_COMPILER_MSC_WARNING_START (5063)
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wconstant-evaluated\"");
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wtautological-compare\"");
-        if constexpr (is_constant_evaluated ()) {
+        if (is_constant_evaluated ()) {
             //Require (count == 0 or lhs != nullptr);
             //Require (count == 0 or rhs != nullptr);
             const uint8_t* li = lhs;
@@ -50,9 +47,6 @@ namespace Stroika::Foundation::Memory {
             }
             return Common::CompareResultNormalizer (::memcmp (lhs, rhs, count));
         }
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wtautological-compare\"");
-        DISABLE_COMPILER_MSC_WARNING_END (5063)
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wconstant-evaluated\"");
     }
     template <typename T>
     constexpr strong_ordering CompareBytes (const T* lhs, const T* rhs, size_t count)
