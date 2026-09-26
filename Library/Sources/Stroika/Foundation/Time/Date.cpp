@@ -103,14 +103,13 @@ optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>&
     wistringstream               iss{rep};
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
-    istreambuf_iterator<wchar_t> i =
-        tmget.get (itbegin, itend, iss, errState, &when, formatPattern_CStr, formatPattern_CStr + formatPattern_SV.size ());
+    (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern_CStr, formatPattern_CStr + formatPattern_SV.size ());
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[unlikely]] {
         return nullopt;
     }
     else {
         if (consumedCharsInStringUpTo != nullptr) {
-            *consumedCharsInStringUpTo = static_cast<size_t> (distance (itbegin, i));
+            *consumedCharsInStringUpTo = static_cast<size_t> (static_cast<streamoff> (iss.tellg ()));
         }
         return AsDate_ (when);
     }

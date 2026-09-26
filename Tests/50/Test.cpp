@@ -818,6 +818,26 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Time, ParseConsumedCharacters_)
+    {
+        TraceContextBumper ctx{"ParseConsumedCharacters_"};
+        // the count of characters consumed is how far the parse got - whether or not that is the whole string
+        const Date     kDate{Year{2026}, Time::September, DayOfMonth{26}};
+        const DateTime kDateTime{kDate, TimeOfDay{10, 11, 12}};
+        for (const String& rep : initializer_list<String>{"2026-09-26 and more"sv, "2026-09-26"sv}) {
+            size_t consumed = 99;
+            EXPECT_EQ (Date::Parse (rep, locale::classic (), String{Date::kISO8601Format}, &consumed), kDate);
+            EXPECT_EQ (consumed, 10u) << rep;
+        }
+        for (const String& rep : initializer_list<String>{"2026-09-26 10:11:12 and more"sv, "2026-09-26 10:11:12"sv}) {
+            size_t consumed = 99;
+            EXPECT_EQ (DateTime::ParseQuietly (rep, locale::classic (), "%Y-%m-%d %H:%M:%S"sv, &consumed), kDateTime);
+            EXPECT_EQ (consumed, 19u) << rep;
+        }
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Time, Duration_)
     {
         TraceContextBumper ctx{"Duration_"};

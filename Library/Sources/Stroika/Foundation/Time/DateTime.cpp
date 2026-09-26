@@ -543,15 +543,9 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
         wstring                      formatPatternWS = formatPattern.As<wstring> ();
         wistringstream               iss{rep};
         istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-        istreambuf_iterator<wchar_t> i = tmget.get (itbegin, istreambuf_iterator<wchar_t>{}, iss, errState, &when, formatPatternWS.c_str (),
-                                                    formatPatternWS.c_str () + formatPatternWS.length ());
-        if (errState & ios::eofbit) {
-            nCharsConsumed = rep.size ();
-        }
-        else {
-            //tmphack workaround msft bug
-            nCharsConsumed = static_cast<size_t> (distance (itbegin, i));
-        }
+        (void)tmget.get (itbegin, istreambuf_iterator<wchar_t>{}, iss, errState, &when, formatPatternWS.c_str (),
+                         formatPatternWS.c_str () + formatPatternWS.length ());
+        nCharsConsumed = static_cast<size_t> (static_cast<streamoff> (iss.tellg ()));
     }
 
     if constexpr (qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy) {
