@@ -224,12 +224,9 @@ namespace CommonTests {
                     }
                     applyToContainer (s);
 
-                    for (
-#if !qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
-                        [[maybe_unused]]
-#endif
-                        auto it = s.begin ();
-                        it != s.end (); ++it) {
+                    for ([[maybe_unused]]
+                         auto it = s.begin ();
+                         it != s.end (); ++it) {
                         for (auto it1 [[maybe_unused]] : s.Elements ()) {
                             applyToContainer (s);
                         }

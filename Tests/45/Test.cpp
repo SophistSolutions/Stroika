@@ -573,17 +573,7 @@ namespace {
         void SimpleGetFetch_T1 (Connection::Ptr c)
         {
             Debug::TraceContextBumper ctx{"{}::...SimpleGetFetch_T1"};
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-            static const auto kInitList_ =
-                initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}};
-#endif
-            for (URI u :
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                 kInitList_
-#else
-                 initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}}
-#endif
-            ) {
+            for (URI u : initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}}) {
                 try {
                     Response r = c.GET (u);
                     EXPECT_TRUE (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
@@ -650,17 +640,7 @@ namespace {
         void SimpleGetFetch_T1 (function<Connection::Ptr (const URI& uriHint)> factory)
         {
             Debug::TraceContextBumper ctx{"{}::...SimpleGetFetch_T1"};
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-            static const auto kInitList_ =
-                initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}};
-#endif
-            for (URI u :
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                 kInitList_
-#else
-                 initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}}
-#endif
-            ) {
+            for (URI u : initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}}) {
                 Connection::Ptr c = factory (u);
                 Response        r = c.GET (u);
                 EXPECT_TRUE (r.GetSucceeded ());

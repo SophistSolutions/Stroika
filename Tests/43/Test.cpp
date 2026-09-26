@@ -308,18 +308,7 @@ namespace {
                 else {
                     EXPECT_TRUE (false);
                 }
-// workaround really only needed if ASAN enabled, but more of a PITA to test that
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                static const auto kInitList_ =
-                    initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, fred, URI{"http://www.cnn.com"}};
-#endif
-                for (URI u :
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                     kInitList_
-#else
-                     {URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, fred, URI{"http://www.cnn.com"}}
-#endif
-                ) {
+                for (URI u : {URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, fred, URI{"http://www.cnn.com"}}) {
                     auto schemeAndAuthority = fred.GetSchemeAndAuthority ();
                     URI  fURL_              = u;
                     URI  newURL             = u;

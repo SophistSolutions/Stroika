@@ -39,7 +39,9 @@ Everything must be a C++20-or-later toolchain; see [Building-Stroika.md](Buildin
 - **Apple XCode** 16.4, 26.3
   <br/>XCode 15 was dropped in 3.0d23 along with MacOS 14 - lots of bugs, and 15.3 misreports its
   clang version, which breaks the `__clang_major__` gating Stroika's bug workarounds depend on.
-- **MSVC** - Visual Studio.Net 2022 (17.x) and 2026 (18.x)
+- **MSVC** - Visual Studio.Net 2022 (17.14) and 2026 (18.x)
+  <br/>17.14 is the final VS2022 update, and the only one tested; earlier 17.x updates are no longer
+  supported (`CompilerAndStdLib_.h` warns about them).
 
 Not every combination of the above is built; the table says which are.
 

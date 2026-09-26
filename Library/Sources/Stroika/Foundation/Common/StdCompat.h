@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Common::StdCompat {
 #endif
 
     /**
-     *  workaround qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
+     *  std::isinf, but constexpr where the standard library allows it (C++23)
      */
     template <typename T>
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _MSVC_LANG >= kStrokia_Foundation_Common_cplusplus_23
@@ -255,17 +255,11 @@ namespace Stroika::Foundation::Common::StdCompat {
 #endif
         bool isinf (T v) noexcept
     {
-#if qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
-        if constexpr (integral<T>) {
-            return false; // needed for vis stud
-        }
-        else
-#endif
-            return std::isinf (v);
+        return std::isinf (v);
     }
 
     /**
-     *  workaround qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
+     *  std::isnan, but constexpr where the standard library allows it (C++23)
      */
     template <typename T>
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23
@@ -275,13 +269,7 @@ namespace Stroika::Foundation::Common::StdCompat {
 #endif
         bool isnan (T v) noexcept
     {
-#if qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
-        if constexpr (integral<T>) {
-            return false; // needed for vis stud
-        }
-        else
-#endif
-            return std::isnan (v);
+        return std::isnan (v);
     }
 
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy

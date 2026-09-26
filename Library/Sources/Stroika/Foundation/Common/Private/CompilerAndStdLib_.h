@@ -126,14 +126,16 @@
 #define _MSC_VER_v145_1951_ 1951
 
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
-#if _MSC_VER < _MSC_VER_2k22_17Pt9_
+#if _MSC_VER < _MSC_VER_2k22_17Pt14_
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2022 (17.9) - (use Stroika v2.1 or earlier)"
+    "Warning: Stroika v3 does not support versions prior to Microsoft Visual Studio.net 2022 17.14 (update Visual Studio 2022; Stroika "   \
+    "v2.1 supports older versions)"
 #elif _MSC_VER <= _MSC_VER_v145_1951_
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #else
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: This version of Stroika (check newer version of Stroika) is untested with this release (> 17.14) of Microsoft Visual "       \
+    "Warning: This version of Stroika (check newer version of Stroika) is untested with this release (newer than Visual Studio 2026 "      \
+    "/ _MSC_VER 1951) of Microsoft Visual "                                                                                                \
     "Studio.net / Visual C++ - USING "                                                                                                     \
     "PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -253,87 +255,12 @@ Test.cpp:1109:93: error: no viable constructor or deduction guide for deduction 
 
 #endif
 
-// \TestCommon\CommonTests_MultiSet.h(232): error C2760: syntax error: ';' was unexpected here; expected ')'
-/// error C2760: syntax error: ';' was unexpected here; expected ')
-///C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(246): error C2760: syntax error: unexpected token ';', expected ')'
-// You can use [[maybe_unused]] after the identifier, but not before the auto
-/*
-C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): error C2760: syntax error: ';' was unexpected here; expected ')'
-C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): error C2065: 'it': undeclared identifier
-C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): error C2760: syntax error: ')' was unexpected here; expected ';'
-C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): error C3878: syntax error: unexpected token ')' following 'expression_statement'
-C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): note: error recovery skipped: ')'
-*/
-#ifndef qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
-
-#if defined(_MSC_VER)
-// verified broken in _MSC_VER_2k22_17Pt9_
-// verified broken in _MSC_VER_2k22_17Pt10_
-// Appears FIXED in _MSC_VER_2k22_17Pt11_
-#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy                                                                          \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt10_)
-#else
-#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy 0
-#endif
-
-#endif
-
 #if __cpp_lib_chrono < 201611
 #error "Stroika v3 requires c++20 chrono library support"
 #endif
 // #if __cpp_lib_chrono < 201907
 // #error "Stroika v3 requires c++20 chrono library support"
 // #endif
-
-/**
- *
-=================================================================
-Foundation::IO::Network::Transfer - ../Builds/Debug/Tests/Test45.exe --gtest_brief
-
-
-==13840==ERROR: AddressSanitizer: stack-use-after-scope on address 0x00dedb3fef90 at pc 0x7ff71b65a40f bp 0x00dedb3fdbd0 sp 0x00dedb3fdbd8
-READ of size 8 at 0x00dedb3fef90 thread T0
-    #0 0x7ff71b65a40e in std::initializer_list<Stroika::Foundation::IO::Network::URI>::begin C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\include\initializer_list:38
-    #1 0x7ff71b6266f6 in `anonymous namespace'::Test1_URI_::Private_::Test_RegressionDueToBugInCompareURIsC20Spaceship_ C:\Sandbox\Stroika\DevRoot\Tests\43\Test.cpp:381
-    #2 0x7ff71b626e41 in `anonymous namespace'::Test1_URI_::DoTests_ C:\Sandbox\Stroika\DevRoot\Tests\43\Test.cpp:407
-    #3 0x7ff71b62d888 in `anonymous namespace'::DoRegressionTests_ C:\Sandbox\Stroika\DevRoot\Tests\43\Test.cpp:595
-    #4 0x7ff71b65fb19 in Stroika::TestHarness::PrintPassOrFail C:\Sandbox\Stroika\DevRoot\Tests\TestHarness\TestHarness.cpp:75
-    #5 0x7ff71b62d8cd in main C:\Sandbox\Stroika\DevRoot\Tests\43\Test.cpp:607
-    #6 0x7ff71bc3d008 in invoke_main d:\a01\_work\43\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:78
-    #7 0x7ff71bc3cf5d in __scrt_common_main_seh d:\a01\_work\43\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:288
-    #8 0x7ff71bc3ce1d in __scrt_common_main d:\a01\_work\43\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:330
-    #9 0x7ff71bc3d07d in mainCRTStartup d:\a01\_work\43\s\src\vctools\crt\vcstartup\src\startup\exe_main.cpp:16
-    #10 0x7ffa00ff54df in BaseThreadInitThunk+0xf (C:\WINDOWS\System32\KERNEL32.DLL+0x1800154df)
-    #11 0x7ffa023a485a in RtlUserThreadStart+0x2a (C:\WINDOWS\SYSTEM32\ntdll.dll+0x18000485a)
-
-Address 0x00dedb3fef90 is located in stack of thread T0
-SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\include\initializer_list:38 in std::initializer_list<Stroika::Foundation::IO::Network::URI>::begin
- * 
- * 
- * 
- Sent email to MSFT - can reproduce with ASAN and -- https://developercommunity.visualstudio.com/t/initializer-list-lifetime-buggy-maybe-just-asan-is/1439352
-
-                for (string i : initializer_list<string>{"a", "b", "c"}) {
-                    assert (i.length () == 1);
-                }
-
- * UPDATED BUG REPORT WITH 
- *      https://developercommunity.visualstudio.com/t/initializer-list-lifetime-buggy-maybe-just-asan-is/1439352#T-N1439942-N1454940
- *      reproduction example
- * 
- * .
- */
-#ifndef qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-
-#if defined(_MSC_VER)
-// verified broken in _MSC_VER_2k22_17Pt9_
-// appears finally fixed in _MSC_VER_2k22_17Pt10_
-#define qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt9_)
-#else
-#define qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy 0
-#endif
-
-#endif
 
 /**
 * 
@@ -1103,19 +1030,6 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
 #else
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy 0
-#endif
-#endif
-
-/**
- *  https://en.cppreference.com/w/cpp/numeric/math/fpclassify says fpclassify() and isnan etc - OK to call on ints
- */
-#ifndef qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy
-#if defined(_MSC_VER)
-// still broken in _MSC_VER_2k22_17Pt10_
-// Appears FIXED in _MSC_VER_2k22_17Pt11_
-#define qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt10_)
-#else
-#define qCompilerAndStdLib_fpclasifyEtcOfInteger_Buggy 0
 #endif
 #endif
 
@@ -3218,13 +3132,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-18
 // appears fixed for clang++19
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
-#elif defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k22_17Pt9_
-// verified still broken in _MSC_VER_2k22_17Pt10_
-// verified still broken in _MSC_VER_2k22_17Pt11_
-// no longer appears broken but probably is with _MSC_VER_2k22_17Pt12_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy                                                                       \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt11_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -3668,23 +3575,6 @@ TRIED alignas to fix on the array but no luck
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
 #else
 #define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy 0
-#endif
-
-#endif
-
-/* attempts to format a date outside the range -1900 to 8099 trigger an assertion error in vis studio runtime lib
-* 
-* 
-*   @todo if this is still broken - add regtest and document how to retest / verify if still broken
-*/
-#ifndef qCompilerAndStdLib_FormatRangeRestriction_Buggy
-
-#if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k22_17Pt9_
-// ASSUME fixed TIL I see issue again --- _MSC_VER_2k22_17Pt10_
-#define qCompilerAndStdLib_FormatRangeRestriction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt9_)
-#else
-#define qCompilerAndStdLib_FormatRangeRestriction_Buggy 0
 #endif
 
 #endif

@@ -621,17 +621,7 @@ namespace {
         {
             Time::TimePointSeconds now = Time::GetTickCount ();
 
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-            static const auto kInitList_ =
-                initializer_list<Time::DurationSeconds>{3s, 995s, 3.4s, 3004.5s, 1055646.4s, 60 * 60 * 24 * 300s};
-#endif
-            for (Time::DurationSeconds dso :
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                 kInitList_
-#else
-                 initializer_list<Time::DurationSeconds>{3s, 995s, 3.4s, 3004.5s, 1055646.4s, 60s * 60 * 24 * 300}
-#endif
-            ) {
+            for (Time::DurationSeconds dso : initializer_list<Time::DurationSeconds>{3s, 995s, 3.4s, 3004.5s, 1055646.4s, 60s * 60 * 24 * 300}) {
                 // test going back and forth between TimePointSeconds and DateTime...
                 Time::TimePointSeconds ds = dso + now;
                 DateTime               dt{ds};
