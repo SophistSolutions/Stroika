@@ -5,6 +5,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
+#include <iterator>
+#include <sstream>
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -374,6 +376,17 @@ namespace {
                 EXPECT_EQ (buf[i], "{}"_f(i));
             }
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Memory_, InlineBufferFromSinglePassIterator_)
+    {
+        Debug::TraceContextBumper ctx{"InlineBufferFromSinglePassIterator_"};
+        // reading a single-pass iterator consumes it - so it cannot be walked once to count and again to copy
+        istringstream        in{"1 2 3 4 5"};
+        InlineBuffer<int, 2> b{istream_iterator<int>{in}, istream_iterator<int>{}}; // more than fit inline, so it also grows
+        EXPECT_EQ ((vector<int>{b.begin (), b.end ()}), (vector<int>{1, 2, 3, 4, 5}));
     }
 }
 

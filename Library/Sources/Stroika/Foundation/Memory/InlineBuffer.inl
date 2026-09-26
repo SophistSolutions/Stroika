@@ -63,21 +63,30 @@ namespace Stroika::Foundation::Memory {
         : InlineBuffer{}
     {
         static_assert (is_convertible_v<Common::ExtractValueType_t<ITERATOR_OF_T>, T>);
+        if constexpr (forward_iterator<ITERATOR_OF_T>) {
+            // count, then copy into exactly enough room - which walks start twice, so needs a multi-pass iterator
 #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-        auto sz = static_cast<size_t> (distance (start, ITERATOR_OF_T{end}));
+            auto sz = static_cast<size_t> (distance (start, ITERATOR_OF_T{end}));
 #else
-        // not forward<ITERATOR_OF_T2> (end) - ranges::distance takes it by value, and end is used again below
-        auto sz = static_cast<size_t> (ranges::distance (start, end));
+            // not forward<ITERATOR_OF_T2> (end) - ranges::distance takes it by value, and end is used again below
+            auto sz = static_cast<size_t> (ranges::distance (start, end));
 #endif
-        if (not this->HasEnoughCapacity_ (sz)) [[unlikely]] {
-            reserve (sz, true); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+            if (not this->HasEnoughCapacity_ (sz)) [[unlikely]] {
+                reserve (sz, true); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+            }
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+            uninitialized_copy (start, ITERATOR_OF_T (end), this->begin ());
+#else
+            ranges::uninitialized_copy (start, forward<ITERATOR_OF_T2> (end), this->begin (), this->begin () + sz);
+#endif
+            fSize_ = sz;
         }
-#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-        uninitialized_copy (start, ITERATOR_OF_T (end), this->begin ());
-#else
-        ranges::uninitialized_copy (start, forward<ITERATOR_OF_T2> (end), this->begin (), this->begin () + sz);
-#endif
-        fSize_ = sz;
+        else {
+            // a single-pass iterator (e.g. istream_iterator): reading it consumes it, so it cannot be counted first
+            for (ITERATOR_OF_T i = start; i != end; ++i) {
+                push_back (*i);
+            }
+        }
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
