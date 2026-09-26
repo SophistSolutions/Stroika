@@ -1621,6 +1621,19 @@ namespace {
                              << "\t\t\t" << took.count () << " seconds" << endl;
             GetOutStream_ () << endl;
         }
+        // this test's JSONTestData directory - found by probing, since the test is run from different directories
+        filesystem::path FindJSONTestRoot_ ()
+        {
+            using filesystem::path;
+            const path kTestDir_ = "52"; // this test's directory under Tests/
+            for (const path& p : {path{"."} / kTestDir_, path{"."} / "Tests" / kTestDir_, path{".."} / "Tests" / kTestDir_,
+                                  path{".."} / ".." / "Tests" / kTestDir_, path{".."} / ".." / ".." / kTestDir_}) {
+                if (filesystem::exists (p / "JSONTestData")) {
+                    return p / "JSONTestData";
+                }
+            }
+            return path{"."} / kTestDir_ / "JSONTestData"; // not found - DoJSONParse_ reports each file as missing
+        }
         void Run ()
         {
             using filesystem::path;
@@ -1642,21 +1655,7 @@ namespace {
                  make_tuple (DoStroikaJSONParse_boost_json2Stk, "boost_json-vv-parser")
 #endif
                 }};
-            path jsonTestRoot = path{"."} / "51" / "JSONTestData";
-            // hack a bit to find jsonTestRoot, since sometimes run from different places; no need to do good/formal job here
-            // since this is for a rarely used test suite
-            if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{"."} / "Tests" / "51" / "JSONTestData";
-            }
-            if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{".."} / "Tests" / "51" / "JSONTestData";
-            }
-            if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{".."} / ".." / "Tests" / "51" / "JSONTestData";
-            }
-            if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{".."} / ".." / ".." / "51" / "JSONTestData";
-            }
+            const path jsonTestRoot = FindJSONTestRoot_ ();
             for (auto testCase : kTestCases_) {
                 DoJSONParse_ (jsonTestRoot / "small-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
                 if constexpr (not qStroika_Foundation_Debug_AssertionsChecked) {
@@ -2509,21 +2508,7 @@ namespace {
         {
             using namespace JSONTests_;
             using filesystem::path;
-            path jsonTestRoot = path{"."} / "52" / "JSONTestData";
-            // hack a bit to find jsonTestRoot, since sometimes run from different places; no need to do good/formal job here
-            // since this is for a rarely used test suite
-            if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{"."} / "Tests" / "52" / "JSONTestData";
-            }
-            if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{".."} / "Tests" / "52" / "JSONTestData";
-            }
-            if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{".."} / path{".."} / "Tests" / "52" / "JSONTestData";
-            }
-            if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{".."} / path{".."} / path{".."} / "52" / "JSONTestData";
-            }
+            const path jsonTestRoot = FindJSONTestRoot_ ();
 
             // WEIRD/CONFUSING - TIMES APPEAR TO DEPEND (ALOT ON WINDOWS) on order of calls!!! SO CAREFUL COMPARING
             DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_, "stroika-default-json");
