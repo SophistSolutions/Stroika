@@ -622,6 +622,25 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Characters, IsWhitespace_)
+    {
+        Debug::TraceContextBumper ctx{"IsWhitespace_"};
+        // exactly the set documented for Character::IsWhitespace - ISO 30112's list, less U+180E
+        const vector<unsigned int> kExpected{0x09,   0x0A,   0x0B,   0x0C,   0x0D,   0x20,   0x1680, 0x2000, 0x2001, 0x2002, 0x2003,
+                                             0x2004, 0x2005, 0x2006, 0x2008, 0x2009, 0x200A, 0x2028, 0x2029, 0x205F, 0x3000};
+        vector<unsigned int>       found;
+        for (char32_t c = 0; c <= 0x10FFFF; ++c) {
+            if ((c < 0xD800 or c > 0xDFFF) and Character{c}.IsWhitespace ()) {
+                found.push_back (static_cast<unsigned int> (c));
+            }
+        }
+        EXPECT_EQ (found, kExpected);
+        // a no-break space is deliberately not whitespace - it is there to keep the text on either side together
+        EXPECT_EQ (String{U"10\u00A0km 5"}.Tokenize ().size (), 2u);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Characters, CodePageConverter_)
     {
         Debug::TraceContextBumper ctx{"CodePageConverter_"};

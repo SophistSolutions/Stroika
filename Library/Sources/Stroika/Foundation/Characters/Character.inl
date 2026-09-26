@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Characters {
         }
         else if (fCharacterCode_ >= 0x1680) [[unlikely]] {
             // rarely get chars this big, so shortcut all the detailed tests
-            if (fCharacterCode_ == 0x1680 or fCharacterCode_ == 0x180E) [[unlikely]] {
+            if (fCharacterCode_ == 0x1680) [[unlikely]] {
                 result = true;
             }
             else if (0x2000 <= fCharacterCode_ and fCharacterCode_ <= 0x2006) [[unlikely]] {
@@ -415,15 +415,6 @@ namespace Stroika::Foundation::Characters {
                 result = true;
             }
         }
-        DISABLE_COMPILER_MSC_WARNING_START (5063)
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wconstant-evaluated\"");
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wtautological-compare\"");
-        if constexpr (not std::is_constant_evaluated ()) {
-            Ensure (result == !!iswspace (static_cast<wchar_t> (fCharacterCode_)));
-        }
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wtautological-compare\"");
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wconstant-evaluated\"");
-        DISABLE_COMPILER_MSC_WARNING_END (5063)
         return result;
     }
     constexpr bool Character::IsWhitespace (Character c) noexcept

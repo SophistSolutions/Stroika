@@ -354,22 +354,51 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         * FROM https://en.cppreference.com/w/cpp/string/wide/iswspace:
-         *      In the default (C) locale, the whitespace characters are the following:
-         *          space (0x20, ' ')
-         *          form feed (0x0c, '\f')
-         *          line feed (0x0a, '\n')
-         *          carriage return (0x0d, '\r')
-         *          horizontal tab (0x09, '\t')
-         *          vertical tab (0x0b, '\v')
-         *       ...
-         *       ISO 30112 defines POSIX space characters as UNICODE characters 
-         *          U+0009..U+000D, U+0020, U+1680, U+180E, U+2000..U+2006, U+2008..U+200A, U+2028, U+2029, U+205F, and U+3000.
-         * 
+         *  \brief Is this blank, and a place text may break (between words, tokens, lines ...)? The C standard white-space
+         *         characters, plus the other POSIX space characters: U+1680, U+2000..U+2006, U+2008..U+200A, U+2028, U+2029,
+         *         U+205F and U+3000.
+         *
+         *  The guiding principle: whitespace is a character that is BLANK, and that text may BREAK at. It needs both:
+         *      o   Punctuation (such as '.') can end a word too, but it is not blank - it is part of the content, which is why
+         *          e.g. String::Trim () and String::Tokenize () keep it.
+         *      o   The no-break spaces (U+00A0, U+2007, U+202F) look exactly like a space, but exist to keep the text on either
+         *          side together (e.g. a number and its unit) - so they are not whitespace, and Tokenize () does not split there.
+         *
+         *  All of the C standard white-space characters are included - exactly the ones isspace () counts in the "C" locale:
+         *      space (0x20, ' ')
+         *      form feed (0x0c, '\f')
+         *      line feed (0x0a, '\n')
+         *      carriage return (0x0d, '\r')
+         *      horizontal tab (0x09, '\t')
+         *      vertical tab (0x0b, '\v')
+         *
+         *  The whole set - those six (U+0009..U+000D, U+0020) and the others above - is ISO 30112's list of POSIX space
+         *  characters, less U+180E, which that list still includes but Unicode 6.3 reclassified as a format character.
+         *
+         *  Gives the same answer on every platform and in every locale - unlike iswspace (), which depends on both. There is
+         *  no single standard definition of whitespace (ICU ships separate functions for several: u_isWhitespace is Java's,
+         *  u_isUWhiteSpace is Unicode's), but those in common use differ only on these characters:
+         *
+         *      Definition                            No-break spaces    U+0085    U+180E            U+001C..U+001F
+         *                                            (U+00A0, U+2007,   (NEL)     (Mongolian        (information
+         *                                            U+202F)                      vowel separator)  separators)
+         *      Character::IsWhitespace               no                 no        no                no
+         *      ISO 30112 POSIX space characters      no                 no        YES               no
+         *      glibc iswspace (UTF-8 locale)         no                 no        no                no
+         *      macOS iswspace (UTF-8 locale)         YES                no        no                no
+         *      MSVC iswspace (any locale)            YES                YES       YES               no
+         *      Unicode White_Space property          YES                YES       no                no
+         *      Java Character.isWhitespace           no                 no        no                YES
+         *      .NET Char.IsWhiteSpace                YES                YES       no                no
+         *      Python str.isspace                    YES                YES       no                YES
+         *
+         *  In the "C" locale, glibc's and macOS's iswspace count only the ASCII characters above. The iswspace rows were
+         *  measured in 2026; the others are from each one's documentation.
+         *
          *  \note before Stroika v3.0d1, this just used iswspace()
          */
         constexpr bool        IsWhitespace () const noexcept;
-        static constexpr bool IsWhitespace (Character c) noexcept;
+        static constexpr bool IsWhitespace (Character c) noexcept; ///< \brief Same as c.IsWhitespace ()
 
     public:
         nonvirtual bool IsDigit () const noexcept;
