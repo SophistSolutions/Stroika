@@ -746,11 +746,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline String String::LimitLength (size_t maxLen, StringShorteningPreference keepPref) const
     {
-#if qCompiler_vswprintf_on_elispisStr_Buggy
-        static const String kELIPSIS_{"..."_k};
-#else
         static const String kELIPSIS_{u"\u2026"sv}; // OR "..."
-#endif
         return LimitLength (maxLen, keepPref, kELIPSIS_);
     }
     template <typename T>

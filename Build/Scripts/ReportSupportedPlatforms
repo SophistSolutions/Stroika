@@ -54,7 +54,7 @@ def needs_fmtlib(compiler):
     if v is None:
         return False
     if compiler.startswith("XCode"):
-        return v < 15.5
+        return False  # every supported XCode (Apple clang 17, XCode 16.3 and later) has a usable <format>
     if "clang" in compiler:
         return v < 16.0
     if "g++" in compiler:

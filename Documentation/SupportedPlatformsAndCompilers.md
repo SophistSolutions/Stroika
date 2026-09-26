@@ -36,7 +36,8 @@ Everything must be a C++20-or-later toolchain; see [Building-Stroika.md](Buildin
 - **g++** 11, 12, 13, 14, 15, 16
 - **clang++** 15, 16, 17, 18, 19, 20, 21, 22 - against *both* libstdc++ and libc++, which behave
   differently enough to matter (see the caveats)
-- **Apple XCode** 16.4, 26.3
+- **Apple XCode** 16.4, 26.3 - both are Apple clang 17, the minimum (XCode 16.3 or later;
+  `CompilerAndStdLib_.h` and `configure` warn below it)
   <br/>XCode 15 was dropped in 3.0d23 along with MacOS 14 - lots of bugs, and 15.3 misreports its
   clang version, which breaks the `__clang_major__` gating Stroika's bug workarounds depend on.
 - **MSVC** - Visual Studio.Net 2022 (17.14) and 2026 (18.x)

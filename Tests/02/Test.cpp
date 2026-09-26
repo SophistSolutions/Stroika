@@ -1431,12 +1431,7 @@ namespace {
     GTEST_TEST (Foundation_Characters, LimitLength_)
     {
         Debug::TraceContextBumper ctx{"LimitLength_"};
-        if constexpr (qCompiler_vswprintf_on_elispisStr_Buggy) {
-            EXPECT_EQ (String{"12345"}.LimitLength (3), "...");
-        }
-        else {
-            EXPECT_EQ (String{"12345"}.LimitLength (3), L"12\u2026");
-        }
+        EXPECT_EQ (String{"12345"}.LimitLength (3), L"12\u2026");
         EXPECT_EQ (String{"12345"}.LimitLength (5), "12345");
     }
 }
@@ -1933,14 +1928,12 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"vswprintf_on_2_strings_longish_Buggy_"};
         String                    b = L"…";
-        if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
-            try {
-                String x = "{}"_f(b);
-                EXPECT_TRUE (x == b);
-            }
-            catch (...) {
-                EXPECT_TRUE (false); // means we have the bug...
-            }
+        try {
+            String x = "{}"_f(b);
+            EXPECT_TRUE (x == b);
+        }
+        catch (...) {
+            EXPECT_TRUE (false); // means we have the bug...
         }
     }
 }

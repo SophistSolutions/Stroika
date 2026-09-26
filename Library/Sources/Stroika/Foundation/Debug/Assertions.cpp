@@ -206,11 +206,7 @@ void Stroika::Foundation::Debug::SetWeakAssertionHandler (void (*legacyHandler) 
     s_InTrap = false;
 
     // Doesn't matter much what we do at this stage, but in visual studio debugger, you can skip this line
-#if qCompilerAndStdLib_quick_exit_Buggy
-    _Exit (1);
-#else
     quick_exit (1);
-#endif
 }
 
 void Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (const wchar_t* assertCategory, const wchar_t* assertionText,

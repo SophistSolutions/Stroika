@@ -361,13 +361,6 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
-#if defined(__APPLE__) && __clang_major__ == 15
-    static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
-    static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
-    static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
-    static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
-    static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
-#endif
 
 // Debugging hacks to make sure IStdFormatterPredefinedFor_ defined properly
 //
