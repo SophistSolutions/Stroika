@@ -111,11 +111,6 @@
 #elif defined(_MSC_VER)
 
 // v143 14.3 to 14.4    1930 to 1949    Visual Studio 2022 (All updates)
-#define _MSC_VER_2k22_17Pt9_ 1939
-#define _MSC_VER_2k22_17Pt10_ 1940
-#define _MSC_VER_2k22_17Pt11_ 1941
-#define _MSC_VER_2k22_17Pt12_ 1942
-#define _MSC_VER_2k22_17Pt13_ 1943
 // "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/cl.exe" -v
 //            Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35227 for x64
 #define _MSC_VER_2k22_17Pt14_ 1944
