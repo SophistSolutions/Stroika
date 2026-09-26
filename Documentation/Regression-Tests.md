@@ -72,7 +72,7 @@ Times below are approximate, from what the runs actually recorded - every run en
 
 - \$TEST_TARGET=MacOS_XCode26_m1
 
-  (takes about 2 h)
+  (takes about 2.5 h)
 
   ```bash
   MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode26_m1 PARALELLMAKEFLAG=-j5 \
@@ -82,7 +82,7 @@ Times below are approximate, from what the runs actually recorded - every run en
 
 - \$TEST_TARGET=Windows_VS2k22
 
-  (on windows bash shell run; takes about 9 h on medusa-windows-dev vm)
+  (on windows bash shell run; takes about 5 h on medusa-windows-dev vm)
 
   ```bash
   USE_TEST_BASENAME=Windows_`./Build/Scripts/DetectedHostOS`_VS2k22 PLATFORM=VisualStudio.Net-2022 \
@@ -92,7 +92,7 @@ Times below are approximate, from what the runs actually recorded - every run en
 
 - \$TEST_TARGET=Windows_VS2k26
 
-  (on windows bash shell run; takes about 10 h on medusa-windows-dev vm)
+  (on windows bash shell run; takes about 6 h on medusa-windows-dev vm)
 
   ```bash
   USE_TEST_BASENAME=Windows_`./Build/Scripts/DetectedHostOS`_VS2k26 PLATFORM=VisualStudio.Net-2026 \
@@ -116,7 +116,7 @@ Times below are approximate, from what the runs actually recorded - every run en
 
 - \$TEST_TARGET=Ubuntu2404_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 9 h)
+  (remote execute on machine medusa using docker and copy back results; takes about 10.5 h)
 
   ```bash
   RUN_IN_DOCKER=1 \
