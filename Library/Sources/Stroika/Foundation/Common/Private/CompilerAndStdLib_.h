@@ -2371,10 +2371,13 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 // fails with clang++17 using _GLIBCXX_RELEASE
 // fails with clang++18 using _GLIBCXX_RELEASE
 // fails with clang++19 using _GLIBCXX_RELEASE
-#if defined(_GLIBCXX_RELEASE)
+#if defined(__clang__) && defined(_GLIBCXX_RELEASE)
 // Appears fixed in clang++-20
 #define qCompilerAndStdLib_defaultconstructibleFails_Buggy                                                                                 \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE <= 12) or (__clang_major__ <= 19))
+#elif defined(_GLIBCXX_RELEASE)
+// g++ - so no __clang_major__, which would count as 0 and turn this on for every g++
+#define qCompilerAndStdLib_defaultconstructibleFails_Buggy (_GLIBCXX_RELEASE <= 12)
 #else
 #define qCompilerAndStdLib_defaultconstructibleFails_Buggy 0
 #endif
@@ -2615,7 +2618,7 @@ CommandLine.cpp:124:20: error: unable to find string literal operator ‘operato
  * 
  */
 #ifndef qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 #define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
 #else
 #define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy 0
@@ -2724,7 +2727,7 @@ make[2]: *** [Makefile:163: 42] Error 2
 make[2]: *** Waiting for unfinished jobs....
 */
 #ifndef qCompilerAndStdLib_tsubst_pack_expansion_Buggy
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 #define qCompilerAndStdLib_tsubst_pack_expansion_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
 #else
 #define qCompilerAndStdLib_tsubst_pack_expansion_Buggy 0
