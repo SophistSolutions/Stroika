@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/SortedMultiSet.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
@@ -877,6 +878,42 @@ namespace {
             vv = m.FromObject (Duration{numbers::pi});
             EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.1S\"");
         }
+    }
+}
+
+namespace {
+    namespace NestedOptionalMember_ {
+        // A nested struct with default member initializers, held as optional<> inside its enclosing class - like
+        // Samples/HTMLUI's Model::About::APIServerInfo::APIEndpoint. Those initializers are not usable until Outer_ is
+        // complete (CWG 2335). With clang and libstdc++, the Sequence member ahead of fNested is enough to get
+        // is_constructible<Nested_> answered - false - before then, which once made DefaultConstructForRead reject Nested_
+        struct Outer_ {
+            Sequence<int> fInts;
+            struct Nested_ {
+                unsigned int    fCount{};
+                optional<float> fAverage;
+                bool            operator== (const Nested_&) const = default;
+            };
+            optional<Nested_> fNested;
+            bool              operator== (const Outer_&) const = default;
+        };
+    }
+    GTEST_TEST (Foundation_DataExchangeFormat_ObjectVariantMapper, NestedOptionalMember)
+    {
+        Debug::TraceContextBumper ctx{"NestedOptionalMember"};
+        using NestedOptionalMember_::Outer_;
+        ObjectVariantMapper mapper;
+        mapper.AddCommonType<optional<float>> ();
+        mapper.AddClass<Outer_::Nested_> ({
+            {"Count", &Outer_::Nested_::fCount},
+            {"Average", &Outer_::Nested_::fAverage},
+        });
+        mapper.AddCommonType<optional<Outer_::Nested_>> ();
+        mapper.AddClass<Outer_> ({
+            {"Nested", &Outer_::fNested},
+        });
+        Outer_ o{.fNested = Outer_::Nested_{.fCount = 3, .fAverage = 1.5f}};
+        EXPECT_EQ (mapper.ToObject<Outer_> (mapper.FromObject (o)), o);
     }
 }
 

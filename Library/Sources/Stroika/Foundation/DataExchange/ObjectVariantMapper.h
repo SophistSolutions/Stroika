@@ -129,11 +129,10 @@ namespace Stroika::Foundation::DataExchange {
     struct DefaultConstructForRead {
         constexpr T operator() () const
         {
-#if !qCompilerAndStdLib_defaultconstructibleFails_Buggy
-            static_assert (default_initializable<T>,
-                           "to use ObjectVariantMapper::ToObject<> on this type, you must specialize DefaultConstructForRead, or "
-                           "externally construct a T object, and pass its address to a T* overload of ToObject");
-#endif
+            // default_initializable<T>, but cannot use named concept since sometimes cached in early evaluation, before T fully constructed
+            static_assert (
+                requires { T{}; }, "to use ObjectVariantMapper::ToObject<> on this type, you must specialize DefaultConstructForRead, or "
+                                   "externally construct a T object, and pass its address to a T* overload of ToObject");
             return T{};
         }
     };
