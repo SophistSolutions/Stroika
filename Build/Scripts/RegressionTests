@@ -502,9 +502,14 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		if [[  "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
 			USE_SKEL_NAME="SKEL-TEST"
 		fi
-		echo "Build/Scripts/Skel --appRoot $USE_SKEL_NAME" >>$TEST_OUT_FILE 2>&1
+		# Build Stroika from THIS tree at THIS commit, not GitHub's tip of the same branch, so the skel app tests the code the
+		# rest of this run did (its committed state - uncommitted changes are not cloned)
+		SKEL_STROIKA_COMMIT=$(git rev-parse HEAD)
+		echo "Build/Scripts/Skel --appRoot $USE_SKEL_NAME --stroikaGitRemote $StroikaRoot" >>$TEST_OUT_FILE 2>&1
 		rm -rf $USE_SKEL_NAME
-		Build/Scripts/Skel --appRoot $USE_SKEL_NAME >>$TEST_OUT_FILE 2>&1
+		Build/Scripts/Skel --appRoot $USE_SKEL_NAME --stroikaGitRemote "$StroikaRoot" >>$TEST_OUT_FILE 2>&1
+		echo "git -C $USE_SKEL_NAME/ThirdPartyComponents/Stroika/StroikaRoot checkout $SKEL_STROIKA_COMMIT" >>$TEST_OUT_FILE 2>&1
+		git -C $USE_SKEL_NAME/ThirdPartyComponents/Stroika/StroikaRoot checkout --quiet $SKEL_STROIKA_COMMIT >>$TEST_OUT_FILE 2>&1
 		echo -n "cd $USE_SKEL_NAME && make CONFIGURATION=Debug ... " 2>&1
 		echo "cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
 		(cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1

@@ -4,6 +4,7 @@
 #   Parameters:
 #       --appRoot <DIR>     # top level directory generated
 #       --stroika-source (git | download)
+#       --stroikaGitRemote <URL | DIR>
 #
 POSITIONAL_ARGS=()
 APP_ROOT=""
@@ -36,6 +37,7 @@ help_()
   echo "  [--template T ]         # defaults to Basic, but supported: [Basic, HTMLUI]"
   echo '  [--appName <NAME>]      # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}` no spaces in name, and no punct except _)'
   echo "  [--stroikaSource git]"
+  echo "  [--stroikaGitRemote <URL | DIR>] # repository the Stroika submodule is cloned from (DEFAULT: $STROIKA_SOURCE_GIT_REMOTE)"
   # todo add | download | symbolic-link, or maybe conan, but NYI --LGP 2023-10-24
 }
 parse_command_line_ () {
@@ -63,6 +65,15 @@ parse_command_line_ () {
         ;;
       --stroikaSource)
         echo "NYI - only support git for now... $1"
+        ;;
+      --stroikaGitRemote)
+        STROIKA_SOURCE_GIT_REMOTE="$2"
+        shift # past argument
+        shift # past value
+        # A directory must be absolute: git submodule add resolves a relative url against the new repo's remote
+        if [[ -d "$STROIKA_SOURCE_GIT_REMOTE" ]] ; then
+          STROIKA_SOURCE_GIT_REMOTE=$(cd "$STROIKA_SOURCE_GIT_REMOTE" && pwd)
+        fi
         ;;
       -h|--help)
         help_;
@@ -101,9 +112,15 @@ mkThirdPartyComponentsAndStroika_()
     cp $MY_PATH_/../Shared/Skel-Templates/Common/ThirdPartyComponents/Makefile $APP_ROOT/ThirdPartyComponents/
     cp $MY_PATH_/../Shared/Skel-Templates/Common/ThirdPartyComponents/Stroika/Makefile $APP_ROOT/ThirdPartyComponents/Stroika/
     if [[ "$STROIKA_SOURCE" == "git" ]] ; then
-      echo "Initializing git repository and adding Stroika submodule"
+      echo "Initializing git repository and adding Stroika submodule (from $STROIKA_SOURCE_GIT_REMOTE)"
       (cd $APP_ROOT && git init)
-      (cd $APP_ROOT/ThirdPartyComponents/Stroika; git submodule add $STROIKA_SOURCE_GIT_REMOTE StroikaRoot)
+      # Only for a local repository (--stroikaGitRemote DIR): since git 2.38.1, cloning a submodule from a local path is
+      # refused without protocol.file.allow. It has no effect on a remote url, which is left exactly as before.
+      LOCAL_REMOTE_OPTS_=
+      if [[ -d "$STROIKA_SOURCE_GIT_REMOTE" ]] ; then
+        LOCAL_REMOTE_OPTS_="-c protocol.file.allow=always"
+      fi
+      (cd $APP_ROOT/ThirdPartyComponents/Stroika; git $LOCAL_REMOTE_OPTS_ submodule add "$STROIKA_SOURCE_GIT_REMOTE" StroikaRoot)
       (cd $APP_ROOT/ThirdPartyComponents/Stroika/StroikaRoot; git checkout ${STROIKA_SOURCE_GIT_STROIKA_BRANCH})
     fi
 }
