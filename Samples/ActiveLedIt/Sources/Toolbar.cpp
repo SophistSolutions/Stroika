@@ -644,11 +644,7 @@ LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBSelChange ([[maybe_unused]] USHO
     int     r  = static_cast<int> (fComboBox.SendMessage (CB_GETCURSEL, 0, 0));
     try {
         if (r >= 0 and static_cast<size_t> (r) < fCommandListCache.size ()) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALCommand> alc = (IDispatch*)fCommandListCache[r];
-#else
-            CComQIPtr<IALCommand> alc = fCommandListCache[r];
-#endif
             CComBSTR internalName;
             ThrowIfErrorHRESULT (alc->get_InternalName (&internalName));
             CComPtr<IDispatch> al              = fOwningActiveLedIt;
@@ -796,11 +792,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
                 for (vector<CComPtr<IALCommand>>::iterator i = fCommandListCache.begin (); i != fCommandListCache.end (); ++i) {
                     {
                         CComVariant result;
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                         CComVariant alcmdCCV = (IDispatch*)*i;
-#else
-                        CComVariant alcmdCCV = *i;
-#endif
                         ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &alcmdCCV, &result));
                         ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                         if (result.boolVal) {
@@ -809,11 +801,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
                     }
                     {
                         CComVariant result;
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                         CComVariant alcmdCCV = (IDispatch*)*i;
-#else
-                        CComVariant alcmdCCV = *i;
-#endif
                         ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &alcmdCCV, &result));
                         ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                         if (result.boolVal) {
@@ -869,11 +857,7 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
         //  changed behind our backs... (need some way to keep them in sync?)
         (void)fComboBox.SendMessage (CB_RESETCONTENT, 0, 0);
         fCommandListCache.clear ();
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALCommandList> cmdList = (IDispatch*)fCommandList;
-#else
-        CComQIPtr<IALCommandList> cmdList = fCommandList;
-#endif
         if (cmdList.p != NULL) {
             long cmdCount = 0;
             ThrowIfErrorHRESULT (cmdList->get_Count (&cmdCount));
@@ -884,11 +868,7 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
                 for (long i = 0; i < cmdCount; ++i) {
                     CComPtr<IDispatch> e;
                     ThrowIfErrorHRESULT (cmdList->get_Item (i, &e));
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                     CComQIPtr<IALCommand> alc = (IDispatch*)e;
-#else
-                    CComQIPtr<IALCommand> alc = e;
-#endif
                     CComBSTR name;
                     ThrowIfErrorHRESULT (alc->get_Name (&name));
                     fCommandListCache.push_back (alc);
@@ -1128,11 +1108,7 @@ void ActiveLedIt_Toolbar::DoLayout ()
     Led_Rect itemBoundsCursor = Led_Rect (clientBounds.GetTop (), clientBounds.GetLeft () + kHTBEdge, clientBounds.GetHeight (), 0);
 
     for (vector<CComPtr<IDispatch>>::iterator i = fToolbarItems.begin (); i != fToolbarItems.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbarElement> tbi = (IDispatch*)*i;
-#else
-        CComQIPtr<IALToolbarElement> tbi = *i;
-#endif
         UINT preferredWidth = 0;
         ThrowIfErrorHRESULT (tbi->get_PreferredWidth (&preferredWidth));
         UINT preferredHeight = 0;
@@ -1166,11 +1142,7 @@ void ActiveLedIt_Toolbar::OnEnterIdle ()
 {
     try {
         for (vector<CComPtr<IDispatch>>::iterator i = fToolbarItems.begin (); i != fToolbarItems.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarElement> tbi = (IDispatch*)*i;
-#else
-            CComQIPtr<IALToolbarElement> tbi = *i;
-#endif
             ThrowIfErrorHRESULT (tbi->UpdateEnableState ());
         }
     }
@@ -1251,11 +1223,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::MergeAdd (IDispatch* newElts, UINT afterElt)
             ThrowIfErrorHRESULT (alt->get_Item (i, &e));
             fToolbarItems.insert (fToolbarItems.begin () + idx, e);
             if (fOwningActiveLedIt != NULL) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                 CComQIPtr<IALToolbarElement> tbe = (IDispatch*)e;
-#else
-                CComQIPtr<IALToolbarElement> tbe = e;
-#endif
                 tbe->NotifyOfOwningToolbar (this, fOwningActiveLedIt);
             }
             ++idx;
@@ -1274,11 +1242,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::Remove (VARIANT eltIntNameOrIndex)
             return E_INVALIDARG;
         }
         if (fOwningActiveLedIt != NULL) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarElement> tbe = (IDispatch*)fToolbarItems[idx];
-#else
-            CComQIPtr<IALToolbarElement> tbe = fToolbarItems[idx];
-#endif
             ThrowIfErrorHRESULT (tbe->NotifyOfOwningToolbar (NULL, NULL));
         }
         fToolbarItems.erase (fToolbarItems.begin () + idx, fToolbarItems.begin () + idx + 1);
@@ -1293,11 +1257,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::Clear ()
     try {
         if (fOwningActiveLedIt != NULL) {
             for (vector<CComPtr<IDispatch>>::iterator i = fToolbarItems.begin (); i != fToolbarItems.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                 CComQIPtr<IALToolbarElement> tbe = (IDispatch*)*i;
-#else
-                CComQIPtr<IALToolbarElement> tbe = *i;
-#endif
                 ThrowIfErrorHRESULT (tbe->NotifyOfOwningToolbar (NULL, NULL));
             }
         }
@@ -1326,11 +1286,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredHeight (UINT* pVal)
 
         UINT maxHeight = 0;
         for (vector<CComPtr<IDispatch>>::iterator i = fToolbarItems.begin (); i != fToolbarItems.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarElement> tbi = (IDispatch*)*i;
-#else
-            CComQIPtr<IALToolbarElement> tbi = *i;
-#endif
             UINT preferredHeight = 0;
             ThrowIfErrorHRESULT (tbi->get_PreferredHeight (&preferredHeight));
             maxHeight = max (maxHeight, preferredHeight);
@@ -1354,11 +1310,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredWidth (UINT* pVal)
         }
         UINT totalPrefWidth = 0;
         for (vector<CComPtr<IDispatch>>::iterator i = fToolbarItems.begin (); i != fToolbarItems.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarElement> tbi = (IDispatch*)*i;
-#else
-            CComQIPtr<IALToolbarElement> tbi = *i;
-#endif
             UINT preferredWidth = 0;
             ThrowIfErrorHRESULT (tbi->get_PreferredWidth (&preferredWidth));
             totalPrefWidth += preferredWidth;
@@ -1394,11 +1346,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::NotifyOfOwningActiveLedIt (IDispatch* owningAc
             }
 
             for (vector<CComPtr<IDispatch>>::iterator i = fToolbarItems.begin (); i != fToolbarItems.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                 CComQIPtr<IALToolbarElement> tbi = (IDispatch*)*i;
-#else
-                CComQIPtr<IALToolbarElement> tbi = *i;
-#endif
                 tbi->NotifyOfOwningToolbar (owningActiveLedIt == NULL ? NULL : this, owningActiveLedIt);
             }
 
@@ -1539,11 +1487,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::Remove (VARIANT eltIntNameOrIndex)
         if (idx != kBadIndex) {
             return E_INVALIDARG;
         }
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)fToolbars[idx];
-#else
-        CComQIPtr<IALToolbar> tb = fToolbars[idx];
-#endif
         ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (NULL, NULL));
         fToolbars.erase (fToolbars.begin () + idx, fToolbars.begin () + idx + 1);
         CallInvalidateLayout ();
@@ -1556,11 +1500,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::Clear ()
 {
     try {
         for (vector<CComPtr<IDispatch>>::iterator i = fToolbars.begin (); i != fToolbars.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbar> tb = (IDispatch*)*i;
-#else
-            CComQIPtr<IALToolbar> tb = *i;
-#endif
             ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (NULL, NULL));
         }
         fToolbars.clear ();
@@ -1594,11 +1534,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::NotifyOfOwningActiveLedIt (IDispatch* owni
             }
 
             for (vector<CComPtr<IDispatch>>::iterator i = fToolbars.begin (); i != fToolbars.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                 CComQIPtr<IALToolbar> tb = (IDispatch*)*i;
-#else
-                CComQIPtr<IALToolbar> tb = *i;
-#endif
                 ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (owningActiveLedIt, owningActiveLedIt == NULL ? NULL : this));
             }
             CallInvalidateLayout ();
@@ -1626,11 +1562,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_PreferredHeight (UINT* pVal)
 
         UINT totalHeight = 0;
         for (vector<CComPtr<IDispatch>>::iterator i = fToolbars.begin (); i != fToolbars.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbar> tb = (IDispatch*)*i;
-#else
-            CComQIPtr<IALToolbar> tb = *i;
-#endif
             UINT preferredHeight = 0;
             ThrowIfErrorHRESULT (tb->get_PreferredHeight (&preferredHeight));
             totalHeight += preferredHeight;
@@ -1658,11 +1590,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_PreferredWidth (UINT* pVal)
         }
         UINT maxWidth = 0;
         for (vector<CComPtr<IDispatch>>::iterator i = fToolbars.begin (); i != fToolbars.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbar> tb = (IDispatch*)*i;
-#else
-            CComQIPtr<IALToolbar> tb = *i;
-#endif
             UINT preferredWidth = 0;
             ThrowIfErrorHRESULT (tb->get_PreferredWidth (&preferredWidth));
             maxWidth = max (maxWidth, preferredWidth);
@@ -1700,11 +1628,7 @@ void ActiveLedIt_ToolbarList::DoLayout ()
 
     Led_Rect itemBoundsCursor = clientBounds;
     for (vector<CComPtr<IDispatch>>::iterator i = fToolbars.begin (); i != fToolbars.end (); ++i) {
-#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)*i;
-#else
-        CComQIPtr<IALToolbar> tb = *i;
-#endif
         if (tb.p != NULL) {
             UINT height = 0;
             ThrowIfErrorHRESULT (tb->get_PreferredHeight (&height));
