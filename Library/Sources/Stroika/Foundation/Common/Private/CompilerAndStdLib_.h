@@ -2131,29 +2131,21 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 #endif
 
 /*
-In file included from Namespace.cpp:10:
-./Namespace.h:36:14: warning: explicitly defaulted three-way comparison operator is implicitly deleted [-Wdefaulted-function-deleted]
-        auto operator<=> (const NamespaceDefinition& rhs) const = default;
-             ^
-./Namespace.h:29:17: note: defaulted 'operator<=>' is implicitly deleted because there is no viable three-way comparison function for member 'fURI'
-        wstring fURI;    // required non-null
-                ^
-*/
+ *  Not a compiler bug - a library limitation: libc++ before 17 has no operator<=> for std::basic_string or std::optional
+ *  (measured: missing in libc++ 15, present in 18; the history here says 16 lacked it too). So an 'auto operator<=> ()
+ *  const = default' on a type with such a member is implicitly deleted there, and clang (-Wdefaulted-function-deleted)
+ *  says so. Other libraries (libstdc++, MSVC, libc++ 17+) compare those members fine. Remove this once libc++ 16 and
+ *  earlier are no longer supported (as of 3.0d25: clang++-15 with libc++ 15, on Ubuntu 22.04).
+ *
+ *  A type whose operator<=> is deleted with EVERY library (e.g. Database::Document::Projection, whose Set<> members have
+ *  no ordering) should say '= delete' instead, not be covered by this.
+ */
 #ifndef qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-
-#if defined(__clang__)
-// Reproduced using clang++15, libcpp 15007, and Ubunutu 22.04
-// Reproduced using xcode 15 with _LIBCPP_VERSION == 160006 (yes they appear to have added an extra digit recently) (note some warnings only happen on XCode 15)
-// new case whith this happening with 200100  (was just checking < 170000)
-// and     {clang++-15-release-libstdc++}:
-// reproduced using clang++20 on ubuntu 25.04
-// reproduced using clang++21 on ubuntu 26.04
-// reproduced using clang++22 on ubuntu 26.04
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ < 23)
+#if defined(_LIBCPP_VERSION)
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy (_LIBCPP_VERSION < 170000)
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
 #endif
-
 #endif
 
 /*
