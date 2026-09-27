@@ -197,6 +197,8 @@ namespace Stroika::Foundation::Execution {
         };
 
     public:
+        ProcessRunner ()                     = delete;
+        ProcessRunner (const ProcessRunner&) = delete;
         /**
          * \brief Construct ProcessRunner with a CommandLine to run (doesn't actually RUN til you call Run or RunInBackground).
          * 
@@ -207,21 +209,12 @@ namespace Stroika::Foundation::Execution {
          *        Simple commands are run directly, and strings with apparent shell-isms, like pipes and quotes etc, are run through kDefaultShell.
          *        This overload is handy, but easy to explicitly control shell used with CommandLine argument instead.
          */
-        ProcessRunner ()                     = delete;
-        ProcessRunner (const ProcessRunner&) = delete;
-
-#if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
-        ProcessRunner (const filesystem::path& executable, const CommandLine& args);
-        ProcessRunner (const CommandLine& args);
-        ProcessRunner (const String& commandLine);
         ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o);
-        ProcessRunner (const CommandLine& args, const Options& o);
-        ProcessRunner (const String& commandLine, const Options& o);
-#else
-        ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o = {});
-        ProcessRunner (const CommandLine& args, const Options& o = {});
-        ProcessRunner (const String& commandLine, const Options& o = {});
-#endif
+        ProcessRunner (const CommandLine& args, const Options& o);   ///< \brief Run args, whose args[0] is the executable
+        ProcessRunner (const String& commandLine, const Options& o); ///< \brief Run directly if simple, else through kDefaultShell
+        ProcessRunner (const filesystem::path& executable, const CommandLine& args); ///< \brief Same, with Options{}
+        ProcessRunner (const CommandLine& args);                                     ///< \brief Same, with Options{}
+        ProcessRunner (const String& commandLine);                                   ///< \brief Same, with Options{}
 
     public:
         nonvirtual ProcessRunner& operator= (const ProcessRunner&) = delete;

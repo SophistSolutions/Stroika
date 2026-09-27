@@ -24,7 +24,9 @@ namespace Stroika::Foundation::Execution {
      *************************** Execution::ProcessRunner ***************************
      ********************************************************************************
      */
-#if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
+    // Separate overloads, rather than 'const Options& o = {}': g++ and clang (as of g++ 16, clang 22) will not use a nested
+    // class's default member initializers inside its enclosing class's definition. The standard has not settled that
+    // (https://cplusplus.github.io/CWG/issues/2335.html) and MSVC allows it, so this is the portable spelling, not a workaround.
     inline ProcessRunner::ProcessRunner (const filesystem::path& executable, const CommandLine& args)
         : ProcessRunner{executable, args, Options{}}
     {
@@ -37,7 +39,6 @@ namespace Stroika::Foundation::Execution {
         : ProcessRunner{commandLine, Options{}}
     {
     }
-#endif
     inline ProcessRunner::ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o)
         : fExecutable_{executable}
         , fArgs_{args}

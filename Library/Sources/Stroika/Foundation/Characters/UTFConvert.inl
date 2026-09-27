@@ -28,12 +28,13 @@ namespace Stroika::Foundation::Characters {
      *************************** Characters::UTFConvert *****************************
      ********************************************************************************
      */
-#if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
+    // A separate overload, rather than 'const Options& options = Options{}': g++ and clang (as of g++ 16, clang 22) will not use
+    // a nested class's default member initializers inside its enclosing class's definition. The standard has not settled that
+    // (https://cplusplus.github.io/CWG/issues/2335.html) and MSVC allows it, so this is the portable spelling, not a workaround.
     constexpr UTFConvert::UTFConvert ()
         : UTFConvert{Options{}}
     {
     }
-#endif
     constexpr UTFConvert::UTFConvert (const Options& options)
         : fOriginalOptions_{options}
         , fUsingOptions{options}

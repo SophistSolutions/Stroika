@@ -56,15 +56,8 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
     public:
         /**
          */
-#if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
         Writer (const Options& options);
-        Writer ()
-            : Writer (Options{})
-        {
-        }
-#else
-        Writer (const Options& options = {});
-#endif
+        Writer (); ///< \brief Same as Writer{Options{}}
 
     public:
         /**
