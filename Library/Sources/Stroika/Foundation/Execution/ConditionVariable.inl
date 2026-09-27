@@ -6,6 +6,8 @@
 
 namespace Stroika::Foundation::Execution {
 
+    // Declared here instead of including Thread.h - so these must NOT be inline: an inline function must be defined in every
+    // translation unit that uses it, and many that use these never see Thread.inl (optimized non-LTO builds then fail to link)
     namespace Thread {
         void CheckForInterruption ();
         bool IsCurrentThreadInterruptible ();

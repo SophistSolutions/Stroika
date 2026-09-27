@@ -1037,7 +1037,6 @@ string Thread::FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo
     }
 }
 
-#if qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 #if __cpp_lib_jthread >= 201911
 /*
  ********************************************************************************
@@ -1054,9 +1053,7 @@ optional<stop_token> Thread::GetCurrentThreadStopToken ()
     }
 }
 #endif
-#endif
 
-#if qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 /*
  ********************************************************************************
  ******************* Thread::IsCurrentThreadInterruptible ***********************
@@ -1066,7 +1063,6 @@ bool Thread::IsCurrentThreadInterruptible ()
 {
     return GetCurrent () != nullptr;
 }
-#endif
 
 /*
  ********************************************************************************

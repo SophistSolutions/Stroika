@@ -377,41 +377,6 @@ namespace Stroika::Foundation::Execution {
 #endif
     }
 
-#if !qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
-#if __cpp_lib_jthread >= 201911
-    /*
-     ********************************************************************************
-     ************************ Thread::GetCurrentThreadStopToken *********************
-     ********************************************************************************
-     */
-    inline optional<stop_token> Thread::GetCurrentThreadStopToken ()
-    {
-        if (Ptr curThread = GetCurrent ()) {
-            return curThread.GetStopToken ();
-        }
-        else {
-            return nullopt;
-        }
-    }
-#endif
-#endif
-
-#if !qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
-    /*
-     ********************************************************************************
-     ******************* Thread::IsCurrentThreadInterruptible ***********************
-     ********************************************************************************
-     */
-    inline bool Thread::IsCurrentThreadInterruptible ()
-    {
-#if qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
-        return Ptr::sCurrentThreadRep_BWA_ ().lock () != nullptr;
-#else
-        return Ptr::sCurrentThreadRep_.lock () != nullptr;
-#endif
-    }
-#endif
-
 }
 
 namespace Stroika::Foundation::Common {
