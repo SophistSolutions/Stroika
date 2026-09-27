@@ -2263,13 +2263,15 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 // fails with clang++17 using _GLIBCXX_RELEASE
 // fails with clang++18 using _GLIBCXX_RELEASE
 // fails with clang++19 using _GLIBCXX_RELEASE
+// fails with clang++20 using _GLIBCXX_RELEASE (14, 15 and 16) - Frameworks/UPnP/DeviceDescription.cpp, DeviceDescription::Icon
+// fixed in clang++-21 (and 22)
+// fails with g++-15 - Frameworks/UPnP/DeviceDescription.cpp, DeviceDescription::Icon; not g++-13, 14 or 16
 #if defined(__clang__) && defined(_GLIBCXX_RELEASE)
-// Appears fixed in clang++-20
 #define qCompilerAndStdLib_defaultconstructibleFails_Buggy                                                                                 \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE <= 12) or (__clang_major__ <= 19))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE <= 12) or (__clang_major__ <= 20))
 #elif defined(_GLIBCXX_RELEASE)
 // g++ - so no __clang_major__, which would count as 0 and turn this on for every g++
-#define qCompilerAndStdLib_defaultconstructibleFails_Buggy (_GLIBCXX_RELEASE <= 12)
+#define qCompilerAndStdLib_defaultconstructibleFails_Buggy ((_GLIBCXX_RELEASE <= 12) or (__GNUC__ == 15))
 #else
 #define qCompilerAndStdLib_defaultconstructibleFails_Buggy 0
 #endif
