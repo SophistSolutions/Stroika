@@ -315,6 +315,9 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"{}::Endian_"};
         using namespace Common;
+        // GetEndianness () is a constant expression, and agrees with std::endian where that can answer
+        static_assert (std::endian::native != std::endian::little or GetEndianness () == Endian::eLittle);
+        static_assert (std::endian::native != std::endian::big or GetEndianness () == Endian::eBig);
         EXPECT_EQ (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle), 0xBBAA);
         EXPECT_EQ (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle), 0xDDCCBBAA);
     }

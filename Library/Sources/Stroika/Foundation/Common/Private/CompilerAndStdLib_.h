@@ -2707,69 +2707,6 @@ clang++: error: linker command failed with exit code 1 (use -v to see invoc
 #endif
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-
-WinSock.cpp
-Fault.cpp
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\internetprotocol\IP.h(75): error C2975: '_Test': invalid template argument for 'std::conditional', expected compile-time constant expression (compiling source file ..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.cpp)
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.10.25017\include\xtr1common(69): note: see declaration of '_Test' (compiling source file ..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.cpp)
-Socket.cpp
-SocketAddress.cpp
-SocketStream.cpp
-
-
-
-
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.h(108): error C2975: '_Test': invalid template argument for 'std::conditional_t', expected compile-time constant expression
-
-
-
-
-
-./../Configuration/Endian.inl:34:37: error: constexpr function never produces a constant expression [-Winvalid-constexpr]
-            inline constexpr Endian GetEndianness ()
-                                    ^
-./../Configuration/Endian.inl:37:25: note: read of member 'cdat' of union with active member 'sdat' is not allowed in a constant expression
-
-
-
-error C2975: '_Test': invalid template argument for 'std::conditional', expected compile-time constant expression (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
-1>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.11.25503\include\xtr1common(66): note: see declaration of '_Test' (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
-
-    ************NOTE - this may NOT be a bug. I seem to recall soemthing about this being a restruction in C++17 and earlier fixed  in C++20
-    (AND I THINK GETENDIAN API IN C++20)
-
-
-./../Configuration/Endian.inl:33:29: error: constexpr function never produces a constant expression [-Winvalid-constexpr]
-    inline constexpr Endian GetEndianness ()
-                            ^
-
-
-
-                            : error C2975: '_Test': invalid template argument for 'std::conditional_t', expected compile-time constant expressio
-
-
-
-
-            **** NOTE - I THINK THIS MAYBE FIXED IN C++20 - a C++20 feature??? ?>??
-*/
-#ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-// still broken in clang++-14
-// still broken in clang++-15
-// still broken in clang++-16
-// still broken in clang++-17
-// still broken in clang++-18
-// appears fixed for clang++19
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
-#else
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
-#endif
-
-#endif
-
-/*
  * NOW ALLOWED IN C++17
 Test.cpp:173:31: error: template template argument has different template parameters than its corresponding template template parameter
                 Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};

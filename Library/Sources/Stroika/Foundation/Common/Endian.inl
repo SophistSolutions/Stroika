@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include <array>
 #include <bit>
 #include <cstdint>
 
@@ -13,42 +14,16 @@ namespace Stroika::Foundation::Common {
      ****************************** Common::GetEndianness ***************************
      ********************************************************************************
      */
-#if !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-    namespace Private_ {
-        union EndianTester_ {
-            uint32_t sdat;
-            uint8_t  cdat[4];
-        };
-        static constexpr EndianTester_ kMix_{0x01020304};
-    }
-#endif
     inline constexpr Endian GetEndianness ()
     {
-        if constexpr (endian::native == endian::little) {
-            return Endian::eLittle;
-        }
-        if constexpr (endian::native == endian::big) {
-            return Endian::eBig;
-        }
-#if !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-        return (Private_::kMix_.cdat[0] == 4) ? Endian::eLittleByte : // aka little endian
-                   (Private_::kMix_.cdat[0] == 1) ? Endian::eBigByte
-                                                  : // aka big endian
-                   (Private_::kMix_.cdat[0] == 2) ? Endian::eLittleWord
-                                                  : // aka little PDP
-                   Endian::eBigWord;
-#else
-#if (defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN) || (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) ||      \
-    defined(__BIG_ENDIAN__) || defined(__ARMEB__) || defined(__THUMBEB__) || defined(__AARCH64EB__) || defined(_MIBSEB) ||                 \
-    defined(__MIBSEB) || defined(__MIBSEB__)
-        return Endian::eBigByte;
-#endif
-#if (defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN) || (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || \
-    defined(__LITTLE_ENDIAN__) || defined(__ARMEL__) || defined(__THUMBEL__) || defined(__AARCH64EL__) || defined(_MIPSEL) ||               \
-    defined(__MIPSEL) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) || defined(_M_IA64) || defined(_M_ARM)
-        return Endian::eLittle;
-#endif
-#endif
+        // The byte order of a known value. bit_cast may look at an object's bytes in a constant expression; reading a
+        // union member other than the one last written may not (in any C++ version). std::endian alone cannot tell the
+        // two word-swapped orders apart.
+        constexpr auto kBytes_ = bit_cast<array<uint8_t, 4>> (uint32_t{0x01020304});
+        return kBytes_[0] == 4   ? Endian::eLittleByte
+               : kBytes_[0] == 1 ? Endian::eBigByte
+               : kBytes_[0] == 2 ? Endian::eLittleWord
+                                 : Endian::eBigWord;
     }
 
     /*
