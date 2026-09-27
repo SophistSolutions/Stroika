@@ -101,7 +101,8 @@ namespace Stroika::Frameworks::Test {
      *          #endif
      *      \endcode
      */
-#define SkipTestPart(reason) [&] { GTEST_SKIP () << (reason); }()
+// reason is passed in, not captured - clang++-15 cannot capture a structured binding
+#define SkipTestPart(reason) [] (const auto& reason_) { GTEST_SKIP () << reason_; }(reason)
 #endif
 
     /**
