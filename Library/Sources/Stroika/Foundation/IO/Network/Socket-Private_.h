@@ -166,7 +166,7 @@ namespace Stroika::Foundation::IO::Network {
                 Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized};
                 struct sockaddr_storage                                 radr;
                 socklen_t                                               len = sizeof (radr);
-                if (::getsockname (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
+                if (::getsockname (fSD_, reinterpret_cast<struct sockaddr*> (&radr), &len) == 0) {
                     IO::Network::SocketAddress sa{radr};
                     return sa;
                 }

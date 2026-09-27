@@ -314,7 +314,7 @@ namespace {
             AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             struct sockaddr_storage                          radr;
             socklen_t                                        len = sizeof (radr);
-            if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
+            if (::getpeername (fSD_, (struct sockaddr*)&radr, &len) == 0) {
                 IO::Network::SocketAddress sa{radr};
                 return sa;
             }
