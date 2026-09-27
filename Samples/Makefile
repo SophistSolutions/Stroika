@@ -8,9 +8,6 @@ include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 SUBPROJECTS=
 
-ifeq ($(qFeatureFlag_ATLMFC), use-system)
-SUBPROJECTS+=	ActiveLedIt
-endif
 SUBPROJECTS+=	AppSettings
 SUBPROJECTS+=	ArchiveUtility
 SUBPROJECTS+=	Containers

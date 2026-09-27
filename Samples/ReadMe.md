@@ -1,9 +1,5 @@
 # Stroika Samples {#Samples}
 
-* [ActiveLedIt](ActiveLedIt/ReadMe.md)
-  is a word-processor activeX control. This works only for Windows.
-  ActiveLedIt is based on the Stroika Led WordProcessor framework
-
 * [AppSettings](AppSettings/ReadMe.md)
   is a simple example of using ObjectVariantMapper to map objects to/from JSON, 
   combined with OptionsFile utility class to store JSON content in the file system (managing version/format upgrades etc),

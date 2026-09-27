@@ -53,7 +53,7 @@ Building with Stroika requires
 - Install the C++ related workloads
   - Desktop Development with C++ (suggested/sufficient to get started)
 - On the Individual Components page
-  - select MFC (latest or whatever platform/toolsets you are targetting) if you want to build the LedIt, LedLineIt, and ActiveLedIt samples
+  - select MFC (latest or whatever platform/toolsets you are targetting) if you want to build the LedIt and LedLineIt samples
 
 ### Visual Studio.net 2022
 
@@ -61,7 +61,7 @@ Building with Stroika requires
 - Install the C++ related workloads
   - Desktop Development with C++ (suggested/sufficient to get started)
 - On the Individual Components page
-  - select MFC (latest or whatever platform/toolsets you are targetting) if you want to build the LedIt, LedLineIt, and ActiveLedIt samples
+  - select MFC (latest or whatever platform/toolsets you are targetting) if you want to build the LedIt and LedLineIt samples
 
 ### Cygwin
 

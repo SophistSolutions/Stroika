@@ -1728,7 +1728,7 @@ namespace Stroika::Frameworks::Led::Platform {
     /*
     @METHOD:        Led_Win32_Helper<BASE_CLASS>::WindowDrawHelper
     @DESCRIPTION:   <p>Share some code among various methods which invoke message-paint-based drawing. Helpful in some
-        places like ActiveLedIt! where we don't get message WM_PAINT at all, but get from the control.</p>
+        places (like an ActiveX control) where we don't get message WM_PAINT at all, but get from the control.</p>
     */
     void Led_Win32_Helper<BASE_INTERACTOR>::WindowDrawHelper (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing)
     {
