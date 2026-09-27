@@ -2296,6 +2296,10 @@ CommandLine.cpp:124:20: error: unable to find string literal operator ‘operato
 #ifndef qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy
 #if defined(__GNUC__) && !defined(__clang__)
 #define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
+#elif qStroika_HasComponent_fmtlib
+// Not a compiler bug: formatting with fmtlib (no <format>), Common::StdCompat::formattable is only an approximation - it
+// rejects a char, and fails to compile for a std::byte - so "..."_f cannot filter its arguments on it
+#define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy 1
 #else
 #define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy 0
 #endif

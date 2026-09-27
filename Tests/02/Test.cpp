@@ -2174,6 +2174,7 @@ namespace {
         EXPECT_EQ (a1, "1");
 
         EXPECT_EQ ("a{}a"_f(3), "a3a");
+        EXPECT_EQ ("-{}"_f('x'), "-x"); // a char into the wide result - once failed to compile, formatting with fmtlib
 
         String a3 = Format ("{}"_f, 3);
         String a4 = Format ("{}"_f, a3);
