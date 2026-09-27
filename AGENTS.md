@@ -285,6 +285,29 @@ Two things that quietly break that on Windows:
 - **`git reset` throws that away.** If a staged script gets unstaged for any reason, the `--chmod`
   has to be redone - `git add` alone will not bring it back.
 
+## Downstream projects
+
+These applications are built on Stroika. Clone and search them freely - they are the best evidence
+of what a change would break downstream, so check them before deleting or renaming a public macro
+or API, and when deciding whether a commit needs an `UPGRADE NOTE:`.
+
+- https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow ("WTF")
+- https://github.com/SophistSolutions/IPAM-Root
+- https://github.com/SophistSolutions/HearHE
+- https://github.com/Records-For-Living-Inc/AskHealthFrame - **private**, so it may not be
+  accessible (it is with LGP's GitHub credentials), and part of its C++ is in a private
+  `HealthRecordModel` submodule. Never quote its code in anything public - GitHub issues, commit
+  messages.
+
+Each keeps its own Stroika in `ThirdPartyComponents/Stroika/StroikaRoot`, so exclude that when
+searching, or you are only searching Stroika again. A shallow clone of `v1-Dev` (the newest branch
+in all four) is enough: `git clone --depth 1 --branch v1-Dev <url>`. Clone fresh rather than
+reusing a checkout found on a dev box - those go stale, and one was 8 months behind when this was
+written.
+
+A search answers "does anything use X"; only building against the changed Stroika answers "does it
+still compile". Say which one you did.
+
 
 ## Architecture
 
