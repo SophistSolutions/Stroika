@@ -26,7 +26,7 @@ RUN apt-get -qq install -y g++-11 g++-12
 #install the latest (C++20 compat) clang compilers (and libs)
 #and only install libc++-14-dev since others don't appear to work on this release of ubuntu (at least not instlaling mulitple versions)
 RUN apt-get update  # unclear why update needed but container build fails without
-RUN apt-get -qq install -y clang++-15 && apt-get install -y libc++-15-dev libc++abi-15-dev
+RUN apt-get -qq install -y clang++-15 lld-15 && apt-get install -y libc++-15-dev libc++abi-15-dev
 
 #Only needed to run with valgrind regtests
 RUN apt-get update; apt-get -qq install -y valgrind

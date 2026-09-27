@@ -86,7 +86,7 @@ Which compiler is built against which standard library, and where each combinati
 | `clang++-20` | libstdc++ | 25.04 v3-Release | 26.04 |  |
 | `clang++-21` | libc++ | 26.04 v3-Release | - |  |
 | `clang++-21` | libstdc++ | - | 26.04 |  |
-| `clang++-22` | libc++ | - | 26.04 (parked) |  |
+| `clang++-22` | libc++ | - | 26.04 |  |
 | `clang++-22` | libstdc++ | 26.04 **always** | 26.04 |  |
 | `XCode 16.4` | libc++ | macos-15 **always** | - | [^j] |
 | `XCode 26.3` | libc++ | macos-26 **always** | MacOS_XCode26_m1 |  |
@@ -136,10 +136,10 @@ Beyond the per-row notes above:
 - **`std::mutex` speed varies a lot by standard library**, which is why
   `Execution::kSpinLock_IsFasterThan_mutex` keys off the std-library macros rather than the compiler.
   See the measured table in `Execution/SpinLock.h`.
-- **Ubuntu 26.04 has no Release clang configuration.** Both were tried 2026-09-09: they configure and
-  build the library fine, but every test fails to link. That is a link-line/LTO problem, so the
-  clang optimizer and LTO are untested on 26.04. See the comment in
-  `Build/Scripts/MakeRegressionTestConfigurations`.
+- **clang Release builds on Linux use LTO only if lld is installed** (`lld-NN`, matching the
+  compiler). GNU ld mis-links clang LTO, so configure then links with `-fuse-ld=lld`; without lld it
+  leaves LTO off, and the build otherwise works the same. The regression-test Docker images install
+  lld for every clang they carry.
 - **Sanitizer and valgrind coverage is narrower than the compiler coverage above** - every sanitizer
   configuration is a `g++` one, and GitHub Actions runs no sanitizer or valgrind job at all. Dynamic
   analysis happens in the per-release regression runs.

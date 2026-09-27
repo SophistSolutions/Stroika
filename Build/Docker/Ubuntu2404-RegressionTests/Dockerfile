@@ -23,13 +23,13 @@ RUN apt-get -qq install -y rpm; \
 #install the latest (C++20 compat) clang compilers (and libs)
 #and only install libc++-14-dev since others don't appear to work on this release of ubuntu (at least not instlaling mulitple versions)
 RUN apt-get update  # unclear why update needed but container build fails without
-RUN apt-get -qq install -y clang++-15; \
+RUN apt-get -qq install -y clang++-15 lld-15; \
     apt-get -qq clean -y;
-RUN apt-get -qq install -y clang++-16; \
+RUN apt-get -qq install -y clang++-16 lld-16; \
     apt-get -qq clean -y;
-RUN apt-get -qq install -y clang++-17; \
+RUN apt-get -qq install -y clang++-17 lld-17; \
     apt-get -qq clean -y;
-RUN apt-get -qq install -y clang++-18 && apt-get install -y libc++-18-dev libc++abi-18-dev; \
+RUN apt-get -qq install -y clang++-18 lld-18 && apt-get install -y libc++-18-dev libc++abi-18-dev; \
     apt-get -qq clean -y;
 
 #Only needed to run with valgrind regtests

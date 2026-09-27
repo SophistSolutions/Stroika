@@ -71,11 +71,12 @@ Generally will track stuff here between releases
      report is `.claude/BWA-AUDIT.md` on protagoras only (gitignored), summarized in the issue. Lists below are the
      Phase 1 summary's:
        - "Live Stroika bugs" and "fix regardless": all done except macOS `ifreq` (next entry).
-       - "Not compiler bugs": items 1-3 done; next is 4, `template_template_call_SequentialEquals` (drop the
-         `.template` in Tests/TestCommon/CommonTests_Iterable.h, which has no template argument list), then 5-12.
+       - "Not compiler bugs": items 1-8 done; next is 9, `template_optionalDeclareIncompleteType`, then 10-12 and the
+         4 suspects.
        - "Dead once minimums match": the MSVC-only and Apple-clang-15 ones went with the minimum raise; still there
          are the Apple-clang-16 branches of shared macros, the armhf pair, and `ASAN_With_OpenSSL3_LoadLegacyProvider`.
-       - Waiting on LGP: valgrind keep/drop, investigate clang+LTO, minimum compiler versions, naming convention.
+       - Waiting on LGP: valgrind keep/drop, minimum compiler versions, naming convention. (clang+LTO: answered -
+         GNU ld, now lld.)
        - **DEPRECATE, don't delete** these two - downstream apps (AGENTS.md "Downstream projects") use them:
          `qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy` (WTF) and
          `qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy` (HearHE). Re-grep those apps before

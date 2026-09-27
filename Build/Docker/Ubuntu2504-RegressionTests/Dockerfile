@@ -20,11 +20,11 @@ RUN apt-get -qq install -y g++-14 g++-15; \
 #and only install libc++-14-dev since others don't appear to work on this release of ubuntu (at least not instlaling mulitple versions)
 RUN apt-get update  # unclear why update needed but container build fails without
 # RUN apt-get -qq install -y clang++-17 # COULD test but tested elsewhere and run out of space on github actions
-RUN apt-get -qq install -y clang++-18; \
+RUN apt-get -qq install -y clang++-18 lld-18; \
     apt-get -qq clean -y;
-RUN apt-get -qq install -y clang++-19; \
+RUN apt-get -qq install -y clang++-19 lld-19; \
     apt-get -qq clean -y;
-RUN apt-get -qq install -y clang++-20 && apt-get install -y libc++-20-dev libc++abi-20-dev; \
+RUN apt-get -qq install -y clang++-20 lld-20 && apt-get install -y libc++-20-dev libc++abi-20-dev; \
     apt-get -qq clean -y;
 
 #Only needed to run with valgrind regtests

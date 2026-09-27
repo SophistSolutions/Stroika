@@ -198,11 +198,6 @@ else
 endif
 	@if [ ! -e "${B2FullPath}" ]; then $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${B2FullPath} not found - so bootstrap failed"; exit 1; fi
 
-ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
-CFLAGS:=$(filter-out -flto, $(CFLAGS))
-CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
-endif
-
 
 
 ### Run b2.exe --help
