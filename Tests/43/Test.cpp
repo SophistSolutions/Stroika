@@ -576,6 +576,25 @@ GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
     }
 }
 
+GTEST_TEST (Foundation_IO_Network, GetAddressFamily_)
+{
+    Debug::TraceContextBumper ctx{"GetAddressFamily_"};
+    // a socket reports the family it was created with - UDP and TCP, IPv4 and IPv6, not yet bound
+    for (auto [family, name] :
+         initializer_list<pair<SocketAddress::FamilyType, string_view>>{{SocketAddress::INET, "IPv4"sv}, {SocketAddress::INET6, "IPv6"sv}}) {
+        optional<ConnectionlessSocket::Ptr> udp;
+        try {
+            udp = ConnectionlessSocket::New (family, Socket::DGRAM);
+        }
+        catch (const system_error&) {
+            SkipTestPart (string{"no "} + string{name} + " sockets on this host");
+            continue;
+        }
+        EXPECT_EQ (udp->GetAddressFamily (), family) << name << " UDP";
+        EXPECT_EQ (ConnectionOrientedStreamSocket::New (family).GetAddressFamily (), family) << name << " TCP";
+    }
+}
+
 GTEST_TEST (Foundation_IO_Network, MulticastOptions_)
 {
     Debug::TraceContextBumper ctx{"MulticastOptions_"};

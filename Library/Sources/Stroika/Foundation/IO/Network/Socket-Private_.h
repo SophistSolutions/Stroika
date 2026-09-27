@@ -176,26 +176,20 @@ namespace Stroika::Foundation::IO::Network {
             {
                 Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized};
 #if defined(SO_DOMAIN)
-                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
-#elif defined(SO_PROTOCOL)
-                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
+                return static_cast<SocketAddress::FamilyType> (getsockopt<int> (SOL_SOCKET, SO_DOMAIN)); // an int, per socket(7)
 #elif qStroika_Foundation_Common_Platform_Windows
-                /*
-                        *  According to https://msdn.microsoft.com/en-us/library/windows/desktop/ms741621(v=vs.85).aspx,
-                        *      WSAENOPROTOOPT  The socket option is not supported on the specified protocol. For example,
-                        *                      an attempt to use the SIO_GET_BROADCAST_ADDRESS IOCTL was made on an IPv6 socket
-                        *                      or an attempt to use the TCP SIO_KEEPALIVE_VALS IOCTL was made on a datagram socket.
-                        */
-                DWORD            dwBytesRet;
-                sockaddr_storage bcast;
-                bool isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast), &dwBytesRet,
-                                       NULL, NULL) == SOCKET_ERROR);
-                if (isV6) {
-                    Assert (::WSAGetLastError () == WSAENOPROTOOPT);
-                }
-                return isV6 ? SocketAddress::FamilyType::INET6 : SocketAddress::FamilyType::INET;
+                // getsockname cannot stand in here: Windows fails it (WSAEINVAL) on a socket not yet bound
+                WSAPROTOCOL_INFOW info{};
+                socklen_t         infoLen = sizeof (info);
+                getsockopt (SOL_SOCKET, SO_PROTOCOL_INFOW, &info, &infoLen);
+                return static_cast<SocketAddress::FamilyType> (info.iAddressFamily);
 #else
-                Execution::Throw (Execution::OperationNotSupportedException ("SO_DOMAIN"sv));
+                // No SO_DOMAIN (macOS, as of macOS 26): getsockname reports the family. POSIX leaves its result unspecified for
+                // a socket not yet bound, but macOS fills in the family then too.
+                sockaddr_storage radr{};
+                socklen_t        len = sizeof (radr);
+                ThrowPOSIXErrNoIfNegative (::getsockname (fSD_, reinterpret_cast<sockaddr*> (&radr), &len));
+                return static_cast<SocketAddress::FamilyType> (radr.ss_family);
 #endif
             }
             virtual Socket::PlatformNativeHandle GetNativeSocket () const override
