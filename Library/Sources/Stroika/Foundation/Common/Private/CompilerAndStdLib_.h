@@ -357,28 +357,6 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 #endif
 
 /**
- *  PROBABLY not stricyly a bug - maybe enable and remove the source of these warnings - but way too many warnings to be useful
- *  right now....
- * 
- * 
-/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Enumeration.inl:203:26: warning: assumption is ignored because it contains (potential) side-effects [-Wassume]
- */
-#ifndef qCompilerAndStdLib_AssumeWarningSpamming_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 17))
-#elif defined(__clang__) && !defined(__APPLE__)
-// also in clang++-20
-// also in clang++-21
-#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy                                                                                     \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((19 <= __clang_major__ and __clang_major__ <= 21))
-#else
-#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy 0
-#endif
-
-#endif
-
-/**
  *  Spurious - fires on a call to a constexpr constructor that runs if (not is_constant_evaluated ()) {...}, directly or via a constexpr
  *  function it calls (e.g. Duration, Date), and only when optimizing. The warning points at the constructor call, so it must be
  *  suppressed at each call site, not in the library.

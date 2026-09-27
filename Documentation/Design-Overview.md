@@ -16,9 +16,24 @@ It is recommended programs be developed mostly with Debug builds, and transition
 
 ### Release Builds
 
-Release builds have zero overhead from assertions. There is no runtime or space cost.
+Release builds have zero overhead from assertions. The conditions are never evaluated, so checking them has no runtime cost (though they can still change the generated code - see below).
 
 This is very important to understand, because it the zero cost of assertion checking in the final delivered product helps encourage more use of assertions (by removing the excuse that the check would make the program seem slow for users). And it contributes to why Stroika is a very high performance framework.
+
+### Release Builds and [[assume]]
+
+In Release builds, `Assert`, `Require` and `Ensure` expand to `[[assume (condition)]]` wherever the compiler supports it - g++ 13 and later and clang 19 and later, even in C++20 mode - and to `__assume (condition)` on MSVC. The condition is still never evaluated, but the optimizer may treat it as a known fact.
+
+**Why.** An assertion states something the code already relies on being true. Telling the optimizer so costs nothing to write, and compilers are only beginning to make use of `[[assume]]`, so the benefit should grow over time without touching the code.
+
+**The cost.** A *wrong* assertion is undefined behavior in a Release build, not merely an unchecked condition: the optimizer may, for example, remove a later test of the same condition. In practice this adds little - code that relies on a condition misbehaves when it is false anyway - and a wrong assertion is a bug like any other, found and fixed the same way. Violating a `Require` is a bug in the caller: run Debug builds to find those. (C++26 contracts deliberately offer no "assume" semantic, for exactly this reason. Stroika's assertions are written carefully enough that it makes the other choice.)
+
+**What compilers do with it today.**
+
+- clang ignores any assumption whose condition might have side effects, such as a function call - which describes most of Stroika's - and warns (`-Wassume`) about each one. `qStroika_ATTRIBUTE_ASSUME` silences that warning for its own expansions only, so code using Stroika still gets it for its own `[[assume]]`s.
+- Measured in September 2026 on the performance regression test (Tests/52, g++-16 Release with LTO): no measurable overall change, but individual benchmarks moved by as much as 20-40% in both directions. Assumptions change code generation (inlining, layout), and not always for the better.
+
+**When chasing a Release-only failure**, one quick experiment is to rebuild with the assumptions removed (define `qStroika_ATTRIBUTE_ASSUME` empty in `Common/StdCompat.h`): if the failure goes away, look for a wrong assertion.
 
 ---
 

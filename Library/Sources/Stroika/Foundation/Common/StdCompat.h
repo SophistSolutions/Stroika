@@ -441,7 +441,15 @@ namespace Stroika::Foundation::Common::StdCompat {
      *  The assume attribute was introduced in c++23, and Stroika OPTIONALLY supports this, but doesn't require it as of Stroika v3.
      *  So use qStroika_ATTRIBUTE_ASSUME () to conditionally use [[assume(X)]]
      */
-#if __has_cpp_attribute(assume)
+#if __has_cpp_attribute(assume) && defined(__clang__)
+    // clang warns by default (-Wassume) whenever it ignores an assumption whose expression might have side effects, such as
+    // a function call. That helps someone who wrote [[assume]] by hand for its effect; for the Assert/Require/Ensure that
+    // expand to this - conditions written as documentation first - it is only noise. So silence it for these expansions
+    // only, not for other code's own [[assume]]s.
+#define qStroika_ATTRIBUTE_ASSUME(X)                                                                                                       \
+    _Pragma ("clang diagnostic push") _Pragma ("clang diagnostic ignored \"-Wassume\"") [[assume (X)]];                                    \
+    _Pragma ("clang diagnostic pop")
+#elif __has_cpp_attribute(assume)
 #define qStroika_ATTRIBUTE_ASSUME(X) [[assume (X)]];
 #elif _MSC_VER
     // Docs not clear.
@@ -450,11 +458,6 @@ namespace Stroika::Foundation::Common::StdCompat {
 #define qStroika_ATTRIBUTE_ASSUME(X) __assume (X);
 #else
 #define qStroika_ATTRIBUTE_ASSUME(X)
-#endif
-
-#if qCompilerAndStdLib_AssumeWarningSpamming_Buggy
-    // INTENTIONALLY UNBALANCED WITH _END - cuz this is used all over the place!!!
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wassume\"");
 #endif
 
     /**

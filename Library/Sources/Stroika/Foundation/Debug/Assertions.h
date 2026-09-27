@@ -248,8 +248,10 @@ namespace Stroika::Foundation::Debug {
      *              GetAssertionHandler () (...)
      *          }
      *
-     *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qStroika_Foundation_Debug_AssertionsChecked false. This means that - though the arguments will not be evaluated in a release
-     *        build, they must be syntactic (new requirement in Stroika v3.0).
+     *  \note When qStroika_Foundation_Debug_AssertionsChecked is false, this expands to qStroika_ATTRIBUTE_ASSUME - [[assume(X)]]
+     *        wherever the compiler supports it (g++ 13+, clang 19+, even in C++20 mode), or __assume on MSVC. So though the arguments
+     *        are not evaluated in a release build, they must be syntactic (new requirement in Stroika v3.0), and a false one is
+     *        undefined behavior - @see Documentation/Design-Overview.md "Release Builds and [[assume]]".
      * 
      *  @see GetAssertionHandler
      */
