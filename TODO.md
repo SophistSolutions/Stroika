@@ -56,6 +56,20 @@ Generally will track stuff here between releases
          ones upstream and diagnose somewhat different things, so this is a real second axis of the same
          single-platform problem, not a duplicate of it.
 
+   - **#1177 bug-workaround audit - handoff** (2026-09-27). Progress is in the issue comments; the full Phase 1
+     report is `.claude/BWA-AUDIT.md` on protagoras only (gitignored), summarized in the issue. Lists below are the
+     Phase 1 summary's:
+       - "Live Stroika bugs" and "fix regardless": all done except macOS `ifreq` (next entry).
+       - "Not compiler bugs": items 1-3 done; next is 4, `template_template_call_SequentialEquals` (drop the
+         `.template` in Tests/TestCommon/CommonTests_Iterable.h, which has no template argument list), then 5-12.
+       - "Dead once minimums match": the MSVC-only and Apple-clang-15 ones went with the minimum raise; still there
+         are the Apple-clang-16 branches of shared macros, the armhf pair, and `ASAN_With_OpenSSL3_LoadLegacyProvider`.
+       - Waiting on LGP: valgrind keep/drop, investigate clang+LTO, minimum compiler versions, naming convention.
+       - **DEPRECATE, don't delete** these two - downstream apps (AGENTS.md "Downstream projects") use them:
+         `qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy` (WTF) and
+         `qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy` (HearHE). Re-grep those apps before
+         removing any other public macro.
+
    - **`GetInterfaces_POSIX_` (IO/Network/Interface.cpp) - SIOCGIFCONF is the wrong API; decide the fix**
      (#1177 bucket 1, the last live bug; parked 2026-09-26, no code changed). `qMacUBSanitizerifreqAlignmentIssue_Buggy`
      only silences UBSan on the misaligned `const ifreq*` walk - macOS packs the records (`IFNAMSIZ + sa_len`), so
