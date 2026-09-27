@@ -1924,65 +1924,6 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 
 /*
-35>C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(61): error C2187: syntax error: 'template' was unexpected here
-
-
-5>C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(60): error C2059: syntax error: 'template'
-25>C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(76): note: see reference to function template instantiation 'void CommonTests::IterableTests::Test5_SequenceEquals_<USING_ITERABLE_CONTAINER,EQUALS_COMPARER>(const Stroika::Foundation::Traversal::Iterable<T> &,EQUALS_COMPARER)' being compiled
-25>        with
-25>        [
-
-\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\Test20.lib and object C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\Test20.exp
-C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(62): error C2187: syntax error: 'template' was unexpected here
-C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(62): note: the template instantiation context (the oldest one first) is
-C:\Sandbox\Stroika\DevRoot\Tests\22\Test.cpp(104): note: see reference to function template instantiation 'void `anonymous-namespace'::DoTestForConcreteContainer_<Stroika::Foundation::Containers::Set<Stroika::Frameworks::Test::ArchtypeClasses::OnlyCopyableMoveable>,`anonymous-namespace'::Foundation_Containers_Set_DEFAULT_SET_FACTORY_Test::TestBody::<lambda_1>>(CONCRETE_CONTAINER_FACTORY)' being compiled
-
-
-./../TestCommon/CommonTests_Iterable.h:62:49: error: a template argument list is expected after a name prefixed by the template
-      keyword [-Wmissing-template-arg-list-after-template-kw]
-   62 |             EXPECT_TRUE ((iterableCopy.template SequentialEquals (container, forward<EQUALS_COMPARER> (equalsCom...
-      |                                                 ^
-1 warning generated.
-   Linking Test Builds/clang++-22-debug/Tests/Test01 (Foundation::Caching) ... 
-In file included from Test.cpp:17:
-In file included from ./../TestCommon/CommonTests_Collection.h:14:
-./../TestCommon/CommonTests_Iterable.h:62:49: error: a template argument list is expected after a name prefixed by the template
-      keyword [-Wmissing-template-arg-list-after-template-kw]
-   62 |             EXPECT_TRUE ((iterableCopy.template SequentialEquals (container, forward<EQUALS_COMPARER> (equalsCom...
-      |                                                 ^
-25*/
-#ifndef qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy
-
-#if defined(_MSC_VER)
-// still broken in _MSC_VER_2k22_17Pt9_
-// still broken in _MSC_VER_2k22_17Pt10_
-// still broken in _MSC_VER_2k22_17Pt11_
-// still broken in _MSC_VER_2k22_17Pt12_
-// still broken in _MSC_VER_2k22_17Pt13_
-// still broken in _MSC_VER_2k22_17Pt14_
-// still broken in _MSC_VER_v145_1951_
-#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
-#elif defined(__clang__)
-#if defined(__APPLE__)
-// broken in clang++17 for Apple
-#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 17))
-#else
-// first broken in clang++ 19 (linux)
-// Still broken in clang++-20
-// Still broken in clang++-21
-// Still broken in clang++-22
-#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((19 <= __clang_major__ and __clang_major__ <= 22))
-#endif
-#else
-#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy 0
-#endif
-
-#endif
-
-/*
  *      ACCORDING To https://en.cppreference.com/w/cpp/locale/time_get/get
  * 
  *              m   parses the month as a decimal number (range [01,12]), leading zeroes permitted but not required
