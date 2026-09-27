@@ -1045,7 +1045,7 @@ string Thread::FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo
  */
 optional<stop_token> Thread::GetCurrentThreadStopToken ()
 {
-    if (Ptr curThread = GetCurrent ()) {
+    if (Ptr curThread = GetCurrent ()) [[likely]] {
         return curThread.GetStopToken ();
     }
     else {
