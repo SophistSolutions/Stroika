@@ -119,7 +119,7 @@ namespace {
             switch (format) {
                 case ToStringFormat::eAsBytes: {
                     for (size_t i = 0; i < fBufferFilledUpValidBytes_; ++i) {
-                        sb << "x{:x}, "_f(fAllDataReadBuf_[i]);
+                        sb << "x{:x}, "_f(to_integer<unsigned int> (fAllDataReadBuf_[i]));
                     }
                 } break;
                 case ToStringFormat::eAsString: {

@@ -14,6 +14,8 @@
 #include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Cookie.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
@@ -159,6 +161,20 @@ namespace {
                 EXPECT_TRUE (h2.ifNoneMatch ().value ().fETags.Contains (etag));
             }
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_IO_Network_HTTP, MessageStartTextInputStreamBinaryAdapter_ToString)
+    {
+        Debug::TraceContextBumper ctx{"MessageStartTextInputStreamBinaryAdapter_ToString"};
+        const std::byte           kMessageStart_[] = {std::byte{'G'},  std::byte{'E'},  std::byte{'T'},  std::byte{0xab},
+                                                      std::byte{'\r'}, std::byte{'\n'}, std::byte{'\r'}, std::byte{'\n'}};
+        MessageStartTextInputStreamBinaryAdapter::Ptr adapter =
+            MessageStartTextInputStreamBinaryAdapter::New (Streams::MemoryStream::New<std::byte> (span{kMessageStart_}));
+        EXPECT_TRUE (adapter.AssureHeaderSectionAvailable ());
+        String asBytes = adapter.ToString (MessageStartTextInputStreamBinaryAdapter::eAsBytes); // hex - it threw format_error
+        EXPECT_TRUE (asBytes.Contains ("x47, x45, x54, xab, "sv)) << asBytes.AsNarrowSDKString ();
     }
 }
 
