@@ -8,6 +8,44 @@ Generally will track stuff here between releases
 
 ## Open
 
+  - https://github.com/SophistSolutions/Stroika/issues/1075
+    Issue generates: on WTF:....
+        (use "git push" to publish your local commits)
+
+      Changes not staged for commit:
+        (use "git add <file>..." to update what will be committed)
+        (use "git restore <file>..." to discard changes in working directory)
+              typechange: Workspaces/VisualStudio.net/Microsoft.Cpp.stroika.ConfigurationBased.props
+              typechange: Workspaces/VisualStudio.net/Microsoft.Cpp.stroika.user.props
+
+      Untracked files:
+        (use "git add <file>..." to include in what will be committed)
+              nw1.json
+              nwinterface1.json
+              test1.json
+              test2.json
+
+      no changes added to commit (use "git add" and/or "git commit -a")
+
+      lewis@Protagoras MSYS ~/Sandbox/WTF/DevRoot
+      $ git diff Workspaces/VisualStudio.net/
+      warning: in the working copy of 'Workspaces/VisualStudio.net/Microsoft.Cpp.stroika.ConfigurationBased.props', LF will be replaced by CRLF the next time Git touches it
+      diff --git a/Workspaces/VisualStudio.net/Microsoft.Cpp.stroika.ConfigurationBased.props b/Workspaces/VisualStudio.net/Microsoft.Cpp.stroika.ConfigurationBased.props
+      deleted file mode 120000
+      index e9e2f47d..00000000
+      --- a/Workspaces/VisualStudio.net/Microsoft.Cpp.stroika.ConfigurationBased.props
+      +++ /dev/null
+      @@ -1 +0,0 @@
+      -../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props
+      \ No newline at end of file
+      diff --git a/Workspaces/VisualStudio.net/Microsoft.Cpp.stroika.ConfigurationBased.props b/Workspaces/VisualStudio.net/Microsoft.Cpp.stroika.ConfigurationBased.props
+      new file mode 100644
+      index 00000000..7278e2a0
+      --- /dev/null
+      +++ b/Workspaces/VisualStudio.net/Microsoft.Cpp.stroika.ConfigurationBased.props
+      @@ -0,0 +1,60 @@
+
+
   - KEEP GOING with 1177
   - Update the build time estimates - everything has
     been rebuilt since last round of estimates and its genreally improved.
