@@ -212,15 +212,15 @@ namespace Stroika::Foundation::Characters {
             : inherited{o}
         {
         }
-        /*
-         *  What is in the other byte order is each SERIALIZED_CHAR_T code unit - not each resulting CHAR_T, which can be a
-         *  different size (e.g. UTF-16 bytes into char32_t) - so swap the bytes, and leave decoding/encoding to inherited.
-         */
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
             RequireNotNull (from);
             Require (to.size () >= this->ComputeTargetCharacterBufferSize (*from));
             Memory::StackBuffer<byte> nativeOrderBytes{*from};
+            /*
+             * What is in the other byte order is each SERIALIZED_CHAR_T code unit - so swap the bytes, 
+             * and leave decoding to inherited.
+             */
             SwapEachCodeUnit_ (span<byte>{nativeOrderBytes.data (), nativeOrderBytes.size ()});
             span<const byte> remaining{nativeOrderBytes.data (), nativeOrderBytes.size ()};
             span<CHAR_T>     r = inherited::Bytes2Characters (&remaining, to);
