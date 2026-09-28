@@ -430,7 +430,7 @@ namespace Stroika::Foundation::Cache {
     namespace Factory::LRUCache {
         template <typename KEY, typename VALUE, InternallySynchronized internallySynchronized, typename STATS_TYPE>
         template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER>
-#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
         inline auto Maker<KEY, VALUE, internallySynchronized, STATS_TYPE>::operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer)
 #else
         inline auto Maker<KEY, VALUE, internallySynchronized, STATS_TYPE>::operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer) const
@@ -447,7 +447,7 @@ namespace Stroika::Foundation::Cache {
         }
         template <typename KEY, typename VALUE, InternallySynchronized internallySynchronized, typename STATS_TYPE>
         template <typename KEY_HASH_FUNCTION>
-#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
         inline auto Maker<KEY, VALUE, internallySynchronized, STATS_TYPE>::operator() (size_t maxCacheSize, size_t hashTableSize,
                                                                                        KEY_HASH_FUNCTION&& hashFunction)
 #else
@@ -467,7 +467,7 @@ namespace Stroika::Foundation::Cache {
         }
         template <typename KEY, typename VALUE, InternallySynchronized internallySynchronized, typename STATS_TYPE>
         template <typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION>
-#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
         inline auto Maker<KEY, VALUE, internallySynchronized, STATS_TYPE>::operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer,
                                                                                        size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction)
 #else

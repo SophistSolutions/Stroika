@@ -43,6 +43,24 @@
  */
 #define kStrokia_Foundation_Common_cplusplus_23 202302L
 
+/**
+ *  \brief The C++ version being compiled: __cplusplus, except on MSVC, which leaves __cplusplus at 199711L unless given
+ *         /Zc:__cplusplus (by design, for compatibility), and puts the real value in _MSVC_LANG.
+ *
+ *  Use this, not __cplusplus, in any #if that MSVC may evaluate. To test for a library feature, prefer its __cpp_lib_ macro.
+ *
+ *  \note MSVC reports /std:c++latest as 202400L (as of 19.44 and 19.51), so compare with >= or <, not ==.
+ */
+#if defined(_MSVC_LANG)
+#define qStroika_Foundation_Common_cplusplus _MSVC_LANG
+#else
+#define qStroika_Foundation_Common_cplusplus __cplusplus
+#endif
+
+#if qStroika_Foundation_Common_cplusplus < kStrokia_Foundation_Common_cplusplus_20
+#pragma message("Stroika v3 requires at least C++ ISO/IEC 14882:2020(E) supported by the compiler (informally known as C++ 20)")
+#endif
+
 /*
  *******************************************************************
  *******************************************************************
@@ -1880,37 +1898,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #endif
 
 /*
- * Crazy man!  - https://connect.microsoft.com/VisualStudio/feedback/details/763051/a-value-of-predefined-macro-cplusplus-is-still-199711l
- *
- *       Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)
- *
- *      \note - they DO define _MSVC_LANG  to be the same value as cplusplus should be defined to! 
- *
- *      IF FAILS:       
- *              Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)
- * 
- * 
- * MESSAGE:  Stroika v3 requires at least C++ ISO/IEC 14882:2020(E) supported by the compiler (informally known as C++ 20)
- */
-#ifndef qCompilerAndStdLib_cplusplus_macro_value_Buggy
-
-#if defined(_MSC_VER)
-
-// verified still broken in _MSC_VER_2k22_17Pt9_
-// verified still broken in _MSC_VER_2k22_17Pt10_
-// verified still broken in _MSC_VER_2k22_17Pt11_
-// verified still broken in _MSC_VER_2k22_17Pt12_
-// verified still broken in _MSC_VER_2k22_17Pt13_
-// verified still broken in _MSC_VER_2k22_17Pt14_
-// verified still broken in _MSC_VER_v145_1951_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
-#else
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
-#endif
-
-#endif
-
-/*
  *  Not a compiler bug - a library limitation: libc++ before 17 has no operator<=> for std::basic_string or std::optional
  *  (measured: missing in libc++ 15, present in 18; the history here says 16 lacked it too). So an 'auto operator<=> ()
  *  const = default' on a type with such a member is implicitly deleted there, and clang (-Wdefaulted-function-deleted)
@@ -2969,17 +2956,6 @@ TRIED alignas to fix on the array but no luck
  *******************************************************************
  *******************************************************************
  */
-
-// When MSFT fixes qCompilerAndStdLib_cplusplus_macro_value_Buggy move back to the top of the file
-#if qCompilerAndStdLib_cplusplus_macro_value_Buggy
-#if _MSVC_LANG < kStrokia_Foundation_Common_cplusplus_20
-#pragma message("Stroika v3 requires at least C++ ISO/IEC 14882:2020(E) supported by the compiler (informally known as C++ 20)")
-#endif
-#else
-#if __cplusplus < kStrokia_Foundation_Common_cplusplus_20
-#pragma message("Stroika v3 requires at least C++ ISO/IEC 14882:2020(E) supported by the compiler (informally known as C++ 20)")
-#endif
-#endif
 
 #if qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
 // Note - I tried tricks with token pasting, but only seems to work if I do all token pasting
