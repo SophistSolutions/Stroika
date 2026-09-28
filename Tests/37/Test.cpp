@@ -435,6 +435,22 @@ namespace {
         Debug::BackTrace::Options::sDefault_IncludeSourceLines = prevValue;
         Private::ThrowCatchStringException_ ();
     }
+    GTEST_TEST (Foundation_Execution_Exceptions, BackTrace_MaxFrames_)
+    {
+        Debug::TraceContextBumper ctx{"BackTrace_MaxFrames_"};
+        // One frame per line, per BackTrace.h; a "..." line (where skipped frames were) is not a frame
+        auto frames = [] (const wstring& bt) {
+            return Characters::String{bt}.AsLines ().Where ([] (const Characters::String& l) { return l != "..."sv; }).size ();
+        };
+        size_t all = frames (Debug::BackTrace::Capture ());
+        if (all == 0) {
+            GTEST_SKIP () << "BackTrace::Capture () returns nothing in this build";
+        }
+        EXPECT_GE (all, 3u); // at least this function, gtest's caller and main
+        for (unsigned int maxFrames : {1u, 2u}) {
+            EXPECT_EQ (frames (Debug::BackTrace::Capture ({.fMaxFrames = maxFrames})), maxFrames);
+        }
+    }
 }
 
 namespace {

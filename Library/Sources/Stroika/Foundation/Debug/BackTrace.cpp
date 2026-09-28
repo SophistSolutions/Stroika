@@ -54,9 +54,10 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     [[maybe_unused]] unsigned usingMaxFrames = options.fMaxFrames.value_or (BackTrace::Options::sDefault_MaxFrames);
 
 #if __cpp_lib_stacktrace >= 202011 && !qCompilerAndStdLib_stacktraceLinkError_Buggy && !qCompilerAndStdLib_StdBacktraceCompile_Buggy
-    auto         st = std::stacktrace::current ();
+    // current () requires skip + max_depth to fit its size_type - just 16 bits in libstdc++, and 32 for MSVC x86 - and the
+    // default usingMaxFrames is UINT_MAX
+    auto st = std::stacktrace::current (useSkipFrames, min<size_t> (usingMaxFrames, numeric_limits<std::stacktrace::size_type>::max () - useSkipFrames));
     stringstream o;
-    bool         firstEntry = true;
     for (const stacktrace_entry& entry : st) {
         string eText       = entry.description ();
         bool   useFileName = eText.empty ();
@@ -67,13 +68,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         else if (useFileName or options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines)) {
             eText += "#" + to_string (entry.source_line ());
         }
-        if (firstEntry) {
-            firstEntry = false;
-        }
-        else {
-            o << "; ";
-        }
-        o << eText;
+        o << eText << ";" << Characters::kEOL<char>;
     }
     return Characters::NarrowSDK2Wide (o.str (), eIgnoreErrors);
 #elif qStroika_HasComponent_boost
@@ -101,6 +96,9 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         if (i < useSkipFrames) {
             continue;
         }
+        if (i - useSkipFrames >= usingMaxFrames) {
+            break;
+        }
         result.width (2);
         result << i;
         result.width (w);
@@ -112,9 +110,6 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
             result << String::FromNarrowSDKString (bt[i].name ()).As<wstring> ();
         }
         result << L";" << Characters::kEOL<wchar_t>;
-        if (i - useSkipFrames >= usingMaxFrames) {
-            break;
-        }
     }
     return result.str ();
 #elif qStroika_Foundation_Common_Platform_Linux
@@ -149,6 +144,9 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         if (j < useSkipFrames) {
             continue;
         }
+        if (j - useSkipFrames >= usingMaxFrames) {
+            break;
+        }
         wstring symStr = narrow2Wide (syms[j]);
 #if defined(__GNUC__) && defined(__GLIBCXX__)
         //
@@ -178,9 +176,6 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         }
 #endif
         out += symStr + L";" + Characters::kEOL<wchar_t>;
-        if (j - useSkipFrames >= usingMaxFrames) {
-            break;
-        }
     }
     return out;
 #elif qStroika_Foundation_Common_Platform_Windows
