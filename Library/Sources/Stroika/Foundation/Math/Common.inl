@@ -304,7 +304,12 @@ namespace Stroika::Foundation::Math {
     template <Common::IBuiltinArithmetic T, typename RESULT_TYPE>
     constexpr RESULT_TYPE Abs (T v)
     {
-        return v < 0 ? -v : v;
+        if constexpr (is_unsigned_v<T>) {
+            return v; // and no unary minus on an unsigned type, which MSVC warns about (C4146) even where never evaluated
+        }
+        else {
+            return v < 0 ? -v : v;
+        }
     }
 
     /*
