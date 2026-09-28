@@ -53,6 +53,17 @@ namespace {
             EXPECT_TRUE (isinf (Round (Math::infinity (), 9)));
         }
     }
+    GTEST_TEST (Foundation_Math, Abs_)
+    {
+        // Abs is constexpr, so these must be constant expressions, whatever the C++ version
+        static_assert (Abs (-3) == 3);
+        static_assert (Abs (-3L) == 3L);
+        static_assert (Abs (-3LL) == 3LL);
+        static_assert (Abs (-2.5) == 2.5);
+        static_assert (Abs (4u) == 4u);
+        EXPECT_EQ (Abs (-7), 7);
+        EXPECT_EQ (Abs (7), 7);
+    }
 }
 
 namespace {

@@ -304,17 +304,6 @@ namespace Stroika::Foundation::Math {
     template <Common::IBuiltinArithmetic T, typename RESULT_TYPE>
     constexpr RESULT_TYPE Abs (T v)
     {
-#if __cplusplus >= qStroika_Foundation_Common_cplusplus_23
-        if constexpr (Common::IAnyOf<T, int, intmax_t>) {
-            return std::abs (v);
-        }
-        else if constexpr (Common::IAnyOf<T, long>) {
-            return std::labs (v);
-        }
-        else if constexpr (Common::IAnyOf<T, long long>) {
-            return std::llabs (v);
-        }
-#endif
         return v < 0 ? -v : v;
     }
 

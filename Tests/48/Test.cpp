@@ -122,6 +122,22 @@ namespace {
             EXPECT_TRUE (optional<int>{-9999} > optional<int>{});
         }
     }
+    GTEST_TEST (Foundation_Memory_, Optional_Monadic_)
+    {
+        // std::optional's own and_then/or_else/transform where the library has them, else Stroika's - same results either way
+        const optional<int> kSome{3};
+        const optional<int> kNone;
+        auto                next = [] (int i) { return optional<int>{i + 1}; };
+        EXPECT_EQ (And_Then (kSome, next), 4);
+        EXPECT_EQ (And_Then (kNone, next), nullopt);
+        auto seven = [] () { return optional<int>{7}; };
+        EXPECT_EQ (Or_Else (kSome, seven), 3);
+        EXPECT_EQ (Or_Else (kNone, seven), 7);
+        auto twice = [] (int i) { return 2.5 * i; };
+        EXPECT_EQ (Transform (kSome, twice), 7.5);
+        EXPECT_EQ (Transform (kNone, twice), nullopt);
+        static_assert (same_as<decltype (Transform (kSome, twice)), optional<double>>);
+    }
 }
 
 namespace {

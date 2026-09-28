@@ -202,7 +202,8 @@ namespace Stroika::Foundation::Math {
      *      \note   we define this as an alternative to std::abs () - since that is not extendible to other types (just an overload for floating point and int types)
      *
      *  \note   when we port stroika bignum package - this should support those bignums.
-     *  \note std::abs() not constexpr until C++ 23 (which is why this isn't)
+     *  \note Does not call std::abs/labs/llabs: though C++23 made them constexpr, clang and MSVC cannot evaluate them in a
+     *        constant expression (as of clang 22, MSVC 19.51 - and no library defines __cpp_lib_constexpr_cmath)
      */
     template <Common::IBuiltinArithmetic T, typename RESULT_TYPE = T>
     constexpr RESULT_TYPE Abs (T v);
