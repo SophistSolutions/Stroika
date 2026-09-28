@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Debug {
     constexpr bool kBuiltWithAddressSanitizer = false;
 #endif
 
-    /*
+    /**
      *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
      *
      *  \note Defined whether or not built with the address sanitizer (a compiler ignores it when not) - @see the file comment
