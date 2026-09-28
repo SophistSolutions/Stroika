@@ -42,3 +42,7 @@ Each stage of upgrade should come with fairly clear instructions (deprecation wa
   new_way();
 #endif
 ~~~
+
+Since v3.0d25 these are also spelled `qStroika_Version_...`, and the `kStroika_Version_...` names are deprecated. But keep the
+`k` names in a test like this one, which must also work with older Stroika: an `#if` reads a name that is not defined as 0, so
+with the `q` names it would silently choose `old_way ()` on every version before v3.0d25.

@@ -364,7 +364,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
 
         /**
          */
-        String fUserAgent{"Stroika/3.0"sv}; // @todo use kStroika_Version_MajorMinorVersionString
+        String fUserAgent{"Stroika/3.0"sv}; // @todo use qStroika_Version_MajorMinorVersionString
 
         /**
          */

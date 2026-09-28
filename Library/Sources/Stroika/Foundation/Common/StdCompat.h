@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Common::StdCompat {
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_args;
     using qStroika_Foundation_Characters_FMT_PREFIX_::wformat_string;
 
-#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
+#if qStroika_Foundation_Common_cplusplus >= qStroika_Foundation_Common_cplusplus_23
     template <class T, class CharT>
     concept formattable = std::formattable<T, CharT>;
 #else
@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Common::StdCompat {
      *  std::isinf, but constexpr where the standard library allows it (C++23)
      */
     template <typename T>
-#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
+#if qStroika_Foundation_Common_cplusplus >= qStroika_Foundation_Common_cplusplus_23
     constexpr
 #else
     inline
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Common::StdCompat {
      *  std::isnan, but constexpr where the standard library allows it (C++23)
      */
     template <typename T>
-#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
+#if qStroika_Foundation_Common_cplusplus >= qStroika_Foundation_Common_cplusplus_23
     constexpr
 #else
     inline

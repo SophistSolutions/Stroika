@@ -58,14 +58,18 @@ fi
 
 if [ "$OUT_FILE_TYPE" == "StroikaLibVersion" ]
   then
-	echo "#define kStroika_Version_Major                  $MAJOR" >> $VERSION_OUT_FILE
-	echo "#define kStroika_Version_Minor                  $MINOR" >> $VERSION_OUT_FILE
-	echo "#define kStroika_Version_MajorMinor             0x$MAJOR$MINOR" >> $VERSION_OUT_FILE
-	echo "#define kStroika_Version_Stage                  kStroika_Version_Stage_$VERSIONSTAGE" >> $VERSION_OUT_FILE
-	echo "#define kStroika_Version_SubStage               $VERSIONSUBSTAGEINT" >> $VERSION_OUT_FILE
-	echo "#define kStroika_Version_FinalBuild             $VERSIONFINALBUILD" >> $VERSION_OUT_FILE
+	echo "#define qStroika_Version_Major                  $MAJOR" >> $VERSION_OUT_FILE
+	echo "#define qStroika_Version_Minor                  $MINOR" >> $VERSION_OUT_FILE
+	echo "#define qStroika_Version_MajorMinor             0x$MAJOR$MINOR" >> $VERSION_OUT_FILE
+	echo "#define qStroika_Version_Stage                  qStroika_Version_Stage_$VERSIONSTAGE" >> $VERSION_OUT_FILE
+	echo "#define qStroika_Version_SubStage               $VERSIONSUBSTAGEINT" >> $VERSION_OUT_FILE
+	echo "#define qStroika_Version_FinalBuild             $VERSIONFINALBUILD" >> $VERSION_OUT_FILE
 		
-	echo "#define kStroika_Version_MajorMinorVersionString        \"$MAJOR.$MINOR\"" >> $VERSION_OUT_FILE
-	echo "#define kStroika_Version_ShortVersionString             \"$FULLVERSIONSTRING\"" >> $VERSION_OUT_FILE
-	echo "#define kStroika_Version_FullVersion                    Stroika_Make_FULL_VERSION (kStroika_Version_Major, kStroika_Version_Minor, kStroika_Version_Stage, kStroika_Version_SubStage, kStroika_Version_FinalBuild)" >> $VERSION_OUT_FILE
+	echo "#define qStroika_Version_MajorMinorVersionString        \"$MAJOR.$MINOR\"" >> $VERSION_OUT_FILE
+	echo "#define qStroika_Version_ShortVersionString             \"$FULLVERSIONSTRING\"" >> $VERSION_OUT_FILE
+	echo "#define qStroika_Version_FullVersion                    Stroika_Make_FULL_VERSION (qStroika_Version_Major, qStroika_Version_Minor, qStroika_Version_Stage, qStroika_Version_SubStage, qStroika_Version_FinalBuild)" >> $VERSION_OUT_FILE
+	echo "/* DEPRECATED since Stroika v3.0d25 - use the qStroika_Version_ names above ('q' names a macro - see Design-Overview.md) */" >> $VERSION_OUT_FILE
+	for n in Major Minor MajorMinor Stage SubStage FinalBuild MajorMinorVersionString ShortVersionString FullVersion; do
+		echo "#define kStroika_Version_$n qStroika_Version_$n" >> $VERSION_OUT_FILE
+	done
 fi

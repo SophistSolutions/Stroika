@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Memory {
          */
         template <typename T, typename SHARED_IMPL = shared_ptr<T>>
         struct DefaultValueCopier_FunctionObject {
-#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
+#if qStroika_Foundation_Common_cplusplus >= qStroika_Foundation_Common_cplusplus_23
             static SHARED_IMPL operator() (const T& t);
 #else
             SHARED_IMPL operator() (const T& t) const;

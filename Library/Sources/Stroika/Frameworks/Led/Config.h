@@ -39,24 +39,24 @@
 #define qLed_Version_Major 4
 #define qLed_Version_Minor 0
 #define qLed_Version_MajorMinor 0x40
-#define qLed_Version_Stage kStroika_Version_Stage
-#define qLed_Version_SubStage kStroika_Version_SubStage
-#define qLed_Version_FinalBuild kStroika_Version_FinalBuild
+#define qLed_Version_Stage qStroika_Version_Stage
+#define qLed_Version_SubStage qStroika_Version_SubStage
+#define qLed_Version_FinalBuild qStroika_Version_FinalBuild
 
 // MAJOR VERSION OF LED is 2 + VERSION OF STROIKA
-#if kStroika_Version_Major == 3 && kStroika_Version_Minor == 0
+#if qStroika_Version_Major == 3 && qStroika_Version_Minor == 0
 #define qLed_MajorMinorVersionString "5.0"
 #else
 #warning "Led version needs manual update here..."
 #define qLed_MajorMinorVersionString "4.1"
 #endif
-#if kStroika_Version_Stage == kStroika_Version_Stage_Dev
+#if qStroika_Version_Stage == qStroika_Version_Stage_Dev
 #define __vLet1__ "d"
-#elif kStroika_Version_Stage == kStroika_Version_Stage_Alpha
+#elif qStroika_Version_Stage == qStroika_Version_Stage_Alpha
 #define __vLet1__ "a"
-#elif kStroika_Version_Stage == kStroika_Version_Stage_Beta
+#elif qStroika_Version_Stage == qStroika_Version_Stage_Beta
 #define __vLet1__ "b"
-#elif kStroika_Version_Stage == kStroika_Version_Stage_ReleaseCandidate
+#elif qStroika_Version_Stage == qStroika_Version_Stage_ReleaseCandidate
 #define __vLet1__ "rc"
 #else
 #define __vLet1__ ""
@@ -64,7 +64,7 @@
 
 #define _STR_HELPER(x) #x
 #define _STR(x) _STR_HELPER (x)
-#define __vLet2__ _STR (kStroika_Version_SubStage)
+#define __vLet2__ _STR (qStroika_Version_SubStage)
 
 #if qLed_Version_FinalBuild
 #define qLed_ShortVersionString qLed_MajorMinorVersionString __vLet1__ __vLet2__

@@ -263,8 +263,8 @@ namespace {
                 EXPECT_TRUE (sv.AsFullVersionNum () == fullVer);
             };
             // Could try a variety of these versions, but this should be enough...
-            testRoundTrip (kStroika_Version_FullVersion, kStroika_Version_Major, kStroika_Version_Minor,
-                           static_cast<VersionStage> (kStroika_Version_Stage), kStroika_Version_SubStage, kStroika_Version_FinalBuild);
+            testRoundTrip (qStroika_Version_FullVersion, qStroika_Version_Major, qStroika_Version_Minor,
+                           static_cast<VersionStage> (qStroika_Version_Stage), qStroika_Version_SubStage, qStroika_Version_FinalBuild);
         }
     }
 }

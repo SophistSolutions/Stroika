@@ -544,7 +544,7 @@ namespace Stroika::Foundation::Cache {
             /**
              * @brief  NOHASH versions
              */
-#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
+#if qStroika_Foundation_Common_cplusplus >= qStroika_Foundation_Common_cplusplus_23
             template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
             static auto operator() (size_t maxCacheSize = 1, KEY_EQUALS_COMPARER&& keyComparer = {});
 #else
@@ -556,13 +556,13 @@ namespace Stroika::Foundation::Cache {
              * @brief  Hashing versions
              */
             template <typename KEY_HASH_FUNCTION = hash<KEY>>
-#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
+#if qStroika_Foundation_Common_cplusplus >= qStroika_Foundation_Common_cplusplus_23
             static auto operator() (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {});
 #else
             auto operator() (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {}) const;
 #endif
             template <typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = hash<KEY>>
-#if qStroika_Foundation_Common_cplusplus >= kStrokia_Foundation_Common_cplusplus_23
+#if qStroika_Foundation_Common_cplusplus >= qStroika_Foundation_Common_cplusplus_23
             static auto operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer, size_t hashTableSize,
                                     KEY_HASH_FUNCTION&& hashFunction = {});
 #else

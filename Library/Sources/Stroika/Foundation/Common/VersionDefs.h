@@ -34,11 +34,11 @@ namespace Stroika::Foundation::Common {
      *          high order byte = MAJOR
      *          next byte = MINOR
      *          next nibble (1/2 byte):
-     *              kStroika_Version_Stage_Dev              (kStroika_Version_Stage_Dev<<1)                     =>  0x2
-     *              kStroika_Version_Stage_Alpha            (kStroika_Version_Stage_Alpha<<1)                   =>  0x4
-     *              kStroika_Version_Stage_Beta             (kStroika_Version_Stage_Beta<<1)                    =>  0x6
-     *              kStroika_Version_Stage_ReleaseCandidate (kStroika_Version_Stage_ReleaseCandidate<<1)        =>  0x8
-     *              kStroika_Version_Stage_Release          (kStroika_Version_Stage_Release<<1)                 =>  0xa
+     *              qStroika_Version_Stage_Dev              (qStroika_Version_Stage_Dev<<1)                     =>  0x2
+     *              qStroika_Version_Stage_Alpha            (qStroika_Version_Stage_Alpha<<1)                   =>  0x4
+     *              qStroika_Version_Stage_Beta             (qStroika_Version_Stage_Beta<<1)                    =>  0x6
+     *              qStroika_Version_Stage_ReleaseCandidate (qStroika_Version_Stage_ReleaseCandidate<<1)        =>  0x8
+     *              qStroika_Version_Stage_Release          (qStroika_Version_Stage_Release<<1)                 =>  0xa
      *              low order bit part of substage but generally zero and ignoreable
      *          next nibble - part of substage but generally zero and ignorable
      *          next byte - low order 8 bits of substage << 1, so take that # and shift right  (divide by 2) to get substage
@@ -65,11 +65,23 @@ namespace Stroika::Foundation::Common {
     /**
      *  We use a MACRO here so we can use in languages other than C++, and so we can use these in #if macro pre-processor commands.
      */
-#define kStroika_Version_Stage_Dev 0x1
-#define kStroika_Version_Stage_Alpha 0x2
-#define kStroika_Version_Stage_Beta 0x3
-#define kStroika_Version_Stage_ReleaseCandidate 0x4
-#define kStroika_Version_Stage_Release 0x5
+#define qStroika_Version_Stage_Dev 0x1
+#define qStroika_Version_Stage_Alpha 0x2
+#define qStroika_Version_Stage_Beta 0x3
+#define qStroika_Version_Stage_ReleaseCandidate 0x4
+#define qStroika_Version_Stage_Release 0x5
+
+    /**
+     *  DEPRECATED since Stroika v3.0d25 - use the qStroika_Version_Stage_ names above ('q' names a macro - see
+     *  Design-Overview.md "'q' versus 'k'"). A macro cannot be marked [[deprecated]], so these just remain, until removed.
+     *  The generated kStroika_Version_ names (Major, FullVersion ...) likewise remain, beside qStroika_Version_ ones.
+     *  Before removing them: an #if on a name that no longer exists silently reads as 0 (see Upgrading.md).
+     */
+#define kStroika_Version_Stage_Dev qStroika_Version_Stage_Dev
+#define kStroika_Version_Stage_Alpha qStroika_Version_Stage_Alpha                       ///< DEPRECATED since Stroika v3.0d25
+#define kStroika_Version_Stage_Beta qStroika_Version_Stage_Beta                         ///< DEPRECATED since Stroika v3.0d25
+#define kStroika_Version_Stage_ReleaseCandidate qStroika_Version_Stage_ReleaseCandidate ///< DEPRECATED since Stroika v3.0d25
+#define kStroika_Version_Stage_Release qStroika_Version_Stage_Release                   ///< DEPRECATED since Stroika v3.0d25
 
     /**
      *  We use a MACRO here so we can use in languages other than C++, and so we can use these in #if macro pre-processor commands.
@@ -77,8 +89,8 @@ namespace Stroika::Foundation::Common {
      *
      *  \par Example Usage
      *      \code
-     *          // be sure to #include "Stroika/Foundation/Common/StroikaVersion.h" for kStroika_Version_FullVersion else kStroika_Version_FullVersion acts as if 0, and always use old code
-     *          #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 156, 0)
+     *          // be sure to #include "Stroika/Foundation/Common/StroikaVersion.h" for qStroika_Version_FullVersion else qStroika_Version_FullVersion acts as if 0, and always use old code
+     *          #if     qStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, qStroika_Version_Stage_Alpha, 156, 0)
      *              use new function;
      *          #else
      *              use older API

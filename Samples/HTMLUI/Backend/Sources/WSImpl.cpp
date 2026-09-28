@@ -231,7 +231,7 @@ About WSImpl::about_GET () const
     using Database        = APIServerInfo::Database;
 
     static const Sequence<ComponentInfo> kAPIServerComponents_{initializer_list<ComponentInfo>{
-        ComponentInfo{"Stroika"sv, Version{kStroika_Version_FullVersion}.AsPrettyVersionString (), URI{"https://github.com/SophistSolutions/Stroika"sv}}
+        ComponentInfo{"Stroika"sv, Version{qStroika_Version_FullVersion}.AsPrettyVersionString (), URI{"https://github.com/SophistSolutions/Stroika"sv}}
 #if qStroika_HasComponent_boost
         ,
         ComponentInfo{"boost"sv, String{BOOST_LIB_VERSION}}

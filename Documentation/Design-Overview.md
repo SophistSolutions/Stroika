@@ -184,10 +184,25 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 - &#39;s&#39; prefix for static varaibles.
 - &#39;\_&#39; prefix for PROTECTED instance variables or functions
 - 'I' prefix for concepts (since they essentially ACT as interfaces, but are used in a context where they cannot be confused with subclassable interfaces)
+- 'q' prefix for preprocessor macros that name a value - configuration flags and constants, such as `qStroika_HasComponent_boost` or `qStroika_Foundation_Debug_AssertionsChecked` (see 'q' versus 'k' below)
 
 #### Suffix
 
 - &#39;\_&#39; suffix for PRIVATE instance variables or functions
+
+#### 'q' versus 'k'
+
+Both name constants, but a 'q' name is a macro and a 'k' name is a C++ constant, and the two must be handled differently - so it
+pays to see at a glance which one you have:
+
+- A macro works in `#if`, so it can select code, or configure a build from the command line. A C++ constant cannot - the
+  preprocessor has finished before it exists - and is tested with `if constexpr` instead.
+- A macro has no type and no scope. It is textual and global from its `#define` on, ignores namespaces, and can collide with any
+  identifier in any other library. That is why 'q' names carry their namespace in the name: `qStroika_Foundation_...`.
+- A named C++ module cannot export a macro (only header units carry them).
+
+Function-like macros that act as language extensions - `Assert`, `Require`, `DbgTrace` - are named like the functions or keywords
+they stand in for, not with 'q'.
 
 #### Case
 

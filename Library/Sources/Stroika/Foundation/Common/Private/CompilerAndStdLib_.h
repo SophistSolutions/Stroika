@@ -35,13 +35,20 @@
  *  https://github.com/cplusplus/draft/releases/download/n4868/n4868.pdf (search for __cplusplus)
  *  c++20
  */
-#define kStrokia_Foundation_Common_cplusplus_20 202002L
+#define qStroika_Foundation_Common_cplusplus_20 202002L
 
 /**
  *  https://www.open-std.org/JTC1/SC22/WG21/docs/papers/2023/n4950.pdf (search for __cplusplus)
  *  c++23
  */
-#define kStrokia_Foundation_Common_cplusplus_23 202302L
+#define qStroika_Foundation_Common_cplusplus_23 202302L
+
+/**
+ *  DEPRECATED since Stroika v3.0d25 - use qStroika_Foundation_Common_cplusplus_20 / _23 ('q' names a macro - see
+ *  Design-Overview.md "'q' versus 'k'"). A macro cannot be marked [[deprecated]], so these just remain, until removed.
+ */
+#define kStrokia_Foundation_Common_cplusplus_20 qStroika_Foundation_Common_cplusplus_20
+#define kStrokia_Foundation_Common_cplusplus_23 qStroika_Foundation_Common_cplusplus_23 ///< DEPRECATED since Stroika v3.0d25
 
 /**
  *  \brief The C++ version being compiled: __cplusplus, except on MSVC, which leaves __cplusplus at 199711L unless given
@@ -57,7 +64,7 @@
 #define qStroika_Foundation_Common_cplusplus __cplusplus
 #endif
 
-#if qStroika_Foundation_Common_cplusplus < kStrokia_Foundation_Common_cplusplus_20
+#if qStroika_Foundation_Common_cplusplus < qStroika_Foundation_Common_cplusplus_20
 #pragma message("Stroika v3 requires at least C++ ISO/IEC 14882:2020(E) supported by the compiler (informally known as C++ 20)")
 #endif
 

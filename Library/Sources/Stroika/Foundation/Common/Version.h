@@ -32,11 +32,11 @@ namespace Stroika::Foundation::Common {
     /**
      */
     enum class VersionStage {
-        Dev              = kStroika_Version_Stage_Dev,
-        Alpha            = kStroika_Version_Stage_Alpha,
-        Beta             = kStroika_Version_Stage_Beta,
-        ReleaseCandidate = kStroika_Version_Stage_ReleaseCandidate,
-        Release          = kStroika_Version_Stage_Release,
+        Dev              = qStroika_Version_Stage_Dev,
+        Alpha            = qStroika_Version_Stage_Alpha,
+        Beta             = qStroika_Version_Stage_Beta,
+        ReleaseCandidate = qStroika_Version_Stage_ReleaseCandidate,
+        Release          = qStroika_Version_Stage_Release,
 
         Stroika_Define_Enum_Bounds (Dev, Release)
     };
