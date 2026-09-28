@@ -1974,67 +1974,77 @@ namespace Stroika::Foundation::DataExchange {
  *  Allow std::format to work with String class
  *
  *  \note SUPER PRIMITIVE ROUGH FIRST DRAFT
+ *
+ *  \note   These specializations are written inside namespace qStroika_Foundation_Characters_FMT_PREFIX_ { ... }, NOT with
+ *          the equivalent (and perfectly legal) qualified form:
+ *              template <> struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<String, wchar_t> {...};
+ *          The qualified form crashes the VSCode C/C++ extension's IntelliSense process (cpptools 1.34.4, windows-msvc-x64:
+ *          "IntelliSense process crash detected: handle_initialize") whenever this header is open in an editor and any
+ *          translation unit that includes it is parsed. The extension then silently falls back to the tag parser, so there
+ *          is no hover, member completion, or go-to-definition for anything using String (found 2026-09-28).
  */
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, wchar_t> {
-    qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::wstring, wchar_t> fDelegate2_;
+namespace qStroika_Foundation_Characters_FMT_PREFIX_ {
+    template <>
+    struct formatter<Stroika::Foundation::Characters::String, wchar_t> {
+        qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::wstring, wchar_t> fDelegate2_;
 
-    template <typename ParseContext>
-    constexpr typename ParseContext::iterator parse (ParseContext& ctx)
-    {
-        return fDelegate2_.parse (ctx);
-    }
+        template <typename ParseContext>
+        constexpr typename ParseContext::iterator parse (ParseContext& ctx)
+        {
+            return fDelegate2_.parse (ctx);
+        }
 
-    template <typename FmtContext>
-    typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
-    {
-        return fDelegate2_.format (s.As<std::wstring> (), ctx);
-    }
-};
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Characters::String, char> {
-    bool ignoreerrors{true}; // maybe set from thread-local variable, or parse() settings, or both
+        template <typename FmtContext>
+        typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
+        {
+            return fDelegate2_.format (s.As<std::wstring> (), ctx);
+        }
+    };
+    template <>
+    struct formatter<Stroika::Foundation::Characters::String, char> {
+        bool ignoreerrors{true}; // maybe set from thread-local variable, or parse() settings, or both
 
-    template <typename ParseContext>
-    constexpr typename ParseContext::iterator parse (ParseContext& ctx)
-    {
-        auto it = ctx.begin ();
-        while (it != ctx.end ()) {
-            ++it;
+        template <typename ParseContext>
+        constexpr typename ParseContext::iterator parse (ParseContext& ctx)
+        {
+            auto it = ctx.begin ();
+            while (it != ctx.end ()) {
+                ++it;
 #if 0
                 if (it == ctx.end()) {
                     throw Common::StdCompat::format_error{"Invalid format args (missing }) for formatter<String,char>."};
                 }
 #endif
-            if (*it == '}') {
-                return it;
+                if (*it == '}') {
+                    return it;
+                }
+            }
+            return it;
+        }
+
+        template <typename FmtContext>
+        typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
+        {
+            using namespace Stroika::Foundation::Characters;
+            //  wformat_context delegateCTX;
+            String dr{s}; // really want to delegate to wchar_t version (with vformat) but no documented easy way to extract format_args from ctx (though its in there)
+            if (ignoreerrors) {
+#if __cpp_lib_ranges >= 202207L
+                return std::ranges::copy (dr.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
+#else
+                return format_to (ctx.out (), "{}", dr.AsNarrowSDKString (eIgnoreErrors));
+#endif
+            }
+            else {
+#if __cpp_lib_ranges >= 202207L
+                return std::ranges::copy (dr.AsNarrowSDKString (), ctx.out ()).out;
+#else
+                return format_to (ctx.out (), "{}", dr.AsNarrowSDKString ());
+#endif
             }
         }
-        return it;
-    }
-
-    template <typename FmtContext>
-    typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
-    {
-        using namespace Stroika::Foundation::Characters;
-        //  wformat_context delegateCTX;
-        String dr{s}; // really want to delegate to wchar_t version (with vformat) but no documented easy way to extract format_args from ctx (though its in there)
-        if (ignoreerrors) {
-#if __cpp_lib_ranges >= 202207L
-            return std::ranges::copy (dr.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
-#else
-            return format_to (ctx.out (), "{}", dr.AsNarrowSDKString (eIgnoreErrors));
-#endif
-        }
-        else {
-#if __cpp_lib_ranges >= 202207L
-            return std::ranges::copy (dr.AsNarrowSDKString (), ctx.out ()).out;
-#else
-            return format_to (ctx.out (), "{}", dr.AsNarrowSDKString ());
-#endif
-        }
-    }
-};
+    };
+}
 
 /*
  ********************************************************************************
