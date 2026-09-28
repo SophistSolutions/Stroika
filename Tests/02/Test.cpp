@@ -1656,6 +1656,15 @@ namespace {
             [[maybe_unused]] String a  = "{}"_f(sp);
             DbgTrace ("a={}"_f, a);
         }
+        {
+            // A filesystem::path is a range of paths, but must format as one path, not as [dir, file.txt] - Stroika's
+            // formatter, unless the library has the C++26 one (__cpp_lib_format_path)
+            const filesystem::path p{"dir/file.txt"};
+            String                 narrow = "{}"_f(p);
+            String                 wide   = L"{}"_f(p);
+            EXPECT_TRUE (narrow.Contains ("file.txt") and not narrow.Contains ("["));
+            EXPECT_TRUE (wide.Contains ("file.txt") and not wide.Contains ("["));
+        }
     }
 }
 

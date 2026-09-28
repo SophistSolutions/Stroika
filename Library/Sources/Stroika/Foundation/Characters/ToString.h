@@ -17,6 +17,9 @@
 #include <typeindex>
 #include <typeinfo>
 #include <utility>
+#if __cpp_lib_format_ranges
+#include <format> // std::format_kind - IStdFormatterPredefinedFor_ uses it even when Stroika formats with fmtlib
+#endif
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Concepts.h"
@@ -217,12 +220,8 @@ namespace Stroika::Foundation::Characters::Private_ {
      */
     template <typename T>
     concept IStdFormatterPredefinedFor_ =
-    // clang-format off
-
-#if __cplusplus == 202302L && _GLIBCXX_RELEASE == 15
-    not Common::IAnyOf<remove_cvref_t<T>, filesystem::path> and
-#endif
-    ( 
+        // clang-format off
+    (
 
         // C++-20
         Common::IAnyOf<decay_t<T>, char, wchar_t> or Common::IAnyOf<T, char*, const char*, wchar_t*, const wchar_t*> 
@@ -266,7 +265,11 @@ namespace Stroika::Foundation::Characters::Private_ {
         // this stuff needed for clang++-18-debug-libstdc++-c++23
         //
 #if __cpp_lib_format_ranges
-        or ranges::range<decay_t<T>>
+        // Not every range: the standard's range formatter requires format_kind != disabled - which it is for a range whose
+        // elements are themselves that range (filesystem::path), and for optional (C++26, where optional became a range).
+        // Unlike formattable, format_kind depends only on the type - not on which formatters are declared - so is safe to
+        // ask here. input_range first: format_kind is ill-formed for anything else, and a concept's 'and' stops there.
+        or (ranges::input_range<decay_t<T>> and std::format_kind<decay_t<T>> != std::range_format::disabled)
 #endif
 #if (qStroika_Foundation_Common_cplusplus > 202101L or _LIBCPP_STD_VER >= 23) and not (defined (_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE <= 14)
         or Common::IPair<remove_cvref_t<T>>  or Common::ITuple<remove_cvref_t<T>>
@@ -284,8 +287,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
 
         // C++26
-#if __cplusplus > 202400L or _LIBCPP_STD_VER >= 26 or _MSVC_LANG >= 202400L
-        // unsure what to check - __cpp_lib_format - test c++26  __cpp_lib_formatters < 202601L  -- 202302L  is c++23
+#if __cpp_lib_format_path
         or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
 
@@ -353,7 +355,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
 #endif
 #if __cplusplus == 202302L && _GLIBCXX_RELEASE == 16
-    static_assert (IStdFormatterPredefinedFor_<std::filesystem::path>);
+    static_assert (not IStdFormatterPredefinedFor_<std::filesystem::path>);
     static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (IStdFormatterPredefinedFor_<std::tuple<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
@@ -419,7 +421,7 @@ namespace Stroika::Foundation::Characters::Private_ {
              // available in C++23
              or Common::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
-#if __cplusplus < 202400L || (defined(_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE <= 14)
+#if !__cpp_lib_format_path
              or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
              or is_enum_v<remove_cvref_t<T>> or Common::IOptional<remove_cvref_t<T>> or Common::IVariant<remove_cvref_t<T>> or
@@ -444,15 +446,6 @@ template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFor
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, wchar_t> : Stroika::Foundation::Characters::ToStringFormatter<T> {};
 template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_ T>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
-
-#if qCompilerAndStdLib_StdFmtOfPath_Buggy
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, wchar_t>
-    : Stroika::Foundation::Characters::ToStringFormatter<std::filesystem::path> {};
-template <>
-struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::filesystem::path, char>
-    : Stroika::Foundation::Characters::ToStringFormatterASCII<std::filesystem::path> {};
-#endif
 
 /*
  *  If any of these static_asserts trigger, it means you are using a newer compiler I don't have 

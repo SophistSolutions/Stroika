@@ -29,21 +29,14 @@ Generally will track stuff here between releases
       - Test-first: a regtest that sets `locale::global (locale::classic ())` and checks that both calls succeed. For
         `SDK2Wide`, also check that no exception was thrown (the Debug trace shows each one).
 
-  - **clang-22 + libstdc++-16, C++23: Stroika does not compile** (found 2026-09-28 by #1177 item 10, on
-    stroika-dev-2604). Every file that includes `Characters/Format.h` fails at the
-    `static_assert (formattable<std::filesystem::path, wchar_t>)` in
-    [ToString.h:464](Library/Sources/Stroika/Foundation/Characters/ToString.h#L464), with
-    `call to deleted constructor of 'std::formatter<std::filesystem::path, wchar_t>'` (28 of each in a
-    `libraries` build). The comment above those asserts says this means the `IStdFormatterPredefinedFor_` /
-    `IUseToStringFormatterForFormatter_` settings need updating for a newer library.
-      - Repro: `./configure X --compiler-driver clang++-22 --stdlib libstdc++ --cppstd-version c++23 --apply-default-debug-flags`,
-        then `make CONFIGURATION=X libraries`.
-      - Not hit today: no regression or CI configuration builds it - clang 19+ configs use libc++, and clang-18 + libstdc++
-        C++23 on 24.04 gets libstdc++-14. g++-16 C++23 on the same libstdc++-16 builds and passes fine.
-      - Likely lead, unverified: [ToString.h:222](Library/Sources/Stroika/Foundation/Characters/ToString.h#L222-L224)
-        drops `filesystem::path` from `IStdFormatterPredefinedFor_` only for `_GLIBCXX_RELEASE == 15` in C++23 -
-        libstdc++-16 is not covered. That g++-16 works anyway suggests the clang-only
-        `qCompiler_IUseToStringFormatterForFormatter_Buggy` path is part of it.
+  - **clang-22 + libstdc++-16, C++26: Stroika does not compile** (found 2026-09-28, stroika-dev-2604). clang rejects
+    [FloatConversion.inl:553 and :581](Library/Sources/Stroika/Foundation/Characters/FloatConversion.inl#L553) with
+    `call to immediate function 'formatNonScientific_ (...)::(lambda)'` - consteval propagation (P2564): a lambda whose body
+    calls format with a compile-time-checked format string becomes an immediate function itself. g++-16 C++26 and
+    clang-22 + libc++ C++26 compile fine. (Its C++23 sibling - clang 20-22 in C++23 not compiling, at the
+    formattable<filesystem::path> assert - was fixed by the format_kind / __cpp_lib_format_path change.)
+      - Repro: `clang++-22 -stdlib=libstdc++ -std=c++26 -fsyntax-only` on any TU that includes `Characters/FloatConversion.h`.
+      - Not hit today: no configuration builds C++26.
 
   - https://github.com/SophistSolutions/Stroika/issues/1075
     Issue generates: on WTF:....

@@ -1797,34 +1797,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #endif
 
 /*
-
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Characters\ToString.h(443): note: the concept 'Stroika::Foundation::Common::StdCompat::formattable<std::filesystem::path,wchar_t>' evaluated to false
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\StdCompat.h(76): note: the concept 'std::formattable<std::filesystem::path,wchar_t>' evaluated to false
-1>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\__msvc_ranges_tuple_formatter.hpp(891): note: the concept 'std::_Formattable_with<std::filesystem::path,std::basic_format_context<std::_Phony_fmt_iter_for<wchar_t>,wchar_t>,std::formatter<std::filesystem::path,_CharT>>' evaluated to false
-1>        with
- */
-#ifndef qCompilerAndStdLib_StdFmtOfPath_Buggy
-
-#if defined(__clang__) and __clang_major__ == 19 and _LIBCPP_STD_VER == 23
-// appears broken ONLY for clang++19 and stdc++ version 23
-// appears fixed for clang++20
-#define qCompilerAndStdLib_StdFmtOfPath_Buggy 1
-#elif defined(__GNUC__) && !defined(__clang__) && __GNUC__ == 16 && defined(__GLIBCXX__) && (__cplusplus >= 202302L || _GLIBCXX_RELEASE >= 16)
-// GCC 16's libstdc++ formatter for std::filesystem::path is not semiregular in C++23 mode, so Stroika's fallback formatter is needed.
-#define qCompilerAndStdLib_StdFmtOfPath_Buggy 1
-#elif defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k22_17Pt12_
-// verified still broken in _MSC_VER_2k22_17Pt13_
-// verified still broken in _MSC_VER_2k22_17Pt14_
-// verified still broken in _MSC_VER_v145_1951_
-#define qCompilerAndStdLib_StdFmtOfPath_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
-#else
-#define qCompilerAndStdLib_StdFmtOfPath_Buggy 0
-#endif
-
-#endif
-
-/*
 /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/stacktrace:595:3: error: no matching function for call to 'operator delete'
   595 |                 _GLIBCXX_OPERATOR_DELETE (static_cast<void*>(_M_frames),
       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
