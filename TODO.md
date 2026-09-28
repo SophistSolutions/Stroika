@@ -8,6 +8,43 @@ Generally will track stuff here between releases
 
 ## Open
 
+  - **HIGH PRIORITY: `SDK2Wide` throws and catches on every call in a locale that cannot represent U+FFFD**
+    (found 2026-09-28 by #1177 item 10). In
+    [SDKString.cpp:28-46](Library/Sources/Stroika/Foundation/Characters/SDKString.cpp#L28-L46), the non-Windows,
+    non-macOS branch builds `CodeCvt<wchar_t>{locale{}, kOptions_}` with
+    `fInvalidCharacterReplacement = kDefaultMissingReplacementCharacter` (U+FFFD). In a locale that has no U+FFFD - "C" /
+    POSIX, which is what the regression-test containers run in - that constructor throws
+    (`ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_`); the lambda catches it and retries with `'?'`.
+      - Cost: a thrown exception on every call, and in Debug builds `Throw ()` also logs a trace line and a
+        `BackTrace::Capture ()`, each time.
+      - It already caused one real bug: once libstdc++ builds used `std::stacktrace`, `BackTrace::Capture` widens with
+        `SDK2Wide`, so the throw recursed until the stack overflowed (15 of 54 tests SIGSEGV'd, g++-16 C++23 Debug). That
+        is now guarded by a re-entrancy check in `BackTrace::Capture`, which hides the symptom but not the cause.
+      - Fix idea: decide the replacement character without throwing - ask whether the locale's codecvt can encode
+        U+FFFD - and/or cache the result per locale, rather than using an exception for flow control.
+      - Also check the sibling `Wide2SDK (span, AllowMissingCharacterErrorsFlag)`
+        ([SDKString.cpp:67-76](Library/Sources/Stroika/Foundation/Characters/SDKString.cpp#L67-L76)): same U+FFFD
+        options, but NO try/catch - so in the same locales it probably throws right out to the caller, despite its
+        'AllowMissingCharacterErrors' contract. Unverified.
+      - Test-first: a regtest that sets `locale::global (locale::classic ())` and checks that both calls succeed. For
+        `SDK2Wide`, also check that no exception was thrown (the Debug trace shows each one).
+
+  - **clang-22 + libstdc++-16, C++23: Stroika does not compile** (found 2026-09-28 by #1177 item 10, on
+    stroika-dev-2604). Every file that includes `Characters/Format.h` fails at the
+    `static_assert (formattable<std::filesystem::path, wchar_t>)` in
+    [ToString.h:464](Library/Sources/Stroika/Foundation/Characters/ToString.h#L464), with
+    `call to deleted constructor of 'std::formatter<std::filesystem::path, wchar_t>'` (28 of each in a
+    `libraries` build). The comment above those asserts says this means the `IStdFormatterPredefinedFor_` /
+    `IUseToStringFormatterForFormatter_` settings need updating for a newer library.
+      - Repro: `./configure X --compiler-driver clang++-22 --stdlib libstdc++ --cppstd-version c++23 --apply-default-debug-flags`,
+        then `make CONFIGURATION=X libraries`.
+      - Not hit today: no regression or CI configuration builds it - clang 19+ configs use libc++, and clang-18 + libstdc++
+        C++23 on 24.04 gets libstdc++-14. g++-16 C++23 on the same libstdc++-16 builds and passes fine.
+      - Likely lead, unverified: [ToString.h:222](Library/Sources/Stroika/Foundation/Characters/ToString.h#L222-L224)
+        drops `filesystem::path` from `IStdFormatterPredefinedFor_` only for `_GLIBCXX_RELEASE == 15` in C++23 -
+        libstdc++-16 is not covered. That g++-16 works anyway suggests the clang-only
+        `qCompiler_IUseToStringFormatterForFormatter_Buggy` path is part of it.
+
   - https://github.com/SophistSolutions/Stroika/issues/1075
     Issue generates: on WTF:....
         (use "git push" to publish your local commits)
