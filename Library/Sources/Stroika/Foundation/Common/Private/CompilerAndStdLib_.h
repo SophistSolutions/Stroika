@@ -539,56 +539,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
 
 #endif
 
-/*
-/usr/bin/ld: /tmp/cchyvHxb.ltrans6.ltrans.o: in function `Stroika::Foundation::Debug::BackTrace::Capture[abi:cxx11](Stroika::Foundation::Debug::BackTrace::Options const&) [clone .constprop.0]':
-/usr/include/c++/13/stacktrace:196:(.text+0x844e): undefined reference to `__glibcxx_backtrace_pcinfo'
-/usr/bin/ld: /usr/include/c++/13/stacktrace:196:(.text+0x84cd): undefined reference to `__glibcxx_backtrace_pcinfo'
-/usr/bin/ld: /tmp/cchyvHxb.ltrans6.ltrans.o:/usr/include/c++/13/stacktrace:206:(.text+0x8914): undefined reference to `__glibcxx_backtrace_syminfo'
-/usr/bin/ld: /tmp/cchyvHxb.ltrans6.ltrans.o: in function `Stroika::Foundation::Debug::BackTrace::Capture[abi:cxx11](Stroika::Foundation::Debug::BackTrace::Options const&) [clone .constprop.0]':
-/usr/include/c++/13/stacktrace:196:(.text+0x89b0): undefined reference to `__glibcxx_backtrace_pcinfo'
-/usr/bin/ld: /usr/include/c++/13/stacktrace:164:(.text+0x8a83): undefined reference to `__glibcxx_backtrace_create_state'
-/usr/bin/ld: /usr/include/c++/13/stacktrace:164:(.text+0x8c8e): undefined reference to `__glibcxx_backtrace_create_state'
-/usr/bin/ld: /usr/include/c++/13/stacktrace:164:(.text+0x8d41): undefined reference to `__glibcxx_backtrace_create_state'
-/usr/bin/ld: /tmp/cchyvHxb.ltrans7.ltrans.o: in function `std::basic_stacktrace<std::allocator<std::stacktrace_entry> >::current(std::allocator<std::stacktrace_entry> const&) [clone .isra.0]':
-/usr/include/c++/13/stacktrace:259:(.text+0x2f9): undefined reference to `__glibcxx_backtrace_simple'
-/usr/bin/ld: /usr/include/c++/13/stacktrace:164:(.text+0x344): undefined reference to `__glibcxx_backtrace_create_state'
-collect2: error: ld returned 1 exit status
-                #   https://gcc.gnu.org/pipermail/gcc-bugs/2022-May/787733.html 
-                #       says use '-lstdc++_libbacktrace' but doesn't exist on ubuntu 24.04 -LGP 24.04
-
-
-      Linking  $StroikaRoot/Builds/g++-debug++2b/bin/HTMLViewCompiler...
-/usr/bin/x86_64-linux-gnu-ld.bfd: /Sandbox/Stroika-Dev/Builds/g++-debug++2b/lib/pkgconfig/../libstroika-foundation.a(BackTrace.o): in function `std::stacktrace_entry::_M_get_info(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, int*) const':
-/usr/include/c++/15/stacktrace:167:(.text._ZNKSt16stacktrace_entry11_M_get_infoEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES6_Pi[_ZNKSt16stacktrace_entry11_M_get_infoEPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES6_Pi]+0x1a7): undefined reference to `std::stacktrace_entry::_Info::_M_populate(unsigned long)'
-/usr/bin/x86_64-linux-gnu-ld.bfd: /Sandbox/Stroika-Dev/Builds/g++-debug++2b/lib/pkgconfig/../libstroika-foundation.a(BackTrace.o): in function `std::basic_stacktrace<std::allocator<std::stacktrace_entry> >::current(std::allocator<std::stacktrace_entry> const&)':
-/usr/include/c++/15/stacktrace:209:(.text._ZNSt16basic_stacktraceISaISt16stacktrace_entryEE7currentERKS1_[_ZNSt16basic_stacktraceISaISt16stacktrace_entryEE7currentERKS1_]+0x5f): undefined reference to `std::__stacktrace_impl::_S_current(int (*)(void*, unsigned long), void*, int)'
-
-
-GCC 12 and GCC 13: You must link using -lstdc++_libbacktrace. The newer -lstdc++exp flag
-will not work or exist on these versions.
-
-GCC 14, GCC 15, and GCC 16: You must link using -lstdc++exp. GCC changed the library
-name starting with version 14 to consolidate all experimental C++23/C++26
-features into a single experimental archive.
-
-For any of these flags to work, your Linux distribution's package maintainers must
-have compiled GCC with the configuration option --enable-libstdcxx-backtrace.
-If they did not, the library archives will be missing from your system entirely.
-*/
-#ifndef qCompilerAndStdLib_stacktraceLinkError_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// Only SEEN BROKEN IN GCC 13, Ubuntu 24.04
-// Same issue on GCC-14 and Ubuntu 24.04
-// Same issue on GCC-15 and Ubuntu 26.04
-// Same issue on GCC-16 and Ubuntu 26.04 (g++-16-release++23)
-#define qCompilerAndStdLib_stacktraceLinkError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (13 <= __GNUC__ and __GNUC__ <= 16)
-#else
-#define qCompilerAndStdLib_stacktraceLinkError_Buggy 0
-#endif
-
-#endif
-
 /***
  GCC compiler gcrash on Ubuntu gcc11 on WSL
  */

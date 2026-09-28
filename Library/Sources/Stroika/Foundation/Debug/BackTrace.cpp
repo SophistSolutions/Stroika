@@ -46,6 +46,15 @@ using namespace Stroika::Foundation::Debug;
  */
 wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& options)
 {
+    // Throw () logs a Capture (), and Capture () calls code that may throw (SDK2Wide does, as a matter of course, in a
+    // locale that cannot represent its replacement character) - so a Capture () inside a Capture () returns nothing
+    static thread_local bool tCapturing_{false};
+    if (tCapturing_) {
+        return wstring{};
+    }
+    tCapturing_                   = true;
+    [[maybe_unused]] auto&& clear = Execution::Finally ([] () noexcept { tCapturing_ = false; });
+
     Execution::Thread::SuppressInterruptionInContext suppressAborts;
     [[maybe_unused]] unsigned int                    useSkipFrames = options.fSkipFrames.value_or (BackTrace::Options::sDefault_SkipFrames);
 
@@ -53,7 +62,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
 
     [[maybe_unused]] unsigned usingMaxFrames = options.fMaxFrames.value_or (BackTrace::Options::sDefault_MaxFrames);
 
-#if __cpp_lib_stacktrace >= 202011 && !qCompilerAndStdLib_stacktraceLinkError_Buggy && !qCompilerAndStdLib_StdBacktraceCompile_Buggy
+#if __cpp_lib_stacktrace >= 202011 && !qCompilerAndStdLib_StdBacktraceCompile_Buggy
     // current () requires skip + max_depth to fit its size_type - just 16 bits in libstdc++, and 32 for MSVC x86 - and the
     // default usingMaxFrames is UINT_MAX
     auto st = std::stacktrace::current (useSkipFrames, min<size_t> (usingMaxFrames, numeric_limits<std::stacktrace::size_type>::max () - useSkipFrames));

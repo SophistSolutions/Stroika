@@ -646,6 +646,23 @@ sub     GetClangLLD_
 	return ($lld =~ /^\// and -x $lld) ? $lld : undef;
 }
 
+#	The library a std::stacktrace program must link with this compiler, C++ version and libstdc++: "" if none (including
+#	when std::stacktrace is not there to use at that C++ version), undef if no candidate links. libstdc++ keeps it out of
+#	libstdc++ proper - libstdc++exp from gcc 14 (and 13.3), libstdc++_libbacktrace in 12 and 13. Asks the compiler by
+#	linking one, rather than going by version, since the distribution decides what is built and shipped.
+sub     GetLibStdCXXStacktraceLib_
+{
+	my $compilerDriver = trim(shift(@_));
+	my $flags = trim(shift(@_));
+	my $src = "#include <version>\n#if __cpp_lib_stacktrace\n#include <stacktrace>\nint main () { return std::stacktrace::current ().empty (); }\n#else\nint main () {}\n#endif\n";
+	foreach my $lib ("", "-lstdc++exp", "-lstdc++_libbacktrace") {
+		if (system ("printf '$src' | $compilerDriver $flags -x c++ - $lib -o /dev/null 2>/dev/null >/dev/null") == 0) {
+			return $lib;
+		}
+	}
+	return undef;
+}
+
 
 sub     IsMSVCCompiler_
 {
@@ -2943,6 +2960,17 @@ sub PostProcessOptions_ ()
 	}
 
 	if ($BuildPlatform eq 'Unix') {
+		# Ahead of the libstdc++ entries below, since it uses libstdc++
+		if (defined $STDCXXLIB and $STDCXXLIB eq "libstdc++") {
+			my $stdlibFlag = IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) ? "-stdlib=libstdc++" : "";
+			my $stacktraceLib = GetLibStdCXXStacktraceLib_ ($COMPILER_DRIVER_CPlusPlus, "$CPPSTD_VERSION_FLAG $stdlibFlag");
+			if (not defined $stacktraceLib) {
+				print "Warning: found no library that makes std::stacktrace link with $COMPILER_DRIVER_CPlusPlus $CPPSTD_VERSION_FLAG - if Debug/BackTrace fails to link, that is why\n";
+			}
+			elsif ($stacktraceLib ne "") {
+				push @LinkerArgs_LibDependencies_ADD, $stacktraceLib;
+			}
+		}
 		if ($STATIC_LINK_GCCRUNTIME == 1) {
 			# tried $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=0 in Ubuntu 1804, and g++-7, and failed (still left .so file in ldd)
 			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
