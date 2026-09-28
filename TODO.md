@@ -8,6 +8,12 @@ Generally will track stuff here between releases
 
 ## Open
 
+  - KEEP GOING with 1177
+  - Update the build time estimates - everything has
+    been rebuilt since last round of estimates and its genreally improved.
+  - take steps to reduce warnings/skips on rasp pi
+
+
   - **Re-test the Ubuntu 24.04 gcc workarounds when that toolchain updates, and delete them if fixed.**
     `configure`'s `ApplyCompilerBugWorkarounds_` currently forces `-O2` for sanitizer configs on 24.04
     and warns about optimizing without LTO there. Both exist purely because gcc 13.3/14.2 *as packaged
