@@ -251,7 +251,6 @@ Test.cpp:1109:93: error: no viable constructor or deduction guide for deduction 
 
 #endif
 
-
 #if __cpp_lib_chrono < 201611
 #error "Stroika v3 requires c++20 chrono library support"
 #endif
