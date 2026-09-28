@@ -369,7 +369,7 @@ namespace {
         EXPECT_FALSE (Debug::kBuiltWithThreadSanitizer);
         EXPECT_FALSE (Debug::kBuiltWithUndefinedBehaviorSanitizer);
 #else
-        GTEST_SKIP () << "no independent check on this platform";
+        GTEST_SKIP () << "no 'SanitizerDetection' check on this platform";
 #endif
     }
 }
