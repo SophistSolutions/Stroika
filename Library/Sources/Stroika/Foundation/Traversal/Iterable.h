@@ -1076,21 +1076,12 @@ namespace Stroika::Foundation::Traversal {
             requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T> and
                       convertible_to<invoke_result_t<COMBINER, RESULT_T, RESULT_T, bool>, RESULT_T>);
 #endif
-#if qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
-        nonvirtual Characters::String Join (const Characters::String& separator) const;
-        nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const;
-        template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT>
-        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const RESULT_T& separator) const
-            requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>);
-        template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT>
-        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const RESULT_T& separator, const optional<RESULT_T>& finalSeparator) const
-            requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>);
-#else
-        nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
+        nonvirtual Characters::String Join (const Characters::String& separator) const; ///< \brief Join (separator, nullopt)
+        nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const; ///< \brief ToString each element; separator between them, or finalSeparator (if given) between the last two
+        /// \brief Like Join (separator, finalSeparator), but convertToResult converts each element
         template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT>
         nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const RESULT_T& separator, const optional<RESULT_T>& finalSeparator = {}) const
             requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>);
-#endif
 
     public:
         /**

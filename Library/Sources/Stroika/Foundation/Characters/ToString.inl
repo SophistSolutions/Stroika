@@ -493,20 +493,11 @@ namespace Stroika::Foundation::Characters {
 }
 
 namespace Stroika::Foundation::Traversal {
-#if qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
     template <typename T>
     inline Characters::String Iterable<T>::Join (const Characters::String& separator) const
     {
         return Join (separator, nullopt);
     }
-    template <typename T>
-    template <typename RESULT_T, invocable<T> CONVERT_TO_RESULT>
-    inline RESULT_T Iterable<T>::Join (const CONVERT_TO_RESULT& convertToResult, const RESULT_T& separator) const
-        requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>)
-    {
-        return Join<RESULT_T> (convertToResult, separator, nullopt);
-    }
-#endif
     template <typename T>
     inline Characters::String Iterable<T>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const
     {

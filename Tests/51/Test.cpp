@@ -1081,6 +1081,7 @@ namespace {
             SkipTestPart ("Join not checked (qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy)");
 #endif
             EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }), "A, B, C");
+            EXPECT_EQ (kT2_.Join<String> ([] (auto i) { return i.ToUpperCase (); }, "; "sv), "A; B; C");
             EXPECT_EQ (kT2_.Join<String> ([] (auto i) { return i.ToUpperCase (); }, "; "sv, " and "sv), "A; B and C");
         }
     }
