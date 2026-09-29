@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -239,7 +240,13 @@ namespace {
             // At this point the thread 't' SHOULD block and wait kLONGTimeForThread2Wait_ seconds
             // So we wait a shorter time for it, and that should fail
             {
-                Debug::TraceContextBumper       ctx1{"expect-failed-wait"};
+                Debug::TraceContextBumper ctx1{"expect-failed-wait"};
+                // The timeout below is this process's FIRST throw, and with tracing on Throw () symbolizes a backtrace
+                // for its trace line - the first symbolization in a process can take ~30s on Windows. Pay that one-time
+                // cost here, outside the timed wait. @see https://github.com/SophistSolutions/Stroika/issues/1183
+                if constexpr (qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace) {
+                    (void)Debug::BackTrace::Capture ();
+                }
                 constexpr Time::DurationSeconds kMarginOfErrorLo_ = .5s;
                 constexpr Time::DurationSeconds kMarginOfErrorHi_Warn_ =
                     qStroika_Foundation_Debug_AssertionsChecked ? 5.0s : 3.0s; // if sys busy, thread could be put to sleep almost any amount of time
@@ -295,9 +302,13 @@ namespace {
                 //                       at ~32s, a dozen times in one 13 minute test phase. The number says
                 //                       nothing about Stroika; demote this to VerifyTestResultWarning for that
                 //                       case rather than loosening the bound for everyone.
-                //      gap of ~0.06s    the machine was healthy and the WAIT really did oversleep. That is a
-                //                       real bug in Thread::WaitForDone / WaitableEvent / ConditionVariable,
-                //                       and worth chasing.
+                //      gap of ~0.06s    the process kept running, so the time went into Stroika - either the WAIT
+                //                       really did oversleep (a real bug in Thread::WaitForDone / WaitableEvent /
+                //                       ConditionVariable, worth chasing), or the THROW did: caughtExceptAt is
+                //                       taken after the timeout exception is thrown, and a traced throw symbolizes
+                //                       a backtrace. That cost 32.9s here once (GitHub Actions, 2026-09-29, first
+                //                       throw in the process - see issue 1183), hence the warm-up above; the
+                //                       trace log's 'Throwing exception' timestamp tells the two apart.
                 // Full analysis in the commit message for 118e1e2b88. Never yet seen on medusa-windows-dev's
                 // own regression runs - only in GitHub Actions. -- LGP 2026-09-22
                 //
@@ -979,7 +990,7 @@ namespace {
             ThreadPool                             p{ThreadPool::Options{.fThreadCount = kThreadPoolSize_}};
             auto                                   doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
 
-            for (int i = 0; i < kStepsToGetTrouble_; ++i) {
+            for (unsigned i = 0; i < kStepsToGetTrouble_; ++i) {
                 p.AddTask (doItHandler);
             }
 
