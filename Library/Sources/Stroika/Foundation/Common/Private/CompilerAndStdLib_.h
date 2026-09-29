@@ -705,31 +705,6 @@ See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
 
 #endif
 
-/***
- *     Compiling Library/Sources/Stroika/Foundation/Debug/BackTrace.cpp ... 
-In file included from BackTrace.cpp:24:
-/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/stacktrace:595:3: error: no matching function for call to 'operator delete'
-  595 |                 _GLIBCXX_OPERATOR_DELETE (static_cast<void*>(_M_frames),
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  596 |                                           _M_capacity * sizeof(value_type));
-      |                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/stacktrace:550:35: note: expanded from macro '_GLIBCXX_OPERATOR_DELETE'
-  550 | # define _GLIBCXX_OPERATOR_DELETE __builtin_operator_delete
-      |                                   ^
-
-*/
-#ifndef qCompilerAndStdLib_StdBacktraceCompile_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__) && defined(__GLIBCXX__)
-// broken in clang++-18 with
-// appears fixed for clang++19
-#define qCompilerAndStdLib_StdBacktraceCompile_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
-#else
-#define qCompilerAndStdLib_StdBacktraceCompile_Buggy 0
-#endif
-
-#endif
-
 /*
  file included from AssertExternallySynchronizedChecker.cpp:6:
 ./../Characters/ToString.h:258:16: error: static assertion failed
@@ -1785,34 +1760,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #define qCompiler_IUseToStringFormatterForFormatter_Buggy 1
 #else
 #define qCompiler_IUseToStringFormatterForFormatter_Buggy 0
-#endif
-#endif
-
-/*
-/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/stacktrace:595:3: error: no matching function for call to 'operator delete'
-  595 |                 _GLIBCXX_OPERATOR_DELETE (static_cast<void*>(_M_frames),
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  596 |                                           _M_capacity * sizeof(value_type));
-      |                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/stacktrace:550:35: note: expanded from macro '_GLIBCXX_OPERATOR_DELETE'
-  550 | # define _GLIBCXX_OPERATOR_DELETE __builtin_operator_delete
-      |                                   ^
-/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/new:149:6: note: candidate function not viable: no known conversion from 'unsigned long' to 'const std::nothrow_t' for 2nd argument
-  149 | void operator delete(void*, const std::nothrow_t&) _GLIBCXX_USE_NOEXCEPT
-      |      ^                      ~~~~~~~~~~~~~~~~~~~~~
-/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/new:158:6: note: candidate function not viable: no known conversion from 'unsigned long' to 'std::align_val_t' for 2nd argument
-  158 | void operator delete(void*, std::align_val_t)
-      |      ^                      ~~~~~~~~~~~~~~~~
-/usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/new:185:13: note: candidate function not viable: no known conversion from 'unsigned long' to 'void *' for 2nd argument
-  185 | inline void operator delete  (void*, void*) _GLIBCXX_USE_NOEXCEPT { }
-      |             ^                        ~~~~~
- */
-#ifndef qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
-// appears fixed for clang++19
-#if defined(__clang__) and __clang_major__ <= 18 && __cpp_lib_stacktrace >= 202011 && defined(_GLIBCXX_RELEASE)
-#define qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy 1
-#else
-#define qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy 0
 #endif
 #endif
 

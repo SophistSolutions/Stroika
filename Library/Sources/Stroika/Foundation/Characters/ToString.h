@@ -27,7 +27,7 @@
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Common/StdCompat.h"
 
-#if __cpp_lib_stacktrace >= 202011 && !qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
+#if __cpp_lib_stacktrace >= 202011
 #include <stacktrace>
 #endif
 
@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if qStroika_Foundation_Common_cplusplus > 202101L or _LIBCPP_STD_VER >= 23
         or Common::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
-#if __cpp_lib_stacktrace >= 202011 && !qCompiler_clangNotCompatibleWithLibStdCPPStackTrace_Buggy
+#if __cpp_lib_stacktrace >= 202011
         or Common::IAnyOf<remove_cvref_t<T>, stacktrace_entry>
         or requires { []<typename ALLOCATOR> (type_identity<basic_stacktrace<ALLOCATOR>>) {}(type_identity<T> ()); } 
 #endif
