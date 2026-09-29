@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_HashTable (Mapping_HashTable&&) noexcept      = default;
         Mapping_HashTable (const Mapping_HashTable&) noexcept = default;
         Mapping_HashTable (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-#if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+#if !qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy
             requires (default_initializable<Mapping_HashTable>)
 #endif
         ;
@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         ;
         template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         Mapping_HashTable (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-#if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+#if !qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy
             requires (default_initializable<Mapping_HashTable>)
 #endif
         ;

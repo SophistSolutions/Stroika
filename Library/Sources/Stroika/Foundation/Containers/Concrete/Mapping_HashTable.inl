@@ -210,9 +210,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
         : inherited{Memory::MakeSharedPtr<Rep_<HASH_TABLE_TRAITS>> (move (src))}
     {
-#if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-        static_assert (default_initializable<Mapping_HashTable>);
-#endif
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -225,12 +222,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_HashTable (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-#if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+#if !qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy
         requires (default_initializable<Mapping_HashTable>)
 #endif
         : Mapping_HashTable{}
     {
-#if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+#if qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy
         static_assert (default_initializable<Mapping_HashTable>);
 #endif
         this->AddAll (src);
@@ -278,12 +275,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
     Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_HashTable (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-#if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+#if !qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy
         requires (default_initializable<Mapping_HashTable>)
 #endif
         : Mapping_HashTable{}
     {
-#if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+#if qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy
         static_assert (default_initializable<Mapping_HashTable>);
 #endif
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));

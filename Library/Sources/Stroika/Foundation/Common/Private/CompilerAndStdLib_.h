@@ -1896,18 +1896,25 @@ Configuration.cpp:126:21: error: no viable conversion from 'common_comparison_ca
 
 #endif
 
-#ifndef qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+/**
+ *  A compiler bug, not a me bug: g++ 12 and clang 15 evaluate 'requires (default_initializable<Mapping_HashTable>)' on
+ *  Mapping_HashTable's own constructors while the class is still incomplete - g++ 12 fails with "template argument must be a
+ *  complete class", clang 15 at the out-of-line definition - rather than when overload resolution considers the constructor.
+ *  So on those, the same check is a static_assert in the constructor body. (Verified 2026-09-29 by forcing this to 0: both
+ *  fail; every newer compiler builds the requires form.)
+ */
+#ifndef qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
 // seems fixed in clang++16
-#define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy                                                            \
+#define qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy                                                            \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__GNUC__) && !defined(__clang__)
-// VERIFIED BROKEN IN GCC 12.3 - so wondering if this is not a compiler bug but a me bug --LGP 2023-08-08
+// VERIFIED BROKEN IN GCC 12.3
 // FIXED in GCC 13
-#define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+#define qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
 #else
-#define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy 0
+#define qCompilerAndStdLib_requires_breaks_sometimes_but_static_assert_ok_Buggy 0
 #endif
 
 #endif
