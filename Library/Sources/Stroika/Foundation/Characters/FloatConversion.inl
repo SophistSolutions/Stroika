@@ -849,12 +849,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         if (Character::AsASCIIQuietly (s, &asciiS)) {
             qStroika_ATTRIBUTE_INDETERMINATE T result;
 #if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
-#if qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy
+#if qCompilerAndStdLib_from_chars_reads_past_end_Buggy
             asciiS.push_back (0);
 #endif
             auto b = asciiS.begin ();
             auto e = asciiS.end ();
-#if qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy
+#if qCompilerAndStdLib_from_chars_reads_past_end_Buggy
             e--;
 #endif
             if (b != e and *b == '+') [[unlikely]] {
