@@ -247,7 +247,6 @@ Targets:
     run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost;
                                       [VALGRIND=memcheck, etc] to run with valgrind
                                       (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)
-                                      OR VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp"
                                       EG: VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp" make VALGRIND=memcheck run-tests
     apply-configurations:        -    Force re-creation implied files / links for any configurations in the Configurations
                                       folder (not needed, automatic)

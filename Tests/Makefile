@@ -23,28 +23,10 @@ export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
 SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
 
 
-# Consider exposing this explicitly (as we once did) in the configuration file
-# But for now this is fine...LGP 2020-04-27
-ifeq (qStroika_Foundation_Memory_PreferBlockAllocation=1,$(findstring qStroika_Foundation_Memory_PreferBlockAllocation=1,$(CPPFLAGS)))
-USING_BLOCK_ALLOCATION?=1
-else ifeq (qStroika_Foundation_Memory_PreferBlockAllocation=0,$(findstring qStroika_Foundation_Memory_PreferBlockAllocation=0,$(CPPFLAGS)))
-USING_BLOCK_ALLOCATION?=0
-else ifeq (qStroika_Foundation_Debug_AssertionsChecked=1,$(findstring qStroika_Foundation_Debug_AssertionsChecked=1,$(CPPFLAGS)))
-USING_BLOCK_ALLOCATION?=1
-else
-USING_BLOCK_ALLOCATION?=0
-endif
-
-EXTRA_VALGRIND_SUPPRESSIONS?=
-
 ifeq (memcheck,$(VALGRIND))
 DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-MemCheck-Common.supp
-#DEFAULT_VALGRIND_SUPPRESSIONS_+= BlockAllocation-Valgrind.supp
 ifneq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-MemCheck-Common-$(ARCH).supp
-endif
-ifeq (1,$(USING_BLOCK_ALLOCATION))
-DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-MemCheck-BlockAllocation.supp
 endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
 endif
@@ -74,7 +56,6 @@ help:
 	@$(ECHO) "    tests:"
 	@$(ECHO) "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost;"
 	@$(ECHO) "                                 [VALGRIND=memcheck, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
-	@$(ECHO) "                                 OR VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp\""
 	@$(ECHO) "                                 EG: VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp\" make VALGRIND=memcheck run-tests"
 	@$(ECHO) "                                 [REMOTE_DOCKER_IMAGE=] with REMOTE=, run each test in that image on REMOTE (eg. arm32v7/ubuntu:26.04)"
 	@$(ECHO) "                                 [REMOTE_DOCKER_ARGS=] extra 'docker run' args; [REMOTE_DIR=] where on REMOTE tests go (default /tmp)"

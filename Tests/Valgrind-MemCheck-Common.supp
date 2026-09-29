@@ -1,7 +1,9 @@
-{
-   Saw_on_Ubuntu_2310_so_if_buggy_not_in_stroika
-   Memcheck:Overlap
-   ...
-   fun:inet_pton
-   ...
-}
+#
+#   Stroika's valgrind memcheck suppressions - empty on purpose.
+#
+#   Every earlier entry (135, in this file and the x86_64, armhf and BlockAllocation ones) was removed in 2026-09 (#1177,
+#   #1167) after a full valgrind run on Ubuntu 26.04 matched none of them. Add an entry only for a report confirmed to be a
+#   false positive or a third-party problem, with a comment saying where it was seen (platform, compiler, library version)
+#   and why it is not a Stroika bug, so it can be dropped once that no longer applies. An entry that only one architecture
+#   needs goes in Valgrind-MemCheck-Common-<ARCH>.supp, which Tests/Makefile picks up automatically when it exists.
+#
