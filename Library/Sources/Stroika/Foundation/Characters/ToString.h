@@ -466,9 +466,6 @@ static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::shared_p
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::pair<int, char>, wchar_t>);
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::thread::id, wchar_t>);
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::type_index, wchar_t>); // note not type_info (result of typeid) - because formattable requires copyable, and type_info not copyable
-#if !qCompilerAndStdLib_FormatThreadId_Buggy
-static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::thread::id, wchar_t>);
-#endif
 #if qCompilerAndStdLib_formattable_of_tuple_Buggy
 static_assert (Stroika::Foundation::Common::ITuple<std::remove_cvref_t<std::tuple<int>>>);
 #else
