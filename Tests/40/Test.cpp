@@ -1667,6 +1667,9 @@ namespace {
             // Under valgrind, just a few: it runs one thread at a time, so it can hardly hit the race, and each busy-spin
             // handoff costs a whole scheduling slice - but a few rounds still put memcheck over both Set/Clear paths.
             const unsigned kRounds_ = Debug::IsRunningUnderValgrind () ? 4u : Debug::kBuiltWithThreadSanitizer ? 2000u : 20000u;
+            // Under valgrind every wait below also yields: a spin that never gives up the one core valgrind runs threads on can
+            // starve the thread it waits for (4 rounds did not finish on 24.04's valgrind 3.22), and the window cannot be hit there anyway
+            const bool kYieldInSpins_ = Debug::IsRunningUnderValgrind ();
             // generous, since a readable descriptor returns at once - and only paid on a failure
             constexpr Time::DurationSeconds kReadableWithin_{10.0};
             auto                            e = mkEventFD ();
@@ -1683,6 +1686,9 @@ namespace {
                             if (stop) {
                                 return;
                             }
+                            if (kYieldInSpins_) {
+                                this_thread::yield ();
+                            }
                         }
                         if (round % 2 == 1) {
                             e->Clear ();
@@ -1690,6 +1696,9 @@ namespace {
                         else {
                             do {
                                 e->Clear ();
+                                if (kYieldInSpins_) {
+                                    this_thread::yield ();
+                                }
                             } while (mainDone.load () < round);
                         }
                         helperDone = round;
@@ -1713,13 +1722,19 @@ namespace {
                 if (round % 2 == 1) {
                     do {
                         e->Set ();
+                        if (kYieldInSpins_) {
+                            this_thread::yield ();
+                        }
                     } while (helperDone.load () < round);
                 }
                 else {
                     e->Set ();
                     mainDone = round;
-                    while (helperDone.load () < round)
-                        ;
+                    while (helperDone.load () < round) {
+                        if (kYieldInSpins_) {
+                            this_thread::yield ();
+                        }
+                    }
                 }
                 ++rounds;
                 bool isSet = e->IsSet ();
