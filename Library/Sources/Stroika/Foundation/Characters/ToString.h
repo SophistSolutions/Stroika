@@ -260,9 +260,10 @@ namespace Stroika::Foundation::Characters::Private_ {
 
         // C++23
         //
-        // 202302L is right value (of __cplusplus) to check for C++ 23, but 202101L needed for clang++16 ;-(
-        // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
-        // this stuff needed for clang++-18-debug-libstdc++-c++23
+        // P2286 (formatting ranges) brought the formatters for ranges, pair, tuple, and the container adaptors, and
+        // __cpp_lib_format_ranges says a library has them: it matches what libstdc++ 13-16, libc++ 18-22 and MSVC 19.44 /
+        // 19.51 actually format. The thread::id formatter came separately (__cpp_lib_formatters) - which libc++ never
+        // defines (it lacks the stacktrace formatters), though it formats thread::id in C++23.
         //
 #if defined(__cpp_lib_format_ranges)
         // Not every range: the standard's range formatter requires format_kind != disabled - which it is for a range whose
@@ -271,17 +272,17 @@ namespace Stroika::Foundation::Characters::Private_ {
         // ask here. input_range first: format_kind is ill-formed for anything else, and a concept's 'and' stops there.
         or (ranges::input_range<decay_t<T>> and std::format_kind<decay_t<T>> != std::range_format::disabled)
 #endif
-#if (qStroika_Foundation_Common_cplusplus > 202101L or _LIBCPP_STD_VER >= 23) and not (defined (_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE <= 14)
+#if defined(__cpp_lib_format_ranges)
         or Common::IPair<remove_cvref_t<T>>  or Common::ITuple<remove_cvref_t<T>>
 #endif
-#if qStroika_Foundation_Common_cplusplus > 202101L or _LIBCPP_STD_VER >= 23
+#if defined(__cpp_lib_formatters) or (defined(_LIBCPP_STD_VER) and _LIBCPP_STD_VER >= 23)
         or Common::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
 #if defined(__cpp_lib_stacktrace)
         or Common::IAnyOf<remove_cvref_t<T>, stacktrace_entry>
         or requires { []<typename ALLOCATOR> (type_identity<basic_stacktrace<ALLOCATOR>>) {}(type_identity<T> ()); } 
 #endif
-#if qStroika_Foundation_Common_cplusplus > 202101L or _LIBCPP_STD_VER >= 23
+#if defined(__cpp_lib_format_ranges)
         or requires { []<typename TT> (type_identity<stack<TT>>) {}(type_identity<T> ()); } 
         or requires { []<typename TT> (type_identity<queue<TT>>) {}(type_identity<T> ()); } 
 #endif
@@ -312,6 +313,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if qStroika_Foundation_Common_cplusplus == qStroika_Foundation_Common_cplusplus_20 && _GLIBCXX_RELEASE == 13
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::stack<int>>);
     static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
@@ -319,6 +321,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if qStroika_Foundation_Common_cplusplus == qStroika_Foundation_Common_cplusplus_20 && _GLIBCXX_RELEASE == 14
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::stack<int>>);
     static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
@@ -326,6 +329,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if qStroika_Foundation_Common_cplusplus == qStroika_Foundation_Common_cplusplus_23 && _GLIBCXX_RELEASE == 14
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::stack<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
@@ -334,6 +338,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::filesystem::path>);
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::stack<int>>);
     static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
@@ -342,6 +347,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::filesystem::path>);
     static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (IStdFormatterPredefinedFor_<std::stack<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
@@ -350,6 +356,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::filesystem::path>);
     static_assert (not IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (not IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (not IStdFormatterPredefinedFor_<std::stack<int>>);
     static_assert (not IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
@@ -358,6 +365,7 @@ namespace Stroika::Foundation::Characters::Private_ {
     static_assert (not IStdFormatterPredefinedFor_<std::filesystem::path>);
     static_assert (IStdFormatterPredefinedFor_<std::pair<int, char>>);
     static_assert (IStdFormatterPredefinedFor_<std::tuple<int>>);
+    static_assert (IStdFormatterPredefinedFor_<std::stack<int>>);
     static_assert (IStdFormatterPredefinedFor_<std::thread::id>);
     static_assert (not IStdFormatterPredefinedFor_<std::type_index>);
     static_assert (not IStdFormatterPredefinedFor_<std::exception_ptr>);
@@ -409,8 +417,7 @@ namespace Stroika::Foundation::Characters::Private_ {
                                     qStroika_Foundation_Characters_FMT_PREFIX_::string_view, qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view>)
 #endif
 #endif
-#if _MSC_VER || __cplusplus < 202101L /*202302L 202100L 202300L*/ || (__clang__ != 0 && __GLIBCXX__ != 0 && __GLIBCXX__ <= 20240908) ||    \
-    (!defined(__clang__) && __cplusplus == 202302L && __GLIBCXX__ <= 20240908) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
+#if not defined(__cpp_lib_format_ranges)
 #if !qStroika_HasComponent_fmtlib or (FMT_VERSION < 110000)
              // available in C++23
              or Common::IPair<remove_cvref_t<T>> or
