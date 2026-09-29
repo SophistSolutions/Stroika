@@ -123,9 +123,8 @@ my $MACOSX_DEPLOYMENT_TARGET = undef;
 my $CPPSTD_VERSION_FLAG = '';
 my $CXXWARNING_FLAGS = undef;
 
-# gcc visibility flag - -fvisible=hidden  (see https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html for explanation)
-# setting = 'hidden' used to silence a warning on MacOS with boost, but no longer needed --LGP 2023-12-04
-my $SharedSymbolVisibility = undef;	
+# gcc visibility flag - -fvisibility=hidden  (see https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html for explanation)
+my $SharedSymbolVisibility = undef;
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
 my $sanitizerFlagsIsDefined = false;		#sadly perl arrays cannot be 'undefined'
@@ -181,7 +180,6 @@ my $FEATUREFLAG_ZLib = undef;
 my $FEATUREFLAG_zstd = undef;
 my $TargettingValgrind = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
-my $qCompiler_ValgrindLTO_Buggy = undef;
 my $qCompiler_HasNoMisleadingIndentation_Flag = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
@@ -234,13 +232,6 @@ my $DoSetThirdPartyComponentsParameterFromCommandLine = 'fill-in-defaults';
 my $sMongoArmhfAsanNoted_ = false;
 sub	MongoCXXDriverDefaultsOn_
 {
-	# # if require dodcument why
-	# #	- (for gcc) gcc 12 or later.
-	# #
-	# if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and GetGCCVersion_ ($COMPILER_DRIVER) < 12.0) {
-	# 	return false;
-	# }
-
 	#	- NOT armhf + address sanitizer: the armhf gcc cross compilers crash - "internal compiler error: Segmentation
 	#	  fault" - compiling mongo-c-driver under -fsanitize=address (e.g. in libbson/src/bson/bson-clock.c). Measured
 	#	  2026-09-24: gcc 13.3/14.2 (Ubuntu 24.04) and 13.4/15.2 (26.04) crash at -O2 AND -O0; 26.04's 14.3 built it in
@@ -1176,8 +1167,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			}
 		}
 
-		### if is msvc and version > 19.29 (which is 16.10), enable asan
-		if (IsMSVCCompiler_($COMPILER_DRIVER) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER) >= 192930037) {
+		if (IsMSVCCompiler_($COMPILER_DRIVER)) {
 			if (!$sanitizerFlagsNoneSet) {
 				if (!IsTargettingSanitizer_ ('address')) {
 					push @sanitizerFlags, 'address';
@@ -1211,20 +1201,6 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		if ($gAssertionsEnabled == DEFAULT_BOOL_OPTIONS) {
 			$gAssertionsEnabled = 0;
 		}
-		# https://github.com/SophistSolutions/Stroika/issues/1128
-		#	./Builds/g++-release-sanitize_address_undefined/Tests/Test02
-		#	=================================================================
-		#	==2050532==ERROR: AddressSanitizer: requested allocation size 0xccccccccccc86000 (0xccccccccccc87000 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)
-		#	    #0 0x5628d4f54bff in malloc (/Sandbox/Stroika-Dev/Builds/g++-release-sanitize_address_undefined/Tests/Test02+0x9dcbff) (BuildId: 97ffc4d1d27cdcfb13de655b58bf06b57977e113)
-		#	    #1 0x5628d53fdb7e in Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::Allocate_(unsigned long) /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/../Memory/InlineBuffer.inl:517
-		#	    #2 0x5628d53fdb7e in Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::reserve(unsigned long, bool) [clone .constprop.0] /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/../Memory/InlineBuffer.inl:331
-		#	SUMMARY: AddressSanitizer: allocation-size-too-big (/Sandbox/Stroika-Dev/Builds/g++-release-sanitize_address_undefined/Tests/Test02+0x9dcbff) (BuildId: 97ffc4d1d27cdcfb13de655b58bf06b57977e113) in malloc
-		#	==2050532==ABORTING
-		#
-		# MAYBE add check for only if gcc version < 14 (seen in gcc 13.2)
-		#	NB: the actual $ENABLE_LTO=false for this lives in ApplyCompilerBugWorkarounds_ (), because
-		#	--sanitize is not parsed until ParseCommandLine_Remaining_ (), which runs AFTER this sub.
-
 		# clang LTO on Linux needs lld. GNU ld (ld.bfd, reading the bitcode through the LLVMgold plugin) mis-links Stroika:
 		# undefined references to symbols that ARE in the archive, e.g. on clang++-20
 		#	ld-temp.o:(.text.startup+0x2a66): undefined reference to `Stroika::Foundation::DataExchange::ObjectVariantMapper::ObjectVariantMapper()'
@@ -1425,7 +1401,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		}
 	}
 
-	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and (GetGCCVersion_ ($COMPILER_DRIVER) >= 11.0)) {
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
 		# Needed for sqlite build warning
 		$qCompiler_HasNoMisleadingIndentation_Flag = true;
 	}
@@ -1448,7 +1424,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		# https://github.com/SophistSolutions/Stroika/issues/851 - first seen on 20.10; 22.04 is the last supported release it affects
 
 		#### VERIFIED STILL BROKEN TSAN DEBUG on Ubuntu 22.04 g++-debug-sanitize_thread
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER) and GetGCCVersion_ ($COMPILER_DRIVER) < 14.0)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and GetGCCVersion_ ($COMPILER_DRIVER) < 14.0) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
 		}
 	}
@@ -1547,13 +1523,7 @@ sub ComputeARCHFlag_
 sub	SetDefaultsWhichDependOnPlatform_
 {
 	if ($BuildPlatform eq 'Unix' && $COMPILER_DRIVER eq '') {
-		# If the default gcc is older than Stroika's minimum (11), default to gcc-11 - the user can say otherwise with --compiler-driver
-		if (GetGCCVersion_ ("gcc") < 11.0) {
-			$COMPILER_DRIVER = "gcc-11";
-		}
-		else {
-			$COMPILER_DRIVER = "gcc";
-		}
+		$COMPILER_DRIVER = "gcc";
 	}
 }
 
@@ -2336,9 +2306,8 @@ sub	ApplyCompilerBugWorkarounds_
 	return if (not IsGCCOrGPlusPlus_ ($COMPILER_DRIVER));
 
 	#	NB: deliberately NOT disabling LTO for the address sanitizer.
-	#	https://github.com/SophistSolutions/Stroika/issues/1128 asked for that (see the
-	#	allocation-size-too-big report quoted in SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_),
-	#	but that test never actually ran - it sat in a sub called before --sanitize was parsed - so asan
+	#	https://github.com/SophistSolutions/Stroika/issues/1128 asked for that (an asan
+	#	allocation-size-too-big report from Tests/02, gcc 13.2), but that test never actually ran - it sat in a sub called before --sanitize was parsed - so asan
 	#	release builds have had LTO on for years and are fine with it. Turning it on for real (tried
 	#	2026-08-29, gcc < 14 only) made things WORSE, not better:
 	#		WITH -flto (as shipped for years): 24.04/g++-13.3 asan run is clean
@@ -2366,7 +2335,7 @@ sub	ApplyCompilerBugWorkarounds_
 	#			-O3       -fsanitize=thread	passes  (ie -fno-lto fixes it)
 	#			-O3 -flto                  	passes
 	#			-O0                        	passes
-	#	so LTO is the necessary ingredient, exactly as with the address sanitizer.
+	#	so LTO is the necessary ingredient.
 	#	Compiler/platform matrix actually measured (2026-08-29, same source, same probe):
 	#			24.04	g++-13 (13.3.0-6ubuntu2~24.04.1)	FAILS
 	#			24.04	g++-14 (14.2.0-4ubuntu2~24.04.1)	FAILS
@@ -2418,24 +2387,9 @@ sub	ApplyCompilerBugWorkarounds_
 		$COPTIMIZE_FLAGS = "-O2";
 	}
 
-	#	...BUT dropping LTO is NOT an acceptable cure, and this arm is therefore disabled too.
-	#	Measured on the 3.0d24 Ubuntu 24.04 release run (g++ 13.3), building WITHOUT -flto:
-	#		g++-release-sanitize_thread went from 1 failure (the Test47 one above) to TWENTY -
-	#		Containers::Sequence, Traversal (including the new *_ContiguousFastPath_ tests),
-	#		DataExchange Reader/Writers and ObjectVariantMapper, all wrong VALUES rather than
-	#		sanitizer reports. That is the SAME failure set the address sanitizer produced when its
-	#		LTO was removed (see above), so it is not specific to which sanitizer is in play: on this
-	#		toolchain, '-O3 + sanitizer + no LTO' generates wrong code for the new contiguous-storage
-	#		fast paths. Trading 1 failure for 20 is not a fix.
-	#	Every release config in the matrix uses LTO, so no-LTO -O3 is a code path this project has
-	#	essentially never shipped - which is very likely why the underlying bug went unnoticed. That
-	#	bug is worth chasing on its own (see TODO.md); it may well be the more important of the two.
-	#	NEXT THING TO TRY for Tests/47 itself: '-O2' with LTO left ON, which was measured to pass the
-	#	real Tests/47 on the failing configuration. That needs verifying against the 20 tests above
-	#	before it goes in.
-	##	if (IsTargettingSanitizer_ ('thread')) {
-	##		$ENABLE_LTO = false;
-	##	}
+	#	Dropping LTO for tsan instead is NOT a cure: on the 3.0d24 Ubuntu 24.04 release run (g++ 13.3) it took
+	#	g++-release-sanitize_thread from 1 failure (Tests/47) to TWENTY - wrong VALUES in Containers::Sequence,
+	#	Traversal and DataExchange, the same set the address sanitizer gave without LTO (above).
 
 	#	armhf gcc (the Ubuntu cross compilers) crashes - "internal compiler error: Segmentation fault" -
 	#	compiling mongo-c-driver (e.g. bson_get_monotonic_time () in libbson/src/bson/bson-clock.c) under
@@ -2813,17 +2767,7 @@ sub PostProcessOptions_ ()
 	}
 
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-		my $clangVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		if ("$^O" eq "darwin")  {
-			if ($clangVersion >= 14.0) {
-				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
-			}
-		}
-		else {
-			if ($clangVersion >= 15.0) {
-				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
-			}
-		}
+		$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
 	}
 
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
@@ -2846,9 +2790,8 @@ sub PostProcessOptions_ ()
 				$LinkerArgs_ExtraPrefix .= " " . $crap2Add2CZZFlags;
 			}
 			if ($isVisualStudio) {
-				# https://github.com/SophistSolutions/Stroika/issues/1116
-				my $clVer = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
-				if(IsTargettingSanitizer_ ('address') and 193732822 <= $clVer) {	## and $clVer <= 193732822(so far not fixed)
+				# asan executables need the asan runtime DLL beside them (https://github.com/SophistSolutions/Stroika/issues/1116)
+				if (IsTargettingSanitizer_ ('address')) {
 					FillInToolsPathAdditionsIfNeeded_();
 					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");
 					# ls -l /c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/
@@ -3008,9 +2951,6 @@ sub PostProcessOptions_ ()
 			if ($STDCXXLIB eq "libc++") {
 				push @LinkerArgs_LibDependencies_ADD, "-lc++";
 			}
-			else {
-				push @LinkerArgs_LibDependencies_ADD, "-lstdc++fs";
-			}
 		}
 	}
 
@@ -3090,9 +3030,7 @@ sub PostProcessOptions_ ()
 		# COULD combine them all, and harwire runing the awk scrit to remove dups a -lz and each of these
 		# libraries: '-lbrotlidec', '-lcrypto', '-lidn2', '-lssl', '-lz'
 		# Seems least bad of a bad bunch of options:
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 15.0) {
-			$LinkerArgs_ExtraSuffix .= " -Wl,-no_warn_duplicate_libraries";
-		}
+		$LinkerArgs_ExtraSuffix .= " -Wl,-no_warn_duplicate_libraries";
 	}
 
 	# Under LTO, gcc generates the code - and so emits every middle/back-end diagnostic - at LINK time, and
@@ -3433,9 +3371,6 @@ sub	WriteConfigFile_
 	if (defined ($qCompiler_HasNoMisleadingIndentation_Flag)) {
 		print (OUT "    <qCompiler_HasNoMisleadingIndentation_Flag>$qCompiler_HasNoMisleadingIndentation_Flag</qCompiler_HasNoMisleadingIndentation_Flag>\n");
 	}
-	if (defined ($qCompiler_ValgrindLTO_Buggy)) {
-		print (OUT "    <qCompiler_ValgrindLTO_Buggy>$qCompiler_ValgrindLTO_Buggy</qCompiler_ValgrindLTO_Buggy>\n");
-	}
 
 	print (OUT "\n    <!--VERSIONS-->\n");
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
@@ -3490,13 +3425,9 @@ if ($onlyGenerateIfCompilerExists) {
 
 	if ($generate && IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		if ($itsVersion < 10.0) {
+		if ($itsVersion < 11.0) {
 			$generate = false;
-			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 10 (v=" . $itsVersion . ") dont adequately support spaceship operator";
-		}
-		elsif ($itsVersion < 11.0) {
-			$generate = false;
-			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 11 (v=" . $itsVersion . ") doesn't support chrono::month, etc";
+			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") v=" . $itsVersion . " is older than Stroika's minimum, gcc 11";
 		}
 	}
 	if (defined $FEATUREFLAG_fmtlib && $FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_No && NeedsFmtLib_ ()) {
@@ -3507,16 +3438,9 @@ if ($onlyGenerateIfCompilerExists) {
 	# if flag to use libc++ - check if right version is available (but not on XCode)
 	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		if ($itsVersion <  14.0) {
+		if ($itsVersion < 15.0) {
 			$generate = false;
-			$generateBecause = "clang++-13 with libc++ doesn't support modern enough c++, and with libstdc++, some versions (ubuntu 22.04) work, and others (libg++ 13 and later) dont compile";
-		}
-		if ($generate && $itsVersion < 15.0 && $STDCXXLIB eq "libstdc++") {
-			# use g++ version and a proxy for what version of stdlib (hard to find otherwise)
-			if (GetGCCVersion_ ("g++") >= 13.0) {
-				$generate = false;
-				$generateBecause = "$COMPILER_DRIVER_CPlusPlus with libstdc++ doesn't work with more recent versions of libstdc++";
-			}
+			$generateBecause = "$COMPILER_DRIVER_CPlusPlus v=" . $itsVersion . " is older than Stroika's minimum, clang 15";
 		}
 		if ($generate && $ubuntuVersion == 24.04 && $itsVersion < 16.0 && $STDCXXLIB eq "libstdc++") {
 			# clang++-15-release-libstdc++ fails building google test

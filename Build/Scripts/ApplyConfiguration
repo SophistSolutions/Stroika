@@ -379,7 +379,6 @@ sub WriteStroikaConfigMakeHeader
 
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_HasNoMisleadingIndentation_Flag");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_ValgrindLTO_Buggy");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ATLMFC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_boost");

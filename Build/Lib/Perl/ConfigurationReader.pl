@@ -299,10 +299,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'RunPrefix'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<qCompiler_ValgrindLTO_Buggy>");
-		if (defined $pps) {
-			$configuration {'qCompiler_ValgrindLTO_Buggy'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<MakeDefine>");
 		if (defined $pps) {
 			push (@useExtraMakeDefines, $pps);
