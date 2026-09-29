@@ -676,23 +676,6 @@ See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
 
 #endif
 
-/**
-/usr/bin/ld: /mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug-unix/Tests/48/Test.o: in function `(anonymous namespace)::Test_7_BLOB_()':
-/mnt/c/Sandbox/Stroika/DevRoot/Tests/48/Test.cpp:262: undefined reference to `Stroika::Foundation::Characters::String Stroika::Foundation::Memory::BLOB::AsBase64<Stroika::Foundation::Characters::String>() const'
-   Test 51: Foundation::Traversal:
-      Compiling Tests/51/Test.cpp ...
-      */
-#ifndef qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// FIRST SEEN BROKEN IN GCC 11
-#define qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
-#else
-#define qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy 0
-#endif
-
-#endif
-
 /*
  file included from AssertExternallySynchronizedChecker.cpp:6:
 ./../Characters/ToString.h:258:16: error: static assertion failed

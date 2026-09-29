@@ -24,11 +24,6 @@ using namespace Stroika::Foundation::Streams;
 using Debug::AssertExternallySynchronizedChecker;
 using Memory::BLOB;
 
-#if qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
-template <>
-Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 () const;
-#endif
-
 /*
  ********************************************************************************
  ************************* Memory::BLOB::BasicRep_ ******************************
