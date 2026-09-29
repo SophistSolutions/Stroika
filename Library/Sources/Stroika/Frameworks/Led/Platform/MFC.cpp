@@ -44,61 +44,6 @@ public:
 
 CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qMFCRequiresCWndLeftmostBaseClass, qMFCRequiresCWndLeftmostBaseClass);
 
-#if qProvideLedStubsForOLEACCDLL
-/*
- ********************************************************************************
- ******************************** OLEACC.DLL ************************************
- ********************************************************************************
- */
-STDAPI CreateStdAccessibleObject (HWND hwnd, LONG idObject, REFIID riid, void** ppvObject)
-{
-    HINSTANCE oleACCDLL = ::LoadLibrary (_T ("OLEACC.dll"));
-    HRESULT   hr        = E_FAIL;
-    if (oleACCDLL != NULL) {
-        HRESULT (WINAPI * pCreateStdAccessibleObject)
-        (HWND, LONG, REFIID, void**) =
-            (HRESULT (WINAPI*) (HWND, LONG, REFIID, void**)) (::GetProcAddress (oleACCDLL, "CreateStdAccessibleObject"));
-        if (pCreateStdAccessibleObject != NULL) {
-            hr = (pCreateStdAccessibleObject)(hwnd, idObject, riid, ppvObject);
-        }
-        Verify (::FreeLibrary (oleACCDLL));
-    }
-    return hr;
-}
-
-STDAPI AccessibleObjectFromWindow (HWND hwnd, DWORD dwId, REFIID riid, void** ppvObject)
-{
-    HINSTANCE oleACCDLL = ::LoadLibrary (_T ("OLEACC.dll"));
-    HRESULT   hr        = E_FAIL;
-    if (oleACCDLL != NULL) {
-        HRESULT (WINAPI * pAccessibleObjectFromWindow)
-        (HWND, DWORD, REFIID, void**) =
-            (HRESULT (WINAPI*) (HWND, DWORD, REFIID, void**)) (::GetProcAddress (oleACCDLL, "AccessibleObjectFromWindow"));
-        if (pAccessibleObjectFromWindow != NULL) {
-            hr = (pAccessibleObjectFromWindow)(hwnd, dwId, riid, ppvObject);
-        }
-        Verify (::FreeLibrary (oleACCDLL));
-    }
-    return hr;
-}
-
-STDAPI_ (LRESULT)
-LresultFromObject (REFIID riid, WPARAM wParam, LPUNKNOWN punk)
-{
-    HINSTANCE oleACCDLL = ::LoadLibrary (_T ("OLEACC.dll"));
-    HRESULT   hr        = E_FAIL;
-    if (oleACCDLL != NULL) {
-        LRESULT (WINAPI * pLresultFromObject)
-        (REFIID, WPARAM, LPUNKNOWN) = (LRESULT (WINAPI*) (REFIID, WPARAM, LPUNKNOWN)) (::GetProcAddress (oleACCDLL, "LresultFromObject"));
-        if (pLresultFromObject != NULL) {
-            hr = (pLresultFromObject)(riid, wParam, punk);
-        }
-        Verify (::FreeLibrary (oleACCDLL));
-    }
-    return hr;
-}
-#endif
-
 /*
  ********************************************************************************
  ******************** Led_MFCReaderDAndDFlavorPackage ***************************

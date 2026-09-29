@@ -1706,9 +1706,6 @@ void LedItApplication::OnOpenDocumentCommand ()
 
 void LedItApplication::OnSaveDocumentCommand ()
 {
-#if qPrintGLIBTradeMessages
-    g_message ("Entering OnSaveDocumentCommand\n");
-#endif
     if (fDocument->fPathName.empty ()) {
         OnSaveAsDocumentCommand ();
     }
@@ -1732,9 +1729,6 @@ void LedItApplication::OnSaveAsDocumentCommand ()
 
 void LedItApplication::OnQuitCommand ()
 {
-#if qPrintGLIBTradeMessages
-    g_message ("Entering OnQuitCommand\n");
-#endif
     gtk_widget_destroy (fTextEditor->Get_GtkWidget ());
     fTextEditor = NULL;
     gtk_main_quit ();

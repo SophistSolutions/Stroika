@@ -71,30 +71,6 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
 
 /*
-    @CONFIGVAR:     qProvideLedStubsForOLEACCDLL
-    @DESCRIPTION:
-            <p>Windows 98 has a problem with OLEACC.DLL. Though it is <em>supposed</em> to be included with Win98-
-        people somehow frequently come up with systems that don't have it, or have it corrupted.
-            (for example, see MSFT knowledge base article
-                http://support.microsoft.com/default.aspx?scid=kb%3Ben-us%3B810684
-            )</p>
-            <p>As of version 7 of MFC (with Visual Studio.Net), Microsoft added virtual functions that refer to
-        this DLL. The virtual function CWnd::EnsureStdObj calls CreateStdAccessibleObject (from OLEACC.DLL),
-        the virtual function CWnd::CreateAccessibleProxy calls LresultFromObject (from OLEACC.DLL),
-        and CWnd::GetAccessibleChild () which calls AccessibleObjectFromWindow (from OLEACC.DLL). This creates
-        a dependency of OLEACC.DLL which is unfortunate for applications that link against MFC and really don't need
-        those functions.
-            </p>
-            <p>We provide a workaround for this problem by providing our own - friendlier stub routines for these
-        two OLEACC.DLL functions.</p>
-            <p>Defaulted to ON if _MFC_VER>=0x0700.</p>
-            <p>NOW Defaults off, since its hard to believe this would still exist</p>
-        */
-#ifndef qProvideLedStubsForOLEACCDLL
-#define qProvideLedStubsForOLEACCDLL 0
-#endif
-
-/*
         **************** MFC bug workaround defines **************
         */
 

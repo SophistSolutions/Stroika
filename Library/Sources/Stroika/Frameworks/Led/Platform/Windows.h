@@ -62,40 +62,6 @@ namespace Stroika::Frameworks::Led::Platform {
 #define qScrollTextDuringThumbTracking 1
 #endif
 
-/*
-    @CONFIGVAR:     qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-    @DESCRIPTION:   <p>On Windows 2000, you SUPPOSEDLY can now get UNICODE characters from the new IME.
-        However - in practice - unless you build a so-called UNICODE application (really this means call RegisterClassW
-        rather than RegisterClassA).
-        Then the Win32 API IsWindowUnicode () returns TRUE or FALSE according to which way
-        you registered your window class.
-        Then the IME decides whether to hand your app UNICODE characters (WM_CHAR/WM_IME_CHAR) based on IsWindowUnicode () API.</p>
-            <p>However - UNICODE applications (so-called) cannot run under Win98 and earlier. For many (most applications)
-        this is not an acceptable limitation (which is why Led supports so-called 'Partial UNICODE' configurations - @'Led_tChar'
-        is UNICODE - but @'Led_SDKChar' is not).</p>
-            <p>Another relevant problem is that MFC allows you to build an application that is either fully UNICODE (-D_UNICODE) or
-        fully ANSI (not -D_UNICODE). Nothing in between.</p>
-            <p>So - if you want your app to use MFC - and you want UNICODE support - you are out of luck getting characters from the IME
-        (unless you set your OS SYSTEM DEFAULT LOCALE for the one locale all your characters character set can be found in).</p>
-            <p>In steps the qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug - to rescue the day.
-        I asked MSFT for help on this question (CASE ID #SRX991213601271). Basicly they weren't very helpful. But after
-        much discussion - I seem to have elicited a kludge that seems to work pretty well.</p>
-            <p>When ever I get an IME_CHAR message - instead of trying to decode the multibyte character inside
-        (which will be bogus frequently) - I call ImmGetCompositionStringW () and then grab the characters out of that
-        buffer directly. The only tricky part - and this was VERY tricky - is which characters to grab!</p>
-            <p>Eventually, through trial and error - I have evolved into doing this. Set an index counter to zero. And for
-        every WM_IME_CHAR - grab the char at that index, and bump my index. And for ever WM_IMECOMPOSITION or WM_IME_ENDCOMPOSITION
-        message - reset that counter to zero.</p>
-            <p>I've tried this on NT4Japanese, Win98J, and Win2K(RC2) with the default Locale Japanese or English. It seems to work.</p>
-            <p>This is probably somewhat error prone or risky. It is for that reason that I'm making this bug workaround
-        optional - and easy to shut off. But I leave it on - by default (when building for UNICODE - but without -D_UNICODE), since
-        in that case - you will almost certainly want that to work.</p>
-            <p>Default Value:   (qWideCharacters && !qTargetPlatformSDKUseswchar_t)</p>
-        */
-#ifndef qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-#define qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug (!qTargetPlatformSDKUseswchar_t)
-#endif
-
     /*
     @CLASS:     FunnyMSPageUpDownAdjustSelectionHelper
     @DESCRIPTION:   <p>Helper class to implement common MS-Windows UI where  paging up/down, and sometimes other activities try
@@ -150,26 +116,21 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual void    OnSize_Msg ();
         virtual void    OnChar_Msg (UINT nChar, LPARAM lKeyData);
         virtual LRESULT OnUniChar_Msg (WPARAM nChar, LPARAM lParam);
-#if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-        virtual LONG OnIMEChar_Msg (WPARAM wParam, LPARAM lParam);
-        virtual LONG OnIME_COMPOSITION_Msg (WPARAM wParam, LPARAM lParam);
-        virtual LONG OnIME_ENDCOMPOSITION_Msg (WPARAM wParam, LPARAM lParam);
-#endif
-        virtual void OnKeyDown_Msg (UINT nChar, LPARAM lKeyData);
-        virtual bool OnSetCursor_Msg (HWND hWnd, UINT nHitTest, UINT message);
-        virtual UINT OnGetDlgCode_Msg ();
-        virtual void OnSetFocus_Msg (HWND oldWnd);
-        virtual void OnKillFocus_Msg (HWND newWnd);
-        virtual bool OnEraseBkgnd_Msg (HDC hDC);
-        virtual void OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);
-        virtual void OnLButtonDown_Msg (UINT nFlags, int x, int y);
-        virtual void OnLButtonUp_Msg (UINT nFlags, int x, int y);
-        virtual void OnLButtonDblClk_Msg (UINT nFlags, int x, int y);
-        virtual void OnMouseMove_Msg (UINT nFlags, int x, int y);
-        virtual void OnVScroll_Msg (UINT nSBCode, UINT nPos, HWND hScrollBar);
-        virtual void OnHScroll_Msg (UINT nSBCode, UINT nPos, HWND hScrollBar);
-        virtual bool OnMouseWheel_Msg (WPARAM wParam, LPARAM lParam);
-        virtual void OnEnable_Msg (bool enable);
+        virtual void    OnKeyDown_Msg (UINT nChar, LPARAM lKeyData);
+        virtual bool    OnSetCursor_Msg (HWND hWnd, UINT nHitTest, UINT message);
+        virtual UINT    OnGetDlgCode_Msg ();
+        virtual void    OnSetFocus_Msg (HWND oldWnd);
+        virtual void    OnKillFocus_Msg (HWND newWnd);
+        virtual bool    OnEraseBkgnd_Msg (HDC hDC);
+        virtual void    OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);
+        virtual void    OnLButtonDown_Msg (UINT nFlags, int x, int y);
+        virtual void    OnLButtonUp_Msg (UINT nFlags, int x, int y);
+        virtual void    OnLButtonDblClk_Msg (UINT nFlags, int x, int y);
+        virtual void    OnMouseMove_Msg (UINT nFlags, int x, int y);
+        virtual void    OnVScroll_Msg (UINT nSBCode, UINT nPos, HWND hScrollBar);
+        virtual void    OnHScroll_Msg (UINT nSBCode, UINT nPos, HWND hScrollBar);
+        virtual bool    OnMouseWheel_Msg (WPARAM wParam, LPARAM lParam);
+        virtual void    OnEnable_Msg (bool enable);
 
     protected:
         short fAccumulatedWheelDelta;
@@ -194,11 +155,6 @@ namespace Stroika::Frameworks::Led::Platform {
 
     private:
         bool fFunnyMSPageUpDownAdjustSelectionBehavior;
-
-#if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-    protected:
-        size_t fIMECurCharIdx;
-#endif
 
         // Message Map Helpers - often do the REAL work of handling the messages...
     protected:
@@ -564,9 +520,6 @@ namespace Stroika::Frameworks::Led::Platform {
         , fDefaultWindowMargins ()
         , fControlArrowsScroll (false)
         , fFunnyMSPageUpDownAdjustSelectionBehavior (true)
-#if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-        , fIMECurCharIdx (0)
-#endif
         , fUpdateTablet (nullptr)
         , fAllocatedTablet ()
         , fAcquireCount (0)
@@ -724,97 +677,6 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
         return 0;
     }
-#if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-    template <typename BASE_INTERACTOR>
-    /*
-    @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::OnIMEChar_Msg
-    @DESCRIPTION:   <p>Part of @'qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug' bug workaround.</p>
-    */
-    LONG Led_Win32_Helper<BASE_INTERACTOR>::OnIMEChar_Msg (WPARAM wParam, LPARAM lParam)
-    {
-        /*
-         *  Win32 SDK docs don't say what value to return for WM_IME_CHAR - so return 0 for now - LGP20000111
-         */
-        UINT nChar = wParam;
-        if (nChar == VK_ESCAPE) {
-            // Ignore when user types ESC key - that is what Windows NotePad and MS Word seem todo...
-            return 0;
-        }
-        if (nChar == '\t') {
-            HandleTabCharacterTyped ();
-            return 0;
-        }
-
-        if (CheckIfDraggingBeepAndReturn ()) {
-            return 0;
-        }
-
-        if (nChar == '\r') {
-            nChar = '\n';
-        }
-
-        if (qTargetPlatformSDKUseswchar_t || ::IsWindowUnicode (this->GetValidatedHWND ())) {
-            // do nothing - 'nChar' is already a fine UNICODE character
-            // NB: we COULD just check qTargetPlatformSDKUseswchar_t. But be nicer that MSFT. Allow for that a user
-            // might want to create a UNICODE window without defining -D_UNICODE (see comments in
-            // qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug)
-        }
-#if !qTargetPlatformSDKUseswchar_t
-        else {
-            wstring tmpIMEBugWorkaroundCompString = IME::Get ().GetCompositionResultStringW (this->GetValidatedHWND ());
-            if (fIMECurCharIdx < tmpIMEBugWorkaroundCompString.length ()) {
-                nChar = tmpIMEBugWorkaroundCompString[fIMECurCharIdx];
-                ++fIMECurCharIdx;
-            }
-            else {
-                /*
-                    *  This shouldn't happen. And it won't do much good except on systems where the default locale
-                    *  is set to use a characterset used by the IME. But at least for those cases - do what
-                    *  we can...
-                    */
-                wchar_t convertedChars[2];
-                memset (&convertedChars, 0, sizeof (convertedChars));
-                int     nWideChars    = ::MultiByteToWideChar (CP_ACP, 0, reinterpret_cast<char*> (&nChar), 2, convertedChars, 2);
-                wchar_t convertedChar = convertedChars[0];
-                if (nWideChars == 0) {
-                    OnBadUserInput ();
-                    return 0;
-                }
-                nChar = convertedChar;
-            }
-        }
-#endif
-
-        OnTypedNormalCharacter (nChar, false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000),
-                                !!(::GetKeyState (VK_MENU) & 0x8000));
-
-#if qSupportWindowsSDKCallbacks
-        HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (GetWindowID (), EN_CHANGE), (LPARAM)hWnd);
-#endif
-        return 0;
-    }
-    template <typename BASE_INTERACTOR>
-    /*
-    @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::OnIME_COMPOSITION_Msg
-    @DESCRIPTION:   <p>Part of @'qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug' bug workaround.</p>
-    */
-    LONG Led_Win32_Helper<BASE_INTERACTOR>::OnIME_COMPOSITION_Msg (WPARAM wParam, LPARAM lParam)
-    {
-        fIMECurCharIdx = 0;
-        return DefWindowProc (WM_IME_COMPOSITION, wParam, lParam);
-    }
-    template <typename BASE_INTERACTOR>
-    /*
-    @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::OnIME_ENDCOMPOSITION_Msg
-    @DESCRIPTION:   <p>Part of @'qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug' bug workaround.</p>
-    */
-    LONG Led_Win32_Helper<BASE_INTERACTOR>::OnIME_ENDCOMPOSITION_Msg (WPARAM wParam, LPARAM lParam)
-    {
-        fIMECurCharIdx = 0;
-        return DefWindowProc (WM_IME_ENDCOMPOSITION, wParam, lParam);
-    }
-#endif
     template <typename BASE_INTERACTOR>
     /*
     @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::OnKeyDown_Msg
@@ -3135,14 +2997,6 @@ namespace Stroika::Frameworks::Led::Platform {
             case WM_UNICHAR:
                 return this->OnUniChar_Msg (wParam, lParam);
                 break;
-#if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-            case WM_IME_CHAR:
-                return this->OnIMEChar_Msg (wParam, lParam);
-            case WM_IME_COMPOSITION:
-                return this->OnIME_COMPOSITION_Msg (wParam, lParam);
-            case WM_IME_ENDCOMPOSITION:
-                return this->OnIME_ENDCOMPOSITION_Msg (wParam, lParam);
-#endif
             case WM_KEYDOWN:
                 this->OnKeyDown_Msg (static_cast<UINT> (wParam), lParam);
                 break;
@@ -3228,10 +3082,5 @@ namespace Stroika::Frameworks::Led::Platform {
 }
 
 CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qSupportWindowsSDKCallbacks, qSupportWindowsSDKCallbacks);
-#if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, 1);
-#else
-CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, 0);
-#endif
 
 #endif /*_Stroika_Frameworks_Led_Platform_Windows_h_*/
