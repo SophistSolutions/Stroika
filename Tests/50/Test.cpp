@@ -884,12 +884,7 @@ namespace {
         }
         {
             const Duration kD = Duration{"PT1.003S"};
-#if qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy
-            //cerr << "HI MOM: '" << kD.PrettyPrint ().AsNarrowSDKString () << "'" << endl;
-            VerifyTestResultWarning (kD.PrettyPrint () == "1.003 seconds");
-#else
             EXPECT_EQ (kD.PrettyPrint (), "1.003 seconds");
-#endif
         }
         {
             const Duration kD = Duration{"PT0.000045S"};
