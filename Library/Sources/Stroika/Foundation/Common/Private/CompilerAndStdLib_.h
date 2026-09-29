@@ -1604,17 +1604,14 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #endif
 #endif
 
+/*
+ *  libc++ before 17 has std::compare_three_way, but shared_ptr has no operator<=> (C++20's library comparisons, P1614), so
+ *  compare_three_way cannot compare two shared_ptrs, and shared_ptr <=> nullptr does not compile. Seen in libc++ 15; 18 and
+ *  later have it - and so does Apple's libc++ as of every supported Xcode (checked in Xcode 16.0's libc++ 18.1 and 26.3's).
+ */
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
-#if defined(_LIBCPP_VERSION)
-#if _LIBCPP_VERSION < 170000
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 170000
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 1
-#else
-#if defined(__APPLE__)
-#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 1
-#else
-#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
-#endif
-#endif
 #else
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
 #endif
