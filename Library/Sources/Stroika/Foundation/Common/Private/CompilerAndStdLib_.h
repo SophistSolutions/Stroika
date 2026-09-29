@@ -403,12 +403,19 @@ Test.cpp:372:31: warning: value computed is not used [-Wunused-value]
 
 #endif
 
-#ifndef qCompilerAndStdLib_illunderstood_ispan_Buggy
+/**
+ *  clang 15 mis-evaluates Memory::ISpan's requires-expression (a generic lambda that deduces span<T1, E1>) in some contexts:
+ *  in String's constructors it takes ISpan<Character> to be true, so String{Sequence<Character>} (Tests/02) finds no
+ *  constructor - "'!Memory::ISpan<Character>' evaluated to false". The concept alone, as a static_assert, gets the same
+ *  cases right, so it depends on context. So on clang 15, ISpan is a plain type trait instead. clang 16 and later get it
+ *  right (verified 2026-09-29, clang 16-22, libc++ and libstdc++, by forcing this to 0).
+ */
+#ifndef qCompilerAndStdLib_ISpanMisevaluatedInContext_Buggy
 
 #if defined(__clang__)
-#define qCompilerAndStdLib_illunderstood_ispan_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#define qCompilerAndStdLib_ISpanMisevaluatedInContext_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
-#define qCompilerAndStdLib_illunderstood_ispan_Buggy 0
+#define qCompilerAndStdLib_ISpanMisevaluatedInContext_Buggy 0
 #endif
 
 #endif

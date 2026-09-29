@@ -20,7 +20,7 @@
 
 namespace Stroika::Foundation::Memory {
 
-#if qCompilerAndStdLib_illunderstood_ispan_Buggy
+#if qCompilerAndStdLib_ISpanMisevaluatedInContext_Buggy
     namespace Private_ {
         template <class>
         inline constexpr bool _Is_span_v = false;
@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Memory {
      *  \note matches span<T>, span<T,EXTENT>, span<const T>, span<const T,EXTENT>, but not things that
      *  are CONVERTIBLE to span<T>
      */
-#if qCompilerAndStdLib_illunderstood_ispan_Buggy
+#if qCompilerAndStdLib_ISpanMisevaluatedInContext_Buggy
     template <typename SPAN_T>
     concept ISpan = Private_::_Is_span_v<SPAN_T>;
 #else
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Memory {
         };
     };
 #endif
-#if qCompilerAndStdLib_illunderstood_ispan_Buggy
+#if qCompilerAndStdLib_ISpanMisevaluatedInContext_Buggy
     static_assert (ISpan<span<int>> and ISpan<span<int, 3>>);
 #else
     static_assert (ISpan<span<int>> and ISpan<span<int, 3>> and ISpan<const span<const int, 3>>);
