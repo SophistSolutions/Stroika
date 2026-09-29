@@ -311,7 +311,7 @@ LedDialogWidget::LedDialogWidget ()
     SetCommandHandler (&fCommandHandler);
 }
 
-LedDialogWidget::LedDialogWidget (TS_SET_OUTSIDE_BWA)
+LedDialogWidget::LedDialogWidget (DerivedClassSpecifiesTextStore)
     : inherited ()
     , fTextStore ()
 {
@@ -566,7 +566,7 @@ void LedComboBoxWidget::MyComboListBoxPopup::ComputePreferedHeight (DistanceType
  ********************************************************************************
  */
 LedComboBoxWidget::MyTextWidget::MyTextWidget ()
-    : inherited (eTS_SET_OUTSIDE_BWA)
+    : inherited (eDerivedClassSpecifiesTextStore)
     , fComboBox (NULL)
 {
     SpecifyTextStore (&fTextStore);

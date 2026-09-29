@@ -34,7 +34,7 @@ endif
 
 ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
 # AVOID "_WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)"
-CPPFLAGS += -D_WIN32_WINNT=0x0501
+CPPFLAGS += -D_WIN32_WINNT=0x0A00
 # Maybe helps avoid bugs?
 CPPFLAGS += -DSTRICT
 # AVOID C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\transact.h(147): error C2872: 'byte': ambiguous symbol

@@ -130,10 +130,13 @@ namespace Stroika::Frameworks::Led {
         LedDialogWidget ();
 
     protected:
-        enum TS_SET_OUTSIDE_BWA {
-            eTS_SET_OUTSIDE_BWA
-        }; /// FILL IN RIGHT LED_CONFIG BWA DEFINE FOR THIS CRAPOLA
-        LedDialogWidget (TS_SET_OUTSIDE_BWA);
+        /**
+         *  Like the default CTOR, but does not SpecifyTextStore (&fTextStore) - for a subclass that specifies its own.
+         */
+        enum DerivedClassSpecifiesTextStore {
+            eDerivedClassSpecifiesTextStore
+        };
+        LedDialogWidget (DerivedClassSpecifiesTextStore);
 
     public:
         virtual ~LedDialogWidget ();

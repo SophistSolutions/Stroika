@@ -491,17 +491,6 @@ namespace Stroika::Frameworks::Led::Platform {
      ***************************** Implementation Details ***************************
      ********************************************************************************
      */
-#if (_WIN32_WINNT < 0x0501)
-//  Make sure WM_UNICHAR & UNICODE_NOCHAR are defined, even if a user builds with old header files
-//  or inconsistent settings of _WIN32_WINNT ... LGP 2003-01-29
-#ifndef WM_UNICHAR
-#define WM_UNICHAR 0x0109
-#endif
-#ifndef UNICODE_NOCHAR
-#define UNICODE_NOCHAR 0xFFFF
-#endif
-#endif
-
     namespace Private {
         /*
          * Hack to assure the Led_Win32.o module is linked in. Without it being linked in,
@@ -2021,8 +2010,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
 
             if (this->ShouldUpdateHScrollBar ()) {
-                ::SCROLLINFO scrollInfo;
-                (void)::memset (&scrollInfo, 0, sizeof (scrollInfo));
+                ::SCROLLINFO scrollInfo{};
                 scrollInfo.cbSize = sizeof (scrollInfo);
                 scrollInfo.fMask  = SIF_PAGE | SIF_POS | SIF_RANGE;
 

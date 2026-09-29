@@ -22,7 +22,7 @@ endif
 
 ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
 # AVOID "_WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)"
-CXXFLAGS += -D_WIN32_WINNT=0x0501
+CXXFLAGS += -D_WIN32_WINNT=0x0A00
 # Maybe helps avoid bugs?
 CXXFLAGS += -DSTRICT
 endif
