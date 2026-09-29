@@ -940,9 +940,7 @@ void ChunkedArrayTextStore::AddMarker (Marker* marker, size_t lhs, size_t length
 {
     RequireNotNull (marker);
     RequireNotNull (owner);
-#if !qVirtualBaseMixinCallDuringCTORBug
     Require (owner->PeekAtTextStore () == this);
-#endif
     Require (owner == this or IndexOf (GetMarkerOwners (), owner) != kBadIndex); // new Led 2.3 requirement - not strictly required internally yet - but it will be - LGP 980416
     Require (marker->fTextStoreHook == NULL);
     Require (lhs < 0x80000000);            // not real test, just sanity check

@@ -853,11 +853,8 @@ namespace Stroika::Frameworks::Led {
         int r = ::GetClipRgn (*this, result);
         Assert (r == 0 or r == 1 or r == -1);
         if (r == 0) {
-#if !qInternalErrorWithStaticRegionDeclaredInFunction
-            static
-#endif
-                Region kWideOpened = Region (Led_Rect (-10000, -10000, 20000, 20000));
-            result                 = kWideOpened;
+            static Region kWideOpened = Region (Led_Rect (-10000, -10000, 20000, 20000));
+            result                    = kWideOpened;
         }
 #else
         Assert (false); // NYI

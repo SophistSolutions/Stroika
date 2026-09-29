@@ -2338,8 +2338,7 @@ namespace Stroika::Frameworks::Led::Platform {
         return (hWnd);
     }
 
-//class Led_Win32_Helper<BASE_INTERACTOR>::TemporarilyUseTablet
-#if !qNestedClassesInTemplateClassesDontExpandCompilerBug
+    //class Led_Win32_Helper<BASE_INTERACTOR>::TemporarilyUseTablet
     template <typename BASE_INTERACTOR>
     inline Led_Win32_Helper<BASE_INTERACTOR>::TemporarilyUseTablet::TemporarilyUseTablet (Led_Win32_Helper<BASE_INTERACTOR>& editor,
                                                                                           Tablet* t, DoTextMetricsChangedCall tmChanged)
@@ -2360,7 +2359,6 @@ namespace Stroika::Frameworks::Led::Platform {
             fEditor.TabletChangedMetrics ();
         }
     }
-#endif
 
     //class Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>
     template <typename BASECLASS>

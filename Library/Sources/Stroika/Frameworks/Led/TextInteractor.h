@@ -541,18 +541,12 @@ namespace Stroika::Frameworks::Led {
 
         // helper function for implementing OnCopyCommand
     protected:
-#if qAccessCheckAcrossInstancesSometimesWrong
-    public:
-#endif
         virtual bool OnCopyCommand_Before ();
         virtual void OnCopyCommand_After ();
         virtual void OnCopyCommand_CopyFlavors ();
 
         // helper function, to share code between this and subclasses which need different paste behavior
     protected:
-#if qAccessCheckAcrossInstancesSometimesWrong
-    public:
-#endif
         virtual bool ShouldEnablePasteCommand () const;
         virtual bool OnPasteCommand_Before ();
         virtual void OnPasteCommand_After ();

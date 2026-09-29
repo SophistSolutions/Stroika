@@ -1156,12 +1156,7 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
     , fMultiByteInputCharBuf ()
 {
     memset (fMultiByteInputCharBuf, 0, sizeof (fMultiByteInputCharBuf));
-#if qCannotAssignRValueAutoPtrToExistingOneInOneStepBug || qTroubleOverloadingXofXRefCTORWithTemplatedMemberCTOR
-    unique_ptr<Destination_> x = unique_ptr<Destination_> (new SinkStreamDestination (reader));
-    fDefaultDestination        = x;
-#else
     fDefaultDestination = unique_ptr<Destination_> (new SinkStreamDestination (reader));
-#endif
     SetDestination (fDefaultDestination.get ());
 }
 
@@ -4518,24 +4513,9 @@ bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
 }
 #endif
 
-#if qGCC_OptBugWithLocalClassesScopedInFunction
-struct VectorSinkStream : SimpleEmbeddedObjectStyleMarker::SinkStream {
-public:
-    virtual void write (const void* buffer, size_t bytes) override
-    {
-        using ci = const char*;
-        fData.insert (fData.end (), ci (buffer), ci (buffer) + bytes);
-    }
-    vector<char> fData;
-};
-#endif
 #if qStroika_Frameworks_Led_SupportGDI
 void StyledTextIOWriter_RTF::WritePrivatLedEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
 {
-#if qBorlandNameInLocalFunctDeclarationSpaceCompilerBug
-    using namespace Led;
-#endif
-#if !qGCC_OptBugWithLocalClassesScopedInFunction
     struct VectorSinkStream : SimpleEmbeddedObjectStyleMarker::SinkStream {
     public:
         virtual void write (const void* buffer, size_t bytes) override
@@ -4545,7 +4525,6 @@ void StyledTextIOWriter_RTF::WritePrivatLedEmbedding (WriterContext& /*writerCon
         }
         vector<char> fData;
     };
-#endif
     VectorSinkStream embeddingData;
     embedding->Write (embeddingData);
 

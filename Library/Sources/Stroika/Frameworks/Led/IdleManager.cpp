@@ -49,13 +49,6 @@ void IdleManager::RemoveIdler (Idler* idler)
 {
     RequireNotNull (idler);
     map<Idler*, IdlerInfo>::iterator i = fIdlers.find (idler);
-#if qBCCStaticVCLDTORLibBug
-    {
-        if (i == fIdlers.end ()) {
-            return;
-        }
-    }
-#endif
     Require (i != fIdlers.end ());
     Assert (i->first == idler);
     fIdlers.erase (i);

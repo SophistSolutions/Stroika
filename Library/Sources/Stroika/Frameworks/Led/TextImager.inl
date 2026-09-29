@@ -482,9 +482,8 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Snag font, background color etc, from the currently associated tablet.</p>
                     <p>Since this calls virtual methods of the imager (this) - it must be called in the final
                 CTOR (most specific type). Really it shouldnt need to be THE most specific - just enough specific to
-                get the right virtual methods called. But because of MSVC compiler bugs
-                (@'qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR')- its generally best to be THE final
-                CTOR.</p>
+                get the right virtual methods called. But because of (old) MSVC compiler bugs, its generally best to be
+                THE final CTOR.</p>
     */
     void TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet ()
     {

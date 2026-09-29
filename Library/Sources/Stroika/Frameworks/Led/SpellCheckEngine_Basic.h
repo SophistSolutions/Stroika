@@ -21,10 +21,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qFailToCompileLargeDataInitializedArraysBug
-#define qIncludeBakedInDictionaries 0
-#endif
-
 /*
     @CONFIGVAR:     qIncludeBakedInDictionaries
     @DESCRIPTION:   <p>Turning this on (its on by default) includes into the binary - pre-built dictionaries (currently just US-English).

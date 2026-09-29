@@ -941,10 +941,7 @@ bool Led_StdDialogHelper::GetWasOK () const
 bool Led_StdDialogHelper::DoModal ()
 {
 #if qStroika_Foundation_Common_Platform_Windows
-    HWND oldFocusWnd = ::GetFocus ();
-#if qNO_INT_PTR_DefinedCompilerBug
-    using INT_PTR = int;
-#endif
+    HWND                     oldFocusWnd = ::GetFocus ();
     [[maybe_unused]] INT_PTR x =
         ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
     if (oldFocusWnd != NULL) {

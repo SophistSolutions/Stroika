@@ -87,9 +87,7 @@ namespace Stroika::Frameworks::Led {
     inline void TextStore::AddMarkerOwner (MarkerOwner* owner)
     {
         RequireNotNull (owner);
-#if !qVirtualBaseMixinCallDuringCTORBug
         Require (owner->PeekAtTextStore () == this);
-#endif
         Require (find (fMarkerOwners.begin (), fMarkerOwners.end (), owner) == fMarkerOwners.end ());
         PUSH_BACK (fMarkerOwners, owner);
     }
@@ -101,9 +99,7 @@ namespace Stroika::Frameworks::Led {
     inline void TextStore::RemoveMarkerOwner (MarkerOwner* owner)
     {
         RequireNotNull (owner);
-#if !qVirtualBaseMixinCallDuringCTORBug
         Require (owner->PeekAtTextStore () == this);
-#endif
         vector<MarkerOwner*>::iterator i = find (fMarkerOwners.begin (), fMarkerOwners.end (), owner);
         Assert (i != fMarkerOwners.end ());
         fMarkerOwners.erase (i);

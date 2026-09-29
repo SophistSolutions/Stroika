@@ -1097,12 +1097,7 @@ StandardUnknownTypeStyleMarker::StandardUnknownTypeStyleMarker (Led_ClipFormat f
     memcpy (fData, unknownTypeData, nBytes);
 
     if (dib != nullptr) {
-#if qCannotAssignRValueAutoPtrToExistingOneInOneStepBug || qTroubleOverloadingXofXRefCTORWithTemplatedMemberCTOR
-        unique_ptr<Led_DIB> x = unique_ptr<Led_DIB> (Led_CloneDIB (dib));
-        fDisplayDIB           = x;
-#else
         fDisplayDIB = unique_ptr<Led_DIB> (Led_CloneDIB (dib));
-#endif
     }
     fShownSize = CalcDefaultShownSize ();
 }

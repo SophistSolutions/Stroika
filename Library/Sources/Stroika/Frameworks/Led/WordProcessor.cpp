@@ -2306,13 +2306,7 @@ void WordProcessor::HookLosingTextStore_ ()
     {
         MarkersOfATypeMarkerSink2Vector<WordProcessorTable> tables;
         GetTextStore ().CollectAllMarkersInRangeInto (GetTextStore ().GetStart (), GetTextStore ().GetEnd (), this, tables);
-#if qConstNonConstPtrConversionsWithTemplatedMemberFunctionBug
-        WordProcessorTable**       t  = Traversal::Iterator2Pointer (tables.fResultArray.begin ());
-        WordProcessorTable* const* tt = t;
-        GetTextStore ().RemoveAndDeleteMarkers (tt, tables.fResult.size ());
-#else
         GetTextStore ().RemoveAndDeleteMarkers (Containers::Start (tables.fResult), tables.fResult.size ());
-#endif
     }
 
     // NB: We only set the fParagraphDatabase/fHidableTextDatabase to nullptr here if we created it because if the USER

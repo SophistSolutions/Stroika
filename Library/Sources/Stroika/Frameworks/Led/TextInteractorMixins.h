@@ -53,24 +53,9 @@ namespace Stroika::Frameworks::Led {
             *  Disambiguate overloads than can happen down both base class chains.
             */
     public:
-#if qUsingDirectiveSometimesCausesInternalCompilerErrorBug
-        nonvirtual void SetWindowRect (const Led_Rect& windowRect, TextInteractor::UpdateMode updateMode = TextInteractor::eDefaultUpdate)
-        {
-            TextInteractor::SetWindowRect (windowRect, updateMode);
-        }
-        nonvirtual void ScrollByIfRoom (ptrdiff_t downByRows, UpdateMode updateMode = eDefaultUpdate)
-        {
-            TextInteractor::ScrollByIfRoom (downByRows, updateMode);
-        }
-        nonvirtual void ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate)
-        {
-            TextInteractor::ScrollSoShowing (markerPos, andTryToShowMarkerPos, updateMode);
-        }
-#else
         using TextInteractor::ScrollByIfRoom;
         using TextInteractor::ScrollSoShowing;
         using TextInteractor::SetWindowRect;
-#endif
     };
 
     /*
@@ -93,14 +78,7 @@ namespace Stroika::Frameworks::Led {
         virtual void HookGainedNewTextStore () override;
 
     public:
-#if qUsingDirectiveSometimesCausesInternalCompilerErrorBug
-        nonvirtual void SetWindowRect (const Led_Rect& windowRect, TextInteractor::UpdateMode updateMode = TextInteractor::eDefaultUpdate)
-        {
-            TextInteractor::SetWindowRect (windowRect, updateMode);
-        }
-#else
         using INTERACTOR1::SetWindowRect; // Should both be the same - but arbitrarily pick one
-#endif
 
         nonvirtual void Invariant ()
         {

@@ -241,14 +241,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         using StringNControlWordAtom = pair<string, ControlWordAtom>;
 
     public:
-#if qFriendDeclarationsDontWorkWithNestedClassesBug
-        friend bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
-        {
-            return lhs.first < rhs.first;
-        }
-#else
         friend bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs);
-#endif
+
     private:
         struct StringNControlWordAtom_Comparator;
         friend struct StringNControlWordAtom_Comparator;
@@ -1064,7 +1058,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         ********************************************************************************
         */
 //  class   RTFIO::StringNControlWordAtom
-#if !qFriendDeclarationsDontWorkWithNestedClassesBug && !qUseMapForControlWordMap
+#if !qUseMapForControlWordMap
     inline bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
     {
         return lhs.first < rhs.first;

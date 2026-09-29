@@ -22,51 +22,15 @@ SimpleLedWordProcessor::SimpleLedWordProcessor ()
     , fCommandHandler (kMaxUndoLevels)
     , fTextStore ()
 {
-#if !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
     SpecifyTextStore (&fTextStore);
     SetCommandHandler (&fCommandHandler);
-#endif
 }
 
 SimpleLedWordProcessor::~SimpleLedWordProcessor ()
 {
-#if !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
     SetCommandHandler (NULL);
     SpecifyTextStore (NULL);
-#endif
 }
-
-#if qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
-#if defined(_MFC_VER)
-void SimpleLedWordProcessor::OnInitialUpdate ()
-{
-    SpecifyTextStore (&fTextStore);
-    SetCommandHandler (&fCommandHandler);
-    inherited::OnInitialUpdate ();
-}
-
-void SimpleLedWordProcessor::PostNcDestroy ()
-{
-    SetCommandHandler (NULL);
-    SpecifyTextStore (NULL);
-    inherited::PostNcDestroy ();
-}
-#elif defined(_WIN32)
-LRESULT SimpleLedWordProcessor::OnCreate_Msg (LPCREATESTRUCT createStruct)
-{
-    SpecifyTextStore (&fTextStore);
-    SetCommandHandler (&fCommandHandler);
-    return inherited::OnCreate_Msg (createStruct);
-}
-
-void SimpleLedWordProcessor::OnNCDestroy_Msg ()
-{
-    SetCommandHandler (NULL);
-    SpecifyTextStore (NULL);
-    inherited::OnNCDestroy_Msg ();
-}
-#endif
-#endif
 
 #if defined(_MFC_VER)
 IMPLEMENT_DYNCREATE (SimpleLedWordProcessor, CView)
@@ -84,52 +48,16 @@ SimpleLedLineEditor::SimpleLedLineEditor ()
     , fCommandHandler (kMaxUndoLevels)
     , fTextStore ()
 {
-#if !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
     SpecifyTextStore (&fTextStore);
     SetCommandHandler (&fCommandHandler);
     SetScrollBarType (h, eScrollBarAlways);
     SetScrollBarType (v, eScrollBarAlways);
-#endif
 }
 
 SimpleLedLineEditor::~SimpleLedLineEditor ()
 {
-#if !qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
     SpecifyTextStore (NULL);
-#endif
 }
-
-#if qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
-#if defined(_MFC_VER)
-void SimpleLedLineEditor::OnInitialUpdate ()
-{
-    SpecifyTextStore (&fTextStore);
-    SetCommandHandler (&fCommandHandler);
-    inherited::OnInitialUpdate ();
-}
-
-void SimpleLedLineEditor::PostNcDestroy ()
-{
-    SetCommandHandler (NULL);
-    SpecifyTextStore (NULL);
-    inherited::PostNcDestroy ();
-}
-#elif defined(_WIN32)
-LRESULT SimpleLedLineEditor::OnCreate_Msg (LPCREATESTRUCT createStruct)
-{
-    SpecifyTextStore (&fTextStore);
-    SetCommandHandler (&fCommandHandler);
-    return inherited::OnCreate_Msg (createStruct);
-}
-
-void SimpleLedLineEditor::OnNCDestroy_Msg ()
-{
-    SetCommandHandler (NULL);
-    SpecifyTextStore (NULL);
-    inherited::OnNCDestroy_Msg ();
-}
-#endif
-#endif
 
 #if defined(_MFC_VER)
 IMPLEMENT_DYNCREATE (SimpleLedLineEditor, CView)

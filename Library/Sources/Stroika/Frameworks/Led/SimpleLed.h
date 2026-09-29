@@ -72,17 +72,6 @@ namespace Stroika::Frameworks::Led {
         SimpleLedWordProcessor ();
         ~SimpleLedWordProcessor ();
 
-#if qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
-    public:
-#if defined(_MFC_VER)
-        virtual void OnInitialUpdate () override;
-        virtual void PostNcDestroy () override;
-#elif defined(_WIN32)
-        virtual LRESULT OnCreate_Msg (LPCREATESTRUCT createStruct) override;
-        virtual void    OnNCDestroy_Msg () override;
-#endif
-#endif
-
     private:
         enum {
             kMaxUndoLevels = 5
@@ -132,17 +121,6 @@ namespace Stroika::Frameworks::Led {
     public:
         SimpleLedLineEditor ();
         ~SimpleLedLineEditor ();
-
-#if qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR
-    public:
-#if defined(_MFC_VER)
-        virtual void OnInitialUpdate () override;
-        virtual void PostNcDestroy () override;
-#elif defined(_WIN32)
-        virtual LRESULT OnCreate_Msg (LPCREATESTRUCT createStruct) override;
-        virtual void    OnNCDestroy_Msg () override;
-#endif
-#endif
 
     private:
         enum {

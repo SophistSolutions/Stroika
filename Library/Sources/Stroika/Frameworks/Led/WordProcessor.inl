@@ -749,24 +749,6 @@ namespace Stroika::Frameworks::Led {
 
 #if qStroika_Frameworks_Led_SupportGDI
 
-#if qTemplateGeneratedMixinsSometimesCorrupted
-    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookLosingTextStore ()
-    {
-        StandardStyledTextInteractor::HookLosingTextStore ();
-        WordWrappedTextInteractor::HookLosingTextStore ();
-    }
-    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookGainedNewTextStore ()
-    {
-        StandardStyledTextInteractor::HookGainedNewTextStore ();
-        WordWrappedTextInteractor::HookGainedNewTextStore ();
-    }
-    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::DidUpdateText (const UpdateInfo& updateInfo)
-    {
-        StandardStyledTextInteractor::DidUpdateText (updateInfo);
-        WordWrappedTextInteractor::DidUpdateText (updateInfo);
-    }
-#endif
-
     /*
      ********************************************************************************
      ************************************ WordProcessor *****************************

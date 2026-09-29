@@ -39,9 +39,7 @@ namespace {
             , fSavedText ()
             , fTextLength (regionEnd - regionStart)
         {
-#if !qFailToLookupFunctionNameWhenCompilingFunctionLocalClassMethodCompilerBug
             RequireNotNull (interactor);
-#endif
             interactor->GetExternalizer ()->ExternalizeBestFlavor (fSavedText, regionStart, regionEnd);
         }
         virtual size_t GetLength () const override
@@ -50,9 +48,7 @@ namespace {
         }
         virtual void InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override
         {
-#if !qFailToLookupFunctionNameWhenCompilingFunctionLocalClassMethodCompilerBug
             RequireNotNull (interactor);
-#endif
             interactor->GetInternalizer ()->InternalizeBestFlavor (fSavedText, at, at + nBytesToOverwrite);
         }
 

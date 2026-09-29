@@ -77,12 +77,8 @@ namespace {
         }
         bool operator() (const SpellCheckEngine_Basic::InfoBlock& _Left, const Led_tString& _Right) const
         {
-// Speed tweeked compare... don't construct string object to safe time and possible heap fragmentation
-#if qBasicString_Missing_CompareOverload_T
-            bool answer = _Right.compare (fBase + _Left.fIndex, 0, _Left.fWordLen) > 0;
-#else
+            // Speed tweeked compare... don't construct string object to safe time and possible heap fragmentation
             bool answer = _Right.compare (0, _Right.length (), fBase + _Left.fIndex, _Left.fWordLen) > 0;
-#endif
             if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                 Led_tString left = Led_tString{fBase + _Left.fIndex, fBase + _Left.fIndex + _Left.fWordLen};
                 Assert (answer == (left < _Right));

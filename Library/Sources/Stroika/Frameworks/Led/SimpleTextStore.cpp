@@ -70,9 +70,6 @@ void SimpleTextStoreMarkerHook::GetStartEnd (size_t* start, size_t* end) const
     *end   = fStart + fLength;
 }
 
-#if qStaticInlineFunctionsInDebugModeNoInliningArentTreatedAsStatic
-#define OurStuff SimpleTextStore_OurStuff
-#endif
 static inline SimpleTextStoreMarkerHook* OurStuff (const Marker* marker)
 {
     AssertNotNull (marker);
@@ -234,9 +231,7 @@ void SimpleTextStore::AddMarker (Marker* marker, size_t lhs, size_t length, Mark
 {
     RequireNotNull (marker);
     RequireNotNull (owner);
-#if !qVirtualBaseMixinCallDuringCTORBug
     Require (owner->PeekAtTextStore () == this);
-#endif
     Require (owner == this or IndexOf (GetMarkerOwners (), owner) != kBadIndex); // new Led 2.3 requirement - not strictly required internally yet - but it will be - LGP 980416
     Require (IndexOf (fMarkers, marker) == kBadIndex); // better not be there!
     Require (lhs < 0x80000000);                        // not real test, just sanity check
