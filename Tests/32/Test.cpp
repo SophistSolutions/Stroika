@@ -599,30 +599,24 @@ namespace {
             CheckMatchesExpected_WRITER_ (v1, "3\n");
         }
         {
-// Sterl's bug report email dated 2015-10-15 - a backslash must be followed by one of “\/bfnrtu
-#if 0
-                    {
-                        VariantValue    v1 = "test\?";
-                        CheckMatchesExpected_WRITER_ (v1, "\"test?\"\n");
-                    }
-#endif
+            // Sterl's bug report email dated 2015-10-15 - a backslash must be followed by one of “\/bfnrtu
+            {
+                VariantValue v1 = "test\?";
+                CheckMatchesExpected_WRITER_ (v1, "\"test?\"\n");
+            }
             {
                 VariantValue v1 = "test\\?";
                 CheckMatchesExpected_WRITER_ (v1, "\"test\\\\?\"\n");
             }
-#if 0
-                    {
-                        Mapping<String, VariantValue> m { pair<String, VariantValue> {"fCmdLine", "test\\?" } };
-                        VariantValue    v1 { m };
-                        CheckMatchesExpected_WRITER_ (v1, "{\n    \"fCmdLine\" : \"test\\\\?\"\n}\n");
-                    }
-#endif
+            {
+                Mapping<String, VariantValue> m{pair<String, VariantValue>{"fCmdLine", "test\\?"}};
+                VariantValue                  v1{m};
+                CheckMatchesExpected_WRITER_ (v1, "{\n    \"fCmdLine\" : \"test\\\\?\"\n}\n");
+            }
         }
         {
             // Check (real issue behind Sterl's bug report email dated 2015-10-15) - proper control char handling
             // No control characters allowed directly in string
-#if 1
-            // CRAZY - but clang-format gets confused without #if 1 surrounding this code -LGP 2024-01-02
             {
                 VariantValue v1 = "\t";
                 CheckMatchesExpected_WRITER_ (v1, "\"\\t\"\n");
@@ -631,7 +625,6 @@ namespace {
                 VariantValue v1 = L"\x3";
                 CheckMatchesExpected_WRITER_ (v1, "\"\\u0003\"\n");
             }
-#endif
         }
         {
             VariantValue v1 = 4.7;

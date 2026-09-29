@@ -246,29 +246,6 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, CvtOp_BehaviorNeededforSyncronize_)
-    {
-        Debug::TraceContextBumper traceCtx{"CvtOp_BehaviorNeededforSyncronize_"};
-#if 0
-            struct  Base {
-                mutable bool    fCalledOp_ = false;
-            };
-            struct  Derived : Base {
-                operator Base () const
-                {
-                    fCalledOp_ = true;
-                }
-            };
-            Derived dd;
-            Base bb = dd;
-            // sadly this doesnt work
-            // --LGP 2014-09-27
-            EXPECT_TRUE (bb.fCalledOp_);
-#endif
-    }
-}
-
-namespace {
     GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, SetSpecificSyncMethods)
     {
         Debug::TraceContextBumper           traceCtx{"{}::SetSpecificSyncMethods"};

@@ -281,33 +281,6 @@ namespace {
 }
 
 namespace {
-#if 0
-    // NOT SURE it was this test - but maybe one just before (which is why added TraceContextBumbers for next time).
-    // But got this tracelog along with crash on Ubunutu 22
-     (NEW THREAD, index=0000 Real Thread ID=0x7fc701d9aac0)  (pthread_self=0x7fc701d9aac0)   ***Starting TraceLog***
-[0000][367451.249]      Starting at Sun Jan 4 1:51:42 2026
-[0000][367451.249]      TraceFileName: /tmp/TraceLog_Test53_PID#1874999-2026-01-04T01-51-42-05-00.txt
-[0000][367451.249]      EXEPath=/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204_x86_64/Builds/g++-12-release++2b/Tests/Test53
-[0000][367451.249]      <debug-state>
-[0000][367451.249]        Debug::kBuiltWithAddressSanitizer = false
-[0000][367451.249]        Debug::kBuiltWithThreadSanitizer = false
-[0000][367451.249]        Debug::kBuiltWithUndefinedBehaviorSanitizer = false(?)
-[0000][367451.249]        Debug::IsRunningUnderValgrind () = false
-[0000][367451.249]      </debug-state>
-....
-       } </Thread::Ptr::Rep_::ThreadMain_>
-[MAIN][0001.021]                } </Thread::WaitForDoneUntil>
-[MAIN][0001.021]        } </Thread::AbortAndWaitForDoneUntil>
-[MAIN][0001.021]        <Thread::AbortAndWaitForDoneUntil (*this={id: 0x7fc6f27fc640, index: 7, name: WebServer-ConnectionMgr-Wait4IOReady,)> {
-[MAIN][0001.021]                <Thread::Abort (*this={id: 0x7fc6f27fc640, index: 7, name: WebServer-ConnectionMgr-Wait4IOReady,)> {
-[MAIN][0001.021]                        Transitioned state to aborting, so calling fThread_.get_stop_source ().request_stop ();
-[MAIN][0001.021]                        Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state.
-[MAIN][0001.021]                        <Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 7fc6f27fc640 signal = SIGUSR2)/>
-[MAIN][0001.021]                } </Thread::Abort>
-[MAIN][0001.021]                <Thread::WaitForDoneUntil (*this={id: 0x7fc6f27fc640, index: 7, name: WebServer-ConnectionMgr-Wait4IOReady,)> {
-[0007][0001.022]                Throwing exception: Thread Abort from ...  4# ;  5# ;  6# ;  7# ;  8# ;  9# ; 10# ; 11# ;
-[0007][0001.022]                FAILED: SIGNAL= SIGSEGV
-#endif
     GTEST_TEST (Frameworks_WebServer, TestChunkedTransfer_)
     {
         TraceContextBumper ctx{"TestChunkedTransfer_"};

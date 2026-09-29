@@ -433,10 +433,7 @@ namespace {
     GTEST_TEST (Foundation_Memory_, Test10_OptionalSelfAssign_)
     {
         {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
-#endif
             // ASSIGN
             {
                 optional<int> x;
@@ -456,10 +453,7 @@ namespace {
             }
         }
         // note - see https://github.com/SophistSolutions/Stroika/issues/692 (STK-556) - we DON'T support Optional self-move
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
-#endif
     }
 }
 
@@ -539,13 +533,6 @@ namespace {
             [[maybe_unused]] size_t kOffset_ = OffsetOf (&NotDefaultConstructible::lastName);
             EXPECT_EQ (OffsetOf (&NotDefaultConstructible::firstName), 0u);
         }
-#if 0
-            // disabled til we can figure out a way to get this constexpr version of OffsetOf() working...
-            {
-                [[maybe_unused]] constexpr size_t kOffsetx_ = OffsetOf_Constexpr (&Person::lastName);
-                static_assert (OffsetOf_Constexpr (&Person::firstName) == 0);
-            }
-#endif
     }
 
 }

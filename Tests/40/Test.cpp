@@ -453,13 +453,6 @@ namespace {
                                 Execution::Sleep (10ms);
                                 //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
                                 r = tmp + 1;
-#if 0
-                                lock_guard<recursive_mutex> critSect (*argP);
-                                int tmp = *argP;
-                                Execution::Sleep (10ms);
-                                //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
-                                *argP = tmp + 1;
-#endif
                             }
                         }
                     };
@@ -1767,8 +1760,6 @@ namespace {
 }
 
 namespace {
-#if 1
-    // No longer legal since Stroika v3.0d5
     namespace RegressionTest25_AbortNotYetStartedThread_ {
         void Test ()
         {
@@ -1777,7 +1768,6 @@ namespace {
             t1.AbortAndWaitForDone ();
         }
     }
-#endif
 }
 
 namespace {

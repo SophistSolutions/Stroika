@@ -145,12 +145,6 @@ namespace {
             for (int i = 1; i <= kLoopEnd; ++i) {
                 big = big + s1;
                 EXPECT_TRUE (big.size () == s1.size () * i);
-#if 0
-                for (int j = 0; j < big.size (); ++j) {
-                    Character c = big[j];
-                    int breahere = 1;
-                }
-#endif
             }
         }
         void StressTestStrings ()
@@ -181,36 +175,6 @@ namespace {
             cout << "finished Stress testing strings + ... time elapsed = " << t << endl;
 #endif
         }
-#if 0
-        void    StressTestBufferedStrings ()
-        {
-#if qPrintTimings
-            cout << "Stress testing buffered strings..." << endl;
-            Time::TimePointSeconds t = Time::GetTickCount ();
-#endif
-
-            {
-                String_BufferedArray s ("");
-                StressTest1_ (s);
-            }
-
-#if qPrintTimings
-            t = Time::GetTickCount () - t;
-            cout << "finished stress testing buffered strings  += ... time elapsed = " << t << endl;
-            t = Time::GetTickCount ();
-#endif
-
-            {
-                String_BufferedArray s ("");
-                StressTest2_ (s);
-            }
-
-#if qPrintTimings
-            t = Time::GetTickCount () - t;
-            cout << "finished stress testing buffered strings + ... at " << t << endl;
-#endif
-        }
-#endif
     }
 }
 
@@ -279,9 +243,6 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test2_"};
         Test2Helpers_::StressTestStrings ();
-#if 0
-        Test2Helpers_::StressTestBufferedStrings ();
-#endif
     }
 }
 
@@ -301,15 +262,9 @@ namespace {
         EXPECT_TRUE (t3 == "a");
         EXPECT_TRUE (t3 == String{"a"});
         EXPECT_TRUE (t4 == "a");
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
-#endif
         t1 = t1;
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
-#endif
         EXPECT_TRUE (t1 == "");
 
         t1 += 'F';
@@ -358,15 +313,9 @@ namespace {
 
         t5 = t1;
         t1 = t5;
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
-#endif
         t1 = t1;
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
-#endif
         EXPECT_TRUE (t1 == "");
         EXPECT_TRUE (t5 == "");
 
@@ -690,13 +639,9 @@ namespace {
         EXPECT_EQ (Format ("{:>20}"_f, L"123"), "                 123");
         EXPECT_EQ (Format ("{:.20}"_f, L"123"), "123");
 
-#if 0
-        // @todo somethign similar with new style string formatters
         for (size_t i = 1; i < 1000; ++i) {
-            String format = Format (L"%%%ds", static_cast<int> (i));
-            EXPECT_TRUE (Format (format.c_str (), L"x").length () == i);
+            EXPECT_EQ (Format ("{:{}}"_f, L"x", i).length (), i); // dynamic width
         }
-#endif
         EXPECT_EQ ("{}.{}{}{}"_f(1, 0, L"a", L"1x"), "1.0a1x"); // 2 conseq %s%s POSIX bug fixed 2014-01-22
     }
 }
@@ -777,16 +722,6 @@ namespace {
                 EXPECT_EQ (replaced, "abcdef");
 #endif
             }
-#if 0
-// not sure why this didn't work! -
-            {
-                String  abc     =   String {"abc"};
-                String  abcabc  =   String {"abc abc"};
-                EXPECT_TRUE (abcabc.Search (abc).size () == 2);
-                EXPECT_TRUE ((abcabc.Search (abc)[0] == pair<size_t, size_t> (0, abc.length ())));
-                EXPECT_TRUE ((abcabc.Search (abc)[1] == pair<size_t, size_t> (3, abc.length ())));
-            }
-#endif
         }
         void Test17_RegExp_ ()
         {
@@ -812,34 +747,6 @@ namespace {
                 EXPECT_TRUE (tmp == "b");
             }
             {
-// SEE http://en.cppreference.com/w/cpp/regex/match_results/operator_at
-// SEE http://en.cppreference.com/w/cpp/regex/regex_search
-// TEST FAIULS - SEE ABOUT WHY
-#if 0
-#include <iostream>
-#include <regex>
-#include <string>
-                int main() {
-                    std::string lines[] = {"a=b,a=c"};
-
-                    std::regex color_regex("a=(.*)");
-
-                    std::smatch color_match;
-                    for (const auto& line : lines) {
-                        std::regex_search(line, color_match, color_regex);
-                        std::cout << "matches for '" << line << "'\n";
-                        // for (size_t i = 0; i < color_match.size(); ++i) {
-                        //     std::ssub_match sub_match = color_match[i];
-                        //     std::string sub_match_str = sub_match.str();
-                        //     std::cout << i << ": " << sub_match_str << '\n';
-                        //}
-
-                        for (const auto& i : color_match) {
-                            std::cout << i << '\n';
-                        }
-                    }
-                }
-#endif
                 {
                     const String            kTest_{"a=b,"_k};
                     const RegularExpression kRE_{"a=(.*)"};
@@ -934,7 +841,6 @@ namespace {
         EXPECT_TRUE (CString::Length (L"hi") == 2);
         {
             // This test was mostly to confirm the false-warning from valgrind
-            // SEE THIS VALGRIND SUPPRESSION - wcscmp_appears_to_generate_false_warnings_gcc48_ubuntu
             wchar_t buf[3] = {'1', '2', 0};
             EXPECT_TRUE (::wcscmp (buf, L"12") == 0);
         }

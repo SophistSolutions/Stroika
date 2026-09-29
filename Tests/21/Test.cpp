@@ -134,30 +134,6 @@ namespace {
 }
 
 namespace {
-    template <typename CONCRETE_SEQUENCE_T, typename WELL_ORDER_COMPARER>
-    void SimpleSequenceTest_3_Compare_ ()
-    {
-        Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_3_Compare_ ()"};
-#if 0
-        // This is RIGHT but We need a way to use 'TRAITS' to extend the definition of Sequence<T> or some such - to make this work...
-        {
-            EXPECT_TRUE (s.size () == 0);
-            s.Append (1);
-            Sequence<T> s2 = s;
-            s2.Append (2);
-            EXPECT_TRUE (s.Compare (s2) < 0);
-            EXPECT_TRUE (s2.Compare (s) > 0);
-            s.Append (2);
-            EXPECT_TRUE (s2.Compare (s) == 0);
-            s.RemoveAll ();
-            EXPECT_TRUE (s.Compare (s2) < 0);
-            EXPECT_TRUE (s.empty ());
-        }
-#endif
-    }
-}
-
-namespace {
     template <typename CONCRETE_SEQUENCE_T, Common::IEqualsComparer<typename CONCRETE_SEQUENCE_T::value_type> EQUALS_COMPARER>
     void SimpleSequenceTest_4_Equals_ ()
     {
@@ -768,7 +744,6 @@ namespace {
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_1_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_2_Contains_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
-        SimpleSequenceTest_3_Compare_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_4_Equals_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_7_IndexOf_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_8_InsertAppendPrepend_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
@@ -956,12 +931,6 @@ namespace {
             if (s1 == s2) {
                 EXPECT_TRUE (false);
             }
-// todo get this type deduction working
-#if 0
-                if (not Sequence<int>::EqualsComparer{[](int l, int r) { return l % 3 == r % 3; }}(s1, s2)) {
-                    EXPECT_TRUE (false);
-                }
-#endif
             auto cmp = Common::DeclareEqualsComparer ([] (int l, int r) { return l % 3 == r % 3; });
             if (not Sequence<int>::EqualsComparer<decltype (cmp)>{cmp}(s1, s2)) {
                 EXPECT_TRUE (false);

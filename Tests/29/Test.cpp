@@ -57,45 +57,6 @@ namespace {
     template <typename StackOfT>
     void SimpleTest_3_Iteration_ (StackOfT s)
     {
-#if 0
-        m.Add (1, 2);
-        EXPECT_TRUE (m.size () == 1);
-        for (auto i : m) {
-            EXPECT_TRUE (i.first == 1);
-            EXPECT_TRUE (i.second == 2);
-        }
-        m.Add (1, 2);
-        EXPECT_TRUE (m.size () == 1);
-        for (auto i : m) {
-            EXPECT_TRUE (i.first == 1);
-            EXPECT_TRUE (i.second == 2);
-        }
-        m.Remove (1);
-        EXPECT_TRUE (m.size () == 0);
-        for (auto i : m) {
-            EXPECT_TRUE (false);
-        }
-        m.Add (1, 2);
-        m.Add (2, 3);
-        m.Add (3, 4);
-        unsigned int cnt = 0;
-        for (auto i : m) {
-            ++cnt;
-            if (cnt == 1) {
-                EXPECT_TRUE (i.first == 1);
-                EXPECT_TRUE (i.second == 2);
-            }
-            if (cnt == 2) {
-                EXPECT_TRUE (i.first == 2);
-                EXPECT_TRUE (i.second == 3);
-            }
-            if (cnt == 3) {
-                EXPECT_TRUE (i.first == 3);
-                EXPECT_TRUE (i.second == 4);
-            }
-        }
-        EXPECT_TRUE (cnt == 3);
-#endif
         s.RemoveAll ();
         EXPECT_EQ (s.size (), 0u);
     }

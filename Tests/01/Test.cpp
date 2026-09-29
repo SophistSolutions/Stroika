@@ -122,23 +122,6 @@ namespace {
 }
 
 namespace {
-#if 0
-    namespace Test3_LRUCache_Elements {
-        namespace Private_ {
-            struct TNoCTOR_ {
-                TNoCTOR_ (int)
-                {
-                }
-                TNoCTOR_ () = delete;
-                bool operator== ([[maybe_unused]] const TNoCTOR_& rhs) const
-                {
-                    return true;
-                }
-            };
-        }
-        
-    }
-#endif
     GTEST_TEST (Foundation_Caching, LRUCache_Elements_)
     {
         Debug::TraceContextBumper ctx{"LRUCache_Elements_"};

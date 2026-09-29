@@ -8,7 +8,6 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Finally.h"
