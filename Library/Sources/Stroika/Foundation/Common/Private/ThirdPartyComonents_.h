@@ -49,6 +49,7 @@
 #define qHasFeature_libxml2 qStroika_HasComponent_libxml2
 #define qHasLibrary_ODBC qStroika_HasComponent_ODBC
 #define qHasFeature_OpenSSL qStroika_HasComponent_OpenSSL
+#define qHas_OpenSSL qStroika_HasComponent_OpenSSL // an older name still; OpenSSLCryptoStream.inl tested it by mistake until v3.0d25
 #define qHasFeature_sqlite qStroika_HasComponent_sqlite
 #define qHas_Syslog qStroika_HasComponent_syslog
 #define qHasFeature_WinHTTP qStroika_HasComponent_WinHTTP

@@ -803,6 +803,34 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Cryptography, OpenSSLCryptoParams_CustomInitializer_)
+    {
+        // OpenSSLCryptoParams (function<void (EVP_CIPHER_CTX*, Direction)>) lets a caller set up the cipher context itself.
+        // Its definition was compiled out by a stale #if (qHas_OpenSSL) from 2015 until 2026-09, so calling it failed to link.
+        Debug::TraceContextBumper ctx{"...OpenSSLCryptoParams_CustomInitializer_"};
+#if qStroika_HasComponent_OpenSSL
+        using namespace Cryptography::Encoding;
+        using namespace Cryptography::Encoding::Algorithm;
+        CipherAlgorithm     alg = OpenSSL::CipherAlgorithms::kAES_128_CBC;
+        OpenSSLCryptoParams builtin{alg, OpenSSL::EVP_BytesToKey{alg, OpenSSL::DigestAlgorithms::kMD5, Characters::String{"aaa"}, 1}};
+        unsigned int        calls = 0;
+        OpenSSLCryptoParams custom{[&] (::EVP_CIPHER_CTX* c, Direction d) {
+            ++calls;
+            builtin.fInitializer (c, d);
+        }};
+        // same key and data as OpenSSLEncryptDecryptTests_: echo hi mom| openssl aes-128-cbc -md md5 -k aaa -nosalt
+        BLOB src     = BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a");
+        BLOB encoded = OpenSSLInputStream::New (custom, Direction::eEncrypt, src.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
+        EXPECT_EQ (encoded, BLOB::FromHex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
+        EXPECT_EQ (OpenSSLInputStream::New (custom, Direction::eDecrypt, encoded.As<Streams::InputStream::Ptr<byte>> ()).ReadAll (), src);
+        EXPECT_TRUE (calls >= 2) << calls; // the custom initializer really ran, once per direction
+#else
+        GTEST_SKIP () << "built without OpenSSL";
+#endif
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Cryptography, AESTest_)
     {
         using namespace Cryptography::Encoding;

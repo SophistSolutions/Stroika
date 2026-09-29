@@ -6,7 +6,7 @@
 #if qStroika_Foundation_Common_Platform_Windows
 #include <shlobj.h>
 #include <windows.h>
-#elif qPlatoform_POSIX
+#elif qStroika_Foundation_Common_Platform_POSIX
 #include <cstdlib>
 #endif
 

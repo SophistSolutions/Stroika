@@ -70,11 +70,11 @@ Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddres
 #if qStroika_Foundation_Common_Platform_Linux
         // Linux follows the RFC, and uses dual-stack mode by default
         constexpr bool kOSDefaultIPV6Only_{false};
-        bool           mustSet = useIPV6Only != kOSDefaultIPV6Only_;
-#elif qPlatfom_Windows
+        bool           mustSet = static_cast<bool> (useIPV6Only) != kOSDefaultIPV6Only_;
+#elif qStroika_Foundation_Common_Platform_Windows
         // Windows defaults to NOT dual sockets, so nothing todo for windows
         constexpr bool kOSDefaultIPV6Only_{true};
-        bool           mustSet = useIPV6Only != kOSDefaultIPV6Only_;
+        bool           mustSet = static_cast<bool> (useIPV6Only) != kOSDefaultIPV6Only_;
 #else
         bool mustSet = true;
 #endif

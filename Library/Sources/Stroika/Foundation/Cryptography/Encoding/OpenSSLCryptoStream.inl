@@ -3,7 +3,7 @@
  */
 namespace Stroika::Foundation::Cryptography::Encoding {
 
-#if qHas_OpenSSL
+#if qStroika_HasComponent_OpenSSL
     /*
      ********************************************************************************
      ********************* Cryptography::OpenSSLCryptoParams ************************
