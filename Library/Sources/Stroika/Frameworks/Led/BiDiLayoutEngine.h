@@ -17,6 +17,10 @@
             with left-to-right text into logical and display text runs according to the UNICODE Bidirectional
             editing algorithm.
             </p>
+            <p>NOTE: no layout engine is implemented - every paragraph comes out as ONE left-to-right run. The Uniscribe
+            and FriBidi code was removed in 3.0d25 (it had not compiled since 2012). If right-to-left text is ever needed,
+            see https://github.com/SophistSolutions/Stroika/issues/1182 for what to use.
+            </p>
 
  */
 
@@ -24,44 +28,6 @@
 #include "Stroika/Frameworks/Led/Support.h"
 
 namespace Stroika::Frameworks::Led {
-
-/*
-    @CONFIGVAR:     qUseFriBidi
-    @DESCRIPTION:   <p>Defines whether or not we use the FriBidi package to generate text layouts for bidirectional text
-                such as Hebrew or Arabic. This defaults to off, because it requires linking with an extra library.</p>
-                    <p>Note that if BOTH @'qUseFriBidi' and @'qTryToUseUNISCRIBEForTextRuns' are defined, then
-                @'qUseFriBidi' will take precedence.</p>
-        */
-#ifndef qUseFriBidi
-#define qUseFriBidi 0
-#endif
-
-/*
-    @CONFIGVAR:     qTryToUseUNISCRIBEForTextRuns
-    @DESCRIPTION:   <p>Defines whether or not we try to use the UNISCRIBE Windows SDK to generate text layouts for bidirectional text
-                such as Hebrew or Arabic. This defaults to true iff @'qStroika_Foundation_Common_Platform_Windows' is true.
-                Note that UNISCRIBE isn't necessarily available on a particular system. This code just tries to use
-                UNISCRIBE if its available. So - you MAY want to use this option TOGETHER with @'qUseFriBidi'.</p>
-                    <p>Note that if BOTH @'qUseFriBidi' and @'qTryToUseUNISCRIBEForTextRuns' are defined, then
-                @'qUseFriBidi' will take precedence.</p>
-        */
-#ifndef qTryToUseUNISCRIBEForTextRuns
-#if qStroika_Foundation_Common_Platform_Windows && qUniscribeAvailableWithSDK
-#define qTryToUseUNISCRIBEForTextRuns 1
-#else
-#define qTryToUseUNISCRIBEForTextRuns 0
-#endif
-#endif
-
-/*
-    @CONFIGVAR:     qUseICUBidi
-    @DESCRIPTION:   <p>Defines whether or not we use the IBM ICU package to generate text layouts for bidirectional text
-                such as Hebrew or Arabic. THIS IS NOT YET IMPLEMENTED (as of 3.1a3) and may never be - as the ICU package is huge,
-                and only setup easily to work with a DLL copy of itself.</p>
-        */
-#ifndef qUseICUBidi
-#define qUseICUBidi 0
-#endif
 
     /*
     @CLASS:         TextLayoutBlock
@@ -166,15 +132,6 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void Construct (const Led_tChar* realText, const Led_tChar* realTextEnd, const TextDirection* initialDirection);
 
     private:
-#if qTryToUseUNISCRIBEForTextRuns
-        nonvirtual bool Construct_UNISCRIBE (const TextDirection* initialDirection);
-#endif
-#if qUseFriBidi
-        nonvirtual void Construct_FriBidi (const TextDirection* initialDirection);
-#endif
-#if qUseICUBidi
-        nonvirtual void Construct_ICU (const TextDirection* initialDirection);
-#endif
         nonvirtual void Construct_Default ();
 
     public:

@@ -31,13 +31,8 @@ using namespace Stroika::Frameworks::Led;
 
 #if qStroika_Foundation_Common_Platform_Windows
 // RTL Imaging flags
-#define qUseUniscribeToImage qUniscribeAvailableWithSDK
 #define qUseFakeTTGetWPlacementToImage 1
 #define qUseGetCharPlacementToImage 1
-#endif
-
-#if qUseUniscribeToImage
-#include <Usp10.h>
 #endif
 
 /*
@@ -45,17 +40,6 @@ using namespace Stroika::Frameworks::Led;
  */
 #ifndef qDebugFontDetails
 #define qDebugFontDetails qStroika_Foundation_Debug_AssertionsChecked&& qStroika_FeatureSupported_XWindows
-#endif
-
-// Suggestion from Greg Binkerd [gregb@microsoft.com] about SRX021206603127 - LGP 2003-01-02
-#if qUniscribeAvailableWithSDK
-#define qTryScriptToCPX 0
-//#define   qTryScriptToCPX 1
-
-#ifndef qTryToOptimizeLongUNISCRIBEScriptOutCalls
-#define qTryToOptimizeLongUNISCRIBEScriptOutCalls 1
-#endif
-
 #endif
 
 #if qStroika_Foundation_Common_Platform_Windows
@@ -103,169 +87,6 @@ inline void Win32_TextOut (HDC hdc, int xStart, int yStart, const Led_tChar* str
 {
     Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
 }
-#endif
-
-#if qStroika_Foundation_Common_Platform_Windows && qUseUniscribeToImage
-
-const size_t kMaxUNISCRIBECharacters = 30000;
-
-/*
- *  Use LoadLibrary/GetProcAddress instead of direct call to avoid having to link with
- *  Usp10.lib. This avoidance allows us to run on systems that don't it installed.
- */
-struct UniscribeDLL {
-    UniscribeDLL ()
-        : fDLL (::LoadLibrary (_T ("Usp10.dll")))
-        , fScriptItemize (nullptr)
-        , fScriptShape (nullptr)
-        , fScriptPlace (nullptr)
-        , fScriptStringAnalyse (nullptr)
-        , fScriptStringOut (nullptr)
-        , fScriptStringFree (nullptr)
-        , fScriptStringGetLogicalWidths (nullptr)
-        , fScriptString_pcOutChars (nullptr)
-        , fScriptString_pSize (nullptr)
-        , fScriptStringCPtoX (nullptr)
-    {
-        if (fDLL != nullptr) {
-            fScriptItemize = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*)) (
-                ::GetProcAddress (fDLL, "ScriptItemize"));
-            fScriptShape = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*,
-                                               int*)) (::GetProcAddress (fDLL, "ScriptShape"));
-            fScriptPlace = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*,
-                                               GOFFSET*, ABC*)) (::GetProcAddress (fDLL, "ScriptPlace"));
-            fScriptStringAnalyse =
-                (HRESULT (WINAPI*) (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*,
-                                    const BYTE*, SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringAnalyse"));
-            fScriptStringOut = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL)) (
-                ::GetProcAddress (fDLL, "ScriptStringOut"));
-            fScriptStringFree = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringFree"));
-            fScriptStringGetLogicalWidths =
-                (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*)) (::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
-            fScriptString_pcOutChars = (const int*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
-            fScriptString_pSize      = (const SIZE*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pSize"));
-            fScriptStringCPtoX =
-                (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, BOOL, int*)) (::GetProcAddress (fDLL, "ScriptStringCPtoX"));
-        }
-    }
-    ~UniscribeDLL ()
-    {
-        if (fDLL != nullptr) {
-            Verify (::FreeLibrary (fDLL));
-        }
-    }
-
-    nonvirtual bool IsAvail () const
-    {
-        return fDLL != nullptr;
-    }
-
-    HRESULT WINAPI ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl,
-                                  const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
-    {
-        if (fScriptItemize == nullptr) {
-            return E_FAIL;
-        }
-        return (*fScriptItemize) (pwcInChars, cInChars, cMaxItems, psControl, psState, pItems, pcItems);
-    }
-
-    HRESULT WINAPI ScriptShape (HDC hdc, SCRIPT_CACHE* psc, const WCHAR* pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS* psa,
-                                WORD* pwOutGlyphs, WORD* pwLogClust, SCRIPT_VISATTR* psva, int* pcGlyphs)
-    {
-        if (fScriptShape == nullptr) {
-            return E_FAIL;
-        }
-        return (*fScriptShape) (hdc, psc, pwcChars, cChars, cMaxGlyphs, psa, pwOutGlyphs, pwLogClust, psva, pcGlyphs);
-    }
-
-    HRESULT WINAPI ScriptPlace (HDC hdc, SCRIPT_CACHE* psc, const WORD* pwGlyphs, int cGlyphs, const SCRIPT_VISATTR* psva,
-                                SCRIPT_ANALYSIS* psa, int* piAdvance, GOFFSET* pGoffset, ABC* pABC)
-    {
-        if (fScriptPlace == nullptr) {
-            return E_FAIL;
-        }
-        return (*fScriptPlace) (hdc, psc, pwGlyphs, cGlyphs, psva, psa, piAdvance, pGoffset, pABC);
-    }
-
-    HRESULT WINAPI ScriptStringAnalyse (HDC hdc, const void* pString, int cString, int cGlyphs, int iCharset, DWORD dwFlags, int iReqWidth,
-                                        SCRIPT_CONTROL* psControl, SCRIPT_STATE* psState, const int* piDx, SCRIPT_TABDEF* pTabdef,
-                                        const BYTE* pbInClass, SCRIPT_STRING_ANALYSIS* pssa)
-    {
-        if (fScriptStringAnalyse == nullptr) {
-            return E_FAIL;
-        }
-        return (*fScriptStringAnalyse) (hdc, pString, cString, cGlyphs, iCharset, dwFlags, iReqWidth, psControl, psState, piDx, pTabdef, pbInClass, pssa);
-    }
-
-    HRESULT WINAPI ScriptStringOut (SCRIPT_STRING_ANALYSIS ssa, int iX, int iY, UINT uOptions, const RECT* prc, int iMinSel, int iMaxSel, BOOL fDisabled)
-    {
-        if (fScriptStringOut == nullptr) {
-            return E_FAIL;
-        }
-        return (*fScriptStringOut) (ssa, iX, iY, uOptions, prc, iMinSel, iMaxSel, fDisabled);
-    }
-
-    HRESULT WINAPI ScriptStringFree (SCRIPT_STRING_ANALYSIS* pssa)
-    {
-        if (fScriptStringFree == nullptr) {
-            return E_FAIL;
-        }
-        return (*fScriptStringFree) (pssa);
-    }
-
-    HRESULT WINAPI ScriptStringGetLogicalWidths (SCRIPT_STRING_ANALYSIS ssa, int* piDx)
-    {
-        if (fScriptStringGetLogicalWidths == nullptr) {
-            return E_FAIL;
-        }
-        return (*fScriptStringGetLogicalWidths) (ssa, piDx);
-    }
-
-    const int* WINAPI ScriptString_pcOutChars (SCRIPT_STRING_ANALYSIS ssa)
-    {
-        if (fScriptString_pcOutChars == nullptr) {
-            return nullptr;
-        }
-        return (*fScriptString_pcOutChars) (ssa);
-    }
-
-    const SIZE* WINAPI ScriptString_pSize (SCRIPT_STRING_ANALYSIS ssa)
-    {
-        if (fScriptString_pSize == nullptr) {
-            return nullptr;
-        }
-        return (*fScriptString_pSize) (ssa);
-    }
-
-    HRESULT WINAPI ScriptStringCPtoX (SCRIPT_STRING_ANALYSIS ssa, int icp, BOOL fTrailing, int* pX)
-    {
-        if (fScriptStringCPtoX == nullptr) {
-            return E_FAIL;
-        }
-        return (*fScriptStringCPtoX) (ssa, icp, fTrailing, pX);
-    }
-
-    HINSTANCE fDLL;
-    HRESULT (WINAPI* fScriptItemize)
-    (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*);
-    HRESULT (WINAPI* fScriptShape)
-    (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*, int*);
-    HRESULT (WINAPI* fScriptPlace)
-    (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*, GOFFSET*, ABC*);
-    HRESULT (WINAPI* fScriptStringAnalyse)
-    (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS*);
-    HRESULT (WINAPI* fScriptStringOut)
-    (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL);
-    HRESULT (WINAPI* fScriptStringFree)
-    (SCRIPT_STRING_ANALYSIS*);
-    HRESULT (WINAPI* fScriptStringGetLogicalWidths)
-    (SCRIPT_STRING_ANALYSIS, int*);
-    const int*(WINAPI* fScriptString_pcOutChars) (SCRIPT_STRING_ANALYSIS);
-    const SIZE*(WINAPI* fScriptString_pSize) (SCRIPT_STRING_ANALYSIS);
-    HRESULT (WINAPI* fScriptStringCPtoX)
-    (SCRIPT_STRING_ANALYSIS, int, BOOL, int*);
-};
-static UniscribeDLL sUniscribeDLL;
 #endif
 
 namespace {
@@ -1476,11 +1297,6 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
     const DistanceType kMaxTextWidthResult = 0x7fff; //X-TMP-HACK-LGP991213
 #endif
     size_t kMaxChars = kMaxTextWidthResult / precomputedFontMetrics.GetMaxCharacterWidth ();
-#if qUseUniscribeToImage
-    if (kMaxChars > kMaxUNISCRIBECharacters) {
-        kMaxChars = kMaxUNISCRIBECharacters;
-    }
-#endif
     Assert (kMaxChars > 1);
 
     DistanceType runningCharCount = 0;
@@ -1513,71 +1329,11 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
 #if qStroika_Foundation_Common_Platform_Windows
         SIZE size;
         Assert (sizeof (int) == sizeof (DistanceType));
-#if qUseUniscribeToImage
-        {
-            if (sUniscribeDLL.IsAvail ()) {
-                SCRIPT_CONTROL scriptControl;
-                memset (&scriptControl, 0, sizeof (scriptControl));
 
-                SCRIPT_STATE scriptState;
-                memset (&scriptState, 0, sizeof (scriptState));
-                // Important to ALLOW ScriptStringAnalyse to REORDER (so don't set this true) cuz otherwise it won't get right measurements
-                // for arabic font substition (shaping)---LGP 2003-01-02
-
-                // MAYBE THIS IS WRONG - AND COVERING UP ANOTHER BUG??? DUNNO? MUST BE CAREFUL ABOUT MIRRORING (SYMSWAP). If done HERE,
-                // then I must NOT inhibit symswap. I DON'T THINK I CAN DO it here cuz the draw code gets done in RUNS... HMMM
-                // LGP 2003-01-02...
-                //  scriptState.fOverrideDirection  = true;     // I THINK This is how I say already in display order
-                scriptState.fInhibitSymSwap = true;
-
-                SCRIPT_STRING_ANALYSIS ssa;
-                memset (&ssa, 0, sizeof (ssa));
-
-                Verify (sUniscribeDLL.ScriptStringAnalyse (m_hAttribDC, &text[i], charsThisTime, 0, -1, SSA_GLYPHS | SSA_FALLBACK, -1,
-                                                           &scriptControl, &scriptState, nullptr, nullptr, nullptr, &ssa) == S_OK);
-
-#if qTryScriptToCPX
-                for (size_t j = 0; j < charsThisTime; ++j) {
-                    int leadingEdge  = 0;
-                    int trailingEdge = 0;
-                    Verify (sUniscribeDLL.ScriptStringCPtoX (ssa, j, false, &leadingEdge) == S_OK);
-                    Verify (sUniscribeDLL.ScriptStringCPtoX (ssa, j, true, &trailingEdge) == S_OK);
-
-                    int logicalWidth = abs (trailingEdge - leadingEdge); // can be zero-width - but never negative...
-                    if (j == 0) {
-                        charLocations[i + j] = runningCharCount + logicalWidth;
-                    }
-                    else {
-                        charLocations[i + j] = charLocations[i + j - 1] + logicalWidth;
-                    }
-                }
-#else
-                Memory::StackBuffer<int> logicalWidths{charsThisTime};
-                Verify (sUniscribeDLL.ScriptStringGetLogicalWidths (ssa, logicalWidths) == S_OK);
-
-                Assert (charsThisTime > 0);
-                Assert (logicalWidths[0] >= 0); // can be zero-width - but never negative...
-                charLocations[i] = runningCharCount + logicalWidths[0];
-                for (size_t j = 1; j < charsThisTime; ++j) {
-                    Assert (logicalWidths[j] >= 0); // can be zero-width - but never negative...
-                    charLocations[i + j] = charLocations[i + j - 1] + logicalWidths[j];
-                }
-#endif
-                Verify (sUniscribeDLL.ScriptStringFree (&ssa) == S_OK);
-                goto Succeeded;
-            }
-        }
-#endif
-
-        // Default code - if UNISCRIBE not compiled for or not dynamically loaded
         Win32_GetTextExtentExPoint (m_hAttribDC, &text[i], charsThisTime, kMaxTextWidthResult, nullptr, (int*)&charLocations[i], &size);
         for (size_t j = 0; j < charsThisTime; ++j) {
             charLocations[i + j] += runningCharCount;
         }
-
-#if qUseUniscribeToImage
-    Succeeded:
-#endif
 #elif qStroika_FeatureSupported_XWindows
         Execution::ThrowIfNull (fCachedFontInfo);
         // Gross hack - sloppy implementation (SLOW). But I'm not sure what in the X SDK allows this to be done faster! -- LGP 2000-09-05
@@ -1654,79 +1410,6 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
 #if qStroika_Foundation_Common_Platform_Windows
         int oldBkMode = SetBkMode (TRANSPARENT);
 
-#if qUseUniscribeToImage
-        {
-#if qTryToOptimizeLongUNISCRIBEScriptOutCalls
-            const size_t kMaxCharsToDrawAtATime = 500;
-#endif
-            size_t len = nextTabAt - textCursor;
-            if (len == 0) {
-                goto Succeeded; // UNISCRIBE barfs on zero-length strings. Nothing todo anyhow...
-            }
-            if (sUniscribeDLL.IsAvail ()) {
-                SCRIPT_CONTROL scriptControl;
-                memset (&scriptControl, 0, sizeof (scriptControl));
-
-                SCRIPT_STATE scriptState;
-                memset (&scriptState, 0, sizeof (scriptState));
-                scriptState.fOverrideDirection = true; // I THINK This is how I say already in display order
-                scriptState.fInhibitSymSwap    = true;
-
-                const Led_tChar* thisChunkPtr = textCursor;
-                for (size_t thisChunkLen = len; thisChunkLen > 0;) {
-                    if (thisChunkLen > kMaxUNISCRIBECharacters) {
-                        thisChunkLen = kMaxUNISCRIBECharacters;
-                    }
-#if qTryToOptimizeLongUNISCRIBEScriptOutCalls
-                    if (thisChunkLen > kMaxCharsToDrawAtATime) {
-                        thisChunkLen = kMaxCharsToDrawAtATime;
-                    }
-#endif
-                    {
-                        SCRIPT_STRING_ANALYSIS ssa;
-                        memset (&ssa, 0, sizeof (ssa));
-                        if (not SUCCEEDED (sUniscribeDLL.ScriptStringAnalyse (m_hDC, thisChunkPtr, thisChunkLen, 0, -1, SSA_GLYPHS | SSA_FALLBACK,
-                                                                              -1, &scriptControl, &scriptState, nullptr, nullptr, nullptr, &ssa))) {
-                            goto UniscribeFailure; // Can happen - for example - during ColeControl::DrawMetaFile ()
-                            // call - see SPR#1447 - fallback on older draw code...
-                        }
-                        Verify (sUniscribeDLL.ScriptStringOut (ssa, outputAt.h + int (widthSoFar) - hScrollOffset, outputAt.v, 0, nullptr,
-                                                               0, 0, false) == S_OK);
-                        const SIZE* sizep = sUniscribeDLL.ScriptString_pSize (ssa);
-                        AssertNotNull (sizep);
-                        widthSoFar += sizep->cx;
-                        Verify (sUniscribeDLL.ScriptStringFree (&ssa) == S_OK);
-                    }
-
-#if qTryToOptimizeLongUNISCRIBEScriptOutCalls
-                    // only rarely (tune this) - check if we've already drawn past the end of the HDC.
-                    // (not REALLY doing a great/reliable test for that either???
-                    if (len > kMaxCharsToDrawAtATime) {
-                        POINT vpOrg;
-                        Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
-                        POINT wOrg;
-                        Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
-                        int   deviceWidth = GetDeviceCaps (HORZRES);
-                        POINT x           = vpOrg;
-                        x.x += deviceWidth;
-                        Verify (::DPtoLP (m_hAttribDC, &x, 1));
-                        if (x.x < outputAt.h + int (widthSoFar) - hScrollOffset) {
-                            // assume we're done - and can break out...
-                            break;
-                        }
-                    }
-#endif
-
-                    thisChunkPtr += thisChunkLen;
-                    thisChunkLen = (textCursor + len - thisChunkPtr); // set length left to go to be end of REAL buf minus new start ptr
-                    // at TOP of loop - it will be trimmed down to kMaxUNISCRIBECharacters
-                }
-                goto Succeeded;
-            }
-        }
-    UniscribeFailure:
-#endif
-
         if (direction == eLeftToRight) {
             Win32_TextOut (m_hDC, static_cast<int> (outputAt.h + widthSoFar - hScrollOffset), static_cast<int> (outputAt.v), textCursor,
                            static_cast<int> (nextTabAt - textCursor));
@@ -1798,9 +1481,6 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                 widthSoFar += size.cx;
             }
         }
-#if qUseUniscribeToImage
-    Succeeded:;
-#endif
 
         (void)SetBkMode (oldBkMode);
 #elif qStroika_FeatureSupported_XWindows
