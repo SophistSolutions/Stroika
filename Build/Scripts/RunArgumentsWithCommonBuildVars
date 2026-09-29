@@ -50,7 +50,7 @@ sub GetString2InsertIntoBatchFileToInitCompiles_
 	}
 	local $VSDIR_VC = "$VSDIR\\VC";
 	local $result = "";
-	##pushd/popd needed cuz vcvars now changes directories (no idea why)
+	## pushd/popd: vcvarsall.bat cd's to %VSCMD_START_DIR% if that is set, and older Visual Studios to %USERPROFILE%\Source
 	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
@@ -78,10 +78,6 @@ sub RunSystemWithVCVarsSetInEnvironment_
 }
 
 my $result = RunSystemWithVCVarsSetInEnvironment_ ($cmd);
-# exit int ($result) doesn't work - for reasons I don't understand, but since I intend to abaondo use of perl, no point in debugging - just workaround for now --LGP 2017-10-29
-if ($result == 0) {
-	exit 0;
-}
-else {
-	exit 1;
-}
+# system () returns the wait status: the exit code is its high byte; a signal, or -1 (could not run the command at all),
+# leaves that byte 0 - so fall back to 1 rather than report success
+exit ($result == 0 ? 0 : (($result >> 8) & 0xff) || 1);

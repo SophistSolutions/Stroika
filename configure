@@ -702,13 +702,16 @@ sub getMacOSVersion_
 
 sub getXCodeVersion_
 {
-	my $a =  trim (`pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version: | awk 'END {print \$2}' | grep -E -o '[0-9]+\.[0-9]' | head -1`) ;
+	# Version of the SELECTED developer directory (xcode-select -p), which need not match the CommandLineTools package.
+	# xcodebuild fails when the CommandLineTools themselves are selected, so fall back to their package version.
+	my $a =  trim (`xcodebuild -version 2>/dev/null | head -1 | grep -E -o '[0-9]+\.[0-9]+' | head -1`) ;
+	if ($a eq "") {
+		$a =  trim (`pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version: | awk 'END {print \$2}' | grep -E -o '[0-9]+\.[0-9]+' | head -1`) ;
+	}
 	if ($a eq "") {
 		return 0;
 	}
-	else {
-		return $a + 0;	## convert to a number
-	}
+	return $a;	# only ever printed; as a number, 26.10 would come out as 26.1
 }
 
 sub getXCodeSelect_
@@ -1583,9 +1586,9 @@ sub	ParseEnvVarsToSetupInfluencedVariables_
 		push @EXTRA_ARGS, "--as";
 		push @EXTRA_ARGS, $ENV{'AS'};
 	}
-	if (defined ($ENV{'$RANLIB'})) {
+	if (defined ($ENV{'RANLIB'})) {
 		push @EXTRA_ARGS, "--ranlib";
-		push @EXTRA_ARGS, $ENV{'$RANLIB'};
+		push @EXTRA_ARGS, $ENV{'RANLIB'};
 	}
 	if (defined ($ENV{'STRIP'})) {
 		push @EXTRA_ARGS, "--strip";
@@ -2078,7 +2081,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-linktime-copy-files-2-EXEDir") or (lc ($var) eq "--append-linktime-copy-files-2-EXEDir")) {
 			$i++;
 			$var = $args[$i];
-			push @LinkTime_CopyFilesToEXEDir, $i;
+			push @LinkTime_CopyFilesToEXEDir, $var;
 		}
 		elsif ((lc ($var) eq "-lib-dependencies") or (lc ($var) eq "--lib-dependencies")) {
 			$i++;
@@ -2200,7 +2203,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-msvc-runtime-library") or (lc ($var) eq "--msvc-runtime-library")) {
 			$i++;
 			$var = $args[$i];
-			$VSVARS_MSVC_RUNTIME_LIBRARY = $i;
+			$VSVARS_MSVC_RUNTIME_LIBRARY = $var;
 		}
 		elsif ((lc ($var) eq "-sanitize") or (lc ($var) eq "--sanitize")) {
 			$i++;
@@ -3136,10 +3139,14 @@ sub GetMSVCVarName_
 		die ("reorg code so this set first");
 	}
 	if (!$GetMSVCVarName_filled_) {
-		if (! defined $BuildToolsRoot) {
-			$BuildToolsRoot = GetDefaultToolsBuildDir($BuildPlatform);
+		# Visual Studio targets only x86 and x86_64. Any other ARCH (e.g. UNKNOWN, for a compiler that is not installed) gets
+		# no Visual Studio environment, so configure gets far enough for --only-if-has-compiler to skip the configuration.
+		if ($ARCH eq "x86" or $ARCH eq "x86_64") {
+			if (! defined $BuildToolsRoot) {
+				$BuildToolsRoot = GetDefaultToolsBuildDir($BuildPlatform);
+			}
+			%GetMSVCVarName_e_ = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, $BuildToolsRoot);
 		}
-		%GetMSVCVarName_e_ = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, $BuildToolsRoot);
 		$GetMSVCVarName_filled_ = true;
 	}
 	return "$GetMSVCVarName_e_{$envVarName}"

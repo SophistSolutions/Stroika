@@ -7,7 +7,7 @@
 
 
 CONTAINER_NAME="${CONTAINER_NAME:-regression-tests}"
-CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests}"
+CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests}"
 # Default EXTRA_DNS to include my local LAN DNS server so I get local machine names, like raspberrypi (where I run my rasberry pi regtests)
 #EXTRA_DNS="${EXTRA_DNS:-192.168.244.1}"
 EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
@@ -25,17 +25,17 @@ EXTRA_DOCKER_HOSTNAME_MAP1="${EXTRA_DOCKER_HOSTNAME_MAP1:-}"
 EXTRA_DOCKER_HOSTNAME_MAP2="${EXTRA_DOCKER_HOSTNAME_MAP2:-}"
 #./Build/Scripts/ResolveIP raspberrypi
 if [ "${EXTRA_DOCKER_HOSTNAME_MAP1}" != "" ] ; then
-	EXTRA_DOCKER_ARGS = "$EXTRA_DOCKER_ARGS --add-host=$EXTRA_DOCKER_HOSTNAME_MAP1 "
+	EXTRA_DOCKER_ARGS="$EXTRA_DOCKER_ARGS --add-host=$EXTRA_DOCKER_HOSTNAME_MAP1 "
 fi
 if [ "${EXTRA_DOCKER_HOSTNAME_MAP2}" != "" ] ; then
-	EXTRA_DOCKER_ARGS = "$EXTRA_DOCKER_ARGS --add-host=$EXTRA_DOCKER_HOSTNAME_MAP2 "
+	EXTRA_DOCKER_ARGS="$EXTRA_DOCKER_ARGS --add-host=$EXTRA_DOCKER_HOSTNAME_MAP2 "
 fi
 
 
 # used todo 	#--dns ${EXTRA_DNS} --dns 8.8.8.8 \
 # but didn't seem to be helping... so simplify
 if [ "${EXTRA_DNS}" != "" ] ; then
-	EXTRA_DOCKER_ARGS = "$EXTRA_DOCKER_ARGS --dns $EXTRA_DNS "
+	EXTRA_DOCKER_ARGS="$EXTRA_DOCKER_ARGS --dns $EXTRA_DNS "
 fi
 
 

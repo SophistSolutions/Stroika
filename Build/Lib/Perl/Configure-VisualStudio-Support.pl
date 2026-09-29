@@ -139,7 +139,7 @@ sub GetString2InsertIntoBatchFileToInitCompiles_
 		die ("Couldn't find $VSDIR_VC: did you install visual studio desktop C++ support?")
 	}
 	my $result = "";
-	##pushd/popd needed cuz vcvars now changes directories (no idea why)
+	## pushd/popd: vcvarsall.bat cd's to %VSCMD_START_DIR% if that is set, and older Visual Studios to %USERPROFILE%\Source
 	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
@@ -216,7 +216,7 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 	}
 	elsif ($ARCH eq "x86_64") {
 		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x64");
-		my $nEXEDirs = @exe64Dir;
+		my $nEXEDirs = @exe64Dirs;
 		my $exe64Dir = fromCygPath_ (@exe64Dirs[$nEXEDirs-1]);
 		if ($nEXEDirs > 1) {
 			print(`Build/Scripts/PrintLevelLeader \$(($MAKE_INDENT_LEVEL+2))` . "Configure Warning: Multiple Compiler directories found: using $exe64Dir\n");

@@ -10,8 +10,8 @@ if [ "$BRANCH" == "" ] ; then
     BRANCH=$(git symbolic-ref --short HEAD)
 fi
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
-: ${PRIVATE_COMPILER_BUILDS_DIR:-/private-compiler-builds}
-: ${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests}
+: ${PRIVATE_COMPILER_BUILDS_DIR:=/private-compiler-builds}
+: ${CONTAINER_IMAGE:=sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests}
 : ${MONGO_CONNECTION_STRING:=}
 : ${PARALELLMAKEFLAG:=-j8}
 : ${RASPBERRYPI_REMOTE_MACHINE:=raspberrypi.local}

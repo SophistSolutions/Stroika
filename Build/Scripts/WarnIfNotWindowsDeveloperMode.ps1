@@ -6,9 +6,9 @@ function Test-RegistryValue {
         [parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]$Value
     )
     try {
-        return Get-ItemPropertyValue -Path $Path -Name $Value -ErrorAction Stop 
+        return Get-ItemPropertyValue -Path $Path -Name $Value -ErrorAction Stop
     } catch {
-        return $true
+        return $false   # never set means Developer Mode was never enabled
     }
 }
 
