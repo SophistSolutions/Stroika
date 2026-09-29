@@ -129,6 +129,11 @@ Generally will track stuff here between releases
          (noted 2026-09-10 during the compiler-coverage audit). clang's sanitizers are the better-supported
          ones upstream and diagnose somewhat different things, so this is a real second axis of the same
          single-platform problem, not a duplicate of it.
+       - **either way, `qCompilerAndStdLib_isinf_Valgrind_Buggy` goes** (#1177, deferred here so the same lines are
+         edited once): it is defined as a plain 1 for every compiler and always tested next to
+         `Debug::IsRunningUnderValgrind ()`, so it carries no information. Keep valgrind: the runtime check alone stays
+         in Tests/02 and Tests/32. Drop it: those checks go too. Probably valgrind's documented limitation (it holds
+         every `long double` in 64 bits), not a compiler bug; its warnings appear in every release run 3.0d8-3.0d24.
 
    - **WATCH: Windows Release-x86_64 SSDPClient segfault at startup** (parked 2026-09-27) - **DROP this entry if it
      has not recurred by 2026-10-27.** Seen once: Windows_MSYS_VS2k22 run at eb58defd98 (2026-09-26), both SSDPClient
