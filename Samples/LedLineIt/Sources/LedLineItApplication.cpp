@@ -30,6 +30,20 @@ using Memory::MakeSharedPtr;
 
 using namespace Stroika::Frameworks::Led;
 
+#if defined(__SANITIZE_ADDRESS__)
+/*
+ *  The common file dialog (File Open, Save As) has the Windows shell enumerate the folder on a worker thread, and shell
+ *  code there (ntshrui.dll, called via windows.storage and propsys) does a memcmp that reads past the end of its own heap
+ *  block. With ASan's default strict_memcmp=1 - "memcmp always reads all n bytes" - that is reported as a heap-buffer-overflow
+ *  and the app dies; no LedLineIt code is on the stack. strict_memcmp=0 checks only up to the first difference.
+ *  ASAN_OPTIONS from the environment still applies on top of this.
+ */
+extern "C" const char* __asan_default_options ()
+{
+    return "strict_memcmp=0";
+}
+#endif
+
 #define STD_EXCEPT_CATCHER(APP)                                                                                                            \
     catch (CMemoryException * e)                                                                                                           \
     {                                                                                                                                      \

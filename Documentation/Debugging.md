@@ -8,6 +8,17 @@
 * br __asan::ReportGenericError
 - see https://stackoverflow.com/questions/30809022/how-can-i-break-on-ubsan-reports-in-gdb-and-continue
 
+## ASAN on Windows (MSVC Debug builds have it on by default)
+
+- **A GUI app that opens the common file dialog dies with a heap-buffer-overflow in `memcmp`**, on a shell worker thread,
+  with only Windows DLLs on the stack (`ntshrui`, `windows.storage`, `propsys`...). That is shell code comparing past the
+  end of its own heap block, not your code. Run with `ASAN_OPTIONS=strict_memcmp=0`, or build it in - LedIt and LedLineIt
+  define `extern "C" const char* __asan_default_options () { return "strict_memcmp=0"; }` under `__SANITIZE_ADDRESS__`.
+- **`ASAN_OPTIONS` splits on `:`**, so a Windows path in it must be quoted inside the value -
+  `ASAN_OPTIONS=log_path='C:\tmp\asan'` - or ASan dies at startup, parsing its own flags.
+- A GUI app has no console, so an ASan report on stderr is invisible; run it under the Visual Studio debugger (the report is
+  in the Output window), or set `log_path` as above.
+
 ## TSAN (thread sanitizer) on Ubuntu 24.04 (Host - not container) and later
 
 - see https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels
