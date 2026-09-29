@@ -30,6 +30,7 @@
 
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Characters/SDKString.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 
@@ -83,18 +84,13 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
 #elif qStroika_HasComponent_boost
     using namespace boost;
 
-    auto bt = stacktrace::stacktrace ();
-
-    //
-    // Simple default usage with boost
-    // auto x = String::FromNarrowSDKString (stacktrace::to_string (bt)).As<wstring> ();
-    //
+    // boost skips its own frames (its constructors are force-inlined; init and collect skip themselves), in Debug or
+    // Release - so skip just ours, and let it apply the limit too
+    auto bt = stacktrace::stacktrace (useSkipFrames, usingMaxFrames);
 
     wstringstream result; // avoid use of StringBuild to avoid dependencies on the rest of stroika
     streamsize    w      = result.width ();
     size_t        frames = bt.size ();
-
-    useSkipFrames += 2; // boost (as checking on windows as of 2020-03-01) appears to leave in two layers of its own
 
     if (useSkipFrames != 0 and frames != 0) {
         result << L"..." << Characters::kEOL<wchar_t>;
@@ -102,12 +98,6 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
 
     bool includeSrcLines = options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines);
     for (size_t i = 0; i < frames; ++i) {
-        if (i < useSkipFrames) {
-            continue;
-        }
-        if (i - useSkipFrames >= usingMaxFrames) {
-            break;
-        }
         result.width (2);
         result << i;
         result.width (w);
@@ -127,6 +117,9 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
      */
     constexpr size_t kMaxStackSize_ = 100; // could look at return size and re-run if equals exactly...
     // @todo combine maxFrames with trial and error on backtrace() calls
+    if constexpr (Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) {
+        ++useSkipFrames; // ASan and TSan interpose on backtrace (), so their interceptor is its first frame
+    }
     void*  stackTraceBuf[kMaxStackSize_]{};
     int    nptrs = ::backtrace (stackTraceBuf, std::size (stackTraceBuf));
     char** syms  = ::backtrace_symbols (stackTraceBuf, nptrs);

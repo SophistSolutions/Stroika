@@ -393,6 +393,30 @@ namespace {
     }
 }
 
+// Three real frames with findable names, for BackTrace_SkipFrames_: external linkage (so even dladdr-based symbolizers can
+// name them), dont_inline, and each does something after its call so it cannot become a tail call
+namespace Stroika_Test37_BackTraceFrames {
+    volatile size_t     sSink;
+    dont_inline wstring Level1 ()
+    {
+        wstring r = Debug::BackTrace::Capture ({.fSkipFrames = 0u});
+        sSink     = r.size ();
+        return r;
+    }
+    dont_inline wstring Level2 ()
+    {
+        wstring r = Level1 ();
+        sSink     = r.size ();
+        return r;
+    }
+    dont_inline wstring Level3 ()
+    {
+        wstring r = Level2 ();
+        sSink     = r.size ();
+        return r;
+    }
+}
+
 namespace {
     namespace Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_ {
         namespace Private {
@@ -450,6 +474,17 @@ namespace {
         for (unsigned int maxFrames : {1u, 2u}) {
             EXPECT_EQ (frames (Debug::BackTrace::Capture ({.fMaxFrames = maxFrames})), maxFrames);
         }
+    }
+    GTEST_TEST (Foundation_Execution_Exceptions, BackTrace_SkipFrames_)
+    {
+        Debug::TraceContextBumper ctx{"BackTrace_SkipFrames_"};
+        // fSkipFrames = 0 starts at Capture's caller: Capture's own frames skipped, and nothing more
+        wstring bt    = Stroika_Test37_BackTraceFrames::Level3 ();
+        auto    lines = Characters::String{bt}.AsLines ().Where ([] (const Characters::String& l) { return l != "..."sv; });
+        if (not lines.Any ([] (const Characters::String& l) { return l.Contains ("Level3"); })) {
+            GTEST_SKIP () << "BackTrace has no symbol names in this build";
+        }
+        EXPECT_TRUE (lines.First ().value_or (Characters::String{}).Contains ("Level1")) << Characters::String{bt}.AsUTF8<string> ();
     }
 }
 
