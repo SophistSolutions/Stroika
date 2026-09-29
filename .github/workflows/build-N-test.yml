@@ -71,7 +71,7 @@ jobs:
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
         matrix=$(jq --arg branchName "$branchName" 'map( 
-            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ("${{github.event.inputs.run_all}}"=="true")) | select(.build_job=="MacOS")
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ("${{github.event.inputs.run_all}}"=="true") and (.run_on_branch!="never")) | select(.build_job=="MacOS")
         )' .github/workflows/build-N-test-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
   WindowsMatrixPrep:
@@ -85,7 +85,7 @@ jobs:
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
         matrix=$(jq --arg branchName "$branchName" 'map( 
-            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ("${{github.event.inputs.run_all}}"=="true")) | select(.build_job=="Windows")
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ("${{github.event.inputs.run_all}}"=="true") and (.run_on_branch!="never")) | select(.build_job=="Windows")
         )' .github/workflows/build-N-test-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
 
@@ -129,7 +129,7 @@ jobs:
             readarray -t extra_apt_add_packages < <(echo "$APT_ADD_JSON_ARRAY_STRING" | jq -r '.[]')
             for package in "${extra_apt_add_packages[@]}"; do
               echo "apt-get install -qq -y $package"
-              apt-get install -qq -y "$package" || true
+              apt-get install -qq -y "$package"
             done
             apt-get autoremove -qq -y || true
             apt-get clean -qq -y || true
@@ -348,14 +348,6 @@ jobs:
         run: |
           mkdir /tmp/LOGS-ARCHIVE
           cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE || :
-      - name: DEBUG Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
-        if: always()
-        run: |
-          echo "TMPDIR=$TMPDIR"
-          echo "TMPDIR using ENV.TMPDIR=${{ env.TMPDIR }}"
-          # Just the echo line above shows empty, and then the ls line causes exit 1/failure
-          #ls -l ${{ env.TMPDIR }}/Trace*.txt
-          #if this gets fixed, then lose Workaround GitHub-Actions-MacOS, and directly reference ${{ env.TMPDIR }}/Trace*.txt in Archive Log Data
       - name: Build System Info
         run: |
           df -h
@@ -379,7 +371,6 @@ jobs:
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/CONFIGURE-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/BUILD-OUT.txt
-            ${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v7
         with:
@@ -491,10 +482,6 @@ jobs:
         shell: "bash"
         if: always()
         run: |
-          # TMPHACK TO TEST
-          echo stroika-platform.pc
-          docker exec --workdir c:/Stroika buildContainer cat Builds/${{ matrix.config_name }}/lib/pkgconfig/stroika-platform.pc
-          
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
           NORMALIZED_WORKSPACE_DIR_=`cygpath --mixed "${GITHUB_WORKSPACE}"`

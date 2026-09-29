@@ -39,17 +39,6 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-22.04-g++-12-c++2a",
-        "compiler": "g++-12",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests",
-        "cpp_version": "c++2a",
-        "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release"
-    },
-    {
-        "build_job": "Linux",
         "displayTargetName": "ubuntu-22.04-clang++-15-debug-libc++",
         "compiler": "clang++-15",
         "runs_on": "ubuntu-latest",
@@ -249,7 +238,7 @@
     },
     {},
     {
-        "#": "ubuntu 24.04"
+        "#": "ubuntu 26.04"
     },
     {
         "build_job": "Linux",
@@ -386,7 +375,7 @@
         "displayTargetName": "ubuntu-26.04-g++-15-debug-smaller-container",
         "compiler": "g++-15",
         "runs_on": "ubuntu-latest",
-        "#": "try avoid runs out of disk space ubuntu2504-small container and add g++ with extra_apt_add_packages",
+        "#": "try avoid runs out of disk space ubuntu2604-small container and add g++ with extra_apt_add_packages",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-small",
         "cpp_version": "c++20",
         "config_name": "Debug",
