@@ -102,10 +102,15 @@ namespace {
 }
 
 namespace {
+    // valgrind is far slower than the sanitizers, and memcheck gets its value from the first few runs anyway (every test runs at least once)
 #if qStroika_Foundation_Debug_AssertionsChecked
-    double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .001 : 1.0;
+    double sTimeMultiplier_ = Debug::IsRunningUnderValgrind ()                                          ? .0001
+                              : (Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .001
+                                                                                                        : 1.0;
 #else
-    double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .002 : 1.0;
+    double sTimeMultiplier_ = Debug::IsRunningUnderValgrind ()                                          ? .0002
+                              : (Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .002
+                                                                                                        : 1.0;
 #endif
 }
 
@@ -296,8 +301,8 @@ namespace {
                      printResults = DEFAULT_TEST_PRINTER)
     {
         Duration baselineTime = 1 / double (runCount);
-        if (Tester (testName, baselineTime, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount),
-                    warnIfPerformanceScoreHigherThan, printResults)) {
+        if (Tester (testName, baselineTime, compareWithT, compareWithTName,
+                    max (1u, static_cast<unsigned int> (sTimeMultiplier_ * runCount)), warnIfPerformanceScoreHigherThan, printResults)) {
             failedTestAccumulator->Add (testName);
         }
     }
@@ -307,7 +312,7 @@ namespace {
                      printResults = DEFAULT_TEST_PRINTER)
     {
         if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName,
-                    static_cast<unsigned int> (sTimeMultiplier_ * runCount), warnIfPerformanceScoreHigherThan, printResults)) {
+                    max (1u, static_cast<unsigned int> (sTimeMultiplier_ * runCount)), warnIfPerformanceScoreHigherThan, printResults)) {
             failedTestAccumulator->Add (testName);
         }
     }
@@ -1659,8 +1664,9 @@ namespace {
             const path jsonTestRoot = FindJSONTestRoot_ ();
             for (auto testCase : kTestCases_) {
                 DoJSONParse_ (jsonTestRoot / "small-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
-                if constexpr (not qStroika_Foundation_Debug_AssertionsChecked) {
-                    // don't bother testing these except in release builds - too slow
+                if (not qStroika_Foundation_Debug_AssertionsChecked and not Debug::IsRunningUnderValgrind ()) {
+                    // don't bother testing these except in release builds, and not under valgrind - too slow, and the
+                    // parsing code they run is the same as for small-dict
                     DoJSONParse_ (jsonTestRoot / "medium-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
                     DoJSONParse_ (jsonTestRoot / "large-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
                 }

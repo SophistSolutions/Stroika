@@ -975,16 +975,14 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_) {
-            // Test passes, but takes hour with valgrind/memcheck. Not without valgrind however
-            GTEST_SKIP () << "too slow under valgrind";
-        }
         {
-            Time::TimePointSeconds    testStartedAt       = Time::GetTickCount ();
-            static constexpr unsigned kThreadPoolSize_    = 10;
-            static constexpr unsigned kStepsToGetTrouble_ = 100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
+            Time::TimePointSeconds    testStartedAt    = Time::GetTickCount ();
+            static constexpr unsigned kThreadPoolSize_ = 10;
+            // wag - should go through each thread pretty quickly. Under valgrind, just a couple of tasks per thread: it runs one
+            // thread at a time, so the full count is slow, and memcheck gets its value from the first few anyway.
+            static const unsigned                  kStepsToGetTrouble_ = (kRunningValgrind_ ? 2 : 100) * kThreadPoolSize_;
             static constexpr Time::DurationSeconds kTime2WaitPerTask_{0.01s};
-            static constexpr Time::DurationSeconds kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
+            static const Time::DurationSeconds     kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
             ThreadPool                             p{ThreadPool::Options{.fThreadCount = kThreadPoolSize_}};
             auto                                   doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
 
@@ -1127,16 +1125,16 @@ namespace {
                 ThreadPool consumerThreadPool{ThreadPool::Options{.fThreadCount = kThreadPoolSize_, .fThreadPoolName = "consumers"}};
                 ThreadPool producerThreadPool{ThreadPool::Options{.fThreadCount = kThreadPoolSize_, .fThreadPoolName = "producers"}};
 
-                enum {
-                    START = 0,
-                    END   = 100
-                };
+                // Under valgrind, few items and tasks: it runs one thread at a time, so every queue handoff is slow, and
+                // memcheck gets its value from the first few anyway.
+                static constexpr int             START = 0;
+                static const int                 END   = kRunningValgrind_ ? 10 : 100;
                 atomic<uint64_t>                 counter{};
                 BlockingQueue<function<void ()>> q;
 
                 Verify (q.size () == 0);
 
-                static const size_t kTaskCounts_ = kRunningValgrind_ ? (kThreadPoolSize_ * 5) : (kThreadPoolSize_ * 10);
+                static const size_t kTaskCounts_ = kRunningValgrind_ ? kThreadPoolSize_ : (kThreadPoolSize_ * 10);
 
                 for (size_t i = 0; i < kTaskCounts_; ++i) {
                     producerThreadPool.AddTask ([&q, &counter] () {
@@ -1166,11 +1164,6 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
             Debug::TimingTrace        tt;
-            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-            if (kRunningValgrind_) {
-                // Test passes, but takes 8 HRs on ubuntu 20.04 ; and quite a while (hours) on other ubuntu releases. Not without valgrind however
-                GTEST_SKIP () << "too slow under valgrind";
-            }
             Private_::TEST_ ();
         }
     }
@@ -1670,9 +1663,10 @@ namespace {
             Debug::TraceContextBumper traceCtx{"RegressionTest28_EventFDSetClearRace_"};
             Debug::TimingTrace        tt;
             // Enough that the rarer case (Clear inside Set) shows reliably - still cheap under asan/ubsan, but not under
-            // tsan or valgrind, which slow every syscall and atomic far more. Neither loses anything by it: this race
-            // is not a data race, so tsan cannot flag it, and valgrind serializes the threads so could hardly hit it.
-            const unsigned kRounds_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer) ? 2000u : 20000u;
+            // tsan, which slows every syscall and atomic far more; it loses nothing, as this race is not a data race.
+            // Under valgrind, just a few: it runs one thread at a time, so it can hardly hit the race, and each busy-spin
+            // handoff costs a whole scheduling slice - but a few rounds still put memcheck over both Set/Clear paths.
+            const unsigned kRounds_ = Debug::IsRunningUnderValgrind () ? 4u : Debug::kBuiltWithThreadSanitizer ? 2000u : 20000u;
             // generous, since a readable descriptor returns at once - and only paid on a failure
             constexpr Time::DurationSeconds kReadableWithin_{10.0};
             auto                            e = mkEventFD ();
