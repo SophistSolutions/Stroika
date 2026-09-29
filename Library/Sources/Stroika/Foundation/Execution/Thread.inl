@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution {
     public:
         nonvirtual NativeHandleType GetNativeHandle ();
 
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
     public:
         nonvirtual stop_token GetStopToken () const;
 #endif
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Execution {
         function<void ()> fRunnable_;
         atomic<bool>      fAbortRequested_{false}; // regular interrupt, abort interrupt, or none
         // Before Stroika v3.0d5 - we had a  mutex to protect fThread_ object, but it caused more trouble than it solved, so removed
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
         stop_source fStopSource_;
         stop_token  fStopToken_; // initialized in Ptr::Start() before ThreadMain_ called
         jthread     fThread_;
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Execution {
      *********************************** Thread::Rep_ *******************************
      ********************************************************************************
      */
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
     inline stop_token Thread::Ptr::Rep_::GetStopToken () const
     {
         return this->fStopToken_;
@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Execution {
         }
         return fRep_->GetNativeHandle ();
     }
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
     inline stop_token Thread::Ptr::GetStopToken () const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareReadContext{fThisAssertExternallySynchronized_};

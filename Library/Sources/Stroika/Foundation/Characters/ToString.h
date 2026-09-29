@@ -17,7 +17,7 @@
 #include <typeindex>
 #include <typeinfo>
 #include <utility>
-#if __cpp_lib_format_ranges
+#if defined(__cpp_lib_format_ranges)
 #include <format> // std::format_kind - IStdFormatterPredefinedFor_ uses it even when Stroika formats with fmtlib
 #endif
 
@@ -27,7 +27,7 @@
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Common/StdCompat.h"
 
-#if __cpp_lib_stacktrace >= 202011
+#if defined(__cpp_lib_stacktrace)
 #include <stacktrace>
 #endif
 
@@ -264,7 +264,7 @@ namespace Stroika::Foundation::Characters::Private_ {
         // value with clang++16 was 202101L and cpp2b and libc++ (ubuntu 23.10 and 24.04) flag... and it had at least the pair<> code supported.
         // this stuff needed for clang++-18-debug-libstdc++-c++23
         //
-#if __cpp_lib_format_ranges
+#if defined(__cpp_lib_format_ranges)
         // Not every range: the standard's range formatter requires format_kind != disabled - which it is for a range whose
         // elements are themselves that range (filesystem::path), and for optional (C++26, where optional became a range).
         // Unlike formattable, format_kind depends only on the type - not on which formatters are declared - so is safe to
@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #if qStroika_Foundation_Common_cplusplus > 202101L or _LIBCPP_STD_VER >= 23
         or Common::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
-#if __cpp_lib_stacktrace >= 202011
+#if defined(__cpp_lib_stacktrace)
         or Common::IAnyOf<remove_cvref_t<T>, stacktrace_entry>
         or requires { []<typename ALLOCATOR> (type_identity<basic_stacktrace<ALLOCATOR>>) {}(type_identity<T> ()); } 
 #endif
@@ -287,7 +287,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
 
         // C++26
-#if __cpp_lib_format_path
+#if defined(__cpp_lib_format_path)
         or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
 
@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Characters::Private_ {
                 { t.ToString () } -> convertible_to<Characters::String>;
             } or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
     //or Common::ISharedPtr<decay_t<T>>
-#if !__cpp_lib_format_ranges
+#if not defined(__cpp_lib_format_ranges)
 #if !qStroika_HasComponent_fmtlib or (FMT_VERSION < 110000)
              or (ranges::range<decay_t<T>> and
                  not Common::IAnyOf<decay_t<T>, string, wstring, string_view, wstring_view, const char[], const wchar_t[],
@@ -417,11 +417,11 @@ namespace Stroika::Foundation::Characters::Private_ {
              Common::ITuple<remove_cvref_t<T>>
 #endif
 #endif
-#if (!defined(__cpp_lib_formatters) || __cpp_lib_formatters < 202302L) and (!defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
+#if not defined(__cpp_lib_formatters) and (not defined(_LIBCPP_STD_VER) || _LIBCPP_STD_VER < 23)
              // available in C++23
              or Common::IAnyOf<remove_cvref_t<T>, thread::id>
 #endif
-#if !__cpp_lib_format_path
+#if not defined(__cpp_lib_format_path)
              or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
              or is_enum_v<remove_cvref_t<T>> or Common::IOptional<remove_cvref_t<T>> or Common::IVariant<remove_cvref_t<T>> or

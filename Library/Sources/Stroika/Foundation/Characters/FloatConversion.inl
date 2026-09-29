@@ -421,7 +421,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
-#if qStroika_Foundation_Debug_AssertionsChecked || !(__cpp_lib_to_chars >= 201611)
+#if qStroika_Foundation_Debug_AssertionsChecked || not defined(__cpp_lib_to_chars)
         inline size_t CalcSignificantFigures_ (const String& numStr, bool countZerosAtEndAfterDecPoint = false)
         {
             bool   leading    = true;
@@ -470,7 +470,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             unsigned int      effectivePrecision = precision.GetEffectiveSignificantFigures<FLOAT_TYPE> ();
 
             // XCode 15 still doesn't define __cpp_lib_to_chars, as well as _LIBCPP_VERSION < 190000, I believe --LGP 2024-07-13
-#if __cpp_lib_to_chars >= 201611
+#if defined(__cpp_lib_to_chars)
             // empirically, on MSVC, to_chars() is much faster than snprintf (appears 3x apx faster) -- LGP 2021-11-04
             if (precision == SignificantFigures::kFullPrecision) {
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
@@ -848,7 +848,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         Memory::StackBuffer<char> asciiS;
         if (Character::AsASCIIQuietly (s, &asciiS)) {
             qStroika_ATTRIBUTE_INDETERMINATE T result;
-#if __cpp_lib_to_chars >= 201611 and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
+#if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
 #if qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy
             asciiS.push_back (0);
 #endif
@@ -887,7 +887,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
          *  Else, fallback on algorithm that understands full unicode character set.
          */
-#if __cpp_lib_to_chars >= 201611 and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
+#if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
         Memory::StackBuffer<char> asciiS;
         if (Character::AsASCIIQuietly (s, &asciiS)) {
             qStroika_ATTRIBUTE_INDETERMINATE T result;
@@ -958,7 +958,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         Require (start <= end);
         RequireNotNull (remainder);
         qStroika_ATTRIBUTE_INDETERMINATE T result;
-#if __cpp_lib_to_chars >= 201611 and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
+#if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
         /*
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
          *  Else, fallback on older algorithm that understands full unicode character set.

@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Execution {
     namespace Thread {
         void CheckForInterruption ();
         bool IsCurrentThreadInterruptible ();
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
         optional<stop_token> GetCurrentThreadStopToken ();
 #endif
     }
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Execution {
 
         if constexpr (kSupportsStopToken) {
             // If no predicate function is provided (to say when we are done) - use stop_requested() as the predicate
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
                 if (fConditionVariable.wait_until (lock, *ost, Time::Pin2SafeSeconds (timeoutAt), [&] () { return ost->stop_requested (); }))
                     [[unlikely]] {
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Execution {
         // Support interruption using the c++20 stop token API, if possible (supported and we are called from a thread with a Thread object
         // whose stop_token we can access)
         if constexpr (kSupportsStopToken) {
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
                 // NB: 'readyToWake' is passed as a plain lvalue here and in the re-wait below, never forwarded:
                 // wait_until () takes its Predicate BY VALUE, and the re-wait sits in a loop, so forwarding would

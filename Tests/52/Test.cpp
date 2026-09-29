@@ -898,7 +898,7 @@ namespace {
     }
 }
 
-#if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
+#if defined(__cpp_lib_containers_ranges)
 namespace {
     /*
      *  append_range () against the std spelling of the same operation - std::vector::append_range (), C++23.
@@ -3007,7 +3007,7 @@ namespace {
                 "from vector<pair<int,int>>", [] () { Test_IterableAlgorithms_::AddAll_KeyedCollection_ (kSrcSeqKCElts_); },
                 "from Sequence<pair<int,int>>", 5000, 1000.0 /* probe */);
         }
-#if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
+#if defined(__cpp_lib_containers_ranges)
         // Sequence<int>::append_range () against std::vector<int>::append_range () - the same operation, so
         // the score is the cost of Stroika's per-element _IRep::Insert () dispatch. See the batching @todo in
         // Sequence.h; this entry is what will show that work landing.

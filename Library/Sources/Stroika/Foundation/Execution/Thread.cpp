@@ -460,7 +460,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             Assert (thisThreadID == thisThreadRep->GetID ()); // By now we know thisThreadRep->fThread_ has been assigned so it can be accessed
 
             if (not thisThreadRep->fAbortRequested_ and not thisThreadRep->IsDone_ ()) {
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
                 // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
                 // But only register this after fRefCountBumpedInsideThreadMainEvent_ (would need to think more carefully to place this earlier)
                 // --LGP 2023-10-03
@@ -687,7 +687,7 @@ void Thread::Ptr::Start () const
             Throw (Execution::Exception<runtime_error>{"Thread aborted during start"sv}); // check and if aborting now, don't go further
         }
 
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
         fRep_->fStopToken_ = fRep_->fStopSource_.get_token ();
         fRep_->fThread_    = jthread{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
 #else
@@ -730,13 +730,13 @@ void Thread::Ptr::Abort () const
     Require (*this != nullptr);
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
     bool wasAborted = fRep_->fAbortRequested_;
 #endif
     // Abort can be called with status in ANY state, except nullptr (which would mean ever assigned Thread::New());
     fRep_->fAbortRequested_ = true;
     if (fRep_->fStartEverInitiated_) {
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
         // If transitioning to aborted state, notify any existing stop_callbacks
         // not needed to check prevState - since https://en.cppreference.com/w/cpp/thread/jthread/request_stop says requst_stop checks if already requested.
         if (not wasAborted) [[likely]] {
@@ -1037,7 +1037,7 @@ string Thread::FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo
     }
 }
 
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
 /*
  ********************************************************************************
  ************************ Thread::GetCurrentThreadStopToken *********************

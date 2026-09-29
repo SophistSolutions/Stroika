@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Execution {
  *  @see https://github.com/SophistSolutions/Stroika/issues/1165
  */
 #ifndef qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
 #define qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup 1
 #else
 #define qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup 0

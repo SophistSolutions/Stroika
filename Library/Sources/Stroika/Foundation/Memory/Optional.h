@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, class F>
     constexpr auto And_Then (const optional<T>& o, F&& f)
     {
-#if __cpp_lib_optional >= 202110L
+#if __cpp_lib_optional >= 202110L // the C++23 revision, which adds the monadic operations
         return o.and_then (forward<F> (f));
 #else
         if (o.has_value ()) {
@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, class F>
     constexpr auto Or_Else (const optional<T>& o, F&& f)
     {
-#if __cpp_lib_optional >= 202110L
+#if __cpp_lib_optional >= 202110L // the C++23 revision, which adds the monadic operations
         return o.or_else (forward<F> (f));
 #else
         if (o.has_value ()) {
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, class F>
     constexpr auto Transform (const optional<T>& o, F&& f)
     {
-#if __cpp_lib_optional >= 202110L
+#if __cpp_lib_optional >= 202110L // the C++23 revision, which adds the monadic operations
         return o.transform (forward<F> (f));
 #else
         using U = std::remove_cv_t<std::invoke_result_t<F, T>>;

@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   ***Which standard libraries actually have jthread/stop_token***
      *
-     *          Much of the Stroika thread code checks (__cpp_lib_jthread >= 201911);
+     *          Much of the Stroika thread code checks defined(__cpp_lib_jthread);
      *          Where it fails, Thread holds a std::thread rather than a
      *          std::jthread, has no stop_source, and Abort () does not call request_stop () - leaving only
      *          the interrupt signal (POSIX) or APC (Windows) to break into a blocking call.
@@ -407,7 +407,7 @@ namespace Stroika::Foundation::Execution {
              */
             nonvirtual NativeHandleType GetNativeHandle () const noexcept;
 
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
         public:
             /**
              */
@@ -1120,7 +1120,7 @@ namespace Stroika::Foundation::Execution {
          */
         Ptr GetCurrent ();
 
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
         /**
          */
         optional<stop_token> GetCurrentThreadStopToken ();

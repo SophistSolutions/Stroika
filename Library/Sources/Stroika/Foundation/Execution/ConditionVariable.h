@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Execution {
          *  So only support stop_token for condition_variable_any.
          *          -- LGP 2023-10-06
          */
-#if __cpp_lib_jthread < 201911
+#if not defined(__cpp_lib_jthread)
         static constexpr bool kSupportsStopToken = false;
 #else
         static constexpr bool kSupportsStopToken = same_as<CONDITION_VARIABLE, condition_variable_any>;

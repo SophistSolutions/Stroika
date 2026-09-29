@@ -6,7 +6,7 @@
 #include <mutex>
 #include <optional>
 #include <version>
-#if __cpp_lib_jthread >= 201911
+#if defined(__cpp_lib_jthread)
 #include <stop_token>
 #endif
 

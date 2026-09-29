@@ -340,7 +340,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         class Rep_;
-#if __cpp_lib_atomic_shared_ptr >= 201711
+#if defined(__cpp_lib_atomic_shared_ptr)
         static inline atomic<shared_ptr<Rep_>> sTheRep_{nullptr};
 #else
         static inline shared_ptr<Rep_> sTheRep_{nullptr};

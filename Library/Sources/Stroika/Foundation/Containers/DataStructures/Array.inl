@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const T*                                                start = &fItems_[0];
         const T*                                                end   = &fItems_[fLength_];
         switch (seq) {
-#if __cpp_lib_execution >= 201603L
+#if defined(__cpp_lib_execution)
             // only ePar goes parallel; 'default' running sequentially is deliberate - see the dispatch note
             // on Execution::SequencePolicy
             case Execution::SequencePolicy::ePar:

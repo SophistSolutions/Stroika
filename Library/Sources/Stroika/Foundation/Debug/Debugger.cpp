@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if __cpp_lib_debugging >= 202403L
+#if defined(__cpp_lib_debugging)
 #include <debugging>
 #endif
 
@@ -93,7 +93,7 @@ namespace {
  */
 optional<bool> Debug::IsThisProcessBeingDebugged ()
 {
-#if __cpp_lib_debugging >= 202403L
+#if defined(__cpp_lib_debugging)
     return std::is_debugger_present ();
 #endif
 #if qStroika_Foundation_Common_Platform_Linux

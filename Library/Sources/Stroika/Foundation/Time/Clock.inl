@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Time {
     template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
     inline auto clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp) -> typename DESTINATION_CLOCK_T::time_point
     {
-#if __cpp_lib_chrono >= 201907L
+#if __cpp_lib_chrono >= 201907L // C++20 chrono, complete (libc++ reports 201611L, as of clang 22)
         if constexpr (Private_::kCanUseStdClockCnv_<DESTINATION_CLOCK_T, SOURCE_CLOCK_T, DURATION_T>) {
             return chrono::clock_cast<DESTINATION_CLOCK_T> (tp);
         }

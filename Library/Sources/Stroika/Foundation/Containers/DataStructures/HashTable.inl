@@ -317,7 +317,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // only ePar goes parallel; 'default' running sequentially is deliberate - see the dispatch
             // note on Execution::SequencePolicy
             switch (seq) {
-#if __cpp_lib_execution >= 201603L
+#if defined(__cpp_lib_execution)
                 case Execution::SequencePolicy::ePar:
                     std::for_each (execution::par, fBuckets_.begin (), fBuckets_.end (), [&] (const BucketType_& bi) {
                         std::for_each (execution::par, bi.fElements.begin (), bi.fElements.end (),

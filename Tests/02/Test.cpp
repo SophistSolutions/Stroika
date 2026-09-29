@@ -1348,7 +1348,7 @@ namespace {
         {
             // if exceeds precision, (is that the rule, or smallest rep?) then scientific notation
             EXPECT_EQ (FloatConversion::ToString (30707548160.0), "3.07075e+10");
-#if __cpp_lib_to_chars >= 201611
+#if defined(__cpp_lib_to_chars)
             EXPECT_EQ (FloatConversion::ToString (3724089.418996166), "3.72409e+06");
             EXPECT_EQ (FloatConversion::ToString (44905.3, FloatConversion::SignificantFigures{6}), "44905.3");
 #else

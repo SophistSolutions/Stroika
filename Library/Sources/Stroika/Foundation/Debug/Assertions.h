@@ -358,7 +358,7 @@ namespace Stroika::Foundation::Debug {
 #define AssertNotReached()                                                                                                                  \
     Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Assert", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), \
                                                                       __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
-#elif __cpp_lib_unreachable < 202202
+#elif not defined(__cpp_lib_unreachable)
 #define AssertNotReached()
 #else
 #define AssertNotReached() unreachable ()
@@ -373,7 +373,7 @@ namespace Stroika::Foundation::Debug {
 #define EnsureNotReached()                                                                                                                  \
     Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Ensure", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), \
                                                                       __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
-#elif __cpp_lib_unreachable < 202202
+#elif not defined(__cpp_lib_unreachable)
 #define EnsureNotReached()
 #else
 #define EnsureNotReached() unreachable ()
@@ -388,7 +388,7 @@ namespace Stroika::Foundation::Debug {
 #define RequireNotReached()                                                                                                                  \
     Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (L"Require", L"Not Reached", Stroika_Foundation_Debug_Widen (__FILE__), \
                                                                       __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
-#elif __cpp_lib_unreachable < 202202
+#elif not defined(__cpp_lib_unreachable)
 #define RequireNotReached()
 #else
 #define RequireNotReached() unreachable ()

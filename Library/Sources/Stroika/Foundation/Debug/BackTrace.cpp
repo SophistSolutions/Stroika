@@ -20,7 +20,7 @@
 #define BOOST_STACKTRACE_USE_WINDBG_CACHED 1
 #endif
 
-#if __cpp_lib_stacktrace >= 202011
+#if defined(__cpp_lib_stacktrace)
 #include <stacktrace>
 #endif
 
@@ -63,7 +63,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
 
     [[maybe_unused]] unsigned usingMaxFrames = options.fMaxFrames.value_or (BackTrace::Options::sDefault_MaxFrames);
 
-#if __cpp_lib_stacktrace >= 202011
+#if defined(__cpp_lib_stacktrace)
     // current () requires skip + max_depth to fit its size_type - just 16 bits in libstdc++, and 32 for MSVC x86 - and the
     // default usingMaxFrames is UINT_MAX
     auto st = std::stacktrace::current (useSkipFrames, min<size_t> (usingMaxFrames, numeric_limits<std::stacktrace::size_type>::max () - useSkipFrames));

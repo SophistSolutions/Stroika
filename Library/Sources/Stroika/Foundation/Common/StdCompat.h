@@ -14,7 +14,7 @@
 #include <cstdarg>
 #include <ranges>
 
-#if __cpp_lib_expected
+#if defined(__cpp_lib_expected)
 #include <expected>
 #else
 #include <variant>
@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Common::StdCompat {
     /**
      *  Workaround absence of bit_cast in MacOS XCode 14 (which we support with Stroika v3)
      */
-#if __cpp_lib_bit_cast >= 201806L
+#if defined(__cpp_lib_bit_cast)
     using std::bit_cast;
 #else
     template <class To, class From>
@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Common::StdCompat {
      *  std::byteswap where the standard library has it (it is C++23), else an equivalent - so every C++20 build uses
      *  the version below.
      */
-#if __cpp_lib_byteswap >= 202110L
+#if defined(__cpp_lib_byteswap)
     using std::byteswap;
 #else
     template <class T>
@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Common::StdCompat {
     /**
      *  Wrap a simplified version of std::unexpected, cuz handy even if c++23 not present
      */
-#if __cpp_lib_expected
+#if defined(__cpp_lib_expected)
     template <typename T>
     using unexpected = std::unexpected<T>;
     template <typename T, typename E>

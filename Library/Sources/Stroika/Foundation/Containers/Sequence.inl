@@ -345,7 +345,7 @@ namespace Stroika::Foundation::Containers {
          */
         vector<T> tmp = this->As<vector<T>> ();
         switch (seq) {
-#if __cpp_lib_execution >= 201603L
+#if defined(__cpp_lib_execution)
             case Execution::SequencePolicy::ePar:
                 stable_sort (std::execution::par, tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
                 break;

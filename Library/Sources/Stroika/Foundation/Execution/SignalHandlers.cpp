@@ -266,7 +266,7 @@ DISABLE_COMPILER_MSC_WARNING_END (4351)
 SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::CTOR"};
-#if __cpp_lib_atomic_shared_ptr >= 201711
+#if defined(__cpp_lib_atomic_shared_ptr)
     Require (sTheRep_.load () == nullptr);
     sTheRep_.store (MakeSharedPtr<SignalHandlerRegistry::SafeSignalsManager::Rep_> ());
 #else
@@ -278,7 +278,7 @@ SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::DTOR"};
-#if __cpp_lib_atomic_shared_ptr >= 201711
+#if defined(__cpp_lib_atomic_shared_ptr)
     SignalHandlerRegistry::SafeSignalsManager::sTheRep_.store (shared_ptr<Rep_>{}); // this will wait for shutdown of safe processing thread to shut down
 #else
     atomic_store (&SignalHandlerRegistry::SafeSignalsManager::sTheRep_, shared_ptr<Rep_>{}); // this will wait for shutdown of safe processing thread to shut down
@@ -305,7 +305,7 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
 SignalHandlerRegistry::~SignalHandlerRegistry ()
 {
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR"};
-#if __cpp_lib_atomic_shared_ptr >= 201711
+#if defined(__cpp_lib_atomic_shared_ptr)
     Assert (SafeSignalsManager::sTheRep_.load () == nullptr); // must be cleared first
 #else
     Assert (atomic_load (&SafeSignalsManager::sTheRep_) == nullptr); // must be cleared first
@@ -315,7 +315,7 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 Set<SignalID> SignalHandlerRegistry::GetHandledSignals () const
 {
     Set<SignalID> result{fDirectHandlers_.cget ()->Keys ()};
-#if __cpp_lib_atomic_shared_ptr >= 201711
+#if defined(__cpp_lib_atomic_shared_ptr)
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_.load ()) {
 #else
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = atomic_load (&SafeSignalsManager::sTheRep_)) {
@@ -328,7 +328,7 @@ Set<SignalID> SignalHandlerRegistry::GetHandledSignals () const
 Set<SignalHandler> SignalHandlerRegistry::GetSignalHandlers (SignalID signal) const
 {
     Set<SignalHandler> result = fDirectHandlers_.cget ()->LookupValue (signal);
-#if __cpp_lib_atomic_shared_ptr >= 201711
+#if defined(__cpp_lib_atomic_shared_ptr)
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_.load ()) {
 #else
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = atomic_load (&SafeSignalsManager::sTheRep_)) {
@@ -374,7 +374,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         // To use safe signal handlers, you must have a SignalHandlerRegistry::SafeSignalsManager
         // defined first. It is recommended that you define an instance of
         // SignalHandlerRegistry::SafeSignalsManager handler; should be defined in main ()
-#if __cpp_lib_atomic_shared_ptr >= 201711
+#if defined(__cpp_lib_atomic_shared_ptr)
         Require (SafeSignalsManager::sTheRep_.load () != nullptr);
 #else
         Require (atomic_load (&SafeSignalsManager::sTheRep_) != nullptr);
@@ -641,7 +641,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
     // I THINK/HOPE it safe to increment/decrement the reference count on the shared_ptr.
     // But this isn't guaranteed by anything I'm aware of.
     //
-#if __cpp_lib_atomic_shared_ptr >= 201711
+#if defined(__cpp_lib_atomic_shared_ptr)
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_.load ();
 #else
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = atomic_load (&SignalHandlerRegistry::SafeSignalsManager::sTheRep_);
