@@ -115,6 +115,7 @@ my $LIBFEATUREFLAG_No = "no";
 
 my $ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_LTO_SetExplicitly = false;		# --lto given on the command line, so the sanitizer reconciliation below must not override it
+my $gLTODefaultedOffForNoLLD = false;		# the release defaults turned LTO off because this clang has no lld - NOTEd in PostProcessOptions_
 my $gUbuntu2404OptimizedNoLTOHazard = false;	# set by ApplyCompilerBugWorkarounds_; see there. Read again at config-generation time
 my $gAssertionsEnabled = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
@@ -1245,6 +1246,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		# Apple's own, reading the bitcode through Apple's libLTO.
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && "$^O" ne "darwin" && not defined (GetClangLLD_ ($COMPILER_DRIVER))) {
 			$ENABLE_LTO = false;
+			$gLTODefaultedOffForNoLLD = true;
 		}
 
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
@@ -2747,6 +2749,10 @@ sub PostProcessOptions_ ()
 		}
 	}
 
+	# Here, not where it is decided, because --lto enable is parsed only after the release defaults are applied
+	if ($gLTODefaultedOffForNoLLD and $ENABLE_LTO != true) {
+		print ("NOTE: LTO defaults OFF for $COMPILER_DRIVER here - it has no lld, and GNU ld mis-links clang LTO; install lld to get LTO\n");
+	}
 	if ($ENABLE_LTO == true) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-flto";
@@ -2761,8 +2767,15 @@ sub PostProcessOptions_ ()
 			push @CFLAGS, "-flto";
 			push @CXXFLAGS, "-flto";
 			$LinkerArgs_ExtraPrefix .= " -flto";
-			# GNU ld mis-links clang LTO - see where the release flags default $ENABLE_LTO. An explicit -fuse-ld wins.
-			if ("$^O" ne "darwin" and not ($LinkerArgs_ExtraPrefix =~ /-fuse-ld=/)) {
+			# GNU ld mis-links clang LTO - see where the release flags default $ENABLE_LTO. An explicit -fuse-ld wins, but
+			# is warned about unless it is lld.
+			if ("$^O" ne "darwin" and $LinkerArgs_ExtraPrefix =~ /-fuse-ld=(\S+)/) {
+				my $explicitLD = $1;
+				if (not ($explicitLD =~ /lld/)) {
+					print "CONFIGURATION-WARNING: LTO with $COMPILER_DRIVER_CPlusPlus and -fuse-ld=$explicitLD - only lld is known to link clang LTO correctly (GNU ld mis-links it).\n";
+				}
+			}
+			elsif ("$^O" ne "darwin") {
 				if (defined (GetClangLLD_ ($COMPILER_DRIVER_CPlusPlus))) {
 					$LinkerArgs_ExtraPrefix .= " -fuse-ld=lld";
 				}
