@@ -57,13 +57,13 @@ basicUnixTestConfigurations_ ()
 		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system
 		# g++-11
 		./configure g++-11-debug --config-tag Unix --compiler-driver g++-11 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20
-		./configure g++-11-release++2b --config-tag Unix --compiler-driver g++-11 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b
+		./configure g++-11-release++23 --config-tag Unix --compiler-driver g++-11 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
 		# g++-12
 		./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20
-		./configure g++-12-release++2b --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b
+		./configure g++-12-release++23 --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
 		# g++-13
 		./configure g++-13-debug --config-tag Unix --compiler-driver g++-13 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20
-		./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b
+		./configure g++-13-release++23 --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
 		# clang-15
 		./configure clang++-15-debug-libc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler
 		./configure clang++-15-release-libstdc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
@@ -84,10 +84,10 @@ basicUnixTestConfigurations_ ()
 		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system
 		# g++-12
 		./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20
-		./configure g++-12-release++2b --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b
+		./configure g++-12-release++23 --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
 		# g++-13
 		./configure g++-13-debug --config-tag Unix --compiler-driver g++-13 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20
-		./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b
+		./configure g++-13-release++23 --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
 		# g++-14
 		./configure g++-14-debug --config-tag Unix --compiler-driver g++-14 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20
 		./configure g++-14-release++23 --config-tag Unix --compiler-driver g++-14 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
@@ -172,7 +172,7 @@ basicUnixTestConfigurations_ ()
 		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler
 		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components
 		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system
-		./configure g++-release++2b --config-tag Unix --compiler-driver g++ --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b
+		./configure g++-release++23 --config-tag Unix --compiler-driver g++ --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
 		./configure clang++-debug --config-tag Unix --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler
 		./configure clang++-release --config-tag Unix --compiler-driver clang++ --apply-default-release-flags --only-if-has-compiler
 		./configure g++-15-debug --config-tag Unix --compiler-driver g++-15 --apply-default-debug-flags --only-if-has-compiler
