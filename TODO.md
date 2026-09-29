@@ -81,6 +81,8 @@ Generally will track stuff here between releases
     been rebuilt since last round of estimates and its genreally improved.
   - take steps to reduce warnings/skips on rasp pi
 
+  - Replace Ubuntu 2504 (I think no longer supported) with 26.10 (i think latest non lts)
+
   - Consider rewrite of remaining perl stuff - mostly configure - to use python?
 
   - **Re-test the Ubuntu 24.04 gcc workarounds when that toolchain updates, and delete them if fixed.**
