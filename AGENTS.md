@@ -94,11 +94,11 @@ For a CRASH the job log is nearly useless — it prints only `FAILED: SIGNAL= SI
 `Log Data (<job>)` artifact is what you want: CI configures `--trace2file enable`, so it holds a
 per-test `tmp/TraceLog_TestNN_PID#….txt` whose tail names the last function entered.
 
-**`fail-fast` hides the blast radius.** When one Linux job fails the siblings get cancelled, so a
-failing run cannot tell you whether the other compilers are affected — and a cancelled job is not a
-passing job. Disable `fail-fast` or reproduce per-compiler before calling a failure toolchain-specific.
-The OS matters as much as the compiler version: an Aug 2026 miscompile hit ubuntu-24.04's g++-14 while
-ubuntu-26.04's g++-14 was clean.
+**Read every job before calling a failure toolchain-specific.** The matrices run with
+`fail-fast: false` (since ee57c38953), so one failing job no longer cancels its siblings - their
+results are there to compare, and a job that WAS cancelled (e.g. by a newer push) is still not a
+passing job. The OS matters as much as the compiler version: an Aug 2026 miscompile hit ubuntu-24.04's
+g++-14 while ubuntu-26.04's g++-14 was clean.
 
 This is NOT the only place regression tests are run, just the most frequent and the easiest to reach;
 a green run here is good evidence, not proof of full coverage.
@@ -339,9 +339,10 @@ still compile". Say which one you did.
   - `Build/Shared/` — data read at build time rather than code: `Skel-Templates/`, the app skeletons
     `Skel` copies and substitutes into.
   - `Build/Tools/Src/` — source for host utilities the build needs *before* Stroika exists, and which
-    therefore cannot use it: `realpath.cpp` (a GNU-`realpath` stand-in, for macOS) and `vswhere/`
-    (fetches Microsoft's Visual Studio locator). Compiled ad hoc by the top-level `Makefile`, not by
-    the normal build. **Not to be confused with top-level `Tools/`** — see below.
+    therefore cannot use it: `realpath.cpp` (a GNU-`realpath` stand-in, for macOS; the top-level
+    `Makefile` compiles it ad hoc) and `vswhere/` (fetches Microsoft's Visual Studio locator; nothing
+    runs it - `make -C Build/Tools/Src/vswhere` by hand). Neither is part of the normal build.
+    **Not to be confused with top-level `Tools/`** — see below.
   - `Build/Docker/` — build-VM container definitions (see `Documentation/Building-Stroika.md`).
   A deprecated top-level `ScriptsLib/` still exists purely to shim the pre-3.0d24 layout: each entry
   warns and forwards to its new home. Don't add to it, and don't reference it from new code.

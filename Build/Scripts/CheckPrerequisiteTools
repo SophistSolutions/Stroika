@@ -96,8 +96,9 @@ WarnIfAffectedMSYS2Runtime_ ()
 		return 0
 	fi
 	local maj_=${BASH_REMATCH[1]} min_=${BASH_REMATCH[2]} rev_=${BASH_REMATCH[3]}
-	#	">= 3.6.10" with no upper bound: no fixed runtime has shipped (the fix,
-	#	msys2/msys2-runtime#366, is an unmerged draft). Bound this when one does, and unpin the boxes.
+	#	">= 3.6.10" with no upper bound: the fix (msys2/msys2-runtime#368) merged upstream 2026-09-25, but as of
+	#	2026-09-29 it is not known which msys2-runtime package has it (3.6.10-6 was current). Bound this once one is
+	#	confirmed to - by building with output on a console - and unpin the boxes.
 	if [ "$maj_" -gt 3 ] || { [ "$maj_" -eq 3 ] && { [ "$min_" -gt 6 ] || { [ "$min_" -eq 6 ] && [ "$rev_" -ge 10 ] ; } ; } ; } ; then
 		echo "CONFIGURATION-WARNING: msys2-runtime $unameR_ can HANG parallel builds (3.6.10 regression; 3.6.9-2 is the last good one)."
 		echo "CONFIGURATION-WARNING:    Symptom: make stops part way, no cl.exe running, nothing new under IntermediateFiles/; Ctrl+C will not break it."

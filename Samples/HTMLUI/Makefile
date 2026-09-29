@@ -42,7 +42,7 @@ ifeq ($(shell which node 2>/dev/null),)
 	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no nodejs installed:" `$(StroikaRoot)Build/Scripts/GetMessageForMissingTool node` "***"
 	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else ifeq ($(shell if `test $(shell node -v | cut -d'.' -f1 | tr -d 'v') -ge 22`; then echo x; fi),)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no nodejs older than 22 installed:" `$(StroikaRoot)Build/Scripts/GetMessageForMissingTool quasar` "***"
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz nodejs is older than 22 (`node -v`):" `$(StroikaRoot)Build/Scripts/GetMessageForMissingTool node` "***"
 	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else ifeq ($(shell which quasar 2>/dev/null),)
 	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed:" `$(StroikaRoot)Build/Scripts/GetMessageForMissingTool quasar` "***"

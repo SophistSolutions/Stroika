@@ -11,8 +11,8 @@ endif
 
 TARGETEXE				=	${StroikaPlatformTargetBuildDir}Tests/Test$(TEST_NUM)${EXE_SUFFIX}
 
-vpath %.h $(SrcDir) ../TestHarness/
-vpath %.cpp $(SrcDir) ../TestHarness/
+vpath %.h $(SrcDir)
+vpath %.cpp $(SrcDir)
 
 
 Objs	=	\

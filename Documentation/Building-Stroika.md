@@ -193,7 +193,7 @@ The command-line used to generate the configuration is the first element of the 
     <VSVARS_PLATFORM_INCLUDES_PATH>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/ATLMFC/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/include;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/ucrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/um;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/shared;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/winrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/cppwinrt;C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/include/um</VSVARS_PLATFORM_INCLUDES_PATH>
 
     <!--Compiling-->
-    <PLATFORM_CPPFLAGS_NOTINCLUDES>-D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG -D_DISABLE_VECTOR_ANNOTATION -D_DISABLE_STRING_ANNOTATION</PLATFORM_CPPFLAGS_NOTINCLUDES>
+    <PLATFORM_CPPFLAGS_NOTINCLUDES>-D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG</PLATFORM_CPPFLAGS_NOTINCLUDES>
     <PLATFORM_INCLUDES_PATH>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/ATLMFC/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/include;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/ucrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/um;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/shared;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/winrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/cppwinrt;C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/include/um;C:/Sandbox/Stroika/DevRoot/Builds/Debug-x86_64/include/</PLATFORM_INCLUDES_PATH>
     <PLATFORM_CFLAGS>-EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -fsanitize=address</PLATFORM_CFLAGS>
     <PLATFORM_CXXFLAGS>-std:c++latest -EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -fsanitize=address</PLATFORM_CXXFLAGS>
@@ -485,9 +485,9 @@ substituted in, rather than duplicated per VS release.
 These two are easy to confuse:
 
 - **Build/Tools/Src/** - host utilities the build needs *before* Stroika exists, and which therefore
-  cannot use it: `realpath.cpp` (a GNU-`realpath` stand-in, for MacOS) and `vswhere/` (fetches
-  Microsoft&#39;s Visual Studio locator). Compiled ad hoc by the top-level `Makefile`, not by the normal
-  build.
+  cannot use it: `realpath.cpp` (a GNU-`realpath` stand-in, for MacOS; the top-level `Makefile`
+  compiles it ad hoc) and `vswhere/` (fetches Microsoft&#39;s Visual Studio locator; nothing runs it -
+  `make -C Build/Tools/Src/vswhere` by hand). Neither is part of the normal build.
 - **Tools/** - tools built *with* Stroika, by the normal build, into **Builds/{CONFIGURATION}/bin/**.
   They depend on the Foundation/Frameworks and mirror **Library/**&#39;s layout. Currently
   `HTMLViewCompiler`, which `SharedBuildRules-Default.mk` invokes to compile `.swsp` files.
