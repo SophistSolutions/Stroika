@@ -124,19 +124,24 @@ docker frequently reports this as corruption and 500 errors and no other indicat
 - Basics
   - Linux
     - Ubuntu
-      -  [Ubuntu2004-Small/DockerFile](Ubuntu2004-Small/DockerFile)
-      -  [Ubuntu2204-Small/DockerFile](Ubuntu2204-Small/DockerFile)
+      -  [Ubuntu2204-Small/Dockerfile](Ubuntu2204-Small/Dockerfile)
+      -  [Ubuntu2404-Small/Dockerfile](Ubuntu2404-Small/Dockerfile)
+      -  [Ubuntu2504-Small/Dockerfile](Ubuntu2504-Small/Dockerfile)
+      -  [Ubuntu2604-Small/Dockerfile](Ubuntu2604-Small/Dockerfile)
     - Windows
-      -  [Windows-VS2k22/DockerFile](Windows-VS2k22/DockerFile)   **build first**
-      -  [Windows-Cygwin/DockerFile](Windows-Cygwin/DockerFile)   **based on VS2k... image**
-      -  [Windows-MSYS/DockerFile](Windows-MSYS/DockerFile)       **based on VS2k... image**
+      -  [Windows-VS2k22/Dockerfile](Windows-VS2k22/Dockerfile)   **build first**
+      -  [Windows-VS2k26/Dockerfile](Windows-VS2k26/Dockerfile)   **build first**
+      -  [Windows-Cygwin/Dockerfile](Windows-Cygwin/Dockerfile)   **based on VS2k... image**
+      -  [Windows-MSYS/Dockerfile](Windows-MSYS/Dockerfile)       **based on VS2k... image**
 - Derived
   - Linux
     - Ubuntu
-      -  [Ubuntu2204-RegressionTests/DockerFile](Ubuntu2204-RegressionTests/DockerFile)
-      -  [Ubuntu2404-RegressionTests/DockerFile](Ubuntu2404-RegressionTests/DockerFile)
+      -  [Ubuntu2204-RegressionTests/Dockerfile](Ubuntu2204-RegressionTests/Dockerfile)
+      -  [Ubuntu2404-RegressionTests/Dockerfile](Ubuntu2404-RegressionTests/Dockerfile)
+      -  [Ubuntu2504-RegressionTests/Dockerfile](Ubuntu2504-RegressionTests/Dockerfile)
+      -  [Ubuntu2604-RegressionTests/Dockerfile](Ubuntu2604-RegressionTests/Dockerfile)
    - Stroika-Dev
-      -  [Stroika-Dev/DockerFile](Stroika-Dev/DockerFile)
+      -  [Stroika-Dev/Dockerfile](Stroika-Dev/Dockerfile)
 
 ## Create and setup for ssh Stroika-Dev images
 

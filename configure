@@ -1156,16 +1156,6 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 					$skipSanCuzBroken = true;
 				}
 			}
-			if (getUbuntuVersion() == 23.10) {
-				# LibCurl fails to build and not important enuf platform to debug...
-				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
-					$skipSanCuzBroken = true;
-				}
-				# with asan and ununtu 23.10, about 1/2 the tests fail (somewhat randomly, not always). --LGP 2024-05-07
-				if (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
-					$skipSanCuzBroken = true;
-				}
-			}
 			if ("$^O" eq "darwin") {
 				# From MacOS 15, and XCode 16:
 				#	#clang++ -rdynamic -mmacosx-version-min=15.0 -fsanitize=address,undefined -static-libsan -stdlib=libc++ --std=c++20 -g -arch arm64 -Wl,-no_warn_duplicate_libraries -o 7zDec 7zMain.o lzma.a -lstdc++ -lc
@@ -1217,10 +1207,6 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 	elsif ($ApplyReleaseFlags == true) {
 		if ($gAssertionsEnabled == DEFAULT_BOOL_OPTIONS) {
 			$gAssertionsEnabled = 0;
-		}
-		# https://github.com/SophistSolutions/Stroika/issues/896
-		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS and $lsb_release == "20.04" and $TargettingValgrind == true) {
-			$ENABLE_LTO = false;
 		}
 		# https://github.com/SophistSolutions/Stroika/issues/1128
 		#	./Builds/g++-release-sanitize_address_undefined/Tests/Test02
@@ -1455,16 +1441,13 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		}
 	}
 
-	if ($lsb_release == "20.04" or $lsb_release == "20.10" or $lsb_release == "21.04" or $lsb_release == "21.10" or $lsb_release == "22.04" or $lsb_release == "23.10") {
-		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://github.com/SophistSolutions/Stroika/issues/851
+	if ($lsb_release == "22.04") {
+		# https://github.com/SophistSolutions/Stroika/issues/851 - first seen on 20.10; 22.04 is the last supported release it affects
 
 		#### VERIFIED STILL BROKEN TSAN DEBUG on Ubuntu 22.04 g++-debug-sanitize_thread
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER) and GetGCCVersion_ ($COMPILER_DRIVER) < 14.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
 		}
-		# if ($ENABLE_LTO == true and $TargettingValgrind == true) {
-		# 	$qCompiler_ValgrindLTO_Buggy = true;
-		# }
 	}
 
 	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
@@ -1561,8 +1544,7 @@ sub ComputeARCHFlag_
 sub	SetDefaultsWhichDependOnPlatform_
 {
 	if ($BuildPlatform eq 'Unix' && $COMPILER_DRIVER eq '') {
-		# Ubuntu 20.04 comes with gcc version 9.x, which this version of Stroika doesnt support so
-		# if < 10, at least force gcc 10 as default; if wrong default - user can specify what they wanted explicitly
+		# If the default gcc is older than Stroika's minimum (11), default to gcc-11 - the user can say otherwise with --compiler-driver
 		if (GetGCCVersion_ ("gcc") < 11.0) {
 			$COMPILER_DRIVER = "gcc-11";
 		}
@@ -3491,18 +3473,6 @@ if ($onlyGenerateIfCompilerExists) {
 		$generateBecause = "compiler $COMPILER_DRIVER_CPlusPlus not present";
 	}
 
-	if ($generate && IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && getUbuntuVersion() == 20.04) {
-		# https://bugs.launchpad.net/ubuntu/+source/gcc-9/+bug/2029910
-		if (IsTargettingSanitizer_ ('thread')) {
-			$generate = false;
-			$generateBecause = "tsan not working in Ubuntu 20.04";
-		}
-		elsif (IsTargettingSanitizer_ ('leak')) {
-			$generate = false;
-			$generateBecause = "leak not working in Ubuntu 20.04";
-		}
-	}
-
 	# Really should do similar for anything we say == system and $onlyGenerateIfCompilerExists
 	if ($generate && $FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem) {
 		 if (system("pkg-config --libs zlib 2>/dev/null >/dev/null")) {
@@ -3594,23 +3564,6 @@ if ($onlyGenerateIfCompilerExists) {
 					$generateBecause = "bogus failure on raspberrypi-g++-12-release-sanitize_address/Tests/Test34 - so skipping asan by default - for this target";
 				}
 			}
-		}
-	}
-	if ($generate && $ubuntuVersion == 23.10) {
-		# needed for [34] Foundation::DataExchange::XML - scp ../Builds/raspberrypi-g++-12-release-sanitize_address/Tests/Test34...; ssh lewis@192.168.244.32   /tmp/Test34 --gtest_brief
-		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14.0) {
-				# maybe only needed for release builds - but fine tune tests later in the cycle, and also not checking if arm only issue
-				if (IsTargettingSanitizer_ ('address') && $ARCH eq "armhf") {
-					$generate = false;
-					$generateBecause = "bogus failure on raspberrypi-g++-12-release-sanitize_address/Tests/Test34 - so skipping asan by default - for this target";
-				}
-			}
-		}
-		if (defined $TargettingValgrind && $TargettingValgrind == true) {
-			# not worth debugging issues.....
-			$generate = false;
-			$generateBecause = "valgrind build issue - on ubuntu 23.10, not worth debugging right now for this target";
 		}
 	}
 	if ($generate && defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
