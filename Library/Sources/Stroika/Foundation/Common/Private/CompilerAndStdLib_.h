@@ -2071,63 +2071,6 @@ Test.cpp:642:38: error: alias template 'SynchronizedLRUCache' requires template 
 #endif
 
 /*
-
-/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
-/tmp/lto-llvm-f3876d.o: in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 2048ul>::reserve(unsigned long, bool)':
-ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm2048EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm2048EE7reserveEmb]+0xb6): undefined reference to `Stroika::Foundation::Execution::ThrowIfNull(void const*)'
-/usr/bin/ld: /tmp/lto-llvm-f3876d.o: in function `Stroika::Foundation::Memory::InlineBuffer<std::byte, 8192ul>::reserve(unsigned long, bool)':
-ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm8192EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm8192EE7reserveEmb]+0xb1): undefined reference to `Stroika::Foundation::Execution::ThrowIfNull(void const*)'
-/usr/bin/ld: /tmp/lto-llvm-f3876d.o: in function `Stroika::Foundation::Memory::InlineBuffer<char, 10240ul>::reserve(unsigned long, bool)':
-ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb]+0xae): undefined reference to `Stroika::Foundation::Execution::ThrowIfNull(void const*)'
-
-
-/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/x/Stroika-Foundation.a(SDKString.o): in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::Allocate_(unsigned long)':
-/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb]+0x93): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
-/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/x/Stroika-Foundation.a(SDKString.o): in function `Stroika::Foundation::Memory::InlineBuffer<std::byte, 4096ul>::Allocate_(unsigned long)':
-/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm4096EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm4096EE7reserveEmb]+0x8e): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
-/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/x/Stroika-Foundation.a(Utilities.o): in function `Stroika::Foundation::Memory::InlineBuffer<char, 10240ul>::Allocate_(unsigned long)':
-/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb]+0x8e): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
-/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/x/Stroika-Foundation.a(Utilities.o): in function `Stroika::Foundation::Memory::InlineBuffer<char8_t, 10240ul>::Allocate_(unsigned long)':
-/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIDuLm
-
-
-      Linking  $StroikaRoot/Builds/clang++-17-release-libc++23/HTMLViewCompiler...
-/usr/bin/ld: /tmp/lto-llvm-91d516.o: in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::reserve(unsigned long, bool)':
-ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb]+0x83): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
-/usr/bin/ld: /tmp/lto-llvm-91d516.o: in function `Stroika::Foundation::Memory::InlineBuffer<std::byte, 4096ul>::Allocate_(unsigned long)':
-/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm4096EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm4096EE7reserveEmb]+0x91): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
-/usr/bin/ld: /tmp/lto-llvm-91d516.o: in function `Stroika::Foundation::Memory::InlineBuffer<char, 10240ul>::Allocate_(unsigned long)':
-/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:532:(.text._ZN7Stroika10Foundation10Characters7CString6FormatEPKcz+0x1f6): undefined reference to `void Stroika::Foundation::Execution::ThrowIfNull<void*>(void*)'
-
-Building Stroika Tests {clang++-release}:
-   Linking Test Builds/clang++-release/Tests/Test01 (Foundation::Caching) ... 
-/usr/bin/ld: /tmp/lto-llvm-b42694.o: in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::reserve(unsigned long, bool)':
-ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE7reserveEmb]+0x80): undefined reference to `_ZN7Stroika10Foundation9Execution11ThrowIfNullITkNSt3__124equality_comparable_withIDnEEPvEEvT_'
-/usr/bin/ld: /tmp/lto-llvm-b42694.o: in function `_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E':
-/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:599:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E]+0x12): undefined reference to `_ZN7Stroika10Foundation9Execution11ThrowIfNullITkNSt3__124equality_comparable_withIDnEEPSt4byteEEvT_'
-/usr/bin/ld: /tmp/lto-llvm-b42694.o: in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::Allocate_(unsigned long)':
-/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Memory/InlineBuffer.inl:568:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm1024EE11Reallocate_EPSt4bytemQ23is_trivially_copyable_vIT_E]+0x27): undefined reference to `_ZN7Stroika10Foundation9Execution11ThrowIfNullITkNSt3__124equality_comparable_withIDnEEPvEEvT_'
-clang++: error: linker command failed with exit code 1 (use -v to see invoc
-
-*/
-#ifndef qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-// appears still broken in clang++-13 and -clang++-14-release-libstdc++
-// and broekn uuntu22.04 clang++-15-release-libstdc++
-// broken in clang++16 - release builds - seemed OK for a while but then broke again - not just says missing symbol... so possibly different bug???
-// same issue with clang++-17-release-libc++23
-// same issue with clang++-18-release-libc++23
-// same issue with clang++-19-release on Ubuntu 24.10
-// same issue with clang++-20-release on Ubuntu 25.04
-#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 20))
-#else
-#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
-#endif
-
-#endif
-
-/*
  * NOW ALLOWED IN C++17
 Test.cpp:173:31: error: template template argument has different template parameters than its corresponding template template parameter
                 Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
