@@ -108,34 +108,23 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **verify if valgrind still useful, and revisit dynamic-analysis coverage broadly** - deliberately
-     deferred from 3.0d24; LGP wants to look at the accumulated workarounds and ask what part of
-     valgrind still earns its keep, rather than just switching it on somewhere new. Groundwork already
-     done, so start from here:
-       - valgrind **3.26.0 is already installed** on Stroika-Dev-2604. The 26.04 branch of
-         `Build/Scripts/MakeRegressionTestConfigurations` has the `valgrind-release-SSLPurify-NoBlockAlloc`
-         line present but **commented out** - uncommenting is the whole change, but it is unvalidated
-         there. (The 24.04 one needs `ulimit -n 1024`, already handled in `Build/Scripts/RegressionTests`.)
-       - 22.04 disabled valgrind entirely in Aug 2024 ("some tests fail inside valgrind code - looks
-         like bug there"), so it has effectively been a single-platform tool for two years.
-       - sanitizer coverage as of 3.0d24 was 24.04-ONLY (asan+ubsan+leak, tsan, valgrind all on one
-         platform, one compiler) - and that compiler turned out to miscompile Tests/47 under LTO+TSAN.
-         3.0d25 adds the sanitizer configs to 26.04; valgrind is the remaining single-platform one.
+   - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
+     only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. Still open:
        - **GitHub Actions runs no sanitizer or valgrind job at all** - so dynamic analysis is entirely
          a local-release-run activity. Worth deciding if that is intentional.
        - msan is not usable with gcc (clang-only, and needs a specially rebuilt libc++) - see the note
          near the top of MakeRegressionTestConfigurations. So the realistic menu is asan/ubsan/leak,
-         tsan, and valgrind; the question is whether valgrind still finds anything the first two do not.
+         tsan, and valgrind - and valgrind does find what the first two cannot: its first 26.04 run caught
+         libstdc++'s from_chars overread (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=127666), which ASan missed.
        - **every sanitizer configuration is a `g++-*` one - there is no clang asan/tsan/ubsan anywhere**
          (noted 2026-09-10 during the compiler-coverage audit). clang's sanitizers are the better-supported
          ones upstream and diagnose somewhat different things, so this is a real second axis of the same
          single-platform problem, not a duplicate of it.
-       - **either way, `qCompilerAndStdLib_isinf_Valgrind_Buggy` goes** (#1177, deferred here so the same lines are
-         edited once): it is defined as a plain 1 for every compiler and always tested next to
-         `Debug::IsRunningUnderValgrind ()`, so it carries no information. Keep valgrind: the runtime check alone stays
-         in Tests/02 and Tests/32. Drop it: those checks go too. Probably valgrind's documented limitation (it holds
-         every `long double` in 64 bits), not a compiler bug; its warnings appear in every release run 3.0d8-3.0d24.
-
+       - **no tool sees inside BlockAllocator's pools**, though block allocation is on by default -
+         https://github.com/SophistSolutions/Stroika/issues/1181
+       - optional: one memcheck run of the suite on the Pi (aarch64; valgrind 3.24 is installed there). Its unsigned
+         `char` and 128-bit software `long double` differ from x86_64 in ways memcheck can see. The 2019 attempts that
+         gave up on it (#837) were 32-bit armhf on Debian 10.
    - **WATCH: Windows Release-x86_64 SSDPClient segfault at startup** (parked 2026-09-27) - **DROP this entry if it
      has not recurred by 2026-10-27.** Seen once: Windows_MSYS_VS2k22 run at eb58defd98 (2026-09-26), both SSDPClient
      sample runs, Release-x86_64 only. It crashes before main: `Xerces::kDefaultProvider`'s initializer ->

@@ -29,8 +29,21 @@
 
 ### MemCheck
 
-Stroika is tested with valgrind memcheck for each release. REVISIT to see if/how useful this is, since I cannot recall ever finding
-anything useful with it - just a bunch of false positives and effort to workaround stuff that was tearfully slow.
+Each release runs the regression tests under valgrind memcheck, on Ubuntu 24.04 and 26.04 (the
+`valgrind-release-SSLPurify-NoBlockAlloc` configuration). It earns its place by finding what the sanitizers cannot: reads
+of uninitialized memory, including inside third-party code. Its first run on 26.04, for example, caught libstdc++'s
+`from_chars` reading past the end of its input for `long double` inf/nan
+([GCC PR 127666](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=127666)) - which ASan missed, because the stray `strlen` usually
+found a zero byte before leaving the buffer.
+
+- **Release builds only.** Memcheck finds the same classes of bug either way, and a Debug build under valgrind takes hours.
+- **Block allocation off**, since memcheck cannot see inside `BlockAllocator`'s pools
+  ([#1181](https://github.com/SophistSolutions/Stroika/issues/1181)).
+- **Fewer iterations, not skips.** Valgrind runs one thread at a time and is far slower than the sanitizers, so a test that
+  is slow under it cuts its loop counts when `Debug::IsRunningUnderValgrind ()` rather than skipping. Memcheck gets its value
+  from the first few iterations; busy-spin handoffs between threads are especially slow.
+- **Suppressions** live in `Tests/Valgrind-MemCheck-Common.supp`, empty as of 2026-09 (every earlier entry had stopped
+  matching). Add one only for a confirmed false positive or third-party problem, noting where it was seen and why.
 
 ### Helgrind and DRD: not supported
 

@@ -1020,12 +1020,12 @@ namespace {
                 stringstream tmp;
                 tmp << encodedRep;
                 VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
-                if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and vOut != v) {
+                if (Debug::IsRunningUnderValgrind () and vOut != v) {
                     Stroika::Frameworks::Test::WarnTestIssue (
-                        "JSONONLY_Test_09_ReadWriteNANShouldNotFail_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, encodedRep={}, vOut={}"_f(
+                        "JSONONLY_Test_09_ReadWriteNANShouldNotFail_ (valgrind holds long double in 64 bits): v={}, encodedRep={}, vOut={}"_f(
                             v, String::FromUTF8 (encodedRep), vOut)
                             .ReplaceAll ("[\\r\\n]"_RegEx, ""));
-                    SkipTestPart ("NaN round trip not checked under valgrind (qCompilerAndStdLib_isinf_Valgrind_Buggy)");
+                    SkipTestPart ("NaN round trip not checked under valgrind (valgrind holds long double in 64 bits)");
                     return;
                 }
                 EXPECT_EQ (vOut, v);
@@ -1071,9 +1071,9 @@ namespace {
             VariantValue v   = numeric_limits<T>::lowest ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and v != vrt) {
+            if (Debug::IsRunningUnderValgrind () and v != vrt) {
                 Stroika::Frameworks::Test::WarnTestIssue (
-                    "Test3_VariantValue_Helper_MinMax_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
+                    "Test3_VariantValue_Helper_MinMax_ (valgrind holds long double in 64 bits): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
             }
             else {
                 EXPECT_EQ (v, vrt);
@@ -1089,9 +1089,9 @@ namespace {
             VariantValue v   = numeric_limits<T>::max ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and v != vrt) {
+            if (Debug::IsRunningUnderValgrind () and v != vrt) {
                 Stroika::Frameworks::Test::WarnTestIssue (
-                    "Test3_VariantValue_Helper_MinMax_ (qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
+                    "Test3_VariantValue_Helper_MinMax_ (valgrind holds long double in 64 bits): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
             }
             else {
                 EXPECT_EQ (v, vrt);

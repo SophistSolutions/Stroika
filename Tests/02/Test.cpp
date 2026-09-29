@@ -1087,12 +1087,13 @@ namespace {
         template <typename FLOAT_TYPE>
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
-            if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy || qCompilerAndStdLib_isinf_Valgrind_Buggy) {
+            {
                 auto f = FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::SignificantFigures::kFullPrecision));
                 if (not Math::NearlyEquals (l, f)) {
-                    if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy) {
-                        Stroika::Frameworks::Test::WarnTestIssue ("ToFloat(ToString({})) not properly roundtripping under valgrind: {}; note isinf({})={}, and isinf(f)={}"_f(
-                            l, f, l, isinf (l), isinf (f)));
+                    if (Debug::IsRunningUnderValgrind ()) {
+                        Stroika::Frameworks::Test::WarnTestIssue (
+                            "ToFloat(ToString({})) not properly roundtripping under valgrind (valgrind holds long double in 64 bits): {}; note isinf({})={}, and isinf(f)={}"_f(
+                                l, f, l, isinf (l), isinf (f)));
                         return;
                     }
                     if (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {

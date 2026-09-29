@@ -1755,13 +1755,6 @@ int main ()
 #endif
 
 /**
- *      Only tested on Ubuntu 24.04 - with default g++ - so g++ version 13 --LGP 2024-07-13
- */
-#ifndef qCompilerAndStdLib_isinf_Valgrind_Buggy
-#define qCompilerAndStdLib_isinf_Valgrind_Buggy 1
-#endif
-
-/**
  #if qCompilerAndStdLib_formattable_of_tuple_Buggy
 static_assert (Stroika::Foundation::Configuration::ITuple<std::remove_cvref_t<std::tuple<int>>>);
 #else

@@ -165,10 +165,8 @@ basicUnixTestConfigurations_ ()
 		./configure g++-debug-sanitize_thread                   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread
 		./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --sanitize none,address,undefined,leak --trace2file enable
 		./configure g++-release-sanitize_thread                 --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread
-		# VALGRIND - not enabled here yet. valgrind 3.26.0 IS installed on the 26.04 build box, so this is
-		#	just the 24.04 line and ought to work, but it has not been validated on 26.04 (and the 24.04 one
-		#	needs 'ulimit -n 1024'). See the TODO.md item about valgrind's continued usefulness.
-		#       ./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable
+		# VALGRIND (memcheck), as on 24.04 - validated here 2026-09 (#1177); RegressionTests sets the 'ulimit -n 1024' it needs
+		./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable
 		;;
 
 	*)
