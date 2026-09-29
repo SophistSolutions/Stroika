@@ -13,10 +13,7 @@ namespace Stroika::Foundation {
 #endif
 
 /*
- *  @see Valgrind.h header for more details. But this should be SAFE and REQUIRED
- *  to include very early on.
- *
- *  Must be included before libg++ stuff (e.g. <shared_ptr>)
+ *  So Debug::IsRunningUnderValgrind () is available everywhere; @see Valgrind.h
  */
 #if defined(__cplusplus) || defined(__STDC__)
 #include "Stroika/Foundation/Debug/Valgrind.h"

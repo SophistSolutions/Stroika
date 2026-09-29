@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Debug/Valgrind.h"
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 

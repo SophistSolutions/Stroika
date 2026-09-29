@@ -11,16 +11,12 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
- *  \brief  Include this file VERY EARLY ON - before including stuff like <cstdio> -
- *          to allow use of Valgrind (some features)
+ *  \brief  Support for running under valgrind memcheck - the only valgrind tool Stroika supports (see Documentation/Debugging.md)
  *
- *  Note - this is NOT required for use of valgrind memcheck() - at least as of v2.0a145.
+ *  Memcheck needs nothing from here to work. This provides IsRunningUnderValgrind (), and - when configured with
+ *  --valgrind enable, which defines qStroika_FeatureSupported_Valgrind - memcheck's client requests (<valgrind/memcheck.h>).
+ *  It includes nothing else, so it is cheap to include anywhere.
  *
- *  This module is VERY careful not to include unneded files - and includes just the minimal required to make
- *  the valgrind family of tools work IFF you preconfigure (./configure) qStroika_FeatureSupported_Valgrind to
- *  be a predefined C++ macro define.
- *
- *  @see http://valgrind.org/docs/manual/drd-manual.html
  *  @see https://github.com/svn2github/valgrind
  *  @see https://sourceforge.net/u/lluct/me722-cm/ci/master/tree/external/valgrind/main/memcheck/memcheck.h
  *  @see https://lists.sourceforge.net/lists/listinfo/valgrind-developers

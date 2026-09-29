@@ -217,29 +217,15 @@ namespace {
         using namespace Memory;
         try {
             Synchronized<optional<int>> sharedValue{0};
-            static const bool           kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-            static const int            kMaxVal_          = kVerySlow_ ? 5 : 100000;
-            Thread::Ptr                 reader            = Thread::New ([&sharedValue] () {
+            static const int            kMaxVal_ = kVerySlow_ ? 5 : 100000;
+            Thread::Ptr                 reader   = Thread::New ([&sharedValue] () {
                 optional<int> prevValue;
-                unsigned int  repeatCount{};
                 while ((prevValue = sharedValue.load ()) < kMaxVal_) {
                     EXPECT_TRUE (sharedValue.load () <= kMaxVal_);
-                    if (kRunningValgrind_) {
-                        if (prevValue == sharedValue.load ()) {
-                            repeatCount++;
-                            if (repeatCount > 100) {
-                                //Execution::Sleep (1ms); // avoid starvation under helgrind (seems to help) -- LGP 2017-12-20.
-                                repeatCount = 0;
-                            }
-                        }
-                        else {
-                            prevValue = nullopt;
-                        }
-                    }
                 }
                 EXPECT_EQ (sharedValue.load (), kMaxVal_);
             });
-            Thread::Ptr                 adder             = Thread::New ([&sharedValue] () {
+            Thread::Ptr                 adder    = Thread::New ([&sharedValue] () {
                 while (sharedValue.load () < kMaxVal_) {
                     sharedValue.store (*sharedValue.load () + 1);
                 }
