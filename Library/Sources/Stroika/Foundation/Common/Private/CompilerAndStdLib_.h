@@ -229,6 +229,10 @@ foo.cpp:
  *  To FIX Stroika - force this true, and then add // in front of #ifndef       CompilerAndStdLib_AssumeBuggyIfNewerCheck_ and its endif,
  *  and go through and test and adjust each bug define for the new version of the compiler.
  *
+ *  Not every bug define goes through CompilerAndStdLib_AssumeBuggyIfNewerCheck_: one for an issue not expected to be fixed in
+ *  a later release, whose workaround stays correct if it is anyway, is just defined for that compiler, with no version list
+ *  to maintain (e.g. qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy).
+ *
  */
 #ifndef CompilerAndStdLib_AssumeBuggyIfNewerCheck_
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) (X)
@@ -2750,18 +2754,19 @@ TRIED alignas to fix on the array but no luck
 #endif
 
 /**
- *  This controls if you must use [[msvc::no_unique_address]] or [[no_unique_address]]
- * 
+ *  This controls if you must use [[msvc::no_unique_address]] or [[no_unique_address]]: MSVC accepts [[no_unique_address]]
+ *  but ignores it, to keep its ABI, and offers [[msvc::no_unique_address]] instead (as of MSVC 19.51).
+ *
+ *  Not version-gated (no CompilerAndStdLib_AssumeBuggyIfNewerCheck_): an ABI decision, not expected to change - and
+ *  [[msvc::no_unique_address]] stays correct if it does.
+ *
  *      example failure in
  *                  static_assert (sizeof (SharedByValue<int>) == sizeof (shared_ptr<int>)); // no space overhead for copier (by default)
  */
 #ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy
 
 #if defined(_MSC_VER)
-// first noticed broken in _MSC_VER_2k22_17Pt14_
-// verified still broken in _MSC_VER_v145_1951_
-#define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy                                                              \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy 1
 #else
 #define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy 0
 #endif
