@@ -952,7 +952,7 @@ namespace {
         // Test it doesn't matter which socket we treat as the 'client' and which we treat as the 'server'
         bool swapSockets = false;
 
-#if qCompilerAndStdLib_nestedLambdaBindings_Buggy
+#if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
         ConnectionOrientedStreamSocket::Ptr fromRawSocketBWA = nullptr;
         ConnectionOrientedStreamSocket::Ptr toRawSocketBWA   = nullptr;
         auto                                pkBWA            = pk;
@@ -963,7 +963,7 @@ namespace {
             // both pairs equal - and can use EITHER as from and either as 'to'
             auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
 
-#if qCompilerAndStdLib_nestedLambdaBindings_Buggy
+#if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
             fromRawSocketBWA = fromRawSocket;
             toRawSocketBWA   = toRawSocket;
 #endif
@@ -990,7 +990,7 @@ namespace {
                                             Thread::New (
                                                 [&] () {
                                                     ClientContext::Options clientOptions;
-#if qCompilerAndStdLib_nestedLambdaBindings_Buggy
+#if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
                                                     auto p = Cryptography::SSL::SocketStream::New (fromRawSocketBWA, clientOptions);
 #else
                                                     auto p = Cryptography::SSL::SocketStream::New (fromRawSocket, clientOptions);
@@ -1006,7 +1006,7 @@ namespace {
             Thread::CleanupPtr serverThread{Thread::CleanupPtr::eDirectlyWait,
                                             Thread::New (
                                                 [&] () {
-#if qCompilerAndStdLib_nestedLambdaBindings_Buggy
+#if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
                                                     ServerContext::Options serverOptions{.fCertificate = make_tuple (pkBWA, certBWA)};
                                                     auto p = Cryptography::SSL::SocketStream::New (toRawSocketBWA, serverOptions);
 #else
