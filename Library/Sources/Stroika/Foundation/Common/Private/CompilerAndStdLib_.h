@@ -238,23 +238,8 @@ foo.cpp:
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) (X)
 #endif
 
-#if __has_include(<version>)
+// C++20 requires <version>; it defines the __cpp_lib_ macros, _GLIBCXX_RELEASE and _LIBCPP_VERSION
 #include <version>
-#elif defined(__clang__)
-// include __config which defines _LIBCPP_VERSION by including ciso646 (see http://stackoverflow.com/questions/31657499/how-to-detect-stdlib-libc-in-the-preprocessor)
-// For libc++ it is recommended to #include <ciso646> which serves no purpose in C++ and declares nothing, but for libc++ does define the _LIBCPP_VERSION macro
-// note if this file is not found, check sudo apt-get install libc++-dev
-#if __cplusplus < 202002L
-#include <ciso646>
-#endif
-#endif
-
-// For pre C++20, to get _GLIBCXX_RELEASE define
-#if !__has_include(<version>)
-#if __has_include(<bits/c++config.h>)
-#include <bits/c++config.h>
-#endif
-#endif
 
 /*
  *******************************************************************
