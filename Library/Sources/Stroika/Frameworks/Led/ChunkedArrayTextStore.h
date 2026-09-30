@@ -34,20 +34,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 /*
- *  Reduce the amount of memory needed per Marker*, by limiting the number of Led_tChars
- *  in the buffer to 16Megs, and the number of different MarkerOwner*'s associated with
- *  a particular text-store to 256. Doing this can save (??? roughly) 8 bytes per
- *  Marker. (OH, and also can do similar trick with next/prev/parent poiinters. They
- *  all occur multiple times. Use table (array) in textstore obj, and store indexes
- *  into it here? maybe too slow on adding/removing markers? - oh well)
- *
- *  WARNING - NOT YET IMPLEMENTED - THIS IS STILL IGNORED, BUT TOTALLY LOCAL TO CHUNKEDDARRAYTEXTSTORE.CPP.
- */
-#ifndef qSkrunchDataSizeByImposingLimits
-#define qSkrunchDataSizeByImposingLimits 1
-#endif
-
-/*
     @CONFIGVAR:     qUseLRUCacheForRecentlyLookedUpMarkers
     @DESCRIPTION:   <p>Small speed tweek. Conditionally compiled cuz I'm not sure its always a speed tweek. In the
         case of a problem sent to me (SPR#0652) - this had a 20% speedup. And in other cases I tested (e.g. reading RTF 1.4 RTF doc) - no

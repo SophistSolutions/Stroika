@@ -11,13 +11,6 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-// Debug later why this doesn't work. Actually - I think I'm still going to do a lot more
-// on the invarients with hackmarkers, so I can more efficiently add and remove them!
-// This should be fine as-is for the 1.0 release however - LGP950527
-#if qStroika_Foundation_Debug_AssertionsChecked
-//#define   qHeavyMarkerDebugging       1
-#endif
-
 class ChunkedArrayTextStore::TextChunk {
 public:
     TextChunk () = default;
@@ -1828,9 +1821,7 @@ void ChunkedArrayTextStore::WalkSubTreeAndCheckInvariants (const Marker* m) cons
         AssertNotNull (OurStuff (subMarker));
         Assert (OurStuff (subMarker)->fParent == m);
         Assert (QUICK_Contains (*subMarker, *m));
-#if qHeavyMarkerDebugging
         Assert (not OurStuff (subMarker)->fIsHackMarker or OurStuff (subMarker)->fFirstSubMarker != NULL); // leaf hacks should be deleted!
-#endif
         WalkSubTreeAndCheckInvariants (subMarker);
     }
 }

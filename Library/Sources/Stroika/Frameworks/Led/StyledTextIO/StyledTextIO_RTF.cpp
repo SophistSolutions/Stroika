@@ -2900,7 +2900,6 @@ void StyledTextIOReader_RTF::ReadIn_pn_Group (ReaderContext& readerContext)
     SkipToEndOfCurrentGroup ();
 }
 
-#define qTryQuickISXXX 1
 inline bool quickIsAlpha (char c)
 {
     return (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z');

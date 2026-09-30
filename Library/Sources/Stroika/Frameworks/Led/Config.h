@@ -38,7 +38,6 @@
 // This part is where we actually update the version#
 #define qLed_Version_Major 4
 #define qLed_Version_Minor 0
-#define qLed_Version_MajorMinor 0x40
 #define qLed_Version_Stage qStroika_Version_Stage
 #define qLed_Version_SubStage qStroika_Version_SubStage
 #define qLed_Version_FinalBuild qStroika_Version_FinalBuild
@@ -87,8 +86,7 @@
  *  Led contains lots of internal debugging code which is mainly intended to find bugs
  *  in Led itself. Its less valuable for finding bugs in your programs' usage of Led. Much of that debugging
  *  code makes Led quite slow (for larger documents).</p>
- *      <p>The Led sample applications are all built with qHeavyDebugging when qStroika_Foundation_Debug_AssertionsChecked is on. But Led defaults
- *  to having this value false, so that your applications won't be needlessly slow.</p>
+ *      <p>Led defaults to having this value false, so that your applications won't be needlessly slow.</p>
  *      <p>If you run into some subtle bug, or if you aren't worried about the speed of Led with large documents
  *      when debugging is ON, then you may want to turn this flag ON.</p>
  *      <p>See also @'qStroika_Foundation_Debug_AssertionsChecked'</p>
@@ -98,7 +96,7 @@
 #endif
 
 /*
-@CONFIGVAR:     qNestedTablesSupported
+@CONFIGVAR:     qStroika_Frameworks_Led_NestedTablesSupported
 @DESCRIPTION:   <p>This define controls whether or not the Led WordProcessor/StyledTextIO class support nested tables.
             This will <em>not</em> be supported for Led 3.1, but probably will be in a release thereafter.
             There is SOME code available for both cases, but just a little (as of 2003-04-12).</p>
