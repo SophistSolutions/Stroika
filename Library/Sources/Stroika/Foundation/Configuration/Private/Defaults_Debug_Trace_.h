@@ -1,9 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Configuration_Private_Defaults_Debug_Trace_h_
-#define _Stroika_Foundation_Configuration_Private_Defaults_Debug_Trace_h_ 1
+#include "Stroika/Foundation/Common/Private/CompilerAndStdLib_.h"
 
 // FILE OBSOLETE AS OF 2023-11-05 - Stroika v3.0d4
-
-#endif /*_Stroika_Foundation_Configuration_Private_Defaults_Debug_Trace_h_*/
+_DeprecatedFile_ ("DEPRECATED - obsolete since v3.0d4. To be removed in v3.0a1");
