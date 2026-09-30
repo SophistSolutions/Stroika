@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Characters {
             ;
     #endif
 
-#if qCompiler_IUseToStringFormatterForFormatter_Buggy
+#if qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy
     public:
         // this hack has nothing todo with real IUseToStringFormatterForFormatter bug - but is needed as artifact of workaround
         Characters::String ToString () const

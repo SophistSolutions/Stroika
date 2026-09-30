@@ -65,12 +65,12 @@ Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& s
 }
 
 Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
     const function<void (const String&)>& logMsg
 #endif
 )
 {
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
     logMsg ("Starting ReadHeaders_"sv);
 #endif
 
@@ -78,7 +78,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
      *  Preflight the request and make sure all the bytes of the header are available. Don't read more than needed.
      */
     if (not fMsgHeaderInTextStream.AssureHeaderSectionAvailable ()) {
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
         logMsg ("got fMsgHeaderInTextStream.AssureHeaderSectionAvailable INCOMPLETE"sv);
 #endif
         if (fMsgHeaderInTextStream.IsAtEOF (Streams::eDontBlock) == true) {
@@ -95,7 +95,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         // Read METHOD URL line
         String line = fMsgHeaderInTextStream.ReadLine ();
         if (line.length () == 0) {
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
             logMsg ("got EOF from src stream reading headers(incomplete)"sv);
 #endif
             return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we don't want the noise in the logs.
@@ -139,7 +139,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
             updatableRequest.rwHeaders ().Add (hdr, value);
         }
     }
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
     logMsg ("ReadHeaders completed normally"sv);
 #endif
     return ReadHeadersResult::eCompleteGood;
@@ -164,7 +164,7 @@ String Connection::Stats::ToString () const
             sb << ", inactive";
         }
     }
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
     if (fReadAndProcessMessageNumber != 0) {
         sb << ", connectionMessageNumber: " << fReadAndProcessMessageNumber;
     }
@@ -232,7 +232,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
         // typically called from thread OTHER than the one filling in these variables
         auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without synchronization
         TimePointSeconds createdAt{thisObj->fConnectionStartedAt_}; // also similar logic - const
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
         Stats2Capture_ statsCapturedDuringMessageProcessing = thisObj->fExtraStats_.load ();
         using State                                         = Stats::State;
         State state                                         = [thisObj] () {
@@ -271,7 +271,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
         Stats stats{
             .fSocketID  = uniqueID,
             .fCreatedAt = createdAt,
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
             .fReadAndProcessMessageNumber = thisObj->fReadAndProcessMessageNumber_,
             .fState                       = state,
             .fMostRecentMessage           = statsCapturedDuringMessageProcessing.fMessageStart
@@ -310,7 +310,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     DbgTrace ("Created connection for socket {}"_f, s);
 #endif
     fSocketStream_ = SocketStream::New (fSocket_);
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
     {
         String socketName = "{}-{}"_f((long)DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
         fSocketStream_    = Streams::LoggingInputOutputStream<byte>::New (
@@ -330,7 +330,7 @@ Connection::~Connection ()
     DbgTrace ("Destroying connection for socket {}, message={}"_f, fSocket_, static_cast<const void*> (fMessage_.get ()));
 #endif
     AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
     WriteLogConnectionMsg_ (L"DestroyingConnection");
 #endif
     if (fMessage_ != nullptr) {
@@ -368,35 +368,35 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 
         // readHeaders returns nullopt if it completed successfully (usually the case)
         auto readHeaders = [&] () -> optional<ReadAndProcessResult> {
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
             ++fReadAndProcessMessageNumber_;
             fState_ = State_Flag_::eReadingHeaders_Started;
             fExtraStats_.store (Stats2Capture_{
                 .fMessageStart = Time::GetTickCount (), .fPeer = fSocket_.GetPeerAddress (), .fHandlingThread = std::this_thread::get_id ()});
 #endif
             switch (fMessage_->ReadHeaders (
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
                 [this] (const String& i) -> void { WriteLogConnectionMsg_ (i); }
 #endif
                 )) {
                 case MyMessage_::eIncompleteDeadEnd: {
                     DbgTrace ("ReadHeaders failed (socket {}) - incomplete data read from client."_f,
                               fSocket_); // sometimes because the client closed the connection before we could handle: e.g. user in web browser hitting refresh button fast
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
                     fState_ = State_Flag_::eFinishedReadingHeaders_Failed;
 #endif
                     return eClose; // don't keep-alive - so this closes connection
                 } break;
                 case MyMessage_::eIncompleteButMoreMayBeAvailable: {
                     DbgTrace ("ReadHeaders failed - incomplete header (most likely a DOS attack)."_f);
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
                     fState_ = State_Flag_::eFinishedReadingHeaders_Incomplete;
 #endif
                     return ReadAndProcessResult::eTryAgainLater;
                 } break;
                 case MyMessage_::eCompleteGood: {
                     // fall through and actually process the request
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
                     fState_ = State_Flag_::eFinishedReadingHeaders_Success;
 #endif
                     return nullopt;
@@ -416,7 +416,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
 #endif
 
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
         [[maybe_unused]] auto&& cleanup2 =
             Finally ([&] () noexcept { fExtraStats_.rwget ().rwref ().fMessageCompleted = Time::GetTickCount (); });
         fExtraStats_.store (Stats2Capture_{.fMessageStart   = Time::GetTickCount (),
@@ -524,14 +524,14 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("Handing request {} to interceptor chain"_f, request ().ToString ());
 #endif
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
             [[maybe_unused]] auto&& cleanupFlags = Finally ([&] () noexcept {
                 Assert (fState_ < State_Flag_::eInterceptorChain_Complete);
                 fState_ = State_Flag_::eInterceptorChain_Complete;
             });
             fState_                              = State_Flag_::eInterceptorChain_Start;
 #endif
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
             WriteLogConnectionMsg_ ("Handing request {} to interceptor chain"_f(request ()));
 #endif
             try {
@@ -541,7 +541,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("Interceptor-Chain caught exception handling message: {}"_f, current_exception ());
 #endif
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
                 WriteLogConnectionMsg_ ("Interceptor-Chain caught exception handling message: {}"_f(current_exception ()));
 #endif
             }
@@ -563,7 +563,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                  *      or Transfer-Encoding header field in the request's message-headers/
                  */
                 if (request ().headers ().contentLength ()) {
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
                     WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -581,7 +581,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
          *  comparing the ETag with the ifNoneMatch header.
          */
         [&] () {
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
             fState_ = State_Flag_::eFlushing_Start;
 #endif
             if (not this->response ().responseStatusSent () and HTTP::IsOK (this->response ().status)) {
@@ -601,11 +601,11 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             if (not this->rwResponse ().End ()) {
                 thisMessageKeepAlive = false;
             }
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
             fKeepAlive_ = thisMessageKeepAlive;
             fState_     = State_Flag_::eFlushing_Done;
 #endif
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
             WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
 #endif
         }();
@@ -615,14 +615,14 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
     catch (...) {
         DbgTrace ("ReadAndProcessMessage Exception caught ({}), so returning ReadAndProcessResult::eClose"_f, current_exception ());
         this->rwResponse ().Abort ();
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
         fState_ = State_Flag_::eAborting;
 #endif
         return Connection::ReadAndProcessResult::eClose;
     }
 }
 
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
 void Connection::WriteLogConnectionMsg_ (const String& msg) const
 {
     String useMsg = DateTime::Now ().Format () + " -- "sv + msg.Trim ();

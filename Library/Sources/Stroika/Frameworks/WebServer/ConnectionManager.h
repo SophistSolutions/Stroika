@@ -335,7 +335,7 @@ namespace Stroika::Frameworks::WebServer {
                  *  Each connection will in general serve many requests (due to connection keep-alives). This computes 
                  *  the median duration of currently open requests.   @todo CLARIFY
                  * 
-                 *  \note REQUIRES qStroika_Framework_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
+                 *  \note REQUIRES qStroika_Frameworks_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
                  */
                 CommonStatistics<Duration> fDurationOfOpenConnectionsRequests;
 
@@ -343,7 +343,7 @@ namespace Stroika::Frameworks::WebServer {
                  *  Each connection will in general serve many requests (due to connection keep-alives). This computes 
                  *  the median duration of currently active connection requests.
                  * 
-                 *  \note REQUIRES qStroika_Framework_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
+                 *  \note REQUIRES qStroika_Frameworks_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
                  */
                 CommonStatistics<Duration> fDurationOfActiveConnectionsRequests;
 
@@ -354,7 +354,7 @@ namespace Stroika::Frameworks::WebServer {
                  * 
                  *  If this number is non-zero, try the connections () property, and look through for connections with problematic times.
                  * 
-                 *  \note REQUIRES qStroika_Framework_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
+                 *  \note REQUIRES qStroika_Frameworks_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
                  */
                 size_t fConnectionsPiningForTheFjords{};
 

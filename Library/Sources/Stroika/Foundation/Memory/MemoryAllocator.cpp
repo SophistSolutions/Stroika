@@ -29,14 +29,14 @@ namespace {
 
 // Since this code frequently gets used with 'DEBUG' turned off - and so no assert checking, we may
 // sometimes want to 'force asserts on' at least for this modules checking.
-//#define   qSuperAssertChecks_MemAllocator 0
-//#define   qSuperAssertChecks_MemAllocator 1
-#ifndef qSuperAssertChecks_MemAllocator
-#define qSuperAssertChecks_MemAllocator qStroika_Foundation_Debug_AssertionsChecked
+//#define   qSuperAssertChecks_MemAllocator_ 0
+//#define   qSuperAssertChecks_MemAllocator_ 1
+#ifndef qSuperAssertChecks_MemAllocator_
+#define qSuperAssertChecks_MemAllocator_ qStroika_Foundation_Debug_AssertionsChecked
 #endif
 
 namespace {
-#if qSuperAssertChecks_MemAllocator
+#if qSuperAssertChecks_MemAllocator_
     inline void SUPER_ASSERT_ (bool t)
     {
         if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {

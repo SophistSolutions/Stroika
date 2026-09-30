@@ -515,7 +515,7 @@ auto ConnectionManager::ComputeStatistics_ () const -> Statistics
     connectionStats.fDurationOfOpenConnections = ComputeCommonStatistics (
         conns.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> { return now - cs.fCreatedAt; }));
 
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
     connectionStats.fDurationOfOpenConnectionsRequests =
         ComputeCommonStatistics (conns.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
             if (cs.fMostRecentMessage) {

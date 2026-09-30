@@ -1559,13 +1559,19 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/ToString.h:390:16: error: static assertion failed
   390 | static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::filesystem::path, wchar_t>);
  */
-#ifndef qCompiler_IUseToStringFormatterForFormatter_Buggy
-#if defined(__clang__) and __clang_major__ <= 18
+#ifndef qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy
+#if defined(qCompiler_IUseToStringFormatterForFormatter_Buggy)
+#define qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy qCompiler_IUseToStringFormatterForFormatter_Buggy
+#elif defined(__clang__) and __clang_major__ <= 18
 // appears fixed for clang++19
-#define qCompiler_IUseToStringFormatterForFormatter_Buggy 1
+#define qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy 1
 #else
-#define qCompiler_IUseToStringFormatterForFormatter_Buggy 0
+#define qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy 0
 #endif
+#endif
+// DEPRECATED NAME - since 3.0d25 (to be removed in v3.0a1)
+#ifndef qCompiler_IUseToStringFormatterForFormatter_Buggy
+#define qCompiler_IUseToStringFormatterForFormatter_Buggy qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy
 #endif
 
 /**
@@ -2239,16 +2245,24 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 ==32172==ABORTING
 
 */
-#ifndef qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
+#ifndef qCompilerAndStdLib_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
 
-#if defined(__GNUC__) && !defined(__clang__)
+#if defined(qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy)
+#define qCompilerAndStdLib_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy                                                           \
+    qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
+#elif defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 11
 // appears fixed in GCC 12
-#define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+#define qCompilerAndStdLib_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
 #else
-#define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy 0
+#define qCompilerAndStdLib_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy 0
 #endif
 
+#endif
+// DEPRECATED NAME - since 3.0d25 (to be removed in v3.0a1)
+#ifndef qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
+#define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy                                                                    \
+    qCompilerAndStdLib_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
 #endif
 
 /*

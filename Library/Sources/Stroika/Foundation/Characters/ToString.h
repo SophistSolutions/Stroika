@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Characters::Private_ {
         // If Characters::ToString() would work
         IToString<T>
 
-#if !qCompiler_IUseToStringFormatterForFormatter_Buggy
+#if !qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy
         // But NOT anything std c++ defined to already support (else we get ambiguity error)
         and not IStdFormatterPredefinedFor_<T>
 #else
@@ -434,7 +434,7 @@ namespace Stroika::Foundation::Characters::Private_ {
              or is_enum_v<remove_cvref_t<T>> or Common::IOptional<remove_cvref_t<T>> or Common::IVariant<remove_cvref_t<T>> or
              same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>> or
              Common::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception> or Common::ISharedPtr<T>);
-#endif /*qCompiler_IUseToStringFormatterForFormatter_Buggy*/
+#endif /*qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy*/
         ;
 
 }
@@ -457,7 +457,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika:
 /*
  *  If any of these static_asserts trigger, it means you are using a newer compiler I don't have 
  *  proper IUseToStringFormatterForFormatter_ or IStdFormatterPredefinedFor_ settings for. Adjust those settings above so these tests pass.
- *      (or if qCompiler_IUseToStringFormatterForFormatter_Buggy - clang++ - then see IUseToStringFormatterForFormatter_ directly)
+ *      (or if qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy - clang++ - then see IUseToStringFormatterForFormatter_ directly)
  */
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::exception_ptr, wchar_t>);
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::filesystem::path, wchar_t>);

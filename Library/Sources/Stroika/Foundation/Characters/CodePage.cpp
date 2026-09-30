@@ -29,27 +29,27 @@ using namespace Stroika::Foundation::Memory;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#ifndef qBuildInTableDrivenCodePageBuilderProc
-#define qBuildInTableDrivenCodePageBuilderProc 0
+#ifndef qBuildInTableDrivenCodePageBuilderProc_
+#define qBuildInTableDrivenCodePageBuilderProc_ 0
 #endif
 
 /*
  *  Hack to build 'myiswalpha' and 'myiswpunct' for SPR#1220 (revised and moved here for SPR#1306 and class
  *  'CharacterProperties').
  */
-#ifndef qBuildMemoizedISXXXBuilderProc
-#define qBuildMemoizedISXXXBuilderProc 0
+#ifndef qBuildMemoizedISXXXBuilderProc_
+#define qBuildMemoizedISXXXBuilderProc_ 0
 #endif
 
 /*
  *  Use this to test my IsWXXX functions produce the right results. Only test under WinXP,
  *  since that is the reference they are copying (SPR#1229).
  */
-#ifndef qTestMyISWXXXFunctions
-#define qTestMyISWXXXFunctions 0
+#ifndef qTestMyISWXXXFunctions_
+#define qTestMyISWXXXFunctions_ 0
 #endif
 
-#if qBuildInTableDrivenCodePageBuilderProc || qBuildMemoizedISXXXBuilderProc
+#if qBuildInTableDrivenCodePageBuilderProc_ || qBuildMemoizedISXXXBuilderProc_
 #include <fstream>
 #endif
 
@@ -384,7 +384,7 @@ namespace {
 
 namespace {
 
-#if qBuildInTableDrivenCodePageBuilderProc
+#if qBuildInTableDrivenCodePageBuilderProc_
     static void WriteCodePageTable (CodePage codePage);
 
     struct DoRunIt {
@@ -402,7 +402,7 @@ namespace {
     } gRunIt;
 #endif
 
-#if qBuildMemoizedISXXXBuilderProc
+#if qBuildMemoizedISXXXBuilderProc_
     template <typename FUNCTION>
     void WriteMemoizedIsXXXProc (FUNCTION function, const string& origFunctionName, const string& functionName)
     {
@@ -480,7 +480,7 @@ namespace {
             }
 
             outStream << "\t\t\t) {\n";
-            outStream << "\t\t\t#if             qTestMyISWXXXFunctions\n";
+            outStream << "\t\t\t#if             qTestMyISWXXXFunctions_\n";
             outStream << "\t\t\tAssert (" << origFunctionName << "(c));\n";
             outStream << "\t\t\t#endif\n";
             outStream << "\t\t\treturn true;\n";
@@ -488,7 +488,7 @@ namespace {
 
             outStream << "\t}\n";
         }
-        outStream << "\t#if             qTestMyISWXXXFunctions\n";
+        outStream << "\t#if             qTestMyISWXXXFunctions_\n";
         outStream << "\tAssert (!" << origFunctionName << "(c));\n";
         outStream << "\t#endif\n";
         outStream << "\treturn false;\n";
@@ -509,7 +509,7 @@ namespace {
     } gRunIt;
 #endif
 
-#if qTestMyISWXXXFunctions
+#if qTestMyISWXXXFunctions_
     class MyIsWXXXTesterFunctions {
     public:
         MyIsWXXXTesterFunctions ()

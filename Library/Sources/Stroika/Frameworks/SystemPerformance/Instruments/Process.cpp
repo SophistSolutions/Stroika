@@ -90,15 +90,15 @@ using Instruments::Process::ProcessType;
 #endif
 
 // This appears to work, but I fear (not tested) its not super performant - performance not tested -- LGP 2016-03-11
-//#define   qUseCreateToolhelp32SnapshotToCountThreads      0
-#ifndef qUseCreateToolhelp32SnapshotToCountThreads
-#define qUseCreateToolhelp32SnapshotToCountThreads qStroika_Platform_Windows
+//#define   qUseCreateToolhelp32SnapshotToCountThreads_      0
+#ifndef qUseCreateToolhelp32SnapshotToCountThreads_
+#define qUseCreateToolhelp32SnapshotToCountThreads_ qStroika_Platform_Windows
 #endif
 
 // Still maybe needed for thread count -- but check with ifdefs
 #define qUseWMICollectionSupport_ 0
 #ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_ qStroika_Platform_Windows && (!qUseCreateToolhelp32SnapshotToCountThreads and !qUseWinInternalSupport_)
+#define qUseWMICollectionSupport_ qStroika_Platform_Windows && (!qUseCreateToolhelp32SnapshotToCountThreads_ and !qUseWinInternalSupport_)
 #endif
 
 #if qUseWinInternalSupport_
@@ -115,7 +115,7 @@ using Instruments::Process::ProcessType;
 #endif
 #endif
 
-#if qUseCreateToolhelp32SnapshotToCountThreads
+#if qUseCreateToolhelp32SnapshotToCountThreads_
 #include <tlhelp32.h>
 #if defined(_MSC_VER)
 #pragma comment(lib, "Ntdll.lib") // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
@@ -247,7 +247,7 @@ namespace {
 }
 #endif
 
-#if qUseCreateToolhelp32SnapshotToCountThreads
+#if qUseCreateToolhelp32SnapshotToCountThreads_
 namespace {
     class ThreadCounter_ {
     private:
@@ -1366,7 +1366,7 @@ namespace {
             Iterable<pid_t> allPids = GetAllProcessIDs_ ();
 #endif
 
-#if qUseCreateToolhelp32SnapshotToCountThreads
+#if qUseCreateToolhelp32SnapshotToCountThreads_
             ThreadCounter_ threadCounter;
 #endif
 
@@ -1454,7 +1454,7 @@ namespace {
                             }
                         }
 
-#if qUseCreateToolhelp32SnapshotToCountThreads
+#if qUseCreateToolhelp32SnapshotToCountThreads_
                         processInfo.fThreadCount = threadCounter.CountThreads (pid);
 #endif
 

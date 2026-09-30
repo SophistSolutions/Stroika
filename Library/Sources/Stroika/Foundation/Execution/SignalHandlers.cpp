@@ -53,8 +53,8 @@ using Containers::Set;
 // https://github.com/SophistSolutions/Stroika/issues/753 (STK-617)
 // https://stackoverflow.com/questions/31117959/waking-up-thread-from-signal-handler
 // -- LGP 2017-09-10
-#ifndef qConditionVariablesSafeInAsyncSignalHanlders
-#define qConditionVariablesSafeInAsyncSignalHanlders !qStroika_Platform_POSIX
+#ifndef qConditionVariablesSafeInAsyncSignalHandlers_
+#define qConditionVariablesSafeInAsyncSignalHandlers_ !qStroika_Platform_POSIX
 #endif
 
 /*
@@ -97,7 +97,7 @@ class SignalHandlerRegistry::SafeSignalsManager::Rep_ final {
 private:
     void waitForNextSig_ ()
     {
-#if qConditionVariablesSafeInAsyncSignalHanlders
+#if qConditionVariablesSafeInAsyncSignalHandlers_
         Assert (not qStroika_Platform_POSIX); // this strategy not safe with POSIX signals
         unique_lock<mutex> lk{fRecievedSig_NotSureWhatMutexFor_};
         fRecievedSig_.wait_for (lk, chrono::seconds (100), [this] () { return fWorkMaybeAvailable_.load (); });
@@ -107,7 +107,7 @@ private:
     }
     void tell2WakeAfterDataUpdate_ ()
     {
-#if qConditionVariablesSafeInAsyncSignalHanlders
+#if qConditionVariablesSafeInAsyncSignalHandlers_
         Assert (not qStroika_Platform_POSIX); // this strategy not safe with POSIX signals
         fRecievedSig_.notify_one ();
         {
@@ -248,7 +248,7 @@ private:
     Thread::Ptr fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
     atomic<bool> fWorkMaybeAvailable_{false};
-#if qConditionVariablesSafeInAsyncSignalHanlders
+#if qConditionVariablesSafeInAsyncSignalHandlers_
     mutex              fRecievedSig_NotSureWhatMutexFor_;
     condition_variable fRecievedSig_;
 #else

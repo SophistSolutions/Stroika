@@ -40,18 +40,34 @@ namespace Stroika::Frameworks::WebServer {
      *  Write out files to %TEMP% dir, with logs of the details of the HTTP conversation, for debugging
      *  HTTP conversations.
      */
-//#define qStroika_Framework_WebServer_Connection_DetailedMessagingLog 1
-#ifndef qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-#define qStroika_Framework_WebServer_Connection_DetailedMessagingLog 0
+//#define qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog 1
+#ifndef qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
+#if defined(qStroika_Framework_WebServer_Connection_DetailedMessagingLog)
+#define qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#else
+#define qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog 0
+#endif
 #endif
 
     /**
      *  This has a slight cost, so you might want to compile it out of the implementation.
      *  At least useful when debugging.
      */
-//#define qStroika_Framework_WebServer_Connection_TrackExtraStats 0
+//#define qStroika_Frameworks_WebServer_Connection_TrackExtraStats 0
+#ifndef qStroika_Frameworks_WebServer_Connection_TrackExtraStats
+#if defined(qStroika_Framework_WebServer_Connection_TrackExtraStats)
+#define qStroika_Frameworks_WebServer_Connection_TrackExtraStats qStroika_Framework_WebServer_Connection_TrackExtraStats
+#else
+#define qStroika_Frameworks_WebServer_Connection_TrackExtraStats 1
+#endif
+#endif
+
+// DEPRECATED NAMES - since 3.0d25 (to be removed in v3.0a1): Frameworks, plural, like every other qStroika_Frameworks_ name
+#ifndef qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#define qStroika_Framework_WebServer_Connection_DetailedMessagingLog qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
+#endif
 #ifndef qStroika_Framework_WebServer_Connection_TrackExtraStats
-#define qStroika_Framework_WebServer_Connection_TrackExtraStats 1
+#define qStroika_Framework_WebServer_Connection_TrackExtraStats qStroika_Frameworks_WebServer_Connection_TrackExtraStats
 #endif
 
     /**
@@ -175,7 +191,7 @@ namespace Stroika::Frameworks::WebServer {
              */
             TimePointSeconds fCreatedAt;
 
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
             /**
              * A given connection can be used for mutliple messages. Track what message number this is on this connection.
              *
@@ -292,7 +308,7 @@ namespace Stroika::Frameworks::WebServer {
          */
         Common::Property<optional<HTTP::KeepAlive>> remainingConnectionLimits;
 
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
     private:
         nonvirtual void WriteLogConnectionMsg_ (const String& msg) const;
 #endif
@@ -318,7 +334,7 @@ namespace Stroika::Frameworks::WebServer {
                 eCompleteGood
             };
             nonvirtual ReadHeadersResult ReadHeaders (
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
                 const function<void (const String&)>& logMsg
 #endif
             );
@@ -335,7 +351,7 @@ namespace Stroika::Frameworks::WebServer {
         const TimePointSeconds                                 fConnectionStartedAt_{};
         unique_ptr<MyMessage_>                                 fMessage_; // always there, but ptr so it can be replaced
         optional<HTTP::KeepAlive>                              fRemaining_;
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
         enum class State_Flag_ : uint8_t {
             eNew,
             eReadingHeaders_Started,
@@ -362,7 +378,7 @@ namespace Stroika::Frameworks::WebServer {
         static_assert (is_default_constructible_v<Stats2Capture_>);
         Execution::Synchronized<Stats2Capture_> fExtraStats_;
 #endif
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
         Streams::OutputStream::Ptr<Character> fLogConnectionState_;
 #endif
     };
