@@ -421,7 +421,7 @@ namespace {
             void TestBasics_ ()
             {
                 static const size_t kIOverallRepeatCount_{
-                    (qStroika_Foundation_Debug_AssertionsChecked or Debug::IsRunningUnderValgrind ()) ? 50 : 1000}; // tweak count cuz too slow
+                    (qStroika_Foundation_Debug_AssertionsChecked or Debug::IsRunningUnderValgrind ()) ? 50u : 1000u}; // tweak count cuz too slow
                 Sequence<int> tmp{Traversal::DiscreteRange<int>{1, 1000}};
                 Thread::Ptr   t1 = Thread::New ([&tmp] () {
                     for (int i = 1; i < kIOverallRepeatCount_; ++i) {
