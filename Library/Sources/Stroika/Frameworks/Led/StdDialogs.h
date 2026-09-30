@@ -43,17 +43,7 @@
 // will silently - but surely - generate the wrong resids. Amazing but true stories -- LGP 2000-10-16
 #define kLedStdDlgIDBase 0x1000
 
-/*
-@CONFIGVAR:     qSupportLedDialogWidgets
-@DESCRIPTION:   <p>Support the @'LedDialogWidget' class. This requires you link with SimpleTextStore.cpp,
-            SimpleTextImager.cpp, and SimpleTextInteractor.cpp.</p>
-                <p>This flag defaults to true, iff qStroika_Platform_Windows is true.</p>
- */
-#ifndef qSupportLedDialogWidgets
-#define qSupportLedDialogWidgets (qStroika_Platform_Windows)
-#endif
-
-#if qSupportLedDialogWidgets && qStroika_Platform_Windows && defined(__cplusplus)
+#if qStroika_Platform_Windows && defined(__cplusplus)
 #include "Platform/Windows.h"
 #include "SimpleTextInteractor.h"
 #include "SimpleTextStore.h"
@@ -105,7 +95,7 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 
-#if qSupportLedDialogWidgets && defined(__cplusplus)
+#if qStroika_Platform_Windows && defined(__cplusplus)
 
     namespace LedDialogWidget_Private {
         using LedDialogWidget_BASE = Platform::Led_Win32_SimpleWndProc_HelperWithSDKMessages<Platform::Led_Win32_Helper<SimpleTextInteractor>>;
@@ -153,7 +143,7 @@ namespace Stroika::Frameworks::Led {
 
 #endif
 
-#if qSupportLedDialogWidgets && defined(__cplusplus)
+#if qStroika_Platform_Windows && defined(__cplusplus)
     /*
             @CLASS:         LedComboBoxWidget
             @DESCRIPTION:   <p></p>
@@ -347,11 +337,7 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 
-#ifndef qSupportStdAboutBoxDlg
-#define qSupportStdAboutBoxDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportStdAboutBoxDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_AboutBoxID 0x1001
 //NB: order of these must track declared order in Mac .r file!
 #define kLedStdDlg_AboutBox_InfoLedFieldID (kLedStdDlgCommandBase + 1)
@@ -360,10 +346,6 @@ namespace Stroika::Frameworks::Led {
 #define kLedStdDlg_AboutBox_VersionFieldID (kLedStdDlgCommandBase + 4)
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_AboutBox
-            @DESCRIPTION:   <p>You can define qSupportStdAboutBoxDlg to 0 to disable inclusion of this resource/code (for size reasons).</p>
-            */
     class Led_StdDialogHelper_AboutBox : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -386,11 +368,7 @@ namespace Stroika::Frameworks::Led {
 
 #endif
 
-#ifndef qSupportStdFindDlg
-#define qSupportStdFindDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportStdFindDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_FindBoxID 0x1002
 #define kLedStdDlg_FindBox_FindText (kLedStdDlgCommandBase + 1)
 #define kLedStdDlg_FindBox_WrapAtEndOfDoc (kLedStdDlgCommandBase + 2)
@@ -400,10 +378,6 @@ namespace Stroika::Frameworks::Led {
 #define kLedStdDlg_FindBox_Cancel (kLedStdDlgCommandBase + 6)
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_FindDialog
-            @DESCRIPTION:   <p>You can define qSupportStdFindDlg to 0 to disable inclusion of this resource/code (for size reasons).</p>
-            */
     class Led_StdDialogHelper_FindDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -431,7 +405,7 @@ namespace Stroika::Frameworks::Led {
         bool                fPressedOK;
 
     protected:
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
         LedComboBoxWidget fFindTextWidget;
 #endif
 
@@ -445,11 +419,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportStdReplaceDlg
-#define qSupportStdReplaceDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportStdReplaceDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_ReplaceBoxID 0x1003
 #define kLedStdDlg_ReplaceBox_FindText (kLedStdDlgCommandBase + 1)
 #define kLedStdDlg_ReplaceBox_ReplaceText (kLedStdDlgCommandBase + 2)
@@ -463,10 +433,6 @@ namespace Stroika::Frameworks::Led {
 #define kLedStdDlg_ReplaceBox_ReplaceAllInSelection (kLedStdDlgCommandBase + 10)
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_ReplaceDialog
-            @DESCRIPTION:   <p>You can define qSupportStdReplaceDlg to 0 to disable inclusion of this resource/code (for size reasons).</p>
-            */
     class Led_StdDialogHelper_ReplaceDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -504,7 +470,7 @@ namespace Stroika::Frameworks::Led {
         ButtonPressed fPressed;
 
     protected:
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
         LedComboBoxWidget fFindTextWidget;
         LedDialogWidget   fReplaceTextWidget;
 #endif
@@ -525,14 +491,10 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportStdColorPickBox
-#define qSupportStdColorPickBox qStroika_Platform_Windows
-#endif
-
-#if qSupportStdColorPickBox && defined(__cplusplus)
+#if qStroika_Platform_Windows && defined(__cplusplus)
     /*
             @CLASS:         StdColorPickBox
-            @DESCRIPTION:   <p>Only defined if @'qSupportStdColorPickBox' defined. This doesn't even use @'Led_StdDialogHelper' - but
+            @DESCRIPTION:   <p>This doesn't even use @'Led_StdDialogHelper' - but
                         instead - uses other SDK calls to display the dialog.</p>
                             <p>You still invoke it with a DoModal () call and consider that OK was pressed and
                         the fColor field filled in if DoModal returns true.
@@ -567,11 +529,7 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 
-#ifndef qSupportUpdateWin32FileAssocDlg
-#define qSupportUpdateWin32FileAssocDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportUpdateWin32FileAssocDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_UpdateWin32FileAssocsDialogID 0x1004
 #define kLedStdDlg_UpdateWin32FileAssocsDialog_Msg (kLedStdDlgCommandBase + 1)
 #define kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg (kLedStdDlgCommandBase + 2)
@@ -604,21 +562,13 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportParagraphIndentsDlg
-#define qSupportParagraphIndentsDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportParagraphIndentsDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_ParagraphIndentsID 0x1005
 #define kLedStdDlg_ParagraphIndents_LeftMarginFieldID (kLedStdDlgCommandBase + 4)
 #define kLedStdDlg_ParagraphIndents_RightMarginFieldID (kLedStdDlgCommandBase + 6)
 #define kLedStdDlg_ParagraphIndents_FirstIndentFieldID (kLedStdDlgCommandBase + 8)
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_ParagraphIndentsDialog
-            @DESCRIPTION:   <p>You can define qSupportParagraphIndentsDlg to exlude this from your build (for size reasons)</p>
-            */
     class Led_StdDialogHelper_ParagraphIndentsDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -654,11 +604,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportParagraphSpacingDlg
-#define qSupportParagraphSpacingDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportParagraphSpacingDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_ParagraphSpacingID 0x1006
 #define kParagraphSpacing_Dialog_SpaceBeforeFieldID (kLedStdDlgCommandBase + 4)
 #define kParagraphSpacing_Dialog_SpaceAfterFieldID (kLedStdDlgCommandBase + 6)
@@ -671,10 +617,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_ParagraphSpacingDialog
-            @DESCRIPTION:   <p>You can define qSupportParagraphSpacingDlg to exlude this from your build (for size reasons)</p>
-            */
     class Led_StdDialogHelper_ParagraphSpacingDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -711,19 +653,11 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportOtherFontSizeDlg
-#define qSupportOtherFontSizeDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportOtherFontSizeDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_OtherFontSizeID 0x1007
 #define kOtherFontSize_Dialog_FontSizeEditFieldID (kLedStdDlgCommandBase + 4)
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_OtherFontSizeDialog
-            @DESCRIPTION:   <p>You can define qSupportOtherFontSizeDlg to exlude this from your build (for size reasons)</p>
-            */
     class Led_StdDialogHelper_OtherFontSizeDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -751,19 +685,11 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportUnknownEmbeddingInfoDlg
-#define qSupportUnknownEmbeddingInfoDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportUnknownEmbeddingInfoDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_UnknownEmbeddingInfoBoxID 0x1008
 #define kLedStdDlg_UnknownEmbeddingInfoBox_TypeTextMsg (kLedStdDlgCommandBase + 1)
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_UnknownEmbeddingInfoDialog
-            @DESCRIPTION:   <p>You can define qSupportUnknownEmbeddingInfoDlg to exlude this from your build (for size reasons)</p>
-            */
     class Led_StdDialogHelper_UnknownEmbeddingInfoDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -785,21 +711,13 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportURLXEmbeddingInfoDlg
-#define qSupportURLXEmbeddingInfoDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportURLXEmbeddingInfoDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_URLXEmbeddingInfoBoxID 0x1009
 #define kLedStdDlg_URLXEmbeddingInfoBox_TypeTextMsg (kLedStdDlgCommandBase + 1)
 #define kLedStdDlg_URLXEmbeddingInfoBox_TitleText (kLedStdDlgCommandBase + 4)
 #define kLedStdDlg_URLXEmbeddingInfoBox_URLText (kLedStdDlgCommandBase + 6)
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_URLXEmbeddingInfoDialog
-            @DESCRIPTION:   <p>You can define qSupportURLXEmbeddingInfoDlg to exlude this from your build (for size reasons)</p>
-            */
     class Led_StdDialogHelper_URLXEmbeddingInfoDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -830,10 +748,6 @@ namespace Stroika::Frameworks::Led {
 #define kLedStdDlg_AddURLXEmbeddingInfoBox_URLText (kLedStdDlgCommandBase + 6)
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog
-            @DESCRIPTION:   <p>You can define qSupportURLXEmbeddingInfoDlg to exlude this from your build (for size reasons)</p>
-            */
     class Led_StdDialogHelper_AddURLXEmbeddingInfoDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -859,20 +773,12 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportAddNewTableDlg
-#define qSupportAddNewTableDlg qStroika_Platform_Windows || qStroika_Platform_MacOS
-#endif
-
-#if qSupportAddNewTableDlg
+#if qStroika_Platform_Windows || qStroika_Platform_MacOS
 #define kLedStdDlg_AddNewTableBoxID 0x100b
 #define kLedStdDlg_AddNewTableBox_RowCount (kLedStdDlgCommandBase + 5)
 #define kLedStdDlg_AddNewTableBox_ColCount (kLedStdDlgCommandBase + 7)
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_AddNewTableDialog
-            @DESCRIPTION:   <p>You can define qSupportAddNewTableDlg to exlude this from your build (for size reasons)</p>
-            */
     class Led_StdDialogHelper_AddNewTableDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -897,11 +803,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportEditTablePropertiesDlg
-#define qSupportEditTablePropertiesDlg qStroika_Platform_Windows || qStroika_Platform_MacOS
-#endif
-
-#if qSupportEditTablePropertiesDlg
+#if qStroika_Platform_Windows || qStroika_Platform_MacOS
 #define kLedStdDlg_EditTablePropertiesBoxID 0x100c
 #define kLedStdDlg_EditTablePropertiesBox_CellMarginTop (kLedStdDlgCommandBase + 10)
 #define kLedStdDlg_EditTablePropertiesBox_CellMarginLeft (kLedStdDlgCommandBase + 12)
@@ -926,10 +828,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_EditTablePropertiesDialog
-            @DESCRIPTION:   <p>You can define qSupportEditTablePropertiesDlg to exlude this from your build (for size reasons)</p>
-            */
     class Led_StdDialogHelper_EditTablePropertiesDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -1006,11 +904,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#ifndef qSupportStdSpellCheckDlg
-#define qSupportStdSpellCheckDlg qStroika_Platform_Windows
-#endif
-
-#if qSupportStdSpellCheckDlg
+#if qStroika_Platform_Windows
 #define kLedStdDlg_SpellCheckBoxID 0x100d
 #define kLedStdDlg_SpellCheckBox_UnknownWordText (kLedStdDlgCommandBase + 1)
 #define kLedStdDlg_SpellCheckBox_ChangeText (kLedStdDlgCommandBase + 2)
@@ -1029,10 +923,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if defined(__cplusplus)
-    /*
-            @CLASS:         Led_StdDialogHelper_SpellCheckDialog
-            @DESCRIPTION:   <p>You can define qSupportStdSpellCheckDlg to 0 to disable inclusion of this resource/code (for size reasons).</p>
-            */
     class Led_StdDialogHelper_SpellCheckDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
@@ -1064,7 +954,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     protected:
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
         LedDialogWidget fUndefinedWordWidget;
         LedDialogWidget fChangeTextWidget;
 #endif

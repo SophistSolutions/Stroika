@@ -89,7 +89,7 @@ public:
         AddAssociation (kFontSize36Cmd, LedItView::kFontSize36_CmdID);
         AddAssociation (kFontSize48Cmd, LedItView::kFontSize48_CmdID);
         AddAssociation (kFontSize72Cmd, LedItView::kFontSize72_CmdID);
-#if qSupportOtherFontSizeDlg
+#if qStroika_Platform_Windows
         AddAssociation (kFontSizeOtherCmd, LedItView::kFontSizeOther_CmdID);
 #endif
         AddAssociation (kFontSizeSmallerCmd, LedItView::kFontSizeSmaller_CmdID);
@@ -118,10 +118,10 @@ public:
         AddAssociation (kJustifyRightCmd, LedItView::kJustifyRight_CmdID);
         AddAssociation (kJustifyFullCmd, LedItView::kJustifyFull_CmdID);
 
-#if qSupportParagraphSpacingDlg
+#if qStroika_Platform_Windows
         AddAssociation (kParagraphSpacingCmd, LedItView::kParagraphSpacingCommand_CmdID);
 #endif
-#if qSupportParagraphIndentsDlg
+#if qStroika_Platform_Windows
         AddAssociation (kParagraphIndentsCmd, LedItView::kParagraphIndentsCommand_CmdID);
 #endif
 
@@ -200,7 +200,7 @@ public:
     }
 
 //  TextInteractor::DialogSupport
-#if qSupportStdFindDlg
+#if qStroika_Platform_Windows
 public:
     virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch,
                                     bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
@@ -226,7 +226,7 @@ public:
         *pressedOK       = findDialog.fPressedOK;
     }
 #endif
-#if qSupportStdReplaceDlg
+#if qStroika_Platform_Windows
 public:
     virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions,
                                                        Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
@@ -268,7 +268,7 @@ public:
         return eReplaceButton_Cancel;
     }
 #endif
-#if qSupportStdSpellCheckDlg
+#if qStroika_Platform_Windows
 public:
     virtual void DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override
     {
@@ -309,7 +309,7 @@ public:
         return LedItApplication::Get ().CmdNumToFontName (MFC_CommandNumberMapping::Get ().ReverseLookup (cmdNum)).c_str ();
 #endif
     }
-#if qSupportOtherFontSizeDlg
+#if qStroika_Platform_Windows
     virtual DistanceType PickOtherFontHeight (DistanceType origHeight) override
     {
 #if qStroika_Platform_MacOS
@@ -326,7 +326,7 @@ public:
         }
     }
 #endif
-#if qSupportParagraphSpacingDlg
+#if qStroika_Platform_Windows
     virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid,
                                               LineSpacing* lineSpacing, bool* lineSpacingValid) override
     {
@@ -357,7 +357,7 @@ public:
         }
     }
 #endif
-#if qSupportParagraphIndentsDlg
+#if qStroika_Platform_Windows
     virtual bool PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin,
                                                         bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid) override
     {
@@ -451,7 +451,7 @@ public:
 #endif
     }
 #endif
-#if qSupportAddNewTableDlg
+#if qStroika_Platform_Windows || qStroika_Platform_MacOS
     bool AddNewTableDialog (size_t* nRows, size_t* nCols)
     {
         RequireNotNull (nRows);
@@ -473,7 +473,7 @@ public:
         }
     }
 #endif
-#if qSupportEditTablePropertiesDlg
+#if qStroika_Platform_Windows || qStroika_Platform_MacOS
     virtual bool EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties) override
     {
         RequireNotNull (tableProperties);

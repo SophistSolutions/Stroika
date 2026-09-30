@@ -3,7 +3,7 @@
  */
 
 namespace Stroika::Frameworks::Led {
-#if qSupportLedDialogWidgets && defined(__cplusplus)
+#if qStroika_Platform_Windows && defined(__cplusplus)
     //  class   LedComboBoxWidget
     inline vector<Led_tString> LedComboBoxWidget::GetPopupItems () const
     {

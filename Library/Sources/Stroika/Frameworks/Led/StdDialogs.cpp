@@ -296,7 +296,7 @@ void StdColorPopupHelper::AppendMenuString (const SDKString& s)
 }
 #endif
 
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ********************************* LedDialogWidget ******************************
@@ -388,7 +388,7 @@ void LedDialogWidget::SetText (const Led_tString& t)
 }
 #endif
 
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ************************** LedComboBoxWidget::MyButton *************************
@@ -431,7 +431,7 @@ LRESULT LedComboBoxWidget::MyButton::WndProc (UINT message, WPARAM wParam, LPARA
 
 #endif
 
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ****************** LedComboBoxWidget::MyComboListBoxPopup **********************
@@ -559,7 +559,7 @@ void LedComboBoxWidget::MyComboListBoxPopup::ComputePreferedHeight (DistanceType
 }
 #endif
 
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  *********************** LedComboBoxWidget::MyTextWidget ************************
@@ -606,7 +606,7 @@ LRESULT LedComboBoxWidget::MyTextWidget::WndProc (UINT message, WPARAM wParam, L
 #endif
 #endif
 
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ******************************* LedComboBoxWidget ******************************
@@ -1141,7 +1141,7 @@ BOOL Led_StdDialogHelper_AboutBox::DialogProc (UINT message, WPARAM wParam, LPAR
 }
 #endif
 
-#if qSupportStdAboutBoxDlg
+#if qStroika_Platform_Windows
 void Led_StdDialogHelper_AboutBox::OnClickInInfoField ()
 {
     OnOK ();
@@ -1153,7 +1153,7 @@ void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField ()
 }
 #endif
 
-#if qSupportStdFindDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  *************************** Led_StdDialogHelper_FindDialog *********************
@@ -1169,7 +1169,7 @@ Led_StdDialogHelper_FindDialog::Led_StdDialogHelper_FindDialog (HINSTANCE hInsta
     , fWholeWordSearch (false)
     , fCaseSensativeSearch (false)
     , fPressedOK (false)
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     , fFindTextWidget ()
 #endif
 {
@@ -1198,7 +1198,7 @@ BOOL Led_StdDialogHelper_FindDialog::DialogProc (UINT message, WPARAM wParam, LP
 void Led_StdDialogHelper_FindDialog::PreDoModalHook ()
 {
 
-#if qStroika_Platform_Windows && qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     /*
      *  ReplaceWindow seems to work better than SubclassWindow - for reasons I don't FULLY understand.
      *  (see SPR#1266).
@@ -1210,7 +1210,7 @@ void Led_StdDialogHelper_FindDialog::PreDoModalHook ()
     DialogItemID findText = kLedStdDlg_FindBox_FindText;
 #endif
 
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     fFindTextWidget.SetText (fFindText);
     fFindTextWidget.SetPopupItems (fRecentFindTextStrings);
 #else
@@ -1235,7 +1235,7 @@ void Led_StdDialogHelper_FindDialog::OnFindButton ()
 
 void Led_StdDialogHelper_FindDialog::OnDontFindButton ()
 {
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     fFindText = fFindTextWidget.GetText ();
 #elif qStroika_Platform_Windows
     fFindText = Led_SDKString2tString (GetItemText (kLedStdDlg_FindBox_FindText));
@@ -1251,7 +1251,7 @@ void Led_StdDialogHelper_FindDialog::OnDontFindButton ()
 
 #endif
 
-#if qSupportStdReplaceDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ************************* Led_StdDialogHelper_ReplaceDialog ********************
@@ -1267,7 +1267,7 @@ Led_StdDialogHelper_ReplaceDialog::Led_StdDialogHelper_ReplaceDialog (HINSTANCE 
     , fWholeWordSearch (false)
     , fCaseSensativeSearch (false)
     , fPressed (eCancel)
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     , fFindTextWidget ()
     , fReplaceTextWidget ()
 #endif
@@ -1306,7 +1306,7 @@ BOOL Led_StdDialogHelper_ReplaceDialog::DialogProc (UINT message, WPARAM wParam,
 void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
 {
 
-#if qStroika_Platform_Windows && qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     /*
      *  ReplaceWindow seems to work better than SubclassWindow - for reasons I don't FULLY understand.
      *  (see SPR#1266).
@@ -1320,7 +1320,7 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
     DialogItemID replaceText = kLedStdDlg_ReplaceBox_ReplaceText;
 #endif
 
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     fFindTextWidget.SetText (fFindText);
     fFindTextWidget.SetPopupItems (fRecentFindTextStrings);
     fReplaceTextWidget.SetText (fReplaceText);
@@ -1376,7 +1376,7 @@ void Led_StdDialogHelper_ReplaceDialog::OnDontFindButton ()
 
 void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
 {
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     fFindText    = fFindTextWidget.GetText ();
     fReplaceText = fReplaceTextWidget.GetText ();
 #elif qStroika_Platform_Windows
@@ -1393,7 +1393,7 @@ void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
 
 #endif
 
-#if qSupportStdColorPickBox
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ********************************** StdColorPickBox *****************************
@@ -1454,7 +1454,7 @@ UINT_PTR CALLBACK StdColorPickBox::ColorPickerINITPROC (HWND hWnd, UINT message,
 
 #endif
 
-#if qSupportUpdateWin32FileAssocDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_UpdateWin32FileAssocsDialog ************
@@ -1505,7 +1505,7 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::OnCancel ()
 }
 #endif
 
-#if qSupportParagraphIndentsDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_ParagraphIndentsDialog *****************
@@ -1580,7 +1580,7 @@ void Led_StdDialogHelper_ParagraphIndentsDialog::OnOK ()
 DISABLE_COMPILER_MSC_WARNING_END (4706)
 #endif
 
-#if qSupportParagraphSpacingDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_ParagraphSpacingDialog *****************
@@ -1703,7 +1703,7 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
 DISABLE_COMPILER_MSC_WARNING_END (4706)
 #endif
 
-#if qSupportOtherFontSizeDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ******************** Led_StdDialogHelper_OtherFontSizeDialog *******************
@@ -1742,7 +1742,7 @@ void Led_StdDialogHelper_OtherFontSizeDialog::OnOK ()
 }
 #endif
 
-#if qSupportUnknownEmbeddingInfoDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_UnknownEmbeddingInfoDialog *************
@@ -1771,7 +1771,7 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
 }
 #endif
 
-#if qSupportURLXEmbeddingInfoDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_URLXEmbeddingInfoDialog ****************
@@ -1823,7 +1823,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
 }
 #endif
 
-#if qSupportURLXEmbeddingInfoDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_AddURLXEmbeddingInfoDialog *************
@@ -1861,7 +1861,7 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
 }
 #endif
 
-#if qSupportAddNewTableDlg
+#if qStroika_Platform_Windows || qStroika_Platform_MacOS
 /*
  ********************************************************************************
  ********************* Led_StdDialogHelper_AddNewTableDialog ********************
@@ -1906,7 +1906,7 @@ void Led_StdDialogHelper_AddNewTableDialog::OnOK ()
 }
 #endif
 
-#if qSupportEditTablePropertiesDlg
+#if qStroika_Platform_Windows || qStroika_Platform_MacOS
 /*
  ********************************************************************************
  ***************** Led_StdDialogHelper_EditTablePropertiesDialog ****************
@@ -2022,7 +2022,7 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::OnOK ()
 }
 #endif
 
-#if qSupportStdSpellCheckDlg
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ************************ Led_StdDialogHelper_SpellCheckDialog ******************
@@ -2034,7 +2034,7 @@ Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (Spel
     : inherited (hInstance, resID, parentWnd)
     , fCallback (callback)
     , fCurrentMisspellInfo (NULL)
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     , fUndefinedWordWidget ()
     , fChangeTextWidget ()
 #endif
@@ -2100,7 +2100,7 @@ BOOL Led_StdDialogHelper_SpellCheckDialog::DialogProc (UINT message, WPARAM wPar
 void Led_StdDialogHelper_SpellCheckDialog::PreDoModalHook ()
 {
 
-#if qStroika_Platform_Windows && qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     /*
      *  ReplaceWindow seems to work better than SubclassWindow - for reasons I don't FULLY understand.
      *  (see SPR#1266).
@@ -2132,7 +2132,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnIgnoreAllButton ()
 
 void Led_StdDialogHelper_SpellCheckDialog::OnChangeButton ()
 {
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qStroika_Platform_Windows
     Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
@@ -2143,7 +2143,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeButton ()
 
 void Led_StdDialogHelper_SpellCheckDialog::OnChangeAllButton ()
 {
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qStroika_Platform_Windows
     Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
@@ -2154,7 +2154,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeAllButton ()
 
 void Led_StdDialogHelper_SpellCheckDialog::OnAddToDictionaryButton ()
 {
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     Led_tString undefinedWordText = fUndefinedWordWidget.GetText ();
 #elif qStroika_Platform_Windows
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_UnknownWordText));
@@ -2165,7 +2165,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnAddToDictionaryButton ()
 
 void Led_StdDialogHelper_SpellCheckDialog::OnLookupOnWebButton ()
 {
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     Led_tString undefinedWordText = fUndefinedWordWidget.GetText ();
 #elif qStroika_Platform_Windows
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_UnknownWordText));
@@ -2198,7 +2198,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListChangeSelection ()
 #endif
         if (itemSelResult >= 0 and static_cast<size_t> (itemSelResult) < fCurrentMisspellInfo->fSuggestions.size ()) {
             Led_tString changeText = fCurrentMisspellInfo->fSuggestions[itemSelResult];
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
             fChangeTextWidget.SetText (changeText);
 #else
             SetItemText (changeTextItem, Led_tString2SDKString (changeText));
@@ -2243,7 +2243,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
         }
     }
 
-#if qSupportLedDialogWidgets
+#if qStroika_Platform_Windows
     fUndefinedWordWidget.SetText (undefinedWordText);
     fChangeTextWidget.SetText (changeText);
 #else

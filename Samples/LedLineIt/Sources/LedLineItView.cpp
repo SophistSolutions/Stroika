@@ -60,7 +60,7 @@ public:
     {
         TextInteractor::SetDialogSupport (NULL);
     }
-#if qSupportStdFindDlg
+#if qStroika_Platform_Windows
 public:
     virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch,
                                     bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
@@ -82,7 +82,7 @@ public:
         *pressedOK       = findDialog.fPressedOK;
     }
 #endif
-#if qSupportStdReplaceDlg
+#if qStroika_Platform_Windows
 public:
     virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions,
                                                        Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
@@ -120,7 +120,7 @@ public:
         return eReplaceButton_Cancel;
     }
 #endif
-#if qSupportStdSpellCheckDlg
+#if qStroika_Platform_Windows
 public:
     virtual void DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override
     {

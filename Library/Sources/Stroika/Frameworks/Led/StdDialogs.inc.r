@@ -12,7 +12,7 @@
 
 	
 
-#if		qSupportStdAboutBoxDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_AboutBoxID, purgeable) {
 			{0, 0, 283, 425},
@@ -98,7 +98,7 @@
 
 
 
-#if		qSupportStdFindDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_FindBoxID) {
 			{0, 0, 121, 428},
@@ -175,7 +175,7 @@
 
 
 
-#if		qSupportStdReplaceDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_ReplaceBoxID) {
 			{0, 0, 139, 544},
@@ -284,7 +284,7 @@
 
 
 
-#if		qSupportUpdateWin32FileAssocDlg
+#if		qStroika_Platform_Windows
 	kLedStdDlg_UpdateWin32FileAssocsDialogID	DIALOG DISCARDABLE  34, 22, 250, 82
 	CAPTION "Update file associations"
 	STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -306,7 +306,7 @@
 
 
 
-#if		qSupportParagraphIndentsDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_ParagraphIndentsID, purgeable) {
 			{0, 0, 158, 292},
@@ -392,7 +392,7 @@
 
 
 
-#if		qSupportParagraphSpacingDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_ParagraphSpacingID, purgeable) {
 			{0, 0, 163, 382},
@@ -497,7 +497,7 @@
 
 
 
-#if		qSupportUnknownEmbeddingInfoDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_UnknownEmbeddingInfoBoxID, purgeable) {
 			{0, 0, 123, 425},
@@ -545,7 +545,7 @@
 
 
 
-#if		qSupportOtherFontSizeDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_OtherFontSizeID, purgeable) {
 			{0, 0, 110, 212},
@@ -605,7 +605,7 @@
 
 
 
-#if		qSupportURLXEmbeddingInfoDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_URLXEmbeddingInfoBoxID, purgeable) {
 			{0, 0, 145, 369},
@@ -678,7 +678,7 @@
 
 
 
-#if		qSupportURLXEmbeddingInfoDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_AddURLXEmbeddingInfoBoxID, purgeable) {
 			{0, 0, 140, 375},
@@ -750,7 +750,7 @@
 
 
 
-#if		qSupportAddNewTableDlg
+#if		qStroika_Platform_Windows || qStroika_Platform_MacOS
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_AddNewTableBoxID, purgeable) {
 			{0, 0, 114, 313},
@@ -830,7 +830,7 @@
 
 
 
-#if		qSupportEditTablePropertiesDlg
+#if		qStroika_Platform_Windows || qStroika_Platform_MacOS
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_EditTablePropertiesBoxID, purgeable) {
 			{0, 0, 290, 466},
@@ -1075,7 +1075,7 @@
 
 
 
-#if		qSupportStdSpellCheckDlg
+#if		qStroika_Platform_Windows
 	#if		qStroika_Platform_MacOS
 		resource 'DLOG' (kLedStdDlg_SpellCheckBoxID) {
 			{0, 0, 194, 520},
