@@ -412,13 +412,17 @@ namespace Stroika::Foundation::Characters {
             return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok};
         }
         else {
-            int srcLen          = static_cast<int> (source.size ());
-            int trgLen          = static_cast<int> (target.size ());
-            int convertedLength = ::MultiByteToWideChar (CP_UTF8, 0, reinterpret_cast<const char*> (source.data ()), srcLen,
-                                                         reinterpret_cast<WCHAR*> (&*target.begin ()), trgLen);
-            return ConversionResultWithStatus{{static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
-                                               static_cast<size_t> (convertedLength)},
-                                              convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
+            int srcLen = static_cast<int> (source.size ());
+            int trgLen = static_cast<int> (target.size ());
+            // MB_ERR_INVALID_CHARS: without it, Windows silently substitutes U+FFFD for malformed input - and for a character
+            // the input ends inside of - so it could never report sourceIllegal or sourceExhausted
+            int convertedLength = ::MultiByteToWideChar (CP_UTF8, MB_ERR_INVALID_CHARS, reinterpret_cast<const char*> (source.data ()),
+                                                         srcLen, reinterpret_cast<WCHAR*> (&*target.begin ()), trgLen);
+            if (convertedLength == 0) [[unlikely]] {
+                // malformed or cut short: the portable converter says which, and where
+                return ConvertQuietly_StroikaPortable_ (nullopt, source, target);
+            }
+            return ConversionResultWithStatus{{static_cast<size_t> (srcLen), static_cast<size_t> (convertedLength)}, ConversionStatusFlag::ok};
         }
     }
     inline auto UTFConvert::ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target) -> ConversionResultWithStatus
@@ -427,13 +431,16 @@ namespace Stroika::Foundation::Characters {
             return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok};
         }
         else {
-            int srcLen          = static_cast<int> (source.size ());
-            int trgLen          = static_cast<int> (target.size ());
-            int convertedLength = ::WideCharToMultiByte (CP_UTF8, 0, reinterpret_cast<const WCHAR*> (source.data ()), srcLen,
-                                                         reinterpret_cast<char*> (target.data ()), trgLen, nullptr, nullptr);
-            return ConversionResultWithStatus{{static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
-                                               static_cast<size_t> (convertedLength)},
-                                              convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
+            int srcLen = static_cast<int> (source.size ());
+            int trgLen = static_cast<int> (target.size ());
+            // WC_ERR_INVALID_CHARS: without it, Windows silently substitutes U+FFFD for an unpaired surrogate
+            int convertedLength = ::WideCharToMultiByte (CP_UTF8, WC_ERR_INVALID_CHARS, reinterpret_cast<const WCHAR*> (source.data ()),
+                                                         srcLen, reinterpret_cast<char*> (target.data ()), trgLen, nullptr, nullptr);
+            if (convertedLength == 0) [[unlikely]] {
+                // malformed or cut short: the portable converter says which, and where
+                return ConvertQuietly_StroikaPortable_ (nullopt, source, target);
+            }
+            return ConversionResultWithStatus{{static_cast<size_t> (srcLen), static_cast<size_t> (convertedLength)}, ConversionStatusFlag::ok};
         }
     }
 #endif
