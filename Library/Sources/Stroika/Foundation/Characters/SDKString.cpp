@@ -12,6 +12,12 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
+#if !qTargetPlatformSDKUseswchar_t
+namespace {
+    constexpr CodeCvt<wchar_t>::Options kAllowMissing_{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
+}
+#endif
+
 #if not qTargetPlatformSDKUseswchar_t && not qStroika_Foundation_Common_Platform_MacOS
 namespace {
     // CodeCvt cannot say whether a replacement is encodable - encoding throws when one is needed and it is not - so ask the locale
@@ -25,6 +31,33 @@ namespace {
         char           to[MB_LEN_MAX];
         char*          toNext{};
         return use_facet<CVT> (l).out (state, &w, &w + 1, fromNext, begin (to), end (to), toNext) == CVT::ok;
+    }
+
+    // The converters for one locale
+    struct LocaleCodeCvts_ {
+        locale           fLocale;
+        CodeCvt<wchar_t> fStrict;             // throws on a missing character
+        CodeCvt<wchar_t> fAllowMissingToWide; // U+FFFD - decoding can always produce it
+        CodeCvt<wchar_t> fAllowMissingToSDK; // U+FFFD if the locale can encode it (the "C" locale cannot), else '?', which every locale can
+    };
+
+    // Constructing a CodeCvt from a locale is costly (it builds a codecvt_byname), so each thread keeps the ones for the
+    // global locale until that changes. So a locale::global () takes effect at the next conversion, just as with no cache:
+    // CodeCvt depends only on the locale's name, and that is what locale's operator== compares.
+    CodeCvt<wchar_t> GetCodeCvt_ (CodeCvt<wchar_t> LocaleCodeCvts_::* which)
+    {
+        static thread_local optional<LocaleCodeCvts_> tCache_;
+        locale                                        l{};
+        if (not tCache_ or tCache_->fLocale != l) [[unlikely]] {
+            auto toSDK = kAllowMissing_;
+            if (not LocaleCanEncode_ (l, *toSDK.fInvalidCharacterReplacement)) {
+                toSDK.fInvalidCharacterReplacement = '?';
+            }
+            tCache_.emplace (LocaleCodeCvts_{l, CodeCvt<wchar_t>{l}, CodeCvt<wchar_t>{l, kAllowMissing_}, CodeCvt<wchar_t>{l, toSDK}});
+        }
+        // a copy (it shares the rep), so it stays valid even if a nested call - a Throw () traced mid-conversion - finds
+        // the global locale changed, and rebuilds the cache
+        return (*tCache_).*which;
     }
 }
 #endif
@@ -41,18 +74,16 @@ wstring Characters::SDK2Wide (span<const SDKChar> s)
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8};
     return kCvt_.Bytes2String<wstring> (as_bytes (s));
 #else
-    return CodeCvt<wchar_t>{locale{}}.Bytes2String<wstring> (as_bytes (s));
+    return GetCodeCvt_ (&LocaleCodeCvts_::fStrict).Bytes2String<wstring> (as_bytes (s));
 #endif
 }
 wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag)
 {
-    constexpr auto kOptions_ = CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
 #if qStroika_Foundation_Common_Platform_MacOS
-    static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kOptions_};
+    static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kAllowMissing_};
     return kCvt_.Bytes2String<wstring> (as_bytes (s));
 #else
-    // decoding can always produce the replacement, whether or not the locale can encode it
-    return CodeCvt<wchar_t>{locale{}, kOptions_}.Bytes2String<wstring> (as_bytes (s));
+    return GetCodeCvt_ (&LocaleCodeCvts_::fAllowMissingToWide).Bytes2String<wstring> (as_bytes (s));
 #endif
 }
 #endif
@@ -69,24 +100,16 @@ SDKString Characters::Wide2SDK (span<const wchar_t> s)
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8};
     return kCvt_.String2Bytes<SDKString> (s);
 #else
-    return CodeCvt<wchar_t>{locale{}}.String2Bytes<SDKString> (s);
+    return GetCodeCvt_ (&LocaleCodeCvts_::fStrict).String2Bytes<SDKString> (s);
 #endif
 }
 SDKString Characters::Wide2SDK (span<const wchar_t> s, AllowMissingCharacterErrorsFlag)
 {
-    constexpr auto kOptions_ = CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
 #if qStroika_Foundation_Common_Platform_MacOS
-    static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kOptions_};
+    static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kAllowMissing_};
     return kCvt_.String2Bytes<SDKString> (s);
 #else
-    // encoding needs a replacement the locale can represent - U+FFFD if it can (the "C" locale cannot), else '?', which
-    // every locale can
-    locale l{};
-    auto   o = kOptions_;
-    if (not LocaleCanEncode_ (l, *o.fInvalidCharacterReplacement)) {
-        o.fInvalidCharacterReplacement = '?';
-    }
-    return CodeCvt<wchar_t>{l, o}.String2Bytes<SDKString> (s);
+    return GetCodeCvt_ (&LocaleCodeCvts_::fAllowMissingToSDK).String2Bytes<SDKString> (s);
 #endif
 }
 #endif

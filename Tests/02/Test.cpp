@@ -1480,6 +1480,66 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Characters, SDKStringFollowsGlobalLocale_)
+    {
+        Debug::TraceContextBumper ctx{"SDKStringFollowsGlobalLocale_"};
+#if not qTargetPlatformSDKUseswchar_t && not qStroika_Foundation_Common_Platform_MacOS
+        // An SDKString is in the global locale's encoding, so every conversion must follow a change of global locale,
+        // back and forth - though SDK2Wide/Wide2SDK, and String's narrow conversions, keep their converters from call to call
+        optional<locale> utf8;
+        for (const char* name : {"C.UTF-8", "en_US.UTF-8", "en_US.utf8"}) {
+            try {
+                utf8 = locale{name};
+                break;
+            }
+            catch (const runtime_error&) {
+            }
+        }
+        if (not utf8) {
+            SkipTestPart ("no UTF-8 locale installed");
+            return;
+        }
+        const char    kEAcuteUTF8_[] = {'\xC3', '\xA9'}; // two bytes that are invalid in the "C" locale
+        const string  kEAcuteUTF8Str_{kEAcuteUTF8_, 2};
+        const wstring kEAcute_ (1, L'\xE9');
+        const String  kEAcuteString_{kEAcute_};
+        auto          checkC = [&] () {
+            Common::ScopedUseLocale useC{locale::classic ()};
+            EXPECT_EQ (SDK2Wide (span{kEAcuteUTF8_}, eIgnoreErrors), wstring (2, L'\xFFFD'));
+            EXPECT_THROW (SDK2Wide (span{kEAcuteUTF8_}), CharacterEncodingException);
+            EXPECT_EQ (Wide2SDK (kEAcute_, eIgnoreErrors), "?");
+            EXPECT_THROW (Wide2SDK (kEAcute_), CharacterEncodingException);
+            EXPECT_EQ (kEAcuteString_.AsSDKString (eIgnoreErrors), "?");
+            EXPECT_THROW (kEAcuteString_.AsSDKString (), runtime_error);
+            EXPECT_THROW (String::FromNarrowString (span{kEAcuteUTF8_}, locale{}), runtime_error);
+        };
+        checkC ();
+        {
+            Common::ScopedUseLocale useUTF8{*utf8};
+            EXPECT_EQ (SDK2Wide (span{kEAcuteUTF8_}, eIgnoreErrors), kEAcute_);
+            EXPECT_EQ (SDK2Wide (span{kEAcuteUTF8_}), kEAcute_);
+            EXPECT_EQ (Wide2SDK (kEAcute_, eIgnoreErrors), kEAcuteUTF8Str_);
+            EXPECT_EQ (Wide2SDK (kEAcute_), kEAcuteUTF8Str_);
+            EXPECT_EQ (kEAcuteString_.AsSDKString (eIgnoreErrors), kEAcuteUTF8Str_);
+            EXPECT_EQ (kEAcuteString_.AsSDKString (), kEAcuteUTF8Str_);
+            EXPECT_EQ (String::FromNarrowString (span{kEAcuteUTF8_}, locale{}), kEAcuteString_);
+        }
+        checkC ();
+
+        // and an explicit locale, whatever the global one - alternating
+        for (int i = 0; i < 2; ++i) {
+            EXPECT_EQ (kEAcuteString_.AsNarrowString (*utf8), kEAcuteUTF8Str_);
+            EXPECT_THROW (kEAcuteString_.AsNarrowString (locale::classic ()), runtime_error);
+            EXPECT_EQ (String::FromNarrowString (span{kEAcuteUTF8_}, *utf8), kEAcuteString_);
+            EXPECT_THROW (String::FromNarrowString (span{kEAcuteUTF8_}, locale::classic ()), runtime_error);
+        }
+#else
+        SkipTestPart ("an SDKString's encoding does not depend on the locale here");
+#endif
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Characters, Tokenize_)
     {
         Debug::TraceContextBumper ctx{"Tokenize_"};

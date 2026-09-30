@@ -521,6 +521,25 @@ namespace {
         }
         ~deletable_facet_ () = default;
     };
+
+    using CodeCvtByName_ = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
+
+    // Constructing a codecvt_byname is costly (in any locale but "C", a newlocale ()), so each thread keeps the last one it
+    // built, until asked for another locale. It depends only on the locale's name, and that is what locale's operator==
+    // compares - so this returns just what constructing one would. Shared, so it stays valid even if a nested call
+    // replaces the cache entry.
+    shared_ptr<const CodeCvtByName_> GetCodeCvtByName_ (const locale& l)
+    {
+        struct Entry_ {
+            locale                           fLocale;
+            shared_ptr<const CodeCvtByName_> fCodeCvt;
+        };
+        static thread_local optional<Entry_> tCache_;
+        if (not tCache_ or tCache_->fLocale != l) [[unlikely]] {
+            tCache_.emplace (Entry_{l, MakeSharedPtr<CodeCvtByName_> (l.name ())});
+        }
+        return tCache_->fCodeCvt;
+    }
 }
 
 /*
@@ -600,9 +619,7 @@ String String::FromNarrowString (span<const char> s, const locale& l)
     // Note: this could use CodeCvt, but directly using std::codecvt in this case pretty simple, and
     // more efficient this way --LGP 2023-02-14
 
-    // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
-    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
-    Destructible_codecvt_byname cvt{l.name ()};
+    shared_ptr<const CodeCvtByName_> cvt = GetCodeCvtByName_ (l);
 
     // http://en.cppreference.com/w/cpp/locale/codecvt/in
     mbstate_t                    mbstate{};
@@ -610,7 +627,7 @@ String String::FromNarrowString (span<const char> s, const locale& l)
     const char*                  from_next;
     wchar_t*                     to_next;
     codecvt_base::result         result =
-        cvt.in (mbstate, s.data (), s.data () + s.size (), from_next, targetBuf.data (), targetBuf.data () + targetBuf.size (), to_next);
+        cvt->in (mbstate, s.data (), s.data () + s.size (), from_next, targetBuf.data (), targetBuf.data () + targetBuf.size (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         static const auto kException_ = Execution::Exception<runtime_error>{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
@@ -1852,9 +1869,7 @@ string String::AsNarrowString (const locale& l) const
     // Note: this could use CodeCvt, but directly using std::codecvt in this case pretty simple, and
     // more efficient this way --LGP 2023-02-14
 
-    // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
-    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
-    Destructible_codecvt_byname cvt{l.name ()};
+    shared_ptr<const CodeCvtByName_> cvt = GetCodeCvtByName_ (l);
 
     Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
     span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
@@ -1864,7 +1879,7 @@ string String::AsNarrowString (const locale& l) const
     char*                     to_next;
     Memory::StackBuffer<char> into{Memory::eUninitialized, thisData.size () * 5}; // not sure what size is always big enuf
     codecvt_base::result      result =
-        cvt.out (mbstate, thisData.data (), thisData.data () + thisData.size (), from_next, into.data (), into.end (), to_next);
+        cvt->out (mbstate, thisData.data (), thisData.data () + thisData.size (), from_next, into.data (), into.end (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         static const auto kException_ = Execution::Exception<runtime_error>{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
@@ -1877,9 +1892,7 @@ string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag)
     // Note: this could use CodeCvt, but directly using std::codecvt in this case pretty simple, and
     // more efficient this way --LGP 2023-02-14
 
-    // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
-    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
-    Destructible_codecvt_byname cvt{l.name ()};
+    shared_ptr<const CodeCvtByName_> cvt = GetCodeCvtByName_ (l);
 
     Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
     span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
@@ -1891,7 +1904,7 @@ string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag)
 Again:
     const wchar_t* from_next{nullptr};
     char*          to_next{nullptr};
-    codecvt_base::result result = cvt.out (mbstate, readFrom, thisData.data () + thisData.size (), from_next, intoIndex, into.end (), to_next);
+    codecvt_base::result result = cvt->out (mbstate, readFrom, thisData.data () + thisData.size (), from_next, intoIndex, into.end (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         if (from_next != thisData.data () + thisData.size ()) {
             readFrom  = from_next + 1; // unclear how much to skip (due to surrogates) - but likely this is a good guess
