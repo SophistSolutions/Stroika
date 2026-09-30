@@ -470,9 +470,13 @@ namespace {
         if (all == 0) {
             GTEST_SKIP () << "BackTrace::Capture () returns nothing in this build";
         }
-        EXPECT_GE (all, 3u); // at least this function, gtest's caller and main
+        // At least this function, gtest's caller and main - unless the walk stops early, as it can where frames have no
+        // frame pointer (see BackTrace.h); then warn, and check fMaxFrames against what the walk does return
+        if (all < 3) {
+            Stroika::Frameworks::Test::WarnTestIssue ("BackTrace::Capture () walks only {} frame(s) in this build"_f(all));
+        }
         for (unsigned int maxFrames : {1u, 2u}) {
-            EXPECT_EQ (frames (Debug::BackTrace::Capture ({.fMaxFrames = maxFrames})), maxFrames);
+            EXPECT_EQ (frames (Debug::BackTrace::Capture ({.fMaxFrames = maxFrames})), min<size_t> (maxFrames, all));
         }
     }
     GTEST_TEST (Foundation_Execution_Exceptions, BackTrace_SkipFrames_)
@@ -482,7 +486,7 @@ namespace {
         wstring bt    = Stroika_Test37_BackTraceFrames::Level3 ();
         auto    lines = Characters::String{bt}.AsLines ().Where ([] (const Characters::String& l) { return l != "..."sv; });
         if (not lines.Any ([] (const Characters::String& l) { return l.Contains ("Level3"); })) {
-            GTEST_SKIP () << "BackTrace has no symbol names in this build";
+            GTEST_SKIP () << "BackTrace does not show Level3 in this build (no symbol names, or the walk stopped early)";
         }
         EXPECT_TRUE (lines.First ().value_or (Characters::String{}).Contains ("Level1")) << Characters::String{bt}.AsUTF8<string> ();
     }

@@ -81,6 +81,10 @@ namespace Stroika::Foundation::Debug {
          *          For now, typically delegate to https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace.html
          *      
          *  \note The first few frames are internal to the implementation of BackTrace() so not interesting
+         *
+         *  \note   The stack walk can stop early. On x86 it stops at the first frame without a frame pointer - and optimized
+         *          MSVC x86 builds omit them (-Oy, the Release default) - often after a single frame. Build with -Oy- to
+         *          get whole backtraces there. x64 (table-based unwinding) is not affected.
          */
         wstring Capture (const Options& options = {});
     }
