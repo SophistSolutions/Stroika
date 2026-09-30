@@ -279,12 +279,14 @@ namespace Stroika::Foundation::Characters {
             ok,
 
             /**
-              * partial character in source, but hit end
-              */
+             * partial character in source, but hit end: what is there is a legal start of a character, so the rest may
+             * come in a later call. A byte that can never begin a character is sourceIllegal, even at the end.
+             */
             sourceExhausted,
 
             /**
              * Source sequence is illegal/malformed - only generated if fOptions.fInvalidCharacterReplacement == nullopt
+             * (otherwise the replacement is used, and conversion goes on)
              */
             sourceIllegal
         };
