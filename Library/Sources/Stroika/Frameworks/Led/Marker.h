@@ -88,7 +88,7 @@
     TextLayout and imaging process described in the TextImager header file.</p>
  */
 
-#include "Support.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 namespace Stroika::Frameworks::Led {
 

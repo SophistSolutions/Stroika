@@ -13,10 +13,10 @@
     a Led buffer, but making it available for later display.</p>.
  */
 
-#include "StandardStyledTextImager.h" //only for template used in light-underline-xxxx - maybe move to WP file... so dont need this include here!
-#include "StyledTextImager.h"
-#include "Support.h"
-#include "TextInteractor.h"
+#include "Stroika/Frameworks/Led/StandardStyledTextImager.h" //only for template used in light-underline-xxxx - maybe move to WP file... so dont need this include here!
+#include "Stroika/Frameworks/Led/StyledTextImager.h"
+#include "Stroika/Frameworks/Led/Support.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
 
 namespace Stroika::Frameworks::Led {
 

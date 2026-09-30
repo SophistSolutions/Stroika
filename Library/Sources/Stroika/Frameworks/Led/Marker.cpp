@@ -3,7 +3,7 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "TextStore.h"
+#include "Stroika/Frameworks/Led/TextStore.h"
 
 #include "Marker.h"
 

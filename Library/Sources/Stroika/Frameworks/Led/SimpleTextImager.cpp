@@ -5,8 +5,8 @@
 
 #include <limits.h>
 
-#include "LineBasedPartition.h"
-#include "Support.h"
+#include "Stroika/Frameworks/Led/LineBasedPartition.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 #include "SimpleTextImager.h"
 

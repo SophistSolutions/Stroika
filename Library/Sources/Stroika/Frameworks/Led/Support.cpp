@@ -21,7 +21,7 @@
 #include <io.h>
 #endif
 
-#include "Stroika/Frameworks/Led/Support.h"
+#include "Support.h"
 
 #if qUseActiveXToOpenURLs
 #include <URLMon.h>

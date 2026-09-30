@@ -20,19 +20,17 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "ChunkedArrayTextStore.h"
-#include "Command.h"
-#include "SimpleTextInteractor.h"
-#include "WordProcessor.h"
+#include "Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
+#include "Stroika/Frameworks/Led/Command.h"
+#include "Stroika/Frameworks/Led/SimpleTextInteractor.h"
+#include "Stroika/Frameworks/Led/WordProcessor.h"
 
 #if defined(_MFC_VER)
-#include "Led_MFC.h"
-#include "Led_MFC_WordProcessor.h"
+#include "Stroika/Frameworks/Led/Platform/MFC.h"
+#include "Stroika/Frameworks/Led/Platform/MFC_WordProcessor.h"
 #elif defined(_WIN32)
-#include "Platform/Windows.h"
+#include "Stroika/Frameworks/Led/Platform/Windows.h"
 #endif
-
-#include "WordProcessor.h"
 
 namespace Stroika::Frameworks::Led {
 

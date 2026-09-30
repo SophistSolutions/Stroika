@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
-#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_MIMETextEnriched.h"
+#include "StyledTextIO_MIMETextEnriched.h"
 
 using namespace Stroika::Foundation;
 

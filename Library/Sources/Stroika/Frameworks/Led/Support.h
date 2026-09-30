@@ -30,11 +30,11 @@
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Time/Realtime.h"
-#include "Stroika/Frameworks/Led/Config.h"
-
 #if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
+
+#include "Stroika/Frameworks/Led/Config.h"
 
 /*
 @MODULE:    LedSupport

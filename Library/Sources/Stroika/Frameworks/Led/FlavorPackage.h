@@ -19,8 +19,8 @@
 
 #include "Stroika/Foundation/Characters/CodePage.h"
 
-#include "Command.h"
-#include "TextImager.h"
+#include "Stroika/Frameworks/Led/Command.h"
+#include "Stroika/Frameworks/Led/TextImager.h"
 
 namespace Stroika::Frameworks::Led {
 

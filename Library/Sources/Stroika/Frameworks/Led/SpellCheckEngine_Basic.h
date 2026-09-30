@@ -15,9 +15,9 @@
 #include <memory>
 #include <set>
 
-#include "SpellCheckEngine.h"
-#include "Support.h"
-#include "TextBreaks.h"
+#include "Stroika/Frameworks/Led/SpellCheckEngine.h"
+#include "Stroika/Frameworks/Led/Support.h"
+#include "Stroika/Frameworks/Led/TextBreaks.h"
 
 namespace Stroika::Frameworks::Led {
 

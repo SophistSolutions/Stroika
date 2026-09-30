@@ -35,7 +35,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "StyledTextIO.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO.h"
 
 namespace Stroika::Frameworks::Led::StyledTextIO {
 

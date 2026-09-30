@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
-#include "Config.h"
+#include "Stroika/Frameworks/Led/Config.h"
 
 #if qStroika_Platform_Windows
 #include <fcntl.h>
@@ -17,8 +17,8 @@
 #include <shellapi.h>
 #endif
 
-#include "Marker.h"
-#include "TextStore.h"
+#include "Stroika/Frameworks/Led/Marker.h"
+#include "Stroika/Frameworks/Led/TextStore.h"
 
 #include "FlavorPackage.h"
 

@@ -16,8 +16,8 @@
 #include <climits> // for UINT_MAX
 #include <cstring>
 
-#include "LineBasedPartition.h"
-#include "PartitioningTextImager.h"
+#include "Stroika/Frameworks/Led/LineBasedPartition.h"
+#include "Stroika/Frameworks/Led/PartitioningTextImager.h"
 
 namespace Stroika::Frameworks::Led {
 

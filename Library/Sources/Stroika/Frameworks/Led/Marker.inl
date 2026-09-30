@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "TextStore.h"
+#include "Stroika/Frameworks/Led/TextStore.h"
 
 namespace Stroika::Frameworks::Led {
 

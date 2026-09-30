@@ -17,9 +17,9 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #if qSupportDrawTextGetTextExtent
 
-#include "SimpleTextImager.h"
-#include "SimpleTextStore.h"
-#include "WordWrappedTextImager.h"
+#include "Stroika/Frameworks/Led/SimpleTextImager.h"
+#include "Stroika/Frameworks/Led/SimpleTextStore.h"
+#include "Stroika/Frameworks/Led/WordWrappedTextImager.h"
 
 #endif
 

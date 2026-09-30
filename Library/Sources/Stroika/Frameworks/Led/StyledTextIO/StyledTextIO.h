@@ -6,7 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include <set>
 
 /*
 @MODULE:    StyledTextIO
@@ -37,8 +37,7 @@
     @'StyledTextIOWriter_HTML'.</p>
  */
 
-#include <set>
-
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
 #include "Stroika/Frameworks/Led/StandardStyledTextImager.h" //  For StyledInfoSummaryRecord declaration

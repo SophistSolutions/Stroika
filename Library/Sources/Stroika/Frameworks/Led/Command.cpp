@@ -3,8 +3,8 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "IdleManager.h"
-#include "TextInteractor.h"
+#include "Stroika/Frameworks/Led/IdleManager.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
 
 #include "Command.h"
 

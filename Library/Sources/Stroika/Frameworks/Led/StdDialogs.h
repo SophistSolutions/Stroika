@@ -42,9 +42,9 @@
 #define kLedStdDlgIDBase 0x1000
 
 #if qStroika_Platform_Windows && defined(__cplusplus)
-#include "Platform/Windows.h"
-#include "SimpleTextInteractor.h"
-#include "SimpleTextStore.h"
+#include "Stroika/Frameworks/Led/Platform/Windows.h"
+#include "Stroika/Frameworks/Led/SimpleTextInteractor.h"
+#include "Stroika/Frameworks/Led/SimpleTextStore.h"
 #endif
 
 #if defined(__cplusplus)

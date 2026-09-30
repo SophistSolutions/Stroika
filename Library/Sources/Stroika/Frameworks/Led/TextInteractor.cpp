@@ -16,8 +16,9 @@
 #include "Stroika/Frameworks/Led/Config.h"
 #include "Stroika/Frameworks/Led/IdleManager.h"
 #include "Stroika/Frameworks/Led/Marker.h"
-#include "Stroika/Frameworks/Led/TextInteractor.h"
 #include "Stroika/Frameworks/Led/TextStore.h"
+
+#include "TextInteractor.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;

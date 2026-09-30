@@ -12,8 +12,8 @@
         <p>SimpleTextInteractor.</p>
  */
 
-#include "SimpleTextImager.h"
-#include "TextInteractorMixins.h"
+#include "Stroika/Frameworks/Led/SimpleTextImager.h"
+#include "Stroika/Frameworks/Led/TextInteractorMixins.h"
 
 namespace Stroika::Frameworks::Led {
 

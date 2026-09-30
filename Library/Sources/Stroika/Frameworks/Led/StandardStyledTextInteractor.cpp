@@ -13,7 +13,7 @@
 #include "StandardStyledTextInteractor.h"
 
 #if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
-#include "Stroika/Frameworks/Led/StyledTextIO/Led_StyledTextIO_LedNative.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
 #endif
 
 using std::byte;

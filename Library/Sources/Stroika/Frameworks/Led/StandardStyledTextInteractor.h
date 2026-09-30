@@ -14,10 +14,10 @@
 
  */
 
-#include "StandardStyledTextImager.h"
-#include "TextInteractor.h"
+#include "Stroika/Frameworks/Led/StandardStyledTextImager.h"
+#include "Stroika/Frameworks/Led/TextInteractor.h"
 
-#include "StyledTextIO/StyledTextIO.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO.h"
 
 namespace Stroika::Frameworks::Led {
 

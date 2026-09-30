@@ -17,7 +17,7 @@
 #include <limits.h> // for UINT_MAX
 #include <string.h>
 
-#include "PartitioningTextImager.h"
+#include "Stroika/Frameworks/Led/PartitioningTextImager.h"
 
 namespace Stroika::Frameworks::Led {
 

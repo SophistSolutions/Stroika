@@ -5,7 +5,7 @@
 #define	__Led_Std_Dialogs_r__	1
 
 
-#include	"StdDialogs.h"
+#include	"Stroika/Frameworks/Led/StdDialogs.h"
 
 
 

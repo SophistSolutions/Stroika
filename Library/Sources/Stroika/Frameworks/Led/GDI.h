@@ -26,7 +26,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 
-#include "Support.h"
+#include "Stroika/Frameworks/Led/Support.h"
 
 namespace Stroika::Frameworks::Led {
 

@@ -22,7 +22,7 @@
     for LF chraracters, and consider each "line" to be a separate partition element.</p>
 */
 
-#include "TextImager.h"
+#include "Stroika/Frameworks/Led/TextImager.h"
 
 namespace Stroika::Frameworks::Led {
 
