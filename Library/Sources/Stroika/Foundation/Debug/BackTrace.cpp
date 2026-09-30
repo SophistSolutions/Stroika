@@ -47,8 +47,8 @@ using namespace Stroika::Foundation::Debug;
  */
 wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& options)
 {
-    // Throw () logs a Capture (), and Capture () calls code that may throw (SDK2Wide does, as a matter of course, in a
-    // locale that cannot represent its replacement character) - so a Capture () inside a Capture () returns nothing
+    // Throw () logs a Capture (), and Capture () calls code that may throw (character conversion, allocation) - so a
+    // Capture () inside a Capture () returns nothing, rather than recursing
     static thread_local bool tCapturing_{false};
     if (tCapturing_) {
         return wstring{};

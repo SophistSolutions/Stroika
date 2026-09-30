@@ -30,7 +30,6 @@ namespace Stroika::Foundation::Characters {
         void ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError);
         void ThrowCodePageNotSupportedException_ (CodePage cp);
         void ThrowCharsetNotSupportedException_ (const Charset& charset);
-        void ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ();
     }
 
     /*
@@ -426,13 +425,12 @@ namespace Stroika::Foundation::Characters {
                                          fInvalidCharacterReplacementBytesBuf,
                                          fInvalidCharacterReplacementBytesBuf + size (fInvalidCharacterReplacementBytesBuf), bytesInvalChar);
                 DISABLE_COMPILER_MSC_WARNING_END (4996)
-                if (r == STD_CODE_CVT_T::ok) {
+                if (r == STD_CODE_CVT_T::ok) [[likely]] {
                     fInvalidCharacterReplacementBytes_ = as_writable_bytes (
                         span{fInvalidCharacterReplacementBytesBuf}.subspan (0, bytesInvalChar - fInvalidCharacterReplacementBytesBuf));
                 }
-                else {
-                    Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ();
-                }
+                // else this encoding cannot represent the replacement - so Bytes2Characters still uses it, and
+                // Characters2Bytes throws on an invalid character, as if there were none (see Options::fInvalidCharacterReplacement)
             }
         }
         virtual Options GetOptions () const override
@@ -496,7 +494,7 @@ namespace Stroika::Foundation::Characters {
         continueWith:
             auto r = fCodeCvt_->out (ignoredMBState, _First1 + charsDone, _Last1, _Mid1, _First2 + bytesDone, _Last2, _Mid2);
             if (r != STD_CODE_CVT_T::ok) {
-                if (fInvalidCharacterReplacement_) {
+                if (fInvalidCharacterReplacementBytes_) {
                     charsDone = _Mid1 - _First1 + 1; // skip one character and try again
                     bytesDone = _Mid2 - _First2;
                     memcpy (_First2 + bytesDone, fInvalidCharacterReplacementBytes_->data (), fInvalidCharacterReplacementBytes_->size ());

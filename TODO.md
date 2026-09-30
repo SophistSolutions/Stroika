@@ -8,27 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-  - **HIGH PRIORITY: `SDK2Wide` throws and catches on every call in a locale that cannot represent U+FFFD**
-    (found 2026-09-28 by #1177 item 10). In
-    [SDKString.cpp:28-46](Library/Sources/Stroika/Foundation/Characters/SDKString.cpp#L28-L46), the non-Windows,
-    non-macOS branch builds `CodeCvt<wchar_t>{locale{}, kOptions_}` with
-    `fInvalidCharacterReplacement = kDefaultMissingReplacementCharacter` (U+FFFD). In a locale that has no U+FFFD - "C" /
-    POSIX, which is what the regression-test containers run in - that constructor throws
-    (`ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_`); the lambda catches it and retries with `'?'`.
-      - Cost: a thrown exception on every call, and in Debug builds `Throw ()` also logs a trace line and a
-        `BackTrace::Capture ()`, each time.
-      - It already caused one real bug: once libstdc++ builds used `std::stacktrace`, `BackTrace::Capture` widens with
-        `SDK2Wide`, so the throw recursed until the stack overflowed (15 of 54 tests SIGSEGV'd, g++-16 C++23 Debug). That
-        is now guarded by a re-entrancy check in `BackTrace::Capture`, which hides the symptom but not the cause.
-      - Fix idea: decide the replacement character without throwing - ask whether the locale's codecvt can encode
-        U+FFFD - and/or cache the result per locale, rather than using an exception for flow control.
-      - Also check the sibling `Wide2SDK (span, AllowMissingCharacterErrorsFlag)`
-        ([SDKString.cpp:67-76](Library/Sources/Stroika/Foundation/Characters/SDKString.cpp#L67-L76)): same U+FFFD
-        options, but NO try/catch - so in the same locales it probably throws right out to the caller, despite its
-        'AllowMissingCharacterErrors' contract. Unverified.
-      - Test-first: a regtest that sets `locale::global (locale::classic ())` and checks that both calls succeed. For
-        `SDK2Wide`, also check that no exception was thrown (the Debug trace shows each one).
-
   - **clang-22 + libstdc++-16, C++26: Stroika does not compile** (found 2026-09-28, stroika-dev-2604). clang rejects
     [FloatConversion.inl:553 and :581](Library/Sources/Stroika/Foundation/Characters/FloatConversion.inl#L553) with
     `call to immediate function 'formatNonScientific_ (...)::(lambda)'` - consteval propagation (P2564): a lambda whose body
@@ -76,9 +55,6 @@ Generally will track stuff here between releases
       @@ -0,0 +1,60 @@
 
 
-  - KEEP GOING with 1177
-  - Update the build time estimates - everything has
-    been rebuilt since last round of estimates and its genreally improved.
   - take steps to reduce warnings/skips on rasp pi
 
   - Replace Ubuntu 2504 (I think no longer supported) with 26.10 (i think latest non lts)
@@ -96,7 +72,6 @@ Generally will track stuff here between releases
         means workaround #2 (and the warning + the `--only-if-has-compiler` skip) can go
     Not worth filing upstream - it is confined to one distro's packaging, so Launchpad rather than GCC
     bugzilla, and it needs a reduced testcase we do not have.
-    - NOTE WORKING NOW - this became https://github.com/SophistSolutions/Stroika/issues/1177
 
 - MakeBuildRoot / out-of-source builds: moved to
   https://github.com/SophistSolutions/Stroika/issues/1170 - too big for this list. The Windows
@@ -111,7 +86,8 @@ Generally will track stuff here between releases
 
 - v3.0d25
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
-     only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. Still open:
+     only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
+     retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
        - **GitHub Actions runs no sanitizer or valgrind job at all** - so dynamic analysis is entirely
          a local-release-run activity. Worth deciding if that is intentional.
        - msan is not usable with gcc (clang-only, and needs a specially rebuilt libc++) - see the note
@@ -137,21 +113,6 @@ Generally will track stuff here between releases
      If it recurs: keep the failing exe + pdb; `C:/Sandbox/claude/ssdp/crashstack2.exe EXE ARGS` prints the stack and
      Xerces globals, `symaddr.exe EXE SYMBOL` + `dumpbin /disasm /range:` shows the code; the failing copy is kept
      there to compare. Candidate workaround: build Xerces without `-GL` under MSVC.
-
-   - **#1177 bug-workaround audit - handoff** (2026-09-27). Progress is in the issue comments; the full Phase 1
-     report is `.claude/BWA-AUDIT.md` on protagoras only (gitignored), summarized in the issue. Lists below are the
-     Phase 1 summary's:
-       - "Live Stroika bugs" and "fix regardless": all done except macOS `ifreq` (next entry).
-       - "Not compiler bugs": items 1-8 done; next is 9, `template_optionalDeclareIncompleteType`, then 10-12 and the
-         4 suspects.
-       - "Dead once minimums match": the MSVC-only and Apple-clang-15 ones went with the minimum raise; still there
-         are the Apple-clang-16 branches of shared macros, the armhf pair, and `ASAN_With_OpenSSL3_LoadLegacyProvider`.
-       - Waiting on LGP: valgrind keep/drop, minimum compiler versions, naming convention. (clang+LTO: answered -
-         GNU ld, now lld.)
-       - **DEPRECATE, don't delete** these two - downstream apps (AGENTS.md "Downstream projects") use them:
-         `qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy` (WTF) and
-         `qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy` (HearHE). Re-grep those apps before
-         removing any other public macro.
 
    - **`GetInterfaces_POSIX_` (IO/Network/Interface.cpp) - SIOCGIFCONF is the wrong API; decide the fix**
      (#1177 bucket 1, the last live bug; parked 2026-09-26, no code changed). `qMacUBSanitizerifreqAlignmentIssue_Buggy`

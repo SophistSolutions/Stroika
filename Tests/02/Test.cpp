@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CharacterEncodingException.h"
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
@@ -1439,6 +1440,42 @@ namespace {
         //testRoundtrip ("en_US.utf8", u8"z\u00df\u6c34\U0001d10b", L"zß水𝄋");
         testRoundtrip ("C", "fred", L"fred");
         testRoundtrip ("en_US.utf8", "\x7a\xc3\x9f\xe6\xb0\xb4\xf0\x9d\x84\x8b", L"zß水𝄋");
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Characters, MissingCharacterReplacementInCLocale_)
+    {
+        Debug::TraceContextBumper ctx{"MissingCharacterReplacementInCLocale_"};
+        // The "C" locale is single-byte (ASCII-only on glibc), so it cannot encode U+FFFD, the default replacement
+        // character - nor U+6C34
+        const CodeCvt<wchar_t>::Options kReplaceWithFFFD_{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
+        const char    kBadByte_[]     = {'a', '\xFF', 'b'};
+        const wchar_t kUnencodable_[] = {L'a', L'\u6C34', L'b'};
+
+        // Decoding can always produce the replacement, so a replacement the locale cannot encode must not stop a CodeCvt
+        // being constructed; encoding then throws on an invalid character, as if no replacement were given
+        optional<CodeCvt<wchar_t>> cvt;
+        EXPECT_NO_THROW (cvt.emplace (locale::classic (), kReplaceWithFFFD_));
+        if (cvt) {
+            wstring w = cvt->Bytes2String<wstring> (as_bytes (span{kBadByte_}));
+            EXPECT_EQ (w.size (), 3u);
+            EXPECT_NE (w[1], L'?');
+            EXPECT_THROW (cvt->String2Bytes<string> (span{kUnencodable_}), CharacterEncodingException);
+        }
+
+#if not qTargetPlatformSDKUseswchar_t
+        // AllowMissingCharacterErrors, both ways, without throwing - and SDK2Wide with the real replacement: a '?' there
+        // means it threw and caught internally, and fell back
+        Common::ScopedUseLocale useCLocale{locale::classic ()};
+        wstring                 w;
+        EXPECT_NO_THROW (w = SDK2Wide (span{kBadByte_}, eIgnoreErrors));
+        EXPECT_EQ (w.size (), 3u);
+        EXPECT_NE (w[1], L'?');
+        SDKString s;
+        EXPECT_NO_THROW (s = Wide2SDK (span{kUnencodable_}, eIgnoreErrors));
+        EXPECT_TRUE (s.size () >= 3 and s.front () == 'a' and s.back () == 'b') << s;
+#endif
     }
 }
 

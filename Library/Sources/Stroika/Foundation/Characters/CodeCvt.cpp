@@ -64,18 +64,6 @@ void Characters::Private_::ThrowCharsetNotSupportedException_ (const Charset& ch
 
 /*
  ********************************************************************************
- **** Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ******
- ********************************************************************************
- */
-void Characters::Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ()
-{
-    static const auto kException_ =
-        Execution::Exception<runtime_error>{"Cannot construct CodeCvt with provided std::code_cvt and provided 'invalid character'"sv};
-    Execution::Throw (kException_);
-}
-
-/*
- ********************************************************************************
  ************** Private_::BuiltinSingleByteTableCodePageRep_ ********************
  ********************************************************************************
  */

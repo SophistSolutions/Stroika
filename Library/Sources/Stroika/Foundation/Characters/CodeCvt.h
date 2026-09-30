@@ -135,7 +135,11 @@ namespace Stroika::Foundation::Characters {
             /**
              *  if fInvalidCharacterReplacement is nullopt (the default) - conversion APIs throw on invalid characters, and
              *  otherwise use the value provided in fInvalidCharacterReplacement as the replacement for invalid characters.
-             * 
+             *
+             *  The replacement need not be representable in the byte encoding (e.g. U+FFFD in the "C" locale). Decoding
+             *  (bytes to characters) always uses it; encoding uses it only if it can be encoded, and otherwise throws on an
+             *  invalid character, as if no replacement had been given.
+             *
              *  Note - CodeCvt allows the Character to be comprised of multiple CHAR_T characters potentially.
              */
             optional<Character> fInvalidCharacterReplacement;
