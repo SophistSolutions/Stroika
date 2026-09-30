@@ -912,15 +912,6 @@ Led_StdDialogHelper::Led_StdDialogHelper (HINSTANCE hInstance, const Characters:
     fParentWnd = parentWnd;
     fWasOK     = false;
 }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper::Led_StdDialogHelper (GtkWindow* parentWindow)
-    : fWindow{NULL}
-    , fParentWindow{parentWindow}
-    , fOKButton{NULL}
-    , fCancelButton{NULL}
-    , fWasOK{false}
-{
-}
 #endif
 
 Led_StdDialogHelper::~Led_StdDialogHelper ()
@@ -947,30 +938,6 @@ bool Led_StdDialogHelper::DoModal ()
     if (oldFocusWnd != NULL) {
         ::SetFocus (oldFocusWnd);
     }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    /* create the main window, and attach delete_event signal to terminating
-    the application */
-    GtkWidget* window = MakeWindow ();
-    SetWindow (window);
-
-    PreDoModalHook ();
-    gtk_window_set_transient_for (GTK_WINDOW (window), GTK_WINDOW (fParentWindow));
-    gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER_ALWAYS); // or GTK_WIN_POS_CENTER?
-    gtk_window_set_modal (GTK_WINDOW (window), true);
-    gtk_widget_show (window);
-
-    gtk_signal_connect_after (GTK_OBJECT (window), "delete_event", GTK_SIGNAL_FUNC (Static_OnWindowDeleteRequest), (gpointer)this);
-
-    if (fOKButton != NULL) {
-        gtk_signal_connect (GTK_OBJECT (fOKButton), "clicked", GTK_SIGNAL_FUNC (Static_OnOKButtonClick), (gpointer)this);
-        gtk_widget_show (fOKButton);
-    }
-    if (fCancelButton != NULL) {
-        gtk_signal_connect (GTK_OBJECT (fCancelButton), "clicked", GTK_SIGNAL_FUNC (Static_OnCancelButtonClick), (gpointer)this);
-        gtk_widget_show (fCancelButton);
-    }
-    gtk_main ();
-    gtk_widget_destroy (window);
 #endif
     return GetWasOK ();
 }
@@ -985,14 +952,6 @@ void Led_StdDialogHelper::ReplaceAllTokens (SDKString* m, const SDKString& token
 void Led_StdDialogHelper::PreDoModalHook ()
 {
 }
-
-#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-GtkWidget* Led_StdDialogHelper::MakeWindow ()
-{
-    //  return gtk_window_new (GTK_WINDOW_TOPLEVEL);
-    return gtk_dialog_new ();
-}
-#endif
 
 #if qStroika_Platform_Windows
 BOOL Led_StdDialogHelper::OnInitDialog ()
@@ -1052,15 +1011,13 @@ BOOL Led_StdDialogHelper::DialogProc (UINT message, [[maybe_unused]] WPARAM wPar
 }
 #endif
 
-#if qStroika_Platform_Windows || (qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs)
+#if qStroika_Platform_Windows
 SDKString Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
 {
 #if qStroika_Platform_Windows
     Characters::SDKChar widgetText[2 * 1024]; // sb big enough for the most part???
     (void)::GetDlgItemText (GetHWND (), itemID, widgetText, static_cast<UINT> (std::size (widgetText)));
     return widgetText;
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    return (char*)gtk_entry_get_text (GTK_ENTRY (itemID)); // gtk returns internal pointer - DON'T FREE
 #endif
 }
 
@@ -1068,8 +1025,6 @@ void Led_StdDialogHelper::SetItemText (DialogItemID itemID, const SDKString& tex
 {
 #if qStroika_Platform_Windows
     (void)::SetDlgItemText (GetHWND (), itemID, text.c_str ());
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    gtk_entry_set_text (GTK_ENTRY (itemID), text.c_str ());
 #endif
 }
 
@@ -1077,8 +1032,6 @@ void Led_StdDialogHelper::SelectItemText (DialogItemID itemID, size_t from, size
 {
 #if qStroika_Platform_Windows
     ::SendDlgItemMessage (GetHWND (), itemID, EM_SETSEL, from, to);
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    gtk_entry_select_region (GTK_ENTRY (itemID), from, to);
 #endif
 }
 
@@ -1086,9 +1039,6 @@ bool Led_StdDialogHelper::GetItemChecked (DialogItemID itemID) const
 {
 #if qStroika_Platform_Windows
     return !!::IsDlgButtonChecked (GetHWND (), itemID);
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Assert (false); //NYI
-    return false;
 #endif
 }
 
@@ -1096,9 +1046,6 @@ void Led_StdDialogHelper::SetItemChecked (DialogItemID itemID, bool checked)
 {
 #if qStroika_Platform_Windows
     ::CheckDlgButton (GetHWND (), itemID, checked);
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    //gtk_entry_set_text (GTK_ENTRY (itemID), text.c_str ());
-    Assert (false); //NYI
 #endif
 }
 
@@ -1106,9 +1053,6 @@ bool Led_StdDialogHelper::GetItemEnabled (DialogItemID itemID) const
 {
 #if qStroika_Platform_Windows
     return !!::IsWindowEnabled (GetDlgItem (GetHWND (), itemID));
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs && 0
-    Assert (false); //NYI
-    return false;
 #else
     Assert (false);
     return true; // by default - if NYI...
@@ -1119,9 +1063,6 @@ void Led_StdDialogHelper::SetItemEnabled (DialogItemID itemID, bool enabled)
 {
 #if qStroika_Platform_Windows
     ::EnableWindow (GetDlgItem (GetHWND (), itemID), enabled);
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    //gtk_entry_set_text (GTK_ENTRY (itemID), text.c_str ());
-    Assert (false); //NYI
 #endif
 }
 
@@ -1132,8 +1073,6 @@ void Led_StdDialogHelper::SetFocusedItem (DialogItemID itemID)
     Assert (dlgItem != NULL);
     ::SetFocus (dlgItem);
     fSetFocusItemCalled = true;
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    gtk_widget_grab_focus (itemID);
 #endif
 }
 #endif
@@ -1154,41 +1093,6 @@ HWND Led_StdDialogHelper::GetHWND () const
 {
     return fHWnd;
 }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-GtkWidget* Led_StdDialogHelper::GetWindow () const
-{
-    return fWindow;
-}
-
-void Led_StdDialogHelper::SetWindow (GtkWidget* w)
-{
-    if (fWindow != w) {
-        if (fWindow != NULL) {
-            gtk_object_set_user_data (GTK_OBJECT (fWindow), NULL);
-        }
-        fWindow = w;
-        if (fWindow != NULL) {
-            gtk_object_set_user_data (GTK_OBJECT (fWindow), this);
-        }
-    }
-}
-GtkWidget* Led_StdDialogHelper::GetOKButton () const
-{
-    return fOKButton;
-}
-void Led_StdDialogHelper::SetOKButton (GtkWidget* okButton)
-{
-    fOKButton = okButton;
-}
-
-GtkWidget* Led_StdDialogHelper::GetCancelButton () const
-{
-    return fWindow;
-}
-void Led_StdDialogHelper::SetCancelButton (GtkWidget* cancelButton)
-{
-    fCancelButton = cancelButton;
-}
 #endif
 
 void Led_StdDialogHelper::OnOK ()
@@ -1196,8 +1100,6 @@ void Led_StdDialogHelper::OnOK ()
     fWasOK = true;
 #if qStroika_Platform_Windows
     ::EndDialog (GetHWND (), IDOK);
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    gtk_main_quit ();
 #endif
 }
 
@@ -1205,31 +1107,8 @@ void Led_StdDialogHelper::OnCancel ()
 {
 #if qStroika_Platform_Windows
     ::EndDialog (GetHWND (), IDCANCEL);
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    gtk_main_quit ();
 #endif
 }
-
-#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-void Led_StdDialogHelper::Static_OnOKButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper* dlg = reinterpret_cast<Led_StdDialogHelper*> (data);
-    dlg->OnOK ();
-}
-
-void Led_StdDialogHelper::Static_OnCancelButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper* dlg = reinterpret_cast<Led_StdDialogHelper*> (data);
-    dlg->OnCancel ();
-}
-
-void Led_StdDialogHelper::Static_OnWindowDeleteRequest (GtkWidget* widget)
-{
-    Led_StdDialogHelper* dlg = reinterpret_cast<Led_StdDialogHelper*> (gtk_object_get_user_data (GTK_OBJECT (widget)));
-    Assert (dlg->fWindow == widget);
-    dlg->OnCancel ();
-}
-#endif
 
 /*
  ********************************************************************************
@@ -1240,18 +1119,6 @@ void Led_StdDialogHelper::Static_OnWindowDeleteRequest (GtkWidget* widget)
 Led_StdDialogHelper_AboutBox::Led_StdDialogHelper_AboutBox (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
 {
-}
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper_AboutBox::Led_StdDialogHelper_AboutBox (GtkWindow* parentWindow)
-    : inherited (parentWindow)
-{
-}
-#endif
-
-#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-GtkWidget* Led_StdDialogHelper_AboutBox::MakeWindow ()
-{
-    return gtk_window_new (GTK_WINDOW_TOPLEVEL);
 }
 #endif
 
@@ -1307,18 +1174,6 @@ Led_StdDialogHelper_FindDialog::Led_StdDialogHelper_FindDialog (HINSTANCE hInsta
 #endif
 {
 }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper_FindDialog::Led_StdDialogHelper_FindDialog (GtkWindow* parentWindow)
-    : inherited (parentWindow)
-    , fFindText ()
-    , fRecentFindTextStrings ()
-    , fWrapSearch (false)
-    , fWholeWordSearch (false)
-    , fCaseSensativeSearch (false)
-    , fPressedOK (false)
-    , fLookupTextWidget (NULL)
-{
-}
 #endif
 
 #if qStroika_Platform_Windows
@@ -1342,31 +1197,6 @@ BOOL Led_StdDialogHelper_FindDialog::DialogProc (UINT message, WPARAM wParam, LP
 
 void Led_StdDialogHelper_FindDialog::PreDoModalHook ()
 {
-#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    GtkWidget* actionArea = GTK_DIALOG (GetWindow ())->action_area;
-    {
-        fLookupTextWidget = gtk_entry_new ();
-        gtk_container_add (GTK_CONTAINER (actionArea), fLookupTextWidget);
-        gtk_widget_show (fLookupTextWidget);
-        //          gtk_entry_set_text (GTK_ENTRY (fLookupTextWidget), Led_tString2SDKString (fFindText).c_str ());
-        //          gtk_entry_select_region (GTK_ENTRY (fLookupTextWidget), 0, -1);
-        //          gtk_widget_grab_focus (fLookupTextWidget);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Find");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnFindButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Close");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnDontFindButtonClick), (gpointer)this);
-    }
-#endif
 
 #if qStroika_Platform_Windows && qSupportLedDialogWidgets
     /*
@@ -1378,8 +1208,6 @@ void Led_StdDialogHelper_FindDialog::PreDoModalHook ()
 
 #if qStroika_Platform_Windows
     DialogItemID findText = kLedStdDlg_FindBox_FindText;
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    DialogItemID findText = fLookupTextWidget;
 #endif
 
 #if qSupportLedDialogWidgets
@@ -1411,8 +1239,6 @@ void Led_StdDialogHelper_FindDialog::OnDontFindButton ()
     fFindText = fFindTextWidget.GetText ();
 #elif qStroika_Platform_Windows
     fFindText = Led_SDKString2tString (GetItemText (kLedStdDlg_FindBox_FindText));
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    fFindText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
 #endif
 
 #if qStroika_Platform_Windows
@@ -1422,20 +1248,6 @@ void Led_StdDialogHelper_FindDialog::OnDontFindButton ()
 #endif
     OnOK ();
 }
-
-#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-void Led_StdDialogHelper_FindDialog::Static_OnFindButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_FindDialog* dlg = reinterpret_cast<Led_StdDialogHelper_FindDialog*> (data);
-    dlg->OnFindButton ();
-}
-
-void Led_StdDialogHelper_FindDialog::Static_OnDontFindButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_FindDialog* dlg = reinterpret_cast<Led_StdDialogHelper_FindDialog*> (data);
-    dlg->OnDontFindButton ();
-}
-#endif
 
 #endif
 
@@ -1459,20 +1271,6 @@ Led_StdDialogHelper_ReplaceDialog::Led_StdDialogHelper_ReplaceDialog (HINSTANCE 
     , fFindTextWidget ()
     , fReplaceTextWidget ()
 #endif
-{
-}
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper_ReplaceDialog::Led_StdDialogHelper_ReplaceDialog (GtkWindow* parentWindow)
-    : inherited (parentWindow)
-    , fFindText ()
-    , fRecentFindTextStrings ()
-    , fReplaceText ()
-    , fWrapSearch (false)
-    , fWholeWordSearch (false)
-    , fCaseSensativeSearch (false)
-    , fPressed (eCancel)
-    , fLookupTextWidget (NULL)
-    , fReplaceTextWidget (NULL)
 {
 }
 #endif
@@ -1507,55 +1305,6 @@ BOOL Led_StdDialogHelper_ReplaceDialog::DialogProc (UINT message, WPARAM wParam,
 
 void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
 {
-#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    GtkWidget* actionArea = GTK_DIALOG (GetWindow ())->action_area;
-    {
-        fLookupTextWidget = gtk_entry_new ();
-        gtk_container_add (GTK_CONTAINER (actionArea), fLookupTextWidget);
-        gtk_widget_show (fLookupTextWidget);
-        fReplaceTextWidget = gtk_entry_new ();
-        gtk_container_add (GTK_CONTAINER (actionArea), fReplaceTextWidget);
-        gtk_widget_show (fReplaceTextWidget);
-        //          gtk_entry_set_text (GTK_ENTRY (fLookupTextWidget), Led_tString2SDKString (fFindText).c_str ());
-        //          gtk_entry_select_region (GTK_ENTRY (fLookupTextWidget), 0, -1);
-        //          gtk_widget_grab_focus (fLookupTextWidget);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Find");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnFindButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Close");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnDontFindButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Replace");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnReplaceButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Replace All");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnReplaceAllButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Replace All in Selection");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnReplaceAllInSelectionButtonClick), (gpointer)this);
-    }
-#endif
 
 #if qStroika_Platform_Windows && qSupportLedDialogWidgets
     /*
@@ -1569,9 +1318,6 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
 #if qStroika_Platform_Windows
     DialogItemID findText    = kLedStdDlg_ReplaceBox_FindText;
     DialogItemID replaceText = kLedStdDlg_ReplaceBox_ReplaceText;
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    DialogItemID findText    = fLookupTextWidget;
-    DialogItemID replaceText = fReplaceTextWidget;
 #endif
 
 #if qSupportLedDialogWidgets
@@ -1636,9 +1382,6 @@ void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
 #elif qStroika_Platform_Windows
     fFindText    = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_FindText));
     fReplaceText = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_ReplaceText));
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    fFindText    = Led_SDKString2tString (GetItemText (fLookupTextWidget));
-    fReplaceText = Led_SDKString2tString (GetItemText (fReplaceTextWidget));
 #endif
 
 #if qStroika_Platform_Windows
@@ -1648,74 +1391,6 @@ void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
 #endif
 }
 
-#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-void Led_StdDialogHelper_ReplaceDialog::Static_OnFindButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_ReplaceDialog* dlg = reinterpret_cast<Led_StdDialogHelper_ReplaceDialog*> (data);
-    dlg->OnFindButton ();
-}
-
-void Led_StdDialogHelper_ReplaceDialog::Static_OnDontFindButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_ReplaceDialog* dlg = reinterpret_cast<Led_StdDialogHelper_ReplaceDialog*> (data);
-    dlg->OnDontFindButton ();
-}
-
-void Led_StdDialogHelper_ReplaceDialog::Static_OnReplaceButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_ReplaceDialog* dlg = reinterpret_cast<Led_StdDialogHelper_ReplaceDialog*> (data);
-    dlg->OnReplaceButton ();
-}
-
-void Led_StdDialogHelper_ReplaceDialog::Static_OnReplaceAllButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_ReplaceDialog* dlg = reinterpret_cast<Led_StdDialogHelper_ReplaceDialog*> (data);
-    dlg->OnReplaceAllButton ();
-}
-
-void Led_StdDialogHelper_ReplaceDialog::Static_OnReplaceAllInSelectionButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_ReplaceDialog* dlg = reinterpret_cast<Led_StdDialogHelper_ReplaceDialog*> (data);
-    dlg->OnReplaceAllInSelectionButton ();
-}
-#endif
-
-#endif
-
-#if qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows
-/*
- ********************************************************************************
- ********************************** StdFontPickBox ******************************
- ********************************************************************************
- */
-StdFontPickBox::StdFontPickBox (GtkWindow* modalParentWindow, const FontSpecification& initialFont)
-    : inherited (modalParentWindow)
-    , fFont (initialFont)
-{
-}
-
-GtkWidget* StdFontPickBox::MakeWindow ()
-{
-    return gtk_font_selection_dialog_new ("Select font");
-}
-
-void StdFontPickBox::PreDoModalHook ()
-{
-    inherited::PreDoModalHook ();
-    SetOKButton (GTK_FONT_SELECTION_DIALOG (GetWindow ())->ok_button);
-    SetCancelButton (GTK_FONT_SELECTION_DIALOG (GetWindow ())->cancel_button);
-    Verify (gtk_font_selection_dialog_set_font_name (GTK_FONT_SELECTION_DIALOG (GetWindow ()), fFont.GetOSRep ().c_str ()));
-}
-
-void StdFontPickBox::OnOK ()
-{
-    inherited::OnOK ();
-    gchar* newFontOSName = gtk_font_selection_dialog_get_font_name (GTK_FONT_SELECTION_DIALOG (GetWindow ()));
-    if (newFontOSName != NULL) {
-        fFont.SetFromOSRep (newFontOSName);
-        g_free (newFontOSName);
-    }
-}
 #endif
 
 #if qSupportStdColorPickBox
@@ -1734,12 +1409,6 @@ StdColorPickBox::StdColorPickBox (const Color& initialColor)
 StdColorPickBox::StdColorPickBox ([[maybe_unused]] HINSTANCE hInstance, HWND parentWnd, const Color& initialColor)
     : fColor (initialColor)
     , fParentWnd (parentWnd)
-{
-}
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-StdColorPickBox::StdColorPickBox (GtkWindow* modalParentWindow, const Color& initialColor)
-    : inherited (modalParentWindow)
-    , fColor (initialColor)
 {
 }
 #endif
@@ -1783,89 +1452,6 @@ UINT_PTR CALLBACK StdColorPickBox::ColorPickerINITPROC (HWND hWnd, UINT message,
 }
 #endif
 
-#if qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows
-GtkWidget* StdColorPickBox::MakeWindow ()
-{
-    return gtk_color_selection_dialog_new ("Select color");
-}
-
-void StdColorPickBox::PreDoModalHook ()
-{
-    inherited::PreDoModalHook ();
-    SetOKButton (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->ok_button);
-    SetCancelButton (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->cancel_button);
-    gdouble colors[4];
-    colors[0] = static_cast<double> (fColor.GetRed ()) / Color::kColorValueMax;
-    colors[1] = static_cast<double> (fColor.GetGreen ()) / Color::kColorValueMax;
-    colors[2] = static_cast<double> (fColor.GetBlue ()) / Color::kColorValueMax;
-    colors[3] = 0;
-    gtk_color_selection_set_color (GTK_COLOR_SELECTION (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->colorsel), colors);
-}
-
-void StdColorPickBox::OnOK ()
-{
-    inherited::OnOK ();
-    gdouble colors[4];
-    gtk_color_selection_get_color (GTK_COLOR_SELECTION (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->colorsel), colors);
-    using CV = Color::ColorValue;
-    fColor   = Color (static_cast<CV> (colors[0] * Color::kColorValueMax), static_cast<CV> (colors[1] * Color::kColorValueMax),
-                      static_cast<CV> (colors[2] * Color::kColorValueMax));
-}
-#endif
-#endif
-
-#if qSupportStdFileDlg && defined(__cplusplus)
-/*
- ********************************************************************************
- ********************************** StdFilePickBox ******************************
- ********************************************************************************
- */
-StdFilePickBox::StdFilePickBox (GtkWindow* modalParentWindow, const SDKString& title, bool saveDialog, const SDKString& fileName)
-    : inherited (modalParentWindow)
-    , fTitle (title)
-    , fSaveDialog (saveDialog)
-    , fFileName (fileName)
-{
-}
-
-GtkWidget* StdFilePickBox::MakeWindow ()
-{
-    return gtk_file_selection_new (fTitle.c_str ());
-}
-
-void StdFilePickBox::PreDoModalHook ()
-{
-    inherited::PreDoModalHook ();
-
-    SetOKButton (GTK_FILE_SELECTION (GetWindow ())->ok_button);
-    SetCancelButton (GTK_FILE_SELECTION (GetWindow ())->cancel_button);
-
-    gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION (GetWindow ())); // they look terrible...
-    if (fSaveDialog) {
-        gtk_file_selection_set_filename (GTK_FILE_SELECTION (GetWindow ()), fFileName.empty () ? Led_SDK_TCHAROF ("untitled") : fFileName.c_str ());
-    }
-}
-
-void StdFilePickBox::OnOK ()
-{
-    inherited::OnOK ();
-
-    SDKString fileName = gtk_file_selection_get_filename (GTK_FILE_SELECTION (GetWindow ()));
-    try {
-        if (fileName.empty ()) {
-            throw "EMPTY";
-        }
-        fFileName = fileName;
-    }
-    catch (...) {
-        // should print error dialog on errors...
-    }
-}
-
-SDKString StdFilePickBox::GetFileName () const
-{
-    return fFileName;
-}
 #endif
 
 #if qSupportUpdateWin32FileAssocDlg
@@ -2169,12 +1755,6 @@ Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbed
     , fEmbeddingTypeName ()
 {
 }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbeddingInfoDialog (GtkWindow* parentWindow)
-    : inherited (parentWindow)
-    , fEmbeddingTypeName ()
-{
-}
 #endif
 
 void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
@@ -2186,20 +1766,6 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
     SDKString m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fEmbeddingTypeName);
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_UnknownEmbeddingInfoBox_TypeTextMsg, m.c_str ());
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    GtkWidget* window = GetWindow ();
-    gtk_container_set_border_width (GTK_CONTAINER (window), 10);
-
-    string     message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
-    GtkWidget* label   = gtk_label_new (message.c_str ());
-
-    gtk_widget_show (label);
-
-    /* a button to contain the pixmap widget */
-    GtkWidget* button = gtk_button_new_with_label ("OK");
-    GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-    gtk_widget_show (button);
-    SetOKButton (button);
 #endif
     inherited::PreDoModalHook ();
 }
@@ -2220,16 +1786,6 @@ Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingIn
     , fURLText ()
 {
 }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingInfoDialog (GtkWindow* parentWindow)
-    : inherited (parentWindow)
-    , fTitleTextWidget (NULL)
-    , fURLTextWidget (NULL)
-    , fEmbeddingTypeName ()
-    , fTitleText ()
-    , fURLText ()
-{
-}
 #endif
 
 void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
@@ -2244,22 +1800,6 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
 
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TitleText, fTitleText.c_str ());
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_URLText, fURLText.c_str ());
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    // MUST FIX THIS FOR X-WINDOWS!!!!
-
-    GtkWidget* window = GetWindow ();
-    gtk_container_set_border_width (GTK_CONTAINER (window), 10);
-
-    string     message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
-    GtkWidget* label   = gtk_label_new (message.c_str ());
-
-    gtk_widget_show (label);
-
-    /* a button to contain the pixmap widget */
-    GtkWidget* button = gtk_button_new_with_label ("OK");
-    GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-    gtk_widget_show (button);
-    SetOKButton (button);
 #endif
 #if qStroika_Platform_Windows
     SelectItemText (kLedStdDlg_URLXEmbeddingInfoBox_TitleText);
@@ -2297,15 +1837,6 @@ Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbed
     , fURLText ()
 {
 }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (GtkWindow* parentWindow)
-    : inherited (parentWindow)
-    , fTitleTextWidget (NULL)
-    , fURLTextWidget (NULL)
-    , fTitleText ()
-    , fURLText ()
-{
-}
 #endif
 
 void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::PreDoModalHook ()
@@ -2313,22 +1844,6 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::PreDoModalHook ()
 #if qStroika_Platform_Windows
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_TitleText, fTitleText.c_str ());
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_URLText, fURLText.c_str ());
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    // MUST FIX THIS FOR X-WINDOWS!!!!
-
-    GtkWidget* window = GetWindow ();
-    gtk_container_set_border_width (GTK_CONTAINER (window), 10);
-
-    string     message = "ADD URL.";
-    GtkWidget* label   = gtk_label_new (message.c_str ());
-
-    gtk_widget_show (label);
-
-    /* a button to contain the pixmap widget */
-    GtkWidget* button = gtk_button_new_with_label ("OK");
-    GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-    gtk_widget_show (button);
-    SetOKButton (button);
 #endif
     inherited::PreDoModalHook ();
 }
@@ -2359,20 +1874,10 @@ Led_StdDialogHelper_AddNewTableDialog::Led_StdDialogHelper_AddNewTableDialog (HI
     , fColumns (0)
 {
 }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper_AddNewTableDialog::Led_StdDialogHelper_AddNewTableDialog (GtkWindow* parentWindow)
-    : inherited (parentWindow)
-    , fRows (0)
-    , fColumns (0)
-{
-}
 #endif
 
 void Led_StdDialogHelper_AddNewTableDialog::PreDoModalHook ()
 {
-#if qStroika_Platform_Windows
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-#endif
 #if qStroika_Platform_Windows
     SetItemText (kLedStdDlg_AddNewTableBox_RowCount, FormatINTAsString (static_cast<int> (fRows)));
     SetItemText (kLedStdDlg_AddNewTableBox_ColCount, FormatINTAsString (static_cast<int> (fColumns)));
@@ -2416,14 +1921,6 @@ Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTableProp
     , fCellBackgroundColorPopup (true)
 {
 }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTablePropertiesDialog (GtkWindow* parentWindow)
-    : inherited (parentWindow)
-    , fInfo ()
-    , fBorderColorPopup (false)
-    , fCellBackgroundColorPopup (true)
-{
-}
 #endif
 
 void Led_StdDialogHelper_EditTablePropertiesDialog::PreDoModalHook ()
@@ -2454,7 +1951,6 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::PreDoModalHook ()
     if (fInfo.fCellWidth_Common) {
         SetItemText (kLedStdDlg_EditTablePropertiesBox_ColumnWidth, FormatINTAsString (fInfo.fCellWidth));
     }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 #endif
 #if qStroika_Platform_Windows
     SetFocusedItem (kLedStdDlg_EditTablePropertiesBox_BorderWidth);
@@ -2544,15 +2040,6 @@ Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (Spel
 #endif
 {
 }
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, GtkWindow* parentWindow)
-    : inherited (parentWindow)
-    , fCallback (callback)
-    , fCurrentMisspellInfo (NULL)
-    , fLookupTextWidget (NULL)
-    , fChangeTextWidget (NULL)
-{
-}
 #endif
 
 Led_StdDialogHelper_SpellCheckDialog::~Led_StdDialogHelper_SpellCheckDialog ()
@@ -2612,76 +2099,6 @@ BOOL Led_StdDialogHelper_SpellCheckDialog::DialogProc (UINT message, WPARAM wPar
 
 void Led_StdDialogHelper_SpellCheckDialog::PreDoModalHook ()
 {
-#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    GtkWidget* actionArea = GTK_DIALOG (GetWindow ())->action_area;
-    {
-        fLookupTextWidget = gtk_entry_new ();
-        gtk_container_add (GTK_CONTAINER (actionArea), fLookupTextWidget);
-        gtk_widget_show (fLookupTextWidget);
-        fChangeTextWidget = gtk_entry_new ();
-        gtk_container_add (GTK_CONTAINER (actionArea), fChangeTextWidget);
-        gtk_widget_show (fChangeTextWidget);
-        //          gtk_entry_set_text (GTK_ENTRY (fLookupTextWidget), Led_tString2SDKString (fUndefinedWordText).c_str ());
-        //          gtk_entry_select_region (GTK_ENTRY (fLookupTextWidget), 0, -1);
-        //          gtk_widget_grab_focus (fLookupTextWidget);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Ignore");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnIgnoreButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Ignore All");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnIgnoreAllButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Change");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnChangeButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Change All");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnChangeAllButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Add to Dictionary");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnAddToDictionaryButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Lookup on Web");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnLookupOnWebButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Options...");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnOptionsDialogButtonClick), (gpointer)this);
-    }
-    {
-        GtkWidget* button = gtk_button_new_with_label ("Close");
-        gtk_container_add (GTK_CONTAINER (actionArea), button);
-        GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-        gtk_widget_show (button);
-        gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (Static_OnCloseButtonClick), (gpointer)this);
-    }
-#endif
 
 #if qStroika_Platform_Windows && qSupportLedDialogWidgets
     /*
@@ -2719,8 +2136,6 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeButton ()
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qStroika_Platform_Windows
     Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
 #endif
     fCallback.DoChange (changeText);
     DoFindNextCall ();
@@ -2732,8 +2147,6 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeAllButton ()
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qStroika_Platform_Windows
     Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
 #endif
     fCallback.DoChangeAll (changeText);
     DoFindNextCall ();
@@ -2745,8 +2158,6 @@ void Led_StdDialogHelper_SpellCheckDialog::OnAddToDictionaryButton ()
     Led_tString undefinedWordText = fUndefinedWordWidget.GetText ();
 #elif qStroika_Platform_Windows
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_UnknownWordText));
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
 #endif
     fCallback.AddToDictionary (undefinedWordText);
     DoFindNextCall ();
@@ -2758,8 +2169,6 @@ void Led_StdDialogHelper_SpellCheckDialog::OnLookupOnWebButton ()
     Led_tString undefinedWordText = fUndefinedWordWidget.GetText ();
 #elif qStroika_Platform_Windows
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_UnknownWordText));
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
 #endif
     fCallback.LookupOnWeb (undefinedWordText);
 }
@@ -2779,8 +2188,6 @@ void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListChangeSelection ()
     if (fCurrentMisspellInfo != NULL) {
 #if qStroika_Platform_Windows
         DialogItemID changeTextItem = kLedStdDlg_SpellCheckBox_ChangeText;
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-        DialogItemID changeTextItem = fChangeTextWidget;
 #endif
 
 #if qStroika_Platform_Windows
@@ -2815,9 +2222,6 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
 #if qStroika_Platform_Windows
     DialogItemID undefinedTextItem = kLedStdDlg_SpellCheckBox_UnknownWordText;
     DialogItemID changeTextItem    = kLedStdDlg_SpellCheckBox_ChangeText;
-#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    DialogItemID undefinedTextItem = fLookupTextWidget;
-    DialogItemID changeTextItem    = fChangeTextWidget;
 #endif
 
 #if qStroika_Platform_Windows
@@ -2859,55 +2263,5 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
     SelectItemText (changeTextItem);
     SetFocusedItem (changeTextItem);
 }
-
-#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-void Led_StdDialogHelper_SpellCheckDialog::Static_OnIgnoreButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_SpellCheckDialog* dlg = reinterpret_cast<Led_StdDialogHelper_SpellCheckDialog*> (data);
-    dlg->OnIgnoreButton ();
-}
-
-void Led_StdDialogHelper_SpellCheckDialog::Static_OnIgnoreAllButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_SpellCheckDialog* dlg = reinterpret_cast<Led_StdDialogHelper_SpellCheckDialog*> (data);
-    dlg->OnIgnoreAllButton ();
-}
-
-void Led_StdDialogHelper_SpellCheckDialog::Static_OnChangeButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_SpellCheckDialog* dlg = reinterpret_cast<Led_StdDialogHelper_SpellCheckDialog*> (data);
-    dlg->OnChangeButton ();
-}
-
-void Led_StdDialogHelper_SpellCheckDialog::Static_OnChangeAllButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_SpellCheckDialog* dlg = reinterpret_cast<Led_StdDialogHelper_SpellCheckDialog*> (data);
-    dlg->OnChangeAllButton ();
-}
-
-void Led_StdDialogHelper_SpellCheckDialog::Static_OnAddToDictionaryButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_SpellCheckDialog* dlg = reinterpret_cast<Led_StdDialogHelper_SpellCheckDialog*> (data);
-    dlg->OnAddToDictionaryButton ();
-}
-
-void Led_StdDialogHelper_SpellCheckDialog::Static_OnLookupOnWebButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_SpellCheckDialog* dlg = reinterpret_cast<Led_StdDialogHelper_SpellCheckDialog*> (data);
-    dlg->OnLookupOnWebButton ();
-}
-
-void Led_StdDialogHelper_SpellCheckDialog::Static_OnOptionsDialogButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_SpellCheckDialog* dlg = reinterpret_cast<Led_StdDialogHelper_SpellCheckDialog*> (data);
-    dlg->OnOptionsDialogButton ();
-}
-
-void Led_StdDialogHelper_SpellCheckDialog::Static_OnCloseButtonClick (GtkWidget* widget, gpointer data)
-{
-    Led_StdDialogHelper_SpellCheckDialog* dlg = reinterpret_cast<Led_StdDialogHelper_SpellCheckDialog*> (data);
-    dlg->OnCloseButton ();
-}
-#endif
 
 #endif

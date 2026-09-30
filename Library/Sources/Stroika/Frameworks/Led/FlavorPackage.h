@@ -116,17 +116,12 @@ namespace Stroika::Frameworks::Led {
      *     <p>NB: On windows - it is REQUIRED the ClipboardFlavorPackage objects only be
      *  created in the context of Open/Close clipboard operations (for example done in
      *  OnPasteCommand_Before/OnPasteCommand_After - so typically no problem).</p>
-     *      <p>NB: For X-Windows, the clip data is just stored in the global variable ReaderClipboardFlavorPackage::sPrivateClipData.</p>
      */
     class ReaderClipboardFlavorPackage : public ReaderFlavorPackage {
     public:
         virtual bool   GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
         virtual size_t GetFlavorSize (Led_ClipFormat clipFormat) const override;
         virtual size_t ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const override;
-#if qStroika_FeatureSupported_XWindows
-    public:
-        static map<Led_ClipFormat, vector<char>> sPrivateClipData;
-#endif
     };
 #endif
 

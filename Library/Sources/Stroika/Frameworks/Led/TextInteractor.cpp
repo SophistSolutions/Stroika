@@ -3271,13 +3271,11 @@ void TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPre
 #endif
 }
 
-#if qStroika_Platform_MacOS || qStroika_FeatureSupported_XWindows
+#if qStroika_Platform_MacOS
 float TextInteractor::GetTickCountBetweenBlinks ()
 {
 #if qStroika_Platform_MacOS
     return ::GetCaretTime () / 60.0;
-#elif qStroika_FeatureSupported_XWindows
-    return 0.4f;
 #endif
 }
 #endif

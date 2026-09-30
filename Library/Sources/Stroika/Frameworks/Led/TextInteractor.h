@@ -45,9 +45,8 @@ namespace Stroika::Frameworks::Led {
                 be done genericly, without having yet made a choice about these things.
                 TextInteractor mainly serves to collect common code/functionality which
                 can be shared accross (for example) MFC/OpenDoc/TCL/PowerPlant/PowerPlant, etc.
-                See @'Led_PPView', @'Led_MacOS_Helper<BASE_INTERACTOR>', @'Led_MFC', @'Led_Win32_Helper<BASE_INTERACTOR>'
-                @'Led_Gtk_Helper<BASE_INTERACTOR,GTKBASEINFO>', etc for more information on class-library-specific
-                integration.</p>
+                See @'Led_PPView', @'Led_MacOS_Helper<BASE_INTERACTOR>', @'Led_MFC', @'Led_Win32_Helper<BASE_INTERACTOR>',
+                etc for more information on class-library-specific integration.</p>
     */
     class TextInteractor : public virtual TextImager {
     protected:
@@ -691,7 +690,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         nonvirtual void UpdateIfNoKeysPending (); // utility
 
-#if qStroika_Platform_MacOS || qStroika_FeatureSupported_XWindows
+#if qStroika_Platform_MacOS
     public:
         static float GetTickCountBetweenBlinks ();
 #endif

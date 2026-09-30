@@ -20,9 +20,6 @@
 
 #include <oaidl.h> // for SAFEARRAY
 #include <tchar.h>
-#elif qStroika_FeatureSupported_XWindows
-#include <X11/X.h>
-#include <X11/Xatom.h>
 #endif
 
 #include "Stroika/Foundation/Characters/SDKString.h"
@@ -365,13 +362,11 @@ namespace Stroika::Frameworks::Led {
      *
      */
 #ifndef qStroika_Frameworks_Led_SupportClipboard
-#define qStroika_Frameworks_Led_SupportClipboard (qStroika_Platform_Windows or qStroika_FeatureSupported_XWindows)
+#define qStroika_Frameworks_Led_SupportClipboard qStroika_Platform_Windows
 #endif
 
 #if qStroika_Platform_Windows
     using Led_ClipFormat = CLIPFORMAT;
-#elif qStroika_FeatureSupported_XWindows
-    using Led_ClipFormat = long;
 #else
     // used in a lot of places to exchange info, even if not to a real clipboad, so keep type defined for now ... --LGP 2024-02-11
     enum Led_ClipFormat : unsigned short {
@@ -382,9 +377,6 @@ namespace Stroika::Frameworks::Led {
     //  const Led_ClipFormat    kPICTClipFormat =   CF_METAFILEPICT;
     const Led_ClipFormat kPICTClipFormat = CF_DIB;
     const Led_ClipFormat kFILEClipFormat = CF_HDROP;
-#elif qStroika_FeatureSupported_XWindows
-    const Led_ClipFormat kTEXTClipFormat = XA_STRING;
-    const Led_ClipFormat kFILEClipFormat = 1; // X-TMP-HACK-LGP991213 - not sure what this should be???
 #else
     const Led_ClipFormat kTEXTClipFormat = (Led_ClipFormat)1;
     const Led_ClipFormat kFILEClipFormat = (Led_ClipFormat)2;
@@ -414,12 +406,6 @@ namespace Stroika::Frameworks::Led {
 
     void Led_BeepNotify ();
     Foundation::Time::DurationSeconds Led_GetDoubleClickTime (); // time-interval which defines how quick we consider two consecutive clicks a dbl-click
-
-#if qStroika_FeatureSupported_XWindows
-    extern void (*gBeepNotifyCallBackProc) ();
-    unsigned long LedTickCount2XTime (float ledTickCount);
-    void          SyncronizeLedXTickCount (unsigned long xTickCount);
-#endif
 
 #if qStroika_Platform_Windows
     class VariantArrayPacker {

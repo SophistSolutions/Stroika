@@ -22,12 +22,6 @@
 #if defined(WIN32)
 
 #include <afxwin.h>
-#elif qStroika_FeatureSupported_XWindows
-#include <fcntl.h>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 #endif
 
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -248,9 +242,6 @@ LedItDocument::LedItDocument (LCommander* inSuper, FileFormat format)
 LedItDocument::LedItDocument ()
     : COleServerDoc ()
     ,
-#elif qStroika_FeatureSupported_XWindows
-LedItDocument::LedItDocument ()
-    :
 #endif
     MarkerOwner ()
     , fTextStore ()
@@ -263,14 +254,11 @@ LedItDocument::LedItDocument ()
 #if qStroika_Platform_MacOS
     fFileFormat (format)
     ,
-#elif qStroika_Platform_Windows || qStroika_FeatureSupported_XWindows
+#elif qStroika_Platform_Windows
     fFileFormat (eDefaultFormat)
     ,
 #endif
     fHTMLInfo ()
-#if qStroika_FeatureSupported_XWindows
-    , fPathName ()
-#endif
 #if qStroika_Platform_MacOS
     , fTextView (NULL)
 #endif
@@ -319,190 +307,6 @@ TextStore* LedItDocument::PeekAtTextStore () const
 {
     return &const_cast<LedItDocument*> (this)->fTextStore;
 }
-
-#if qStroika_FeatureSupported_XWindows
-void LedItDocument::LoadFromFile (const string& fileName, FileFormat fileFormat)
-{
-    Require (not fileName.empty ());
-    fPathName   = fileName;
-    fFileFormat = fileFormat;
-
-// Now do actual reading stuff..
-#if qPrintGLIBTraceMessages
-    g_message ("DOING LedItDocument::LoadFromFile (path= '%s', format=%d)\n", fPathName.c_str (), fileFormat);
-#endif
-    size_t            fileLen = 0;
-    StackBuffer<char> fileData{Memory::eUninitialized, fileLen};
-    int               fd = ::open (fPathName.c_str (), O_RDONLY);
-    if (fd == -1) {
-        Execution::Throw (bad_alloc{});
-    }
-    fileLen = ::lseek (fd, 0, SEEK_END);
-    fileData.GrowToSize (fileLen);
-    try {
-        ::lseek (fd, 0, SEEK_SET);
-        if (::read (fd, fileData, fileLen) != int (fileLen)) {
-            Execution::Throw (bad_alloc{});
-        }
-    }
-    catch (...) {
-        ::close (fd);
-        throw;
-    }
-    ::close (fd);
-
-    StyledTextIOSrcStream_Memory                 source (fileData, fileLen);
-    WordProcessor::WordProcessorTextIOSinkStream sink (&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase);
-
-ReRead:
-    switch (fFileFormat) {
-        case eTextFormat: {
-            StyledTextIOReader_PlainText textReader (&source, &sink);
-            textReader.Read ();
-        } break;
-
-        case eLedPrivateFormat: {
-            StyledTextIOReader_LedNativeFileFormat textReader (&source, &sink);
-            textReader.Read ();
-        } break;
-
-        case eRTFFormat: {
-            StyledTextIOReader_RTF textReader (&source, &sink, &fRTFInfo);
-            textReader.Read ();
-        } break;
-
-        case eHTMLFormat: {
-            StyledTextIOReader_HTML textReader (&source, &sink, &fHTMLInfo);
-            textReader.Read ();
-        } break;
-
-        case eUnknownFormat: {
-            /*
-                 *  Should enhance this unknown/format reading code to take into account file suffix in our guess.
-                 *  First look at file suffix. THAT takes precedence over guessing file format based on
-                 *  contents.
-                 */
-            SDKString suffix = ExtractFileSuffix (fPathName);
-            if (suffix == ".rtf") {
-                fFileFormat = eRTFFormat;
-                goto ReRead;
-            }
-            if (suffix == ".htm" or suffix == ".html") {
-                fFileFormat = eHTMLFormat;
-                goto ReRead;
-            }
-            if (suffix == ".led") {
-                fFileFormat = eLedPrivateFormat;
-                goto ReRead;
-            }
-            if (suffix == ".txt") {
-                fFileFormat = eTextFormat;
-                goto ReRead;
-            }
-            // Try RTF
-            try {
-                StyledTextIOReader_RTF reader (&source, &sink, &fRTFInfo);
-                if (reader.QuickLookAppearsToBeRightFormat ()) {
-                    fFileFormat = eRTFFormat;
-                    goto ReRead;
-                }
-            }
-            catch (...) {
-                // ignore any errors, and proceed to next file type
-            }
-
-            // Try LedNativeFileFormat
-            try {
-                StyledTextIOReader_LedNativeFileFormat reader (&source, &sink);
-                if (reader.QuickLookAppearsToBeRightFormat ()) {
-                    fFileFormat = eLedPrivateFormat;
-                    goto ReRead;
-                }
-            }
-            catch (...) {
-                // ignore any errors, and proceed to next file type
-            }
-
-            // Try HTML
-            try {
-                StyledTextIOReader_HTML reader (&source, &sink);
-                if (reader.QuickLookAppearsToBeRightFormat ()) {
-                    fFileFormat = eHTMLFormat;
-                    goto ReRead;
-                }
-            }
-            catch (...) {
-                // ignore any errors, and proceed to next file type
-            }
-
-            // Nothing left todo but to read the text file as plain text, as best we can...
-            fFileFormat = eTextFormat;
-            goto ReRead;
-        } break;
-
-        default: {
-            Assert (false); // don't support reading that format (yet?)!
-        } break;
-    }
-    sink.Flush (); // explicit Flush () call - DTOR would have done it - but there exceptions get silently eaten - this will at least show them...
-
-#if 0
-    // Should do something like this for XWin too - but right now - no backpointer from Doc to View kept... LGP 2002-11-20
-    fTextView->SetEmptySelectionStyle ();
-#endif
-}
-
-void LedItDocument::Save ()
-{
-    // Now do actual reading stuff..
-    g_message ("DOING Save- '%s'\n", fPathName.c_str ());
-    Require (fFileFormat != eUnknownFormat); // We must have chosen a file format by now...
-
-    WordProcessor::WordProcessorTextIOSrcStream source (&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase);
-    StyledTextIOWriterSinkStream_Memory         sink;
-
-    switch (fFileFormat) {
-        case eTextFormat: {
-            StyledTextIOWriter_PlainText textWriter (&source, &sink);
-            textWriter.Write ();
-        } break;
-
-        case eRTFFormat: {
-            StyledTextIOWriter_RTF textWriter (&source, &sink, &fRTFInfo);
-            textWriter.Write ();
-        } break;
-
-        case eHTMLFormat: {
-            StyledTextIOWriter_HTML textWriter (&source, &sink, &fHTMLInfo);
-            textWriter.Write ();
-        } break;
-
-        case eLedPrivateFormat: {
-            StyledTextIOWriter_LedNativeFileFormat textWriter (&source, &sink);
-            textWriter.Write ();
-        } break;
-
-        default: {
-            Assert (false); // don't support writing that format (yet?)!
-        } break;
-    }
-    int fd = ::open (fPathName.c_str (), O_RDWR | O_CREAT, 0666);
-    if (fd == -1) {
-        Execution::Throw (bad_alloc{});
-    }
-    try {
-        ::lseek (fd, 0, SEEK_SET);
-        if (::write (fd, sink.PeekAtData (), sink.GetLength ()) != int (sink.GetLength ())) {
-            Execution::Throw (bad_alloc{});
-        }
-    }
-    catch (...) {
-        ::close (fd);
-        throw;
-    }
-    ::close (fd);
-}
-#endif
 
 #if qStroika_Platform_MacOS
 const vector<LWindow*>& LedItDocument::GetDocumentWindows ()

@@ -243,8 +243,6 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
                              4
 #elif qStroika_Platform_Windows
                              1
-#elif qStroika_FeatureSupported_XWindows
-                             0 //  X-TMP-HACK-LGP991213    -- Not quite a hack - but revisit when we have REAL X-Font support
 #endif
         ;
 

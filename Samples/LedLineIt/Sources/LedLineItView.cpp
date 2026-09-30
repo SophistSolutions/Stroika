@@ -129,8 +129,6 @@ public:
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
 #elif qStroika_Platform_Windows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
-#elif qStroika_FeatureSupported_XWindows
-        Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
 
         spellCheckDialog.DoModal ();

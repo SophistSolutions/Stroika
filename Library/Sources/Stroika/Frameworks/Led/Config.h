@@ -204,12 +204,4 @@ namespace Stroika::Frameworks::Led {
 
 #endif /*qStroika_Platform_Windows*/
 
-/*
- *************** X-Windows Specific configuration variables *************
- *************** X-Windows Specific configuration variables *************
- *************** X-Windows Specific configuration variables *************
- *************** X-Windows Specific configuration variables *************
- *************** X-Windows Specific configuration variables *************
- */
-
 #endif /*_Stroika_Framework_Led_Config_h_*/

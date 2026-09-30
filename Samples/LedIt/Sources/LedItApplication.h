@@ -21,8 +21,6 @@
 DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
 DISABLE_COMPILER_MSC_WARNING_END (5054)
-#elif qStroika_FeatureSupported_XWindows
-#include <gtk/gtk.h>
 #endif
 
 #include "Stroika/Foundation/Execution/Logger.h"
@@ -41,8 +39,6 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 #include "Stroika/Frameworks/Led/Platform/Led_PP.h"
 #elif qStroika_Platform_Windows
 #include "Stroika/Frameworks/Led/Platform/MFC.h"
-#elif qStroika_FeatureSupported_XWindows
-#include "Stroika/Frameworks/Led/Platform/Gtk.h"
 #endif
 
 #if qStroika_Platform_Windows
@@ -56,8 +52,6 @@ class LedItView;
 using CMD_ENABLER = Platform::Led_PP_TmpCmdUpdater;
 #elif qStroika_Platform_Windows
 using CMD_ENABLER = Platform::Led_MFC_TmpCmdUpdater;
-#elif qStroika_FeatureSupported_XWindows
-using CMD_ENABLER = Platform::Led_Gtk_TmpCmdUpdater;
 #endif
 
 class LedItApplication
@@ -213,53 +207,13 @@ private:
     static pascal short   SFGetDlgHook (short item, DialogPtr dialog, void* myData);
 #endif
 
-#if qStroika_FeatureSupported_XWindows
-private:
-    nonvirtual GtkWidget* get_main_menu (GtkWidget* window);
-
-public:
-    static gint delete_event (GtkWidget* widget, gpointer data);
-    static void xdestroy (GtkWidget* widget, gpointer data);
-
-private:
-    LedItDocument* fDocument;
-
-public:
-    nonvirtual void OnNewDocumentCommand ();
-    nonvirtual void OnOpenDocumentCommand ();
-    nonvirtual void OnSaveDocumentCommand ();
-    nonvirtual void OnSaveAsDocumentCommand ();
-    nonvirtual void OnQuitCommand ();
-
-public:
-    nonvirtual void LoadFromFile (const string& fileName, FileFormat fileFormat);
-    nonvirtual void SaveAs (const string& fileName, FileFormat fileFormat);
-    nonvirtual void Save ();
-
-private:
-    nonvirtual void UpdateFrameWindowTitle ();
-
-public:
-    static void AppCmdDispatcher (gpointer callback_data, guint callback_action, GtkWidget* widget);
-    static void AppCmdOnInitMenu (GtkMenuItem* menuItem, gpointer callback_data);
-
-public:
-    nonvirtual GtkWidget* GetAppWindow () const;
-
-private:
-    GtkWidget* fAppWindow;
-    LedItView* fTextEditor;
-
-private:
-    static GtkItemFactoryEntry kMenuItemResources[];
-#endif
 #if qStroika_Platform_Windows
 private:
     Execution::Platform::Windows::COMInitializer fCOMInitializer_{COINIT_APARTMENTTHREADED};
 #endif
 private:
     Execution::Logger::Activator fLogMgrActivator_;
-#if qStroika_Platform_Windows || qStroika_FeatureSupported_XWindows
+#if qStroika_Platform_Windows
 public:
     InstalledFonts fInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
 #endif

@@ -19,14 +19,6 @@
 #if qStroika_Platform_Windows
 #include <fcntl.h>
 #include <io.h>
-#elif qStroika_FeatureSupported_XWindows
-#include <fcntl.h>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <time.h>
-#include <unistd.h>
 #endif
 
 #include "Stroika/Frameworks/Led/Support.h"
@@ -73,62 +65,13 @@ string Led::Led_tString2ANSIString (const Led_tString& s)
 @METHOD:        Led_BeepNotify
 @DESCRIPTION:   <p>Make an audible beep on the users terminal. Used as a simple warning
             mechanism (like for typing bad characters).</p>
-                <p>NB: For X-Windows only, this function invokes the private gBeepNotifyCallBackProc
-            callback procedure to handle the beeping.
-            This is because with X-Windows, the beep callback requires data (XDisplay) we don't have at this level.</p>
 */
 void Led::Led_BeepNotify ()
 {
 #if qStroika_Platform_Windows
     ::MessageBeep (MB_OK);
-#elif qStroika_FeatureSupported_XWindows
-    if (gBeepNotifyCallBackProc != nullptr) {
-        (gBeepNotifyCallBackProc) ();
-    }
 #endif
 }
-
-#if qStroika_FeatureSupported_XWindows
-static unsigned long sLastXWindowsEventTime;
-static double        sLastEventReferenceTime;
-static double        Led::GetThisMachineCurTime ()
-{
-    struct timeval tv;
-    memset (&tv, 0, sizeof (tv));
-    Verify (::gettimeofday (&tv, nullptr) == 0);
-    Assert (tv.tv_usec < 1000000);
-    double t = static_cast<double> (tv.tv_sec) + (tv.tv_usec / 1000000.0);
-    return t;
-}
-#endif
-
-#if qStroika_FeatureSupported_XWindows
-/*
-@METHOD:        gBeepNotifyCallBackProc
-@DESCRIPTION:   <p>X-Windows specific magic. See @'Led_BeepNotify'.</p>
-*/
-void (*Led::gBeepNotifyCallBackProc) () = nullptr;
-
-/*
-@METHOD:        SyncronizeLedXTickCount
-@DESCRIPTION:   <p>X-Windows specific magic. See @'Time::GetTickCount'.</p>
-*/
-void Led::SyncronizeLedXTickCount (unsigned long xTickCount)
-{
-    sLastEventReferenceTime = GetThisMachineCurTime ();
-    sLastXWindowsEventTime  = xTickCount;
-}
-
-/*
-@METHOD:        LedTickCount2XTime
-@DESCRIPTION:   <p>X-Windows specific. See also @'SyncronizeLedXTickCount' and @'Time::GetTickCount'. Maps Time::GetTickCount ()
-            result to the sort of time value you can stick into an XEvent record.</p>
-*/
-unsigned long Led::LedTickCount2XTime (float ledTickCount)
-{
-    return static_cast<unsigned long> (ledTickCount * 1000.0f);
-}
-#endif
 
 /*
 @METHOD:        Led_GetDoubleClickTime
@@ -731,8 +674,6 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
     string fullURL = "http://www.sophists.com" + relURL + "?AppName=" + appName +
 #if qStroika_Platform_Windows
                      string{"&Platform=Windows"} +
-#elif qStroika_FeatureSupported_XWindows
-                     string{"&Platform=XWindows"} +
 #endif
                      "&MajorMinorVersion=" + qLed_MajorMinorVersionString + "&LedFullVersion=" + fullVersionBuf +
                      "&ShortVersionString=" + qLed_ShortVersionString + extraArgs;

@@ -13,7 +13,7 @@
 
 // MFC must define something like this someplace, but I haven't found where....
 // Use this for now, so I can update things more easily when I find the MFC definition...
-// PowerPlant/Gtk don't seem picky about this number - same # works in both places - but it would be OK to have
+// PowerPlant doesn't seem picky about this number - same # works in both places - but it would be OK to have
 // this differ across platforms.
 // NOTE: MFC commands tend to be in the range:
 //      0xE100 (ID_FILE_NEW) ... 0xEffff
@@ -316,14 +316,6 @@
 #if qStroika_Platform_MacOS
 #define kBaseWindowCmd 20600
 #define kLastWindowCmd 20699
-#elif qStroika_FeatureSupported_XWindows
-enum {
-    kNewDocumentCmd,
-    kOpenDocumentCmd,
-    kSaveDocumentCmd,
-    kSaveAsDocumentCmd,
-    kQuitCmd,
-};
 #endif
 
 #if qStroika_Platform_MacOS

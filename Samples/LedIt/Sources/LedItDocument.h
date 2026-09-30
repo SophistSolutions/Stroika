@@ -48,9 +48,6 @@ public:
 protected: // create from serialization only
     LedItDocument ();
     DECLARE_DYNCREATE (LedItDocument)
-#elif qStroika_FeatureSupported_XWindows
-public:
-    LedItDocument ();
 #endif
 
 public:
@@ -129,12 +126,6 @@ public:
     shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
     MultiLevelUndoCommandHandler             fCommandHandler;
 
-#if qStroika_FeatureSupported_XWindows
-public:
-    nonvirtual void LoadFromFile (const string& fileName, FileFormat fileFormat);
-    nonvirtual void Save ();
-#endif
-
 #if qStroika_Platform_Windows
     // utilities to pick save/open file names
 public:
@@ -146,11 +137,6 @@ private:
     static bool DoPromptFileName (CString& fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, FileFormat* fileFormat);
 #endif
 
-#if qStroika_FeatureSupported_XWindows
-private:
-public: //tmphack to allow easier change of old code...
-    string fPathName;
-#endif
 private:
 public:
     FileFormat             fFileFormat;

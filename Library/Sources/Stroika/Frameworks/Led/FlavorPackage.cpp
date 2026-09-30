@@ -15,11 +15,6 @@
 #include <fcntl.h>
 #include <io.h>
 #include <shellapi.h>
-#elif qStroika_FeatureSupported_XWindows
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 #endif
 
 #include "Marker.h"
@@ -92,9 +87,7 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
     if (length != 0) {
         Memory::StackBuffer<Led_tChar> buf2{length};
         GetTextStore ().CopyOut (start, length, buf2.data ());
-#if qStroika_FeatureSupported_XWindows
-        length = Characters::NLToNative<Led_tChar> (buf2, length, buf, length);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         length = Characters::NLToNative<Led_tChar> (buf2.data (), length, buf.data (), 2 * length + 1);
 #endif
     }
@@ -297,31 +290,14 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
  *************************** ReaderClipboardFlavorPackage ***********************
  ********************************************************************************
  */
-#if qStroika_FeatureSupported_XWindows
-map<Led_ClipFormat, vector<char>> ReaderClipboardFlavorPackage::sPrivateClipData;
-#endif
 
 bool ReaderClipboardFlavorPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const
 {
-#if qStroika_FeatureSupported_XWindows
-    map<Led_ClipFormat, vector<char>>::const_iterator i = sPrivateClipData.find (clipFormat);
-    return (i != sPrivateClipData.end ());
-#else
     return Led_ClipboardObjectAcquire::FormatAvailable (clipFormat);
-#endif
 }
 
 size_t ReaderClipboardFlavorPackage::GetFlavorSize (Led_ClipFormat clipFormat) const
 {
-#if qStroika_FeatureSupported_XWindows
-    map<Led_ClipFormat, vector<char>>::const_iterator i = sPrivateClipData.find (clipFormat);
-    if (i == sPrivateClipData.end ()) {
-        return 0;
-    }
-    else {
-        return i->second.size ();
-    }
-#else
     Led_ClipboardObjectAcquire clip (clipFormat);
     if (clip.GoodClip ()) {
         return clip.GetDataLength ();
@@ -329,23 +305,10 @@ size_t ReaderClipboardFlavorPackage::GetFlavorSize (Led_ClipFormat clipFormat) c
     else {
         return 0;
     }
-#endif
 }
 
 size_t ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const
 {
-#if qStroika_FeatureSupported_XWindows
-    map<Led_ClipFormat, vector<char>>::const_iterator i = sPrivateClipData.find (clipFormat);
-    if (i == sPrivateClipData.end ()) {
-        return 0;
-    }
-    else {
-        size_t copyNBytes = min (bufSize, i->second.size ());
-        (void)::memcpy (buf, Traversal::Iterator2Pointer (i->second.begin ()), copyNBytes);
-        Ensure (copyNBytes <= bufSize);
-        return copyNBytes;
-    }
-#else
     Led_ClipboardObjectAcquire clip{clipFormat};
     if (clip.GoodClip ()) {
         size_t copyNBytes = min (bufSize, clip.GetDataLength ());
@@ -356,7 +319,6 @@ size_t ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, 
     else {
         return 0;
     }
-#endif
 }
 #endif
 
@@ -386,9 +348,6 @@ void WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, siz
         DWORD err = ::GetLastError ();
         ThrowIfErrorHRESULT (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_WIN32, err));
     }
-#elif qStroika_FeatureSupported_XWindows
-    ReaderClipboardFlavorPackage::sPrivateClipData.insert (map<Led_ClipFormat, vector<char>>::value_type (
-        clipFormat, vector<char> (reinterpret_cast<const char*> (buf), reinterpret_cast<const char*> (buf) + bufSize)));
 #endif
 }
 #endif

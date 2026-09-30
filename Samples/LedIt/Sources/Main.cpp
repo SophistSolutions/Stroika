@@ -9,10 +9,6 @@
 
 #include <UDrawingState.h> // for class UQDGlobals
 #include <UMemoryMgr.h>    // for InitializeHeap
-#elif qStroika_FeatureSupported_XWindows
-#include <gdk/gdkx.h>
-#include <gtk/gtk.h>
-#include <stdio.h>
 #elif defined(WIN32)
 #include <afxwin.h>
 #endif
@@ -31,12 +27,6 @@
 
 #ifndef qProfile
 #define qProfile 0
-#endif
-#elif qStroika_FeatureSupported_XWindows
-#define qSlowXDebugSyncMode 0
-//#define   qSlowXDebugSyncMode qStroika_Foundation_Debug_AssertionsChecked
-#ifndef qUseMyXErrorHandlers
-#define qUseMyXErrorHandlers qStroika_Foundation_Debug_AssertionsChecked
 #endif
 #endif
 
@@ -129,23 +119,7 @@ std::size_t __sys_pointer_size (void* p)
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
-#if qStroika_FeatureSupported_XWindows && qUseMyXErrorHandlers
-static int MyXErrorHandler (Display* display, XErrorEvent* error)
-{
-    if (error->error_code) {
-        if (gdk_error_warnings) {
-            char buf[64];
-            XGetErrorText (display, error->error_code, buf, 63);
-            g_error ("%s\n  serial %ld error_code %d request_code %d minor_code %d\n", buf, error->serial, error->error_code,
-                     error->request_code, error->minor_code);
-        }
-        gdk_error_code = error->error_code;
-    }
-    return 0;
-}
-#endif
-
-#if qStroika_Platform_MacOS || qStroika_FeatureSupported_XWindows
+#if qStroika_Platform_MacOS
 int main ([[maybe_unused]]int argc, [maybe_unused]]char** argv)
 {
 #if qStroika_Platform_MacOS
@@ -184,19 +158,6 @@ int main ([[maybe_unused]]int argc, [maybe_unused]]char** argv)
     // Hmm. produces link error doing this on CW6Pro? But seems to work OK without... LGP 2001-07-17
     ::DebugNewValidateAllBlocks ();
 #endif
-#elif qStroika_FeatureSupported_XWindows
-    gtk_set_locale ();
-    gtk_init (&argc, &argv);
-#if qUseMyXErrorHandlers
-    XSetErrorHandler (MyXErrorHandler);
-#endif
-
-#if qSlowXDebugSyncMode
-    (void)XSynchronize (GDK_DISPLAY (), true);
-#endif
-
-    LedItApplication app;
-    gtk_main ();
 #endif
     return (0);
 }

@@ -94,9 +94,6 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
     if (changed) {
         imager->fCachedFontInfo = tablet->GetFontMetrics ();
     }
-#elif qStroika_FeatureSupported_XWindows
-    tablet->SetFont (fontSpec);
-    imager->fCachedFontInfo = tablet->GetFontMetrics ();
 #endif
 }
 

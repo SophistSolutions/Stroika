@@ -353,8 +353,6 @@ const char* StandardMacPictureStyleMarker::GetTag () const
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 'DIB ';
 #elif qStroika_Platform_Windows
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = CF_DIB;
-#elif qStroika_FeatureSupported_XWindows
-const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 666; // X-TMP-HACK-LGP991214
 #endif
 constexpr Led_PrivateEmbeddingTag StandardDIBStyleMarker::kEmbeddingTag = "DIB";
 
@@ -484,8 +482,6 @@ const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat = 'URLD';
 const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Netscape Bookmark")));
 const Led_ClipFormat StandardURLStyleMarker::kWin32URLClipFormat =
     static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("UniformResourceLocator")));
-#elif qStroika_FeatureSupported_XWindows
-const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat = 'URLD'; //??? NOT SURE WHAT RIGHT ANSWER SB HERE!!!
 #endif
 
 constexpr Led_PrivateEmbeddingTag StandardURLStyleMarker::kEmbeddingTag = "URL";
@@ -1144,8 +1140,6 @@ TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
 #elif qStroika_Platform_Windows
     RequireNotNull (sUnknownPict);
     Led_Size pixelSize = Led_GetDIBImageSize (sUnknownPict);
-#elif qStroika_FeatureSupported_XWindows
-    Led_Size pixelSize = Led_Size (10, 10); //  X-TMP-HACK-LGP2000-06-13
 #endif
 
     return TWIPS_Point (Led_CvtScreenPixelsToTWIPSV (pixelSize.v), Led_CvtScreenPixelsToTWIPSH (pixelSize.h));

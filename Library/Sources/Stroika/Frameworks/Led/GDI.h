@@ -23,10 +23,6 @@
 #include <vector>
 
 // WHY DON'T WE NEED TO INCLUDE <Windows.h> here??? - LGP 991213
-#if qStroika_FeatureSupported_XWindows
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#endif
 
 #include "Stroika/Foundation/Characters/String.h"
 
@@ -535,8 +531,6 @@ namespace Stroika::Frameworks::Led {
                 return ::_tcscmp (fName, rhs.fName) == 0;
             }
         };
-#elif qStroika_FeatureSupported_XWindows
-        using FontNameSpecifier = SDKString;
 #else
         // even if no actual GDI, need FontNameSpecifer to get stuff compiling
         using FontNameSpecifier = String;
@@ -595,10 +589,6 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void    GetOSRep (LOGFONT* logFont) const;
         nonvirtual void    SetOSRep (LOGFONT logFont);
         nonvirtual void    LightSetOSRep (LOGFONT logFont);
-#elif qStroika_FeatureSupported_XWindows
-        static string mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize);
-        nonvirtual string GetOSRep () const;
-        nonvirtual void   SetFromOSRep (const string& osRep);
 #endif
 
     public:
@@ -777,11 +767,7 @@ namespace Stroika::Frameworks::Led {
             eDefaultFilterOptions = 0
 #endif
         };
-        InstalledFonts (
-#if qStroika_FeatureSupported_XWindows
-            Display* display,
-#endif
-            FilterOptions filterOptions = eDefaultFilterOptions);
+        InstalledFonts (FilterOptions filterOptions = eDefaultFilterOptions);
 
     public:
         nonvirtual const vector<SDKString>& GetUsableFontNames () const;
@@ -865,9 +851,6 @@ namespace Stroika::Frameworks::Led {
     RECT      AsRECT (Led_Rect p);
     SIZE      AsSIZE (Led_Size s);
     Led_Size  AsLedSize (SIZE s);
-#elif qStroika_FeatureSupported_XWindows
-    Led_Rect   AsLedRect (const XRectangle& r);
-    XRectangle AsXRect (const Led_Rect& r);
 #endif
 
 #if qStroika_Frameworks_Led_SupportGDI
@@ -885,21 +868,10 @@ namespace Stroika::Frameworks::Led {
         portable access to things like GetLineHeight (), and GetAscent (), etc...</p>
     */
     class FontMetrics {
-#if qStroika_FeatureSupported_XWindows
-    public:
-        struct PlatformSpecific {
-            DistanceType fAscent;
-            DistanceType fDescent;
-            DistanceType fLeading;
-            DistanceType fMaxCharWidth;
-        };
-#endif
     public:
         FontMetrics () = default;
 #if qStroika_Platform_Windows
         FontMetrics (const TEXTMETRIC& from);
-#elif qStroika_FeatureSupported_XWindows
-        FontMetrics (const PlatformSpecific& from);
 #endif
         FontMetrics (const FontMetrics&)                = default;
         FontMetrics& operator= (const FontMetrics& rhs) = default;
@@ -928,8 +900,6 @@ namespace Stroika::Frameworks::Led {
     private:
 #if qStroika_Platform_Windows
         TEXTMETRIC fPlatformSpecific{};
-#elif qStroika_FeatureSupported_XWindows
-        PlatformSpecific fPlatformSpecific{};
 #endif
     };
 #endif
@@ -946,7 +916,7 @@ namespace Stroika::Frameworks::Led {
 #if qStroika_Frameworks_Led_SupportGDI
     /**
      *  This class is used to wrap a low level graphics drawing device. On Windows - this is an HDC.
-     *  On the Mac - a GrafPtr (also CGrafPtr and GWorldPtr). On X-Windows - a drawable and display, and GC.</p>
+     *  On the Mac - a GrafPtr (also CGrafPtr and GWorldPtr).</p>
      * 
      *  This class right now is a very thin wrapper on those drawing prodedures (mostly for backward compatability reasons.
      *  Eventually - it may do a better job of wrapping those concepts/APIs genericly.</p>
@@ -962,8 +932,6 @@ namespace Stroika::Frameworks::Led {
         };
 
         Tablet (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
-#elif qStroika_FeatureSupported_XWindows
-        Tablet (Display* display, Drawable drawable);
 #endif
 
     public:
@@ -1022,21 +990,6 @@ namespace Stroika::Frameworks::Led {
         nonvirtual int   GetDeviceCaps (int nIndex) const;
         nonvirtual BOOL  Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
         nonvirtual HDC   Detach ();
-#elif qStroika_FeatureSupported_XWindows
-    public:
-        nonvirtual void SetFont (const FontSpecification& fontSpec);
-
-    private:
-        map<string, XFontStruct*> fFontCache;
-        enum {
-            kMaxFontCacheSize = 5
-        };
-
-    public:
-        nonvirtual void SetDrawableOrigin (const Led_Point& origin);
-
-    private:
-        Led_Point fDrawableOrigin;
 #endif
 
 #if qStroika_Platform_Windows
@@ -1045,27 +998,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual unsigned int SetTextAlign (unsigned int nTextAlign);
 #endif
 
-#if qStroika_FeatureSupported_XWindows
-    public:
-        static int IgnoreXErrorHandler (Display* display, XErrorEvent* error);
-#endif
-
-#if qStroika_FeatureSupported_XWindows
-    private:
-        nonvirtual SDKString BestMatchFont (const FontSpecification& fsp, const vector<SDKString>& fontsList);
-
-    public:
-        static void ParseFontName (const SDKString& fontName, SDKString* familyName, SDKString* fontSize, SDKString* fontWeight, SDKString* fontSlant);
-#endif
-
     public:
         nonvirtual void MoveTo (const Led_Point& to);
         nonvirtual void LineTo (const Led_Point& to);
-
-#if qStroika_FeatureSupported_XWindows
-    private:
-        Led_Point fCurDrawLineLoc;
-#endif
 
     public:
         nonvirtual void MeasureText (const FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nTChars, DistanceType* charLocations);
@@ -1118,14 +1053,6 @@ namespace Stroika::Frameworks::Led {
     private:
         mutable DistanceType fLogPixelsV;
         mutable DistanceType fLogPixelsH;
-#elif qStroika_FeatureSupported_XWindows
-    private:
-        Display*             fDisplay;
-        Drawable             fDrawable;
-        GC                   fGC;
-        Colormap             fColormap;
-        mutable XFontStruct* fCachedFontInfo;
-        map<string, string>  fFontMappingCache;
 #endif
 
     public:
@@ -1231,8 +1158,6 @@ namespace Stroika::Frameworks::Led {
             OT (GrafPtr gp);
 #elif qStroika_Platform_Windows
             OT (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
-#elif qStroika_FeatureSupported_XWindows
-            OT (Display* display, Drawable drawable);
 #endif
         };
 
@@ -1249,8 +1174,6 @@ namespace Stroika::Frameworks::Led {
         Bitmap fMemoryBitmap; // only can create / select inside loop cuz there is where we know the size.
         // but decare outside, so stays around for successive rows which are the same size.
         HBITMAP fOldBitmapInDC; // used for save/restore of bitmap associated with the DC.
-#elif qStroika_FeatureSupported_XWindows
-        Drawable fPixmap;
 #endif
     };
 
@@ -1268,7 +1191,7 @@ namespace Stroika::Frameworks::Led {
     public:
 #if qStroika_Platform_Windows
         GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect);
-#elif qStroika_Platform_MacOS || qStroika_FeatureSupported_XWindows
+#elif qStroika_Platform_MacOS
         GDI_Obj_Selector (Tablet* tablet, const Pen& pen);
 #endif
     public:

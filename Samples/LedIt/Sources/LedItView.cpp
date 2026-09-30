@@ -50,8 +50,6 @@ class My_CMDNUM_MAPPING : public
                           Platform::MFC_CommandNumberMapping
 #elif qStroika_Platform_MacOS
                           Platform::PP_CommandNumberMapping
-#elif qStroika_FeatureSupported_XWindows
-                          Platform::Gtk_CommandNumberMapping
 #endif
 {
 public:
@@ -150,7 +148,7 @@ public:
 #endif
         AddAssociation (kSubScriptCmd, LedItView::kSubScriptCommand_CmdID);
         AddAssociation (kSuperScriptCmd, LedItView::kSuperScriptCommand_CmdID);
-#if qStroika_Platform_Windows || qStroika_FeatureSupported_XWindows
+#if qStroika_Platform_Windows
         AddAssociation (kChooseFontDialogCmd, LedItView::kChooseFontCommand_CmdID);
 #endif
 
@@ -211,8 +209,6 @@ public:
         Led_StdDialogHelper_FindDialog findDialog;
 #elif qStroika_Platform_Windows
         Led_StdDialogHelper_FindDialog findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
-#elif qStroika_FeatureSupported_XWindows
-        Led_StdDialogHelper_FindDialog findDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
 
         findDialog.fFindText              = *findText;
@@ -239,8 +235,6 @@ public:
         Led_StdDialogHelper_ReplaceDialog replaceDialog;
 #elif qStroika_Platform_Windows
         Led_StdDialogHelper_ReplaceDialog replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
-#elif qStroika_FeatureSupported_XWindows
-        Led_StdDialogHelper_ReplaceDialog replaceDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
 
         replaceDialog.fFindText              = *findText;
@@ -283,8 +277,6 @@ public:
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
 #elif qStroika_Platform_Windows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
-#elif qStroika_FeatureSupported_XWindows
-        Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
 
         spellCheckDialog.DoModal ();
@@ -315,10 +307,6 @@ public:
         return sFontIDMapCache[idx];
 #elif qStroika_Platform_Windows
         return LedItApplication::Get ().CmdNumToFontName (MFC_CommandNumberMapping::Get ().ReverseLookup (cmdNum)).c_str ();
-#elif qStroika_FeatureSupported_XWindows
-        const vector<SDKString>& fontNames = LedItApplication::Get ().fInstalledFonts.GetUsableFontNames ();
-        Led_Assert (cmdNum - LedItView::kFontMenuFirst_CmdID < fontNames.size ());
-        return (fontNames[cmdNum - LedItView::kFontMenuFirst_CmdID]);
 #endif
     }
 #if qSupportOtherFontSizeDlg
@@ -397,30 +385,6 @@ public:
         else {
             return false;
         }
-    }
-#endif
-#if qStroika_FeatureSupported_XWindows
-    virtual bool PickOtherFontColor (Color* color) override
-    {
-        StdColorPickBox dlg (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()), *color);
-        dlg.DoModal ();
-        if (dlg.GetWasOK ()) {
-            *color = dlg.fColor;
-            return true;
-        }
-        return false;
-    }
-#endif
-#if qStroika_FeatureSupported_XWindows
-    virtual bool ChooseFont (IncrementalFontSpecification* font) override
-    {
-        StdFontPickBox dlg (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()), *font);
-        dlg.DoModal ();
-        if (dlg.GetWasOK ()) {
-            *font = dlg.fFont;
-            return true;
-        }
-        return false;
     }
 #endif
 #if qStroika_Platform_MacOS || qStroika_Platform_Windows
@@ -556,11 +520,7 @@ END_MESSAGE_MAP ()
 DISABLE_COMPILER_MSC_WARNING_END (4407)
 #endif
 
-LedItView::LedItView (
-#if qStroika_FeatureSupported_XWindows
-    LedItDocument* owningDoc
-#endif
-    )
+LedItView::LedItView ()
     : inherited ()
     , fWrapToWindow (Options{}.GetWrapToWindow ())
 {
@@ -575,14 +535,6 @@ LedItView::LedItView (
 #elif qStroika_Platform_Windows
     SetScrollBarType (h, fWrapToWindow ? eScrollBarNever : eScrollBarAsNeeded);
     SetScrollBarType (v, eScrollBarAlways);
-#elif qStroika_FeatureSupported_XWindows
-    SpecifyTextStore (&owningDoc->GetTextStore ());
-    SetStyleDatabase (owningDoc->GetStyleDatabase ());
-    SetParagraphDatabase (owningDoc->GetParagraphDatabase ());
-    SetHidableTextDatabase (owningDoc->GetHidableTextDatabase ());
-    //SetShowHiddenText (Options{}.GetShowHiddenText ());
-    SetCommandHandler (&owningDoc->GetCommandHandler ());
-    SetSpellCheckEngine (&LedItApplication::Get ().fSpellCheckEngine);
 #endif
 #if qStroika_Platform_MacOS || qStroika_Platform_Windows
     SetUseSecondaryHilight (true);

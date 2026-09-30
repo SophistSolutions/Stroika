@@ -34,13 +34,6 @@ using namespace Stroika::Frameworks::Led;
 #define qUseGetCharPlacementToImage 1
 #endif
 
-/*
- *  Short term debugging crap to debug X-Windows font issues.
- */
-#ifndef qDebugFontDetails
-#define qDebugFontDetails qStroika_Foundation_Debug_AssertionsChecked&& qStroika_FeatureSupported_XWindows
-#endif
-
 #if qStroika_Platform_Windows
 /*
  *  Used to use CreateCompatibleBitmap, but as of SPR#1271 try using a DIBSection (of a compatile depth) instead).
@@ -449,60 +442,6 @@ const Color Color::kAqua      = Color::kCyan;    // same according to that table
  ****************************** FontSpecification ***************************
  ********************************************************************************
  */
-#if qStroika_FeatureSupported_XWindows
-string FontSpecification::mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize)
-{
-    char hRes[1024];
-    (void)::sprintf (hRes, "%d", Globals::Get ().GetMainScreenLogPixelsH ());
-    char vRes[1024];
-    (void)::sprintf (vRes, "%d", Globals::Get ().GetMainScreenLogPixelsV ());
-    string result = "-" + foundry + "-" + family + "-" + weight + "-" + slant + "-*-*-*-" + pointSize + "-" + hRes + "-" + vRes + "-*-*-*-*";
-    return result;
-}
-
-string FontSpecification::GetOSRep () const
-{
-    string foundry = "*";
-    string weight  = fBold ? "bold" : "medium";
-    string slant   = fItalics ? "i" : "r";
-    char   pointSize[1024];
-    (void)::sprintf (pointSize, "%d", GetPointSize () * 10);
-    return mkOSRep (foundry, fFontFamily, weight, slant, pointSize);
-}
-
-void FontSpecification::SetFromOSRep (const string& osRep)
-{
-    SDKString familyName;
-    SDKString fontSize;
-    SDKString fontWeight;
-    SDKString fontSlant;
-    Tablet::ParseFontName (osRep, &familyName, &fontSize, &fontWeight, &fontSlant);
-    SetFontName (familyName);
-    if (fontSlant == "i") {
-        SetStyle_Italic (true);
-    }
-    else if (fontSlant == "r") {
-        SetStyle_Italic (false);
-    }
-    if (fontWeight == "bold") {
-        SetStyle_Bold (true);
-    }
-    else if (fontWeight == "medium") {
-        SetStyle_Bold (false);
-    }
-    int fspPointSize = GetPointSize ();
-    if (::sscanf (fontSize.c_str (), "%d", &fspPointSize) == 1) {
-        fspPointSize /= 10;
-        if (fspPointSize < 5) {
-            fspPointSize = 5;
-        }
-        if (fspPointSize > 100) {
-            fspPointSize = 100;
-        }
-        SetPointSize (fspPointSize);
-    }
-}
-#endif
 
 /*
 @METHOD:        FontSpecification::SetFontName
@@ -513,8 +452,6 @@ void FontSpecification::SetFontName (const SDKString& fontName)
 #if qStroika_Platform_Windows
     Characters::CString::Copy (fFontInfo.lfFaceName, std::size (fFontInfo.lfFaceName), fontName.c_str ());
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
-#elif qStroika_FeatureSupported_XWindows
-    fFontFamily = fontName;
 #endif
 }
 
@@ -530,8 +467,6 @@ void FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifie
 #if qStroika_Platform_Windows
     Characters::CString::Copy (fFontInfo.lfFaceName, std::size (fFontInfo.lfFaceName), fontNameSpecifier.fName);
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
-#elif qStroika_FeatureSupported_XWindows
-    fFontFamily = fontNameSpecifier;
 #endif
 }
 
@@ -645,11 +580,6 @@ FontSpecification Led::GetStaticDefaultFont ()
     if (not sDefaultFontValid) {
 #if qStroika_Platform_Windows
         sDefaultFont = GetStaticDefaultFont (DEFAULT_CHARSET);
-#elif qStroika_FeatureSupported_XWindows
-        {
-            sDefaultFont.SetFontNameSpecifier ("times");
-            sDefaultFont.SetPointSize (12);
-        }
 #endif
 #if qStroika_Platform_Windows
         sDefaultFont.SetTextColor (Led_GetTextColor ());
@@ -1037,43 +967,6 @@ Tablet::Tablet (HDC hdc, Tablet::OwnDCControl ownsDC)
     , fLogPixelsH (0)
 {
 }
-#elif qStroika_FeatureSupported_XWindows
-Tablet::Tablet (Display* display, Drawable drawable)
-    : fDrawableOrigin (Led_Point (0, 0))
-    , fFontCache ()
-    , fCurDrawLineLoc (Led_Point (0, 0))
-    , fDisplay (display)
-    , fDrawable (drawable)
-    , fGC (nullptr)
-    , fColormap (0)
-    , fCachedFontInfo (nullptr)
-    , fFontMappingCache ()
-{
-    int screen = DefaultScreen (display);
-    fGC        = ::XCreateGC (display, drawable, 0, nullptr);
-    ::XSetForeground (display, fGC, BlackPixel (display, screen));
-    ::XSetBackground (display, fGC, WhitePixel (display, screen));
-    XSetGraphicsExposures (display, fGC, true);
-    XWindowAttributes wa;
-    (void)::memset (&wa, 0, sizeof (wa));
-    /*
-     *  Since we don't know for sure the drawable is a window - catch the error and ignore it. Don't let
-     *  XErrorHandler do anything bad.
-     */
-    int (*oldErrHandler) (Display*, XErrorEvent*) = ::XSetErrorHandler (IgnoreXErrorHandler);
-    Status s                                      = ::XGetWindowAttributes (display, drawable, &wa);
-    ::XSetErrorHandler (oldErrHandler);
-    if (s != 0 and wa.map_installed) {
-        fColormap = wa.colormap;
-    }
-    else {
-        fColormap = DefaultColormap (fDisplay, DefaultScreen (fDisplay));
-        //          Assert (false);//???
-        // make new colormap...call XGetWMColormap ()...
-        // CALL XSetWindowColormap ().... if not gotten
-        // .
-    }
-}
 #endif
 
 Tablet::~Tablet ()
@@ -1082,11 +975,6 @@ Tablet::~Tablet ()
     delete fRecolorHelper;
     if (m_hDC != nullptr and fOwnsDC == eOwnsDC) {
         ::DeleteDC (Detach ());
-    }
-#elif qStroika_FeatureSupported_XWindows
-    ::XFreeGC (fDisplay, fGC);
-    for (auto i = fFontCache.begin (); i != fFontCache.end (); ++i) {
-        ::XFreeFont (fDisplay, i->second);
     }
 #endif
 }
@@ -1157,64 +1045,6 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
     HWND w = GetWindow ();
     Execution::ThrowIfNull (w);
     ::ScrollWindow (w, 0, scrollVBy, &gdiMoveRect, &gdiMoveRect);
-#elif qStroika_FeatureSupported_XWindows
-    if (scrollVBy != 0) {
-        {
-            /*
-             *  We cannot do a scrollbits if there are any pending update events. Ideally - we would PREVENT
-             *  this situation by having Led_Gtk_Helper<BASE_INTERACTOR,GTKBASEINFO>::Update_ () work properly.
-             *  But - alas - after a day or two's efforts - I've been unable to get that code working.
-             *  Sigh. Luckily - this seems to prevent any drawing bugs, and only results in an occasional
-             *  drawing (scrolling) slowdown. I guess we can live with that. -- LGP 2001-05-18
-             */
-            XEvent e;
-            if (::XCheckTypedEvent (fDisplay, Expose, &e) or ::XCheckTypedEvent (fDisplay, GraphicsExpose, &e)) {
-                ::XPutBackEvent (fDisplay, &e);
-                Execution::ThrowIfNull (nullptr);
-            }
-        }
-        Led_Rect srcMoveRect = windowRect;
-        Led_Rect exposedRect = windowRect;
-        if (scrollVBy > 0) {
-            // moving bits down (up scrollbar button)
-            srcMoveRect.bottom -= scrollVBy;
-            exposedRect.bottom = scrollVBy;
-        }
-        else {
-            srcMoveRect.top -= scrollVBy;
-            exposedRect.top = exposedRect.bottom + scrollVBy;
-        }
-        XGCValues           prevValues;
-        const unsigned long kSavedAttrs = GCGraphicsExposures;
-        (void)::memset (&prevValues, 0, sizeof (prevValues));
-        ::XGetGCValues (fDisplay, fGC, kSavedAttrs, &prevValues);
-        ::XSetClipMask (fDisplay, fGC, None);
-        ::XSetGraphicsExposures (fDisplay, fGC, true);
-        ::XCopyArea (fDisplay, fDrawable, fDrawable, fGC, srcMoveRect.GetLeft (), srcMoveRect.GetTop (), srcMoveRect.GetWidth (),
-                     srcMoveRect.GetHeight (), srcMoveRect.GetLeft (), srcMoveRect.top + scrollVBy);
-        ::XChangeGC (fDisplay, fGC, kSavedAttrs, &prevValues);
-
-/*
-         *  After the scrollbits - we leave a little rectangle exposed. We must mark that as needing drawing.
-         */
-#if 1
-        XEvent event;
-        (void)::memset (&event, 0, sizeof (event));
-        event.type               = Expose;
-        event.xexpose.send_event = true;
-        event.xexpose.display    = fDisplay;
-        event.xexpose.window     = fDrawable;
-        event.xexpose.x          = (int)exposedRect.GetLeft ();
-        event.xexpose.y          = (int)exposedRect.GetTop ();
-        event.xexpose.width      = (int)exposedRect.GetWidth ();
-        event.xexpose.height     = (int)exposedRect.GetHeight ();
-        event.xexpose.count      = 0;
-        Verify (::XSendEvent (fDisplay, fDrawable, false, ExposureMask, &event) != 0);
-#else
-        ::XClearArea (fDisplay, fDrawable, (int)exposedRect.GetLeft (), (int)exposedRect.GetTop (), (unsigned int)exposedRect.GetWidth (),
-                      (unsigned int)exposedRect.GetHeight (), true);
-#endif
-    }
 #else
     Assert (false); //NYI
 #endif
@@ -1288,8 +1118,6 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
         SIZE we             = GetWindowExt ();
         kMaxTextWidthResult = ::MulDiv (kMaxTextWidthResult, we.cx, ve.cx) - 1;
     }
-#elif qStroika_FeatureSupported_XWindows
-    const DistanceType kMaxTextWidthResult = 0x7fff; //X-TMP-HACK-LGP991213
 #endif
     size_t kMaxChars = kMaxTextWidthResult / precomputedFontMetrics.GetMaxCharacterWidth ();
     Assert (kMaxChars > 1);
@@ -1328,13 +1156,6 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
         Win32_GetTextExtentExPoint (m_hAttribDC, &text[i], charsThisTime, kMaxTextWidthResult, nullptr, (int*)&charLocations[i], &size);
         for (size_t j = 0; j < charsThisTime; ++j) {
             charLocations[i + j] += runningCharCount;
-        }
-#elif qStroika_FeatureSupported_XWindows
-        Execution::ThrowIfNull (fCachedFontInfo);
-        // Gross hack - sloppy implementation (SLOW). But I'm not sure what in the X SDK allows this to be done faster! -- LGP 2000-09-05
-        // Actually - not TOO bad since whole computation is done client-side. Seems to be working OK - at least for now - LGP 2001-05-05
-        for (size_t j = 0; j < charsThisTime; ++j) {
-            charLocations[i + j] = runningCharCount + ::XTextWidth (const_cast<XFontStruct*> (fCachedFontInfo), &text[i], j + 1);
         }
 #endif
 
@@ -1466,17 +1287,6 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
         }
 
         (void)SetBkMode (oldBkMode);
-#elif qStroika_FeatureSupported_XWindows
-        Led_Point cursor = Led_Point (outputAt.v + precomputedFontMetrics.GetAscent (), outputAt.h - hScrollOffset) - fDrawableOrigin; // ascent - goto baseline...
-        XTextItem item;
-        memset (&item, 0, sizeof (item));
-        item.chars  = const_cast<char*> (textCursor);
-        item.nchars = nextTabAt - textCursor;
-        item.delta  = 0;
-        item.font   = None;
-        ::XDrawText (fDisplay, fDrawable, fGC, cursor.h + widthSoFar, cursor.v, &item, 1);
-        Execution::ThrowIfNull (fCachedFontInfo);
-        widthSoFar += ::XTextWidth (const_cast<XFontStruct*> (fCachedFontInfo), item.chars, item.nchars);
 #endif
 
         // Now see if nextTab really pointing at a tab (otherwise at end of buffer)
@@ -1503,28 +1313,6 @@ void Tablet::SetBackColor (const Color& backColor)
 {
 #if qStroika_Platform_Windows
     SetBkColor (backColor.GetOSRep ());
-#elif qStroika_FeatureSupported_XWindows
-    if (backColor == Color::kWhite) {
-        ::XSetBackground (fDisplay, fGC, WhitePixel (fDisplay, DefaultScreen (fDisplay)));
-    }
-    else if (backColor == Color::kBlack) {
-        ::XSetBackground (fDisplay, fGC, BlackPixel (fDisplay, DefaultScreen (fDisplay)));
-    }
-    else {
-        XColor bgColorDef;
-        memset (&bgColorDef, 0, sizeof (bgColorDef));
-        bgColorDef.red   = backColor.GetRed ();
-        bgColorDef.green = backColor.GetGreen ();
-        bgColorDef.blue  = backColor.GetBlue ();
-        Colormap cmap    = DefaultColormap (fDisplay, DefaultScreen (fDisplay));
-        Status   s       = XAllocColor (fDisplay, cmap, &bgColorDef);
-        if (s == 0) {
-            ::XSetBackground (fDisplay, fGC, WhitePixel (fDisplay, DefaultScreen (fDisplay)));
-        }
-        else {
-            ::XSetBackground (fDisplay, fGC, bgColorDef.pixel);
-        }
-    }
 #endif
 }
 
@@ -1532,28 +1320,6 @@ void Tablet::SetForeColor (const Color& foreColor)
 {
 #if qStroika_Platform_Windows
     SetTextColor (foreColor.GetOSRep ());
-#elif qStroika_FeatureSupported_XWindows
-    if (foreColor == Color::kWhite) {
-        ::XSetForeground (fDisplay, fGC, WhitePixel (fDisplay, DefaultScreen (fDisplay)));
-    }
-    else if (foreColor == Color::kBlack) {
-        ::XSetForeground (fDisplay, fGC, BlackPixel (fDisplay, DefaultScreen (fDisplay)));
-    }
-    else {
-        XColor fgColorDef;
-        memset (&fgColorDef, 0, sizeof (fgColorDef));
-        fgColorDef.red   = foreColor.GetRed ();
-        fgColorDef.green = foreColor.GetGreen ();
-        fgColorDef.blue  = foreColor.GetBlue ();
-        Colormap cmap    = DefaultColormap (fDisplay, DefaultScreen (fDisplay));
-        Status   s       = ::XAllocColor (fDisplay, cmap, &fgColorDef);
-        if (s == 0) {
-            ::XSetForeground (fDisplay, fGC, BlackPixel (fDisplay, DefaultScreen (fDisplay)));
-        }
-        else {
-            ::XSetForeground (fDisplay, fGC, fgColorDef.pixel);
-        }
-    }
 #endif
 }
 
@@ -1573,23 +1339,6 @@ void Tablet::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color
         ++eraser.right; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
         ++eraser.bottom;
         Rectangle (AsRECT (eraser));
-#elif qStroika_FeatureSupported_XWindows
-        XGCValues           prevValues;
-        const unsigned long kSavedAttrs = GCForeground;
-        Colormap            cmap        = DefaultColormap (fDisplay, 0);
-        XColor              fgColorDef;
-        memset (&fgColorDef, 0, sizeof (fgColorDef));
-        fgColorDef.red   = eraseColor.GetRed ();
-        fgColorDef.green = eraseColor.GetGreen ();
-        fgColorDef.blue  = eraseColor.GetBlue ();
-        Status s         = ::XAllocColor (fDisplay, cmap, &fgColorDef);
-        if (s != 0) {
-            ::XSetForeground (fDisplay, fGC, fgColorDef.pixel);
-        }
-        Led_Rect adjustedEraseRect = eraseRect - fDrawableOrigin;
-        ::XFillRectangle (fDisplay, fDrawable, fGC, adjustedEraseRect.GetLeft (), adjustedEraseRect.GetTop (),
-                          adjustedEraseRect.GetWidth (), adjustedEraseRect.GetHeight ());
-        ::XChangeGC (fDisplay, fGC, kSavedAttrs, &prevValues);
 #endif
     }
 }
@@ -1636,24 +1385,6 @@ void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unuse
             recolorHelper->DoRecolor (hilightArea);
 #endif
         }
-#elif qStroika_FeatureSupported_XWindows
-        /*
-         *  Quick and dirty primitive version. Should probably take into account backColor/foreColor args.
-         *          --  LGP 2001-04-30
-         */
-        XGCValues           prevValues;
-        const unsigned long kSavedAttrs = GCFunction | GCForeground | GCBackground;
-        (void)::memset (&prevValues, 0, sizeof (prevValues));
-        ::XGetGCValues (fDisplay, fGC, kSavedAttrs, &prevValues);
-        ::XSetFunction (fDisplay, fGC, GXxor);
-        long whiteP = WhitePixel (fDisplay, DefaultScreen (fDisplay));
-        long blackP = BlackPixel (fDisplay, DefaultScreen (fDisplay)) ^ whiteP;
-        ::XSetBackground (fDisplay, fGC, whiteP);
-        ::XSetForeground (fDisplay, fGC, blackP);
-        Led_Rect adjustedRect = hilightArea - fDrawableOrigin;
-        ::XFillRectangle (fDisplay, fDrawable, fGC, adjustedRect.GetLeft (), adjustedRect.GetTop (), adjustedRect.GetWidth (),
-                          adjustedRect.GetHeight ());
-        ::XChangeGC (fDisplay, fGC, kSavedAttrs, &prevValues);
 #endif
     }
 }
@@ -1671,8 +1402,6 @@ void Tablet::HilightArea_SolidHelper (const Region& hilightArea, [[maybe_unused]
     if (not hilightArea.IsEmpty ()) {
 #if qStroika_Platform_Windows
         Assert (false); // probably not hard - bit not totally obvious how todo and since not called yet - ignore for now... LGP 2002-12-03
-#elif qStroika_FeatureSupported_XWindows
-        Assert (false); // I have no XWin region implementation yet... LGP 2002-12-03
 #endif
     }
 }
@@ -1688,254 +1417,8 @@ FontMetrics Tablet::GetFontMetrics () const
     TEXTMETRIC tms;
     Verify (::GetTextMetrics (m_hAttribDC, &tms) != 0);
     return tms;
-#elif qStroika_FeatureSupported_XWindows
-    FontMetrics::PlatformSpecific result;
-    memset (&result, 0, sizeof (result));
-    Execution::ThrowIfNull (fCachedFontInfo);
-    result.fAscent       = fCachedFontInfo->ascent;
-    result.fDescent      = fCachedFontInfo->descent;
-    result.fLeading      = 0; // NOT SURE WHAT THIS IS in X-terminology. Maybe just not supported in XFonts? - LGP 2001-05-07
-    result.fMaxCharWidth = fCachedFontInfo->max_bounds.width;
-    return result;
 #endif
 }
-
-#if qStroika_FeatureSupported_XWindows
-void Tablet::SetFont (const FontSpecification& fontSpec)
-{
-    /*
-     * First, see if the XFontStruct* is already cached. If so - all we need todo is (maybe) an XSetFont call.
-     */
-    {
-        map<string, XFontStruct*>::const_iterator i = fFontCache.find (fontSpec.GetOSRep ());
-        if (i != fFontCache.end ()) {
-            XFontStruct* newFontStruct = i->second;
-            if (newFontStruct != fCachedFontInfo) {
-                fCachedFontInfo = i->second;
-                AssertNotNull (fCachedFontInfo);
-                ::XSetFont (fDisplay, fGC, fCachedFontInfo->fid);
-            }
-            return;
-        }
-        /*
-         *  If a cache miss, then assure cache not too big.
-         */
-        if (fFontCache.size () >= kMaxFontCacheSize) {
-            // remove a random elt
-            ::XFreeFont (fDisplay, fFontCache.begin ()->second);
-            fFontCache.erase (fFontCache.begin ());
-        }
-    }
-
-    /*
-     *  The font is not already cached. We must try to find it (maybe finding the name in the
-     *  fFontMappingCache cache, maybe not.
-     */
-    fCachedFontInfo = nullptr;
-    fCachedFontInfo = ::XLoadQueryFont (fDisplay, fontSpec.GetOSRep ().c_str ());
-    if (fCachedFontInfo == nullptr) {
-        /*
-         *  Look and see if the font is in the cache.
-         */
-        map<string, string>::const_iterator i = fFontMappingCache.find (fontSpec.GetOSRep ());
-
-        string useFontName;
-        if (i != fFontMappingCache.end ()) {
-            useFontName = i->second;
-            Assert (not useFontName.empty ());
-        }
-        else {
-            // try font-matching algorithm...
-            char pointSize[1024];
-            (void)::sprintf (pointSize, "%d", fontSpec.GetPointSize () * 10);
-            const string kMatchAny  = "*";
-            string       tryFontRep = fontSpec.mkOSRep (kMatchAny, fontSpec.GetFontNameSpecifier (), kMatchAny, kMatchAny, kMatchAny);
-            int          nFonts     = 0;
-            char**       fontList   = ::XListFonts (fDisplay, tryFontRep.c_str (), 100000, &nFonts);
-#if qDebugFontDetails
-            bool nameMatchFailure = false;
-#endif
-            if (fontList == nullptr) {
-#if qDebugFontDetails
-                nameMatchFailure = true;
-#endif
-                // Try a few name mappings/aliases (apx equal fonts - generalize this!!!)
-                if (fontSpec.GetFontNameSpecifier () == "Times New Roman") {
-                    tryFontRep = fontSpec.mkOSRep (kMatchAny, "times", kMatchAny, kMatchAny, kMatchAny);
-                    fontList   = ::XListFonts (fDisplay, tryFontRep.c_str (), 100000, &nFonts);
-                }
-            }
-            if (fontList == nullptr) {
-#if qDebugFontDetails
-                nameMatchFailure = true;
-#endif
-                tryFontRep = fontSpec.mkOSRep (kMatchAny, kMatchAny, kMatchAny, kMatchAny, kMatchAny);
-                fontList   = ::XListFonts (fDisplay, tryFontRep.c_str (), 100000, &nFonts);
-            }
-            Execution::ThrowIfNull (fontList);
-            vector<string> vFontList;
-            {
-                vFontList.reserve (nFonts);
-                for (size_t i = 0; i < nFonts; ++i) {
-                    vFontList.push_back (fontList[i]);
-                }
-            }
-            ::XFreeFontNames (fontList);
-            fontList                = nullptr;
-            string bestMatchingName = BestMatchFont (fontSpec, vFontList);
-#if qDebugFontDetails
-            if (nameMatchFailure) {
-                fprintf (stderr, "Couldn't find fontName '%s'- using BestMatchSpec = '%s'\r\n", fontSpec.GetFontNameSpecifier ().c_str (),
-                         bestMatchingName.c_str ());
-            }
-#endif
-            useFontName = bestMatchingName;
-            Assert (not useFontName.empty ());
-#if qDebugFontDetails
-            fprintf (stderr, "Adding mapping to  fFontMappingCache: '%s'- ==> '%s'\r\n", fontSpec.GetOSRep ().c_str (), useFontName.c_str ());
-#endif
-            fFontMappingCache.insert (map<string, string>::value_type (fontSpec.GetOSRep (), useFontName));
-        }
-        fCachedFontInfo = ::XLoadQueryFont (fDisplay, useFontName.c_str ());
-        Execution::ThrowIfNull (fCachedFontInfo);
-    }
-    fFontCache.insert (map<string, XFontStruct*>::value_type (fontSpec.GetOSRep (), fCachedFontInfo));
-    AssertNotNull (fCachedFontInfo);
-    ::XSetFont (fDisplay, fGC, fCachedFontInfo->fid);
-}
-
-void Tablet::SetDrawableOrigin (const Led_Point& origin)
-{
-    fDrawableOrigin = origin;
-}
-#endif
-
-#if qStroika_FeatureSupported_XWindows
-static bool FontNamesEqual (const string& lhs, const string& rhs)
-{
-    if (lhs.length () != rhs.length ()) {
-        return false;
-    }
-    for (size_t i = 0; i < lhs.length (); ++i) {
-        if (lhs[i] != rhs[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-SDKString Tablet::BestMatchFont (const FontSpecification& fsp, const vector<SDKString>& fontsList)
-{
-    SDKString    bestAnswer;
-    float        bestScore    = 0.0f;
-    SDKString    fspName      = fsp.GetFontName ();
-    int          fspPointSize = fsp.GetPointSize ();
-    SDKString    fspWeight    = fsp.GetStyle_Bold () ? "bold" : "medium";
-    SDKString    fspItalics   = fsp.GetStyle_Italic () ? "i" : "r";
-    const string kMatchAny    = "*";
-    for (auto i = fontsList.begin (); i != fontsList.end (); ++i) {
-        SDKString name;
-        SDKString size;
-        SDKString weight;
-        SDKString slant;
-        ParseFontName (*i, &name, &size, &weight, &slant);
-        bool rightFontName = (FontNamesEqual (fspName, name));
-
-        float thisScore = 1;
-        if (rightFontName) {
-            thisScore += 10;
-        }
-        int thisPointSize = 0;
-        if (::sscanf (size.c_str (), "%d", &thisPointSize) == 1) {
-            int   pointSizeDiff = abs (thisPointSize - (fspPointSize * 10));
-            float scoreAdj      = (100.0f - (pointSizeDiff / 10.0f)) / 10.0f;
-            scoreAdj            = max (0.0f, scoreAdj);
-            thisScore += scoreAdj;
-        }
-        if (weight == fspWeight) {
-            thisScore += 5.0f;
-        }
-        if (slant == fspItalics) {
-            thisScore += 4.0f;
-        }
-
-        if (thisScore > bestScore) {
-            bestScore  = thisScore;
-            bestAnswer = FontSpecification::mkOSRep (kMatchAny, name, weight, slant, size);
-        }
-    }
-    return bestAnswer;
-}
-
-int Tablet::IgnoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/)
-{
-    return 0;
-}
-
-void Tablet::ParseFontName (const SDKString& fontName, SDKString* familyName, SDKString* fontSize, SDKString* fontWeight, SDKString* fontSlant)
-{
-    RequireNotNull (familyName);
-    RequireNotNull (fontSize);
-    RequireNotNull (fontWeight);
-
-    SDKString foundry;
-    SDKString family;
-    SDKString weight;
-    SDKString slant;
-    SDKString setwidth;
-    SDKString pixels;
-    SDKString points;
-    SDKString hRes;
-    SDKString vRes;
-    SDKString spacing;
-    SDKString aveWidth;
-    SDKString charset;
-
-    size_t start = 1;
-    size_t end   = fontName.find ('-', start);
-    foundry      = fontName.substr (start, end - start);
-
-    start  = end + 1;
-    end    = fontName.find ('-', start);
-    family = fontName.substr (start, end - start);
-
-    start  = end + 1;
-    end    = fontName.find ('-', start);
-    weight = fontName.substr (start, end - start);
-
-    start = end + 1;
-    end   = fontName.find ('-', start);
-    slant = fontName.substr (start, end - start);
-
-    start    = end + 1;
-    end      = fontName.find ('-', start);
-    setwidth = fontName.substr (start, end - start);
-
-    start          = end + 1;
-    end            = fontName.find ('-', start);
-    string ignored = fontName.substr (start, end - start);
-
-    start  = end + 1;
-    end    = fontName.find ('-', start);
-    pixels = fontName.substr (start, end - start);
-
-    start  = end + 1;
-    end    = fontName.find ('-', start);
-    points = fontName.substr (start, end - start);
-
-    start = end + 1;
-    end   = fontName.find ('-', start);
-    hRes  = fontName.substr (start, end - start);
-
-    start = end + 1;
-    end   = fontName.find ('-', start);
-    vRes  = fontName.substr (start, end - start);
-
-    *familyName = family;
-    *fontSize   = points;
-    *fontWeight = weight;
-    *fontSlant  = slant;
-}
-#endif
 
 /*
  ********************************************************************************
@@ -1950,11 +1433,6 @@ OffscreenTablet::OT::OT (GrafPtr gp)
 #elif qStroika_Platform_Windows
 OffscreenTablet::OT::OT (HDC hdc, Tablet::OwnDCControl ownsDC)
     : inherited (hdc, ownsDC)
-{
-}
-#elif qStroika_FeatureSupported_XWindows
-OffscreenTablet::OT::OT (Display* display, Drawable drawable)
-    : inherited (display, drawable)
 {
 }
 #endif
@@ -1976,8 +1454,6 @@ OffscreenTablet::OffscreenTablet ()
     , fMemDC ()
     , fMemoryBitmap ()
     , fOldBitmapInDC (nullptr)
-#elif qStroika_FeatureSupported_XWindows
-    , fPixmap (0)
 #endif
 {
 }
@@ -1995,10 +1471,6 @@ OffscreenTablet::~OffscreenTablet ()
 #elif qStroika_Platform_Windows
     if (fOldBitmapInDC != nullptr) {
         (void)fMemDC.SelectObject (fOldBitmapInDC);
-    }
-#elif qStroika_FeatureSupported_XWindows
-    if (fPixmap != 0) {
-        ::XFreePixmap (fOrigTablet->fDisplay, fPixmap);
     }
 #endif
 }
@@ -2037,9 +1509,6 @@ void OffscreenTablet::Setup (Tablet* origTablet)
     if (fMemDC.CreateCompatibleDC (fOrigTablet)) {
         fOffscreenTablet = &fMemDC;
     }
-#elif qStroika_FeatureSupported_XWindows
-    Assert (fPixmap == 0);
-// Nothing todo yet - create the pixmap when we know the RowRect.
 #endif
 }
 
@@ -2124,55 +1593,6 @@ Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceTy
             fMemDC.SetWindowOrg (fOffscreenRect.left, fOffscreenRect.top);
         }
     }
-#elif qStroika_FeatureSupported_XWindows
-    Led_Size pixmapSize = fOffscreenRect.GetSize ();
-    fOffscreenRect      = currentRowRect;
-    fOffscreenRect.bottom += extraToAddToBottomOfRect;
-    if (fPixmap == 0 or pixmapSize != fOffscreenRect.GetSize ()) {
-        // Destroy old pixmap, and create new one
-        delete fOffscreenTablet;
-        fOffscreenTablet = nullptr;
-        if (fPixmap != 0) {
-            ::XFreePixmap (fOrigTablet->fDisplay, fPixmap);
-            fPixmap = 0;
-        }
-        unsigned int depth = 1; // default - cuz should always be supported
-        {
-            // Try to get it from the drawable. Only works (I believe) if the drawable is a window.
-            XWindowAttributes winAttrs;
-            (void)::memset (&winAttrs, 0, sizeof (winAttrs));
-            /*
-             *  Since we don't know for sure the drawable is a window - catch the error and ignore it. Don't let
-             *  XErrorHandler do anything bad.
-             */
-            int (*oldErrHandler) (Display*, XErrorEvent*) = ::XSetErrorHandler (Tablet::IgnoreXErrorHandler);
-            Status s = ::XGetWindowAttributes (fOrigTablet->fDisplay, fOrigTablet->fDrawable, &winAttrs);
-            ::XSetErrorHandler (oldErrHandler);
-            if (s == 0) {
-                // if call failed - no biggie. Just pick the DefaultDepthOfScreen (could have used XListDepths ()?).
-                depth = ::XDefaultDepthOfScreen (::XScreenOfDisplay (fOrigTablet->fDisplay, DefaultScreen (fOrigTablet->fDisplay)));
-            }
-            else {
-                depth = winAttrs.depth;
-            }
-        }
-        fPixmap = ::XCreatePixmap (fOrigTablet->fDisplay, fOrigTablet->fDrawable, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (), depth);
-        Assert (fPixmap != 0);
-        try {
-            fOffscreenTablet                    = new OT (fOrigTablet->fDisplay, fPixmap);
-            fOffscreenTablet->fColormap         = fOrigTablet->fColormap;
-            fOffscreenTablet->fFontMappingCache = fOrigTablet->fFontMappingCache;
-        }
-        catch (...) {
-            delete fOffscreenTablet;
-            fOffscreenTablet = nullptr;
-            throw;
-        }
-    }
-    if (fOffscreenTablet != nullptr) {
-        fOffscreenTablet->SetDrawableOrigin (fOffscreenRect.GetTopLeft ());
-        result = fOffscreenTablet; // Draw into offscreen bitmap
-    }
 #endif
     return result;
 }
@@ -2205,10 +1625,6 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
         Tablet* screenDC = fOrigTablet;
         screenDC->BitBlt (fOffscreenRect.left, fOffscreenRect.top, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (),
                           fOffscreenTablet, fOffscreenRect.left, fOffscreenRect.top, SRCCOPY);
-#elif qStroika_FeatureSupported_XWindows
-        Assert (fPixmap != 0);
-        ::XCopyArea (fOrigTablet->fDisplay, fOffscreenTablet->fDrawable, fOrigTablet->fDrawable, fOrigTablet->fGC, 0, 0,
-                     fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (), (int)fOffscreenRect.GetLeft (), (int)fOffscreenRect.GetTop ());
 #endif
     }
 }
@@ -2221,11 +1637,7 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
  ********************************* InstalledFonts ***************************
  ********************************************************************************
  */
-InstalledFonts::InstalledFonts (
-#if qStroika_FeatureSupported_XWindows
-    Display* display,
-#endif
-    FilterOptions filterOptions)
+InstalledFonts::InstalledFonts (FilterOptions filterOptions)
     : fFilterOptions (filterOptions)
     , fFontNames ()
 {
@@ -2238,28 +1650,6 @@ InstalledFonts::InstalledFonts (
     sort (fFontNames.begin (), fFontNames.end ());
     vector<SDKString>::iterator rest = unique (fFontNames.begin (), fFontNames.end ());
     fFontNames.erase (rest, fFontNames.end ()); // remove the duplicates
-#elif qStroika_FeatureSupported_XWindows
-    int         fontListSize = 0;
-    char**      fontList     = ::XListFonts (display, "*", 200000, &fontListSize);
-    set<string> fontNames;
-    for (int i = 0; i < fontListSize; ++i) {
-        string longFontName = fontList[i];
-        string tmp          = longFontName;
-        if (tmp.length () > 0 and tmp[0] == '-') {
-            size_t nextDash = tmp.find ('-', 1);
-            if (nextDash != string::npos and nextDash > 1) {
-                tmp = tmp.substr (nextDash + 1);
-            }
-            nextDash              = tmp.find ('-'); // OK - even if end of string
-            string fontFamilyName = tmp.substr (0, nextDash);
-            if (not fontFamilyName.empty ()) {
-                fontNames.insert (fontFamilyName);
-            }
-        }
-    }
-    ::XFreeFontNames (fontList);
-    fontList   = nullptr;
-    fFontNames = vector<string> (fontNames.begin (), fontNames.end ());
 #else
     Assert (false); // NYI for other platforms
 #endif
@@ -2324,18 +1714,6 @@ void Globals::InvalidateGlobals ()
     WindowDC screenDC (nullptr);
     fLogPixelsH = ::GetDeviceCaps (screenDC, LOGPIXELSX);
     fLogPixelsV = ::GetDeviceCaps (screenDC, LOGPIXELSY);
-#elif qStroika_FeatureSupported_XWindows
-    /*
-     *  Either 75 or 100??? Not sure which is best
-     *
-     *  AbiWord has comments (in gr_UnixGraphix.cpp) that though most X-Servers return a resolution of 75, 100 seems to
-     *  look best. I tried on XWinPro 5.1 (a Win32-based X-Server) and on the one that comes with RedHat Linux 6.1, and both
-     *  looked better when I set this to 100. So try that for now...
-     */
-    //const int kResToUse   =   75;
-    const int kResToUse = 100;
-    fLogPixelsH         = kResToUse;
-    fLogPixelsV         = kResToUse;
 #endif
 }
 #endif

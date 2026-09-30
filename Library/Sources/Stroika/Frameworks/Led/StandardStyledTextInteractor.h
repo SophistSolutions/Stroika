@@ -34,15 +34,9 @@ namespace Stroika::Frameworks::Led {
 #define qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor 1
 #endif
 
-#if qStroika_FeatureSupported_XWindows
-    extern Led_ClipFormat kLedPrivateClipFormat;
-    extern Led_ClipFormat kRTFClipFormat;
-    extern Led_ClipFormat kHTMLClipFormat;
-#else
     extern const Led_ClipFormat kLedPrivateClipFormat;
     extern const Led_ClipFormat kRTFClipFormat;
     extern const Led_ClipFormat kHTMLClipFormat;
-#endif
 
     /**
      *   <p>This is a writer source stream which talks to a StandardStyledTextImager and/or WordProcessor

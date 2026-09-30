@@ -186,8 +186,6 @@ namespace Stroika::Frameworks::Led {
         Pen pen (PS_DOT, 1, lightColor.GetOSRep ());
 #elif qStroika_Platform_MacOS
         Pen pen (patCopy, &Pen::kGrayPattern, lightColor);
-#elif qStroika_FeatureSupported_XWindows
-        Pen pen;
 #endif
         GDI_Obj_Selector penWrapper (tablet, pen);
         CoordinateType   underlineAt = useBaseLine;

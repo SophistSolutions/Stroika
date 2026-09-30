@@ -11,8 +11,6 @@
 #include "Stroika/Frameworks/Led/Platform/Led_PP_WordProcessor.h"
 #elif defined(WIN32)
 #include "Stroika/Frameworks/Led/Platform/MFC_WordProcessor.h"
-#elif qStroika_FeatureSupported_XWindows
-#include "Stroika/Frameworks/Led/Platform/Led_Gtk_WordProcessor.h"
 #endif
 
 #include "LedItConfig.h"
@@ -20,9 +18,6 @@
 
 #if qStroika_Platform_Windows
 class LedItControlItem;
-class LedItDocument;
-#endif
-#if qStroika_FeatureSupported_XWindows
 class LedItDocument;
 #endif
 
@@ -36,8 +31,6 @@ class LedItView :
     public Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor>>
 #elif qStroika_Platform_Windows
     public Platform::WordProcessorCommonCommandHelper_MFC<LedItViewAlmostBASE>
-#elif qStroika_FeatureSupported_XWindows
-    public Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor>>
 #endif
 {
 private:
@@ -45,8 +38,6 @@ private:
     using inherited = Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor>>;
 #elif qStroika_Platform_Windows
     using inherited = Platform::WordProcessorCommonCommandHelper_MFC<LedItViewAlmostBASE>;
-#elif qStroika_FeatureSupported_XWindows
-    using inherited = Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor>>;
 #endif
 
 #if qStroika_Platform_MacOS
@@ -56,9 +47,6 @@ public:
 protected: // create from serialization only
     LedItView ();
     DECLARE_DYNCREATE (LedItView)
-#elif qStroika_FeatureSupported_XWindows
-public:
-    LedItView (LedItDocument* owningDoc);
 #endif
 
 public:

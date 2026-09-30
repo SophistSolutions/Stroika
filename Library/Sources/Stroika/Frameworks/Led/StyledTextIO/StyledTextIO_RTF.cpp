@@ -170,7 +170,7 @@ IncrementalFontSpecification FontTable::GetFontSpec (int fontNumber)
         return IncrementalFontSpecification{}; // See spr#0696 0 some docs leave bad \font#s - so don't blow up - just no font spec!
     }
     IncrementalFontSpecification fontSpec;
-#if qStroika_Platform_Windows || qStroika_FeatureSupported_XWindows
+#if qStroika_Platform_Windows
     fontSpec.SetFontNameSpecifier (ftep->fFontName.c_str ());
 #endif
     return fontSpec;

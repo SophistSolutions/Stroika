@@ -8,7 +8,7 @@ vpath %cpp $(SrcDir)
 
 Objs	:=	
 
-# for now - this only builds on windows, cuz unix requires x-windows, and macos only written for very old macos gdi (carbon)
+# for now - this only builds on windows, cuz there is no unix GUI support, and macos only written for very old macos gdi (carbon)
 Objs+=	$(ObjDir)StyledTextIO${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_HTML${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_LedNative${OBJ_SUFFIX}

@@ -226,9 +226,6 @@ namespace Stroika::Frameworks::Led {
     {
 #if qStroika_Platform_Windows
         return (!!::IsClipboardFormatAvailable (clipType));
-#elif qStroika_FeatureSupported_XWindows
-        // Wild guess - no good answer yet - LGP 2003-05-06
-        return true;
 #endif
     }
     inline bool Led_ClipboardObjectAcquire::FormatAvailable_TEXT ()
