@@ -53,13 +53,13 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
 
 /*
-    @CONFIGVAR:     qScrollTextDuringThumbTracking
+    @CONFIGVAR:     qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
     @DESCRIPTION:   <p>On Windows many applications scroll their content as the thumb is tracking.
         This CAN make thumb movement slower, and may be undesriable for other reasons</p>
             <p>But its common enuf now that I make this behavior ON by default</p>
         */
-#ifndef qScrollTextDuringThumbTracking
-#define qScrollTextDuringThumbTracking 1
+#ifndef qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
+#define qStroika_Frameworks_Led_ScrollTextDuringThumbTracking 1
 #endif
 
     /*
@@ -232,7 +232,7 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         size_t fDragAnchor; // only used while dragging mouse
     private:
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
         bool fSBarThumbTracking;
 #endif
 
@@ -514,7 +514,7 @@ namespace Stroika::Frameworks::Led::Platform {
         , fAcquireCount (0)
         , fMouseTrackingLastPoint ()
         , fDragAnchor (0)
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
         , fSBarThumbTracking (false)
 #endif
         , fAutoScrollTimerID (0)
@@ -736,7 +736,7 @@ namespace Stroika::Frameworks::Led::Platform {
                         selectionAdjuster.CompleteAdjustment (*this);
                     }
                 }
-#if qPeekForMoreCharsOnUserTyping
+#if qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
                 this->UpdateIfNoKeysPending ();
 #endif
             } break;
@@ -763,7 +763,7 @@ namespace Stroika::Frameworks::Led::Platform {
                         selectionAdjuster.CompleteAdjustment (*this);
                     }
                 }
-#if qPeekForMoreCharsOnUserTyping
+#if qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
                 this->UpdateIfNoKeysPending ();
 #endif
             } break;
@@ -775,8 +775,8 @@ namespace Stroika::Frameworks::Led::Platform {
                 this->BreakInGroupedCommands ();
                 this->DoSingleCharCursorEdit (eCursorToEnd, controlPressed ? eCursorByBuffer : eCursorByRow,
                                               shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                              qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
-#if qPeekForMoreCharsOnUserTyping
+                                              qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+#if qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
                 this->UpdateIfNoKeysPending ();
 #endif
             } break;
@@ -788,8 +788,8 @@ namespace Stroika::Frameworks::Led::Platform {
                 this->BreakInGroupedCommands ();
                 this->DoSingleCharCursorEdit (eCursorToStart, controlPressed ? eCursorByBuffer : eCursorByRow,
                                               shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                              qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
-#if qPeekForMoreCharsOnUserTyping
+                                              qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+#if qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
                 this->UpdateIfNoKeysPending ();
 #endif
             } break;
@@ -801,8 +801,8 @@ namespace Stroika::Frameworks::Led::Platform {
                 this->BreakInGroupedCommands ();
                 this->DoSingleCharCursorEdit (eCursorBack, controlPressed ? eCursorByWord : eCursorByChar,
                                               shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                              qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
-#if qPeekForMoreCharsOnUserTyping
+                                              qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+#if qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
                 this->UpdateIfNoKeysPending ();
 #endif
             } break;
@@ -826,14 +826,14 @@ namespace Stroika::Frameworks::Led::Platform {
                     }
                     else {
                         this->DoSingleCharCursorEdit (eCursorToStart, eCursorByLine, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                                      qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                                                      qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
                     }
                 }
                 else {
                     this->DoSingleCharCursorEdit (eCursorBack, eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                                  qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                                                  qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
                 }
-#if qPeekForMoreCharsOnUserTyping
+#if qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
                 this->UpdateIfNoKeysPending ();
 #endif
             } break;
@@ -845,8 +845,8 @@ namespace Stroika::Frameworks::Led::Platform {
                 this->BreakInGroupedCommands ();
                 this->DoSingleCharCursorEdit (eCursorForward, controlPressed ? eCursorByWord : eCursorByChar,
                                               shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                              qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
-#if qPeekForMoreCharsOnUserTyping
+                                              qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+#if qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
                 this->UpdateIfNoKeysPending ();
 #endif
             } break;
@@ -870,14 +870,14 @@ namespace Stroika::Frameworks::Led::Platform {
                     }
                     else {
                         this->DoSingleCharCursorEdit (eCursorToEnd, eCursorByLine, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                                      qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                                                      qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
                     }
                 }
                 else {
                     this->DoSingleCharCursorEdit (eCursorForward, eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                                  qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                                                  qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
                 }
-#if qPeekForMoreCharsOnUserTyping
+#if qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
                 this->UpdateIfNoKeysPending ();
 #endif
             } break;
@@ -1126,7 +1126,7 @@ namespace Stroika::Frameworks::Led::Platform {
             }
         }
 
-#if qDynamiclyChooseAutoScrollIncrement
+#if qStroika_Frameworks_Led_DynamiclyChooseAutoScrollIncrement
         Foundation::Time::TimePointSeconds        now = Foundation::Time::GetTickCount ();
         static Foundation::Time::TimePointSeconds sLastTimeThrough{};
         const Foundation::Time::DurationSeconds   kClickThreshold = Led_GetDoubleClickTime () / 3;
@@ -1137,7 +1137,7 @@ namespace Stroika::Frameworks::Led::Platform {
         const int increment = 1;
 #endif
 
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
         fSBarThumbTracking = (nSBCode == SB_THUMBTRACK);
 #endif
         switch (nSBCode) {
@@ -1166,7 +1166,7 @@ namespace Stroika::Frameworks::Led::Platform {
             } break;
 
             case SB_THUMBTRACK:
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
 // Fall through into SB_THUMBPOSITION code
 #else
                 break;
@@ -1181,7 +1181,7 @@ namespace Stroika::Frameworks::Led::Platform {
                      *      --  LGP 2003-01-20.
                      */
                     SCROLLINFO scrollInfo = this->GetVScrollInfo ();
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
                     newPos = scrollInfo.nTrackPos;
 #else
                     newPos = scrollInfo.nPos;
@@ -1196,7 +1196,7 @@ namespace Stroika::Frameworks::Led::Platform {
                         newPos = this->GetLength ();
                     }
 
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
                     // Make sure nPos matches nTrackPos after tracking done
                     scrollInfo.cbSize = sizeof (scrollInfo);
                     scrollInfo.fMask  = SIF_POS;
@@ -1205,7 +1205,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
                 }
 
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
                 this->InvalidateScrollBarParameters (); // In case below SetHScrollPos doesn't cause inval (due to caching), make sure
                                                         // things really get recomputed
 #endif
@@ -1223,7 +1223,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 // shipping- LGP 941026
             } break;
         }
-#if qDynamiclyChooseAutoScrollIncrement
+#if qStroika_Frameworks_Led_DynamiclyChooseAutoScrollIncrement
         sLastTimeThrough = now;
 #endif
     }
@@ -1240,7 +1240,7 @@ namespace Stroika::Frameworks::Led::Platform {
             }
         }
 
-#if qDynamiclyChooseAutoScrollIncrement
+#if qStroika_Frameworks_Led_DynamiclyChooseAutoScrollIncrement
         Foundation::Time::TimePointSeconds        now = Foundation::Time::GetTickCount ();
         static Foundation::Time::TimePointSeconds sLastTimeThrough{};
         const Foundation::Time::DurationSeconds   kClickThreshold = Led_GetDoubleClickTime ();
@@ -1286,13 +1286,13 @@ namespace Stroika::Frameworks::Led::Platform {
             } break;
 
             case SB_THUMBTRACK:
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
 // Fall through into SB_THUMBPOSITION code
 #else
                 break;
 #endif
             case SB_THUMBPOSITION: {
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
                 fSBarThumbTracking = (nSBCode == SB_THUMBTRACK);
 #endif
                 /*
@@ -1302,13 +1302,13 @@ namespace Stroika::Frameworks::Led::Platform {
                  *      --  LGP 2003-01-20.
                  */
                 SCROLLINFO scrollInfo = this->GetHScrollInfo ();
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
                 size_t newPos = scrollInfo.nTrackPos;
 #else
                 size_t newPos = scrollInfo.nPos;
 #endif
 
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
                 // Make sure nPos matches nTrackPos after tracking done
                 scrollInfo.cbSize = sizeof (scrollInfo);
                 scrollInfo.fMask  = SIF_POS;
@@ -1316,7 +1316,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 this->SetHScrollInfo (this->GetScrollBarType (TextInteractor::h), scrollInfo);
 #endif
 
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
                 this->InvalidateScrollBarParameters (); // In case below SetHScrollPos doesn't cause inval (due to caching), make sure
                                                         // things really get recomputed
 #endif
@@ -1334,7 +1334,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 // shipping- LGP 941026
             } break;
         }
-#if qDynamiclyChooseAutoScrollIncrement
+#if qStroika_Frameworks_Led_DynamiclyChooseAutoScrollIncrement
         sLastTimeThrough = now;
 #endif
     }
@@ -1994,7 +1994,7 @@ namespace Stroika::Frameworks::Led::Platform {
 // whther HORZ scrollbar is shown due to dynamic compuation of it being needed - and THEN we get it resized at that point).
 // That makes compute of if we are at end of sbar or where we are almost impossible (cuz we don't know graphic/visual size of thumb)
 //      -- LGP 2003-11-04
-#if qScrollTextDuringThumbTracking
+#if qStroika_Frameworks_Led_ScrollTextDuringThumbTracking
         if (fSBarThumbTracking) {
             return;
         }

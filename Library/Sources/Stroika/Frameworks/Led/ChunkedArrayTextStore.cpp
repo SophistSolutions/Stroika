@@ -326,7 +326,7 @@ static inline bool QUICK_Contains (const Marker& containedMarker, const Marker& 
     return result;
 }
 
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
 struct ChunkedArrayTextStore::CollectLookupCacheElt {
     vector<Marker*> fMarkers;
     size_t          fFrom;
@@ -361,12 +361,12 @@ private:
 public:
     ChunkedArrayMarkerOwnerHook (MarkerOwner* mo, size_t len)
         :
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
         fCache{2}
         ,
 #endif
         fRootMarker{}
-#if qKeepChunkedArrayStatistics
+#if qStroika_Frameworks_Led_KeepChunkedArrayStatistics
         , fTotalMarkersPresent{0}
         , fTotalHackMarkersPresent{0}
         , fPeakTotalMarkersPresent{0}
@@ -382,7 +382,7 @@ public:
     }
     ~ChunkedArrayMarkerOwnerHook ()
     {
-#if qKeepChunkedArrayStatistics
+#if qStroika_Frameworks_Led_KeepChunkedArrayStatistics
         Require (fTotalMarkersPresent == 0); // ALL MARKERS MUST BE REMOVED BEFORE EDITOR DESTROYED!!!!
                                              // If this assertion ever triggers, then it may well be a Led client
                                              // bug and not a Led-bug per-se. Check that all your markers have been
@@ -413,7 +413,7 @@ public:
         }
 #endif
 
-#if qKeepChunkedArrayStatistics
+#if qStroika_Frameworks_Led_KeepChunkedArrayStatistics
         Assert (fTotalHackMarkersPresent == 0); // If the fTotalMarkersPresent==0 and fTotalHackMarkersPresent != 0, then
                                                 // this is a Led bug (see walk children/FreeHackTree code above for workaround)
 #endif
@@ -426,7 +426,7 @@ public:
         delete ((ChunkedArrayMarkerHook*)fRootMarker.fTextStoreHook);
     }
 
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
 public:
     using CollectLookupCacheElt = ChunkedArrayTextStore::CollectLookupCacheElt;
     using CACHE_TYPE =
@@ -554,7 +554,7 @@ public:
                 m->fTextStoreHook = (ChunkedArrayMarkerHook*)666; // magic # so we know these are bad... Should never be referenced after this
             }
             delete m;
-#if qKeepChunkedArrayStatistics
+#if qStroika_Frameworks_Led_KeepChunkedArrayStatistics
             Assert (fTotalHackMarkersPresent > 0);
             --fTotalHackMarkersPresent;
 #endif
@@ -564,7 +564,7 @@ public:
 public:
     Marker fRootMarker;
 
-#if qKeepChunkedArrayStatistics
+#if qStroika_Frameworks_Led_KeepChunkedArrayStatistics
 public:
     unsigned long fTotalMarkersPresent; // real markers - not including hack and root
     unsigned long fTotalHackMarkersPresent;
@@ -665,7 +665,7 @@ void ChunkedArrayTextStore::RemoveMarkerOwner (MarkerOwner* owner)
     RequireNotNull (owner);
     RequireNotNull (owner->fTextStoreHook);
     RequireNotNull (dynamic_cast<ChunkedArrayMarkerOwnerHook*> (owner->fTextStoreHook));
-#if qKeepChunkedArrayStatistics
+#if qStroika_Frameworks_Led_KeepChunkedArrayStatistics
     {
         ChunkedArrayMarkerOwnerHook* camoh = dynamic_cast<ChunkedArrayMarkerOwnerHook*> (owner->fTextStoreHook);
         Require (camoh->fTotalMarkersPresent == 0); // ALL MARKERS MUST BE REMOVED BEFORE EDITOR DESTROYED!!!!
@@ -717,7 +717,7 @@ void ChunkedArrayTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffe
 
 void ChunkedArrayTextStore::ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount)
 {
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
     for (vector<MarkerOwner*>::const_iterator i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
         GetAMOH (*i)->ClearCache ();
     }
@@ -944,7 +944,7 @@ void ChunkedArrayTextStore::AddMarker (Marker* marker, size_t lhs, size_t length
     ChunkedArrayMarkerOwnerHook* camoh = dynamic_cast<ChunkedArrayMarkerOwnerHook*> (owner->fTextStoreHook);
     AssertNotNull (camoh);
 
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
     camoh->ClearCache ();
 #endif
 
@@ -958,7 +958,7 @@ void ChunkedArrayTextStore::AddMarker (Marker* marker, size_t lhs, size_t length
 
     AddMarker1 (marker, &camoh->fRootMarker, true);
 
-#if qKeepChunkedArrayStatistics
+#if qStroika_Frameworks_Led_KeepChunkedArrayStatistics
     ++camoh->fTotalMarkersPresent;
     camoh->fPeakTotalMarkersPresent = max (camoh->fPeakTotalMarkersPresent, camoh->fTotalMarkersPresent);
 #endif
@@ -1171,7 +1171,7 @@ void ChunkedArrayTextStore::PossiblyAddHackMarkers (Marker* insideMarker)
 
 void ChunkedArrayTextStore::RemoveMarkers (Marker* const markerArray[], size_t markerCount)
 {
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
     // could only do this for affected markers, but we want to avoid redundant clearcache calls - and this is simpler...
     // Probably no real performance harm...
     for (vector<MarkerOwner*>::const_iterator i = GetMarkerOwners ().begin (); i != GetMarkerOwners ().end (); ++i) {
@@ -1189,7 +1189,7 @@ void ChunkedArrayTextStore::RemoveMarkers (Marker* const markerArray[], size_t m
         Assert (not OurStuff (markerArray[i])->fIsHackMarker);
         OurStuff (markerArray[i])->fIsHackMarker    = true;
         OurStuff (markerArray[i])->fIsDeletedMarker = true;
-#if qKeepChunkedArrayStatistics
+#if qStroika_Frameworks_Led_KeepChunkedArrayStatistics
         Assert (GetAMOH (markerArray[i])->fTotalMarkersPresent >= 1);
         GetAMOH (markerArray[i])->fTotalMarkersPresent -= 1;
 #endif
@@ -1332,7 +1332,7 @@ Marker* ChunkedArrayTextStore::AddHackMarkerHelper_ (Marker* insideMarker, size_
 
         Assert (not OurStuff (marker)->fIsHackMarker);
         OurStuff (marker)->fIsHackMarker = true;
-#if qKeepChunkedArrayStatistics
+#if qStroika_Frameworks_Led_KeepChunkedArrayStatistics
         ++GetAMOH (insideMarker)->fTotalHackMarkersAlloced;
         ++GetAMOH (insideMarker)->fTotalHackMarkersPresent;
         GetAMOH (insideMarker)->fPeakHackMarkersPresent =
@@ -1382,7 +1382,7 @@ void ChunkedArrayTextStore::LoseIfUselessHackMarker (Marker* potentiallyUselessH
 void ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept
 {
     RequireNotNull (marker);
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
     GetAMOH (marker)->ClearCache ();
 #endif
     /*
@@ -1482,7 +1482,7 @@ void ChunkedArrayTextStore::CollectAllMarkersInRangeInto (size_t from, size_t to
         }
     }
     else {
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
         ChunkedArrayMarkerOwnerHook* camoh     = GetAMOH (owner);
         CollectLookupCacheElt*       cacheItem = camoh->LookupElement (CollectLookupCacheElt::COMPARE_ITEM (from, to));
         if (cacheItem != NULL) {
@@ -1507,7 +1507,7 @@ void ChunkedArrayTextStore::CollectAllMarkersInRangeInto (size_t from, size_t to
 }
 
 void ChunkedArrayTextStore::CollectAllMarkersInRangeInto_Helper_MO (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
                                                                     ,
                                                                     CollectLookupCacheElt* fillingCache
 #endif
@@ -1530,7 +1530,7 @@ RoutineTop:
         Assert (QUICK_Overlap (mio, from, to) == QUICK_Overlap (*mi, from, to));
         if (QUICK_Overlap (mio, from, to)) {
             if (not mio->fIsHackMarker and not mio->fIsPreRemoved) {
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
                 if (fillingCache != NULL) {
                     fillingCache->fMarkers.push_back (mi);
                 }

@@ -337,7 +337,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>;
         using TheBaseClass = MFC_BASE_CLASS;
-        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_WM_CREATE () ON_WM_CHAR () ON_WM_TIMER () ON_WM_KEYDOWN () ON_WM_PAINT () ON_WM_MOUSEMOVE () ON_WM_LBUTTONDOWN ()
                 ON_WM_SETCURSOR () ON_WM_GETDLGCODE () ON_WM_LBUTTONUP () ON_WM_LBUTTONDBLCLK () ON_WM_SETFOCUS () ON_WM_KILLFOCUS ()
@@ -611,7 +611,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>;
         using TheBaseClass = BASECLASS;
-        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_MESSAGE (WM_SETTEXT, &OnMFCSDKMessageDispatcher<WM_SETTEXT>) ON_MESSAGE (WM_GETTEXT, &OnMFCSDKMessageDispatcher<WM_GETTEXT>)
                 ON_MESSAGE (WM_GETTEXTLENGTH, &OnMFCSDKMessageDispatcher<WM_GETTEXTLENGTH>) ON_MESSAGE (
@@ -1086,7 +1086,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_DragAndDropWindow<BASECLASS>;
         using TheBaseClass = BASECLASS;
-        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {ON_WM_CREATE () ON_WM_TIMER (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
         DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
@@ -1482,7 +1482,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_CViewHelper<BASECLASS>;
         using TheBaseClass = BASECLASS;
-        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {ON_WM_PAINT () ON_WM_LBUTTONDOWN () ON_WM_CREATE () ON_WM_VSCROLL ()
                                                                ON_WM_HSCROLL (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
         DISABLE_COMPILER_MSC_WARNING_END (4407)
@@ -1593,7 +1593,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_ExceptionHandlerHelper<BASECLASS>;
         using TheBaseClass = BASECLASS;
-        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {ON_WM_CHAR () ON_MESSAGE (WM_IME_CHAR, &OnIMEChar) ON_WM_KEYDOWN () ON_MESSAGE (
             WM_PASTE, &OnMsgPaste) ON_WM_LBUTTONDOWN () ON_WM_LBUTTONUP () ON_WM_LBUTTONDBLCLK (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
         DISABLE_COMPILER_MSC_WARNING_END (4407)
@@ -1688,4 +1688,5 @@ namespace Stroika::Frameworks::Led::Platform {
     }
 }
 
-CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qMFCRequiresCWndLeftmostBaseClass, qMFCRequiresCWndLeftmostBaseClass)
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass,
+                               qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass)

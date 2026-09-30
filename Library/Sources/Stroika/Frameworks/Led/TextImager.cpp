@@ -106,7 +106,7 @@ TextImager::TextImager ()
     : fTextStore{nullptr}
     , fDefaultFont{GetStaticDefaultFont ()}
     , fForceAllRowsShowing{true}
-    , fImageUsingOffscreenBitmaps{qUseOffscreenBitmapsToReduceFlicker}
+    , fImageUsingOffscreenBitmaps{qStroika_Frameworks_Led_UseOffscreenBitmapsToReduceFlicker}
     , fHScrollPos{0}
     , fSuppressGoalColumnRecompute{false}
     , fSelectionGoalColumn{TWIPS{0}}

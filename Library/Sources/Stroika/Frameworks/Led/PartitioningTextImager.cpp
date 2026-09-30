@@ -361,7 +361,7 @@ void Partition::Invariant_ () const
  */
 PartitioningTextImager::PartitioningTextImager ()
     : fPartition{nullptr}
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
     , fMeasureTextCache ()
 #endif
 {
@@ -381,18 +381,18 @@ PartitioningTextImager::~PartitioningTextImager ()
 */
 void PartitioningTextImager::SetPartition (const PartitionPtr& partitionPtr)
 {
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
     fMeasureTextCache.reset ();
 #endif
     fPartition = partitionPtr;
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
     if (partitionPtr.get () != nullptr) {
         fMeasureTextCache = unique_ptr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
     }
 #endif
 }
 
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
 /*
 @METHOD:        PartitioningTextImager::InvalidateAllCaches
 @DESCRIPTION:   <p>Hook the @'TextImager::InvalidateAllCaches' message to free some additional caches.</p>
@@ -458,11 +458,11 @@ TextDirection PartitioningTextImager::GetTextDirection (size_t charPosition) con
 */
 DistanceType PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) const
 {
-#if !qCacheTextMeasurementsForPM || qStroika_Foundation_Debug_AssertionsChecked
+#if !qStroika_Frameworks_Led_CacheTextMeasurementsForPM || qStroika_Foundation_Debug_AssertionsChecked
     DistanceType referenceValue = CalcSegmentSize_REFERENCE (from, to);
 #endif
 
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
     DistanceType value = CalcSegmentSize_CACHING (from, to);
 #if qStroika_Foundation_Debug_AssertionsChecked
     Assert (value == referenceValue);
@@ -505,7 +505,7 @@ DistanceType PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, siz
     }
 }
 
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
 /*
 @METHOD:        PartitioningTextImager::CalcSegmentSize_CACHING
 @ACCESS:        private
@@ -769,7 +769,7 @@ void PartitioningTextImager::Invariant_ () const
 }
 #endif
 
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
 /*
  ********************************************************************************
  ************* PartitioningTextImager::MeasureTextCache *************************

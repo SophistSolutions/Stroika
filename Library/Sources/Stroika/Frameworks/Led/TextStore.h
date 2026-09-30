@@ -38,12 +38,12 @@
 namespace Stroika::Frameworks::Led {
 
 /*
-    @CONFIGVAR:     qUseWin32CompareStringCallForCaseInsensitiveSearch
+    @CONFIGVAR:     qStroika_Frameworks_Led_UseWin32CompareStringCallForCaseInsensitiveSearch
     @DESCRIPTION:   <p>Produces better internationalized results - but - of course - is Win32 specific - and a bit slower.
                 Based on SPR#0864</p>
         */
-#ifndef qUseWin32CompareStringCallForCaseInsensitiveSearch
-#define qUseWin32CompareStringCallForCaseInsensitiveSearch qStroika_Platform_Windows
+#ifndef qStroika_Frameworks_Led_UseWin32CompareStringCallForCaseInsensitiveSearch
+#define qStroika_Frameworks_Led_UseWin32CompareStringCallForCaseInsensitiveSearch qStroika_Platform_Windows
 #endif
 
     /*

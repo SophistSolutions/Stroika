@@ -187,7 +187,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
     //  class   PartitioningTextImager::MeasureTextCache
     inline void PartitioningTextImager::MeasureTextCache::ClearAll ()
     {

@@ -1181,11 +1181,11 @@ namespace Stroika::Frameworks::Led {
     Led_Size Led_GetMacPictSize (const Led_Picture* picture);
 
 // Windows DIB support
-#ifndef qHaveWindowsDIBDefined
-#define qHaveWindowsDIBDefined qStroika_Platform_Windows
+#ifndef qStroika_Frameworks_Led_HaveWindowsDIBDefined
+#define qStroika_Frameworks_Led_HaveWindowsDIBDefined qStroika_Platform_Windows
 #endif
 
-#if !qHaveWindowsDIBDefined
+#if !qStroika_Frameworks_Led_HaveWindowsDIBDefined
     // structs copied (paraphrased) from MSVC 4.1 includes (WinGDI.h)
     struct BITMAPINFOHEADER {
         unsigned long  biSize;

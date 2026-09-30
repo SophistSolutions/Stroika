@@ -23,7 +23,7 @@
 
 #include "Support.h"
 
-#if qUseActiveXToOpenURLs
+#if qStroika_Frameworks_Led_UseActiveXToOpenURLs
 #include <URLMon.h>
 #endif
 
@@ -610,7 +610,7 @@ void Led_URLManager::Set (Led_URLManager* newURLMgr)
 void Led_URLManager::Open (const string& url)
 {
 #if qStroika_Platform_Windows
-#if qUseActiveXToOpenURLs
+#if qStroika_Frameworks_Led_UseActiveXToOpenURLs
     Open_ActiveX (url);
 #endif
 #endif
@@ -622,7 +622,7 @@ string Led_URLManager::FileSpecToURL ([[maybe_unused]] const filesystem::path& p
     return "";
 }
 
-#if qUseActiveXToOpenURLs
+#if qStroika_Frameworks_Led_UseActiveXToOpenURLs
 void Led_URLManager::Open_ActiveX (const string& url)
 {
     Memory::StackBuffer<wchar_t> wideURLBuf{Memory::eUninitialized, url.length () + 1};

@@ -12,7 +12,7 @@
 
 #include "StandardStyledTextInteractor.h"
 
-#if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+#if qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
 #endif
 
@@ -844,7 +844,7 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
                 }
             }
 
-#if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+#if qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
             {
                 StyledTextIOSrcStream_Memory           source (fileStart, fileEnd - fileStart);
                 StyledTextIOReader_LedNativeFileFormat reader (&source, nullptr);
@@ -870,7 +870,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPac
     else if (InternalizeFlavor_HTML (flavorPackage, from, to)) {
         return true;
     }
-#if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+#if qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
     else if (InternalizeFlavor_Native (flavorPackage, from, to)) {
         return true;
     }
@@ -898,7 +898,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPac
     return false;
 }
 
-#if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+#if qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
 bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_Native (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     if (flavorPackage.GetFlavorAvailable (kLedPrivateClipFormat)) {
@@ -1088,7 +1088,7 @@ void StyledTextFlavorPackageExternalizer::ExternalizeBestFlavor (WriterFlavorPac
     ExternalizeFlavor_RTF (flavorPackage, from, to);
 }
 
-#if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+#if qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
 void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_Native (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     Require (from <= to);

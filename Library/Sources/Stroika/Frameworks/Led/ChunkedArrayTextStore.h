@@ -23,27 +23,27 @@
 namespace Stroika::Frameworks::Led {
 
 /*
-    @CONFIGVAR:     qKeepChunkedArrayStatistics
+    @CONFIGVAR:     qStroika_Frameworks_Led_KeepChunkedArrayStatistics
     @DESCRIPTION:   <p>Slight debugging aid. Tells you how many existing markers are out there, and a few other statistics.
         This just keeps track of the given variables. To see them - you must peek in the debugger at the ChunkedArrayTextStore's
         instance variables.</p>
             <p>Turn ON iff @'qStroika_Foundation_Debug_AssertionsChecked' - by default.</p>
 */
-#ifndef qKeepChunkedArrayStatistics
-#define qKeepChunkedArrayStatistics qStroika_Foundation_Debug_AssertionsChecked
+#ifndef qStroika_Frameworks_Led_KeepChunkedArrayStatistics
+#define qStroika_Frameworks_Led_KeepChunkedArrayStatistics qStroika_Foundation_Debug_AssertionsChecked
 #endif
 
 /*
-    @CONFIGVAR:     qUseLRUCacheForRecentlyLookedUpMarkers
+    @CONFIGVAR:     qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
     @DESCRIPTION:   <p>Small speed tweek. Conditionally compiled cuz I'm not sure its always a speed tweek. In the
         case of a problem sent to me (SPR#0652) - this had a 20% speedup. And in other cases I tested (e.g. reading RTF 1.4 RTF doc) - no
         noticable difference. Maybe a 5% speedup on Cut/Paste/Paste operation after opening a file with 3X RTF 1.4 RTF.</p>
             <p>Turn ON by default</p>
         */
-#ifndef qUseLRUCacheForRecentlyLookedUpMarkers
+#ifndef qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
 // a good idea but not compiling and at this stage of developemnt (2012-09-10 - getting quickly imported into Stroika) - ignore for now...)
-#define qUseLRUCacheForRecentlyLookedUpMarkers 0
-//#define qUseLRUCacheForRecentlyLookedUpMarkers  1
+#define qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers 0
+//#define qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers  1
 #endif
 
     /*
@@ -97,13 +97,13 @@ namespace Stroika::Frameworks::Led {
         virtual void SetMarkerRange (Marker* m, size_t start, size_t end) noexcept override;
         virtual void CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const override;
 
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
     public:
         struct CollectLookupCacheElt;
 #endif
     private:
         nonvirtual void CollectAllMarkersInRangeInto_Helper_MO (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output
-#if qUseLRUCacheForRecentlyLookedUpMarkers
+#if qStroika_Frameworks_Led_UseLRUCacheForRecentlyLookedUpMarkers
                                                                 ,
                                                                 CollectLookupCacheElt* fillingCache = NULL
 #endif

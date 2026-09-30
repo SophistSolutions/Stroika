@@ -285,7 +285,7 @@ namespace Stroika::Frameworks::Led::Platform {
         using TheBaseClass = BASECLASS;
 
         DISABLE_COMPILER_MSC_WARNING_START (4407) // warning C4407: cast between different pointer to member representations, compiler may generate incorrect code
-        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+        // Not sure this is safe to ignore but I think it is due to qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_WM_PAINT ()
 

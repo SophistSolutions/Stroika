@@ -167,7 +167,7 @@ namespace Stroika::Frameworks::Led {
                 draw the picture.</p>
                     <p>Using this gets rid of these few cases of flicker, but at a small performance cost
             in overall draw speed.</p>
-                    <p>This value defaults to true (temporarily defaulting to @'qUseOffscreenBitmapsToReduceFlicker).</p>
+                    <p>This value defaults to true (temporarily defaulting to @'qStroika_Frameworks_Led_UseOffscreenBitmapsToReduceFlicker).</p>
                     <p>See @'TextImager::SetImageUsingOffscreenBitmaps'.</p>
     */
     inline bool TextImager::GetImageUsingOffscreenBitmaps () const

@@ -51,7 +51,7 @@ public:
         AddAssociation (kEnterFindStringCmd, LedItView::kEnterFindString_CmdID);
         AddAssociation (kReplaceCmd, LedItView::kReplace_CmdID);
         AddAssociation (kReplaceAgainCmd, LedItView::kReplaceAgain_CmdID);
-#if qIncludeBakedInDictionaries
+#if qStroika_Frameworks_Led_IncludeBakedInDictionaries
         // If we have no dictionaries - assume no spellcheck command should be enabled (mapped)
         AddAssociation (kSpellCheckCmd, LedItView::kSpellCheck_CmdID);
 #endif
@@ -445,7 +445,7 @@ static LedIt_DialogSupport sLedIt_DialogSupport;
 #if qStroika_Platform_Windows
 IMPLEMENT_DYNCREATE (LedItView, CView)
 
-DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
 BEGIN_MESSAGE_MAP (LedItView, LedItView::inherited)
 ON_WM_SETFOCUS ()
 ON_WM_SIZE ()

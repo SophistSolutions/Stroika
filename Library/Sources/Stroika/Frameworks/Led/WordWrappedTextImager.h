@@ -19,21 +19,21 @@
 namespace Stroika::Frameworks::Led {
 
 /*
-    @CONFIGVAR:     qDefaultLedSoftLineBreakChar
+    @CONFIGVAR:     qStroika_Frameworks_Led_DefaultSoftLineBreakChar
     @DESCRIPTION:   <p>This is the magic (sentinel) character that will appear in a Led text buffer to indicate
                 a soft line break. This is generated in MSWord (on Mac 5.1 and Windows WinWord 7.0) by the SHIFT-RETURN
                 key combination. I have no idea what value is stored internally in MSWord. This is the value WE will
                 store internally for Led. And so its somewhat subject to change - if I find THIS value conflicts with anything
                 useful.</p>
         */
-#ifndef qDefaultLedSoftLineBreakChar
-#define qDefaultLedSoftLineBreakChar '\001'
+#ifndef qStroika_Frameworks_Led_DefaultSoftLineBreakChar
+#define qStroika_Frameworks_Led_DefaultSoftLineBreakChar '\001'
 #endif
 
     /**
  *       <p>Sentinel character used to mark a soft line-break.</p>
  */
-    constexpr Led_tChar kSoftLineBreakChar = qDefaultLedSoftLineBreakChar;
+    constexpr Led_tChar kSoftLineBreakChar = qStroika_Frameworks_Led_DefaultSoftLineBreakChar;
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*

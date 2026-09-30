@@ -1187,7 +1187,7 @@ size_t SimpleTextImager::GetCharAtLocationRowRelative (const Led_Point& where, R
 /*
 @METHOD:        SimpleTextImager::ContainsMappedDisplayCharacters
 @DESCRIPTION:   <p>Override @'TextImager::ContainsMappedDisplayCharacters' to hide '\n' characters.
-            See @'qDefaultLedSoftLineBreakChar'.</p>
+            See @'qStroika_Frameworks_Led_DefaultSoftLineBreakChar'.</p>
 */
 bool SimpleTextImager::ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const
 {

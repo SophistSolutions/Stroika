@@ -27,11 +27,11 @@
 namespace Stroika::Frameworks::Led {
 
     /*
-    @CONFIGVAR:     qCacheTextMeasurementsForPM
+    @CONFIGVAR:     qStroika_Frameworks_Led_CacheTextMeasurementsForPM
     @DESCRIPTION:   <p>A fairly simple, but effective performance hack. Defaults ON</p>
         */
-#ifndef qCacheTextMeasurementsForPM
-#define qCacheTextMeasurementsForPM 1
+#ifndef qStroika_Frameworks_Led_CacheTextMeasurementsForPM
+#define qStroika_Frameworks_Led_CacheTextMeasurementsForPM 1
 #endif
 
     /*
@@ -215,7 +215,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual PartitionPtr MakeDefaultPartition () const = 0;
 
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
     private:
         class MeasureTextCache;
         unique_ptr<MeasureTextCache> fMeasureTextCache;
@@ -254,7 +254,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         nonvirtual DistanceType CalcSegmentSize_REFERENCE (size_t from, size_t to) const;
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
         nonvirtual DistanceType CalcSegmentSize_CACHING (size_t from, size_t to) const;
 #endif
 
@@ -273,11 +273,11 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-#if qCacheTextMeasurementsForPM
+#if qStroika_Frameworks_Led_CacheTextMeasurementsForPM
     /*
     @CLASS:         PartitioningTextImager::MeasureTextCache
     @BASES:         private @'Partition::PartitionWatcher', @'MarkerOwner'
-    @DESCRIPTION:   <p>A helper class to implement the @'qCacheTextMeasurementsForPM' caching code.</p>
+    @DESCRIPTION:   <p>A helper class to implement the @'qStroika_Frameworks_Led_CacheTextMeasurementsForPM' caching code.</p>
     */
     class PartitioningTextImager::MeasureTextCache : private Partition::PartitionWatcher, public MarkerOwner {
     private:

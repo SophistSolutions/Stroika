@@ -327,7 +327,7 @@ const Led_ClipFormat RTFIO::kRTFBodyGroupFragmentClipFormat = static_cast<Led_Cl
 inline RTFIO::ControlWordNameMap RTFIO::mkDefaultControlWordNameMap ()
 {
     RTFIO::ControlWordNameMap table;
-#if qUseMapForControlWordMap
+#if qStroika_Frameworks_Led_UseMapForControlWordMap
 #define TAB_INS_METHOD(name)                                                                                                               \
     Assert (table.size () == RTFIO::eControlAtom_##name);                                                                                  \
     table.insert (ControlWordNameMap::value_type (#name, RTFIO::eControlAtom_##name))
@@ -490,7 +490,7 @@ inline RTFIO::ControlWordNameMap RTFIO::mkDefaultControlWordNameMap ()
     TAB_INS_METHOD (wmetafile);
 #undef TAB_INS_METHOD
     Assert (table.size () == RTFIO::eControlAtomDynamicRangeStart);
-#if !qUseMapForControlWordMap
+#if !qStroika_Frameworks_Led_UseMapForControlWordMap
     sort (table.begin (), table.end ());
 #endif
     return table;
@@ -511,7 +511,7 @@ string RTFIO::GetAtomName (ControlWordAtom atom)
     return "";
 }
 
-#if !qUseMapForControlWordMap
+#if !qStroika_Frameworks_Led_UseMapForControlWordMap
 struct RTFIO::StringNControlWordAtom_Comparator : binary_function<RTFIO::StringNControlWordAtom, const char*, bool> {
     bool operator() (const RTFIO::StringNControlWordAtom& x, const char* y) const
     {
@@ -520,19 +520,19 @@ struct RTFIO::StringNControlWordAtom_Comparator : binary_function<RTFIO::StringN
 };
 #endif
 RTFIO::ControlWordAtom RTFIO::EnterControlWord (
-#if qUseMapForControlWordMap
+#if qStroika_Frameworks_Led_UseMapForControlWordMap
     const ControlWordAtomName& controlWord
 #else
     const char* controlWord
 #endif
 )
 {
-#if !qUseMapForControlWordMap
+#if !qStroika_Frameworks_Led_UseMapForControlWordMap
     RequireNotNull (controlWord);
 #endif
 
     using ITER = ControlWordNameMap::iterator;
-#if qUseMapForControlWordMap
+#if qStroika_Frameworks_Led_UseMapForControlWordMap
     ITER i = sControlWordNameMap.find (controlWord);
     if (i == sControlWordNameMap.end ()) {
         ControlWordAtom newVal = ControlWordAtom (eControlAtomDynamicRangeStart + sControlWordNameMap.size ());

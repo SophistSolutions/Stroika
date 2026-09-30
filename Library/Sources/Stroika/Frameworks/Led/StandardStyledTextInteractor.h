@@ -22,16 +22,15 @@
 namespace Stroika::Frameworks::Led {
 
     /*
-    @CONFIGVAR:     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+    @CONFIGVAR:     qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
     @DESCRIPTION:   <p>This format isn't terribly useful right now. It may become much more useful in future versions, if I decide
                 to rewrite it, to make it much faster than RTF. Then I may use it internally more.</p>
                     <p>It should cause little harm being turned on, but some people (SPR#0810) have requested the ability to
                 have this code stripped out.</p>
-                    <p>Turn ON by default.</p>
+                    <p>Off by default.</p>
         */
-#define qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor 0
-#ifndef qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
-#define qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor 1
+#ifndef qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+#define qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor 0
 #endif
 
     extern const Led_ClipFormat kLedPrivateClipFormat;
@@ -290,7 +289,7 @@ namespace Stroika::Frameworks::Led {
                                                                         const byte* fileStart, const byte* fileEnd) override;
 
     public:
-#if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+#if qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
         virtual bool InternalizeFlavor_Native (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
         virtual bool InternalizeFlavor_RTF (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
@@ -321,7 +320,7 @@ namespace Stroika::Frameworks::Led {
         virtual void ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage, size_t from, size_t to) override;
 
     public:
-#if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
+#if qStroika_Frameworks_Led_IncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
         nonvirtual void ExternalizeFlavor_Native (WriterFlavorPackage& flavorPackage, size_t from, size_t to);
 #endif
         nonvirtual void ExternalizeFlavor_RTF (WriterFlavorPackage& flavorPackage, size_t from, size_t to);

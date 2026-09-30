@@ -23,8 +23,8 @@
 
 namespace Stroika::Frameworks::Led::StyledTextIO {
 
-#ifndef qUseMapForControlWordMap
-#define qUseMapForControlWordMap 1
+#ifndef qStroika_Frameworks_Led_UseMapForControlWordMap
+#define qStroika_Frameworks_Led_UseMapForControlWordMap 1
 #endif
 
     /*
@@ -200,7 +200,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             eControlAtomDynamicRangeStart,
             eMaxControlAtom = 65000
         };
-#if qUseMapForControlWordMap
+#if qStroika_Frameworks_Led_UseMapForControlWordMap
     public:
         enum {
             eMaxControlAtomNameLen = 31
@@ -258,7 +258,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         static string GetAtomName (ControlWordAtom atom);
-#if qUseMapForControlWordMap
+#if qStroika_Frameworks_Led_UseMapForControlWordMap
         static ControlWordAtom EnterControlWord (const ControlWordAtomName& controlWord);
 #else
         static ControlWordAtom EnterControlWord (const char* controlWord);
@@ -1058,7 +1058,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         ********************************************************************************
         */
 //  class   RTFIO::StringNControlWordAtom
-#if !qUseMapForControlWordMap
+#if !qStroika_Frameworks_Led_UseMapForControlWordMap
     inline bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
     {
         return lhs.first < rhs.first;

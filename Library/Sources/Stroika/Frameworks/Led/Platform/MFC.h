@@ -44,7 +44,7 @@ namespace Stroika::Frameworks::Led::Platform {
  */
 
 /*
-    @CONFIGVAR:     qLedAssertsDefaultToMFCAsserts
+    @CONFIGVAR:     qStroika_Frameworks_Led_AssertsDefaultToMFCAsserts
     @DESCRIPTION:   <p>By default when using MFC, make the Led asserts fall-thru into the default
         MFC assertion code. Some customers have indicated they prefer this (spr#0424).</p>
             <p>Originally I made this default to TRUE, as the SPR requested. But I personally
@@ -55,8 +55,8 @@ namespace Stroika::Frameworks::Led::Platform {
             <p>Since it was requested, I'll continue to make it easy for others to turn this on.
         But I leave it off by default.</p>
         */
-#ifndef qLedAssertsDefaultToMFCAsserts
-#define qLedAssertsDefaultToMFCAsserts 0
+#ifndef qStroika_Frameworks_Led_AssertsDefaultToMFCAsserts
+#define qStroika_Frameworks_Led_AssertsDefaultToMFCAsserts 0
 #endif
 
 /*
@@ -84,8 +84,8 @@ namespace Stroika::Frameworks::Led::Platform {
 //  It did a cast of the result of CreateObject() to CWnd*, without
 //  knowing the real type it started with, so that code looses if
 //  CWnd is not the left-most base class.
-#ifndef qMFCRequiresCWndLeftmostBaseClass
-#define qMFCRequiresCWndLeftmostBaseClass 1
+#ifndef qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
+#define qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass 1
 #endif
 
     CPoint    AsCPoint (Led_Point p);
@@ -147,7 +147,7 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     template <typename MFC_BASE_CLASS = CWnd, typename BASE_INTERACTOR = TextInteractor>
     class Led_MFC_Helper :
-#if qMFCRequiresCWndLeftmostBaseClass
+#if qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
         public MFC_BASE_CLASS,
         public Led_Win32_Helper<BASE_INTERACTOR>
 #else
@@ -605,7 +605,7 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     template <typename ChosenInteractor, typename LEDMFC = Led_MFC>
     class Led_MFC_X :
-#if qMFCRequiresCWndLeftmostBaseClass
+#if qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
         public LEDMFC,
         public ChosenInteractor
 #else

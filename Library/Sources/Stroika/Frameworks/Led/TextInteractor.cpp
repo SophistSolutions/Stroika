@@ -1527,7 +1527,7 @@ bool TextInteractor::PointsAreCloseForDoubleClick (const Led_Point& p)
 */
 void TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor)
 {
-#if qDynamiclyChooseAutoScrollIncrement
+#if qStroika_Frameworks_Led_DynamiclyChooseAutoScrollIncrement
     Foundation::Time::TimePointSeconds        now = Time::GetTickCount ();
     static Foundation::Time::TimePointSeconds sLastTimeThrough{};
     const Foundation::Time::DurationSeconds   kClickThreshold = Led_GetDoubleClickTime () / 3;
@@ -1575,7 +1575,7 @@ void TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dra
     WhileTrackingConstrainSelection (&newSelStart, &newSelEnd);
     SetSelection (newSelStart, newSelEnd, eImmediateUpdate);
 
-#if qDynamiclyChooseAutoScrollIncrement
+#if qStroika_Frameworks_Led_DynamiclyChooseAutoScrollIncrement
     sLastTimeThrough = now;
 #endif
 }
@@ -1627,7 +1627,7 @@ void TextInteractor::WhileTrackingConstrainSelection_ForWholeWords (size_t* selS
     *selStart = wordStart;
 
     GetTextStore ().FindWordBreaks (*selEnd, &wordStart, &wordEnd, &wordReal);
-#if qDoubleClickSelectsSpaceAfterWord
+#if qStroika_Frameworks_Led_DoubleClickSelectsSpaceAfterWord
     if (wordReal) {
         // select the space forward...
         size_t xWordStart = 0;
@@ -3258,7 +3258,7 @@ void TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPre
     }
 
     ScrollToSelection ();
-#if qPeekForMoreCharsOnUserTyping
+#if qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
     UpdateIfNoKeysPending ();
 #else
     Update ();

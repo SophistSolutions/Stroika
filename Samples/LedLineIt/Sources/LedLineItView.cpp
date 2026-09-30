@@ -255,7 +255,7 @@ namespace {
  */
 IMPLEMENT_DYNCREATE (LedLineItView, CView)
 
-DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
+DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
 BEGIN_MESSAGE_MAP (LedLineItView, LedLineItView::inherited)
 
 ON_WM_SETFOCUS ()

@@ -121,17 +121,17 @@
 #endif
 
 /*
-@CONFIGVAR:     qPeekForMoreCharsOnUserTyping
+@CONFIGVAR:     qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
 @DESCRIPTION:   <p>A trick to get better (worse?) interactivity in typing.</p>
         <p>Defaults to true.</p>
  */
-#ifndef qPeekForMoreCharsOnUserTyping
-#define qPeekForMoreCharsOnUserTyping 1
+#ifndef qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping
+#define qStroika_Frameworks_Led_PeekForMoreCharsOnUserTyping 1
 #endif
 
 /*
-@CONFIGVAR:     qDoubleClickSelectsSpaceAfterWord
-@DESCRIPTION:   <p>qDoubleClickSelectsSpaceAfterWord is a very silly idea, imho, but it is a standard UI feature
+@CONFIGVAR:     qStroika_Frameworks_Led_DoubleClickSelectsSpaceAfterWord
+@DESCRIPTION:   <p>qStroika_Frameworks_Led_DoubleClickSelectsSpaceAfterWord is a very silly idea, imho, but it is a standard UI feature
     on MS Windows editors, and not uncommon on the Mac. As far as I can tell, the idea
     is just to select a word, plus all trailing whitespace on double clicks. The idea is
     that this somehow makes cut/paste work more easily. So it is sometimes referred
@@ -140,11 +140,11 @@
     Now it is always OFF by default, since I think its too stupid, and annoying.
     Someday soon I'll implement better smart-cut/paste like Style(on Mac) does.</p>
  */
-#ifndef qDoubleClickSelectsSpaceAfterWord
+#ifndef qStroika_Frameworks_Led_DoubleClickSelectsSpaceAfterWord
 #if qStroika_Platform_Windows
-#define qDoubleClickSelectsSpaceAfterWord 0
+#define qStroika_Frameworks_Led_DoubleClickSelectsSpaceAfterWord 0
 #else
-#define qDoubleClickSelectsSpaceAfterWord 0
+#define qStroika_Frameworks_Led_DoubleClickSelectsSpaceAfterWord 0
 #endif
 #endif
 
@@ -153,16 +153,16 @@
 #endif
 
 /*
-@CONFIGVAR:     qDynamiclyChooseAutoScrollIncrement
+@CONFIGVAR:     qStroika_Frameworks_Led_DynamiclyChooseAutoScrollIncrement
 @DESCRIPTION:   <p>On slower computers, this can make scrolling appear a bit faster. At some risk to
     predictablity...</p>
  */
-#ifndef qDynamiclyChooseAutoScrollIncrement
-#define qDynamiclyChooseAutoScrollIncrement 1
+#ifndef qStroika_Frameworks_Led_DynamiclyChooseAutoScrollIncrement
+#define qStroika_Frameworks_Led_DynamiclyChooseAutoScrollIncrement 1
 #endif
 
 /*
-@CONFIGVAR:     qUseOffscreenBitmapsToReduceFlicker
+@CONFIGVAR:     qStroika_Frameworks_Led_UseOffscreenBitmapsToReduceFlicker
 @DESCRIPTION:   <p>Led already has very little flicker. This is because we are very careful to
     draw as little as possible, and to draw quickly. But some cases still exist.
     Like large pictures being drawn are flicker, cuz we must erase the bounds and then
@@ -173,8 +173,8 @@
     But now all it does is set the default VALUE for the ImageUsingOffscreenBitmaps property.</p>
         <p>Instead of using this, use @'TextImager::SetImageUsingOffscreenBitmaps' ().</p>
  */
-#ifndef qUseOffscreenBitmapsToReduceFlicker
-#define qUseOffscreenBitmapsToReduceFlicker 1
+#ifndef qStroika_Frameworks_Led_UseOffscreenBitmapsToReduceFlicker
+#define qStroika_Frameworks_Led_UseOffscreenBitmapsToReduceFlicker 1
 #endif
 
 #if defined(__cplusplus)
@@ -192,12 +192,12 @@ namespace Stroika::Frameworks::Led {
  */
 #if qStroika_Platform_Windows
 /*
-@CONFIGVAR:     qUseActiveXToOpenURLs
+@CONFIGVAR:     qStroika_Frameworks_Led_UseActiveXToOpenURLs
 @DESCRIPTION:   <p><b>Win32 ONLY</b></p>
         <p>For supporting openening URLs.</p>
  */
-#ifndef qUseActiveXToOpenURLs
-#define qUseActiveXToOpenURLs 1
+#ifndef qStroika_Frameworks_Led_UseActiveXToOpenURLs
+#define qStroika_Frameworks_Led_UseActiveXToOpenURLs 1
 #endif
 
 #endif /*qStroika_Platform_Windows*/

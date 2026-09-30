@@ -19,22 +19,22 @@
 namespace Stroika::Frameworks::Led::StyledTextIO {
 
 /*
-    @CONFIGVAR:     qThrowAwayMostUnknownHTMLTags
+    @CONFIGVAR:     qStroika_Frameworks_Led_ThrowAwayMostUnknownHTMLTags
     @DESCRIPTION:   <p>By default, on reading, we throw away or interpret loosely most tags. This makes the reader
                 very lossy, but produces the most human-readable result. For now control which behavior
                 you want via this compile time flag. -- LGP 961015</p>
         */
-#ifndef qThrowAwayMostUnknownHTMLTags
-#define qThrowAwayMostUnknownHTMLTags 1
+#ifndef qStroika_Frameworks_Led_ThrowAwayMostUnknownHTMLTags
+#define qStroika_Frameworks_Led_ThrowAwayMostUnknownHTMLTags 1
 #endif
 
 /*
-    @CONFIGVAR:     qWriteOutMostHTMLEntitiesByName
+    @CONFIGVAR:     qStroika_Frameworks_Led_WriteOutMostHTMLEntitiesByName
     @DESCRIPTION:   <p>By default, off - cuz that works more compatably with many older web browser (such as Netscape 4.x).
                 And writing them by number is slightly faster.</p>
         */
-#ifndef qWriteOutMostHTMLEntitiesByName
-#define qWriteOutMostHTMLEntitiesByName 0
+#ifndef qStroika_Frameworks_Led_WriteOutMostHTMLEntitiesByName
+#define qStroika_Frameworks_Led_WriteOutMostHTMLEntitiesByName 0
 #endif
 
     /*

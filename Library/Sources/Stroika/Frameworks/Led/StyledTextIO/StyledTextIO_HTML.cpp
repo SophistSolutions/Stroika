@@ -776,7 +776,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
         }
     }
 
-    // Even if qThrowAwayMostUnknownHTMLTags, we should still emit unknown entity refs, I think ... LGP 961015
+    // Even if qStroika_Frameworks_Led_ThrowAwayMostUnknownHTMLTags, we should still emit unknown entity refs, I think ... LGP 961015
     EmitText (MapInputTextToTString (string{text, nBytes}));
 }
 
@@ -1059,7 +1059,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_BANG_doctype (bool /*start*/, 
 
 void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* text, size_t nBytes)
 {
-#if qThrowAwayMostUnknownHTMLTags
+#if qStroika_Frameworks_Led_ThrowAwayMostUnknownHTMLTags
     if (start) {
         string tagText (text, nBytes);
 
@@ -1302,7 +1302,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_hr ([[maybe_unused]] bool star
     EndParaIfOpen ();
 // emit it unchanged (since we don't support these), but also emit a line-break as well so
 // looks more readable
-#if qThrowAwayMostUnknownHTMLTags
+#if qStroika_Frameworks_Led_ThrowAwayMostUnknownHTMLTags
     const Led_tChar kSeparator[] = LED_TCHAR_OF ("----------------------------------------------------------------");
     EmitText (kSeparator, Led_tStrlen (kSeparator));
 #else
@@ -1317,7 +1317,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_hN (bool start, const char* te
     if (start) {
         EmitForcedLineBreak ();
     }
-#if qThrowAwayMostUnknownHTMLTags
+#if qStroika_Frameworks_Led_ThrowAwayMostUnknownHTMLTags
     BasicFontStackOperation (start);
     if (start) {
         FontSpecification fsp = fFontStack.back ();
@@ -1695,7 +1695,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_xmp (bool start, const char* t
 
 void StyledTextIOReader_HTML::HandleHTMLThingyTagUnknown ([[maybe_unused]] bool start, [[maybe_unused]] const char* text, [[maybe_unused]] size_t nBytes)
 {
-#if !qThrowAwayMostUnknownHTMLTags
+#if !qStroika_Frameworks_Led_ThrowAwayMostUnknownHTMLTags
     EmitText (text, nBytes);
 #endif
 }
@@ -1960,7 +1960,7 @@ const vector<StyledTextIOWriter_HTML::EntityRefMapEntry>& StyledTextIOWriter_HTM
     if (sFirstTime) {
         sFirstTime = false;
         for (size_t i = 0; i < HTMLInfo::kDefaultEntityRefMapTable_Count; ++i) {
-#if !qWriteOutMostHTMLEntitiesByName
+#if !qStroika_Frameworks_Led_WriteOutMostHTMLEntitiesByName
             // Then skip all but a handfull of very important ones...
             if (HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "amp" and HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "gt" and
                 HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "lt" and HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "quot"

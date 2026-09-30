@@ -29,7 +29,7 @@ using Memory::StackBuffer;
 
 namespace {
 
-#if qIncludeBakedInDictionaries
+#if qStroika_Frameworks_Led_IncludeBakedInDictionaries
 #include "Dictionary-Compiled-US-English.inc"
 #endif
 
@@ -100,7 +100,7 @@ namespace {
  *************************** SpellCheckEngine_Basic *****************************
  ********************************************************************************
  */
-#if qIncludeBakedInDictionaries
+#if qStroika_Frameworks_Led_IncludeBakedInDictionaries
 const SpellCheckEngine_Basic::CompiledDictionary SpellCheckEngine_Basic::kDictionary_US_English (Dictionary_US_English);
 #endif
 
@@ -1021,7 +1021,7 @@ SpellCheckEngine_Basic_Simple::SpellCheckEngine_Basic_Simple ()
     , fUDName{}
     , fUD{nullptr}
 {
-#if qIncludeBakedInDictionaries
+#if qStroika_Frameworks_Led_IncludeBakedInDictionaries
     SetMainDictionary (&kDictionary_US_English);
 #endif
 }

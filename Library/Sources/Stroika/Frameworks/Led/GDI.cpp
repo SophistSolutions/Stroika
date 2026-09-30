@@ -51,7 +51,7 @@ inline bool operator== (PALETTEENTRY lhs, COLORREF rhs)
 }
 #endif
 
-#if !qHaveWindowsDIBDefined
+#if !qStroika_Frameworks_Led_HaveWindowsDIBDefined
 #ifndef BI_BITFIELDS
 #define BI_BITFIELDS 3
 #endif

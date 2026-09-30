@@ -508,27 +508,8 @@ namespace Stroika::Frameworks::Led {
         virtual string FileSpecToURL (const filesystem::path& p);
 
     protected:
-#if qUseActiveXToOpenURLs
+#if qStroika_Frameworks_Led_UseActiveXToOpenURLs
         nonvirtual void Open_ActiveX (const string& url);
-#endif
-#if qUseSpyglassDDESDIToOpenURLs
-        nonvirtual void Open_SpyglassDDE (const string& url);
-#endif
-
-#if qUseSpyglassDDESDIToOpenURLs
-    public:
-        static void InitDDEHandler (); // to be able to open URLs with DDE this must be called, but
-        // it takes over all DDE processing, disabling your app from doing
-        // any other DDE.
-
-        // Use this for more low level extensions of the DDE support...
-        static DWORD             sDDEMLInstance; //  The DDEML instance identifier.
-        static HDDEDATA CALLBACK SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/,
-                                                    HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/);
-        static const char*       SkipToNextArgument (const char* pFormat);
-        static HSZ               ClientArguments (const char* pFormat, ...);
-        static char*             ExtractArgument (HSZ hszArgs, int iArg);
-        static void              ServerReturned (HDDEDATA hArgs, const char* pFormat, ...);
 #endif
     };
 

@@ -28,7 +28,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 
-#if qLedAssertsDefaultToMFCAsserts && qStroika_Foundation_Debug_AssertionsChecked
+#if qStroika_Frameworks_Led_AssertsDefaultToMFCAsserts && qStroika_Foundation_Debug_AssertionsChecked
 static class OneTimeLedMFCAssertionFunctionSetter {
 public:
     static void MFCAssertionHandler (const char* fileName, int lineNum)
@@ -42,7 +42,8 @@ public:
 } sOneTimeLedMFCAssertionFunctionSetter;
 #endif
 
-CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qMFCRequiresCWndLeftmostBaseClass, qMFCRequiresCWndLeftmostBaseClass);
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass,
+                               qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass);
 
 /*
  ********************************************************************************

@@ -22,14 +22,14 @@
 namespace Stroika::Frameworks::Led {
 
 /*
-    @CONFIGVAR:     qIncludeBakedInDictionaries
+    @CONFIGVAR:     qStroika_Frameworks_Led_IncludeBakedInDictionaries
     @DESCRIPTION:   <p>Turning this on (its on by default) includes into the binary - pre-built dictionaries (currently just US-English).
                 Including this allows direct access to the US-English dictionary. However - its large - adding about 2-3MB (depending
                 on if you use UNICODE or single-byte - among other things) to the size of your binary.</p>
         */
-#ifndef qIncludeBakedInDictionaries
+#ifndef qStroika_Frameworks_Led_IncludeBakedInDictionaries
 // DISABLE BY DEFAULT UNTIL WE PUT IN PLACE BETTER MECHANISM FOR 'RESOURCES' - as we do in HealthFrame for stuff like XSDs...
-#define qIncludeBakedInDictionaries 0
+#define qStroika_Frameworks_Led_IncludeBakedInDictionaries 0
 #endif
 
     /*
@@ -96,7 +96,7 @@ namespace Stroika::Frameworks::Led {
             unsigned int fXXX : 2; // some flags - I forget the design - but I'll need this...
         };
 
-#if qIncludeBakedInDictionaries
+#if qStroika_Frameworks_Led_IncludeBakedInDictionaries
     public:
         static const CompiledDictionary kDictionary_US_English;
 #endif

@@ -172,7 +172,7 @@ void WordWrappedTextImager::AdjustBestRowLength (size_t /*textStart*/, const Led
 /*
 @METHOD:        WordWrappedTextImager::ContainsMappedDisplayCharacters
 @DESCRIPTION:   <p>Override @'TextImager::ContainsMappedDisplayCharacters' to hide kSoftLineBreakChar characters.
-    See @'qDefaultLedSoftLineBreakChar'.</p>
+    See @'qStroika_Frameworks_Led_DefaultSoftLineBreakChar'.</p>
 */
 bool WordWrappedTextImager::ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const
 {

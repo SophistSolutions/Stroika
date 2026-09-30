@@ -1206,7 +1206,7 @@ DistanceType MultiRowTextImager::CalculateInterLineSpace (const PartitionMarker*
 /*
     @METHOD:        MultiRowTextImager::ContainsMappedDisplayCharacters
     @DESCRIPTION:   <p>Override @'TextImager::ContainsMappedDisplayCharacters' to hide '\n' characters.
-        See @'qDefaultLedSoftLineBreakChar'.</p>
+        See @'qStroika_Frameworks_Led_DefaultSoftLineBreakChar'.</p>
     */
 bool MultiRowTextImager::ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const
 {

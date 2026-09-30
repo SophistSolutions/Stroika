@@ -531,7 +531,7 @@ searchSMORE:
         if (not matchCase and not charsEqual) {
 // if we are doing case-IN-sensative compare, and characters not the same, maybe they are
 // simply of different case?
-#if qUseWin32CompareStringCallForCaseInsensitiveSearch
+#if qStroika_Frameworks_Led_UseWin32CompareStringCallForCaseInsensitiveSearch
 #define X_COMPARESTRING ::CompareStringW
             if (X_COMPARESTRING (LOCALE_USER_DEFAULT, NORM_IGNORECASE, &lookingAtData[i], 1, &pattern[i], 1) == CSTR_EQUAL) {
                 charsEqual = true;
