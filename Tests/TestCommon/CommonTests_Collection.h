@@ -129,7 +129,7 @@ namespace CommonTests {
 
                 IteratorTests_ (s);
 
-                static const size_t K = qStroika_Foundation_Debug_AssertionsChecked ? (Debug::IsRunningUnderValgrind () ? 50 : 200) : 500;
+                static const size_t K = Debug::IsRunningUnderValgrind () ? 50 : (qStroika_Foundation_Debug_AssertionsChecked ? 200 : 500);
 
                 size_t i;
 

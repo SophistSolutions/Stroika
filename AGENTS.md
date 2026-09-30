@@ -46,7 +46,7 @@ Intermediate objects go to `IntermediateFiles/{CONFIGURATION}/`; final libs/exec
 ```bash
 make CONFIGURATION=Debug run-tests -j8                 # build + run all regression tests for one config
 make run-tests                                         # all configurations
-VALGRIND=memcheck make CONFIGURATION=Debug run-tests   # under valgrind
+VALGRIND=memcheck make CONFIGURATION=Release run-tests # under valgrind - a Release build; Debug takes hours (Documentation/Debugging.md)
 ```
 Regression tests live under `Tests/<NN>/` (numbered directories, each a single `Test.cpp` +
 thin `Makefile` including `Tests/Makefile-Test-Template.mk`). Each test file's purpose is documented

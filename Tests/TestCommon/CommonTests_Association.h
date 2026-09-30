@@ -251,7 +251,7 @@ namespace CommonTests {
                 {
                     Debug::TraceContextBumper ctx{"CommonTests::AssociationTests::Test7_Keys"};
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    static const size_t K = qStroika_Foundation_Debug_AssertionsChecked ? (Debug::IsRunningUnderValgrind () ? 25 : 50) : 100;
+                    static const size_t K = Debug::IsRunningUnderValgrind () ? 25 : (qStroika_Foundation_Debug_AssertionsChecked ? 50 : 100);
                     ConcreteContainerType c = testingSchema.Factory ();
                     for (size_t i = 0; i < K; ++i) {
                         c.Add (i, i);
