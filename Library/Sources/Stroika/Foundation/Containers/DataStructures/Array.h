@@ -152,9 +152,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Insert (const ForwardIterator& i, ArgByValueType<T> item);
         nonvirtual void Insert (const BackwardIterator& i, ArgByValueType<T> item);
 
-    public:
+    private:
 #if qCompilerAndStdLib_MemoryInsertAt_Buggy
-        nonvirtual void Insert_BWA (size_t index, ArgByValueType<T> item);
+        nonvirtual void Insert_BWA_ (size_t index, ArgByValueType<T> item); // only Insert (at, span) uses it
 #endif
 
     public:

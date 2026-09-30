@@ -264,19 +264,14 @@ namespace Stroika::Frameworks::Led::Platform {
 
     void IdleManagerOSImpl_Win32::OnTimer_Msg (UINT_PTR /*nEventID*/, TIMERPROC* /*proc*/)
     {
-/*
+        /*
             *  Check if any input or paint messages pending, and if so - ignore the timer message as
             *  this isn't really IDLE time.
             */
-#if defined(PM_QS_INPUT) || defined(PM_QS_PAINT)
         MSG msg;
         if (::PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE | PM_QS_INPUT | PM_QS_PAINT) == 0) {
             CallSpendTime ();
         }
-#else
-        //PM_QS_INPUT and PM_QS_PAINT not defined in MSVC60
-        CallSpendTime ();
-#endif
     }
 
     void IdleManagerOSImpl_Win32::CheckAndCreateIdleWnd ()

@@ -207,22 +207,10 @@ namespace Stroika::Foundation::Common::StdCompat {
 #endif
 
     /**
-     *  Workaround absence of bit_cast in MacOS XCode 14 (which we support with Stroika v3)
+     *  Kept so existing callers of StdCompat::bit_cast still compile; every supported standard library now has std::bit_cast
+     *  (the fallback was for XCode 14).
      */
-#if defined(__cpp_lib_bit_cast)
     using std::bit_cast;
-#else
-    template <class To, class From>
-    inline To bit_cast (const From& src) noexcept
-        requires (sizeof (To) == sizeof (From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>)
-    {
-        static_assert (std::is_trivially_constructible_v<To>, "This implementation additionally requires "
-                                                              "destination type to be trivially constructible");
-        To dst;
-        std::memcpy (&dst, &src, sizeof (To));
-        return dst;
-    }
-#endif
 
     /**
      *  std::byteswap where the standard library has it (it is C++23), else an equivalent - so every C++20 build uses

@@ -254,10 +254,7 @@ namespace Stroika::Foundation::Time {
             return As<T> ();
         }
         else if constexpr (Common::IDuration<T>) {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\""); // warning: implicit conversion from 'std::__1::chrono::duration<long long, std::__1::ratio<1, 1> >::rep' (aka 'long long') to 'double' changes value from 9223372036854775807 to 9223372036854775808
-#endif
             /*
              *  To convert, will do( my_ratio::num/my_ratio::den) * (target::den / target::num) .
              *  Question is - will any of that overflow.
@@ -274,10 +271,7 @@ namespace Stroika::Foundation::Time {
             if (targetRes > T::max ().count ()) [[unlikely]] {
                 return T::max ();
             }
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
-#endif
             return As<T> ();
         }
         else if constexpr (Common::ITimePoint<T>) {

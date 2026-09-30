@@ -88,7 +88,6 @@ Characters::String SignalHandler::ToString () const
  *********** Execution::SignalHandlerRegistry::SafeSignalsManager ***************
  ********************************************************************************
  */
-DISABLE_COMPILER_MSC_WARNING_START (4351)
 /*
  *  Design note:
  *      Though it would be logical to use a BlockQueue<> here to implement the signal forwarding,
@@ -256,7 +255,6 @@ private:
     Execution::Platform::POSIX::SemWaitableEvent fRecievedSig_;
 #endif
 };
-DISABLE_COMPILER_MSC_WARNING_END (4351)
 
 /*
  ********************************************************************************

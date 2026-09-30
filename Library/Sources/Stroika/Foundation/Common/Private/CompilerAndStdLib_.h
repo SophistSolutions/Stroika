@@ -313,7 +313,7 @@ Segmentation fault (core dumped)
  *  \note This flag covers TWO symptoms, both g++ <= 14 optimizer bugs, and almost certainly the same
  *        underlying defect - so one flag, one place to bump when g++-14 support is dropped:
  *
- *          1.  Memory::Insert () miscompiled. DataStructures/Array.inl takes the Insert_BWA ()
+ *          1.  Memory::Insert () miscompiled. DataStructures/Array.inl takes the Insert_BWA_ ()
  *              per-element loop instead. (The original reason for this flag.)
  *
  *          2.  (2026-08-21) Collection<T>::_IRep::Add (span<const value_type>, Iterator<value_type>*)

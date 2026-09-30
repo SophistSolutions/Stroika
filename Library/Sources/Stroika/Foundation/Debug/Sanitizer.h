@@ -157,9 +157,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
-     *          #if qCompiler_ThreadSantizer_SPR_717_Buggy
-     *              Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
-     *          #endif
+     *          Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
      *          static void DoIt (void* ignored) {...}
      *      \endcode
      */

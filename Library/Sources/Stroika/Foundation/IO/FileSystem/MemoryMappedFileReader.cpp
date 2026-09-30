@@ -60,7 +60,6 @@ MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName
     ::close (fd); //http://linux.die.net/man/2/mmap says don't need to keep FD open while mmapped
 #elif qStroika_Foundation_Common_Platform_Windows
     try {
-        // FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
         fFileHandle_ = ::CreateFile (fileName.c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (fFileHandle_ == INVALID_HANDLE_VALUE) {
             Execution::ThrowSystemErrNo ();

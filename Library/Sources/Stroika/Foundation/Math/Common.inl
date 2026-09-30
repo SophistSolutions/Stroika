@@ -122,15 +122,9 @@ namespace Stroika::Foundation::Math {
     {
         FLOAT_TYPE tmp = ::round (n);
         if (tmp > 0) {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 13))
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\""); // warning: implicit conversion from 'std::__1::numeric_limits<long>::type' (aka 'long') to 'double' changes value from 9223372036854775807 to 9223372036854775808
-#endif
             return tmp >= numeric_limits<INT_TYPE>::max () ? numeric_limits<INT_TYPE>::max () : static_cast<INT_TYPE> (tmp);
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 13))
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
-#endif
         }
         else {
             return tmp <= numeric_limits<INT_TYPE>::min () ? numeric_limits<INT_TYPE>::min () : static_cast<INT_TYPE> (tmp);
@@ -171,15 +165,9 @@ namespace Stroika::Foundation::Math {
         }
         FLOAT_TYPE tmp = ::trunc (n);
         if (tmp > 0) {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 13))
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\""); // warning: implicit conversion from 'std::__1::numeric_limits<long>::type' (aka 'long') to 'double' changes value from 9223372036854775807 to 9223372036854775808
-#endif
             return tmp >= numeric_limits<INT_TYPE>::max () ? numeric_limits<INT_TYPE>::max () : static_cast<INT_TYPE> (tmp);
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 13))
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
-#endif
         }
         else {
             return tmp <= numeric_limits<INT_TYPE>::min () ? numeric_limits<INT_TYPE>::min () : static_cast<INT_TYPE> (tmp);

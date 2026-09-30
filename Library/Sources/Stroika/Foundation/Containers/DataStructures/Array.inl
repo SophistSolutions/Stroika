@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 #if qCompilerAndStdLib_MemoryInsertAt_Buggy
     template <typename T>
-    nonvirtual void Array<T>::Insert_BWA (size_t index, ArgByValueType<T> item)
+    nonvirtual void Array<T>::Insert_BWA_ (size_t index, ArgByValueType<T> item)
     {
         // workaround crash in gcc optimized output
         Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             // maybe is a compiler bug - cuz no problem on g++-15 ubuntu 25.04
             //temporary BWA til I find what is wrong with Memory::Insert () on gcc optimizer
             for (size_t i = 0; i < copyFrom.size (); ++i) {
-                this->Insert_BWA (i + at, copyFrom[i]);
+                this->Insert_BWA_ (i + at, copyFrom[i]);
             }
 #else
             this->fLength_ = Memory::Insert (span{this->data (), sz}, span{this->data (), capacity ()}, at, copyFrom).size ();

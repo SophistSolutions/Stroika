@@ -130,15 +130,9 @@ void ThroughTmpFileWriter::Commit ()
         ThrowIfZeroGetLastError (::MoveFileExW (fTmpFilePath_.c_str (), fRealFilePath_.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
     }
     catch (const system_error& we) {
-        // On Win9x - this fails cuz OS not impl...
-        if (we.code () == error_code{ERROR_CALL_NOT_IMPLEMENTED, system_category ()}) {
-            ::DeleteFileW (fRealFilePath_.c_str ());
-            ThrowIfZeroGetLastError (::MoveFileW (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()));
-        }
         // Sadly this happens pretty often on Windoze, due to virus scanners. But when that is the cause, retrying
         // a little later should do the trick --LGP 2026-02-07
-        else if (we.code () == error_code{ERROR_SHARING_VIOLATION, system_category ()} or
-                 we.code () == error_code{ERROR_ACCESS_DENIED, system_category ()}) {
+        if (we.code () == error_code{ERROR_SHARING_VIOLATION, system_category ()} or we.code () == error_code{ERROR_ACCESS_DENIED, system_category ()}) {
             auto retryLoop = [&] () {
                 if (fRetryOnSharingViolationFor != kRetryOnSharingViolationFor_Disable) {
                     DbgTrace ("ThroughTmpFileWriter::Commit: {}, so retrying for {}"_f,
