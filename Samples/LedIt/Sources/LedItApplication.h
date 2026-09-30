@@ -10,11 +10,7 @@
 #include <string>
 #include <vector>
 
-#if qStroika_Platform_MacOS
-#include <Dialogs.h>
-
-#include <LDocApplication.h>
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 
 #include "Stroika/Foundation/Execution/Platform/Windows/COM.h"
 
@@ -35,9 +31,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 #include "Stroika/Frameworks/Led/SpellCheckEngine_Basic.h"
 #endif
 
-#if qStroika_Platform_MacOS
-#include "Stroika/Frameworks/Led/Platform/Led_PP.h"
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Frameworks/Led/Platform/MFC.h"
 #endif
 
@@ -48,23 +42,17 @@ class CMenu;
 class LedItDocument;
 class LedItView;
 
-#if qStroika_Platform_MacOS
-using CMD_ENABLER = Platform::Led_PP_TmpCmdUpdater;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 using CMD_ENABLER = Platform::Led_MFC_TmpCmdUpdater;
 #endif
 
 class LedItApplication
-#if qStroika_Platform_MacOS
-    : public LDocApplication
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     : public CWinApp
 #endif
 {
 private:
-#if qStroika_Platform_MacOS
-    using inherited = LDocApplication;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     using inherited = CWinApp;
 #endif
 
@@ -155,57 +143,6 @@ public:
     nonvirtual void OnGotoLedItWebPageCommand ();
     nonvirtual void OnGotoSophistsWebPageCommand ();
     nonvirtual void OnCheckForUpdatesWebPageCommand ();
-
-#if qStroika_Platform_MacOS
-public:
-    virtual void MakeMenuBar () override;
-    virtual void StartUp () override;
-    virtual void ProcessNextEvent () override;
-    virtual void HandleAppleEvent (const AppleEvent& inAppleEvent, AppleEvent& outAEReply, AEDesc& outResult, long inAENumber) override;
-
-protected:
-    nonvirtual void HandleMacOSException (OSErr err);
-    nonvirtual void HandlePowerPlantException (ExceptionCode err);
-
-public:
-    virtual void ShowAboutBox () override;
-
-    virtual Boolean ObeyCommand (CommandT inCommand, void* ioParam = nil) override;
-    virtual void FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName) override;
-
-public:
-    nonvirtual void OnHelpMenuCommand ();
-
-private:
-    short fHelpMenuItem;
-
-private:
-    short fGotoLedItWebPageMenuItem;
-
-private:
-    short fGotoSophistsWebPageMenuItem;
-
-private:
-    short fCheckForUpdatesWebPageMenuItem;
-
-public:
-    virtual void UseIdleTime (const EventRecord& inMacEvent) override;
-
-private:
-    float fLastLowMemWarnAt;
-
-public:
-    virtual void          OpenDocument (FSSpec* inMacFSSpec) override;
-    virtual void          OpenDocument (FSSpec* inMacFSSpec, FileFormat format) override;
-    virtual LModelObject* MakeNewDocument () override;
-
-public:
-    virtual void ChooseDocument () override;
-
-private:
-    static pascal Boolean SFGetDlgModalFilter (DialogPtr dialog, EventRecord* theEvent, short* itemHit, void* myData);
-    static pascal short   SFGetDlgHook (short item, DialogPtr dialog, void* myData);
-#endif
 
 #if qStroika_Platform_Windows
 private:

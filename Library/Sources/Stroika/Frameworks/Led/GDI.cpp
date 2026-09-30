@@ -950,13 +950,7 @@ void Tablet::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led
  *********************************** Tablet *************************************
  ********************************************************************************
  */
-#if qStroika_Platform_MacOS
-Tablet::Tablet (GrafPtr gp)
-    : fGrafPort (gp)
-{
-    RequireNotNull (gp);
-}
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 Tablet::Tablet (HDC hdc, Tablet::OwnDCControl ownsDC)
     : m_hDC (hdc)
     , fRecolorHelper (nullptr)
@@ -1026,19 +1020,7 @@ TWIPS_Rect Tablet::CvtToTWIPS (Led_Rect from) const
 */
 void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateType scrollVBy)
 {
-#if qStroika_Platform_MacOS
-    Rect      qdMoveRect = AsQDRect (windowRect);
-    RgnHandle updateRgn  = ::NewRgn ();
-    Execution::ThrowIfNull (updateRgn);
-    SetPort ();
-    ::ScrollRect (&qdMoveRect, 0, scrollVBy, updateRgn);
-#if TARGET_CARBON
-    ::InvalWindowRgn (::GetWindowFromPort (fGrafPort), updateRgn);
-#else
-    ::InvalRgn (updateRgn);
-#endif
-    ::DisposeRgn (updateRgn);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     RECT gdiMoveRect = AsRECT (windowRect);
     // NB: I used to use ScrollDC (Led 2.1 and earlier). But that code appeared to sometimes leave
     // little bits of crufy around. I never understood why. But I assume it was a windows bug.
@@ -1056,13 +1038,7 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
 */
 void Tablet::FrameRegion (const Region& r, const Color& c)
 {
-#if qStroika_Platform_MacOS
-    MacPortAndClipRegionEtcSaver saver; // unclear if this is useful/needed?
-    SetPort ();
-    PenMode (srcCopy); // ???
-    GDI_RGBForeColor (c.GetOSRep ());
-    ::FrameRgn (r.GetOSRep ());
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     Brush brush = Brush (c.GetOSRep ());
     (void)::FrameRgn (*this, r, brush, 1, 1);
 #else
@@ -1104,13 +1080,8 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
 {
     RequireNotNull (text);
     RequireNotNull (charLocations);
-#if qStroika_Platform_MacOS
-    SetPort ();
-#endif
 
-#if qStroika_Platform_MacOS
-    const DistanceType kMaxTextWidthResult = 0x7fff;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     DistanceType kMaxTextWidthResult = kRunning32BitGDI ? 0x7fffffff : 0x7fff;
     if (IsPrinting ()) {
         // See SPR#0435
@@ -1425,12 +1396,7 @@ FontMetrics Tablet::GetFontMetrics () const
  ***************************** OffscreenTablet::OT ******************************
  ********************************************************************************
  */
-#if qStroika_Platform_MacOS
-OffscreenTablet::OT::OT (GrafPtr gp)
-    : inherited (gp)
-{
-}
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 OffscreenTablet::OT::OT (HDC hdc, Tablet::OwnDCControl ownsDC)
     : inherited (hdc, ownsDC)
 {
@@ -1446,11 +1412,7 @@ OffscreenTablet::OffscreenTablet ()
     : fOrigTablet (nullptr)
     , fOffscreenRect (Led_Rect (0, 0, 0, 0))
     , fOffscreenTablet (nullptr)
-#if qStroika_Platform_MacOS
-    , fOrigDevice (nullptr)
-    , fOrigPort (nullptr)
-    , fOffscreenGWorld (nullptr)
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     , fMemDC ()
     , fMemoryBitmap ()
     , fOldBitmapInDC (nullptr)
@@ -1460,15 +1422,7 @@ OffscreenTablet::OffscreenTablet ()
 
 OffscreenTablet::~OffscreenTablet ()
 {
-#if qStroika_Platform_MacOS
-    if (fOrigPort != nullptr) {
-        ::SetGWorld (fOrigPort, fOrigDevice); // restore gworld
-    }
-    if (fOffscreenGWorld != nullptr) {
-        ::DisposeGWorld (fOffscreenGWorld);
-    }
-    delete fOffscreenTablet;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     if (fOldBitmapInDC != nullptr) {
         (void)fMemDC.SelectObject (fOldBitmapInDC);
     }
@@ -1487,25 +1441,7 @@ void OffscreenTablet::Setup (Tablet* origTablet)
     RequireNotNull (origTablet);
 
     fOrigTablet = origTablet;
-#if qStroika_Platform_MacOS
-    // Save the old gworld info
-    Assert (fOrigPort == nullptr);
-    Assert (fOrigDevice == nullptr);
-    ::GetGWorld (&fOrigPort, &fOrigDevice);
-
-    // Create our gworld (may have to cache this if it turns out to be expensive to re-create...
-    Assert (fOffscreenGWorld == nullptr);
-    {
-        Rect  bounds = AsQDRect (Led_Rect (0, 0, 1, 1)); // size appropriately on a row-by-row basis below...
-        OSErr theErr = SafeNewGWorld (&fOffscreenGWorld, 0, &bounds, nullptr, nullptr, noNewDevice | useTempMem);
-        if (theErr != noErr) {
-            fOffscreenGWorld = nullptr; // no biggie, we just don't use it...
-        }
-    }
-    if (fOffscreenGWorld != nullptr) {
-        fOffscreenTablet = new OT (reinterpret_cast<GrafPtr> (fOffscreenGWorld));
-    }
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     if (fMemDC.CreateCompatibleDC (fOrigTablet)) {
         fOffscreenTablet = &fMemDC;
     }
@@ -1521,44 +1457,7 @@ void OffscreenTablet::Setup (Tablet* origTablet)
 Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceType extraToAddToBottomOfRect)
 {
     Tablet* result = fOrigTablet;
-#if qStroika_Platform_MacOS
-    if (fOffscreenTablet != nullptr) {
-        fOffscreenRect = currentRowRect;
-        fOffscreenRect.bottom += extraToAddToBottomOfRect;
-        Rect bounds = AsQDRect (fOffscreenRect);
-        ::OffsetRect (&bounds, -bounds.left, -bounds.top);
-#if TARGET_CARBON
-        Led_Size curOffscreenGWorldSize;
-        {
-            Rect junk;
-            curOffscreenGWorldSize = AsLedSize (GetRectSize (*::GetPixBounds (::GetPortPixMap (fOffscreenGWorld), &junk)));
-        }
-#else
-        Led_Size curOffscreenGWorldSize = AsLedSize (GetRectSize ((*fOffscreenGWorld->portPixMap)->bounds));
-#endif
-        if ((fOffscreenRect.GetSize () == curOffscreenGWorldSize) or SafeUpdateGWorld (&fOffscreenGWorld, 0, &bounds, nullptr, nullptr, 0) >= 0) {
-            AssertNotNull (::GetGWorldPixMap (fOffscreenGWorld));
-            if (::LockPixels (::GetGWorldPixMap (fOffscreenGWorld))) {
-                // UpdateGWorld () can change grafPortPTR!
-                delete fOffscreenTablet;
-                fOffscreenTablet = new OT (reinterpret_cast<GrafPtr> (fOffscreenGWorld));
-                result           = fOffscreenTablet;
-                ::SetGWorld (fOffscreenGWorld, nullptr);
-                ::SetOrigin (fOffscreenRect.left, fOffscreenRect.top);
-                goto good;
-            }
-        }
-    bad:
-        ::SetGWorld (fOrigPort, fOrigDevice); // restore gworld
-        if (fOffscreenGWorld != nullptr) {
-            ::DisposeGWorld (fOffscreenGWorld);
-            fOffscreenGWorld = nullptr;
-        }
-        delete fOffscreenTablet;
-        fOffscreenTablet = nullptr;
-    good:;
-    }
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     if (fOffscreenTablet != nullptr) {
         fOffscreenRect = currentRowRect;
         fOffscreenRect.bottom += extraToAddToBottomOfRect;
@@ -1605,23 +1504,7 @@ Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceTy
 void OffscreenTablet::BlastBitmapToOrigTablet ()
 {
     if (fOffscreenTablet != nullptr) {
-#if qStroika_Platform_MacOS
-        Rect bounds = AsQDRect (fOffscreenRect);
-        ::SetGWorld (fOrigPort, fOrigDevice); // restore gworld
-        GDI_RGBForeColor (Color::kBlack.GetOSRep ());
-        GDI_RGBBackColor (Color::kWhite.GetOSRep ());
-        GrafPtr tabletGrafPort = *fOffscreenTablet;
-#if TARGET_CARBON
-        {
-            Rect tmp;
-            ::CopyBits (::GetPortBitMapForCopyBits (tabletGrafPort), ::GetPortBitMapForCopyBits (fOrigPort),
-                        ::GetPortBounds (tabletGrafPort, &tmp), &bounds, srcCopy, nullptr);
-        }
-#else
-        ::CopyBits (&tabletGrafPort->portBits, &((GrafPtr)fOrigPort)->portBits, &tabletGrafPort->portRect, &bounds, srcCopy, nullptr);
-#endif
-        ::UnlockPixels (::GetGWorldPixMap (fOffscreenGWorld));
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Tablet* screenDC = fOrigTablet;
         screenDC->BitBlt (fOffscreenRect.left, fOffscreenRect.top, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (),
                           fOffscreenTablet, fOffscreenRect.left, fOffscreenRect.top, SRCCOPY);
@@ -1707,10 +1590,7 @@ void Globals::InvalidateGlobals ()
 {
 // From the name, it would appear we invalidated, and re-validate later. But I think this implematnion is a bit
 // simpler, and should perform fine given its expected usage.
-#if qStroika_Platform_MacOS
-    fLogPixelsH = 72;
-    fLogPixelsV = 72;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     WindowDC screenDC (nullptr);
     fLogPixelsH = ::GetDeviceCaps (screenDC, LOGPIXELSX);
     fLogPixelsV = ::GetDeviceCaps (screenDC, LOGPIXELSY);

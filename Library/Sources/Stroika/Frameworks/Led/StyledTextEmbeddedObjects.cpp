@@ -28,16 +28,13 @@ static struct FooBarBlatzRegistryCleanupHack {
     }
 } sOneOfThese;
 
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle pictureHandle, Tablet* tablet, Color foreColor,
                                    Color backColor, const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType* pixelsDrawn,
                                    const Led_Size& imageSize, const Led_Size& margin = kDefaultEmbeddingMargin) noexcept;
 #endif
 static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, Color foreColor, Color backColor, const Led_Rect& drawInto, CoordinateType useBaseLine,
                             DistanceType* pixelsDrawn, const Led_Size& imageSize, const Led_Size& margin = kDefaultEmbeddingMargin) noexcept;
-#if qStroika_Platform_MacOS
-static PixMap** MakePixMapFromDIB (const Led_DIB* dib);
-#endif
 
 struct UnsupportedFormat {};
 
@@ -54,7 +51,7 @@ EmbeddedObjectCreatorRegistry* EmbeddedObjectCreatorRegistry::sThe = nullptr;
 
 void EmbeddedObjectCreatorRegistry::AddStandardTypes ()
 {
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     AddAssoc (StandardMacPictureStyleMarker::kClipFormat, StandardMacPictureStyleMarker::kEmbeddingTag, &StandardMacPictureStyleMarker::mk,
               &StandardMacPictureStyleMarker::mk);
     AddAssoc (StandardDIBStyleMarker::kClipFormat, StandardDIBStyleMarker::kEmbeddingTag, &StandardDIBStyleMarker::mk, &StandardDIBStyleMarker::mk);
@@ -66,7 +63,7 @@ void EmbeddedObjectCreatorRegistry::AddStandardTypes ()
               &StandardURLStyleMarker::mk);
 #endif
 
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     AddAssoc (StandardMacPictureWithURLStyleMarker::kClipFormats, StandardMacPictureWithURLStyleMarker::kClipFormatCount,
               StandardMacPictureWithURLStyleMarker::kEmbeddingTag, &StandardMacPictureWithURLStyleMarker::mk,
               &StandardMacPictureWithURLStyleMarker::mk);
@@ -212,15 +209,13 @@ SimpleEmbeddedObjectStyleMarker::CommandNames SimpleEmbeddedObjectStyleMarker::M
     return cmdNames;
 }
 
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ************************** StandardMacPictureStyleMarker ***********************
  ********************************************************************************
  */
-#if qStroika_Platform_MacOS
-const Led_ClipFormat StandardMacPictureStyleMarker::kClipFormat = kPICTClipFormat;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 // Surprising, the QuickTime for windows 2.1 picture viewer doesn't appear to export (on copy) a
 // native format rep of the picture. So I've no guess what the RIGHT arg is to RegisterClipboardFormat.
 // So - this is as good a guess as any. At least then Led can xfer pictures among instances of itself.
@@ -244,9 +239,7 @@ StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture*
 #if qStroika_Platform_Windows
     RequireNotNull (sUnsupportedFormatPict);
 #endif
-#if qStroika_Platform_MacOS
-    fPictureHandle = (PictureHandle)Led_DoNewHandle (picSize);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     fPictureSize   = picSize;
     fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
     Execution::ThrowIfNull (fPictureHandle);
@@ -258,11 +251,7 @@ StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture*
 StandardMacPictureStyleMarker::~StandardMacPictureStyleMarker ()
 {
     AssertNotNull (fPictureHandle);
-#if qStroika_Platform_MacOS
-    ::DisposeHandle (Handle (fPictureHandle));
-#else
     ::GlobalFree (fPictureHandle);
-#endif
 }
 
 SimpleEmbeddedObjectStyleMarker* StandardMacPictureStyleMarker::mk ([[maybe_unused]] const char* embeddingTag, const void* data, size_t len)
@@ -347,26 +336,15 @@ const char* StandardMacPictureStyleMarker::GetTag () const
  ************************** StandardDIBStyleMarker ******************************
  ********************************************************************************
  */
-#if qStroika_Platform_MacOS
-// I don't know of any standard type for this, so just make one up...
-// LGP 960429
-const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 'DIB ';
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = CF_DIB;
 #endif
 constexpr Led_PrivateEmbeddingTag StandardDIBStyleMarker::kEmbeddingTag = "DIB";
-
-#if qStroika_Platform_MacOS
-Led_Picture** StandardDIBStyleMarker::sUnsupportedFormatPict = nullptr;
-#endif
 
 StandardDIBStyleMarker::StandardDIBStyleMarker (const Led_DIB* pictData)
     : SimpleEmbeddedObjectStyleMarker ()
     , fDIBData (nullptr)
 {
-#if qStroika_Platform_MacOS
-    RequireNotNull (sUnsupportedFormatPict); // see class declaration for descriptio
-#endif
     RequireNotNull (pictData);
     fDIBData = Led_CloneDIB (pictData);
 }
@@ -473,9 +451,7 @@ const char* StandardDIBStyleMarker::GetTag () const
  ****************************** StandardURLStyleMarker **************************
  ********************************************************************************
  */
-#if qStroika_Platform_MacOS
-const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat = 'URLD';
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 // Netscape USED to have some sort of predefined name like Netscsape Bookmark, or something like that.
 // Apparently not any more. Will have to investigate further to see what todo for Netscape...
 // LGP 960429
@@ -676,7 +652,7 @@ FontSpecification StandardURLStyleMarker::GetDisplayFont (const StyleRunElement&
     return fsp;
 }
 
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ************************ StandardMacPictureWithURLStyleMarker ******************
@@ -698,9 +674,7 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
     fURLData (urlData)
 {
     RequireNotNull (pictData);
-#if qStroika_Platform_MacOS
-    fPictureHandle = (StandardMacPictureStyleMarker::PictureHandle)Led_DoNewHandle (picSize);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     fPictureSize   = picSize;
     fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
     Execution::ThrowIfNull (fPictureHandle);
@@ -714,9 +688,7 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
 StandardMacPictureWithURLStyleMarker::~StandardMacPictureWithURLStyleMarker ()
 {
     AssertNotNull (fPictureHandle);
-#if qStroika_Platform_MacOS
-    ::DisposeHandle (Handle (fPictureHandle));
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     ::GlobalFree (fPictureHandle);
 #endif
 }
@@ -889,9 +861,6 @@ StandardDIBWithURLStyleMarker::StandardDIBWithURLStyleMarker (const Led_DIB* dib
     , fDIBData (nullptr)
     , fURLData (urlData)
 {
-#if qStroika_Platform_MacOS
-    RequireNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict); // see class declaration for descriptio
-#endif
     RequireNotNull (dibData);
     fDIBData = Led_CloneDIB (dibData);
 }
@@ -1065,9 +1034,7 @@ const char* StandardDIBWithURLStyleMarker::GetTag () const
  ************************* StandardUnknownTypeStyleMarker ***********************
  ********************************************************************************
  */
-#if qStroika_Platform_MacOS
-Led_Picture** StandardUnknownTypeStyleMarker::sUnknownPict = nullptr;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 const Led_DIB* StandardUnknownTypeStyleMarker::sUnknownPict = nullptr;
 #endif
 const Led_PrivateEmbeddingTag StandardUnknownTypeStyleMarker::kDefaultEmbeddingTag = "UnknwnDlf";
@@ -1086,7 +1053,7 @@ StandardUnknownTypeStyleMarker::StandardUnknownTypeStyleMarker (Led_ClipFormat f
     fDisplayDIB ()
 {
     memcpy (fEmbeddingTag, embeddingTag, sizeof (fEmbeddingTag));
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     RequireNotNull (sUnknownPict); // If this is ever triggered, see class declaration where we delcare this field
 #endif
     fData = new char[nBytes];
@@ -1133,11 +1100,7 @@ TWIPS_Point StandardUnknownTypeStyleMarker::CalcDefaultShownSize ()
 
 TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
 {
-#if qStroika_Platform_MacOS
-    RequireNotNull (sUnknownPict);
-    StackBasedHandleLocker locker (sUnknownPict);
-    Led_Size               pixelSize = Led_GetMacPictSize (sUnknownPict);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     RequireNotNull (sUnknownPict);
     Led_Size pixelSize = Led_GetDIBImageSize (sUnknownPict);
 #endif
@@ -1160,11 +1123,7 @@ void StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* imager
                         drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, shownPixelSize);
         return;
     }
-#if qStroika_Platform_MacOS
-    MacPictureDrawSegment (sUnknownPict, tablet, imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor),
-                           imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
-                           drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, shownPixelSize);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     DIBDrawSegment (sUnknownPict, tablet, imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor),
                     imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                     drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, shownPixelSize);
@@ -1250,7 +1209,7 @@ void Led::AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& t
     InsertEmbeddingForExistingSentinel (embedding, textStore, insertAt, ownerForEmbedding);
 }
 
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ************************** MacPictureDrawSegment *******************************
@@ -1264,9 +1223,7 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 
     StackBasedHandleLocker locker (pictureHandle);
 
-#if qStroika_Platform_MacOS
-    tablet->SetPort ();
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     Tablet* dc = tablet;
 #endif
 
@@ -1280,10 +1237,7 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
     Assert (embedBottom <= drawInto.bottom);
     Led_Rect innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.GetLeft () + margin.h), pictSize);
 
-#if qStroika_Platform_MacOS
-    GDI_RGBForeColor (foreColor.GetOSRep ());
-    GDI_RGBBackColor (backColor.GetOSRep ());
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     dc->SetTextColor (foreColor.GetOSRep ());
     dc->SetBkColor (backColor.GetOSRep ());
 #endif
@@ -1300,9 +1254,7 @@ static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, [[maybe_unused]]
     RequireNotNull (dib);
     RequireNotNull (tablet);
 
-#if qStroika_Platform_MacOS
-    tablet->SetPort ();
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     Tablet* dc = tablet;
 #endif
 
@@ -1320,43 +1272,12 @@ static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, [[maybe_unused]]
         *pixelsDrawn = ourBoundsRect.GetWidth ();
     }
 
-#if qStroika_Platform_MacOS
-#if 1
-    GDI_RGBForeColor (Color::kBlack.GetOSRep ());
-    GDI_RGBBackColor (Color::kWhite.GetOSRep ());
-#else
-    GDI_RGBForeColor (foreColor.GetOSRep ());
-    GDI_RGBBackColor (backColor.GetOSRep ());
-#endif
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     dc->SetTextColor (foreColor.GetOSRep ());
     dc->SetBkColor (backColor.GetOSRep ());
 #endif
 
-#if qStroika_Platform_MacOS
-    // Must erase above the picture, and below it. And
-    Rect rr = AsQDRect (innerBoundsRect);
-
-    // Turn the DIB into a pixmap, and then image it, and free it again...
-    try {
-        PixMap** pm       = MakePixMapFromDIB (dib);
-        PixMap*  pmPtr    = *pm;
-        GrafPtr  destPort = *tablet;
-#if TARGET_CARBON
-        ::CopyBits (reinterpret_cast<BitMap*> (pmPtr), GetPortBitMapForCopyBits (destPort), &pmPtr->bounds, &rr, srcCopy, nullptr);
-#else
-        ::CopyBits (reinterpret_cast<BitMap*> (pmPtr), &destPort->portBits, &pmPtr->bounds, &rr, srcCopy, nullptr);
-#endif
-        delete[] (char*)pmPtr->baseAddr;
-        ::DisposePixMap (pm);
-    }
-    catch (...) {
-        // treat all excpetions the same. In principle, could draw different picst for memory and
-        // unsupported format exceptions...
-        AssertNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict);
-        ::DrawPicture (StandardDIBStyleMarker::sUnsupportedFormatPict, &rr);
-    }
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     //const BITMAPINFOHEADER&   hdr         =   dib->bmiHeader;
     const void* lpBits = Led_GetDIBBitsPointer (dib);
     //const char*               lpBits      =   ((const char*)dib) + Led_ByteSwapFromWindows (hdr.biSize) + Led_GetDIBPalletByteCount (dib);
@@ -1365,151 +1286,4 @@ static void DIBDrawSegment (const Led_DIB* dib, Tablet* tablet, [[maybe_unused]]
 #endif
 }
 
-#if qStroika_Platform_MacOS
-static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
-{
-    RequireNotNull (dib);
-
-    Led_Size dibImageSize = Led_GetDIBImageSize (dib);
-
-    const BITMAPINFOHEADER& hdr         = dib->bmiHeader;
-    const RGBQUAD*          srcCLUT     = (const RGBQUAD*)(((const unsigned char*)dib) + Led_ByteSwapFromWindows (hdr.biSize));
-    const unsigned char*    srcBits     = ((const unsigned char*)srcCLUT) + Led_GetDIBPalletByteCount (dib);
-    unsigned short          bitCount    = Led_ByteSwapFromWindows (hdr.biBitCount);
-    size_t                  srcRowBytes = (((dibImageSize.h * bitCount + 31) & ~31) >> 3);
-
-    if (bitCount != 8 and bitCount != 24) { // only supported sizes, for now...
-        // LGP 960430
-        throw UnsupportedFormat ();
-    }
-
-    if (hdr.biCompression != 0) { // unsupported for now, thought here is DECODE code on the 'Encyclopedia of Graphix Formats' CD
-        // LGP 960430
-        throw UnsupportedFormat ();
-    }
-
-    if (bitCount > 8) {
-        srcCLUT = 0;
-    }
-
-    // make sure CLUT looks good...
-    if (srcCLUT != nullptr) {
-        size_t nColors = Led_ByteSwapFromWindows (hdr.biClrUsed);
-        if (nColors > (1 << bitCount)) {
-            throw UnsupportedFormat (); // really bad format, probably...
-        }
-    }
-
-    size_t dstBitCount = bitCount;
-    if (bitCount == 24) {
-        dstBitCount = 32;
-    }
-    size_t         dstRowBytes  = ((((dstBitCount * dibImageSize.h) + 15) >> 4) << 1);
-    unsigned char* newImageData = new unsigned char[dstRowBytes * dibImageSize.v];
-    AssertNotNull (newImageData);
-
-    PixMap** result = ::NewPixMap ();
-    if (result == nullptr) {
-        delete[] (char*)newImageData;
-        Execution::Throw (bad_alloc{});
-    }
-    (*result)->bounds.top    = 0;
-    (*result)->bounds.left   = 0;
-    (*result)->bounds.bottom = dibImageSize.v;
-    (*result)->bounds.right  = dibImageSize.h;
-
-    (*result)->baseAddr = Ptr (newImageData);
-
-    switch (bitCount) {
-        case 8: {
-            (*result)->rowBytes  = 0x8000 | dstRowBytes;
-            (*result)->cmpCount  = 1;
-            (*result)->cmpSize   = 8;
-            (*result)->pixelType = chunky;
-            (*result)->pixelSize = 8;
-        } break;
-
-        case 24: {
-            (*result)->rowBytes  = 0x8000 | dstRowBytes;
-            (*result)->cmpCount  = 3;
-            (*result)->cmpSize   = 8;
-            (*result)->pixelType = RGBDirect;
-            (*result)->pixelSize = 32;
-        } break;
-
-        default: {
-            Assert (false); // not supported - should have punted above!
-        } break;
-    }
-
-    /*
-     *  Copy the CLUT data.
-     */
-    if (srcCLUT != nullptr) { // 'if' so support 24-bit and no CLUT!!!
-        size_t nColors = Led_ByteSwapFromWindows (hdr.biClrUsed);
-        if (nColors == 0) {
-            nColors = 1 << bitCount;
-        }
-        Assert (nColors <= (1 << bitCount));
-
-        CTabHandle newCLUT = (CTabHandle)::NewHandle (sizeof (ColorTable) + (nColors - 1) * sizeof (ColorSpec));
-        if (newCLUT == nullptr) {
-            delete[] (char*)newImageData;
-            ::DisposePixMap (result);
-            Execution::Throw (bad_alloc{});
-        }
-        (*newCLUT)->ctSeed  = ::GetCTSeed ();
-        (*newCLUT)->ctFlags = 0;
-        (*newCLUT)->ctSize  = nColors - 1;
-        for (size_t i = 0; i < nColors; ++i) {
-            (*newCLUT)->ctTable[i].value     = i;
-            (*newCLUT)->ctTable[i].rgb.red   = srcCLUT[i].rgbRed << 8;
-            (*newCLUT)->ctTable[i].rgb.green = srcCLUT[i].rgbGreen << 8;
-            (*newCLUT)->ctTable[i].rgb.blue  = srcCLUT[i].rgbBlue << 8;
-        }
-        if ((*result)->pmTable != nullptr) {
-            ::DisposeCTable ((*result)->pmTable);
-        }
-        (*result)->pmTable = newCLUT;
-        ::CTabChanged (newCLUT);
-    }
-
-    /*
-     *  Copy the PixMap data.
-     */
-    bool rowsReversed = (Led_ByteSwapFromWindows (hdr.biHeight) > 0);
-    for (size_t row = 0; row < dibImageSize.v; ++row) {
-        const unsigned char* srcRow = srcBits + (rowsReversed ? (dibImageSize.v - row - 1) : row) * srcRowBytes;
-        unsigned char*       dstRow = newImageData + row * dstRowBytes;
-
-        switch (bitCount) {
-            case 8: {
-                // we use the same CLUT, so this should be OK
-                memcpy (dstRow, srcRow, min (srcRowBytes, dstRowBytes));
-            } break;
-
-            case 24: {
-                for (size_t col = 0; col < dibImageSize.h; ++col) {
-                    const unsigned char* srcCell   = srcRow + 3 * col;
-                    unsigned char*       dstCell   = dstRow + 4 * col;
-                    unsigned char        blueComp  = *srcCell++;
-                    unsigned char        greenComp = *srcCell++;
-                    unsigned char        redComp   = *srcCell++;
-                    *dstCell++                     = 0;
-                    *dstCell++                     = redComp;
-                    *dstCell++                     = greenComp;
-                    *dstCell++                     = blueComp;
-                }
-            } break;
-
-            default: {
-                // too bad, we don't support that size - just zero out the memory...
-                memset (dstRow, 0, dstRowBytes);
-            } break;
-        }
-    }
-
-    return result;
-}
-#endif
 #endif

@@ -314,11 +314,7 @@ void StandardStyledTextIOSinkStream::PopContext ()
 
 #if qStroika_Frameworks_Led_SupportGDI
 
-#if qStroika_Platform_MacOS
-const Led_ClipFormat Led::kLedPrivateClipFormat = 'LedP';
-const Led_ClipFormat Led::kRTFClipFormat        = 'RTF ';
-const Led_ClipFormat Led::kHTMLClipFormat       = 'HTML';
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 const TCHAR          kLedPrivateClipTypeName[]  = _T ("Led Rich Text Format");
 const Led_ClipFormat Led::kLedPrivateClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kLedPrivateClipTypeName));
 const TCHAR          kRTFClipTypeName[]         = _T ("Rich Text Format");
@@ -800,10 +796,7 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromName (fileName, suggestedClipFormat, suggestedCodePage);
 
-#if qStroika_Platform_MacOS
-// Should add code here to grab file-type from OS. If called from XXX - then thats already done, but in case
-// called from elsewhere...
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     if (suggestedClipFormat != nullptr and *suggestedClipFormat == kBadClipFormat) {
         TCHAR drive[_MAX_DRIVE];
         TCHAR dir[_MAX_DIR];
@@ -899,45 +892,11 @@ bool StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPac
     else if (InternalizeFlavor_OtherRegisteredEmbedding (flavorPackage, from, to)) {
         return true;
     }
-#if qStroika_Platform_MacOS
-    else if (InternalizeFlavor_STYLAndTEXT (flavorPackage, from, to)) {
-        return true;
-    }
-#endif
     else if (InternalizeFlavor_TEXT (flavorPackage, from, to)) {
         return true;
     }
     return false;
 }
-
-#if qStroika_Platform_MacOS
-bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
-{
-    size_t pasteStart = from;
-    size_t pasteEnd   = to;
-    Assert (pasteEnd >= pasteStart);
-
-    TempMarker newSel (GetTextStore (), pasteStart + 1, pasteStart + 1);
-    if (inherited::InternalizeFlavor_TEXT (flavorPackage, pasteStart, pasteEnd)) {
-        if (flavorPackage.GetFlavorAvailable ('styl')) {
-            size_t                    length = flavorPackage.GetFlavorSize ('styl');
-            Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
-            length = flavorPackage.ReadFlavorData ('styl', length, buf);
-            Assert (newSel.GetStart () >= pasteStart + 1);
-            size_t pasteEndXXX = newSel.GetStart () - 1;
-            Assert (pasteEndXXX >= pasteStart);
-            StScrpRec* styleRecords = reinterpret_cast<StScrpRec*> (static_cast<char*> (buf));
-            vector<StyledInfoSummaryRecord> ledStyleInfo = StandardStyledTextImager::Convert (styleRecords->scrpStyleTab, styleRecords->scrpNStyles);
-            fStyleDatabase->SetStyleInfo (pasteStart, pasteEndXXX - pasteStart, ledStyleInfo);
-        }
-
-        // Even if we have no STYL info, we did already paste the text in, and that would be next
-        // on our list to try anyhow...
-        return true;
-    }
-    return false;
-}
-#endif
 
 #if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
 bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_Native (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
@@ -1122,38 +1081,12 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavors (WriterFlavorPackag
     ExternalizeFlavor_RTF (flavorPackage, start, end);
 
     ExternalizeFlavor_TEXT (flavorPackage, start, end);
-
-#if qStroika_Platform_MacOS
-    ExternalizeFlavor_STYL (flavorPackage, start, end);
-#endif
 }
 
 void StyledTextFlavorPackageExternalizer::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     ExternalizeFlavor_RTF (flavorPackage, from, to);
 }
-
-#if qStroika_Platform_MacOS
-void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPackage& flavorPackage, size_t from, size_t to)
-{
-    Require (from <= to);
-    Require (to <= GetTextStore ().GetEnd ());
-    size_t length = to - from;
-
-    vector<StyledInfoSummaryRecord> ledStyleRuns = fStyleDatabase->GetStyleInfo (from, length);
-    size_t                          nStyleRuns   = ledStyleRuns.size ();
-
-    Assert (offsetof (StScrpRec, scrpStyleTab) == sizeof (short)); // thats why we add sizeof (short)
-
-    size_t                    nBytes = sizeof (short) + nStyleRuns * sizeof (ScrpSTElement);
-    Memory::StackBuffer<char> buf{nBytes};
-    StScrpPtr                 stylePtr = (StScrpPtr)(char*)buf;
-
-    stylePtr->scrpNStyles = nStyleRuns;
-    StandardStyledTextImager::Convert (ledStyleRuns, stylePtr->scrpStyleTab);
-    flavorPackage.AddFlavorData ('styl', nBytes, stylePtr);
-}
-#endif
 
 #if qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
 void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_Native (WriterFlavorPackage& flavorPackage, size_t from, size_t to)

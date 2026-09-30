@@ -1861,7 +1861,7 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
 }
 #endif
 
-#if qStroika_Platform_Windows || qStroika_Platform_MacOS
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ********************* Led_StdDialogHelper_AddNewTableDialog ********************
@@ -1906,7 +1906,7 @@ void Led_StdDialogHelper_AddNewTableDialog::OnOK ()
 }
 #endif
 
-#if qStroika_Platform_Windows || qStroika_Platform_MacOS
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ***************** Led_StdDialogHelper_EditTablePropertiesDialog ****************

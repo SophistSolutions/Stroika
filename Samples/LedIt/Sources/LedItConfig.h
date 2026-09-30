@@ -12,15 +12,6 @@
 #include "Stroika/Frameworks/Led/GDI.h"
 #endif
 
-#if qStroika_Platform_MacOS
-#define kApplicationSignature 'LDAP'
-
-#define kTEXTFileType 'TEXT'
-#define kTEXTStationeryFileType 'sEXT'
-#define kLedPrivateDocumentFileType 'LDDC'           // LedIt! Portable (mac/pc) rich text document
-#define kLedPrivateDocumentStationeryFileType 'sDDC' // LedIt! Portable (mac/pc) rich text stationary
-#endif
-
 // Didn't make it into 2.0 - sigh...LGP 960520
 #define qSupportPasteSpecial 0
 

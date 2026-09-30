@@ -4,33 +4,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Platform_MacOS
-#include <Balloons.h>
-#include <Gestalt.h>
-#include <ToolUtils.h>
-
-#include <LCaption.h>
-#include <LDialogBox.h>
-#include <LEditField.h>
-#include <LGrowZone.h>
-#include <LMenu.h>
-#include <LMenuBar.h>
-#include <LPicture.h>
-#include <LPlaceHolder.h>
-#include <LPrintout.h>
-#include <LStdControl.h>
-#include <LTabGroup.h>
-#include <LTextButton.h>
-#include <LWindow.h>
-#include <PP_Messages.h>
-#include <PP_Resources.h>
-#include <TArrayIterator.h>
-#include <UAppleEventsMgr.h>
-#include <UDesktop.h>
-#include <UMemoryMgr.h>
-#include <UModalDialogs.h>
-#include <URegistrar.h>
-#elif defined(WIN32)
+#if defined(WIN32)
 
 #include <afx.h>
 
@@ -51,8 +25,6 @@
 #include "LedItControlItem.h"
 #include "LedItInPlaceFrame.h"
 #include "LedItMainFrame.h"
-#elif qStroika_Platform_MacOS
-#include "FilteredFilePicker.h"
 #endif
 
 #include "LedItDocument.h"
@@ -83,65 +55,7 @@ extern "C" const char* __asan_default_options ()
 }
 #endif
 
-#if qStroika_Platform_MacOS
-static Handle sDeepShitCheeseBuf = NULL; // so no mem alerts don't crash...
-
-inline void DoStringyAlert (short alertID, const ConstStr255Param p0 = NULL, const ConstStr255Param p1 = NULL,
-                            const ConstStr255Param p2 = NULL, const ConstStr255Param p3 = NULL)
-{
-    if (sDeepShitCheeseBuf != NULL) {
-        ::DisposeHandle (sDeepShitCheeseBuf);
-        sDeepShitCheeseBuf = NULL;
-    }
-    if (::GetResource ('ALRT', alertID) == nil) {
-        Led_BeepNotify ();
-    }
-    else {
-        try {
-            Led_CheckSomeLocalHeapRAMAvailable (4 * 1024); // empiricly arrived at how much needed to avoid crash
-        }
-        catch (...) {
-            Led_BeepNotify ();
-            return;
-        }
-        ::ParamText (p0 == NULL ? "\p" : p0, p1 == NULL ? "\p" : p1, p2 == NULL ? "\p" : p2, p3 == NULL ? "\p" : p3);
-        ::InitCursor ();
-        ::CautionAlert (alertID, nil);
-    }
-}
-#endif
-
 const char kAppName[] = "LedIt";
-
-#if qStroika_Platform_MacOS
-
-#define STANDARD_LEDITAPPLICATION_MACOS_CATCHERS()                                                                                         \
-    catch (OSErr err)                                                                                                                      \
-    {                                                                                                                                      \
-        HandleMacOSException (err);                                                                                                        \
-    }                                                                                                                                      \
-    catch (bad_alloc)                                                                                                                      \
-    {                                                                                                                                      \
-        HandleBadAllocException ();                                                                                                        \
-    }                                                                                                                                      \
-    catch (TextInteractor::BadUserInput&)                                                                                                  \
-    {                                                                                                                                      \
-        HandleBadUserInputException ();                                                                                                    \
-    }                                                                                                                                      \
-    catch (const LException& err)                                                                                                          \
-    {                                                                                                                                      \
-        HandlePowerPlantException ((OSErr)err.GetErrorCode ());                                                                            \
-    }                                                                                                                                      \
-    catch (ExceptionCode err)                                                                                                              \
-    {                                                                                                                                      \
-        HandlePowerPlantException (err);                                                                                                   \
-    }                                                                                                                                      \
-    catch (...)                                                                                                                            \
-    {                                                                                                                                      \
-        HandleUnknownException ();                                                                                                         \
-    }
-
-#endif
 
 #if qStroika_Platform_Windows
 
@@ -381,13 +295,7 @@ public:
 #define kUNICODE_NAME_ADORNER " [Internal UNICODE]"
 #endif
 
-#if qStroika_Platform_MacOS
-        const short kPictHeight = 273;
-        const short kPictWidth  = 437;
-        SDKString   verStr      = SDKString{qLed_ShortVersionString} + kUNICODE_NAME_ADORNER " (" + __DATE__ + ")";
-        const int   kVERWidth   = 230;
-        SimpleLayoutHelper (kPictHeight, kPictWidth, Led_Rect (159, 15, 17, 142), Led_Rect (159, 227, 17, 179), verStr);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         // Cuz of fact that dlog sizes specified in dlog units, and that doesn't work well for bitmaps
         // we must resize our dlog on the fly based on pict resource size...
         const int kPictWidth  = 437; // must agree with ACTUAL bitmap size
@@ -499,19 +407,12 @@ LedItApplication* LedItApplication::sThe = NULL;
 
 LedItApplication::LedItApplication ()
     :
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     inherited ()
     ,
 #endif
-#if qStroika_Platform_MacOS
-    fHelpMenuItem (0)
-    , fGotoLedItWebPageMenuItem (0)
-    , fGotoSophistsWebPageMenuItem (0)
-    , fCheckForUpdatesWebPageMenuItem (0)
-    , fLastLowMemWarnAt (0.0f)
-#endif
 #if qStroika_Platform_Windows
-          fOleTemplateServer ()
+    fOleTemplateServer ()
     ,
 #endif
 #if qStroika_Platform_Windows
@@ -541,30 +442,6 @@ LedItApplication::LedItApplication ()
                                                     LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
 #endif
 #endif
-
-#if qStroika_Platform_MacOS
-    // Register classes for objects created from 'PPob' resources
-    TRegistrar<LPlaceHolder>::Register ();
-    TRegistrar<LPrintout>::Register ();
-    TRegistrar<LDialogBox>::Register ();
-    TRegistrar<LPicture>::Register ();
-    TRegistrar<LCaption>::Register ();
-    TRegistrar<LPane>::Register ();
-    TRegistrar<LTextButton>::Register ();
-    TRegistrar<LStdCheckBox>::Register ();
-    TRegistrar<LStdButton>::Register ();
-    TRegistrar<LEditField>::Register ();
-    TRegistrar<LTabGroup>::Register ();
-    TRegistrar<LStdPopupMenu>::Register ();
-
-    // Tell Led about the picture resources it needs to render some special embedding markers
-    StandardUnknownTypeStyleMarker::sUnknownPict   = (Picture**)::GetResource ('PICT', kUnknownEmbeddingPictID);
-    StandardDIBStyleMarker::sUnsupportedFormatPict = (Picture**)::GetResource ('PICT', kUnsupportedDIBFormatPictID);
-
-    // Always make sure sleep time no longer than the caret blink time.
-    // But default to 6 ticks (PP's default) - 0.1 seconds.
-    SetSleepTime (Led_Min (6, GetCaretTime ()));
-#endif
 }
 
 LedItApplication::~LedItApplication ()
@@ -581,9 +458,7 @@ LedItApplication& LedItApplication::Get ()
 
 void LedItApplication::DoAboutBox ()
 {
-#if qStroika_Platform_MacOS
-    MyAboutBox dlg;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     MyAboutBox dlg (m_hInstance, AfxGetMainWnd ()->m_hWnd);
 #endif
     dlg.DoModal ();
@@ -595,9 +470,6 @@ void LedItApplication::OnGotoLedItWebPageCommand ()
         Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/LedIt/", kAppName));
     }
     catch (...) {
-#if qStroika_Platform_MacOS
-        DoStringyAlert (kCannotOpenWebPageAlertID);
-#endif
     }
 }
 
@@ -607,9 +479,6 @@ void LedItApplication::OnGotoSophistsWebPageCommand ()
         Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/", kAppName));
     }
     catch (...) {
-#if qStroika_Platform_MacOS
-        DoStringyAlert (kCannotOpenWebPageAlertID);
-#endif
     }
 }
 
@@ -619,361 +488,8 @@ void LedItApplication::OnCheckForUpdatesWebPageCommand ()
         Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/CheckForUpdates.asp", kAppName));
     }
     catch (...) {
-#if qStroika_Platform_MacOS
-        DoStringyAlert (kCannotOpenWebPageAlertID);
-#endif
     }
 }
-
-#if qStroika_Platform_MacOS
-void LedItApplication::StartUp ()
-{
-    try {
-        ObeyCommand (cmd_New, nil); // create a new window
-    }
-    STANDARD_LEDITAPPLICATION_MACOS_CATCHERS ();
-}
-
-void LedItApplication::MakeMenuBar ()
-{
-    inherited::MakeMenuBar ();
-
-    // Base class has already constructed the menu bar, by this point...
-    // So we can add font menus, and associate command numbers...
-    {
-        MenuRef fontMenuHandle = ::GetMenuHandle (cmd_FontMenu);
-        AssertNotNull (fontMenuHandle);
-        ::AppendResMenu (fontMenuHandle, 'FONT');
-        AssertNotNull (LMenuBar::GetCurrentMenuBar ());
-        LMenu* fontMenu = LMenuBar::GetCurrentMenuBar ()->FetchMenu (cmd_FontMenu);
-        AssertNotNull (fontMenu);
-        size_t nMenuItems = ::CountMenuItems (fontMenu->GetMacMenuH ());
-        for (size_t i = 1; i <= nMenuItems; ++i) {
-            fontMenu->SetCommand (i, i - 1 + kBaseFontNameCmd); // make first cmd = kBaseFontNameCmd
-        }
-    }
-
-    bool aquaUI = false;
-    {
-        SInt32 gestaltResponse = 0;
-        aquaUI = (::Gestalt (gestaltMenuMgrAttr, &gestaltResponse) == noErr) and (gestaltResponse & gestaltMenuMgrAquaLayoutMask);
-    }
-
-    // Add a special help menu item you launch our help file
-    // (see NewIM Essential Macintosh Toolbox, 3-68)
-    {
-        MenuHandle helpMenu = NULL;
-#if !TARGET_CARBON
-        if (::HMGetHelpMenuHandle (&helpMenu) != noErr) {
-            helpMenu = NULL;
-        }
-#endif
-        if (helpMenu == NULL) {
-            // if there is no helpMenu, then add our own...
-            helpMenu = ::NewMenu (kHelpMenuID, "\pHelp");
-            AssertNotNull (helpMenu);
-            MenuID append = 0;
-            ::InsertMenu (helpMenu, append);
-        }
-        if (helpMenu != NULL) {
-            ::AppendMenu (helpMenu, "\pBrowse Local Help");
-            fHelpMenuItem = ::CountMenuItems (helpMenu);
-            ::AppendMenu (helpMenu, "\p-");
-            ::AppendMenu (helpMenu, "\pxxx"); // Text in SetMenuItemText() call cuz idiodic mac toolbox interprets '!' character!
-            ::SetMenuItemText (helpMenu, ::CountMenuItems (helpMenu), "\pGoto LedIt! Web Page");
-            fGotoLedItWebPageMenuItem = ::CountMenuItems (helpMenu);
-            ::AppendMenu (helpMenu, "\pGoto Sophist Solutions Web Page");
-            fGotoSophistsWebPageMenuItem = ::CountMenuItems (helpMenu);
-            ::AppendMenu (helpMenu, "\pCheck for LedIt! Web Updates");
-            fCheckForUpdatesWebPageMenuItem = ::CountMenuItems (helpMenu);
-        }
-    }
-
-    // For Aqua UI (OSX) - lose the Quit menu item.
-    if (aquaUI) {
-        MenuRef fileMenu = ::GetMenuHandle (kFileMenuID);
-        AssertNotNull (fileMenu);
-        // Lose the separator AND the Quit menu item.
-        ::DeleteMenuItem (fileMenu, ::CountMenuItems (fileMenu));
-        ::DeleteMenuItem (fileMenu, ::CountMenuItems (fileMenu));
-    }
-}
-
-void LedItApplication::ProcessNextEvent ()
-{
-    if (sDeepShitCheeseBuf == NULL) {
-        sDeepShitCheeseBuf = ::NewHandle (10 * 1024);
-    }
-    try {
-        inherited::ProcessNextEvent ();
-    }
-    STANDARD_LEDITAPPLICATION_MACOS_CATCHERS ();
-}
-
-void LedItApplication::HandleAppleEvent (const AppleEvent& inAppleEvent, AppleEvent& outAEReply, AEDesc& outResult, long inAENumber)
-{
-    try {
-        inherited::HandleAppleEvent (inAppleEvent, outAEReply, outResult, inAENumber);
-    }
-    STANDARD_LEDITAPPLICATION_MACOS_CATCHERS ();
-}
-
-void LedItApplication::HandleMacOSException (OSErr err)
-{
-    switch (err) {
-        case memFullErr: {
-            HandleBadAllocException ();
-        } break;
-
-        default: {
-            Str255 tmp;
-            NumToString (err, tmp);
-            DoStringyAlert (kGenericMacOSExceptionAlertID, tmp);
-        } break;
-    }
-}
-
-void LedItApplication::HandlePowerPlantException (ExceptionCode err)
-{
-    if (err > 32767 or err < -32768) {
-        Str255 tmp;
-        ::NumToString (err, tmp);
-        ::DoStringyAlert (kPowerPlantExceptionAlertID, tmp);
-    }
-    else {
-        Led_Assert (err == OSErr (err));
-        HandleMacOSException (OSErr (err));
-    }
-}
-
-Boolean LedItApplication::ObeyCommand (CommandT inCommand, void* ioParam)
-{
-    Boolean cmdHandled = true;
-
-    if ((HiWord ((-inCommand)) == kHMHelpMenuID or HiWord ((-inCommand)) == kHelpMenuID) and fHelpMenuItem == LoWord (-inCommand)) {
-        OnHelpMenuCommand ();
-        return true;
-    }
-    if ((HiWord ((-inCommand)) == kHMHelpMenuID or HiWord ((-inCommand)) == kHelpMenuID) and fGotoLedItWebPageMenuItem == LoWord (-inCommand)) {
-        OnGotoLedItWebPageCommand ();
-        return true;
-    }
-    if ((HiWord ((-inCommand)) == kHMHelpMenuID or HiWord ((-inCommand)) == kHelpMenuID) and fGotoSophistsWebPageMenuItem == LoWord (-inCommand)) {
-        OnGotoSophistsWebPageCommand ();
-        return true;
-    }
-    if ((HiWord ((-inCommand)) == kHMHelpMenuID or HiWord ((-inCommand)) == kHelpMenuID) and fCheckForUpdatesWebPageMenuItem == LoWord (-inCommand)) {
-        OnCheckForUpdatesWebPageCommand ();
-        return true;
-    }
-
-    if (inCommand >= kBaseWindowCmd and inCommand <= kLastWindowCmd) {
-        size_t                  windowIdx = (inCommand - kBaseWindowCmd);
-        const vector<LWindow*>& windows   = LedItDocument::GetDocumentWindows ();
-        if (windowIdx < windows.size ()) {
-            LWindow* w = windows[windowIdx];
-            AssertNotNull (w);
-            UDesktop::SelectDeskWindow (w);
-        }
-        else {
-            Led_Assert (false); // we shouldn't get these!
-        }
-        return true;
-    }
-
-    switch (inCommand) {
-        case kToggleUseSmartCutNPasteCmd:
-            OnToggleSmartCutNPasteOptionCommand ();
-            break;
-        case kToggleWrapToWindowCmd:
-            OnToggleWrapToWindowOptionCommand ();
-            break;
-        case kToggleShowHiddenTextCmd:
-            OnToggleShowHiddenTextOptionCommand ();
-            break;
-        default:
-            cmdHandled = inherited::ObeyCommand (inCommand, ioParam);
-            break;
-    }
-
-    return cmdHandled;
-}
-
-//  Pass back status of a (menu) command
-void LedItApplication::FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName)
-{
-    if (inCommand >= kBaseWindowCmd and inCommand <= kLastWindowCmd) {
-        size_t                  windowIdx = (inCommand - kBaseWindowCmd);
-        const vector<LWindow*>& windows   = LedItDocument::GetDocumentWindows ();
-        if (windowIdx < windows.size ()) {
-            LWindow* w = windows[windowIdx];
-            AssertNotNull (w);
-            outEnabled = true;
-            (void)w->GetDescriptor (outName);
-            outMark = UDesktop::WindowIsSelected (w) ? checkMark : 0;
-        }
-        else {
-            Led_Assert (false); // we shouldn't get these!
-        }
-        outUsesMark = true;
-        return;
-    }
-
-    outUsesMark = false;
-    switch (inCommand) {
-        case kToggleUseSmartCutNPasteCmd:
-            OnToggleSmartCutNPasteOption_UpdateCommandUI (&Led_PP_TmpCmdUpdater (inCommand, outEnabled, outUsesMark, outMark, outName));
-            break;
-        case kToggleWrapToWindowCmd:
-            OnToggleWrapToWindowOption_UpdateCommandUI (&Led_PP_TmpCmdUpdater (inCommand, outEnabled, outUsesMark, outMark, outName));
-            break;
-        case kToggleShowHiddenTextCmd:
-            OnToggleShowHiddenTextOption_UpdateCommandUI (&Led_PP_TmpCmdUpdater (inCommand, outEnabled, outUsesMark, outMark, outName));
-            break;
-        default:
-            inherited::FindCommandStatus (inCommand, outEnabled, outUsesMark, outMark, outName);
-            break;
-    }
-}
-
-void LedItApplication::OnHelpMenuCommand ()
-{
-    try {
-        FSSpec fsp;
-        Led_ThrowOSErr (::FSMakeFSSpec (0, 0, "\p:LedItDocs:index.html", &fsp));
-        string helpURL = Led_URLManager::Get ().FileSpecToURL (fsp);
-        Led_URLManager::Get ().Open (helpURL);
-    }
-    catch (...) {
-        DoStringyAlert (kCannotOpenHelpFileAlertID);
-    }
-}
-
-void LedItApplication::UseIdleTime (const EventRecord& inMacEvent)
-{
-    inherited::UseIdleTime (inMacEvent);
-
-    /*
-     *  Check to see if we're too low on memory.
-     */
-    const float kIntervalBetweenWarnings = 10.0f;
-    if (fLastLowMemWarnAt + kIntervalBetweenWarnings < ::Led_GetTickCount ()) {
-        bool enufLocalMemory = true;
-        bool enufMemory      = true;
-        try {
-            Led_CheckSomeLocalHeapRAMAvailable (8 * 1024);
-        }
-        catch (...) {
-            enufLocalMemory = false;
-        }
-        try {
-            ::DisposeHandle (Led_DoNewHandle (8 * 1024));
-        }
-        catch (...) {
-            enufMemory = false;
-        }
-
-        if (not enufLocalMemory) {
-            DoStringyAlert (kWarnLowLocalRAMAlertID);
-            fLastLowMemWarnAt = ::Led_GetTickCount ();
-        }
-        if (not enufMemory) {
-            DoStringyAlert (kWarnLowRAMAlertID);
-            fLastLowMemWarnAt = ::Led_GetTickCount ();
-        }
-    }
-
-#if qUseMacTmpMemForAllocs && 0
-    // Didn't help - See SPR#0351
-    float sLastSendMemBackTryAt = 0;
-    if (sLastSendMemBackTryAt + 30.0f < ::Led_GetTickCount ()) {
-        extern void TryToSendSomeTmpMemBackToOS ();
-        TryToSendSomeTmpMemBackToOS ();
-        sLastSendMemBackTryAt = ::Led_GetTickCount ();
-    }
-#endif
-}
-
-void LedItApplication::OpenDocument (FSSpec* inMacFSSpec)
-{
-    LedItDocument* doc = new LedItDocument (this, eUnknownFormat);
-    try {
-        doc->BuildDocWindow (inMacFSSpec);
-    }
-    catch (...) {
-        delete doc;
-        throw;
-    }
-}
-
-void LedItApplication::OpenDocument (FSSpec* inMacFSSpec, FileFormat format)
-{
-    LedItDocument* doc = new LedItDocument (this, format);
-    try {
-        doc->BuildDocWindow (inMacFSSpec);
-    }
-    catch (...) {
-        delete doc;
-        throw;
-    }
-}
-
-LModelObject* LedItApplication::MakeNewDocument ()
-{
-    LedItDocument* doc = new LedItDocument (this, eDefaultFormat);
-    try {
-        doc->BuildDocWindow (NULL);
-    }
-    catch (...) {
-        delete doc;
-        throw;
-    }
-    return doc;
-}
-
-//  Prompt the user to select a document to open
-void LedItApplication::ChooseDocument ()
-{
-    static FilteredSFGetDLog::TypeSpec typeList[] = {
-        {"HTML file", kTEXTFileType},
-        {"Led Rich Text Format", kLedPrivateDocumentFileType},
-        {"Microsoft Rich Text Format (RTF)", kTEXTFileType},
-        {"Text file", kTEXTFileType},
-    };
-    FilteredSFGetDLog filteredPicker (typeList, (sizeof typeList) / (sizeof typeList[0]));
-
-    bool       typeSpecified = false;
-    size_t     typeIndex     = 0;
-    FileFormat format        = eUnknownFormat;
-    FSSpec     fileResult;
-    if (filteredPicker.PickFile (&fileResult, &typeSpecified, &typeIndex)) {
-        if (typeSpecified) {
-            switch (typeIndex) {
-                case 0:
-                    format = eHTMLFormat;
-                    break;
-                case 1:
-                    format = eLedPrivateFormat;
-                    break;
-                case 2:
-                    format = eRTFFormat;
-                    break;
-                case 3:
-                    format = eTextFormat;
-                    break;
-                default:
-                    Led_Assert (false);
-            }
-        }
-        OpenDocument (&fileResult, format);
-    }
-}
-
-void LedItApplication::ShowAboutBox ()
-{
-    DoAboutBox ();
-}
-#endif
 
 void LedItApplication::OnToggleSmartCutNPasteOptionCommand ()
 {
@@ -1023,19 +539,7 @@ void LedItApplication::UpdateViewsForPrefsChange ()
     bool smartCutNPaste = Options{}.GetSmartCutAndPaste ();
     bool showHiddenText = Options{}.GetShowHiddenText ();
 
-#if qStroika_Platform_MacOS
-    const TArray<LDocument*>&  docList = LDocument::GetDocumentList ();
-    TArrayIterator<LDocument*> iterator (docList);
-    LDocument*                 theDoc = NULL;
-    while (iterator.Next (theDoc)) {
-        AssertMember (theDoc, LedItDocument);
-        LedItDocument* d = dynamic_cast<LedItDocument*> (theDoc);
-        AssertNotNull (d->GetTextView ());
-        d->GetTextView ()->SetSmartCutAndPasteMode (smartCutNPaste);
-        d->GetTextView ()->SetWrapToWindow (wrapToWindow);
-        d->GetTextView ()->SetShowHiddenText (showHiddenText);
-    }
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     // Update each open view
     POSITION tp = GetFirstDocTemplatePosition ();
     while (tp != NULL) {
@@ -1386,18 +890,6 @@ void LedItApplication::HandleBadAllocException () noexcept
 #if qStroika_Platform_Windows
         CDialog errorDialog (kBadAllocExceptionOnCmdDialogID);
         errorDialog.DoModal ();
-#elif qStroika_Platform_MacOS
-        // ALSO, FREE ANY MEMORY WE CAN...
-        TArray<LDocument*>&        docList = LDocument::GetDocumentList ();
-        TArrayIterator<LDocument*> iterator (docList);
-        LDocument*                 theDoc = NULL;
-        while (iterator.Next (theDoc)) {
-            AssertMember (theDoc, LedItDocument);
-            LedItDocument* d = dynamic_cast<LedItDocument*> (theDoc);
-            d->PurgeUnneededMemory ();
-        }
-
-        DoStringyAlert (kMemoryExceptionAlertID);
 #else
         HandleUnknownException ();
 #endif
@@ -1410,9 +902,7 @@ void LedItApplication::HandleBadAllocException () noexcept
 void LedItApplication::HandleBadUserInputException () noexcept
 {
     try {
-#if qStroika_Platform_MacOS
-        DoStringyAlert (kBadUserInputExceptionAlertID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         CDialog errorDialog (kBadUserInputExceptionOnCmdDialogID);
         errorDialog.DoModal ();
 #else
@@ -1427,9 +917,7 @@ void LedItApplication::HandleBadUserInputException () noexcept
 void LedItApplication::HandleUnknownException () noexcept
 {
     try {
-#if qStroika_Platform_MacOS
-        DoStringyAlert (kUnknownExceptionAlertID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         CDialog errorDialog (kUnknownExceptionOnCmdDialogID);
         errorDialog.DoModal ();
 #endif

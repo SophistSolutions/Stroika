@@ -1236,9 +1236,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline nonvirtual DistanceType FontMetrics::GetMaxCharacterWidth () const
     {
-#if qStroika_Platform_MacOS
-        return fPlatformSpecific.widMax;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         return fPlatformSpecific.tmMaxCharWidth;
 #endif
     }
@@ -1248,16 +1246,7 @@ namespace Stroika::Frameworks::Led {
         return fPlatformSpecific.tmAveCharWidth;
     }
 #endif
-#if qStroika_Platform_MacOS
-    inline FontMetrics::operator const FontInfo*() const
-    {
-        return &fPlatformSpecific;
-    }
-    inline FontMetrics::operator FontInfo*()
-    {
-        return (&fPlatformSpecific);
-    }
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     inline FontMetrics::operator const TEXTMETRIC*() const
     {
         return &fPlatformSpecific;
@@ -2337,32 +2326,14 @@ namespace Stroika::Frameworks::Led {
      */
     inline Color Led_GetSelectedTextColor ()
     {
-#if qStroika_Platform_MacOS
-        RGBColor hiliteRGBValue;
-        LMGetHiliteRGB (&hiliteRGBValue);
-        /*
-            *  This is based on empirical testing with the behavior of the TE in the Color desk accessory
-            *  that comes with system 7.5. I REALLY should probably do something with color intensity
-            *  matching -- LGP 950531
-            */
-        if (Color (hiliteRGBValue) == Color::kBlack) {
-            return (Color::kWhite);
-        }
-        else {
-            return (Color::kBlack);
-        }
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         //          return Color (::GetSysColor (COLOR_CAPTIONTEXT));
         return Color (::GetSysColor (COLOR_HIGHLIGHTTEXT));
 #endif
     }
     inline Color Led_GetSelectedTextBackgroundColor ()
     {
-#if qStroika_Platform_MacOS
-        RGBColor hiliteRGBValue;
-        LMGetHiliteRGB (&hiliteRGBValue);
-        return Color (hiliteRGBValue);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         //return Color (::GetSysColor (COLOR_ACTIVECAPTION));
         return Color (::GetSysColor (COLOR_HIGHLIGHT));
 #endif
@@ -2395,10 +2366,7 @@ namespace Stroika::Frameworks::Led {
     {
         RequireNotNull (tablet);
         fHasOldClip = tablet->GetClip (&fOldClip);
-#if qStroika_Platform_MacOS
-        Assert (fHasOldClip);
-        tablet->SetClip (fOldClip * clipFurtherTo);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         /*
             *  NB: We must use IntersectClipRect instead of the above SetClip () call because the CLIP on Win32 is in
             *  device rather than logical coordinates.
@@ -2417,10 +2385,7 @@ namespace Stroika::Frameworks::Led {
     {
         RequireNotNull (tablet);
         fHasOldClip = tablet->GetClip (&fOldClip);
-#if qStroika_Platform_MacOS
-        Assert (fHasOldClip);
-        tablet->SetClip (fOldClip * clipFurtherTo);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Assert (false); // NYI - see SPR#????
 #else
         Assert (false); // NYI
@@ -2488,21 +2453,6 @@ namespace Stroika::Frameworks::Led {
             fRestoreAttribObject = ::SelectObject (tablet->m_hAttribDC, objToSelect);
         }
     }
-#elif qStroika_Platform_MacOS
-    inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
-        : fTablet (tablet)
-        ,
-#if TARGET_CARBON
-        fRestorePen (Pen (::GetPortPenMode (Led_GetCurrentGDIPort ()), &Pen::kBlackPattern, Color (GDI_GetForeColor ())))
-#else
-        fRestorePen (Pen (Led_GetCurrentGDIPort ()->pnMode, &Led_GetCurrentGDIPort ()->pnPat, Color (GDI_GetForeColor ())))
-#endif
-    {
-        Assert (Led_GetCurrentGDIPort () == *tablet);
-        GDI_RGBForeColor (pen.fPenColor.GetOSRep ());
-        ::PenMode (pen.fPenStyle);
-        ::PenPat (&pen.fPenPat);
-    }
 #endif
     inline GDI_Obj_Selector::~GDI_Obj_Selector ()
     {
@@ -2514,10 +2464,6 @@ namespace Stroika::Frameworks::Led {
         if (fRestoreAttribObject != nullptr) {
             Verify (::SelectObject (fTablet->m_hAttribDC, fRestoreAttribObject));
         }
-#elif qStroika_Platform_MacOS
-        GDI_RGBForeColor (fRestorePen.fPenColor.GetOSRep ());
-        ::PenMode (fRestorePen.fPenStyle);
-        ::PenPat (&fRestorePen.fPenPat);
 #endif
     }
 #endif

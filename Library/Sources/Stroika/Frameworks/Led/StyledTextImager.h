@@ -18,11 +18,6 @@
 
  */
 
-#if qStroika_Platform_MacOS
-struct TextStyle;
-struct ScrpSTElement;
-#endif
-
 namespace Stroika::Frameworks::Led {
 
 /** 

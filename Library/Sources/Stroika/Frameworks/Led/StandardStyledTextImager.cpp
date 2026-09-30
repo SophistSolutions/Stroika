@@ -239,9 +239,7 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
     // Note - we COULD have simply checked at the end of each loop count a bunch of 'IsValid' booleans. That would have
     // been simpler. But it would have been more costly (performance).
     int countOfValidThings = 7 +
-#if qStroika_Platform_MacOS
-                             4
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
                              1
 #endif
         ;
@@ -288,32 +286,7 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
                     break;
                 }
             }
-#if qStroika_Platform_MacOS
-            if (fontSpec.GetStyle_Outline_Valid () and fontSpec.GetStyle_Outline () != isr.GetStyle_Outline ()) {
-                fontSpec.InvalidateStyle_Outline ();
-                if (--countOfValidThings == 0) {
-                    break;
-                }
-            }
-            if (fontSpec.GetStyle_Shadow_Valid () and fontSpec.GetStyle_Shadow () != isr.GetStyle_Shadow ()) {
-                fontSpec.InvalidateStyle_Shadow ();
-                if (--countOfValidThings == 0) {
-                    break;
-                }
-            }
-            if (fontSpec.GetStyle_Condensed_Valid () and fontSpec.GetStyle_Condensed () != isr.GetStyle_Condensed ()) {
-                fontSpec.InvalidateStyle_Condensed ();
-                if (--countOfValidThings == 0) {
-                    break;
-                }
-            }
-            if (fontSpec.GetStyle_Extended_Valid () and fontSpec.GetStyle_Extended () != isr.GetStyle_Extended ()) {
-                fontSpec.InvalidateStyle_Extended ();
-                if (--countOfValidThings == 0) {
-                    break;
-                }
-            }
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
             if (fontSpec.GetStyle_Strikeout_Valid () and fontSpec.GetStyle_Strikeout () != isr.GetStyle_Strikeout ()) {
                 fontSpec.InvalidateStyle_Strikeout ();
                 if (--countOfValidThings == 0) {
@@ -342,88 +315,6 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
 
     return fontSpec;
 }
-
-#if qStroika_Platform_MacOS
-bool StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChars, short* mode, TextStyle* theStyle)
-{
-    //  Require ((*mode & doColor) == 0);   // NB: we currently don't support   doColor,  doAll , addSize
-    // Just silently ignore doColor for now since done from TCL - and we just return NO for that style...
-    Require ((*mode & addSize) == 0);
-    RequireNotNull (theStyle);
-
-    unsigned int                 resultMode = *mode;
-    IncrementalFontSpecification resultSpec = GetContinuousStyleInfo (from, nTChars);
-    if (resultMode & doFont) {
-        resultSpec.GetOSRep (&theStyle->tsFont, nullptr, nullptr);
-    }
-    if (resultMode & doFace) {
-        resultSpec.GetOSRep (nullptr, nullptr, &theStyle->tsFace);
-    }
-    if (resultMode & doSize) {
-        resultSpec.GetOSRep (nullptr, &theStyle->tsSize, nullptr);
-    }
-
-    bool result = (resultMode != *mode);
-    *mode       = resultMode;
-    return (result);
-}
-
-vector<StyledInfoSummaryRecord> StandardStyledTextImager::Convert (const ScrpSTElement* teScrapFmt, size_t nElts)
-{
-    vector<StyledInfoSummaryRecord> result;
-    for (size_t i = 0; i < nElts; ++i) {
-        IncrementalFontSpecification fsp;
-        fsp.SetOSRep (teScrapFmt[i].scrpFont, teScrapFmt[i].scrpSize, teScrapFmt[i].scrpFace);
-        size_t                  length = (i < (nElts - 1)) ? (teScrapFmt[i + 1].scrpStartChar - teScrapFmt[i].scrpStartChar) : 9999999;
-        StyledInfoSummaryRecord isr (fsp, length);
-        result.push_back (isr);
-    }
-    return (result);
-}
-
-void StandardStyledTextImager::Convert (const vector<StyledInfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt)
-{
-    size_t nElts     = fromLedStyleRuns.size ();
-    size_t startChar = 0;
-
-    GrafPtr oldPort = Led_GetCurrentGDIPort ();
-#if TARGET_CARBON
-    CGrafPtr tmpPort = ::CreateNewPort ();
-    ::SetPort (tmpPort);
-#else
-    CGrafPort tmpPort;
-    ::OpenCPort (&tmpPort);
-#endif
-
-    for (size_t i = 0; i < nElts; ++i) {
-        StyledInfoSummaryRecord isr = fromLedStyleRuns[i];
-
-        (void)::memset (&teScrapFmt[i], 0, sizeof (teScrapFmt[i]));
-        teScrapFmt[i].scrpStartChar = startChar;
-
-        isr.GetOSRep (&teScrapFmt[i].scrpFont, &teScrapFmt[i].scrpSize, &teScrapFmt[i].scrpFace);
-
-        ::TextFont (teScrapFmt[i].scrpFont);
-        ::TextFace (teScrapFmt[i].scrpFace);
-        ::TextSize (teScrapFmt[i].scrpSize);
-
-        FontInfo info;
-        ::GetFontInfo (&info);
-
-        teScrapFmt[i].scrpHeight = info.ascent + info.descent + info.leading;
-        teScrapFmt[i].scrpAscent = info.ascent;
-
-        startChar += isr.fLength;
-    }
-
-#if TARGET_CARBON
-    ::DisposePort (tmpPort);
-#else
-    ::CloseCPort (&tmpPort);
-#endif
-    ::SetPort (oldPort);
-}
-#endif
 
 #if qStroika_Foundation_Debug_AssertionsChecked
 void StandardStyledTextImager::Invariant_ () const

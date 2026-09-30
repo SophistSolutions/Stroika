@@ -125,9 +125,7 @@ public:
     virtual void DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override
     {
         Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback> delegator (callback);
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
 
@@ -314,7 +312,7 @@ LedLineItView::LedLineItView ()
                                          kLedItViewRHSMargin - kLedItViewLHSMargin));
 #endif
 
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     SetUseSecondaryHilight (true);
 #endif
 }
@@ -671,9 +669,7 @@ void LedLineItView::OnFontSizeChangeCommand (UINT cmdNum)
 
 DistanceType LedLineItView::PickOtherFontHeight (DistanceType origHeight)
 {
-#if qStroika_Platform_MacOS
-    Led_StdDialogHelper_OtherFontSizeDialog dlg;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     Led_StdDialogHelper_OtherFontSizeDialog dlg{::AfxGetResourceHandle (), ::GetActiveWindow ()};
 #endif
     dlg.InitValues (origHeight);

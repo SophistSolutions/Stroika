@@ -17,23 +17,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\LedIt.r">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="..\..\Sources\AboutBoxImage.bmp">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\Sources\AboutBoxImage.vsd">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\Sources\CarbonPreComp.pch">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="..\..\Sources\CarbonUNICODEPreComp.pch">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="..\..\Sources\PreComp.pch">
-      <Filter>Header Files</Filter>
     </None>
     <None Include="..\..\Sources\Font.bmp">
       <Filter>Resource Files</Filter>
@@ -96,9 +84,6 @@
     <ClCompile Include="..\..\Sources\ColorMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\FilteredFilePicker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\FormatToolbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -138,9 +123,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\ColorMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\FilteredFilePicker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\FormatToolbar.h">

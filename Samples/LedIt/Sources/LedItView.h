@@ -7,9 +7,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Platform_MacOS
-#include "Stroika/Frameworks/Led/Platform/Led_PP_WordProcessor.h"
-#elif defined(WIN32)
+#if defined(WIN32)
 #include "Stroika/Frameworks/Led/Platform/MFC_WordProcessor.h"
 #endif
 
@@ -27,23 +25,16 @@ using LedItViewAlmostBASE = Platform::Led_MFC_X<WordProcessor>;
 
 DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 class LedItView :
-#if qStroika_Platform_MacOS
-    public Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor>>
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     public Platform::WordProcessorCommonCommandHelper_MFC<LedItViewAlmostBASE>
 #endif
 {
 private:
-#if qStroika_Platform_MacOS
-    using inherited = Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor>>;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     using inherited = Platform::WordProcessorCommonCommandHelper_MFC<LedItViewAlmostBASE>;
 #endif
 
-#if qStroika_Platform_MacOS
-public:
-    LedItView ();
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 protected: // create from serialization only
     LedItView ();
     DECLARE_DYNCREATE (LedItView)
@@ -79,11 +70,6 @@ public:
 
 #if qStroika_Platform_Windows
     nonvirtual LedItControlItem* GetSoleSelectedOLEEmbedding () const;
-#endif
-
-#if qStroika_Platform_MacOS
-public:
-    virtual void FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName) override;
 #endif
 
 #if qStroika_Platform_Windows

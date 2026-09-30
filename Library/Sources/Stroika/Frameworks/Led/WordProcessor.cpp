@@ -2042,15 +2042,7 @@ bool WordProcessor::DialogSupport::PickOtherFontColor (Color* color)
 {
     RequireNotNull (color);
 
-#if qStroika_Platform_MacOS
-    RGBColor oldColor = color->GetOSRep ();
-    RGBColor newColor = oldColor;
-    Point    where    = {0, 0};
-    if (::GetColor (where, "\pPick new color", &oldColor, &newColor)) {
-        *color = Color (newColor);
-        return true;
-    }
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     CHOOSECOLOR cc;
     memset (&cc, 0, sizeof (cc));
     cc.lStructSize = sizeof (cc);
@@ -3468,24 +3460,6 @@ bool WordProcessor::OnUpdateCommand (CommandUpdater* enabler)
             return true;
         }
 #endif
-#if qStroika_Platform_MacOS
-        case kFontStyleOutline_CmdID: {
-            OnUpdateFontStyleOutlineCommand (enabler);
-            return true;
-        }
-        case kFontStyleShadow_CmdID: {
-            OnUpdateFontStyleShadowCommand (enabler);
-            return true;
-        }
-        case kFontStyleCondensed_CmdID: {
-            OnUpdateFontStyleCondensedCommand (enabler);
-            return true;
-        }
-        case kFontStyleExtended_CmdID: {
-            OnUpdateFontStyleExtendedCommand (enabler);
-            return true;
-        }
-#endif
         case kSubScriptCommand_CmdID: {
             OnUpdateFontStyleSubscriptCommand (enabler);
             return true;
@@ -3598,24 +3572,6 @@ bool WordProcessor::OnPerformCommand (CommandNumber commandNumber)
 #if qStroika_Platform_Windows
         case kFontStyleStrikeout_CmdID: {
             OnFontStyleStrikeoutCommand ();
-            return true;
-        }
-#endif
-#if qStroika_Platform_MacOS
-        case kFontStyleOutline_CmdID: {
-            OnFontStyleOutlineCommand ();
-            return true;
-        }
-        case kFontStyleShadow_CmdID: {
-            OnFontStyleShadowCommand ();
-            return true;
-        }
-        case kFontStyleCondensed_CmdID: {
-            OnFontStyleCondensedCommand ();
-            return true;
-        }
-        case kFontStyleExtended_CmdID: {
-            OnFontStyleExtendedCommand ();
             return true;
         }
 #endif
@@ -3913,72 +3869,7 @@ void WordProcessor::OnFontStyleUnderlineCommand ()
     InteractiveSetFont (applyFontSpec);
 }
 
-#if qStroika_Platform_MacOS
-void WordProcessor::OnUpdateFontStyleOutlineCommand (CommandUpdater* enabler)
-{
-    RequireNotNull (enabler);
-    AssureCurSelFontCacheValid ();
-    enabler->SetChecked (fCachedCurSelFontSpec.GetStyle_Outline_Valid () and fCachedCurSelFontSpec.GetStyle_Outline ());
-    enabler->SetEnabled (true);
-}
-
-void WordProcessor::OnFontStyleOutlineCommand ()
-{
-    AssureCurSelFontCacheValid ();
-    IncrementalFontSpecification applyFontSpec;
-    applyFontSpec.SetStyle_Outline (not(fCachedCurSelFontSpec.GetStyle_Outline_Valid () and fCachedCurSelFontSpec.GetStyle_Outline ()));
-    InteractiveSetFont (applyFontSpec);
-}
-
-void WordProcessor::OnUpdateFontStyleShadowCommand (CommandUpdater* enabler)
-{
-    RequireNotNull (enabler);
-    AssureCurSelFontCacheValid ();
-    enabler->SetChecked (fCachedCurSelFontSpec.GetStyle_Shadow_Valid () and fCachedCurSelFontSpec.GetStyle_Shadow ());
-    enabler->SetEnabled (true);
-}
-
-void WordProcessor::OnFontStyleShadowCommand ()
-{
-    AssureCurSelFontCacheValid ();
-    IncrementalFontSpecification applyFontSpec;
-    applyFontSpec.SetStyle_Shadow (not(fCachedCurSelFontSpec.GetStyle_Shadow_Valid () and fCachedCurSelFontSpec.GetStyle_Shadow ()));
-    InteractiveSetFont (applyFontSpec);
-}
-
-void WordProcessor::OnUpdateFontStyleCondensedCommand (CommandUpdater* enabler)
-{
-    RequireNotNull (enabler);
-    AssureCurSelFontCacheValid ();
-    enabler->SetChecked (fCachedCurSelFontSpec.GetStyle_Condensed_Valid () and fCachedCurSelFontSpec.GetStyle_Condensed ());
-    enabler->SetEnabled (true);
-}
-
-void WordProcessor::OnFontStyleCondensedCommand ()
-{
-    AssureCurSelFontCacheValid ();
-    IncrementalFontSpecification applyFontSpec;
-    applyFontSpec.SetStyle_Condensed (not(fCachedCurSelFontSpec.GetStyle_Condensed_Valid () and fCachedCurSelFontSpec.GetStyle_Condensed ()));
-    InteractiveSetFont (applyFontSpec);
-}
-
-void WordProcessor::OnUpdateFontStyleExtendedCommand (CommandUpdater* enabler)
-{
-    RequireNotNull (enabler);
-    AssureCurSelFontCacheValid ();
-    enabler->SetChecked (fCachedCurSelFontSpec.GetStyle_Extended_Valid () and fCachedCurSelFontSpec.GetStyle_Extended ());
-    enabler->SetEnabled (true);
-}
-
-void WordProcessor::OnFontStyleExtendedCommand ()
-{
-    AssureCurSelFontCacheValid ();
-    IncrementalFontSpecification applyFontSpec;
-    applyFontSpec.SetStyle_Extended (not(fCachedCurSelFontSpec.GetStyle_Extended_Valid () and fCachedCurSelFontSpec.GetStyle_Extended ()));
-    InteractiveSetFont (applyFontSpec);
-}
-
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 
 void WordProcessor::OnUpdateFontStyleStrikeoutCommand (CommandUpdater* enabler)
 {
@@ -4639,7 +4530,7 @@ SDKString WordProcessor::GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m)
     else if (dynamic_cast<StandardURLStyleMarker*> (m) != nullptr) {
         return GetCommandNames ().fEmbeddingTypeName_URL;
     }
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     else if (dynamic_cast<StandardMacPictureStyleMarker*> (m) != nullptr) {
         return GetCommandNames ().fEmbeddingTypeName_ImageMacPict;
     }
@@ -5053,19 +4944,6 @@ void WordProcessor::DrawSegment (Tablet* tablet, size_t from, size_t to, const T
                     pts[1] = AsPOINT (topPt);
                     pts[2] = AsPOINT (botPt);
                     Verify (::Polygon (*tablet, pts, static_cast<int> (std::size (pts))));
-#elif qStroika_Platform_MacOS
-                    PolyHandle ph = ::OpenPoly ();
-                    ::MoveTo (tip.h, tip.v);
-                    ::LineTo (topPt.h, topPt.v);
-                    ::LineTo (botPt.h, botPt.v);
-                    ::LineTo (tip.h, tip.v);
-                    ::ClosePoly ();
-                    if (ph != nullptr) {
-                        Assert (*tablet == Led_GetCurrentGDIPort ());
-                        GDI_RGBForeColor (arrowColor.GetOSRep ());
-                        ::FillPoly (ph, &Pen::kBlackPattern);
-                        ::KillPoly (ph);
-                    }
 #else
 //NYI - but not too serious - cuz looks pretty reasonable without arrow head - just the line...
 #endif

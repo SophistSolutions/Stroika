@@ -184,8 +184,6 @@ namespace Stroika::Frameworks::Led {
         Color lightColor = Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
 #if qStroika_Platform_Windows
         Pen pen (PS_DOT, 1, lightColor.GetOSRep ());
-#elif qStroika_Platform_MacOS
-        Pen pen (patCopy, &Pen::kGrayPattern, lightColor);
 #endif
         GDI_Obj_Selector penWrapper (tablet, pen);
         CoordinateType   underlineAt = useBaseLine;

@@ -163,28 +163,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-#if qStroika_Platform_MacOS
-    /*
-    @CLASS:         TextBreaks_System
-    @BASES:         @'TextBreaks'
-    @DESCRIPTION:   <p>Similar to the behavior you got in Led 2.3 with the old 'qUseSystemWordBreakRoutine' define.</p>
-            <p>Right now - only implemented for MacOS.</p>
-    */
-    class TextBreaks_System : public TextBreaks {
-    public:
-        /*
-            */
-    public:
-        // NB: textOffsetToStartLookingForWord is zero-based.
-        // No word was found - iff *wordStartResult and *wordEndResult are equal.
-        // *wordStartResult and *wordEndResult are zero-based.
-        virtual void FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                     size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const override;
-        virtual void FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                     size_t* wordEndResult, bool* wordReal) const override;
-    };
-#endif
-
     /*
     @CLASS:         TextBreaks_DefaultImpl
     @BASES:         @'TextBreaks'

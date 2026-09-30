@@ -3091,13 +3091,6 @@ void TextInteractor::SetCaretShown (bool shown)
     if (GetCaretShown () != shown) {
         fCaretShown = shown;
         InvalidateCaretState ();
-#if qStroika_Platform_MacOS
-        // On the mac - when it was shown, and now is not - we MAY need to force an update to get it erased - and when not shown- the
-        // InvalidateCaretState () method doesn't force an update.
-        if (not shown) {
-            RefreshWindowRect (CalculateCaretRect ());
-        }
-#endif
     }
 }
 
@@ -3270,15 +3263,6 @@ void TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPre
     Update ();
 #endif
 }
-
-#if qStroika_Platform_MacOS
-float TextInteractor::GetTickCountBetweenBlinks ()
-{
-#if qStroika_Platform_MacOS
-    return ::GetCaretTime () / 60.0;
-#endif
-}
-#endif
 
 bool TextInteractor::DelaySomeForScrollBarClick ()
 {

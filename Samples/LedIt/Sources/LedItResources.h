@@ -13,8 +13,6 @@
 
 // MFC must define something like this someplace, but I haven't found where....
 // Use this for now, so I can update things more easily when I find the MFC definition...
-// PowerPlant doesn't seem picky about this number - same # works in both places - but it would be OK to have
-// this differ across platforms.
 // NOTE: MFC commands tend to be in the range:
 //      0xE100 (ID_FILE_NEW) ... 0xEffff
 #define kUserCommandBase 0x1000
@@ -28,17 +26,6 @@
 #define kMiscCmdBase (kUserCommandBase + 0x3100)
 
 // Global command numbers
-#if qStroika_Platform_MacOS
-#define kCmdUndo cmd_Undo
-#define kFontStylePlainCmd cmd_Plain
-#define kFontStyleBoldCmd cmd_Bold
-#define kFontStyleItalicCmd cmd_Italic
-#define kFontStyleUnderlineCmd cmd_Underline
-#define kFontStyleOutlineCmd cmd_Outline
-#define kFontStyleShadowCmd cmd_Shadow
-#define kFontStyleCondensedCmd cmd_Condense
-#define kFontStyleExtendedCmd cmd_Extend
-#endif
 #if qStroika_Platform_Windows
 #define kFindCmd ID_EDIT_FIND
 #define kReplaceCmd ID_EDIT_REPLACE
@@ -313,71 +300,8 @@
 #endif
 
 // Command Numbers
-#if qStroika_Platform_MacOS
-#define kBaseWindowCmd 20600
-#define kLastWindowCmd 20699
-#endif
 
-#if qStroika_Platform_MacOS
-#define kAppleMenuID 128 //  PowerPlant assumes this ID - cannot change - LGP 960614
-#define kFileMenuID 2
-#define kEditMenuID 3
-#define kSelectMenuID 4
-#define kInsertMenuID 5
-#define kFormatMenuID 6
-#define kRemoveMenuID 7
-#define kOptionsMenuID 8
-#define kWindowsMenuID 9
-#define kHelpMenuID 10
-
-#define cmd_ListStyleMenu 249
-#define cmd_FontMenu 250
-#define cmd_SizeMenu 251
-#define cmd_StyleMenu 252
-#define cmd_ColorMenu 253
-#define cmd_JustificationMenu 254
-
-// Text Traits
-#define kTextOrForAboutBoxTextTrait 1001
-#define kTextEntryFieldTextTrait 1002
-#define kStaticTextTrait 1003
-#define kButtonTextTrait 1004
-#define kCheckBoxAndRBTextTrait 1005
-
-// Dialogs/Alerts
-//#define   kFind_DialogID  1002
-
-#define kOpenDLOGAdditionItems_DialogID 1003
-
-#define kSaveDLOGAdditionItems_DialogID 1004
-
-#define kMemoryExceptionAlertID 2001
-#define kPowerPlantExceptionAlertID 2002
-#define kGenericMacOSExceptionAlertID 2003
-#define kUnknownExceptionAlertID 2004
-#define kWarnLowLocalRAMAlertID 2005
-#define kWarnLowRAMAlertID 2006
-#define kCannotOpenHelpFileAlertID 2007
-#define kCannotOpenWebPageAlertID 2008
-#define kBadUserInputExceptionAlertID 2009
-
-// Finder BNDL/ICON/etc icon IDs
-#define kPrivateDocument_FinderIconResID 5000
-#define kPrivateDocumentStationary_FinderIconResID 5001
-#define kTEXTDocument_FinderIconResID 5002
-#define kTEXTDocumentStationary_FinderIconResID 5003
-#define kApplicationFinderIconResID 5004
-#define kAnyTypeFinderIconResID 5005
-
-#define STRx_Untitled 300
-
-#define kUnknownEmbeddingPictID 5002
-#define kUnsupportedDIBFormatPictID 5003
-
-#define WIND_TextDoc 200
-#define prto_TextDoc 201
-
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 
 #define IDR_MAINFRAME 128
 #define kLedItDocumentIconID 129

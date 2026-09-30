@@ -8,7 +8,7 @@ vpath %cpp $(SrcDir)
 
 Objs	:=	
 
-# for now - this only builds on windows, cuz there is no unix GUI support, and macos only written for very old macos gdi (carbon)
+# Led's GUI code is Windows only - there is no unix or macos GUI support
 Objs+=	$(ObjDir)StyledTextIO${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_HTML${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_LedNative${OBJ_SUFFIX}

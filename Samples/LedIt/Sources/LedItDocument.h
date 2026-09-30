@@ -7,9 +7,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Platform_MacOS
-#include <LSingleDoc.h>
-#elif defined(WIN32)
+#if defined(WIN32)
 #pragma warning(push)
 #pragma warning(disable : 5054)
 #include <afxole.h>
@@ -35,16 +33,11 @@ class LedItServerItem;
 #endif
 
 class LedItDocument :
-#if qStroika_Platform_MacOS
-    public LSingleDoc,
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     public COleServerDoc,
 #endif
     public MarkerOwner {
-#if qStroika_Platform_MacOS
-public:
-    LedItDocument (LCommander* inSuper, FileFormat format);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 protected: // create from serialization only
     LedItDocument ();
     DECLARE_DYNCREATE (LedItDocument)
@@ -57,36 +50,7 @@ public:
     virtual void       DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept override;
     virtual TextStore* PeekAtTextStore () const override;
 
-#if qStroika_Platform_MacOS
-    // Call exactly once (inFileSpec==NULL for new window)
-public:
-    nonvirtual void BuildDocWindow (const FSSpec* inFileSpec);
-
-public:
-    static const vector<LWindow*>& GetDocumentWindows ();
-
-public:
-    virtual Boolean ObeyCommand (CommandT inCommand, void* ioParam) override;
-    virtual void FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName) override;
-
-    nonvirtual void OnSaveACopyAsCommand ();
-
-public:
-    virtual Boolean IsModified () override;
-
-    virtual Boolean AskSaveAs (FSSpec& outFSSpec, Boolean inRecordIt) override;
-
-    virtual void DoAESave (FSSpec& inFileSpec, OSType inFileType) override;
-    virtual void DoSave () override;
-    virtual void DoRevert () override;
-    virtual void DoPrint () override;
-
-public:
-    nonvirtual void PurgeUnneededMemory ();
-
-private:
-    nonvirtual void DoReadCode ();
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 public:
     nonvirtual LedItServerItem* GetEmbeddedItem ();
 
@@ -142,22 +106,6 @@ public:
     FileFormat             fFileFormat;
     StyledTextIO::HTMLInfo fHTMLInfo;
 
-#if qStroika_Platform_MacOS
-protected:
-    nonvirtual void DoSaveHelper ();
-
-public:
-    nonvirtual LedItView* GetTextView () const
-    {
-        return fTextView;
-    }
-
-private:
-    LedItView* fTextView;
-
-    nonvirtual void NameNewDoc ();
-    nonvirtual void OpenFile (const FSSpec& inFileSpec);
-#endif
 #if qStroika_Platform_Windows
 #if qStroika_Foundation_Debug_AssertionsChecked
 public:

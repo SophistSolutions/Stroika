@@ -13,62 +13,7 @@
 	
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_AboutBoxID, purgeable) {
-			{0, 0, 283, 425},
-			dBoxProc,
-			invisible,
-			noGoAway,
-			0x0,
-			kLedStdDlg_AboutBoxID,
-			"About XXX!",
-			alertPositionMainScreen
-		};
-		resource 'dlgx' (kLedStdDlg_AboutBoxID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_AboutBoxID, purgeable) {
-			{
-				{133, 112, 133+14, 112+154},
-				UserItem {
-					enabled
-				},
-				{147, 17, 147+14, 17+160},
-				UserItem {
-					enabled
-				},
-				{0, 0, 283, 425},
-				Picture {
-					enabled,
-					kLedStdDlg_AboutBoxID
-				},
-				{34, 80, 37+16, 80+284},
-				StaticText {
-					disabled,
-					"VERS-GOES-HERE"
-				},
-			}
-		};
-		#if 0
-		// These don't seem to work - at least under MacOS X - LGP 2003-01-22
-		resource 'dctb' (kLedStdDlg_AboutBoxID, purgeable) {
-			{
-				wContentColor, 55000, 55000, 55000,
-			}
-		};	
-		resource 'dftb' (kLedStdDlg_AboutBoxID, purgeable) {
-			versionZero {
-				{
-					skipItem{},
-					skipItem{},
-					skipItem{},
-					dataItem{kDialogFontUseJustMask|kDialogFontUseFaceMask|kDialogFontUseBackColorMask|kDialogFontUseForeColorMask|kDialogFontUseModeMask,0,0,0,1,2,0,0,0,3330,55000,55000,"Geneva"}
-					//dataItem{kDialogFontUseJustMask|kDialogFontUseFaceMask,0,0,0,0,1,0,0,0,0,0,0,"Geneva"}
-				}
-			}
-		};
-		#endif
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_AboutBoxID	DIALOG DISCARDABLE  34, 22, 250, 110
 		CAPTION "About XXXX!"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -99,60 +44,7 @@
 
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_FindBoxID) {
-			{0, 0, 121, 428},
-			movableDBoxProc,
-			invisible,
-			goAway,
-			0x0,
-			kLedStdDlg_FindBoxID,
-			"Find",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_FindBoxID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_FindBoxID) {
-			{
-				{17, 70, 17+16, 304},
-				EditText {
-					disabled,
-					""
-				},
-				{55, 35, 55+18, 35+120},
-				CheckBox {
-					enabled,
-					"Wrap at End"
-				},
-				{80, 35, 80+18, 35+120},
-				CheckBox {
-					enabled,
-					"Whole Word"
-				},
-				{55, 180, 55+18, 180+120},
-				CheckBox {
-					enabled,
-					"Ignore case"
-				},
-				{17, 320, 17+20, 320+90},
-				Button {
-					enabled,
-					"Find"
-				},
-				{50, 320, 50+20, 320+90},
-				Button {
-					enabled,
-					"Don't Find"
-				},
-				{18, 22, 34, 66},
-				StaticText {
-					disabled,
-					"Find:"
-				}
-			}
-		};
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_FindBoxID DIALOG DISCARDABLE  34, 22, 262, 60
 		CAPTION "Find"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -176,85 +68,7 @@
 
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_ReplaceBoxID) {
-			{0, 0, 139, 544},
-			movableDBoxProc,
-			invisible,
-			goAway,
-			0x0,
-			kLedStdDlg_ReplaceBoxID,
-			"Find / Replace",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_ReplaceBoxID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_ReplaceBoxID) {
-			{
-				{17, 80, 17+16, 304},
-				EditText {
-					disabled,
-					""
-				},
-				{43, 80, 43+16, 304},
-				EditText {
-					disabled,
-					""
-				},
-				{79, 35, 79+18, 35+120},
-				CheckBox {
-					enabled,
-					"Wrap at End"
-				},
-				{104, 35, 104+18, 35+120},
-				CheckBox {
-					enabled,
-					"Whole Word"
-				},
-				{79, 180, 79+18, 180+120},
-				CheckBox {
-					enabled,
-					"Ignore case"
-				},
-				{17, 320, 17+20, 320+90},
-				Button {
-					enabled,
-					"Find"
-				},
-				{17, 426, 17+20, 426+90},
-				Button {
-					enabled,
-					"Close"
-				},
-				{60, 320, 60+20, 320+90},
-				Button {
-					enabled,
-					"Replace"
-				},
-				{60, 426, 60+20, 426+90},
-				Button {
-					enabled,
-					"Replace All"
-				},
-				{93, 320, 93+20, 320+196},
-				Button {
-					enabled,
-					"Replace All in Selection"
-				},
-				{18, 22, 34, 76},
-				StaticText {
-					disabled,
-					"Find:"
-				},
-				{44, 22, 60, 76},
-				StaticText {
-					disabled,
-					"Replace:"
-				}
-			}
-		};
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_ReplaceBoxID DIALOG DISCARDABLE  34, 22, 314, 72
 		CAPTION "Find / Replace"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -307,65 +121,7 @@
 
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_ParagraphIndentsID, purgeable) {
-			{0, 0, 158, 292},
-			movableDBoxProc,
-			invisible,
-			noGoAway,
-			0x0,
-			kLedStdDlg_ParagraphIndentsID,
-			"Paragraph Indents",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_ParagraphIndentsID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_ParagraphIndentsID, purgeable) {
-			{
-					{120, 68, 120+20, 68+70},
-					Button {
-						enabled,
-						"Cancel"
-					},
-					{120, 168, 120+20, 168+70},
-					Button {
-						enabled,
-						"OK"
-					},
-					{24, 37, 24+17, 37+140},
-					StaticText {
-						disabled,
-						"Left Margin (TWIPS):"
-					},
-					{24, 203, 24+18, 203+45},
-					EditText {
-						enabled,
-						""
-					},
-					{56, 37, 56+17, 37+140},
-					StaticText {
-						disabled,
-						"Right Margin (TWIPS):"
-					},
-					{56, 203, 56+18, 203+45},
-					EditText {
-						enabled,
-						""
-					},
-					{85, 37, 85+17, 37+140},
-					StaticText {
-						disabled,
-						"First Indent (TWIPS):"
-					},
-					{85, 203, 85+18, 203+45},
-					EditText {
-						enabled,
-						""
-					}
-			}
-		};
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_ParagraphIndentsID DIALOG DISCARDABLE  0, 0, 136, 86
 		CAPTION "Paragraph Indents"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -393,84 +149,7 @@
 
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_ParagraphSpacingID, purgeable) {
-			{0, 0, 163, 382},
-			movableDBoxProc,
-			invisible,
-			noGoAway,
-			0x0,
-			kLedStdDlg_ParagraphSpacingID,
-			"Paragraph Spacing",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_ParagraphSpacingID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_ParagraphSpacingID, purgeable) {
-			{
-				{124, 114, 124+20, 114+70},
-				Button {
-					enabled,
-					"Cancel"
-				},
-				{124, 210, 124+20, 210+70},
-				Button {
-					enabled,
-					"OK"
-				},
-				{28, 32, 28+17, 32+140},
-				StaticText {
-					disabled,
-					"Space Before (TWIPS):"
-				},
-				{28, 195, 28+18, 195+45},
-				EditText {
-					enabled,
-					""
-				},
-				{60, 32, 60+17, 32+140},
-				StaticText {
-					disabled,
-					"Space After (TWIPS):"
-				},
-				{60, 195, 60+18, 195+45},
-				EditText {
-					enabled,
-					""
-				},
-				{89, 30, 89+20, 30+260},
-				Control {
-					enabled,
-					kParagraphSpacing_Dialog_LineSpaceCNTLID
-				},
-				{89, 305, 89+18, 305+45},
-				EditText {
-					enabled,
-					""
-				}
-			}
-		};
-		resource 'MENU' (kParagraphSpacing_Dialog_LineSpaceMENUID) {
-			kParagraphSpacing_Dialog_LineSpaceMENUID,
-			textMenuProc,
-			0xFFFFFFFF,
-			enabled,
-			"LineSpacing",
-			{
-			}
-		};
-		resource 'CNTL' (kParagraphSpacing_Dialog_LineSpaceCNTLID) {
-			{89, 30, 89+20, 30+260},
-			0,
-			visible,
-			160,
-			kParagraphSpacing_Dialog_LineSpaceMENUID,
-			popupMenuCDEFproc,
-			0,
-			"Line Spacing:"
-		};
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_ParagraphSpacingID DIALOG DISCARDABLE  0, 0, 221, 87
 		CAPTION "Paragraph Spacing"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -498,35 +177,7 @@
 
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_UnknownEmbeddingInfoBoxID, purgeable) {
-			{0, 0, 123, 425},
-			dBoxProc,
-			invisible,
-			noGoAway,
-			0x0,
-			kLedStdDlg_UnknownEmbeddingInfoBoxID,
-			"Embedding Properties",
-			alertPositionMainScreen
-		};
-		resource 'dlgx' (kLedStdDlg_UnknownEmbeddingInfoBoxID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_UnknownEmbeddingInfoBoxID, purgeable) {
-			{
-				{70, 320, 70+20, 320+60},
-				Button {
-					enabled,
-					"OK"
-				},
-				{27, 80, 27+36, 80+230},
-				StaticText {
-					disabled,
-					"The selected embedding is of type: '^0'."
-				},
-			}
-		};
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_UnknownEmbeddingInfoBoxID	DIALOG DISCARDABLE  34, 22, 250, 60
 		CAPTION "Embedding Properties"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -546,45 +197,7 @@
 
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_OtherFontSizeID, purgeable) {
-			{0, 0, 110, 212},
-			movableDBoxProc,
-			invisible,
-			noGoAway,
-			0x0,
-			kLedStdDlg_OtherFontSizeID,
-			"Font Size",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_OtherFontSizeID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_OtherFontSizeID, purgeable) {
-			{
-				{68, 30, 68+20, 30+65},
-				Button {
-					enabled,
-					"Cancel"
-				},
-				{68, 115, 68+20, 115+65},
-				Button {
-					enabled,
-					"OK"
-				},
-				{28, 37, 28+17, 37+80},
-				StaticText {
-					disabled,
-					"Font Size:"
-				},
-				{28, 120, 28+16, 120+45},
-				EditText {
-					enabled,
-					""
-				}
-			}
-		};
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_OtherFontSizeID DIALOG DISCARDABLE  0, 0, 122, 49
 		CAPTION "Font Size"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
@@ -606,55 +219,7 @@
 
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_URLXEmbeddingInfoBoxID, purgeable) {
-			{0, 0, 145, 369},
-			movableDBoxProc,
-			invisible,
-			noGoAway,
-			0x0,
-			kLedStdDlg_URLXEmbeddingInfoBoxID,
-			"URL Embedding Properties",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_URLXEmbeddingInfoBoxID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_URLXEmbeddingInfoBoxID, purgeable) {
-			{
-				{100, 245, 100+20, 245+90},
-				Button {
-					enabled,
-					"Update"
-				},
-				{100, 135, 100+20, 135+90},
-				Button {
-					enabled,
-					"No Change"
-				},
-				{27, 30, 27+16, 30+40},
-				StaticText {
-					disabled,
-					"Title:"
-				},
-				{27, 30+40+10, 27+16, 30+40+10+250},
-				EditText {
-					enabled,
-					""
-				},
-				{27+30, 30, 27+30+16, 30+50},
-				StaticText {
-					disabled,
-					"URL:"
-				},
-				{27+30, 30+40+10, 27+30+16, 30+40+10+250},
-				EditText {
-					enabled,
-					""
-				}
-			}
-		};
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_URLXEmbeddingInfoBoxID	DIALOG DISCARDABLE  0, 0, 235, 90
 		CAPTION "URL Embedding Properties"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -679,55 +244,7 @@
 
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_AddURLXEmbeddingInfoBoxID, purgeable) {
-			{0, 0, 140, 375},
-			movableDBoxProc,
-			invisible,
-			noGoAway,
-			0x0,
-			kLedStdDlg_AddURLXEmbeddingInfoBoxID,
-			"Add URL",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_AddURLXEmbeddingInfoBoxID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_AddURLXEmbeddingInfoBoxID, purgeable) {
-			{
-				{100, 255, 100+20, 255+80},
-				Button {
-					enabled,
-					"Add"
-				},
-				{100, 155, 100+20, 155+80},
-				Button {
-					enabled,
-					"Cancel"
-				},
-				{27, 30, 27+16, 30+40},
-				StaticText {
-					disabled,
-					"Title:"
-				},
-				{27, 30+40+10, 27+16, 30+40+10+250},
-				EditText {
-					enabled,
-					""
-				},
-				{27+30, 30, 27+30+16, 30+40},
-				StaticText {
-					disabled,
-					"URL:"
-				},
-				{27+30, 30+40+10, 27+30+16, 30+40+10+250},
-				EditText {
-					enabled,
-					""
-				}
-			}
-		};
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_AddURLXEmbeddingInfoBoxID	DIALOG DISCARDABLE  0, 0, 230, 68
 		CAPTION "Add URL"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -750,61 +267,8 @@
 
 
 
-#if		qStroika_Platform_Windows || qStroika_Platform_MacOS
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_AddNewTableBoxID, purgeable) {
-			{0, 0, 114, 313},
-			movableDBoxProc,
-			invisible,
-			noGoAway,
-			0x0,
-			kLedStdDlg_AddNewTableBoxID,
-			"Add New Table",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_AddNewTableBoxID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'DITL' (kLedStdDlg_AddNewTableBoxID, purgeable) {
-			{
-				{72, 206, 72+20, 206+80},
-				Button {
-					enabled,
-					"OK"
-				},
-				{72, 113, 72+20, 113+80},
-				Button {
-					enabled,
-					"Cancel"
-				},
-				{11, 18, 11+16, 18+140},
-				StaticText {
-					disabled,
-					"Insert a new table:"
-				},
-				{38, 38, 38+16, 38+50},
-				StaticText {
-					disabled,
-					"Rows:"
-				},
-				{38, 38+50, 38+16, 38+50+40},
-				EditText {
-					enabled,
-					""
-				},
-				{38, 140, 38+16, 140+60},
-				StaticText {
-					disabled,
-					"Columns:"
-				},
-				{38, 210, 38+16, 210+40},
-				EditText {
-					enabled,
-					""
-				}
-			}
-		};
-	#elif	qStroika_Platform_Windows
+#if		qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_AddNewTableBoxID	DIALOG DISCARDABLE  34, 22, 180, 68
 		CAPTION "Add New Table"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -830,194 +294,8 @@
 
 
 
-#if		qStroika_Platform_Windows || qStroika_Platform_MacOS
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_EditTablePropertiesBoxID, purgeable) {
-			{0, 0, 290, 466},
-			movableDBoxProc,
-			invisible,
-			noGoAway,
-			0x0,
-			kLedStdDlg_EditTablePropertiesBoxID,
-			"Edit Table Properties",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_EditTablePropertiesBoxID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'MENU' (kLedStdDlg_EditTablePropertiesBox_BorderColorCNTLID) {
-			kLedStdDlg_EditTablePropertiesBox_BorderColorCNTLID,
-			textMenuProc,
-			0xFFFFFFFF,
-			enabled,
-			"Color",
-			{
-			}
-		};
-		resource 'CNTL' (kLedStdDlg_EditTablePropertiesBox_BorderColorCNTLID) {
-			{0, 0, 20, 140},
-			0,
-			visible,
-			60,
-			kLedStdDlg_EditTablePropertiesBox_BorderColorCNTLID,
-			popupMenuCDEFproc,
-			0,
-			"Color:"
-		};
-		resource 'MENU' (kLedStdDlg_EditTablePropertiesBox_CellBackgroundColorCNTLID) {
-			kLedStdDlg_EditTablePropertiesBox_CellBackgroundColorCNTLID,
-			textMenuProc,
-			0xFFFFFFFF,
-			enabled,
-			"Color",
-			{
-			}
-		};
-		resource 'CNTL' (kLedStdDlg_EditTablePropertiesBox_CellBackgroundColorCNTLID) {
-			{0, 0, 20, 205},
-			0,
-			visible,
-			125,
-			kLedStdDlg_EditTablePropertiesBox_CellBackgroundColorCNTLID,
-			popupMenuCDEFproc,
-			0,
-			"Background Color:"
-		};
-		resource 'DITL' (kLedStdDlg_EditTablePropertiesBoxID, purgeable) {
-			{
-				{240, 365, 240+20, 365+80},
-				Button {
-					enabled,
-					"OK"
-				},
-				{240, 265, 240+20, 265+80},
-				Button {
-					enabled,
-					"Cancel"
-				},
-
-
-				{11, 18, 11+16, 18+140},
-				StaticText {
-					disabled,
-					"Table"
-				},
-
-				{31, 28, 31+16, 28+140},
-				StaticText {
-					disabled,
-					"Border"
-				},
-				{51, 48, 51+16, 48+50},
-				StaticText {
-					disabled,
-					"Width:"
-				},
-				{51, 48+50, 51+16, 48+50+40},
-				EditText {
-					enabled,
-					""
-				},
-				{51, 225, 51+16, 225+200},
-				Control {
-					enabled,
-					kLedStdDlg_EditTablePropertiesBox_BorderColorCNTLID
-				},
-
-
-				{80, 28, 80+16, 28+140},
-				StaticText {
-					disabled,
-					"Cell Margins"
-				},
-				{105, 38, 105+16, 38+50},
-				StaticText {
-					disabled,
-					"Top:"
-				},
-				{105, 38+50, 105+16, 38+50+40},
-				EditText {
-					enabled,
-					""
-				},
-				{105, 140, 105+16, 140+40},
-				StaticText {
-					disabled,
-					"Left:"
-				},
-				{105, 140+40, 105+16, 140+40+40},
-				EditText {
-					enabled,
-					""
-				},
-				{105, 238, 105+16, 238+60},
-				StaticText {
-					disabled,
-					"Bottom:"
-				},
-				{105, 238+60, 105+16, 238+60+40},
-				EditText {
-					enabled,
-					""
-				},
-				{105, 350, 105+16, 350+50},
-				StaticText {
-					disabled,
-					"Right:"
-				},
-				{105, 350+50, 105+16, 350+50+40},
-				EditText {
-					enabled,
-					""
-				},
-
-				{140, 28, 140+16, 28+100},
-				StaticText {
-					disabled,
-					"Cell Spacing:"
-				},
-				{140, 28+100, 140+16, 28+100+40},
-				EditText {
-					enabled,
-					""
-				},
-
-
-				{170, 18, 170+16, 18+140},
-				StaticText {
-					disabled,
-					"Selected Columns"
-				},
-				{195, 38, 195+16, 38+50},
-				StaticText {
-					disabled,
-					"Width:"
-				},
-				{195, 38+50, 195+16, 38+50+40},
-				EditText {
-					enabled,
-					""
-				},
-
-				{170, 225, 170+16, 225+140},
-				StaticText {
-					disabled,
-					"Selected Cells"
-				},
-				{195, 235, 195+16, 235+210},
-				Control {
-					enabled,
-					kLedStdDlg_EditTablePropertiesBox_CellBackgroundColorCNTLID
-				},
-
-				{240, 25, 240+16, 25+200},
-				StaticText {
-					disabled,
-					"(measurements in TWIPS)"
-				},
-			}
-		};
-	#elif	qStroika_Platform_Windows
+#if		qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_EditTablePropertiesBoxID	DIALOG DISCARDABLE  0, 0, 302, 211
 		CAPTION "Edit Table Properties"
 		STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -1076,105 +354,7 @@
 
 
 #if		qStroika_Platform_Windows
-	#if		qStroika_Platform_MacOS
-		resource 'DLOG' (kLedStdDlg_SpellCheckBoxID) {
-			{0, 0, 194, 520},
-			movableDBoxProc,
-			invisible,
-			goAway,
-			0x0,
-			kLedStdDlg_SpellCheckBoxID,
-			"Check Spelling",
-			alertPositionParentWindow
-		};
-		resource 'dlgx' (kLedStdDlg_SpellCheckBoxID, purgeable) {
-			versionZero {kDialogFlagsHandleMovableModal }
-		};
-		resource 'CNTL' (kLedStdDlg_SpellCheckBox_SuggestionsCNTLID) {
-			{0, 0, 20, 140},
-			0,
-			visible,
-			60,
-			kLedStdDlg_SpellCheckBox_SuggestionsCNTLID,
-			popupMenuCDEFproc,
-			0,
-			"Color:"
-		};
-		resource 'DITL' (kLedStdDlg_SpellCheckBoxID) {
-			{
-				{17, 130, 17+16, 304},
-				EditText {
-					disabled,
-					""
-				},
-				{43, 130, 43+16, 304},
-				EditText {
-					disabled,
-					""
-				},
-				{70, 130, 70+80, 304},
-				Control {
-					enabled,
-					kLedStdDlg_SpellCheckBox_SuggestionsCNTLID
-				},
-				{17, 320, 17+20, 320+90},
-				Button {
-					enabled,
-					"Ignore"
-				},
-				{17, 420, 17+20, 420+90},
-				Button {
-					enabled,
-					"Ignore All"
-				},
-				{45, 320, 45+20, 320+90},
-				Button {
-					enabled,
-					"Change"
-				},
-				{45, 420, 45+20, 420+90},
-				Button {
-					enabled,
-					"Change All"
-				},
-				{75, 345, 75+20, 360+120},
-				Button {
-					enabled,
-					"Add to Dictionary"
-				},
-				{103, 345, 103+20, 360+120},
-				Button {
-					enabled,
-					"Lookup on Web"
-				},
-				{131, 345, 131+20, 360+120},
-				Button {
-					enabled,
-					"Options�"
-				},
-				{159, 345, 159+20, 360+120},
-				Button {
-					enabled,
-					"Close"
-				},
-				{18, 22, 34, 120},
-				StaticText {
-					disabled,
-					"Unknown Word:"
-				},
-				{44, 22, 60, 120},
-				StaticText {
-					disabled,
-					"Change To:"
-				},
-				{70, 22, 86, 120},
-				StaticText {
-					disabled,
-					"Suggestions:"
-				},
-			}
-		};
-	#elif	qStroika_Platform_Windows
+	#if		qStroika_Platform_Windows
 		kLedStdDlg_SpellCheckBoxID DIALOG DISCARDABLE  34, 22, 360, 120
 		CAPTION "Check Spelling"
 		STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU

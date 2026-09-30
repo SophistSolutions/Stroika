@@ -4,21 +4,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Platform_MacOS
-#include <AERegistry.h>
-#include <ColorPicker.h>
-#include <Dialogs.h>
-#include <TextUtils.h>
-
-#include <LDialogBox.h>
-#include <LEditField.h>
-#include <LMenu.h>
-#include <LMenuBar.h>
-#include <LStdControl.h>
-#include <PP_Messages.h>
-#include <UAppleEventsMgr.h>
-#include <UModalDialogs.h>
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxodlgs.h> // MFC OLE dialog classes
 DISABLE_COMPILER_MSC_WARNING_END (5054)
@@ -48,8 +34,6 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 class My_CMDNUM_MAPPING : public
 #if qStroika_Platform_Windows
                           Platform::MFC_CommandNumberMapping
-#elif qStroika_Platform_MacOS
-                          Platform::PP_CommandNumberMapping
 #endif
 {
 public:
@@ -137,12 +121,6 @@ public:
         AddAssociation (kFontStyleBoldCmd, LedItView::kFontStyleBold_CmdID);
         AddAssociation (kFontStyleItalicCmd, LedItView::kFontStyleItalic_CmdID);
         AddAssociation (kFontStyleUnderlineCmd, LedItView::kFontStyleUnderline_CmdID);
-#if qStroika_Platform_MacOS
-        AddAssociation (kFontStyleOutlineCmd, LedItView::kFontStyleOutline_CmdID);
-        AddAssociation (kFontStyleShadowCmd, LedItView::kFontStyleShadow_CmdID);
-        AddAssociation (kFontStyleCondensedCmd, LedItView::kFontStyleCondensed_CmdID);
-        AddAssociation (kFontStyleExtendedCmd, LedItView::kFontStyleExtended_CmdID);
-#endif
 #if qStroika_Platform_Windows
         AddAssociation (kFontStyleStrikeoutCmd, LedItView::kFontStyleStrikeout_CmdID);
 #endif
@@ -205,9 +183,7 @@ public:
     virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch,
                                     bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
     {
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_FindDialog findDialog;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_FindDialog findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
 
@@ -231,9 +207,7 @@ public:
     virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions,
                                                        Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
     {
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_ReplaceDialog replaceDialog;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_ReplaceDialog replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
 
@@ -273,9 +247,7 @@ public:
     virtual void DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override
     {
         Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback> delegator (callback);
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
 
@@ -289,32 +261,14 @@ public:
     {
         Require (cmdNum >= WordProcessor::kFontMenuFirst_CmdID);
         Require (cmdNum <= WordProcessor::kFontMenuLast_CmdID);
-#if qStroika_Platform_MacOS
-        static LMenu*        fontMenu = LMenuBar::GetCurrentMenuBar ()->FetchMenu (cmd_FontMenu);
-        static vector<short> sFontIDMapCache; // OK to keep static cuz never changes during run of app
-
-        size_t idx = cmdNum - WordProcessor::kFontMenuFirst_CmdID;
-
-        // Pre-fill cache - at least to the cmd were looking for...
-        for (size_t i = sFontIDMapCache.size (); i <= idx; ++i) {
-            Str255 pFontName = {0};
-            UInt16 menuItem  = fontMenu->IndexFromCommand (i + WordProcessor::kFontMenuFirst_CmdID);
-            ::GetMenuItemText (fontMenu->GetMacMenuH (), menuItem, pFontName);
-            short familyID = 0;
-            ::GetFNum (pFontName, &familyID);
-            sFontIDMapCache.push_back (familyID);
-        }
-        return sFontIDMapCache[idx];
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         return LedItApplication::Get ().CmdNumToFontName (MFC_CommandNumberMapping::Get ().ReverseLookup (cmdNum)).c_str ();
 #endif
     }
 #if qStroika_Platform_Windows
     virtual DistanceType PickOtherFontHeight (DistanceType origHeight) override
     {
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_OtherFontSizeDialog dlg;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_OtherFontSizeDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (origHeight);
@@ -330,9 +284,7 @@ public:
     virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid,
                                               LineSpacing* lineSpacing, bool* lineSpacingValid) override
     {
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_ParagraphSpacingDialog dlg;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_ParagraphSpacingDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (*spaceBefore, *spaceBeforeValid, *spaceAfter, *spaceAfterValid, *lineSpacing, *lineSpacingValid);
@@ -361,9 +313,7 @@ public:
     virtual bool PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin,
                                                         bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid) override
     {
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_ParagraphIndentsDialog dlg;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_ParagraphIndentsDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (*leftMargin, *leftMarginValid, *rightMargin, *rightMarginValid, *firstIndent, *firstIndentValid);
@@ -387,30 +337,26 @@ public:
         }
     }
 #endif
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     virtual void ShowSimpleEmbeddingInfoDialog (const SDKString& embeddingTypeName) override
     {
 // unknown embedding...
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_UnknownEmbeddingInfoDialog infoDialog;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         infoDialog.fEmbeddingTypeName = embeddingTypeName;
         (void)infoDialog.DoModal ();
 #endif
     }
 #endif
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     virtual bool ShowURLEmbeddingInfoDialog (const SDKString& embeddingTypeName, SDKString* urlTitle, SDKString* urlValue) override
     {
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         infoDialog.fEmbeddingTypeName = embeddingTypeName;
         infoDialog.fTitleText         = *urlTitle;
         infoDialog.fURLText           = *urlValue;
@@ -427,15 +373,13 @@ public:
 #endif
     }
 #endif
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     virtual bool ShowAddURLEmbeddingInfoDialog (SDKString* urlTitle, SDKString* urlValue) override
     {
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_AddURLXEmbeddingInfoDialog infoDialog;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         infoDialog.fTitleText = *urlTitle;
         infoDialog.fURLText   = *urlValue;
         if (infoDialog.DoModal ()) {
@@ -451,14 +395,12 @@ public:
 #endif
     }
 #endif
-#if qStroika_Platform_Windows || qStroika_Platform_MacOS
+#if qStroika_Platform_Windows
     bool AddNewTableDialog (size_t* nRows, size_t* nCols)
     {
         RequireNotNull (nRows);
         RequireNotNull (nCols);
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_AddNewTableDialog infoDialog;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_AddNewTableDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         infoDialog.fRows    = *nRows;
@@ -473,15 +415,13 @@ public:
         }
     }
 #endif
-#if qStroika_Platform_Windows || qStroika_Platform_MacOS
+#if qStroika_Platform_Windows
     virtual bool EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties) override
     {
         RequireNotNull (tableProperties);
 
         using DLGTYPE = Led_StdDialogHelper_EditTablePropertiesDialog;
-#if qStroika_Platform_MacOS
-        DLGTYPE infoDialog;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         DLGTYPE infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         DLGTYPE::cvt<DLGTYPE::Info, TableSelectionPropertiesInfo> (&infoDialog.fInfo, *tableProperties);
@@ -529,14 +469,11 @@ LedItView::LedItView ()
     SetShowParagraphGlyphs (Options{}.GetShowParagraphGlyphs ());
     SetShowTabGlyphs (Options{}.GetShowTabGlyphs ());
     SetShowSpaceGlyphs (Options{}.GetShowSpaceGlyphs ());
-#if qStroika_Platform_MacOS
-    SetScrollBarType (h, fWrapToWindow ? eScrollBarNever : eScrollBarAsNeeded);
-    SetScrollBarType (v, eScrollBarAlways);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     SetScrollBarType (h, fWrapToWindow ? eScrollBarNever : eScrollBarAsNeeded);
     SetScrollBarType (v, eScrollBarAlways);
 #endif
-#if qStroika_Platform_MacOS || qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     SetUseSecondaryHilight (true);
 #endif
 #if qStroika_Platform_Windows
@@ -640,37 +577,6 @@ void LedItView::SetWindowRect (const Led_Rect& windowRect)
         }
     }
 }
-
-#if qStroika_Platform_MacOS
-void LedItView::FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName)
-{
-    outUsesMark = false;
-    switch (inCommand) {
-        case cmd_ListStyleMenu:
-            outEnabled = true;
-            break;
-        case cmd_FontMenu:
-            outEnabled = true;
-            break;
-        case cmd_SizeMenu:
-            outEnabled = true;
-            break;
-        case cmd_StyleMenu:
-            outEnabled = true;
-            break;
-        case cmd_ColorMenu:
-            outEnabled = true;
-            break;
-        case cmd_JustificationMenu:
-            outEnabled = true;
-            break;
-
-        default: {
-            inherited::FindCommandStatus (inCommand, outEnabled, outUsesMark, outMark, outName);
-        } break;
-    }
-}
-#endif
 
 #if qStroika_Platform_Windows
 void LedItView::OnContextMenu (CWnd* /*pWnd*/, CPoint pt)

@@ -289,14 +289,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual Led_Rect GetBoundingRect () const;
 
     public:
-#if qStroika_Platform_MacOS
-        Region (RgnHandle rgn);
-        RgnHandle GetOSRep () const;
-        RgnHandle GetOSRep ();
-
-    private:
-        bool fOwned;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
              operator HRGN () const;
         int  CombineRgn (Region* pRgn1, Region* pRgn2, int nCombineMode);
         BOOL PtInRegion (int x, int y) const;
@@ -306,9 +299,7 @@ namespace Stroika::Frameworks::Led {
         BOOL DeleteObject ();
 #endif
     private:
-#if qStroika_Platform_MacOS
-        RgnHandle fRgn;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         HRGN fRgn;
 #endif
     };
@@ -396,7 +387,6 @@ namespace Stroika::Frameworks::Led {
 
     /**
      *  Helper class to keep track of GDI information used for drawing.
-     *  Very different implementations befween Mac and Windows.
      *
      *  Note - this class is used in conjunction with @'GDI_Obj_Selector'.
      */
@@ -502,8 +492,7 @@ namespace Stroika::Frameworks::Led {
 
     /**
      *      <code>FontSpecification</code> is a utility class which portably represents
-     *  a user font choice. This largely corresponds to the MS-Windows <code>LOGFONT</code> structure
-     *  or the Macintosh <code>txFace, txSize, txStyle</code>.</p>
+     *  a user font choice. This largely corresponds to the MS-Windows <code>LOGFONT</code> structure.</p>
      *      In addition to being a portable represenation of this information, it
      *  also contains handy wrapper accessors, and extra information like subscript,
      *  superscript, and font color.</p>
@@ -537,7 +526,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        // string/name wrapper. Trivial for PC, and for Mac - converts between name under NUMBER ID
+        // string/name wrapper
         nonvirtual SDKString GetFontName () const;
         nonvirtual void      SetFontName (const SDKString& fontName);
 
@@ -863,8 +852,8 @@ namespace Stroika::Frameworks::Led {
 #if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         FontMetrics
-    @DESCRIPTION:   <p><code>FontMetrics</code> is a portable wrapper class on the Macintosh
-        <em>FontInfo</em> structure, or the Windows <em>TEXTMETRIC</em> structure. It provides
+    @DESCRIPTION:   <p><code>FontMetrics</code> is a portable wrapper class on the Windows
+        <em>TEXTMETRIC</em> structure. It provides
         portable access to things like GetLineHeight (), and GetAscent (), etc...</p>
     */
     class FontMetrics {
@@ -915,17 +904,14 @@ namespace Stroika::Frameworks::Led {
 
 #if qStroika_Frameworks_Led_SupportGDI
     /**
-     *  This class is used to wrap a low level graphics drawing device. On Windows - this is an HDC.
-     *  On the Mac - a GrafPtr (also CGrafPtr and GWorldPtr).</p>
+     *  This class is used to wrap a low level graphics drawing device. On Windows - this is an HDC.</p>
      * 
      *  This class right now is a very thin wrapper on those drawing prodedures (mostly for backward compatability reasons.
      *  Eventually - it may do a better job of wrapping those concepts/APIs genericly.</p>
      */
     class Tablet {
     public:
-#if qStroika_Platform_MacOS
-        Tablet (GrafPtr gp);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         enum OwnDCControl {
             eOwnsDC,
             eDoesntOwnDC
@@ -938,9 +924,7 @@ namespace Stroika::Frameworks::Led {
         virtual ~Tablet ();
 
     public:
-#if qStroika_Platform_MacOS
-        nonvirtual operator GrafPtr () const;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         nonvirtual operator HDC () const;
 #endif
 
@@ -964,9 +948,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void FrameRectangle (const Led_Rect& r, Color c, DistanceType borderWidth);
 
     public:
-#if qStroika_Platform_MacOS
-        nonvirtual void SetPort ();
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         nonvirtual BOOL     BitBlt (int x, int y, int nWidth, int nHeight, Tablet* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
         nonvirtual BOOL     CreateCompatibleDC (Tablet* pDC);
         nonvirtual COLORREF SetTextColor (COLORREF crColor);
@@ -1040,10 +1022,7 @@ namespace Stroika::Frameworks::Led {
     public:
         nonvirtual FontMetrics GetFontMetrics () const;
 
-#if qStroika_Platform_MacOS
-    private:
-        GrafPtr fGrafPort;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
     public:
         HDC          m_hDC;       // The output DC (must be first data member)
         HDC          m_hAttribDC; // The Attribute DC
@@ -1077,12 +1056,6 @@ namespace Stroika::Frameworks::Led {
         Region  fOldClip;
     };
 
-#if qStroika_Platform_MacOS
-    /**
-     */
-    GrafPtr Led_GetCurrentGDIPort ();
-#endif
-
 #if qStroika_Platform_Windows
     class WindowDC : public Tablet {
     public:
@@ -1091,22 +1064,6 @@ namespace Stroika::Frameworks::Led {
 
     private:
         HWND fHWnd_;
-    };
-#endif
-
-#if qStroika_Platform_MacOS
-    class MacPortAndClipRegionEtcSaver {
-    public:
-        MacPortAndClipRegionEtcSaver ();
-        ~MacPortAndClipRegionEtcSaver ();
-
-    private:
-        GrafPtr   fSavedPort;
-        short     fOldLeft;
-        short     fOldTop;
-        RGBColor  fRGBFgColor;
-        RGBColor  fRGBBkColor;
-        RgnHandle fOldClip;
     };
 #endif
 
@@ -1154,9 +1111,7 @@ namespace Stroika::Frameworks::Led {
             using inherited = Tablet;
 
         public:
-#if qStroika_Platform_MacOS
-            OT (GrafPtr gp);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
             OT (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
 #endif
         };
@@ -1165,11 +1120,7 @@ namespace Stroika::Frameworks::Led {
         Tablet*  fOrigTablet;
         Led_Rect fOffscreenRect;
         Tablet*  fOffscreenTablet;
-#if qStroika_Platform_MacOS
-        GDHandle  fOrigDevice;
-        CGrafPtr  fOrigPort;
-        GWorldPtr fOffscreenGWorld;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         OT     fMemDC;
         Bitmap fMemoryBitmap; // only can create / select inside loop cuz there is where we know the size.
         // but decare outside, so stays around for successive rows which are the same size.
@@ -1191,8 +1142,6 @@ namespace Stroika::Frameworks::Led {
     public:
 #if qStroika_Platform_Windows
         GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect);
-#elif qStroika_Platform_MacOS
-        GDI_Obj_Selector (Tablet* tablet, const Pen& pen);
 #endif
     public:
         ~GDI_Obj_Selector ();
@@ -1202,28 +1151,18 @@ namespace Stroika::Frameworks::Led {
 #if qStroika_Platform_Windows
         HGDIOBJ fRestoreObject;
         HGDIOBJ fRestoreAttribObject;
-#elif qStroika_Platform_MacOS
-        Pen fRestorePen;
 #endif
     };
 #endif
 
-// Even for windows we have have this defined if we build including QuickTime support!
-#ifndef qHaveMacPictureDefined
-#define qHaveMacPictureDefined 0
-#endif
-
-/*
+    /*
     @CLASS:         Led_Picture
     @DESCRIPTION:   <p><code>Led_Picture</code> is a portable abstraction of a Macintosh Picture object.
-        It can be displayed both on windows, and on the Mac (on Windows, it is only displayed if Apples
+        It can be displayed on Windows (only if Apples
         QuickTime is installed). There are a bunch of routines (e.g Led_GetMacPictTop) which portable
         allow access to the size of the picture (even on windows if QT not available). And there are
         portable routines to draw the picture (again, with the windows QT caveat).</p>
     */
-#if qHaveMacPictureDefined
-    using Led_Picture = Picture;
-#else
     struct Led_Picture {
         short picSize;
         short picFrameTop;
@@ -1232,7 +1171,6 @@ namespace Stroika::Frameworks::Led {
         short picFrameRight;
         // other data off end (specified by picSize) - note byte order for shorts is MAC
     };
-#endif
 
     short    Led_GetMacPictTop (const Led_Picture* picture);
     short    Led_GetMacPictLeft (const Led_Picture* picture);
@@ -1241,15 +1179,6 @@ namespace Stroika::Frameworks::Led {
     short    Led_GetMacPictWidth (const Led_Picture* picture);
     short    Led_GetMacPictHeight (const Led_Picture* picture);
     Led_Size Led_GetMacPictSize (const Led_Picture* picture);
-#if qStroika_Platform_MacOS
-    short    Led_GetMacPictTop (const Led_Picture* const* picture);
-    short    Led_GetMacPictLeft (const Led_Picture* const* picture);
-    short    Led_GetMacPictBottom (const Led_Picture* const* picture);
-    short    Led_GetMacPictRight (const Led_Picture* const* picture);
-    short    Led_GetMacPictWidth (const Led_Picture* const* picture);
-    short    Led_GetMacPictHeight (const Led_Picture* const* picture);
-    Led_Size Led_GetMacPictSize (const Led_Picture* const* picture);
-#endif
 
 // Windows DIB support
 #ifndef qHaveWindowsDIBDefined

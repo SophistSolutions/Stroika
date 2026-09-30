@@ -208,18 +208,6 @@ namespace Stroika::Frameworks::Led {
     protected:
         nonvirtual IncrementalFontSpecification GetContinuousStyleInfo_ (const vector<StyledInfoSummaryRecord>& summaryInfo) const;
 
-#if qStroika_Platform_MacOS
-    public:
-        nonvirtual bool DoContinuousStyle_Mac (size_t from, size_t nTChars, short* mode, TextStyle* theStyle);
-#endif
-
-#if qStroika_Platform_MacOS
-        // macstyle routines to get/set 'styl' resources for range of text...
-    public:
-        static vector<StyledInfoSummaryRecord> Convert (const ScrpSTElement* teScrapFmt, size_t nElts);
-        static void Convert (const vector<StyledInfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt); // Assumed pre-alloced and same legnth as fromLedStyleRuns
-#endif
-
     public:
         nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
         nonvirtual void                                 SetStyleDatabase (const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase);

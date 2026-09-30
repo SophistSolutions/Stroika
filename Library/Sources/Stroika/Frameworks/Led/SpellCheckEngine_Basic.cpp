@@ -30,12 +30,7 @@ using Memory::StackBuffer;
 namespace {
 
 #if qIncludeBakedInDictionaries
-#if qStroika_Platform_MacOS
-// Short filenames on MacOS
-#include "Dictionary-Compiled-US-English."
-#else
 #include "Dictionary-Compiled-US-English.inc"
-#endif
 #endif
 
     inline bool IsASCIIUpper (Led_tChar c)
@@ -853,8 +848,6 @@ vector<Led_tChar> SpellCheckEngine_Basic::EditableDictionary::SaveToBuffer () co
 
 #if qStroika_Platform_Windows
     const Led_tChar kLineTerm[] = LED_TCHAR_OF ("\r\n");
-#elif qStroika_Platform_MacOS
-    const Led_tChar kLineTerm[] = LED_TCHAR_OF ("\r");
 #else
     const Led_tChar kLineTerm[] = LED_TCHAR_OF ("\n");
 #endif

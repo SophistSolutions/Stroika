@@ -202,7 +202,7 @@ namespace Stroika::Frameworks::Led {
         /*
         @METHOD:        TextImager::AcquireTablet
         @DESCRIPTION:
-            <p>By "Tablet" I mean on the mac a grafport, or on windows a CDC (@'Tablet*'). Something
+            <p>By "Tablet" I mean on windows a CDC (@'Tablet*'). Something
         we can draw into, and calculate text metrics with.</p>
             <p>Sometimes Led is lucky enough to find itself in a position where it is
         handed a tabet (drawing). But sometimes it isn't so luck. Conisider if someone
@@ -214,7 +214,6 @@ namespace Stroika::Frameworks::Led {
         (including in the prescence of exceptions).</p>
             <p>For windows, @'TextImager::AcquireTablet ()' must return the current PaintDC used in the PaintDC
         call (if we are in the context of a paint).</p>
-            <p>For Mac, we must not only return the grafPort, but be sure it is prepared.</p>
             <p>@'TextImager::AcquireTablet ()' only fail by throwing - typically NoTabletAvailable (Led 2.1 and earlier
         didn't allow failure).</p>
             <p>Calls to @'TextImager::AcquireTablet ()'/@'TextImager::ReleaseTablet ()' can be nested.</p>

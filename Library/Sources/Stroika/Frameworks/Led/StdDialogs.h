@@ -31,9 +31,7 @@
 // MFC must define something like this someplace, but I haven't found where....
 // Use this for now, so I can update things more easily when I find the MFC definition...
 #ifndef kLedStdDlgCommandBase
-#if qStroika_Platform_MacOS
-#define kLedStdDlgCommandBase 0x0
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
 #define kLedStdDlgCommandBase 0x1000
 #endif
 #endif
@@ -339,7 +337,6 @@ namespace Stroika::Frameworks::Led {
 
 #if qStroika_Platform_Windows
 #define kLedStdDlg_AboutBoxID 0x1001
-//NB: order of these must track declared order in Mac .r file!
 #define kLedStdDlg_AboutBox_InfoLedFieldID (kLedStdDlgCommandBase + 1)
 #define kLedStdDlg_AboutBox_LedWebPageFieldID (kLedStdDlgCommandBase + 2)
 #define kLedStdDlg_AboutBox_BigPictureFieldID (kLedStdDlgCommandBase + 3)
@@ -383,16 +380,12 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_FindDialog (int resID = kLedStdDlg_FindBoxID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_FindDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_FindBoxID));
 #endif
 
     protected:
-#if qStroika_Platform_MacOS
-        virtual bool HandleCommandClick (int itemNum) override;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
@@ -438,16 +431,12 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_ReplaceDialog (int resID = kLedStdDlg_ReplaceBoxID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_ReplaceDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ReplaceBoxID));
 #endif
 
     protected:
-#if qStroika_Platform_MacOS
-        virtual bool HandleCommandClick (int itemNum) override;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
@@ -502,9 +491,7 @@ namespace Stroika::Frameworks::Led {
             */
     class StdColorPickBox {
     public:
-#if qStroika_Platform_MacOS
-        StdColorPickBox (const Color& initialColor);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         StdColorPickBox (const Color& initialColor);
         StdColorPickBox (HINSTANCE hInstance, HWND parentWnd, const Color& initialColor);
 #endif
@@ -574,9 +561,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_ParagraphIndentsDialog (int resID = kLedStdDlg_ParagraphIndentsID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd,
                                                     const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ParagraphIndentsID));
 #endif
@@ -611,20 +596,13 @@ namespace Stroika::Frameworks::Led {
 #define kParagraphSpacing_Dialog_LineSpaceModeFieldID (kLedStdDlgCommandBase + 7)
 #define kParagraphSpacing_Dialog_LineSpaceArgFieldID (kLedStdDlgCommandBase + 8)
 
-#if qStroika_Platform_MacOS
-#define kParagraphSpacing_Dialog_LineSpaceMENUID (kLedStdDlgMENUBase + 1)
-#define kParagraphSpacing_Dialog_LineSpaceCNTLID (kLedStdDlgCNTLBase + 1)
-#endif
-
 #if defined(__cplusplus)
     class Led_StdDialogHelper_ParagraphSpacingDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_ParagraphSpacingDialog (int resID = kLedStdDlg_ParagraphSpacingID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd,
                                                     const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ParagraphSpacingID));
 #endif
@@ -663,9 +641,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_OtherFontSizeDialog (int resID = kLedStdDlg_OtherFontSizeID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_OtherFontSizeDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_OtherFontSizeID));
 #endif
 
@@ -695,9 +671,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_UnknownEmbeddingInfoDialog (int resID = kLedStdDlg_UnknownEmbeddingInfoBoxID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
                                                         const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_UnknownEmbeddingInfoBoxID));
 #endif
@@ -723,9 +697,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_URLXEmbeddingInfoDialog (int resID = kLedStdDlg_URLXEmbeddingInfoBoxID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_URLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
                                                      const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_URLXEmbeddingInfoBoxID));
 #endif
@@ -753,9 +725,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (int resID = kLedStdDlg_AddURLXEmbeddingInfoBoxID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
                                                         const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_AddURLXEmbeddingInfoBoxID));
 #endif
@@ -773,7 +743,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#if qStroika_Platform_Windows || qStroika_Platform_MacOS
+#if qStroika_Platform_Windows
 #define kLedStdDlg_AddNewTableBoxID 0x100b
 #define kLedStdDlg_AddNewTableBox_RowCount (kLedStdDlgCommandBase + 5)
 #define kLedStdDlg_AddNewTableBox_ColCount (kLedStdDlgCommandBase + 7)
@@ -784,9 +754,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_AddNewTableDialog (int resID = kLedStdDlg_AddNewTableBoxID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_AddNewTableDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_AddNewTableBoxID));
 #endif
 
@@ -803,7 +771,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#if qStroika_Platform_Windows || qStroika_Platform_MacOS
+#if qStroika_Platform_Windows
 #define kLedStdDlg_EditTablePropertiesBoxID 0x100c
 #define kLedStdDlg_EditTablePropertiesBox_CellMarginTop (kLedStdDlgCommandBase + 10)
 #define kLedStdDlg_EditTablePropertiesBox_CellMarginLeft (kLedStdDlgCommandBase + 12)
@@ -819,23 +787,13 @@ namespace Stroika::Frameworks::Led {
 #define kLedStdDlg_EditTablePropertiesBox_BorderWidth (kLedStdDlgCommandBase + 6)
 #define kLedStdDlg_EditTablePropertiesBox_BorderColor (kLedStdDlgCommandBase + 7)
 
-#if qStroika_Platform_MacOS
-#define kLedStdDlg_EditTablePropertiesBox_BorderColorMENUID (kLedStdDlgMENUBase + 2)
-#define kLedStdDlg_EditTablePropertiesBox_BorderColorCNTLID (kLedStdDlgCNTLBase + 2)
-
-#define kLedStdDlg_EditTablePropertiesBox_CellBackgroundColorMENUID (kLedStdDlgMENUBase + 3)
-#define kLedStdDlg_EditTablePropertiesBox_CellBackgroundColorCNTLID (kLedStdDlgCNTLBase + 3)
-#endif
-
 #if defined(__cplusplus)
     class Led_StdDialogHelper_EditTablePropertiesDialog : public Led_StdDialogHelper {
     private:
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_EditTablePropertiesDialog (int resID = kLedStdDlg_EditTablePropertiesBoxID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_EditTablePropertiesDialog (HINSTANCE hInstance, HWND parentWnd,
                                                        const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_EditTablePropertiesBoxID));
 #endif
@@ -918,10 +876,6 @@ namespace Stroika::Frameworks::Led {
 #define kLedStdDlg_SpellCheckBox_Options (kLedStdDlgCommandBase + 10)
 #define kLedStdDlg_SpellCheckBox_Close (kLedStdDlgCommandBase + 11)
 
-#if qStroika_Platform_MacOS
-#define kLedStdDlg_SpellCheckBox_SuggestionsCNTLID (kLedStdDlgCNTLBase + 4)
-#endif
-
 #if defined(__cplusplus)
     class Led_StdDialogHelper_SpellCheckDialog : public Led_StdDialogHelper {
     private:
@@ -932,9 +886,7 @@ namespace Stroika::Frameworks::Led {
         struct MisspellingInfo;
 
     public:
-#if qStroika_Platform_MacOS
-        Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, int resID = kLedStdDlg_SpellCheckBoxID);
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, HINSTANCE hInstance, HWND parentWnd,
                                               const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_SpellCheckBoxID));
 #endif
@@ -947,9 +899,7 @@ namespace Stroika::Frameworks::Led {
         MisspellingInfo* fCurrentMisspellInfo;
 
     protected:
-#if qStroika_Platform_MacOS
-        virtual bool HandleCommandClick (int itemNum) override;
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 

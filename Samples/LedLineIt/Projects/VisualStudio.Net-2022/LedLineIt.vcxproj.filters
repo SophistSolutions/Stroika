@@ -29,9 +29,6 @@
     <None Include="..\..\Sources\Toolbar.bmp">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\Sources\PreComp.pch">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\Makefile" />
   </ItemGroup>

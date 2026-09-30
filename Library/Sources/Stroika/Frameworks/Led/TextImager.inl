@@ -487,9 +487,7 @@ namespace Stroika::Frameworks::Led {
     */
     void TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet ()
     {
-#if qStroika_Platform_MacOS
-// Should probably do something similar?
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
         HFONT hFont = (HFONT)::GetCurrentObject (fTablet->m_hAttribDC, OBJ_FONT);
         Verify (hFont != nullptr);
         LOGFONT lf;

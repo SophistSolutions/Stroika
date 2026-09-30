@@ -4879,26 +4879,7 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
 //      Very minimal support to get this working as well as it did for Led 3.0. SPR#1577.
 //      Got basically working enough to fix this bug.
 //
-#if qStroika_Platform_MacOS
-                if (name == Led_SDK_TCHAROF ("New York")) {
-                    fte.fFamily = FontTableEntry::eSwiss;
-                }
-                else if (name == Led_SDK_TCHAROF ("Geneva")) {
-                    fte.fFamily = FontTableEntry::eRoman;
-                }
-                else if (name == Led_SDK_TCHAROF ("Monaco")) {
-                    fte.fFamily = FontTableEntry::eModern;
-                }
-                else if (name == Led_SDK_TCHAROF ("Helvetica")) {
-                    fte.fFamily = FontTableEntry::eSwiss;
-                }
-                else if (name == Led_SDK_TCHAROF ("Symbol")) {
-                    fte.fFamily = FontTableEntry::eTech;
-                }
-                else if (name == Led_SDK_TCHAROF ("Times")) {
-                    fte.fFamily = FontTableEntry::eRoman;
-                }
-#elif qStroika_Platform_Windows
+#if qStroika_Platform_Windows
                 LOGFONT lf;
                 (void)::memset (&lf, 0, sizeof (lf));
                 Characters::CString::Copy (lf.lfFaceName, std::size (lf.lfFaceName), name.c_str ());

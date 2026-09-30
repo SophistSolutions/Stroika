@@ -68,7 +68,6 @@
     <None Include="..\..\Sources\AboutBoxImage.vsd" />
     <None Include="..\..\Sources\IToolbar.bmp" />
     <None Include="..\..\Sources\LedLineIt.ico" />
-    <None Include="..\..\Sources\PreComp.pch" />
     <None Include="..\..\Sources\Toolbar.bmp" />
   </ItemGroup>
   <ItemGroup>
