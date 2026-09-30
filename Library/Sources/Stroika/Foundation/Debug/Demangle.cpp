@@ -8,7 +8,7 @@
 
 #if defined(__GNUC__) && defined(__GLIBCXX__)
 #include <cxxabi.h>
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 #include <Windows.h>
 
 #include <Dbghelp.h>
@@ -20,7 +20,7 @@
 
 using namespace Stroika::Foundation;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 // otherwise modules linking with this code will tend to get link errors without explicitly linking
 // to this module...
 #pragma comment(lib, "Dbghelp.lib")
@@ -44,7 +44,7 @@ Characters::String Debug::Demangle (const Characters::String& originalName)
     if (status == 0) {
         return Characters::String::FromNarrowSDKString (realname);
     }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     // From https://learn.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-undecoratesymbolname
     //      All DbgHelp functions, such as this one, are single threaded. Therefore,
     //      calls from more than one thread to this function will likely result in

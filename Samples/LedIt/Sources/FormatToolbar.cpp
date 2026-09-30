@@ -24,7 +24,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 using namespace Stroika::Foundation;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 
 using LocalComboBox = FormatToolbar::LocalComboBox;
 

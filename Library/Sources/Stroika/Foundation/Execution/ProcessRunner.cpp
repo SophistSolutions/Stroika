@@ -5,7 +5,7 @@
 
 #include <sstream>
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/resource.h>
@@ -14,7 +14,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 #include <dirent.h>
 #endif
 
@@ -25,7 +25,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Execution/Activity.h"
@@ -69,7 +69,7 @@ using Memory::StackBuffer;
 #include <fstream>
 #endif
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 namespace {
     // no-except cuz the exception will show up in tracelog, and nothing useful to do, and could be quite bad to except cuz mostly used
     // in cleanup, and could cause leaks
@@ -83,7 +83,7 @@ namespace {
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 namespace {
     pid_t DoFork_ ()
     {
@@ -95,7 +95,7 @@ namespace {
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include <spawn.h>
 namespace {
     //  https://www.ibm.com/support/knowledgecenter/ssw_aix_53/com.ibm.aix.basetechref/doc/basetrf1/posix_spawn.htm%23posix_spawn
@@ -106,7 +106,7 @@ namespace {
 extern char** environ;
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 namespace {
     class AutoHANDLE_ {
     public:
@@ -197,7 +197,7 @@ namespace {
     };
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 namespace {
 // still unsure if needed/useful - I now think the PeekNamedPipe stuff is NOT needed, but
 // I can turn it on if needed -- LGP 2009-05-07
@@ -360,9 +360,9 @@ void ProcessRunner::BackgroundProcess::Terminate ()
     // @todo - Note - UNTESTED, and probably not 100% right (esp error checking!!!
     //
     if (optional<pid_t> o = fRep_->fDetailedRunnableRep_->fRunningPID.load ()) {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         ::kill (SIGTERM, *o);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         // @todo - if this OpenProcess gives us any trouble, we can return the handle directory from the 'CreateRunnable' where we invoke the process
         HANDLE processHandle = ::OpenProcess (PROCESS_TERMINATE, false, *o);
         if (processHandle != nullptr) {
@@ -415,9 +415,9 @@ namespace {
     Mapping<SDKString, SDKString> getEnv_ (const Sequence<filesystem::path>& replacePath)
     {
         Mapping<SDKString, SDKString> r = getEnv_ ();
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         SDKString path = replacePath.Join<SDKString> ([] (const filesystem::path& p) -> SDKString { return p; }, SDKString{":"sv});
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         SDKString path = replacePath.Join<SDKString> ([] (const filesystem::path& p) -> SDKString { return p; }, SDKString{L";"sv});
 #endif
         r.Add (SDKSTR ("PATH"), path);
@@ -604,7 +604,7 @@ ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOptions
     return Run (cmdStdInValue, stringOpts, timeout);
 }
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 namespace {
     void closefrom_ (int lowfd)
     {
@@ -630,7 +630,7 @@ namespace {
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 // @todo Good Candidate for REWRITE - this is a MESS!
 void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_>&            runneeDetails,
                                            [[maybe_unused]] const optional<filesystem::path>& executable, const CommandLine& cmdLine,
@@ -798,7 +798,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
                 constexpr bool kCloseAllExtraneousFDsInChild_ = true;
                 if (kCloseAllExtraneousFDsInChild_) {
                     // close all but stdin, stdout, and stderr in child fork
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
                     ::closefrom_ (3);
 #else
                     ::closefrom (3);
@@ -1024,7 +1024,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRep_>& runneeDetails, const optional<filesystem::path>& executable,
                                              const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
                                              const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
@@ -1372,9 +1372,9 @@ tuple<function<void ()>, shared_ptr<ProcessRunner::DetailedRunnableRep_>> Proces
 #endif
             auto            activity = LazyEvalActivity{[&] () { return "executing '{}'"_f(cmdLine); }};
             DeclareActivity currentActivity{&activity};
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
             Process_Runner_POSIX_ (resultDetails, exe, cmdLine, options, in, out, err);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
             Process_Runner_Windows_ (resultDetails, exe, cmdLine, options, in, out, err);
 #endif
         },
@@ -1392,9 +1392,9 @@ function<void ()> ProcessRunner::CreateSimpleRunnable_ ()
 #endif
         auto            activity = LazyEvalActivity{[&] () { return "executing '{}'"_f(cmdLine); }};
         DeclareActivity currentActivity{&activity};
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         Process_Runner_POSIX_ (nullptr, exe, cmdLine, options, in, out, err);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         Process_Runner_Windows_ (nullptr, exe, cmdLine, options, in, out, err);
 #endif
     };

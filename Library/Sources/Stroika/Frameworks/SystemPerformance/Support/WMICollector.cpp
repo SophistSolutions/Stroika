@@ -3,7 +3,7 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <Pdh.h>
 #include <PdhMsg.h>
 #include <Windows.h>

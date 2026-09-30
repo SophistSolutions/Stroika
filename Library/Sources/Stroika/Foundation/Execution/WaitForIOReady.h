@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Execution {
          *  This is the underlying native type 'HighLevelType objects must be converted to in order to
          *  be used with the operating-system poll/select feature.
          */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         using SDKPollableType = SOCKET;
 #else
         using SDKPollableType = int;

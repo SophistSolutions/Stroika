@@ -10,16 +10,16 @@
 #include <stop_token>
 #endif
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include <csignal>
 #include <fcntl.h>
 #include <poll.h>
 #include <pthread.h>
 #include <unistd.h>
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
 #include <sys/eventfd.h>
 #endif
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 #include <Windows.h>
 
 #include <winsock2.h>
@@ -34,12 +34,12 @@
 #include "Exceptions.h"
 #include "Finally.h"
 #include "Thread.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Platform/Windows/WaitSupport.h"
 #endif
 
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
 #endif
 
@@ -121,7 +121,7 @@ namespace {
         atomic<bool> fIsSet_{false}; // atomic only so IsSet () need not lock
     };
 
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
     /*
      *  Linux: an eventfd (2) - ONE descriptor, one syscall to create, and no network stack involved. In its default
      *  (non-semaphore) mode a write adds to a 64-bit counter and a single read returns it and resets it to zero, so
@@ -160,7 +160,7 @@ namespace {
         }
         const int fFD_;
     };
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
     /*
      *  Other POSIX (macOS, BSD): a pipe. Two descriptors, but no network stack - where a TCP socket pair would also
      *  need a loopback connection set up.
@@ -219,7 +219,7 @@ namespace {
         int fReadFD_;
         int fWriteFD_;
     };
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     /*
      *  Windows: WSAPoll () takes sockets and nothing else - no pipe, no event HANDLE (@see WaitForIOReady.h) - and
      *  only I/O on one of its sockets can wake it. The cheapest such socket is ONE loopback UDP socket connected to
@@ -339,11 +339,11 @@ unique_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
 {
     Debug::TraceContextBumper ctx{"WaitForIOReady_Support::mkEventFD"};
     // the cheapest pollable channel each platform offers - https://github.com/SophistSolutions/Stroika/issues/843
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
     return make_unique<EventFD_Based_eventfd_> ();
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
     return make_unique<EventFD_Based_Pipe_> ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     return make_unique<EventFD_Based_UDPLoopback_> ();
 #else
     return make_unique<EventFD_Based_SocketPair_> ();
@@ -496,7 +496,7 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
      *  qStroika_Foundation_Execution_WaitForIOReady_* macros. Stacking them would only let a failure of the
      *  primary one show up as a delay rather than as a failure.
      */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #if !qStroika_Foundation_Execution_WaitForIOReady_UseStopTokenAbortWakeup
     Require (sPollWaitChunkTime > 0s);
     while (true) {

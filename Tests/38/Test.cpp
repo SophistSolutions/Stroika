@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
 #include "Stroika/Foundation/Execution/Module.h"
@@ -71,7 +71,7 @@ namespace {
             String        out = get<0> (pr.Run (""));
             EXPECT_EQ (out.Trim (), "hi mom");
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo hi mom"}};
             String        out = get<0> (pr.Run (""));
@@ -86,7 +86,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"EchoPATH"}; // quickie simple test
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         {
             // not sure why this fails on WINDOZE?? --LGP 2024-12-07
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $PATH"}};
@@ -95,7 +95,7 @@ namespace {
             EXPECT_TRUE (not out.Trim ().empty ());
         }
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %PATH%"}};
             String        out = get<0> (pr.Run (""));
@@ -116,7 +116,7 @@ namespace {
             DbgTrace ("out='{}'"_f, out.Trim ());
             //EXPECT_TRUE (not out.Trim ().empty ());   not always set, set by login, so if user logged in, but for test shells, maybe not? (bash -c vs -l)
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %USERNAME%"}};
             String        out = get<0> (pr.Run (""));
@@ -340,7 +340,7 @@ namespace {
             // EXCEPT small issue on cygwin version of awk - which is symbolic link, and cygwin symbolic links dont work when run under DOS, so
             // map the filename in that case
             String awk2Use = "awk"_k;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             if (auto op = FindExecutableInPath ("awk")) {
                 if (IO::FileSystem::is_cygwin_symlink (*op)) {
                     awk2Use = String{IO::FileSystem::read_cygwin_symlink (*op)};
@@ -399,7 +399,7 @@ int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     // Many tests use pipes
     // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
     //  --LGP 2014-02-05

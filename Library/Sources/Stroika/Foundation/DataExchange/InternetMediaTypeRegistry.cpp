@@ -10,11 +10,11 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Common/Platform/Windows/Registry.h"
 #endif
 #include "Stroika/Foundation/Debug/Trace.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Execution/Synchronized.h"
@@ -350,7 +350,7 @@ optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const Inter
 shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::DefaultBackend ()
 {
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::DefaultBackend"};
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     return WindowsRegistryDefaultBackend ();
 #endif
     // @todo fix for MacOS - which doesn't support these - https://github.com/SophistSolutions/Stroika/issues/927 (STK-795)
@@ -689,7 +689,7 @@ namespace {
         LRUCache<K, V, LRUCacheSupport::InternallySynchronizedTraits<LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<K, V>>>>;
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<IBackendRep>
 {
     /*

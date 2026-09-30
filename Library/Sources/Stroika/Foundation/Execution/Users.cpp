@@ -3,17 +3,17 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <Windows.h>
 #endif
 
 #include "Stroika/Foundation/Characters/SDKChar.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include "Platform/POSIX/Users.h"
 #endif
 
@@ -32,20 +32,20 @@ using Memory::StackBuffer;
  */
 String Execution::GetCurrentUserName ([[maybe_unused]] UserNameFormat format)
 {
-#if qStroika_Foundation_Common_Platform_Windows && 0
+#if qStroika_Platform_Windows && 0
     EXTENDED_NAME_FORMAT useFormat = NameDisplay;
     ULONG                sz        = 0;
     ::GetUserNameEx (useFormat, nullptr, &sz);
     StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, sz + 1};
     Execution::ThrowIfZeroGetLastError (::GetUserNameEx (useFormat, buf, &sz));
     return String::FromSDKString (span{buf.data (), static_cast<size_t> (sz)});
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     ULONG sz = 0;
     ::GetUserName (nullptr, &sz);
     StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, sz + 1};
     Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetUserName (buf.data (), &sz));
     return String::FromSDKString (span{buf.data (), static_cast<size_t> (sz)});
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
     return Platform::POSIX::uid_t2UserName (Platform::POSIX::GetUID ());
 #else
 #endif

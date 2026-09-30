@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Time {
     inline T DateTime::As () const
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
         requires (Common::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                                  ,
                                  SYSTEMTIME
 #endif
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Time {
         if constexpr (Common::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String>) {
             return As_Simple_<T> ();
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         else if constexpr (same_as<T, SYSTEMTIME>) {
             return AsSYSTEMTIME_ ();
         }

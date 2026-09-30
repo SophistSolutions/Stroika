@@ -5,15 +5,15 @@
 
 #include <cstdio>
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 #include <crt_externs.h>
 #include <libproc.h>
 #include <mach-o/dyld.h>
 #endif
-#if qStroika_Foundation_Common_Platform_POSIX && qSupport_Proc_Filesystem
+#if qStroika_Platform_POSIX && qStroika_FeatureSupported_ProcFilesystem
 #include <unistd.h>
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <windows.h>
 #endif
 
@@ -60,7 +60,7 @@ filesystem::path Execution::GetEXEPath ()
 //      BSD with procfs: readlink /proc/curproc/file
 //      Windows: GetModuleFileName() with hModule = nullptr
 //
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     uint32_t bufSize = 0;
     Verify (_NSGetExecutablePath (nullptr, &bufSize) == -1);
     Assert (bufSize > 0);
@@ -68,7 +68,7 @@ filesystem::path Execution::GetEXEPath ()
     Verify (_NSGetExecutablePath (buf.begin (), &bufSize) == 0);
     Assert (buf[bufSize - 1] == '\0');
     return buf.begin ();
-#elif qStroika_Foundation_Common_Platform_POSIX && qSupport_Proc_Filesystem
+#elif qStroika_Platform_POSIX && qStroika_FeatureSupported_ProcFilesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
     // double buf size and try again
@@ -82,7 +82,7 @@ filesystem::path Execution::GetEXEPath ()
     }
     Assert (n <= buf.GetSize ()); // could leave no room for NUL-byte, but not needed
     return SDKString{buf.begin (), buf.begin () + n};
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     SDKChar buf[MAX_PATH];
     Verify (::GetModuleFileName (nullptr, buf, static_cast<DWORD> (std::size (buf))));
     buf[std::size (buf) - 1] = '\0'; // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
@@ -100,7 +100,7 @@ filesystem::path Execution::GetEXEPath ()
  */
 filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
 {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
     int  ret = ::proc_pidpath (processID, pathbuf, sizeof (pathbuf));
     if (ret <= 0) {
@@ -109,7 +109,7 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     else {
         return pathbuf;
     }
-#elif qStroika_Foundation_Common_Platform_POSIX && qSupport_Proc_Filesystem
+#elif qStroika_Platform_POSIX && qStroika_FeatureSupported_ProcFilesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
     // double buf size and try again
@@ -125,7 +125,7 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     }
     Assert (n <= buf.GetSize ()); // could leave no room for NUL-byte, but not needed
     return SDKString{buf.begin (), buf.begin () + n};
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682621(v=vs.85).aspx but a bit of work
     // not needed yet
     AssertNotImplemented ();
@@ -145,9 +145,9 @@ const LazyInitialized<Sequence<filesystem::path>> Execution::kPath{[] () -> Sequ
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     if (const char* env_p = std::getenv ("PATH")) {
         String pathVar = String::FromNarrowSDKString (env_p);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         return pathVar.Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
 #endif
     }
@@ -155,7 +155,7 @@ const LazyInitialized<Sequence<filesystem::path>> Execution::kPath{[] () -> Sequ
     return {};
 }};
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ***************************** Execution::kPathEXT ******************************
@@ -180,7 +180,7 @@ const LazyInitialized<Sequence<filesystem::path>> Execution::kPathEXT{[] () -> S
 const LazyInitialized<Mapping<SDKString, SDKString>> Execution::kRawEnvironment{[] () -> Mapping<SDKString, SDKString> {
     Mapping<SDKString, SDKString> r;
     const SDKChar* const*         envHead = nullptr;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     // documented in https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/getenv-wgetenv?view=msvc-170 can happen, and how to workaround
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     if constexpr (same_as<SDKChar, wchar_t>) {
@@ -195,14 +195,14 @@ const LazyInitialized<Mapping<SDKString, SDKString>> Execution::kRawEnvironment{
     }
     DISABLE_COMPILER_MSC_WARNING_END (4996)
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     if constexpr (same_as<SDKChar, wchar_t>) {
         envHead = _wenviron;
     }
     else
 #endif
     {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         envHead = (*_NSGetEnviron ());
 #else
         envHead = environ;
@@ -253,7 +253,7 @@ optional<filesystem::path> Execution::FindExecutableInPath (const filesystem::pa
         if (checkExists (fn)) {
             return fn;
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (fn.extension ().empty ()) {
             filesystem::path exe = fn;
             for (auto exeExt : kPathEXT ()) {
@@ -272,7 +272,7 @@ optional<filesystem::path> Execution::FindExecutableInPath (const filesystem::pa
             if (checkExists (exe)) {
                 return exe;
             }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             if (fn.extension ().empty ()) {
                 for (auto exeExt : kPathEXT ()) {
                     exe.replace_extension (exeExt);

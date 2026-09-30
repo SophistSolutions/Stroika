@@ -9,7 +9,7 @@
 #include <memory>
 #include <optional>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <Pdh.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"

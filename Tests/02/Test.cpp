@@ -1467,7 +1467,7 @@ namespace {
             EXPECT_THROW (cvt->String2Bytes<string> (span{kUnencodable_}), CharacterEncodingException);
         }
 
-#if not qTargetPlatformSDKUseswchar_t
+#if not qStroika_Foundation_Characters_SDKUseswchar_t
         // AllowMissingCharacterErrors, both ways, without throwing - and SDK2Wide with the real replacement: a '?' there
         // means it threw and caught internally, and fell back
         Common::ScopedUseLocale useCLocale{locale::classic ()};
@@ -1528,7 +1528,7 @@ namespace {
             {
                 bool ok = String{"hi"}.AsNarrowSDKString (eIgnoreErrors) == "hi" and String{"hi"}.AsNarrowString (locale::classic ()) == "hi" and
                           String::FromNarrowString (string{"hi"}, locale::classic ()) == "hi";
-#if not qTargetPlatformSDKUseswchar_t
+#if not qStroika_Foundation_Characters_SDKUseswchar_t
                 ok = ok and SDK2Wide (SDKString{"hi"}) == L"hi" and Wide2SDK (wstring{L"hi"}, eIgnoreErrors) == "hi";
 #endif
                 sConvertedOK = ok;
@@ -1539,7 +1539,7 @@ namespace {
             (void)&tConvertAtExit;
             (void)String{"hi"}.AsNarrowSDKString (eIgnoreErrors); // builds this thread's caches
             (void)String{"hi"}.AsNarrowString (locale::classic ());
-#if not qTargetPlatformSDKUseswchar_t
+#if not qStroika_Foundation_Characters_SDKUseswchar_t
             (void)SDK2Wide (SDKString{"hi"});
 #endif
         }}.join ();
@@ -1551,7 +1551,7 @@ namespace {
     GTEST_TEST (Foundation_Characters, SDKStringFollowsGlobalLocale_)
     {
         Debug::TraceContextBumper ctx{"SDKStringFollowsGlobalLocale_"};
-#if not qTargetPlatformSDKUseswchar_t && not qStroika_Foundation_Common_Platform_MacOS
+#if not qStroika_Foundation_Characters_SDKUseswchar_t && not qStroika_Platform_MacOS
         // An SDKString is in the global locale's encoding, so every conversion must follow a change of global locale,
         // back and forth - though SDK2Wide/Wide2SDK, and String's narrow conversions, keep their converters from call to call
         optional<locale> utf8;

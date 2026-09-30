@@ -3,17 +3,17 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <windows.h>
 
 #include <shellapi.h>
 #include <shlobj.h>
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #endif
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
 #include <linux/limits.h>
 #endif
 #include "Stroika/Foundation/Characters/Format.h"
@@ -21,7 +21,7 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
@@ -42,7 +42,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
@@ -57,7 +57,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 bool IO::FileSystem::Ptr::Access (const filesystem::path& fileFullPath, AccessMode accessMode) const noexcept
 {
 // @todo FIX to only do ONE system call, not two!!!
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
     if ((accessMode & AccessMode::eRead) == AccessMode::eRead) {
@@ -71,7 +71,7 @@ bool IO::FileSystem::Ptr::Access (const filesystem::path& fileFullPath, AccessMo
         }
     }
     return true;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     if ((accessMode & AccessMode::eRead) == AccessMode::eRead) {
         DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
         if (attribs == INVALID_FILE_ATTRIBUTES) {
@@ -115,11 +115,11 @@ void IO::FileSystem::Ptr::CheckAccess (const filesystem::path& fileFullPath, boo
 
 DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const filesystem::path& fileName)
 {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     struct stat s{};
     FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.generic_string ().c_str (), &s), fileName);
     return DateTime{s.st_mtime};
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
     FileSystem::Exception::ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData), fileName);
     return DateTime{fileAttrData.ftLastWriteTime};
@@ -131,11 +131,11 @@ DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const filesystem::pat
 
 DateTime IO::FileSystem::Ptr::GetFileLastAccessDate (const filesystem::path& fileName)
 {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     struct stat s{};
     FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.generic_string ().c_str (), &s), fileName);
     return DateTime{s.st_atime};
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
     FileSystem::Exception::ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData), fileName);
     return DateTime{fileAttrData.ftLastAccessTime};

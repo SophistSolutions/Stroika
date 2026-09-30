@@ -3,9 +3,9 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <windows.h>
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
 #include <dirent.h>
 #endif
 
@@ -15,7 +15,7 @@
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/IO/FileSystem/Exception.h"
@@ -42,10 +42,10 @@ private:
     IteratorReturnType fIteratorReturnType_;
     String             fDirName_;
     filesystem::path   fReportPrefix_;
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     DIR*    fDirIt_{nullptr};
     dirent* fCur_{nullptr};
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     HANDLE          fHandle_{INVALID_HANDLE_VALUE}; // after constructor - fHandle_ == INVALID_HANDLE_VALUE means iterator ATEND
     WIN32_FIND_DATA fFindFileData_{};
 #endif
@@ -56,14 +56,14 @@ public:
         : fIteratorReturnType_{iteratorReturns}
         , fDirName_{dir}
         , fReportPrefix_{mkReportPrefix_ (dir.As<filesystem::path> (), iteratorReturns)}
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         , fDirIt_{::opendir (dir.AsSDKString ().c_str ())}
 #endif
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DirectoryIterator::Rep_::CTOR", "'{}'"_f, dir};
 #endif
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         if (fDirIt_ == nullptr) {
             Execution::ThrowPOSIXErrNo ();
         }
@@ -78,7 +78,7 @@ public:
             (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
             More ();
         }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
         while (fHandle_ != INVALID_HANDLE_VALUE and
                (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
@@ -86,7 +86,7 @@ public:
         }
 #endif
     }
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     Rep_ (const String& dirName, const optional<ino_t>& curInode, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_{iteratorReturns}
         , fDirName_{dirName}
@@ -105,7 +105,7 @@ public:
             } while (fCur_ != nullptr and fCur_->d_ino != *curInode);
         }
     }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     // missing name implies Iterator::IsAtEnd ()
     Rep_ (const String& dir, const optional<String>& name, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_{iteratorReturns}
@@ -125,11 +125,11 @@ public:
 #endif
     virtual ~Rep_ ()
     {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         if (fDirIt_ != nullptr) {
             ::closedir (fDirIt_);
         }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         if (fHandle_ != INVALID_HANDLE_VALUE) {
             ::FindClose (fHandle_);
         }
@@ -137,9 +137,9 @@ public:
     }
     virtual bool AtEnd () const override
     {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         return fCur_ == nullptr;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         return fHandle_ == INVALID_HANDLE_VALUE;
 #else
         AssertNotImplemented ();
@@ -147,12 +147,12 @@ public:
     }
     virtual optional<filesystem::path> Current () const override
     {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         if (fCur_ == nullptr) {
             return nullopt;
         }
         return fReportPrefix_ / fCur_->d_name;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         if (fHandle_ == INVALID_HANDLE_VALUE) {
             return nullopt;
         }
@@ -164,7 +164,7 @@ public:
     virtual optional<filesystem::path> More () override
     {
         Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     Again:
         RequireNotNull (fCur_);
         RequireNotNull (fDirIt_);
@@ -183,7 +183,7 @@ public:
         if (fCur_ != nullptr) {
             return fReportPrefix_ / fCur_->d_name;
         }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     Again:
         Require (fHandle_ != INVALID_HANDLE_VALUE);
         (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
@@ -207,10 +207,10 @@ public:
         RequireNotNull (rhs);
         RequireMember (rhs, Rep_);
         const Rep_& rrhs = *Debug::UncheckedDynamicCast<const Rep_*> (rhs);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         return fDirName_ == rrhs.fDirName_ and fIteratorReturnType_ == rrhs.fIteratorReturnType_ and
                ((fCur_ == rrhs.fCur_ and fCur_ == nullptr) or (rrhs.fCur_ != nullptr and fCur_->d_ino == rrhs.fCur_->d_ino));
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         return fHandle_ == rrhs.fHandle_;
 #endif
     }
@@ -220,7 +220,7 @@ public:
         Debug::TraceContextBumper ctx{"Entering DirectoryIterator::Rep_::Clone"};
 #endif
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         AssertNotNull (fDirIt_);
         /*
          *  must find telldir() returns the location of the NEXT read. We must pass along the value of telldir as
@@ -252,7 +252,7 @@ public:
          *  find the same inode. Not perfect (in case that is deleted) - but not sure there is a guaranteed way then.
          */
         return make_unique<Rep_> (fDirName_, fCur_ == nullptr ? optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         return make_unique<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName),
                                   fIteratorReturnType_);
 #endif

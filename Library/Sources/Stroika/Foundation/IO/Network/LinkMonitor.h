@@ -6,9 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include <arpa/inet.h>
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 #include <WinSock2.h>
 
 #include <in6addr.h>

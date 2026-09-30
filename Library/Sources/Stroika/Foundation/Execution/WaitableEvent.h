@@ -57,8 +57,16 @@ namespace Stroika::Foundation::Execution {
      *  I THINK condition-variable API is better, so disabling this by default.. and maybe lose it altogether soon.
      *  -- LGP 2023-10-17
      */
+#ifndef qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
+#if defined(qExecution_WaitableEvent_SupportWaitForMultipleObjects)
+#define qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#else
+#define qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects 0
+#endif
+#endif
+// DEPRECATED NAME - since 3.0d25 (to be removed in v3.0a1)
 #ifndef qExecution_WaitableEvent_SupportWaitForMultipleObjects
-#define qExecution_WaitableEvent_SupportWaitForMultipleObjects 0
+#define qExecution_WaitableEvent_SupportWaitForMultipleObjects qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
 #endif
 
     /**
@@ -75,7 +83,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   \em Design Note     WaitForAny/WaitForAnyUntil and WaitForMultipleEvents
      *
-     *  @see    qExecution_WaitableEvent_SupportWaitForMultipleObjects
+     *  @see    qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
      */
     class WaitableEvent {
     public:
@@ -243,7 +251,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual WaitStatus WaitUntilQuietlyAndReset (Time::TimePointSeconds timeoutAt);
 
     public:
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#if qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
     public:
         /**
          *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
@@ -334,7 +342,7 @@ namespace Stroika::Foundation::Execution {
             nonvirtual WaitStatus WaitUntilQuietly (Time::TimePointSeconds timeoutAt);
         };
         WE_ fWE_;
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#if qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
         forward_list<shared_ptr<WE_>> fExtraWaitableEvents_;
 #endif
     };

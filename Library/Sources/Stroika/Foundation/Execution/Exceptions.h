@@ -446,9 +446,9 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          #if qStroika_Foundation_Common_Platform_POSIX
+     *          #if qStroika_Platform_POSIX
      *              ThrowSystemErrNo (errno);
-     *          #elif qStroika_Foundation_Common_Platform_Windows
+     *          #elif qStroika_Platform_Windows
      *              ThrowSystemErrNo (::GetLastError ());      // works with this type of error # - GetLastError () is default if no arg provided
      *              ThrowSystemErrNo (::WSAGetLastError ());   // or this
      *          #endif
@@ -461,7 +461,7 @@ namespace Stroika::Foundation::Execution {
      *          platform - errno and GetLastError(). It is still an assertion (require) error to call these when errno / GetLastError () would return 0.
      */
     [[noreturn]] void ThrowSystemErrNo (int sysErr);
-#if qStroika_Foundation_Common_Platform_POSIX or qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_POSIX or qStroika_Platform_Windows
     [[noreturn]] void ThrowSystemErrNo ();
 #endif
 

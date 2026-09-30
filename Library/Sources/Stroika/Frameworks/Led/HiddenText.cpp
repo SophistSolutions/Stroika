@@ -409,7 +409,7 @@ HidableTextMarkerOwner::HidableTextMarker* HidableTextMarkerOwner::MakeHidableTe
         or:
                 IncrementalFontSpecification    fontSpec;
                 fontSpec.SetTextColor (Color::kRed);
-                #if     qStroika_Foundation_Common_Platform_Windows
+                #if     qStroika_Platform_Windows
                 fontSpec.SetStyle_Strikeout (true);
                 #endif
                 return new FontSpecHidableTextMarker (fontSpec);

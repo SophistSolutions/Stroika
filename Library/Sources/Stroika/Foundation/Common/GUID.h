@@ -8,7 +8,7 @@
 
 #include <compare>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <guiddef.h>
 #endif
 
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Common {
          *        in that case)
          */
         constexpr GUID () noexcept = default;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         constexpr GUID (const ::GUID& src) noexcept;
 #endif
         template <Characters::IConvertibleToString STRISH_TYPE>

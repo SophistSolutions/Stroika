@@ -691,7 +691,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         nonvirtual void UpdateIfNoKeysPending (); // utility
 
-#if qStroika_Foundation_Common_Platform_MacOS || qStroika_FeatureSupported_XWindows
+#if qStroika_Platform_MacOS || qStroika_FeatureSupported_XWindows
     public:
         static float GetTickCountBetweenBlinks ();
 #endif

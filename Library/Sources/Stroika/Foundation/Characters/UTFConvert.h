@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Characters {
                 eBoost_Locale,
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                 // Seems fastest for windows
                 eWindowsAPIWide2FromMultibyte,
 #endif
@@ -391,7 +391,7 @@ namespace Stroika::Foundation::Characters {
         Options fOriginalOptions_;
         Options fUsingOptions;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     private:
         static ConversionResultWithStatus ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target);
         static ConversionResultWithStatus ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target);

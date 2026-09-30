@@ -6,15 +6,15 @@
 #include <cstdlib> // to force __GLIBCXX__ define reference
 #include <sstream>
 
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
 #include <execinfo.h>
 #include <unistd.h>
 #if defined(__GNUC__) && defined(__GLIBCXX__)
 #include <cxxabi.h>
 #endif
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
 #define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED 1
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 #include <Windows.h>
 // BOOST_STACKTRACE_USE_WINDBG seems to be default on windows, and very slow
 #define BOOST_STACKTRACE_USE_WINDBG_CACHED 1
@@ -111,7 +111,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         result << L";" << Characters::kEOL<wchar_t>;
     }
     return result.str ();
-#elif qStroika_Foundation_Common_Platform_Linux
+#elif qStroika_Platform_Linux
     /*
      *  @see http://man7.org/linux/man-pages/man3/backtrace.3.html
      */
@@ -180,7 +180,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         out += symStr + L";" + Characters::kEOL<wchar_t>;
     }
     return out;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     // No real need todo this because boost does so well, but could be done pretty easily - see
     // http://www.debuginfo.com/examples/src/SymFromAddr.cpp -- LGP 2020-03-01
     return wstring{};

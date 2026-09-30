@@ -43,12 +43,12 @@ namespace {
 #endif
             AssertExternallySynchronizedChecker::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             sockaddr_storage                                  sa = sockAddr.As<sockaddr_storage> ();
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
             Handle_ErrNoResultInterruption ([this, &start, &end, &sa, &sockAddr] () -> int {
                 return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa),
                                  sockAddr.GetRequiredSize ());
             });
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
             Require (end - start < numeric_limits<int>::max ());
             ThrowWSASystemErrorIfSOCKET_ERROR (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0,
                                                          reinterpret_cast<sockaddr*> (&sa), static_cast<int> (sockAddr.GetRequiredSize ())));
@@ -60,7 +60,7 @@ namespace {
         {
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
 
-            if constexpr (qStroika_Foundation_Common_Platform_Windows) {
+            if constexpr (qStroika_Platform_Windows) {
                 // TMPHACK for - https://github.com/SophistSolutions/Stroika/issues/1096 (STK-964)
                 auto s = Execution::WaitForIOReady{fSD_}.WaitQuietly (timeout);
                 Execution::Thread::CheckForInterruption ();
@@ -77,7 +77,7 @@ namespace {
                 pollfd pollData{};
                 pollData.fd     = fSD_;
                 pollData.events = POLLIN;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                 int nresults;
                 if ((nresults = ::WSAPoll (&pollData, 1, timeout_millisecs)) == SOCKET_ERROR) {
                     Execution::ThrowSystemErrNo (::WSAGetLastError ());
@@ -92,7 +92,7 @@ namespace {
 
             struct sockaddr_storage sa;
             socklen_t               salen = sizeof (sa);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
             size_t result = static_cast<size_t> (Handle_ErrNoResultInterruption ([&] () -> int {
                 return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag,
                                    fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen);
@@ -101,7 +101,7 @@ namespace {
                 *fromAddress = sa;
             }
             return result;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
             Require (intoEnd - intoStart < numeric_limits<int>::max ());
             size_t result = static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (
                 ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag,

@@ -5,7 +5,7 @@
 
 #include <cstdio>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <windows.h>
 
 #include <commdlg.h>
@@ -39,7 +39,7 @@ namespace {
         return true;
 #else
         int l = 0;
-#if qTargetPlatformSDKUseswchar_t
+#if qStroika_Foundation_Characters_SDKUseswchar_t
         if (::swscanf (s.c_str (), L"%d", &l) < 1) {
             return false;
         }
@@ -82,7 +82,7 @@ namespace {
 StdColorPopupHelper::StdColorPopupHelper (bool allowNone)
     : fIsSelectedColor{allowNone}
     , fAllowNone{allowNone}
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     , fHWnd{NULL}
 #endif
 {
@@ -109,7 +109,7 @@ void StdColorPopupHelper::SetSelectedColor (const Color& c)
 {
     fSelectedColor   = c;
     fIsSelectedColor = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     if (fHWnd != NULL) {
         Verify (::SendMessage (fHWnd, CB_SETCURSEL, MapColorIdx (c), 0) != CB_ERR);
     }
@@ -120,7 +120,7 @@ void StdColorPopupHelper::SetNoSelectedColor ()
 {
     Require (fAllowNone);
     fIsSelectedColor = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     if (fHWnd != NULL) {
         Verify (::SendMessage (fHWnd, CB_SETCURSEL, 0, 0) != CB_ERR);
     }
@@ -223,7 +223,7 @@ Color StdColorPopupHelper::MapColorIdx (size_t i) const
     }
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 void StdColorPopupHelper::Attach (HWND popup)
 {
     Require (fHWnd == NULL);
@@ -235,10 +235,10 @@ void StdColorPopupHelper::Attach (HWND popup)
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 void StdColorPopupHelper::OnSelChange ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     Require (::IsWindow (fHWnd));
     int r = static_cast<int> (::SendMessage (fHWnd, CB_GETCURSEL, 0, 0));
 #endif
@@ -260,7 +260,7 @@ void StdColorPopupHelper::OnSelChange ()
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 void StdColorPopupHelper::DoMenuAppends ()
 {
     if (fAllowNone) {
@@ -286,10 +286,10 @@ void StdColorPopupHelper::DoMenuAppends ()
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 void StdColorPopupHelper::AppendMenuString (const SDKString& s)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     Require (::IsWindow (fHWnd));
     Verify (::SendMessage (fHWnd, CB_ADDSTRING, 0, reinterpret_cast<LPARAM> (s.c_str ())) != CB_ERR);
 #endif
@@ -398,7 +398,7 @@ LedComboBoxWidget::MyButton::MyButton ()
     : fComboBox (NULL)
     , fDropDownArrow ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 // In case compiled without #define OEMRESOURCE
 #ifndef OBM_COMBO
 #define OBM_COMBO 32738
@@ -407,7 +407,7 @@ LedComboBoxWidget::MyButton::MyButton ()
 #endif
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 LRESULT LedComboBoxWidget::MyButton::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
@@ -443,7 +443,7 @@ LedComboBoxWidget::MyComboListBoxPopup::MyComboListBoxPopup ()
 {
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 LRESULT LedComboBoxWidget::MyComboListBoxPopup::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
@@ -577,7 +577,7 @@ LedComboBoxWidget::MyTextWidget::~MyTextWidget ()
     SpecifyTextStore (NULL);
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 LRESULT LedComboBoxWidget::MyTextWidget::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
@@ -628,7 +628,7 @@ LedComboBoxWidget::~LedComboBoxWidget ()
     delete fUseWidgetFont;
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 bool LedComboBoxWidget::ReplaceWindow (HWND hWnd)
 {
     Require (GetHWND () == NULL); // don't call after already created! - use this instead of SetHWnd ()!!!
@@ -695,7 +695,7 @@ void LedComboBoxWidget::SetPopupItems (const vector<Led_tString>& pi)
     fComboListBoxPopup.UpdatePopupItems ();
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 LRESULT LedComboBoxWidget::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
@@ -774,7 +774,7 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
 
         // Next - create the POPUP Listbox (hidden initially)
         {
-#if !qTargetPlatformSDKUseswchar_t
+#if !qStroika_Foundation_Characters_SDKUseswchar_t
             // Try creating a UNICODE popup window - even if we aren't building a UNICODE app. This is OK - since this window isn't
             // handled directly through MFC (which doesn't support UNICODE windows in non-UNICODE apps, but just through
             // Led's code directly - which does support this - LGP 2003-12-29
@@ -787,7 +787,7 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
 #endif
             fComboListBoxPopup.SubclassWindow (::CreateWindowEx (WS_EX_TOPMOST, _T("ListBox"), NULL, WS_POPUP | LBS_NOTIFY | WS_BORDER | WS_TABSTOP,
                                                                  0, 0, 0, 0, GetHWND (), NULL, NULL, NULL));
-#if !qTargetPlatformSDKUseswchar_t
+#if !qStroika_Foundation_Characters_SDKUseswchar_t
         alreadyCreated:;
 #endif
         }
@@ -902,7 +902,7 @@ void LedComboBoxWidget::TogglePopupShown ()
  ********************************* Led_StdDialogHelper **************************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper::Led_StdDialogHelper (HINSTANCE hInstance, const Characters::SDKChar* resID, HWND parentWnd)
     : fSetFocusItemCalled{false}
 {
@@ -925,7 +925,7 @@ Led_StdDialogHelper::Led_StdDialogHelper (GtkWindow* parentWindow)
 
 Led_StdDialogHelper::~Led_StdDialogHelper ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     if (GetHWND () != NULL) {
         // maybe did a throw out of the scope where this object was declared? Anyhow - blow away the window!
         ::DestroyWindow (GetHWND ());
@@ -940,7 +940,7 @@ bool Led_StdDialogHelper::GetWasOK () const
 
 bool Led_StdDialogHelper::DoModal ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     HWND                     oldFocusWnd = ::GetFocus ();
     [[maybe_unused]] INT_PTR x =
         ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
@@ -994,7 +994,7 @@ GtkWidget* Led_StdDialogHelper::MakeWindow ()
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 BOOL Led_StdDialogHelper::OnInitDialog ()
 {
     Led_CenterWindowInParent (GetHWND ());
@@ -1003,7 +1003,7 @@ BOOL Led_StdDialogHelper::OnInitDialog ()
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 BOOL CALLBACK Led_StdDialogHelper::StaticDialogProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (message == WM_INITDIALOG) {
@@ -1052,10 +1052,10 @@ BOOL Led_StdDialogHelper::DialogProc (UINT message, [[maybe_unused]] WPARAM wPar
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows || (qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs)
+#if qStroika_Platform_Windows || (qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs)
 SDKString Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     Characters::SDKChar widgetText[2 * 1024]; // sb big enough for the most part???
     (void)::GetDlgItemText (GetHWND (), itemID, widgetText, static_cast<UINT> (std::size (widgetText)));
     return widgetText;
@@ -1066,7 +1066,7 @@ SDKString Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
 
 void Led_StdDialogHelper::SetItemText (DialogItemID itemID, const SDKString& text)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     (void)::SetDlgItemText (GetHWND (), itemID, text.c_str ());
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     gtk_entry_set_text (GTK_ENTRY (itemID), text.c_str ());
@@ -1075,7 +1075,7 @@ void Led_StdDialogHelper::SetItemText (DialogItemID itemID, const SDKString& tex
 
 void Led_StdDialogHelper::SelectItemText (DialogItemID itemID, size_t from, size_t to)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     ::SendDlgItemMessage (GetHWND (), itemID, EM_SETSEL, from, to);
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     gtk_entry_select_region (GTK_ENTRY (itemID), from, to);
@@ -1084,7 +1084,7 @@ void Led_StdDialogHelper::SelectItemText (DialogItemID itemID, size_t from, size
 
 bool Led_StdDialogHelper::GetItemChecked (DialogItemID itemID) const
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     return !!::IsDlgButtonChecked (GetHWND (), itemID);
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     Assert (false); //NYI
@@ -1094,7 +1094,7 @@ bool Led_StdDialogHelper::GetItemChecked (DialogItemID itemID) const
 
 void Led_StdDialogHelper::SetItemChecked (DialogItemID itemID, bool checked)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     ::CheckDlgButton (GetHWND (), itemID, checked);
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     //gtk_entry_set_text (GTK_ENTRY (itemID), text.c_str ());
@@ -1104,7 +1104,7 @@ void Led_StdDialogHelper::SetItemChecked (DialogItemID itemID, bool checked)
 
 bool Led_StdDialogHelper::GetItemEnabled (DialogItemID itemID) const
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     return !!::IsWindowEnabled (GetDlgItem (GetHWND (), itemID));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs && 0
     Assert (false); //NYI
@@ -1117,7 +1117,7 @@ bool Led_StdDialogHelper::GetItemEnabled (DialogItemID itemID) const
 
 void Led_StdDialogHelper::SetItemEnabled (DialogItemID itemID, bool enabled)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     ::EnableWindow (GetDlgItem (GetHWND (), itemID), enabled);
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     //gtk_entry_set_text (GTK_ENTRY (itemID), text.c_str ());
@@ -1127,7 +1127,7 @@ void Led_StdDialogHelper::SetItemEnabled (DialogItemID itemID, bool enabled)
 
 void Led_StdDialogHelper::SetFocusedItem (DialogItemID itemID)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     HWND dlgItem = ::GetDlgItem (GetHWND (), itemID);
     Assert (dlgItem != NULL);
     ::SetFocus (dlgItem);
@@ -1138,7 +1138,7 @@ void Led_StdDialogHelper::SetFocusedItem (DialogItemID itemID)
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 void Led_StdDialogHelper::SetHWND (HWND hWnd)
 {
     if (fHWnd != NULL) {
@@ -1194,7 +1194,7 @@ void Led_StdDialogHelper::SetCancelButton (GtkWidget* cancelButton)
 void Led_StdDialogHelper::OnOK ()
 {
     fWasOK = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     ::EndDialog (GetHWND (), IDOK);
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     gtk_main_quit ();
@@ -1203,7 +1203,7 @@ void Led_StdDialogHelper::OnOK ()
 
 void Led_StdDialogHelper::OnCancel ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     ::EndDialog (GetHWND (), IDCANCEL);
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     gtk_main_quit ();
@@ -1236,7 +1236,7 @@ void Led_StdDialogHelper::Static_OnWindowDeleteRequest (GtkWidget* widget)
  *************************** Led_StdDialogHelper_AboutBox ***********************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_AboutBox::Led_StdDialogHelper_AboutBox (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
 {
@@ -1255,7 +1255,7 @@ GtkWidget* Led_StdDialogHelper_AboutBox::MakeWindow ()
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 BOOL Led_StdDialogHelper_AboutBox::DialogProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
@@ -1293,7 +1293,7 @@ void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField ()
  ********************************************************************************
  */
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_FindDialog::Led_StdDialogHelper_FindDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fFindText ()
@@ -1321,7 +1321,7 @@ Led_StdDialogHelper_FindDialog::Led_StdDialogHelper_FindDialog (GtkWindow* paren
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 BOOL Led_StdDialogHelper_FindDialog::DialogProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
@@ -1368,7 +1368,7 @@ void Led_StdDialogHelper_FindDialog::PreDoModalHook ()
     }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows && qSupportLedDialogWidgets
+#if qStroika_Platform_Windows && qSupportLedDialogWidgets
     /*
      *  ReplaceWindow seems to work better than SubclassWindow - for reasons I don't FULLY understand.
      *  (see SPR#1266).
@@ -1376,7 +1376,7 @@ void Led_StdDialogHelper_FindDialog::PreDoModalHook ()
     fFindTextWidget.ReplaceWindow (::GetDlgItem (GetHWND (), kLedStdDlg_FindBox_FindText));
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     DialogItemID findText = kLedStdDlg_FindBox_FindText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     DialogItemID findText = fLookupTextWidget;
@@ -1391,7 +1391,7 @@ void Led_StdDialogHelper_FindDialog::PreDoModalHook ()
     SelectItemText (findText);
     SetFocusedItem (findText);
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     SetItemChecked (kLedStdDlg_FindBox_WrapAtEndOfDoc, fWrapSearch);
     SetItemChecked (kLedStdDlg_FindBox_WholeWord, fWholeWordSearch);
     SetItemChecked (kLedStdDlg_FindBox_IgnoreCase, not fCaseSensativeSearch);
@@ -1409,13 +1409,13 @@ void Led_StdDialogHelper_FindDialog::OnDontFindButton ()
 {
 #if qSupportLedDialogWidgets
     fFindText = fFindTextWidget.GetText ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     fFindText = Led_SDKString2tString (GetItemText (kLedStdDlg_FindBox_FindText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     fFindText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     fWrapSearch          = GetItemChecked (kLedStdDlg_FindBox_WrapAtEndOfDoc);
     fWholeWordSearch     = GetItemChecked (kLedStdDlg_FindBox_WholeWord);
     fCaseSensativeSearch = not GetItemChecked (kLedStdDlg_FindBox_IgnoreCase);
@@ -1445,7 +1445,7 @@ void Led_StdDialogHelper_FindDialog::Static_OnDontFindButtonClick (GtkWidget* wi
  ************************* Led_StdDialogHelper_ReplaceDialog ********************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_ReplaceDialog::Led_StdDialogHelper_ReplaceDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fFindText ()
@@ -1477,7 +1477,7 @@ Led_StdDialogHelper_ReplaceDialog::Led_StdDialogHelper_ReplaceDialog (GtkWindow*
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 BOOL Led_StdDialogHelper_ReplaceDialog::DialogProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
@@ -1557,7 +1557,7 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
     }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows && qSupportLedDialogWidgets
+#if qStroika_Platform_Windows && qSupportLedDialogWidgets
     /*
      *  ReplaceWindow seems to work better than SubclassWindow - for reasons I don't FULLY understand.
      *  (see SPR#1266).
@@ -1566,7 +1566,7 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
     fReplaceTextWidget.ReplaceWindow (::GetDlgItem (GetHWND (), kLedStdDlg_ReplaceBox_ReplaceText));
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     DialogItemID findText    = kLedStdDlg_ReplaceBox_FindText;
     DialogItemID replaceText = kLedStdDlg_ReplaceBox_ReplaceText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
@@ -1586,7 +1586,7 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
     SelectItemText (replaceText);
     SetFocusedItem (findText);
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     SetItemChecked (kLedStdDlg_ReplaceBox_WrapAtEndOfDoc, fWrapSearch);
     SetItemChecked (kLedStdDlg_ReplaceBox_WholeWord, fWholeWordSearch);
     SetItemChecked (kLedStdDlg_ReplaceBox_IgnoreCase, not fCaseSensativeSearch);
@@ -1633,7 +1633,7 @@ void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
 #if qSupportLedDialogWidgets
     fFindText    = fFindTextWidget.GetText ();
     fReplaceText = fReplaceTextWidget.GetText ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     fFindText    = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_FindText));
     fReplaceText = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_ReplaceText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
@@ -1641,7 +1641,7 @@ void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
     fReplaceText = Led_SDKString2tString (GetItemText (fReplaceTextWidget));
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     fWrapSearch          = GetItemChecked (kLedStdDlg_ReplaceBox_WrapAtEndOfDoc);
     fWholeWordSearch     = GetItemChecked (kLedStdDlg_ReplaceBox_WholeWord);
     fCaseSensativeSearch = not GetItemChecked (kLedStdDlg_ReplaceBox_IgnoreCase);
@@ -1724,7 +1724,7 @@ void StdFontPickBox::OnOK ()
  ********************************** StdColorPickBox *****************************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 StdColorPickBox::StdColorPickBox (const Color& initialColor)
     : fColor (initialColor)
     , fParentWnd (::GetActiveWindow ()) // a good default...
@@ -1744,10 +1744,10 @@ StdColorPickBox::StdColorPickBox (GtkWindow* modalParentWindow, const Color& ini
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 bool StdColorPickBox::DoModal ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     CHOOSECOLOR cc;
     memset (&cc, 0, sizeof (cc));
     cc.lStructSize = sizeof (cc);
@@ -1773,7 +1773,7 @@ bool StdColorPickBox::DoModal ()
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 UINT_PTR CALLBACK StdColorPickBox::ColorPickerINITPROC (HWND hWnd, UINT message, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
 {
     if (hWnd != NULL and message == WM_INITDIALOG) {
@@ -1886,7 +1886,7 @@ Led_StdDialogHelper_UpdateWin32FileAssocsDialog::Led_StdDialogHelper_UpdateWin32
 
 void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::PreDoModalHook ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     ::SetForegroundWindow (GetHWND ());
     Characters::SDKChar messageText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, messageText, std::ssize (messageText));
@@ -1925,7 +1925,7 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::OnCancel ()
  ******************* Led_StdDialogHelper_ParagraphIndentsDialog *****************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd,
                                                                                         const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
@@ -2000,7 +2000,7 @@ DISABLE_COMPILER_MSC_WARNING_END (4706)
  ******************* Led_StdDialogHelper_ParagraphSpacingDialog *****************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd,
                                                                                         const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
@@ -2033,7 +2033,7 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::InitValues (TWIPS spaceBefore, 
 
 void Led_StdDialogHelper_ParagraphSpacingDialog::PreDoModalHook ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     HWND popup = ::GetDlgItem (GetHWND (), kParagraphSpacing_Dialog_LineSpaceModeFieldID);
     AssertNotNull (popup);
     Assert (::IsWindow (popup));
@@ -2053,7 +2053,7 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::PreDoModalHook ()
         SetItemText (kParagraphSpacing_Dialog_SpaceAfterFieldID, FormatTWIPSAsString (fSpaceAfter_Orig));
     }
     if (fLineSpacing_Valid) {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Verify (::SendMessage (popup, CB_SETCURSEL, fLineSpacing_Orig.fRule, 0) != CB_ERR);
 #endif
         if (fLineSpacing_Orig.fRule == LineSpacing::eAtLeastTWIPSSpacing or fLineSpacing_Orig.fRule == LineSpacing::eExactTWIPSSpacing or
@@ -2079,7 +2079,7 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
         fSpaceAfter_Result = fSpaceAfter_Orig;
     }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     HWND popup = ::GetDlgItem (GetHWND (), kParagraphSpacing_Dialog_LineSpaceModeFieldID);
     AssertNotNull (popup);
     Assert (::IsWindow (popup));
@@ -2123,7 +2123,7 @@ DISABLE_COMPILER_MSC_WARNING_END (4706)
  ******************** Led_StdDialogHelper_OtherFontSizeDialog *******************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_OtherFontSizeDialog::Led_StdDialogHelper_OtherFontSizeDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fFontSize_Orig (0)
@@ -2162,7 +2162,7 @@ void Led_StdDialogHelper_OtherFontSizeDialog::OnOK ()
  ******************* Led_StdDialogHelper_UnknownEmbeddingInfoDialog *************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
                                                                                                 const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
@@ -2179,7 +2179,7 @@ Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbed
 
 void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     Characters::SDKChar messageText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UnknownEmbeddingInfoBox_TypeTextMsg, messageText, std::ssize (messageText));
 
@@ -2211,7 +2211,7 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
  ******************* Led_StdDialogHelper_URLXEmbeddingInfoDialog ****************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
                                                                                           const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
@@ -2234,7 +2234,7 @@ Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingIn
 
 void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     Characters::SDKChar messageText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TypeTextMsg, messageText, std::ssize (messageText));
 
@@ -2261,7 +2261,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
     gtk_widget_show (button);
     SetOKButton (button);
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     SelectItemText (kLedStdDlg_URLXEmbeddingInfoBox_TitleText);
 #endif
     inherited::PreDoModalHook ();
@@ -2269,14 +2269,14 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
 
 void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     Characters::SDKChar bufText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TitleText, bufText, std::ssize (bufText));
     fTitleText = bufText;
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_URLText, bufText, std::ssize (bufText));
     fURLText = bufText;
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     SelectItemText (kLedStdDlg_URLXEmbeddingInfoBox_TitleText);
 #endif
     inherited::OnOK ();
@@ -2289,7 +2289,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
  ******************* Led_StdDialogHelper_AddURLXEmbeddingInfoDialog *************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
                                                                                                 const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
@@ -2310,7 +2310,7 @@ Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbed
 
 void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::PreDoModalHook ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_TitleText, fTitleText.c_str ());
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_URLText, fURLText.c_str ());
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
@@ -2335,7 +2335,7 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::PreDoModalHook ()
 
 void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     Characters::SDKChar bufText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_TitleText, bufText, std::ssize (bufText));
     fTitleText = bufText;
@@ -2352,7 +2352,7 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
  ********************* Led_StdDialogHelper_AddNewTableDialog ********************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_AddNewTableDialog::Led_StdDialogHelper_AddNewTableDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fRows (0)
@@ -2370,10 +2370,10 @@ Led_StdDialogHelper_AddNewTableDialog::Led_StdDialogHelper_AddNewTableDialog (Gt
 
 void Led_StdDialogHelper_AddNewTableDialog::PreDoModalHook ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     SetItemText (kLedStdDlg_AddNewTableBox_RowCount, FormatINTAsString (static_cast<int> (fRows)));
     SetItemText (kLedStdDlg_AddNewTableBox_ColCount, FormatINTAsString (static_cast<int> (fColumns)));
     SetFocusedItem (kLedStdDlg_AddNewTableBox_RowCount);
@@ -2385,7 +2385,7 @@ void Led_StdDialogHelper_AddNewTableDialog::PreDoModalHook ()
 
 void Led_StdDialogHelper_AddNewTableDialog::OnOK ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     int r = 0;
     int c = 0;
     if (ParseStringToINT (GetItemText (kLedStdDlg_AddNewTableBox_RowCount), &r) and
@@ -2407,7 +2407,7 @@ void Led_StdDialogHelper_AddNewTableDialog::OnOK ()
  ***************** Led_StdDialogHelper_EditTablePropertiesDialog ****************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTablePropertiesDialog (HINSTANCE hInstance, HWND parentWnd,
                                                                                               const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
@@ -2428,7 +2428,7 @@ Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTableProp
 
 void Led_StdDialogHelper_EditTablePropertiesDialog::PreDoModalHook ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     fBorderColorPopup.Attach (::GetDlgItem (GetHWND (), kLedStdDlg_EditTablePropertiesBox_BorderColor));
     fCellBackgroundColorPopup.Attach (::GetDlgItem (GetHWND (), kLedStdDlg_EditTablePropertiesBox_CellBackgroundColor));
 #endif
@@ -2441,7 +2441,7 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::PreDoModalHook ()
         fCellBackgroundColorPopup.SetNoSelectedColor ();
     }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     SetItemText (kLedStdDlg_EditTablePropertiesBox_BorderWidth, FormatINTAsString (fInfo.fTableBorderWidth));
 
     SetItemText (kLedStdDlg_EditTablePropertiesBox_CellMarginTop, FormatINTAsString (fInfo.fDefaultCellMargins.top));
@@ -2456,14 +2456,14 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::PreDoModalHook ()
     }
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     SetFocusedItem (kLedStdDlg_EditTablePropertiesBox_BorderWidth);
     SelectItemText (kLedStdDlg_EditTablePropertiesBox_BorderWidth);
 #endif
     inherited::PreDoModalHook ();
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 BOOL Led_StdDialogHelper_EditTablePropertiesDialog::DialogProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
@@ -2487,7 +2487,7 @@ BOOL Led_StdDialogHelper_EditTablePropertiesDialog::DialogProc (UINT message, WP
 
 void Led_StdDialogHelper_EditTablePropertiesDialog::OnOK ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     Info result    = fInfo;
     bool dataValid = true;
 
@@ -2532,7 +2532,7 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::OnOK ()
  ************************ Led_StdDialogHelper_SpellCheckDialog ******************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, HINSTANCE hInstance,
                                                                             HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
@@ -2560,7 +2560,7 @@ Led_StdDialogHelper_SpellCheckDialog::~Led_StdDialogHelper_SpellCheckDialog ()
     delete fCurrentMisspellInfo;
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 BOOL Led_StdDialogHelper_SpellCheckDialog::DialogProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
@@ -2683,7 +2683,7 @@ void Led_StdDialogHelper_SpellCheckDialog::PreDoModalHook ()
     }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows && qSupportLedDialogWidgets
+#if qStroika_Platform_Windows && qSupportLedDialogWidgets
     /*
      *  ReplaceWindow seems to work better than SubclassWindow - for reasons I don't FULLY understand.
      *  (see SPR#1266).
@@ -2692,7 +2692,7 @@ void Led_StdDialogHelper_SpellCheckDialog::PreDoModalHook ()
     fChangeTextWidget.ReplaceWindow (::GetDlgItem (GetHWND (), kLedStdDlg_SpellCheckBox_ChangeText));
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     SetItemEnabled (kLedStdDlg_SpellCheckBox_Options, fCallback.OptionsDialogEnabled ());
 #endif
 
@@ -2717,7 +2717,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeButton ()
 {
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
@@ -2730,7 +2730,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeAllButton ()
 {
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
@@ -2743,7 +2743,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnAddToDictionaryButton ()
 {
 #if qSupportLedDialogWidgets
     Led_tString undefinedWordText = fUndefinedWordWidget.GetText ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_UnknownWordText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
@@ -2756,7 +2756,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnLookupOnWebButton ()
 {
 #if qSupportLedDialogWidgets
     Led_tString undefinedWordText = fUndefinedWordWidget.GetText ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_UnknownWordText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
@@ -2777,13 +2777,13 @@ void Led_StdDialogHelper_SpellCheckDialog::OnCloseButton ()
 void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListChangeSelection ()
 {
     if (fCurrentMisspellInfo != NULL) {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         DialogItemID changeTextItem = kLedStdDlg_SpellCheckBox_ChangeText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         DialogItemID changeTextItem = fChangeTextWidget;
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         LRESULT itemSelResult = ::SendMessage (GetDlgItem (GetHWND (), kLedStdDlg_SpellCheckBox_SuggestedList), LB_GETCURSEL, 0, 0);
 #else
         Assert (false); // REALLY NYI!!!
@@ -2812,7 +2812,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
     fCurrentMisspellInfo = NULL;
     fCurrentMisspellInfo = fCallback.GetNextMisspelling ();
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     DialogItemID undefinedTextItem = kLedStdDlg_SpellCheckBox_UnknownWordText;
     DialogItemID changeTextItem    = kLedStdDlg_SpellCheckBox_ChangeText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
@@ -2820,7 +2820,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
     DialogItemID changeTextItem    = fChangeTextWidget;
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     ::SendMessage (GetDlgItem (GetHWND (), kLedStdDlg_SpellCheckBox_SuggestedList), LB_RESETCONTENT, 0, 0);
 #endif
 
@@ -2830,7 +2830,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
         undefinedWordText = fCurrentMisspellInfo->fUndefinedWord;
         if (not fCurrentMisspellInfo->fSuggestions.empty ()) {
             changeText = fCurrentMisspellInfo->fSuggestions[0];
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             for (auto i = fCurrentMisspellInfo->fSuggestions.begin (); i != fCurrentMisspellInfo->fSuggestions.end (); ++i) {
                 ::SendMessage (GetDlgItem (GetHWND (), kLedStdDlg_SpellCheckBox_SuggestedList), LB_ADDSTRING, 0,
                                reinterpret_cast<LPARAM> (Led_tString2SDKString (*i).c_str ()));
@@ -2847,7 +2847,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
     SetItemText (changeTextItem, Led_tString2SDKString (changeText));
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     SetItemEnabled (kLedStdDlg_SpellCheckBox_IgnoreOnce, fCurrentMisspellInfo != NULL);
     SetItemEnabled (kLedStdDlg_SpellCheckBox_IgnoreAll, fCurrentMisspellInfo != NULL);
     SetItemEnabled (kLedStdDlg_SpellCheckBox_ChangeOnce, fCurrentMisspellInfo != NULL);

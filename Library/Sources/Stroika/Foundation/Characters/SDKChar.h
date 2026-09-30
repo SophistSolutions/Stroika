@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <tchar.h>
 #endif
 
@@ -24,21 +24,27 @@
 namespace Stroika::Foundation::Characters {
 
     /**
-     *  qTargetPlatformSDKUseswchar_t
+     *  qStroika_Foundation_Characters_SDKUseswchar_t
      *
      *  Defines if we use wchar_t or char for most platform interfaces (mostly applicable/useful for windows)
      */
-#ifndef qTargetPlatformSDKUseswchar_t
-#if (defined(_UNICODE) || defined(UNICODE))
-#define qTargetPlatformSDKUseswchar_t 1
+#ifndef qStroika_Foundation_Characters_SDKUseswchar_t
+#if defined(qTargetPlatformSDKUseswchar_t)
+#define qStroika_Foundation_Characters_SDKUseswchar_t qTargetPlatformSDKUseswchar_t
+#elif (defined(_UNICODE) || defined(UNICODE))
+#define qStroika_Foundation_Characters_SDKUseswchar_t 1
 #else
-#define qTargetPlatformSDKUseswchar_t 0
+#define qStroika_Foundation_Characters_SDKUseswchar_t 0
 #endif
+#endif
+// DEPRECATED NAME - since 3.0d25 (to be removed in v3.0a1)
+#ifndef qTargetPlatformSDKUseswchar_t
+#define qTargetPlatformSDKUseswchar_t qStroika_Foundation_Characters_SDKUseswchar_t
 #endif
 
-// Then VALIDATE qTargetPlatformSDKUseswchar_t with respect to other common defines
+// Then VALIDATE qStroika_Foundation_Characters_SDKUseswchar_t with respect to other common defines
 #if defined(_WINDOWS)
-#if qTargetPlatformSDKUseswchar_t
+#if qStroika_Foundation_Characters_SDKUseswchar_t
 #if !defined(_UNICODE) || !defined(UNICODE)
 #error "INCONSITENT VALS"
 #endif
@@ -68,7 +74,7 @@ namespace Stroika::Foundation::Characters {
      *      o   Linux
      *          Same as 'Unix' above - default to assume locale{} based.
      */
-    using SDKChar = conditional_t<qTargetPlatformSDKUseswchar_t, wchar_t, char>;
+    using SDKChar = conditional_t<qStroika_Foundation_Characters_SDKUseswchar_t, wchar_t, char>;
 
 }
 

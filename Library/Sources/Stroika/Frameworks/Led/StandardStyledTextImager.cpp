@@ -239,9 +239,9 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
     // Note - we COULD have simply checked at the end of each loop count a bunch of 'IsValid' booleans. That would have
     // been simpler. But it would have been more costly (performance).
     int countOfValidThings = 7 +
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
                              4
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
                              1
 #elif qStroika_FeatureSupported_XWindows
                              0 //  X-TMP-HACK-LGP991213    -- Not quite a hack - but revisit when we have REAL X-Font support
@@ -290,7 +290,7 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
                     break;
                 }
             }
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
             if (fontSpec.GetStyle_Outline_Valid () and fontSpec.GetStyle_Outline () != isr.GetStyle_Outline ()) {
                 fontSpec.InvalidateStyle_Outline ();
                 if (--countOfValidThings == 0) {
@@ -315,7 +315,7 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
                     break;
                 }
             }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
             if (fontSpec.GetStyle_Strikeout_Valid () and fontSpec.GetStyle_Strikeout () != isr.GetStyle_Strikeout ()) {
                 fontSpec.InvalidateStyle_Strikeout ();
                 if (--countOfValidThings == 0) {
@@ -345,7 +345,7 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
     return fontSpec;
 }
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 bool StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChars, short* mode, TextStyle* theStyle)
 {
     //  Require ((*mode & doColor) == 0);   // NB: we currently don't support   doColor,  doAll , addSize

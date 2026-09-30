@@ -812,7 +812,7 @@ namespace {
     void RegressionTest12_WaitAny_ ()
     {
         Debug::TraceContextBumper ctx{"RegressionTest12_WaitAny_"};
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#if qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
         Debug::TimingTrace tt;
         // EXPERIMENTAL
         WaitableEvent                          we1{};
@@ -854,7 +854,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"RegressionTest13_WaitAll_"};
         Debug::TimingTrace        tt;
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#if qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
         // EXPERIMENTAL
         WaitableEvent we1{};
         WaitableEvent we2{};

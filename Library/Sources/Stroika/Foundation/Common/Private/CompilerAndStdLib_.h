@@ -687,7 +687,7 @@ See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
  */
 #ifndef qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
 
-#if defined(__APPLE__) && defined(__MACH__) /*qStroika_Foundation_Common_Platform_MacOS - not not including Defaults_Configuration_Common.h before here*/
+#if defined(__APPLE__) && defined(__MACH__) /*qStroika_Platform_MacOS - not not including Defaults_Configuration_Common.h before here*/
 #define qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy 1
 #else
 #define qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy 0
@@ -703,7 +703,7 @@ ABORTING...
  */
 #ifndef qCompilerAndStdLib_unnamed_semaphores_Buggy
 
-#if defined(__APPLE__) && defined(__MACH__) /*qStroika_Foundation_Common_Platform_MacOS - not not including Defaults_Configuration_Common.h before here*/
+#if defined(__APPLE__) && defined(__MACH__) /*qStroika_Platform_MacOS - not not including Defaults_Configuration_Common.h before here*/
 #define qCompilerAndStdLib_unnamed_semaphores_Buggy 1
 #else
 #define qCompilerAndStdLib_unnamed_semaphores_Buggy 0
@@ -2584,17 +2584,25 @@ TRIED alignas to fix on the array but no luck
 #endif
 
 /*
-@CONFIGVAR:     qSilenceAnnoyingCompilerWarnings
+@CONFIGVAR:     qStroika_Foundation_Common_SilenceCompilerWarnings
  *
  *  &note   I looked into doing a simple set of macros to hide the
- *          #if qSilenceAnnoyingCompilerWarnings && __MSVCVER \n#pragma stuff, but VC11 didn't like having
+ *          #if qStroika_Foundation_Common_SilenceCompilerWarnings && __MSVCVER \n#pragma stuff, but VC11 didn't like having
  *          the pragmas that disable warnings inside of a macro - so that won't work (I think by definition
  *          of how the C++ spec is written, that should have worked - macros should work as if separate phase
  *          before compiler ahnd then these are compiler pragmas). But if it doesn't work, cannot use it ;-)
  *          -- LGP 2012-11-14
  */
+#ifndef qStroika_Foundation_Common_SilenceCompilerWarnings
+#if defined(qSilenceAnnoyingCompilerWarnings)
+#define qStroika_Foundation_Common_SilenceCompilerWarnings qSilenceAnnoyingCompilerWarnings
+#else
+#define qStroika_Foundation_Common_SilenceCompilerWarnings 1
+#endif
+#endif
+// DEPRECATED NAME - since 3.0d25 (to be removed in v3.0a1)
 #ifndef qSilenceAnnoyingCompilerWarnings
-#define qSilenceAnnoyingCompilerWarnings 1
+#define qSilenceAnnoyingCompilerWarnings qStroika_Foundation_Common_SilenceCompilerWarnings
 #endif
 
 /*
@@ -2605,7 +2613,7 @@ TRIED alignas to fix on the array but no luck
  *******************************************************************
  */
 
-#if qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
+#if qStroika_Foundation_Common_SilenceCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
 // Note - I tried tricks with token pasting, but only seems to work if I do all token pasting
 // and that fails with 'astyle' which breaks up a-b tokens. Need quotes to work with astyle
 // and no way I can find to concatenate strings that works with _Pragma
@@ -2617,7 +2625,7 @@ TRIED alignas to fix on the array but no luck
 #define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)
 #endif
 
-#if qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER)
+#if qStroika_Foundation_Common_SilenceCompilerWarnings && defined(_MSC_VER)
 #define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE) __pragma (warning (push)) __pragma (warning (disable : WARNING_TO_DISABLE))
 #define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE) __pragma (warning (pop))
 #else
@@ -2625,7 +2633,7 @@ TRIED alignas to fix on the array but no luck
 #define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE)
 #endif
 
-#if qSilenceAnnoyingCompilerWarnings && defined(__clang__)
+#if qStroika_Foundation_Common_SilenceCompilerWarnings && defined(__clang__)
 // Note - I tried tricks with token pasting, but only seems to work if I do all token pasting
 // and that fails with 'astyle' which breaks up a-b tokens. Need quotes to work with astyle
 // and no way I can find to concatenate strings that works with _Pragma
@@ -2637,7 +2645,7 @@ TRIED alignas to fix on the array but no luck
 #define DISABLE_COMPILER_CLANG_WARNING_END(WARNING_TO_DISABLE)
 #endif
 
-#if qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER)
+#if qStroika_Foundation_Common_SilenceCompilerWarnings && defined(_MSC_VER)
 // Our pattern of
 //      AssertNotReached();
 //      return x;

@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <random>
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include <arpa/inet.h>
 #include <net/if_arp.h>
 #include <netdb.h>
@@ -15,14 +15,14 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
 #include <linux/ethtool.h>
 #include <linux/sockios.h>
 #include <linux/wireless.h>
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
 #include <net/if.h>
 #endif
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 #include <WinSock2.h>
 
 #include <Windot11.h> // for DOT11_SSID struct
@@ -44,7 +44,7 @@
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Finally.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
@@ -141,7 +141,7 @@ String Interface::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     sb << "internalInterfaceID: "sv << fInternalInterfaceID;
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     sb << ", interfaceName: "sv << GetInterfaceName ();
 #endif
     sb << ", friendlyName: "sv << fFriendlyName;
@@ -182,7 +182,7 @@ String Interface::ToString () const
  ************************** Network::GetInterfaces ******************************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 namespace {
 
     // NB: On macos, we get:
@@ -204,7 +204,7 @@ namespace {
             return r == 0 ? ifreq.ifr_flags : 0;
         };
         int flags = getFlags (sd, i->ifr_name);
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
         auto getWirelessFlag = [] (int sd, const char* name) -> bool {
 #if defined(SIOCGIWNAME)
             iwreq pwrq{};
@@ -219,7 +219,7 @@ namespace {
         if (flags & IFF_LOOPBACK) {
             newInterface.fType = Interface::Type::eLoopback;
         }
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
         else if (getWirelessFlag (sd, i->ifr_name)) {
             newInterface.fType = Interface::Type::eWIFI;
         }
@@ -229,7 +229,7 @@ namespace {
             newInterface.fType = Interface::Type::eWiredEthernet; // WAG - not the right way to tell!
         }
 
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
         {
             ifreq tmp = *i;
             if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
@@ -239,16 +239,16 @@ namespace {
         }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Linux || qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_Linux || qStroika_Platform_MacOS
         auto getNetMaskAsPrefix = [] (int sd, const char* name) -> optional<unsigned int> {
             ifreq ifreq{};
             CString::Copy (ifreq.ifr_name, std::size (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFNETMASK, (char*)&ifreq);
             // On MacOS this often fails, but I've never seen it fail on Linux
             if (r == 0) {
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
                 SocketAddress sa{ifreq.ifr_netmask};
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
                 SocketAddress sa{ifreq.ifr_addr};
 #endif
                 if (sa.IsInternetAddress ()) {
@@ -269,10 +269,10 @@ namespace {
         };
 #endif
 
-#if qStroika_Foundation_Common_Platform_Linux || qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_Linux || qStroika_Platform_MacOS
         auto getDefaultGateway = [] (const char* name) -> optional<InternetAddress> {
             try {
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
                 DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
                 static const filesystem::path                          kFileName_{"/proc/net/route"};
                 /*
@@ -293,7 +293,7 @@ namespace {
                                                static_cast<byte> (tmp[3])};
                     }
                 }
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
                 /*
                  *  NOTE: Could ALSO use netstat -nr   - https://unh.edu/it/kb/article/how-to-route-print-mac-os-x.html
                  *
@@ -355,7 +355,7 @@ namespace {
         }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
         auto getSpeed = [] (int sd, const char* name) -> optional<uint64_t> {
             ifreq ifreq{};
             CString::Copy (ifreq.ifr_name, std::size (ifreq.ifr_name), name);
@@ -398,7 +398,7 @@ namespace {
             }
             else {
                 // see if we can check if physical cable plugged in - https://stackoverflow.com/questions/808560/how-to-detect-the-physical-connected-state-of-a-network-cable-connector
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
                 auto checkCarrierKnownSet = [] (const char* id) -> bool {
 #if !USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextSuppressor suppressTraceInThisBlock; // needlessly noisy on linux systems (due to frequent throw), and more heat than light
@@ -424,7 +424,7 @@ namespace {
         {
             SocketAddress sa{i->ifr_addr};
             if (sa.IsInternetAddress ()) {
-#if qStroika_Foundation_Common_Platform_Linux || qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_Linux || qStroika_Platform_MacOS
                 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
                 newInterface.fBindings.fAddressRanges.Add (CIDR{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
                 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
@@ -475,7 +475,7 @@ namespace {
             // https://linux.die.net/man/7/netdevice strongly suggests ("array of structures" to treat as array - fixed offset per element
             //
             // We'll have to see what other OSes require... --LGP 2018-09-27
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
             size_t len = sizeof (*i);
 #else
             size_t len = IFNAMSIZ + i->ifr_addr.sa_len;
@@ -487,7 +487,7 @@ namespace {
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 namespace {
     /* 
      * This DLL is apparently only available if the Wireless Lan Service feature is installed
@@ -962,9 +962,9 @@ Traversal::Iterable<Interface> SystemInterfacesMgr::GetAll ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"SystemInterfacesMgr::GetAll"};
 #endif
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     Traversal::Iterable<Interface> results = GetInterfaces_POSIX_ ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     Traversal::Iterable<Interface> results = GetInterfaces_Windows_ ();
 #else
     AssertNotImplemented ();

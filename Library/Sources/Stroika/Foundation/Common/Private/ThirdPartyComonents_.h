@@ -18,7 +18,7 @@
 @DESCRIPTION:
 */
 #ifndef qStroika_HasComponent_syslog
-#define qStroika_HasComponent_syslog qStroika_Foundation_Common_Platform_POSIX
+#define qStroika_HasComponent_syslog qStroika_Platform_POSIX
 #endif
 
 /*

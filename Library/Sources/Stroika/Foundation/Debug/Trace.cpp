@@ -360,7 +360,7 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
 #else
             (void)::strcat (buf, buf2);
 #endif
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
             Verify (::snprintf (buf2, std::size (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
             (void)::strcat_s (buf, buf2);
@@ -438,7 +438,7 @@ bool Debug::Private_::Emitter::UnputBufferedCharactersForMatchingToken (TraceLas
 
 void Debug::Private_::Emitter::DoEmit_ (const char* p) noexcept
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     constexpr size_t kMaxLen_ = 1023; // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
     if (::strlen (p) < kMaxLen_) {
         ::OutputDebugStringA (p);
@@ -459,7 +459,7 @@ void Debug::Private_::Emitter::DoEmit_ (const char* p) noexcept
 
 void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p) noexcept
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     constexpr size_t kMaxLen_ = 1023; // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
     if (::wcslen (p) < kMaxLen_) {
         ::OutputDebugStringW (p);

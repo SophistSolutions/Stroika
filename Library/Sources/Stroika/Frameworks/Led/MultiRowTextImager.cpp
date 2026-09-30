@@ -436,11 +436,11 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
             *  on the way out. That way - the drawsegment code need not worry about restoring
             *  these things.
             */
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     tablet->SetPort ();
     RGBColor oldForeColor = GDI_GetForeColor ();
     RGBColor oldBackColor = GDI_GetBackColor ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
     GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
 #endif
@@ -520,7 +520,7 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
         }
     }
     catch (...) {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         // Probably this code (and below case as well) is buggy. Setting back color in offscreen port (which is current now).
         // But the code has been in place for quite some time (don't think broken by my offscreen bitmap move to LedGDI) with no
         // noticable bugs/problems... Reconsider later...
@@ -531,7 +531,7 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
 #endif
         throw;
     }
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     Assert (*tablet == Led_GetCurrentGDIPort ());
     GDI_RGBForeColor (oldForeColor);
     GDI_RGBBackColor (oldBackColor);

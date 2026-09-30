@@ -803,11 +803,11 @@ namespace Stroika::Foundation::Characters {
     }
     inline SDKString String::AsSDKString () const
     {
-#if qTargetPlatformSDKUseswchar_t
+#if qStroika_Foundation_Characters_SDKUseswchar_t
         Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
         span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
         return SDKString{thisData.begin (), thisData.end ()};
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
         Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
         span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
         return SDKString{thisData.begin (), thisData.end ()}; // @todo DOCUMENT THAT MACOS USES UTF8 - SRC - LOGIC/RATIONALE
@@ -817,11 +817,11 @@ namespace Stroika::Foundation::Characters {
     }
     inline SDKString String::AsSDKString (AllowMissingCharacterErrorsFlag) const
     {
-#if qTargetPlatformSDKUseswchar_t
+#if qStroika_Foundation_Characters_SDKUseswchar_t
         Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
         span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
         return SDKString{thisData.begin (), thisData.end ()};
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
         Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
         span<const char8_t> thisData = GetData (&maybeIgnoreBuf1); // Note this always works, since we can always map to UTF-8 any Stroika string
         return SDKString{thisData.begin (), thisData.end ()};      // @todo DOCUMENT THAT MACOS USES UTF8 - SRC - LOGIC/RATIONALE

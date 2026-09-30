@@ -3,15 +3,15 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <shlobj.h>
 #include <windows.h>
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
 #include <cstdlib>
 #endif
 
 #include "Stroika/Foundation/Execution/Throw.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
@@ -34,7 +34,7 @@ using Characters::SDKString;
  */
 filesystem::path FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     // @todo NYI createIfNotPresent - not sure we want/should???
 
     // Cacheable because the environment variables should be set externally.
@@ -49,7 +49,7 @@ filesystem::path FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNo
         return filesystem::path{};
     }();
     return kCachedResult_;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     // @todo DO overlaod with no args, so we can CACHE - like we do for POSIX!
 
     qStroika_ATTRIBUTE_INDETERMINATE wchar_t fileBuf[MAX_PATH]; // SHGetSpecialFolderPathW fills in with OUT parameter
@@ -75,10 +75,10 @@ filesystem::path FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNo
  */
 filesystem::path FileSystem::WellKnownLocations::GetSpoolDirectory ()
 {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     static const filesystem::path kVarSpool_{"/var/spool/"sv};
     return kVarSpool_;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     /// Not sure what better than FOLDERID_ProgramData / "Spool"???
     qStroika_ATTRIBUTE_INDETERMINATE wchar_t fileBuf[MAX_PATH]; // SHGetSpecialFolderPathW fills in with OUT parameter
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, false));
@@ -106,11 +106,11 @@ filesystem::path FileSystem::WellKnownLocations::GetSpoolDirectory ()
  */
 filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     // USED UNTIL STROIKA v2.0a207 - so watch out for older apps - backward compat - static String kVarLib_ = String_Constant{ "/var/lib/" };
     static const filesystem::path kVarLib_{"/var/opt/"sv};
     return kVarLib_;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     qStroika_ATTRIBUTE_INDETERMINATE wchar_t fileBuf[MAX_PATH]; // SHGetSpecialFolderPathW fills in with OUT parameter
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
     filesystem::path result = fileBuf;
@@ -133,10 +133,10 @@ filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool create
  */
 filesystem::path FileSystem::WellKnownLocations::GetRuntimeVariableData ()
 {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     static const filesystem::path kResult_{"/var/run/"sv};
     return kResult_;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     return GetTemporary ();
 #else
     AssertNotImplemented ();
@@ -144,7 +144,7 @@ filesystem::path FileSystem::WellKnownLocations::GetRuntimeVariableData ()
 #endif
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ************** FileSystem::WellKnownLocations::GetWinSxS ***********************

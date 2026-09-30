@@ -14,9 +14,9 @@
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
-#include "Stroika/Frameworks/Led/Config.h" // For qStroika_Foundation_Common_Platform_Windows etc defines...
+#include "Stroika/Frameworks/Led/Config.h" // For qStroika_Platform_Windows etc defines...
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <fcntl.h>
 #include <io.h>
 #elif qStroika_FeatureSupported_XWindows
@@ -40,7 +40,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-#if !qTargetPlatformSDKUseswchar_t
+#if !qStroika_Foundation_Characters_SDKUseswchar_t
 SDKString Led::Led_tString2SDKString (const Led_tString& s)
 {
     return CodeCvt<wchar_t>{locale{}}.String2Bytes<SDKString> (span<const wchar_t>{s});
@@ -79,7 +79,7 @@ string Led::Led_tString2ANSIString (const Led_tString& s)
 */
 void Led::Led_BeepNotify ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     ::MessageBeep (MB_OK);
 #elif qStroika_FeatureSupported_XWindows
     if (gBeepNotifyCallBackProc != nullptr) {
@@ -137,7 +137,7 @@ unsigned long Led::LedTickCount2XTime (float ledTickCount)
 */
 Time::DurationSeconds Led::Led_GetDoubleClickTime ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     return Time::DurationSeconds{float (::GetDoubleClickTime ()) / 1000.0f};
 #else
     return 0.25s; // SAME AS DOUBLE_CLICK_TIME FROM gdkevents.c
@@ -206,13 +206,13 @@ size_t Led::Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tCh
 
 Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
     :
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     fOSClipHandle (nullptr)
     ,
 #endif
     fLockedData (nullptr)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     // perhaps rewrite to use exceptions, but for now - when no cliptype avail - set flag so GoodClip() method can check -
     // just cuz thats what surounding code seems to expect - LGP 980617
     fOSClipHandle = ::GetClipboardData (clipType);
@@ -226,7 +226,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  **************************** VariantArrayPacker ********************************
@@ -306,7 +306,7 @@ size_t VariantArrayUnpacker::GetLength () const
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  **************************** CreateSafeArrayOfBSTR *****************************
@@ -394,10 +394,10 @@ vector<wstring> Led::UnpackVectorOfStringsFromVariantArray (const VARIANT& v)
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 /*
 @METHOD:        DumpSupportedInterfaces
-@DESCRIPTION:   <p>@'qStroika_Foundation_Common_Platform_Windows' only</p>
+@DESCRIPTION:   <p>@'qStroika_Platform_Windows' only</p>
                 <p>Helpful COM debugging utility which dumps to the debugger window all the interfaces
             supported by a given COM object. The arguments 'objectName' and 'levelPrefix' can be nullptr (optional).
             </p>
@@ -509,7 +509,7 @@ void Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const 
 
 /*
 @METHOD:        DumpObjectsInIterator
-@DESCRIPTION:   <p>@'qStroika_Foundation_Common_Platform_Windows' only</p>
+@DESCRIPTION:   <p>@'qStroika_Platform_Windows' only</p>
                 <p>Helpful COM debugging utility which dumps to the debugger window all the subobjects of a given COM object,
             along with the interfaces they supoport (see also @'DumpSupportedInterfaces'). The arguments
             'iteratorName' and 'levelPrefix' can be nullptr (optional).
@@ -666,7 +666,7 @@ void Led_URLManager::Set (Led_URLManager* newURLMgr)
 
 void Led_URLManager::Open (const string& url)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #if qUseActiveXToOpenURLs
     Open_ActiveX (url);
 #endif
@@ -729,7 +729,7 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
     char fullVersionBuf[1024];
     (void)snprintf (fullVersionBuf, std::size (fullVersionBuf), "%d", qLed_FullVersion);
     string fullURL = "http://www.sophists.com" + relURL + "?AppName=" + appName +
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                      string{"&Platform=Windows"} +
 #elif qStroika_FeatureSupported_XWindows
                      string{"&Platform=XWindows"} +

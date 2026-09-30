@@ -60,7 +60,7 @@ bool Execution::MatchesCommandLineArgument (const String& actualArg, const Strin
     if (actualArg.empty ()) {
         return false;
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     if (actualArg[0] != '-' and actualArg[0] != '/') {
         return false;
     }
@@ -235,7 +235,7 @@ CommandLine::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
 {
     switch (wrapInShell) {
         case WrapInShell::eBash:
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         {
             // https://github.com/SophistSolutions/Stroika/issues/132 (STK-1029)
             // Weird bug workaround only needed on Medusa? - unclear why
@@ -253,7 +253,7 @@ CommandLine::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
             fArgs_ += cmdLine;
             fShellStyleQuoting_ = StringShellQuoting::eBash;
             break;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         case WrapInShell::eWindowsCMD: {
             // this is the version of CMD.exe to invoke (I think)
             // https://en.wikipedia.org/wiki/COMSPEC

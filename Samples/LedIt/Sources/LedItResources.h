@@ -28,7 +28,7 @@
 #define kMiscCmdBase (kUserCommandBase + 0x3100)
 
 // Global command numbers
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 #define kCmdUndo cmd_Undo
 #define kFontStylePlainCmd cmd_Plain
 #define kFontStyleBoldCmd cmd_Bold
@@ -39,7 +39,7 @@
 #define kFontStyleCondensedCmd cmd_Condense
 #define kFontStyleExtendedCmd cmd_Extend
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #define kFindCmd ID_EDIT_FIND
 #define kReplaceCmd ID_EDIT_REPLACE
 #define kCmdUndo ID_EDIT_UNDO
@@ -313,7 +313,7 @@
 #endif
 
 // Command Numbers
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 #define kBaseWindowCmd 20600
 #define kLastWindowCmd 20699
 #elif qStroika_FeatureSupported_XWindows
@@ -326,7 +326,7 @@ enum {
 };
 #endif
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 #define kAppleMenuID 128 //  PowerPlant assumes this ID - cannot change - LGP 960614
 #define kFileMenuID 2
 #define kEditMenuID 3
@@ -385,7 +385,7 @@ enum {
 #define WIND_TextDoc 200
 #define prto_TextDoc 201
 
-#elif qRCBWA_Platform_Windows
+#elif qStroika_Platform_Windows
 
 #define IDR_MAINFRAME 128
 #define kLedItDocumentIconID 129

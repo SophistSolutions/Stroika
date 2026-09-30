@@ -33,9 +33,9 @@ namespace {
         {
             Debug::TraceContextBumper                         ctx{"IO::Network::Socket::Listen", "backlog={}"_f, backlog};
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
             Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
             ThrowWSASystemErrorIfSOCKET_ERROR (::listen (fSD_, backlog));
 #else
             AssertNotImplemented ();
@@ -46,10 +46,10 @@ namespace {
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
             sockaddr_storage                                  peer{};
             socklen_t                                         sz = sizeof (peer);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
             return ConnectionOrientedStreamSocket::Attach (
                 Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); }));
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
             return ConnectionOrientedStreamSocket::Attach (
                 ThrowWSASystemErrorIfSOCKET_ERROR (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
 #else

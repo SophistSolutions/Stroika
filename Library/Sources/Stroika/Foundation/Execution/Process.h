@@ -8,32 +8,24 @@
 
 #include <mutex>
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include <sys/types.h>
 #include <unistd.h>
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 #include <Windows.h>
 #include <process.h>
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
 
-#if !defined(qHas_pid_t)
-#error "qHas_pid_t must  be defined in StroikaConfig.h"
-#endif
-
 namespace Stroika::Foundation::Execution {
 
-    /// TODO - maybe move this to configuraiotn module???
-
-#if qHas_pid_t
+#if qStroika_Platform_POSIX
     using pid_t = ::pid_t;
-#else
-#if qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     using pid_t = DWORD;
 #else
     using pid_t = int;
-#endif
 #endif
 
     pid_t GetCurrentProcessID ();

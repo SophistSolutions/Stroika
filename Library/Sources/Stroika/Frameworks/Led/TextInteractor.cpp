@@ -489,7 +489,7 @@ TextInteractor::CommandNames TextInteractor::MakeDefaultCommandNames ()
     cmdNames.fPasteCommandName  = Led_SDK_TCHAROF ("Paste");
     cmdNames.fUndoFormatString  = Led_SDK_TCHAROF ("Undo %s");
     cmdNames.fRedoFormatString  = Led_SDK_TCHAROF ("ReDo %s");
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     cmdNames.fUndoFormatString += Led_SDK_TCHAROF ("\tCtrl+Z");
     cmdNames.fRedoFormatString += Led_SDK_TCHAROF ("\tCtrl+Y");
 #endif
@@ -2780,7 +2780,7 @@ void TextInteractor::OnPasteCommand_After ()
  */
 void TextInteractor::OnPasteCommand_PasteBestFlavor ()
 {
-#if qStroika_Foundation_Common_Platform_Windows && 0
+#if qStroika_Platform_Windows && 0
     // A little debugging hack for windows - sometimes helpful to turn this on
     // to peek in the debugger at what is on the clipboard - LGP 960430
 
@@ -3091,7 +3091,7 @@ void TextInteractor::SetCaretShown (bool shown)
     if (GetCaretShown () != shown) {
         fCaretShown = shown;
         InvalidateCaretState ();
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         // On the mac - when it was shown, and now is not - we MAY need to force an update to get it erased - and when not shown- the
         // InvalidateCaretState () method doesn't force an update.
         if (not shown) {
@@ -3271,10 +3271,10 @@ void TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPre
 #endif
 }
 
-#if qStroika_Foundation_Common_Platform_MacOS || qStroika_FeatureSupported_XWindows
+#if qStroika_Platform_MacOS || qStroika_FeatureSupported_XWindows
 float TextInteractor::GetTickCountBetweenBlinks ()
 {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     return ::GetCaretTime () / 60.0;
 #elif qStroika_FeatureSupported_XWindows
     return 0.4f;

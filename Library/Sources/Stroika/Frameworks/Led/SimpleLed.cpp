@@ -76,7 +76,7 @@ LedDialogText::LedDialogText ()
 {
 }
 
-#if qStroika_Foundation_Common_Platform_Windows && defined(_MFC_VER)
+#if qStroika_Platform_Windows && defined(_MFC_VER)
 void LedDialogText::PostNcDestroy ()
 {
     // Don't auto-delete ourselves!
@@ -91,7 +91,7 @@ int LedDialogText::OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT messa
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows && defined(_MFC_VER)
+#if qStroika_Platform_Windows && defined(_MFC_VER)
 IMPLEMENT_DYNCREATE (LedDialogText, CView)
 BEGIN_MESSAGE_MAP (LedDialogText, LedDialogText::inherited)
 ON_WM_MOUSEACTIVATE ()

@@ -34,7 +34,7 @@ const ObjectVariantMapper AppConfigurationType::kMapper = [] () {
 #if qStroika_HasComponent_syslog
             {"ToSysLog"sv, &AppConfigurationType::Logging::ToSysLog},
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             {"ToWindowsEventLog"sv, &AppConfigurationType::Logging::ToWindowsEventLog},
 #endif
         },

@@ -8,7 +8,7 @@
 
 #include <filesystem>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <Windows.h>
 #else
 #include <dlfcn.h>
@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Execution {
     using Characters::SDKChar;
     using Characters::SDKString;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     using DLLHandle   = HMODULE;
     using ProcAddress = FARPROC;
 #else
@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution {
     using ProcAddress = void*;
 #endif
 
-#if !qStroika_Foundation_Common_Platform_Windows
+#if !qStroika_Platform_Windows
     class DLLException : public Execution::Exception<runtime_error> {
     public:
         DLLException (const char* message);
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Execution {
          */
         DLLLoader (const SDKChar* dllName);
         DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         DLLLoader (const SDKChar* dllName, int flags);
         DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath, int flags);
 #endif

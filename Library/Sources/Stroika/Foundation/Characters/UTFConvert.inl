@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <windows.h>
 #endif
 
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Characters {
         : fOriginalOptions_{options}
         , fUsingOptions{options}
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (fUsingOptions.fPreferredImplementation == nullopt and options.fInvalidCharacterReplacement == nullopt) {
             fUsingOptions.fPreferredImplementation = Options::Implementation::eWindowsAPIWide2FromMultibyte;
         }
@@ -361,7 +361,7 @@ namespace Stroika::Foundation::Characters {
                     return ConvertQuietly_StroikaPortable_ (fUsingOptions.fInvalidCharacterReplacement, ConvertToPrimitiveSpan_ (source),
                                                             ConvertToPrimitiveSpan_ (target));
                 }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                 case Options::Implementation::eWindowsAPIWide2FromMultibyte: {
                     if constexpr ((sizeof (SRC_T) == 1 and sizeof (TRG_T) == 2) or (sizeof (SRC_T) == 2 and sizeof (TRG_T) == 1)) {
                         return ConvertQuietly_Win32_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
@@ -405,7 +405,7 @@ namespace Stroika::Foundation::Characters {
     {
         return span{(CompatibleT_<FromT>*)f.data (), f.size ()};
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline auto UTFConvert::ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target) -> ConversionResultWithStatus
     {
         if (source.begin () == source.end ()) {

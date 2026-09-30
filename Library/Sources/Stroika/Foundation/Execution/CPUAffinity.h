@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Execution {
      *  cannot run on macOS.
      */
     constexpr bool kCPUAffinitySupported =
-#if qStroika_Foundation_Common_Platform_Windows or qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Windows or qStroika_Platform_Linux
         true
 #else
         false

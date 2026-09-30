@@ -595,7 +595,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void ReadPictData (vector<char>* data);
         virtual void ReadTopLevelPictData (TWIPS_Point* shownSize, ImageFormat* imageFormat, TWIPS_Point* bmSize, vector<char>* objData);
         virtual Led_DIB* ConstructDIBFromData (TWIPS_Point shownSize, ImageFormat imageFormat, TWIPS_Point bmSize, size_t nBytes, const void* data);
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         virtual Led_DIB* ConstructDIBFromEMFHelper (TWIPS_Point shownSize, TWIPS_Point bmSize, const HENHMETAFILE hMF);
 #endif
 
@@ -622,7 +622,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         RTFInfo* fRTFInfo;
         bool     fOwnRTFInfo;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     private:
         FontSpecification::FontSize fCachedFontSize; // Keep these as a speedtweek - SetPointSize() expensive on WIN32
         long                        fCachedFontSizeTMHeight;

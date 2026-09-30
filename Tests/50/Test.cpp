@@ -56,7 +56,7 @@ namespace {
             }
             catch (...) {
                 // suppress macOS warn here - just not such locale installed
-#if !qStroika_Foundation_Common_Platform_MacOS
+#if !qStroika_Platform_MacOS
                 SkipTestPart ("test_locale_time_get_date_order_no_order_Buggy not checked: locale {} not installed"_f(localeName));
 #endif
             }
@@ -94,7 +94,7 @@ namespace {
             }
             catch (...) {
                 // suppress macos warn here - just not such locale installed
-#if !qStroika_Foundation_Common_Platform_MacOS
+#if !qStroika_Platform_MacOS
                 SkipTestPart ("localetimeputPCTX_CHECK_StdCPctxTraits not checked: en_US.utf8 locale not installed");
 #endif
             }
@@ -221,7 +221,7 @@ namespace {
                 }
             }
             catch (...) {
-#if !qStroika_Foundation_Common_Platform_MacOS
+#if !qStroika_Platform_MacOS
                 SkipTestPart ("tmget_dot_get_locale_date_order_buggy_test_ not checked: locale not installed");
 #endif
             }

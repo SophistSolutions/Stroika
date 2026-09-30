@@ -12,13 +12,13 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
-#if !qTargetPlatformSDKUseswchar_t
+#if !qStroika_Foundation_Characters_SDKUseswchar_t
 namespace {
     constexpr CodeCvt<wchar_t>::Options kAllowMissing_{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
 }
 #endif
 
-#if not qTargetPlatformSDKUseswchar_t && not qStroika_Foundation_Common_Platform_MacOS
+#if not qStroika_Foundation_Characters_SDKUseswchar_t && not qStroika_Platform_MacOS
 namespace {
     // CodeCvt cannot say whether a replacement is encodable - encoding throws when one is needed and it is not - so ask the locale
     bool LocaleCanEncode_ (const locale& l, Character c)
@@ -86,10 +86,10 @@ namespace {
  ******************************* Characters::SDK2Wide ***************************
  ********************************************************************************
  */
-#if !qTargetPlatformSDKUseswchar_t
+#if !qStroika_Foundation_Characters_SDKUseswchar_t
 wstring Characters::SDK2Wide (span<const SDKChar> s)
 {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8};
     return kCvt_.Bytes2String<wstring> (as_bytes (s));
 #else
@@ -98,7 +98,7 @@ wstring Characters::SDK2Wide (span<const SDKChar> s)
 }
 wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag)
 {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kAllowMissing_};
     return kCvt_.Bytes2String<wstring> (as_bytes (s));
 #else
@@ -112,10 +112,10 @@ wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrors
  ******************************* Characters::Wide2SDK ***************************
  ********************************************************************************
  */
-#if !qTargetPlatformSDKUseswchar_t
+#if !qStroika_Foundation_Characters_SDKUseswchar_t
 SDKString Characters::Wide2SDK (span<const wchar_t> s)
 {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8};
     return kCvt_.String2Bytes<SDKString> (s);
 #else
@@ -124,7 +124,7 @@ SDKString Characters::Wide2SDK (span<const wchar_t> s)
 }
 SDKString Characters::Wide2SDK (span<const wchar_t> s, AllowMissingCharacterErrorsFlag)
 {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kAllowMissing_};
     return kCvt_.String2Bytes<SDKString> (s);
 #else

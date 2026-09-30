@@ -3,13 +3,13 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
 #include <fstab.h>
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 #include <Windows.h>
 #include <winioctl.h>
 #endif
@@ -40,7 +40,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
 namespace {
     // This is quirky, and only works for Linux, and /proc/mounts
     struct Watcher_Proc_Mounts_ {
@@ -79,7 +79,7 @@ namespace {
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 namespace {
     // this also works on Linux, but is a horrible API
     Containers::KeyedCollection<MountedFilesystemType, filesystem::path> ReadMountInfo_getfsent_ ()
@@ -148,7 +148,7 @@ namespace {
         return results;
     }
 }
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
 namespace {
     Containers::KeyedCollection<MountedFilesystemType, filesystem::path> ReadMountInfo_FromProcFSMounts_ ()
     {
@@ -166,7 +166,7 @@ namespace {
     }
 }
 #endif
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
 namespace {
     Collection<MountedFilesystemType> ReadMountInfo_ETC_MTAB_ ()
     {
@@ -176,7 +176,7 @@ namespace {
     }
 }
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 namespace {
     using DynamicDiskIDType_ = filesystem::path;
     DynamicDiskIDType_ GetPhysNameForDriveNumber_ (unsigned int i)
@@ -316,11 +316,11 @@ String MountedFilesystemType::ToString () const
  */
 Containers::KeyedCollection<MountedFilesystemType, filesystem::path> IO::FileSystem::GetMountedFilesystems ()
 {
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
     return ReadMountInfo_FromProcFSMounts_ ();
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
     return ReadMountInfo_getfsent_ ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     return GetMountedFilesystems_Windows_ ();
 #else
     // @todo - maybe a start on macos would be to walk the directory /Volumes

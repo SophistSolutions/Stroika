@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if !qStroika_Foundation_Common_Platform_POSIX
+#if !qStroika_Platform_POSIX
 #error "ONLY INCLUDE FOR POSIX"
 #endif
 

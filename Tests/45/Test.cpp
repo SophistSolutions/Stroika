@@ -799,7 +799,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 #if qStroika_HasComponent_googletest

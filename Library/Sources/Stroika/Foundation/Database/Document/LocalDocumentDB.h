@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
             */
             bool fFlushOnEachWrite{false};
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             /**
              * \see IO::FileSystem::ThroughTmpFileWriter::fRetryOnSharingViolationFor
              */
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
              */
             bool fForceCreateNew{false};
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             /**
              * \see IO::FileSystem::ThroughTmpFileWriter::fRetryOnSharingViolationFor
              */

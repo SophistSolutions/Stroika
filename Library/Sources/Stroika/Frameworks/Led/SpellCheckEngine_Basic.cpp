@@ -30,7 +30,7 @@ using Memory::StackBuffer;
 namespace {
 
 #if qIncludeBakedInDictionaries
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 // Short filenames on MacOS
 #include "Dictionary-Compiled-US-English."
 #else
@@ -851,9 +851,9 @@ vector<Led_tChar> SpellCheckEngine_Basic::EditableDictionary::SaveToBuffer () co
 {
     StackBuffer<Led_tChar> buf{1};
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     const Led_tChar kLineTerm[] = LED_TCHAR_OF ("\r\n");
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
     const Led_tChar kLineTerm[] = LED_TCHAR_OF ("\r");
 #else
     const Led_tChar kLineTerm[] = LED_TCHAR_OF ("\n");

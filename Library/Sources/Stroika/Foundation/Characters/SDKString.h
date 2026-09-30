@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  SDKSTR is a macro to wrap constant string literals to get const SDKChar*
      */
-#if qTargetPlatformSDKUseswchar_t
+#if qStroika_Foundation_Characters_SDKUseswchar_t
 #define SDKSTR(x) L##x
 #else
 #define SDKSTR(x) x

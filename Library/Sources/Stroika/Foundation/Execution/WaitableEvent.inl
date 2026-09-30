@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#if qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #endif
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Execution {
         Reset ();
         return r;
     }
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#if qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
     template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
     inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSeconds timeout)
     {

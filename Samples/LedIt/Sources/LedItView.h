@@ -7,7 +7,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 #include "Stroika/Frameworks/Led/Platform/Led_PP_WordProcessor.h"
 #elif defined(WIN32)
 #include "Stroika/Frameworks/Led/Platform/MFC_WordProcessor.h"
@@ -18,7 +18,7 @@
 #include "LedItConfig.h"
 #include "LedItResources.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 class LedItControlItem;
 class LedItDocument;
 #endif
@@ -26,33 +26,33 @@ class LedItDocument;
 class LedItDocument;
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 using LedItViewAlmostBASE = Platform::Led_MFC_X<WordProcessor>;
 #endif
 
 DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 class LedItView :
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     public Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor>>
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     public Platform::WordProcessorCommonCommandHelper_MFC<LedItViewAlmostBASE>
 #elif qStroika_FeatureSupported_XWindows
     public Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor>>
 #endif
 {
 private:
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     using inherited = Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor>>;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     using inherited = Platform::WordProcessorCommonCommandHelper_MFC<LedItViewAlmostBASE>;
 #elif qStroika_FeatureSupported_XWindows
     using inherited = Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor>>;
 #endif
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 public:
     LedItView ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 protected: // create from serialization only
     LedItView ();
     DECLARE_DYNCREATE (LedItView)
@@ -64,12 +64,12 @@ public:
 public:
     virtual ~LedItView ();
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 protected:
     virtual void OnInitialUpdate () override;
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 public:
     virtual bool OnUpdateCommand (CommandUpdater* enabler) override;
 #endif
@@ -84,21 +84,21 @@ public:
     virtual void GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const override;
     virtual void SetWindowRect (const Led_Rect& windowRect) override;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 public:
     nonvirtual LedItDocument& GetDocument () const;
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     nonvirtual LedItControlItem* GetSoleSelectedOLEEmbedding () const;
 #endif
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 public:
     virtual void FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName) override;
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 public:
     afx_msg void OnContextMenu (CWnd* /*pWnd*/, CPoint /*point*/);
 
@@ -120,7 +120,7 @@ protected:
 public:
     nonvirtual void SetShowHiddenText (bool showHiddenText);
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 protected:
     afx_msg void OnSetFocus (CWnd* pOldWnd);
     afx_msg void OnSize (UINT nType, int cx, int cy);
@@ -144,7 +144,7 @@ DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if !qStroika_Foundation_Debug_AssertionsChecked && qStroika_Foundation_Common_Platform_Windows
+#if !qStroika_Foundation_Debug_AssertionsChecked && qStroika_Platform_Windows
 inline LedItDocument& LedItView::GetDocument () const
 {
     return *(LedItDocument*)m_pDocument;

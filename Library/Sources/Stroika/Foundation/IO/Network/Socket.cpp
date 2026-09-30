@@ -49,15 +49,15 @@ namespace {
 Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind,
                                                                     const optional<IPPROTO>& protocol)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #endif
     Socket::PlatformNativeHandle sfd;
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     sfd = Handle_ErrNoResultInterruption ([=] () -> int {
         return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol)));
     });
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
     ThrowWSASystemErrorIfSOCKET_ERROR (
         sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol))));
@@ -67,11 +67,11 @@ Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddres
 #endif
     if (family == SocketAddress::FamilyType::INET6) {
         int useIPV6Only = not kUseDualStackSockets_;
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
         // Linux follows the RFC, and uses dual-stack mode by default
         constexpr bool kOSDefaultIPV6Only_{false};
         bool           mustSet = static_cast<bool> (useIPV6Only) != kOSDefaultIPV6Only_;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         // Windows defaults to NOT dual sockets, so nothing todo for windows
         constexpr bool kOSDefaultIPV6Only_{true};
         bool           mustSet = static_cast<bool> (useIPV6Only) != kOSDefaultIPV6Only_;
@@ -94,9 +94,9 @@ namespace {
     {
         // auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
         PlatformNativeHandle masterSocket = Socket::_Protected::mkLowLevelSocket_ (family, socketKind, protocol);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { ::close (masterSocket); });
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { ::closesocket (masterSocket); });
 #endif
 
@@ -109,18 +109,18 @@ namespace {
             const int one = 1;
             Verify (::setsockopt (masterSocket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*> (&one), sizeof (one)) == 0);
         }
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         Handle_ErrNoResultInterruption ([masterSocket, &localhost, &localhost_ss] () -> int {
             return ::bind (masterSocket, (sockaddr*)&localhost_ss, static_cast<int> (localhost.GetRequiredSize ()));
         });
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (::bind (masterSocket, (sockaddr*)&localhost_ss, static_cast<int> (localhost.GetRequiredSize ())));
 #endif
 
         // connectionOrientedMaster.Listen (1);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         Handle_ErrNoResultInterruption ([masterSocket] () -> int { return ::listen (masterSocket, 1); });
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (::listen (masterSocket, 1));
 #endif
 
@@ -136,18 +136,18 @@ namespace {
         bool                    succeeded = false;
         [[maybe_unused]] auto&& cleanup2  = Execution::Finally ([&] () noexcept {
             if (not succeeded) {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
                 ::close (endOne);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
                 ::closesocket (endOne);
 #endif
             }
         });
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         Handle_ErrNoResultInterruption ([&] () -> int {
             return ::connect (endOne, (sockaddr*)&masterSocketLocalAddress_ss, static_cast<int> (masterSocketLocalAddress.GetRequiredSize ()));
         });
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (
             ::connect (endOne, (sockaddr*)&masterSocketLocalAddress_ss, static_cast<int> (masterSocketLocalAddress.GetRequiredSize ())));
 #endif
@@ -155,10 +155,10 @@ namespace {
         // fWriteSocket_ = connectionOrientedMaster.Accept ();
         sockaddr_storage peer{};
         socklen_t        sz = sizeof (peer);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         PlatformNativeHandle endTwo =
             Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (masterSocket, reinterpret_cast<sockaddr*> (&peer), &sz); });
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         PlatformNativeHandle endTwo = ThrowWSASystemErrorIfSOCKET_ERROR (::accept (masterSocket, reinterpret_cast<sockaddr*> (&peer), &sz));
 #endif
         succeeded = true; // so endOne not closed
@@ -169,7 +169,7 @@ namespace {
 auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family, Socket::Type socketKind, const optional<IPPROTO>& protocol)
     -> tuple<PlatformNativeHandle, PlatformNativeHandle>
 {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     // docs in https://man7.org/linux/man-pages/man2/socketpair.2.html suggest dont have ot worry about EINTR
     int  sfd[2];
     auto r = ::socketpair (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol)), sfd);
@@ -182,7 +182,7 @@ auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family
         ThrowPOSIXErrNo ();
     }
     return make_tuple (sfd[0], sfd[1]);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     return mkLowLevelSocketPair_BackCompat_ (family, socketKind, protocol);
 #endif
 }
@@ -228,7 +228,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     sockaddr_storage     useSockAddr = sockAddr.As<sockaddr_storage> ();
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
     try {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
         Handle_ErrNoResultInterruption (

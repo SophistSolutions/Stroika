@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Execution {
          *      cmd /C "actual string arg"
          */
         enum class WrapInShell {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             eWindowsCMD,
 #endif
             eBash,

@@ -86,7 +86,7 @@ DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-dec
 #if qStroika_Foundation_Debug_AssertionsChecked
 WaitableEvent::~WaitableEvent ()
 {
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#if qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
     Require (fExtraWaitableEvents_.empty ()); // Cannot kill a waitable event while its being waited on by others
 #endif
 }
@@ -98,7 +98,7 @@ void WaitableEvent::Set ()
     Debug::TraceContextBumper ctx{"WaitableEvent::Set"};
 #endif
     fWE_.Set ();
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#if qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
     [[maybe_unused]] lock_guard critSec{sExtraWaitableEventsMutex_};
     for (const auto& i : fExtraWaitableEvents_) {
         i->Set ();

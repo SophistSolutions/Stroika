@@ -68,7 +68,7 @@ namespace {
     }
     void FatalErrorHandler_ (const Characters::SDKChar* msg) noexcept
     {
-#if qTargetPlatformSDKUseswchar_t
+#if qStroika_Foundation_Characters_SDKUseswchar_t
         cerr << "FAILED: " << Characters::String::FromSDKString (msg) << endl;
 #else
         cerr << "FAILED: " << msg << endl;

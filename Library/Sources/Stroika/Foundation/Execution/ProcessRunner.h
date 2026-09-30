@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Execution {
     class ProcessRunner {
     public:
         static constexpr CommandLine::WrapInShell kDefaultShell =
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             CommandLine::WrapInShell::eWindowsCMD
 #else
             CommandLine::WrapInShell::eBash
@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Execution {
              */
             bool fDetached{false};
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
             /**
              *  \brief set umask of child process
              * 
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Execution {
             optional<mode_t> fChildUMask{027};
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             /**
              *  From: https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
              *  CONSOLE handle from this app not passed to child process. Obviates fDetachConsole.
@@ -220,9 +220,9 @@ namespace Stroika::Foundation::Execution {
         nonvirtual ProcessRunner& operator= (const ProcessRunner&) = delete;
 
     public:
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         using ExitStatusType = uint8_t;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         using ExitStatusType = DWORD;
 #else
         using ExitStatusType = int;
@@ -376,12 +376,12 @@ namespace Stroika::Foundation::Execution {
         nonvirtual tuple<function<void ()>, shared_ptr<DetailedRunnableRep_>> CreateDetailedRunnable_ ();
 
     private:
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         static void Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_>&            runneeDetails,
                                            [[maybe_unused]] const optional<filesystem::path>& executable, const CommandLine& cmdLine,
                                            const ProcessRunner::Options& options, const Streams::InputStream::Ptr<byte>& in,
                                            const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         static void Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRep_>& runneeDetails,
                                              const optional<filesystem::path>& executable, const CommandLine& cmdLine,
                                              const ProcessRunner::Options& options, const Streams::InputStream::Ptr<byte>& in,

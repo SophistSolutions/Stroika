@@ -314,7 +314,7 @@ namespace {
         bool                                fDirty_{true}; // if true, we have changes that haven't yet been flushed to disk
         const bool                          fReadOnly_{false};
         const OpertionCallbackPtr           fOperationLoggingCallback_{nullptr};
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         const optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
 #endif
 
@@ -425,7 +425,7 @@ namespace {
             , fDirty_{not fFlushOnEachWrite_}
             , fReadOnly_{sfOptions.fReadOnly}
             , fOperationLoggingCallback_{options.fOperationLoggingCallback}
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             , fRetryOnSharingViolationFor_{sfOptions.fRetryOnSharingViolationFor}
 #endif
         {
@@ -556,7 +556,7 @@ namespace {
                 }
                 this->fWriter_.Write (VariantValue{collectionsAsVV}, outStream);
                 outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                 tmpFile.fRetryOnSharingViolationFor = fRetryOnSharingViolationFor_;
 #endif
                 tmpFile.Commit (); // any exceptions cause the tmp file to be automatically cleaned up
@@ -587,7 +587,7 @@ namespace {
         const filesystem::path                   fRoot_;
         const DataExchange::Variant::Reader      fReader_;
         const DataExchange::Variant::Writer      fWriter_;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         const optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
 #endif
 
@@ -728,7 +728,7 @@ namespace {
                 IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
                 fDBRep_->fWriter_.Write (vv, outStream);
                 outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                 tmpFile.fRetryOnSharingViolationFor = fDBRep_->fRetryOnSharingViolationFor_;
 #endif
                 tmpFile.Commit (); // any exceptions cause the tmp file to be automatically cleaned up
@@ -765,7 +765,7 @@ namespace {
             , fRoot_{dfOptions.fRoot}
             , fReader_{get<DataExchange::Variant::Reader> (dfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (dfOptions.fSerialization)}
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             , fRetryOnSharingViolationFor_{dfOptions.fRetryOnSharingViolationFor}
 #endif
         {

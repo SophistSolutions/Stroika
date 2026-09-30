@@ -7,10 +7,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <io.h>
 #include <windows.h>
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
 #include <unistd.h>
 #endif
 
@@ -212,7 +212,7 @@ filesystem::path FileSystem::CreateTmpFile (const String& baseName, const filesy
         (void)snprintf (buf, std::size (buf), "-%d", ::rand ());
         filesystem::path trialName = inFolder / (basename + buf + ext).As<filesystem::path> ();
         if (not exists (trialName)) {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             if (HANDLE fd = ::CreateFile (trialName.native ().c_str (), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
                                           nullptr, CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY, nullptr);
                 fd != INVALID_HANDLE_VALUE) {

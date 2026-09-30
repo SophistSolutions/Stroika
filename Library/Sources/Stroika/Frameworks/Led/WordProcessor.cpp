@@ -5,7 +5,7 @@
 
 #include <cctype>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <Windows.h>
 #include <commdlg.h>
 #include <shellapi.h>
@@ -2042,7 +2042,7 @@ bool WordProcessor::DialogSupport::PickOtherFontColor (Color* color)
 {
     RequireNotNull (color);
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     RGBColor oldColor = color->GetOSRep ();
     RGBColor newColor = oldColor;
     Point    where    = {0, 0};
@@ -2050,7 +2050,7 @@ bool WordProcessor::DialogSupport::PickOtherFontColor (Color* color)
         *color = Color (newColor);
         return true;
     }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     CHOOSECOLOR cc;
     memset (&cc, 0, sizeof (cc));
     cc.lStructSize = sizeof (cc);
@@ -2075,7 +2075,7 @@ bool WordProcessor::DialogSupport::PickOtherFontColor (Color* color)
     return false;
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 UINT_PTR CALLBACK WordProcessor::DialogSupport::ColorPickerINITPROC (HWND hWnd, UINT message, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
 {
     if (hWnd != nullptr and message == WM_INITDIALOG) {
@@ -2089,7 +2089,7 @@ bool WordProcessor::DialogSupport::ChooseFont ([[maybe_unused]] IncrementalFontS
 {
     RequireNotNull (font);
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     // Copy each valid attribute into the LOGFONT to initialize the CFontDialog
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
@@ -3256,12 +3256,12 @@ WordProcessor::CommandNames WordProcessor::MakeDefaultCommandNames ()
     cmdNames.fFontSizeChange_Other_NoArg       = Led_SDK_TCHAROF ("Other...");
     cmdNames.fFontSizeChange_Other_OneArg      = Led_SDK_TCHAROF ("Other (%d)...");
     cmdNames.fTablePropertiesCommandName       = Led_SDK_TCHAROF ("Table Properties...")
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Led_SDK_TCHAROF ("\tAlt+Enter")
 #endif
         ;
     cmdNames.fGenericEmbeddingPropertiesCommandName = Led_SDK_TCHAROF ("Properties")
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Led_SDK_TCHAROF ("\tAlt+Enter")
 #endif
         ;
@@ -3462,13 +3462,13 @@ bool WordProcessor::OnUpdateCommand (CommandUpdater* enabler)
             OnUpdateFontStyleUnderlineCommand (enabler);
             return true;
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         case kFontStyleStrikeout_CmdID: {
             OnUpdateFontStyleStrikeoutCommand (enabler);
             return true;
         }
 #endif
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         case kFontStyleOutline_CmdID: {
             OnUpdateFontStyleOutlineCommand (enabler);
             return true;
@@ -3595,13 +3595,13 @@ bool WordProcessor::OnPerformCommand (CommandNumber commandNumber)
             OnFontStyleUnderlineCommand ();
             return true;
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         case kFontStyleStrikeout_CmdID: {
             OnFontStyleStrikeoutCommand ();
             return true;
         }
 #endif
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         case kFontStyleOutline_CmdID: {
             OnFontStyleOutlineCommand ();
             return true;
@@ -3913,7 +3913,7 @@ void WordProcessor::OnFontStyleUnderlineCommand ()
     InteractiveSetFont (applyFontSpec);
 }
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
 void WordProcessor::OnUpdateFontStyleOutlineCommand (CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
@@ -3978,7 +3978,7 @@ void WordProcessor::OnFontStyleExtendedCommand ()
     InteractiveSetFont (applyFontSpec);
 }
 
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 
 void WordProcessor::OnUpdateFontStyleStrikeoutCommand (CommandUpdater* enabler)
 {
@@ -4254,7 +4254,7 @@ void WordProcessor::OnInsertURLCommand ()
 void WordProcessor::OnUpdateInsertSymbolCommand ([[maybe_unused]] CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     enabler->SetEnabled (true);
 #else
     Assert (false); //NYI
@@ -4263,7 +4263,7 @@ void WordProcessor::OnUpdateInsertSymbolCommand ([[maybe_unused]] CommandUpdater
 
 void WordProcessor::OnInsertSymbolCommand ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     (void)::ShellExecute (nullptr, Led_SDK_TCHAROF ("open"), Led_SDK_TCHAROF ("CHARMAP.EXE"), nullptr, Led_SDK_TCHAROF (""), SW_SHOWNORMAL);
 #else
     Assert (false); //NYI
@@ -4639,7 +4639,7 @@ SDKString WordProcessor::GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m)
     else if (dynamic_cast<StandardURLStyleMarker*> (m) != nullptr) {
         return GetCommandNames ().fEmbeddingTypeName_URL;
     }
-#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_MacOS || qStroika_Platform_Windows
     else if (dynamic_cast<StandardMacPictureStyleMarker*> (m) != nullptr) {
         return GetCommandNames ().fEmbeddingTypeName_ImageMacPict;
     }
@@ -5044,7 +5044,7 @@ void WordProcessor::DrawSegment (Tablet* tablet, size_t from, size_t to, const T
                     CoordinateType       hTriangleBase = max (arrowBody.right - kArrowHSize, arrowBody.left);
                     Led_Point            topPt = Led_Point (max (arrowBody.GetTop () - kArrowVSize / 2, tabRect.top), hTriangleBase);
                     Led_Point            botPt = Led_Point (min (arrowBody.GetTop () + kArrowVSize / 2, tabRect.bottom), hTriangleBase);
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                     Brush            backgroundBrush (arrowColor.GetOSRep ());
                     GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
                     GDI_Obj_Selector brush (tablet, backgroundBrush);
@@ -5053,7 +5053,7 @@ void WordProcessor::DrawSegment (Tablet* tablet, size_t from, size_t to, const T
                     pts[1] = AsPOINT (topPt);
                     pts[2] = AsPOINT (botPt);
                     Verify (::Polygon (*tablet, pts, static_cast<int> (std::size (pts))));
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
                     PolyHandle ph = ::OpenPoly ();
                     ::MoveTo (tip.h, tip.v);
                     ::LineTo (topPt.h, topPt.v);

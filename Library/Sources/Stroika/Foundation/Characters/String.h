@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Characters {
      *        the MSYS/cygdrive crap to a path more likely to actually work right. --LGP 2024-03-06
      */
 #ifndef qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
-#define qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin qStroika_Foundation_Common_Platform_Windows
+#define qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin qStroika_Platform_Windows
 #endif
 
 }

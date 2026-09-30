@@ -7,7 +7,7 @@
 
 #include <list>
 #include <sstream>
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <windows.h>
 #endif
 
@@ -27,11 +27,11 @@
 #include "Exceptions.h"
 #include "Synchronized.h"
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include "Platform/POSIX/SignalBlock.h"
 #include "SignalHandlers.h"
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Platform/Windows/WaitSupport.h"
 #endif
 
@@ -79,13 +79,13 @@ namespace {
 
 using Debug::TraceContextBumper;
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 namespace {
     Synchronized<bool> sHandlerInstalled_{false};
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 // Important to use direct signal handler because we send the signal to a specific thread, and must set a thread local
 // variable
 SignalHandler kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
@@ -175,13 +175,13 @@ Thread::Ptr::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] con
     : fRunnable_{runnable}
 {
     // @todo - never used anything from configuration (yet) - should!)
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     static bool sDidInit_{false}; // initialize after main() started, but before any threads
     if (not sDidInit_) {
         sDidInit_                               = true;
         kCallInRepThreadAbortProcSignalHandler_ = SignalHandler{Rep_::InterruptionSignalHandler_, SignalHandler::Type::eDirect};
     }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     if (configuration.has_value () and configuration->fThrowInterruptExceptionInsideUserAPC.has_value ()) {
         fThrowInterruptExceptionInsideUserAPC_ = configuration->fThrowInterruptExceptionInsideUserAPC.value ();
     }
@@ -255,7 +255,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD Characters::String Thread:
     if (fInitialPriority_.load () != nullopt) [[unlikely]] {
         sb << ", initialPriority: "sv << fInitialPriority_.load ();
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     sb << ", throwInterruptExceptionInsideUserAPC: "sv << fThrowInterruptExceptionInsideUserAPC_;
 #endif
     sb << "}"sv;
@@ -265,9 +265,9 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD Characters::String Thread:
 void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()
 {
     if (GetNativeHandle () != NativeHandleType{}) {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         (void)::SetThreadDescription (GetNativeHandle (), fThreadName_.c_str ()); // ignore errors - just so stuff shows in debugger, but might not have permission to set
-#elif qStroika_Foundation_Common_Platform_POSIX && (__GLIBC__ > 2 or (__GLIBC__ == 2 and __GLIBC_MINOR__ >= 12))
+#elif qStroika_Platform_POSIX && (__GLIBC__ > 2 or (__GLIBC__ == 2 and __GLIBC_MINOR__ >= 12))
         // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
         //
         // according to http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html - the length max is 15 characters
@@ -289,7 +289,7 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
 #endif
     NativeHandleType nh = GetNativeHandle ();
     if (nh != NativeHandleType{}) {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         switch (priority) {
             case Priority::eLowest:
                 Verify (::SetThreadPriority (nh, THREAD_PRIORITY_LOWEST));
@@ -309,7 +309,7 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
             default:
                 RequireNotReached ();
         }
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
         /*
          *  pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
          *
@@ -437,7 +437,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 #endif
 
         try {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
             {
                 // we inherit blocked abort signal given how we are created in DoCreate() - so unblock it -
                 // and accept aborts after we've marked reference count as set.
@@ -533,7 +533,7 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
          *      On POSIX - this is sending a signal which generates EINTR error.
          *      On Windoze - this is QueueUserAPC to enter an alertable state.
          */
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         {
             [[maybe_unused]] lock_guard critSec{sHandlerInstalled_};
             if (not sHandlerInstalled_) {
@@ -542,13 +542,13 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
             }
         }
         (void)SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
 #endif
     }
 }
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 void Thread::Ptr::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
 {
     //
@@ -562,7 +562,7 @@ void Thread::Ptr::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
     // Note - using SIG_IGN doesn't work, because then the signal doesn't get delivered, and the EINTR doesn't happen
     //
 }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
 void CALLBACK Thread::Ptr::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
     TraceContextBumper          ctx{"Thread::Ptr::Rep_::CalledInRepThreadAbortProc_"};
@@ -594,7 +594,7 @@ namespace {
             if (cfg->fStackGuard) {
                 result.fStackSize = *cfg->fStackGuard;
             }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             if (cfg->fThrowInterruptExceptionInsideUserAPC) {
                 result.fThrowInterruptExceptionInsideUserAPC = *cfg->fThrowInterruptExceptionInsideUserAPC;
             }
@@ -828,7 +828,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) con
     return false;
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSeconds timeout) const
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -949,7 +949,7 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::Ti
     threads.Apply ([timeoutAt] (const Ptr& t) { t.WaitForDoneUntil (timeoutAt); });
 }
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 namespace {
     SignalID sSignalUsedForThreadInterrupt_ = SIGUSR2;
 }
@@ -998,9 +998,9 @@ string Thread::FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo
     stringstream out;
     out << threadID;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     constexpr size_t kSizeOfThreadID_ = sizeof (DWORD); // All MSFT SDK Thread APIs use DWORD for thread id
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
     constexpr size_t kSizeOfThreadID_ = sizeof (pthread_t);
 #else
     // on MSFT this object is much larger than thread id because it includes handle and id

@@ -560,7 +560,7 @@ namespace Stroika::Foundation::Characters {
             const char16_t*        fMap_;
             optional<byte>         fInvalidCharacterReplacementByte_;
         };
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         struct WindowsNative_ final : CodeCvt<char16_t>::IRep {
             constexpr WindowsNative_ (CodePage cp)
                 : fCodePage_{cp}
@@ -716,7 +716,7 @@ namespace Stroika::Foundation::Characters {
                 fRep_ = Memory::MakeSharedPtr<UTFConvertSwappedRep_<char16_t>> (options);
                 break;
             default:
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                 if (options.fInvalidCharacterReplacement) {
                     Private_::ThrowCodePageNotSupportedException_ (cp); // WindowsNative_ doesn't support fInvalidCharacterReplacement
                 }

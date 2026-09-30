@@ -86,7 +86,7 @@ Characters::String Execution::SignalToName (SignalID signal)
  */
 errno_t Execution::SendSignal ([[maybe_unused]] std::thread::native_handle_type target, [[maybe_unused]] SignalID signal)
 {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     Debug::TraceContextBumper ctx{
         Stroika_Foundation_Debug_OptionalizeTraceArgs ("Stroika::Foundation::Execution::Signals::Execution::SendSignal",
                                                        "target = {:x}, signal = {}"_f, (unsigned long long)(target), SignalToName (signal))};
@@ -94,7 +94,7 @@ errno_t Execution::SendSignal ([[maybe_unused]] std::thread::native_handle_type 
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
         "Stroika::Foundation::Execution::Signals::Execution::SendSignal", "signal = {}"_f, SignalToName (signal))};
 #endif
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     errno_t e = ::pthread_kill (target, signal);
     Verify (e == 0 or e == ESRCH);
     if (e != 0) {

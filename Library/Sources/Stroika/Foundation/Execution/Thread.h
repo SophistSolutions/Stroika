@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Execution {
              */
             optional<size_t> fStackGuard;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             optional<bool> fThrowInterruptExceptionInsideUserAPC;
 #endif
         };
@@ -444,7 +444,7 @@ namespace Stroika::Foundation::Execution {
             nonvirtual void Start () const;
             nonvirtual void Start (WaitUntilStarted) const;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         public:
             /**
              *  CalledInRepThreadAbortProc_ USED TO (until Stroika 2.0a234) - call CheckForThreadInterupption () in most cases. But that appeared to cause some trouble
@@ -668,7 +668,7 @@ namespace Stroika::Foundation::Execution {
              */
             nonvirtual void ThrowIfDoneWithException () const;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         public:
             /**
              *  Look pumping messages until either time2Pump is exceeded or the thread completes.
@@ -1081,7 +1081,7 @@ namespace Stroika::Foundation::Execution {
         Statistics GetStatistics ();
 #endif
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         /**
          *  Unsafe to change this while threads running - at least if you could be interupting threads during this time.
          *  If argument given, this resets the signalNumber.

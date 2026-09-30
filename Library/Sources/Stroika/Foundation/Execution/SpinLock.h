@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Execution {
     constexpr bool kSpinLock_IsFasterThan_mutex =
 #if defined(_GLIBCXX_RELEASE)
         false // libstdc++ (whichever compiler builds it): measured 1.22 .. 1.57 - its uncontended std::mutex wins
-#elif defined(_LIBCPP_VERSION) and qStroika_Foundation_Common_Platform_MacOS
+#elif defined(_LIBCPP_VERSION) and qStroika_Platform_MacOS
         true // libc++ on macOS/arm64: measured 0.72
 #elif defined(_LIBCPP_VERSION)
         false // libc++ elsewhere (Linux): measured 0.99, a tie - so prefer mutex, which degrades better under contention

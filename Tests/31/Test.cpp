@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <windows.h>
 #if qStroika_HasComponent_ATLMFC
 #include <atlenc.h>
@@ -80,7 +80,7 @@ namespace {
 namespace {
     namespace Base64Test {
 
-#if qStroika_Foundation_Common_Platform_Windows && qStroika_HasComponent_ATLMFC
+#if qStroika_Platform_Windows && qStroika_HasComponent_ATLMFC
         using Encoding::Algorithm::LineBreak;
         vector<byte> DecodeBase64_ATL_ (const string& s)
         {
@@ -127,7 +127,7 @@ namespace {
         inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
         {
             using namespace Encoding::Algorithm;
-#if qStroika_Foundation_Common_Platform_Windows && qStroika_HasComponent_ATLMFC
+#if qStroika_Platform_Windows && qStroika_HasComponent_ATLMFC
             EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
                                        (Base64::Options{.fLineBreak = Base64::LineBreak::eCRLF_LB})),
                        EncodeBase64_ATL_ (bytes, Base64::LineBreak::eCRLF_LB));
@@ -138,7 +138,7 @@ namespace {
         }
         inline void VERIFY_ATL_DECODE_ ()
         {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #else
 #endif
         }
@@ -525,7 +525,7 @@ namespace {
                                                                 "ARIA-256-GCM"sv,
 // It appears these failures ONLY happen on X86 and x64 systems --LGP 2021-12-10
 // no idea why these work on windows, but fail on Unix... --LGP 2021-09-14
-#if qStroika_Foundation_Common_Platform_POSIX && (defined(__x86__) || defined(__x86_64__))
+#if qStroika_Platform_POSIX && (defined(__x86__) || defined(__x86_64__))
                                                                 "AES-256-CBC-HMAC-SHA256"sv,
                                                                 "AES-256-CBC-HMAC-SHA1"sv,
                                                                 "AES-128-CBC-HMAC-SHA256"sv,

@@ -15,7 +15,7 @@
 
 #include "LedItConfig.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 class ColorMenu : public CMenu {
 public:
     ColorMenu ();

@@ -24,20 +24,9 @@
 
 /*
  *  The Windows resource compiler (rc.exe) also reads this header (for the dialog templates in StdDialogs.inc.r), and it
- *  truncates identifiers to 31 characters - so under rc.exe every qStroika_Foundation_Common_Platform_XXX is the SAME macro
- *  (qStroika_Foundation_Common_Plat, warning RC4011), holding whichever value was defined last. That silently dropped every
- *  Led standard dialog (About, Find, Replace...) from LedIt and LedLineIt. So the #if tests below use these short names:
- *  under rc.exe - which only ever builds Windows resources - they are fixed; otherwise they are exactly the usual macros.
+ *  truncates identifiers to 31 characters - so the #if tests here use the qStroika_Platform_ names, which are short
+ *  enough for it (see Design-Overview.md "Macro names").
  */
-#if defined(RC_INVOKED)
-#define qLedDlgPlatform_Windows_ 1
-#define qLedDlgPlatform_MacOS_ 0
-#define qLedDlgPlatform_XWindows_ 0
-#else
-#define qLedDlgPlatform_Windows_ qStroika_Foundation_Common_Platform_Windows
-#define qLedDlgPlatform_MacOS_ qStroika_Foundation_Common_Platform_MacOS
-#define qLedDlgPlatform_XWindows_ qStroika_FeatureSupported_XWindows
-#endif
 
 /*
 @CONFIGVAR:     qUseGTKForLedStandardDialogs
@@ -48,7 +37,7 @@
                 <p>This flag defaults to true, iff qStroika_FeatureSupported_XWindows is true.</p>
  */
 #ifndef qUseGTKForLedStandardDialogs
-#define qUseGTKForLedStandardDialogs qLedDlgPlatform_XWindows_
+#define qUseGTKForLedStandardDialogs qStroika_FeatureSupported_XWindows
 #endif
 
 #if qUseGTKForLedStandardDialogs
@@ -58,9 +47,9 @@
 // MFC must define something like this someplace, but I haven't found where....
 // Use this for now, so I can update things more easily when I find the MFC definition...
 #ifndef kLedStdDlgCommandBase
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
 #define kLedStdDlgCommandBase 0x0
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
 #define kLedStdDlgCommandBase 0x1000
 #endif
 #endif
@@ -74,13 +63,13 @@
 @CONFIGVAR:     qSupportLedDialogWidgets
 @DESCRIPTION:   <p>Support the @'LedDialogWidget' class. This requires you link with SimpleTextStore.cpp,
             SimpleTextImager.cpp, and SimpleTextInteractor.cpp.</p>
-                <p>This flag defaults to true, iff qStroika_Foundation_Common_Platform_Windows is true.</p>
+                <p>This flag defaults to true, iff qStroika_Platform_Windows is true.</p>
  */
 #ifndef qSupportLedDialogWidgets
-#define qSupportLedDialogWidgets (qLedDlgPlatform_Windows_)
+#define qSupportLedDialogWidgets (qStroika_Platform_Windows)
 #endif
 
-#if qSupportLedDialogWidgets && qLedDlgPlatform_Windows_ && defined(__cplusplus)
+#if qSupportLedDialogWidgets && qStroika_Platform_Windows && defined(__cplusplus)
 #include "Platform/Windows.h"
 #include "SimpleTextInteractor.h"
 #include "SimpleTextStore.h"
@@ -112,7 +101,7 @@ namespace Stroika::Frameworks::Led {
     private:
         bool fAllowNone;
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     public:
         nonvirtual void Attach (HWND popup);
 
@@ -120,11 +109,11 @@ namespace Stroika::Frameworks::Led {
         HWND fHWnd;
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     public:
         nonvirtual void OnSelChange ();
 #endif
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     private:
         nonvirtual void DoMenuAppends ();
         nonvirtual void AppendMenuString (const SDKString& s);
@@ -186,11 +175,11 @@ namespace Stroika::Frameworks::Led {
             @DESCRIPTION:   <p></p>
             */
     class LedComboBoxWidget
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
         : public Platform::SimpleWin32WndProcHelper
 #endif
     {
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     private:
         using inherited = Platform::SimpleWin32WndProcHelper;
 #endif
@@ -199,7 +188,7 @@ namespace Stroika::Frameworks::Led {
         LedComboBoxWidget ();
         virtual ~LedComboBoxWidget ();
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     public:
         nonvirtual bool ReplaceWindow (HWND hWnd);
 #endif
@@ -215,7 +204,7 @@ namespace Stroika::Frameworks::Led {
     private:
         vector<Led_tString> fPopupItems;
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     public:
         virtual LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 
@@ -224,7 +213,7 @@ namespace Stroika::Frameworks::Led {
         virtual LRESULT OnSize_Msg (WPARAM wParam, LPARAM lParam);
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     protected:
         struct MyButton : public SimpleWin32WndProcHelper {
             using inherited = SimpleWin32WndProcHelper;
@@ -238,7 +227,7 @@ namespace Stroika::Frameworks::Led {
         friend struct MyButton;
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     protected:
         struct MyComboListBoxPopup : public SimpleWin32WndProcHelper {
             using inherited = SimpleWin32WndProcHelper;
@@ -254,7 +243,7 @@ namespace Stroika::Frameworks::Led {
         friend struct MyComboListBoxPopup;
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     protected:
         DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
         struct MyTextWidget : public LedDialogWidget {
@@ -277,7 +266,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void TogglePopupShown ();
 
     private:
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
         MyButton            fPopupButton;
         MyComboListBoxPopup fComboListBoxPopup;
         MyTextWidget        fTextWidget;
@@ -293,9 +282,9 @@ namespace Stroika::Frameworks::Led {
             */
     class Led_StdDialogHelper {
     public:
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
         Led_StdDialogHelper (HINSTANCE hInstance, const SDKChar* resID, HWND parentWnd);
-#elif (qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs)
+#elif (qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs)
         Led_StdDialogHelper (GtkWindow* parentWindow);
 #endif
 
@@ -309,17 +298,17 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void ReplaceAllTokens (SDKString* m, const SDKString& token, const SDKString& with);
 
     protected:
-#if (qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs)
+#if (qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs)
         virtual GtkWidget* MakeWindow ();
 #endif
         virtual void PreDoModalHook ();
 
     private:
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
         HINSTANCE      fHINSTANCE;
         const SDKChar* fResID; // not a REAL string  - fake one for MAKEINTRESOURCE - which is why we don't copy with 'string' class
         HWND           fParentWnd;
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         GtkWindow* fParentWindow;
 #endif
 
@@ -337,13 +326,13 @@ namespace Stroika::Frameworks::Led {
                  *  Some cross-platform portability helper functions.
                  */
     public:
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
         using DialogItemID = int;
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         using DialogItemID = GtkWidget*;
 #endif
     public:
-#if qLedDlgPlatform_Windows_ || (qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs)
+#if qStroika_Platform_Windows || (qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs)
         nonvirtual SDKString GetItemText (DialogItemID itemID) const;
         nonvirtual void      SetItemText (DialogItemID itemID, const SDKString& text);
         nonvirtual void      SelectItemText (DialogItemID itemID, size_t from = 0, size_t to = static_cast<size_t> (-1));
@@ -355,18 +344,18 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     private:
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
         bool fSetFocusItemCalled;
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     public:
         nonvirtual HWND GetHWND () const;
         nonvirtual void SetHWND (HWND hWnd);
 
     private:
         HWND fHWnd;
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     public:
         nonvirtual GtkWidget* GetWindow () const;
         nonvirtual void       SetWindow (GtkWidget* w);
@@ -389,12 +378,12 @@ namespace Stroika::Frameworks::Led {
         GtkWidget* fCancelButton;
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     protected:
         virtual BOOL OnInitDialog ();
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     public:
         static BOOL CALLBACK StaticDialogProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -402,7 +391,7 @@ namespace Stroika::Frameworks::Led {
         virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam);
 #endif
 
-#if qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     public:
         static void Static_OnOKButtonClick (GtkWidget* widget, gpointer data);
         static void Static_OnCancelButtonClick (GtkWidget* widget, gpointer data);
@@ -412,7 +401,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdAboutBoxDlg
-#define qSupportStdAboutBoxDlg (qLedDlgPlatform_Windows_ || qUseGTKForLedStandardDialogs)
+#define qSupportStdAboutBoxDlg (qStroika_Platform_Windows || qUseGTKForLedStandardDialogs)
 #endif
 
 #if qSupportStdAboutBoxDlg
@@ -433,18 +422,18 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
         Led_StdDialogHelper_AboutBox (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_AboutBoxID));
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_AboutBox (GtkWindow* parentWindow);
 #endif
 
-#if qLedDlgPlatform_XWindows_
+#if qStroika_FeatureSupported_XWindows
         virtual GtkWidget* MakeWindow () override;
 #endif
 
     protected:
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
         virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
@@ -457,7 +446,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdFindDlg
-#define qSupportStdFindDlg qLedDlgPlatform_Windows_ || qLedDlgPlatform_XWindows_
+#define qSupportStdFindDlg qStroika_Platform_Windows || qStroika_FeatureSupported_XWindows
 #endif
 
 #if qSupportStdFindDlg
@@ -479,18 +468,18 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_FindDialog (int resID = kLedStdDlg_FindBoxID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_FindDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_FindBoxID));
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_FindDialog (GtkWindow* parentWindow);
 #endif
 
     protected:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         virtual bool HandleCommandClick (int itemNum) override;
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
@@ -514,7 +503,7 @@ namespace Stroika::Frameworks::Led {
         virtual void OnFindButton ();
         virtual void OnDontFindButton ();
 
-#if qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     private:
         GtkWidget* fLookupTextWidget;
 
@@ -527,7 +516,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdReplaceDlg
-#define qSupportStdReplaceDlg qLedDlgPlatform_Windows_ || qLedDlgPlatform_XWindows_
+#define qSupportStdReplaceDlg qStroika_Platform_Windows || qStroika_FeatureSupported_XWindows
 #endif
 
 #if qSupportStdReplaceDlg
@@ -553,18 +542,18 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_ReplaceDialog (int resID = kLedStdDlg_ReplaceBoxID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_ReplaceDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ReplaceBoxID));
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_ReplaceDialog (GtkWindow* parentWindow);
 #endif
 
     protected:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         virtual bool HandleCommandClick (int itemNum) override;
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
@@ -605,7 +594,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual void SaveItems ();
 
-#if qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     private:
         GtkWidget* fLookupTextWidget;
         GtkWidget* fReplaceTextWidget;
@@ -621,7 +610,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 #endif
 
-#if qUseGTKForLedStandardDialogs && qLedDlgPlatform_XWindows_ && defined(__cplusplus)
+#if qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows && defined(__cplusplus)
     /*
             @CLASS:         StdFontPickBox
             @DESCRIPTION:   <p>XWindows only. You can define qUseGTKForLedStandardDialogs to 0 to disable inclusion of this resource/code (for size reasons).</p>
@@ -646,7 +635,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdColorPickBox
-#define qSupportStdColorPickBox (qLedDlgPlatform_Windows_ || (qUseGTKForLedStandardDialogs && qLedDlgPlatform_XWindows_))
+#define qSupportStdColorPickBox (qStroika_Platform_Windows || (qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows))
 #endif
 
 #if qSupportStdColorPickBox && defined(__cplusplus)
@@ -660,36 +649,36 @@ namespace Stroika::Frameworks::Led {
                         </p>
             */
     class StdColorPickBox
-#if qUseGTKForLedStandardDialogs && qLedDlgPlatform_XWindows_
+#if qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows
         : public Led_StdDialogHelper
 #endif
     {
-#if qUseGTKForLedStandardDialogs && qLedDlgPlatform_XWindows_
+#if qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows
     private:
         using inherited = Led_StdDialogHelper;
 #endif
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         StdColorPickBox (const Color& initialColor);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         StdColorPickBox (const Color& initialColor);
         StdColorPickBox (HINSTANCE hInstance, HWND parentWnd, const Color& initialColor);
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         StdColorPickBox (GtkWindow* modalParentWindow, const Color& initialColor);
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     private:
         HWND fParentWnd;
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     public:
         virtual bool DoModal ();
 #endif
 
-#if qUseGTKForLedStandardDialogs && qLedDlgPlatform_XWindows_
+#if qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows
     public:
         virtual GtkWidget* MakeWindow () override;
         virtual void       PreDoModalHook () override;
@@ -698,7 +687,7 @@ namespace Stroika::Frameworks::Led {
         virtual void OnOK () override;
 #endif
 
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
     private:
         static UINT_PTR CALLBACK ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 #endif
@@ -709,7 +698,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdFileDlg
-#define qSupportStdFileDlg qLedDlgPlatform_XWindows_
+#define qSupportStdFileDlg qStroika_FeatureSupported_XWindows
 #endif
 
 #if qSupportStdFileDlg && defined(__cplusplus)
@@ -742,7 +731,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportUpdateWin32FileAssocDlg
-#define qSupportUpdateWin32FileAssocDlg qLedDlgPlatform_Windows_
+#define qSupportUpdateWin32FileAssocDlg qStroika_Platform_Windows
 #endif
 
 #if qSupportUpdateWin32FileAssocDlg
@@ -779,7 +768,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportParagraphIndentsDlg
-#define qSupportParagraphIndentsDlg qLedDlgPlatform_Windows_
+#define qSupportParagraphIndentsDlg qStroika_Platform_Windows
 #endif
 
 #if qSupportParagraphIndentsDlg
@@ -798,9 +787,9 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog (int resID = kLedStdDlg_ParagraphIndentsID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd,
                                                     const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ParagraphIndentsID));
 #endif
@@ -829,7 +818,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportParagraphSpacingDlg
-#define qSupportParagraphSpacingDlg qLedDlgPlatform_Windows_
+#define qSupportParagraphSpacingDlg qStroika_Platform_Windows
 #endif
 
 #if qSupportParagraphSpacingDlg
@@ -839,7 +828,7 @@ namespace Stroika::Frameworks::Led {
 #define kParagraphSpacing_Dialog_LineSpaceModeFieldID (kLedStdDlgCommandBase + 7)
 #define kParagraphSpacing_Dialog_LineSpaceArgFieldID (kLedStdDlgCommandBase + 8)
 
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
 #define kParagraphSpacing_Dialog_LineSpaceMENUID (kLedStdDlgMENUBase + 1)
 #define kParagraphSpacing_Dialog_LineSpaceCNTLID (kLedStdDlgCNTLBase + 1)
 #endif
@@ -854,9 +843,9 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog (int resID = kLedStdDlg_ParagraphSpacingID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd,
                                                     const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ParagraphSpacingID));
 #endif
@@ -886,7 +875,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportOtherFontSizeDlg
-#define qSupportOtherFontSizeDlg qLedDlgPlatform_Windows_
+#define qSupportOtherFontSizeDlg qStroika_Platform_Windows
 #endif
 
 #if qSupportOtherFontSizeDlg
@@ -903,9 +892,9 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog (int resID = kLedStdDlg_OtherFontSizeID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_OtherFontSizeDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_OtherFontSizeID));
 #endif
 
@@ -926,7 +915,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportUnknownEmbeddingInfoDlg
-#define qSupportUnknownEmbeddingInfoDlg qLedDlgPlatform_Windows_
+#define qSupportUnknownEmbeddingInfoDlg qStroika_Platform_Windows
 #endif
 
 #if qSupportUnknownEmbeddingInfoDlg
@@ -943,12 +932,12 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog (int resID = kLedStdDlg_UnknownEmbeddingInfoBoxID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
                                                         const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_UnknownEmbeddingInfoBoxID));
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog (GtkWindow* parentWindow);
 #endif
 
@@ -962,7 +951,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportURLXEmbeddingInfoDlg
-#define qSupportURLXEmbeddingInfoDlg qLedDlgPlatform_Windows_
+#define qSupportURLXEmbeddingInfoDlg qStroika_Platform_Windows
 #endif
 
 #if qSupportURLXEmbeddingInfoDlg
@@ -981,12 +970,12 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_URLXEmbeddingInfoDialog (int resID = kLedStdDlg_URLXEmbeddingInfoBoxID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_URLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
                                                      const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_URLXEmbeddingInfoBoxID));
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_URLXEmbeddingInfoDialog (GtkWindow* parentWindow);
 #endif
 
@@ -1001,7 +990,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual void OnOK () override;
 
-#if qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     private:
         GtkWidget* fTitleTextWidget;
         GtkWidget* fURLTextWidget;
@@ -1023,12 +1012,12 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (int resID = kLedStdDlg_AddURLXEmbeddingInfoBoxID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
                                                         const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_AddURLXEmbeddingInfoBoxID));
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (GtkWindow* parentWindow);
 #endif
 
@@ -1042,7 +1031,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual void OnOK () override;
 
-#if qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     private:
         GtkWidget* fTitleTextWidget;
         GtkWidget* fURLTextWidget;
@@ -1052,7 +1041,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportAddNewTableDlg
-#define qSupportAddNewTableDlg qLedDlgPlatform_Windows_ || qLedDlgPlatform_MacOS_
+#define qSupportAddNewTableDlg qStroika_Platform_Windows || qStroika_Platform_MacOS
 #endif
 
 #if qSupportAddNewTableDlg
@@ -1070,11 +1059,11 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_AddNewTableDialog (int resID = kLedStdDlg_AddNewTableBoxID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_AddNewTableDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_AddNewTableBoxID));
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_AddNewTableDialog (GtkWindow* parentWindow);
 #endif
 
@@ -1092,7 +1081,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportEditTablePropertiesDlg
-#define qSupportEditTablePropertiesDlg qLedDlgPlatform_Windows_ || qLedDlgPlatform_MacOS_
+#define qSupportEditTablePropertiesDlg qStroika_Platform_Windows || qStroika_Platform_MacOS
 #endif
 
 #if qSupportEditTablePropertiesDlg
@@ -1111,7 +1100,7 @@ namespace Stroika::Frameworks::Led {
 #define kLedStdDlg_EditTablePropertiesBox_BorderWidth (kLedStdDlgCommandBase + 6)
 #define kLedStdDlg_EditTablePropertiesBox_BorderColor (kLedStdDlgCommandBase + 7)
 
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
 #define kLedStdDlg_EditTablePropertiesBox_BorderColorMENUID (kLedStdDlgMENUBase + 2)
 #define kLedStdDlg_EditTablePropertiesBox_BorderColorCNTLID (kLedStdDlgCNTLBase + 2)
 
@@ -1129,12 +1118,12 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_EditTablePropertiesDialog (int resID = kLedStdDlg_EditTablePropertiesBoxID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_EditTablePropertiesDialog (HINSTANCE hInstance, HWND parentWnd,
                                                        const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_EditTablePropertiesBoxID));
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_EditTablePropertiesDialog (GtkWindow* parentWindow);
 #endif
 
@@ -1160,7 +1149,7 @@ namespace Stroika::Frameworks::Led {
         virtual void PreDoModalHook () override;
 
     protected:
-#if qLedDlgPlatform_Windows_
+#if qStroika_Platform_Windows
         virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
@@ -1203,7 +1192,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdSpellCheckDlg
-#define qSupportStdSpellCheckDlg qLedDlgPlatform_Windows_ || qLedDlgPlatform_XWindows_
+#define qSupportStdSpellCheckDlg qStroika_Platform_Windows || qStroika_FeatureSupported_XWindows
 #endif
 
 #if qSupportStdSpellCheckDlg
@@ -1220,7 +1209,7 @@ namespace Stroika::Frameworks::Led {
 #define kLedStdDlg_SpellCheckBox_Options (kLedStdDlgCommandBase + 10)
 #define kLedStdDlg_SpellCheckBox_Close (kLedStdDlgCommandBase + 11)
 
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
 #define kLedStdDlg_SpellCheckBox_SuggestionsCNTLID (kLedStdDlgCNTLBase + 4)
 #endif
 
@@ -1238,12 +1227,12 @@ namespace Stroika::Frameworks::Led {
         struct MisspellingInfo;
 
     public:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, int resID = kLedStdDlg_SpellCheckBoxID);
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, HINSTANCE hInstance, HWND parentWnd,
                                               const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_SpellCheckBoxID));
-#elif qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, GtkWindow* parentWindow);
 #endif
         ~Led_StdDialogHelper_SpellCheckDialog ();
@@ -1255,9 +1244,9 @@ namespace Stroika::Frameworks::Led {
         MisspellingInfo* fCurrentMisspellInfo;
 
     protected:
-#if qLedDlgPlatform_MacOS_
+#if qStroika_Platform_MacOS
         virtual bool HandleCommandClick (int itemNum) override;
-#elif qLedDlgPlatform_Windows_
+#elif qStroika_Platform_Windows
         virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 #endif
 
@@ -1285,7 +1274,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual void DoFindNextCall ();
 
-#if qLedDlgPlatform_XWindows_ && qUseGTKForLedStandardDialogs
+#if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     private:
         GtkWidget* fLookupTextWidget;
         GtkWidget* fChangeTextWidget;

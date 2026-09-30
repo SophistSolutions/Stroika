@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Thread.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
 #endif
@@ -116,7 +116,7 @@ int main (int argc, const char* argv[])
     /*
      *  Setup basic (optional) error handling.
      */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
     Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ();
 #endif
@@ -130,7 +130,7 @@ int main (int argc, const char* argv[])
     /*
      *  Ignore SIGPIPE is common practice/helpful in POSIX, but not required by the service manager.
      */
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 
@@ -155,7 +155,7 @@ int main (int argc, const char* argv[])
     else {
 #if qStroika_HasComponent_syslog
         Logger::sThe.SetAppenders (MakeSharedPtr<Logger::SysLogAppender> ("Stroika-Sample-Service"sv));
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         Logger::sThe.SetAppenders (MakeSharedPtr<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));
 #endif
     }

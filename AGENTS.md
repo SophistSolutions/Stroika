@@ -375,7 +375,8 @@ still compile". Say which one you did.
   semantics — this is a meaningful visual cue, not inconsistency. Prefixes: `f` (field), `k`
   (constant), `e` (enumerator), `t` (thread_local), `s` (static var), `_` leading (protected),
   `_` trailing (private), `I` (concept name), `q` (a macro naming a value - usable in `#if`, unlike a
-  `k` constant; see Design-Overview.md "'q' versus 'k'"). Prefer prefix `++`/`--` over postfix. Prefer `using
+  `k` constant; see Design-Overview.md "'q' versus 'k'", and "Macro names" for how a macro is named - `qStroika_`
+  prefix, scope, the `qStroika_Platform_*` family, rc.exe's 31-character limit). Prefer prefix `++`/`--` over postfix. Prefer `using
   T = ...` over `typedef`. `New()` static methods return smart pointers, not raw allocations.
   `Parse()` static methods return `optional<T>` instead of throwing, for expected-failure parsing.
   A `Quietly` suffix variant returns `nullopt`/empty instead of throwing.

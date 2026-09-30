@@ -76,7 +76,7 @@ Again:
  */
 String FileSystem::AssureLongFileName (const String& fileName)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     DWORD r = ::GetLongPathNameW (fileName.As<wstring> ().c_str (), nullptr, 0);
     if (r != 0) {
         StackBuffer<wchar_t> buf{Memory::eUninitialized, r};

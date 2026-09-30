@@ -583,7 +583,7 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     void Led_Win32_Helper<BASE_INTERACTOR>::OnChar_Msg (UINT nChar, LPARAM /*lKeyData*/)
     {
-#if !qTargetPlatformSDKUseswchar_t
+#if !qStroika_Foundation_Characters_SDKUseswchar_t
         {
             CodePage useCodePage = Characters::Platform::Windows::Win32PrimaryLangIDToCodePage (LOWORD (::GetKeyboardLayout (nullptr)));
             char     ccc         = nChar;
@@ -2516,7 +2516,7 @@ namespace Stroika::Frameworks::Led::Platform {
         size_t                         len = ::_tcslen (text);
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
 
-#if qTargetPlatformSDKUseswchar_t
+#if qStroika_Foundation_Characters_SDKUseswchar_t
         //::_tcscpy (buf, text);
         (void)::memcpy (buf.begin (), text, (len + 1) * sizeof (text[0]));
 #else
@@ -2651,7 +2651,7 @@ namespace Stroika::Frameworks::Led::Platform {
     }
     inline LRESULT SimpleWin32WndProcHelper::SendMessage (UINT msg, WPARAM wParam, LPARAM lParam)
     {
-#if !qTargetPlatformSDKUseswchar_t
+#if !qStroika_Foundation_Characters_SDKUseswchar_t
         if (IsWindowUNICODE ()) {
             return ::SendMessageW (this->GetValidatedHWND (), msg, wParam, lParam);
         }
@@ -2725,7 +2725,7 @@ namespace Stroika::Frameworks::Led::Platform {
     }
     inline LRESULT SimpleWin32WndProcHelper::DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam)
     {
-#if !qTargetPlatformSDKUseswchar_t
+#if !qStroika_Foundation_Characters_SDKUseswchar_t
         if (IsWindowUNICODE ()) {
             if (fSuperWindowProc == nullptr) {
                 return ::DefWindowProcW (this->GetValidatedHWND (), message, wParam, lParam);

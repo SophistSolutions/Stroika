@@ -27,9 +27,16 @@
 namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
 
 // @todo now we say iff Linux, but also available on BSD, Solaris, and could fetch with procfs
+#ifndef qStroika_Frameworks_SystemPerformance_CPU_SupportLoadAverage
+#if defined(qSupport_SystemPerformance_Instruments_CPU_LoadAverage)
+#define qStroika_Frameworks_SystemPerformance_CPU_SupportLoadAverage qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#else
+#define qStroika_Frameworks_SystemPerformance_CPU_SupportLoadAverage (qStroika_Platform_Linux or qStroika_Platform_MacOS)
+#endif
+#endif
+// DEPRECATED NAME - since 3.0d25 (to be removed in v3.0a1)
 #ifndef qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage                                                                             \
-    (qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_MacOS)
+#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage qStroika_Frameworks_SystemPerformance_CPU_SupportLoadAverage
 #endif
 
     using DataExchange::ObjectVariantMapper;
@@ -38,7 +45,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
      *
      */
     struct Info {
-#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if qStroika_Frameworks_SystemPerformance_CPU_SupportLoadAverage
         struct LoadAverage {
             double f1MinuteAve{};
             double f5MinuteAve{};

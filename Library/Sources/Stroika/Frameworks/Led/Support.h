@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <Windows.h> //
 
 #include <oaidl.h> // for SAFEARRAY
@@ -35,7 +35,7 @@
 #include "Stroika/Foundation/Time/Realtime.h"
 #include "Stroika/Frameworks/Led/Config.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 
@@ -60,7 +60,7 @@ namespace Stroika::Frameworks::Led {
 
     constexpr size_t kBadIndex = size_t (-1);
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     using Foundation::Execution::Platform::Windows::ThrowIfErrorHRESULT;
 #endif
 
@@ -68,7 +68,7 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         Led_tChar
             @todo LOSE THIS TYPE!!!!  - use Stroika::FoundationL::Character::Charactrer
 
-                   STILL need define for chararcter encoding version of GDI API (qTargetPlatformSDKUseswchar_t)
+                   STILL need define for chararcter encoding version of GDI API (qStroika_Foundation_Characters_SDKUseswchar_t)
 
                    For now - use wchar_t - since thats what I did for a long time.
 
@@ -185,7 +185,7 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         Led_SDK_TCHAROF
     @DESCRIPTION:   <p>Like the Win32SDK macro _T(). See @'SDKString'.</p>
     */
-#if qTargetPlatformSDKUseswchar_t
+#if qStroika_Foundation_Characters_SDKUseswchar_t
 #define Led_SDK_TCHAROF(X) LED_TCHAR_OF__ (X)
 #else
 #define Led_SDK_TCHAROF(X) X
@@ -365,10 +365,10 @@ namespace Stroika::Frameworks::Led {
      *
      */
 #ifndef qStroika_Frameworks_Led_SupportClipboard
-#define qStroika_Frameworks_Led_SupportClipboard (qStroika_Foundation_Common_Platform_Windows or qStroika_FeatureSupported_XWindows)
+#define qStroika_Frameworks_Led_SupportClipboard (qStroika_Platform_Windows or qStroika_FeatureSupported_XWindows)
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     using Led_ClipFormat = CLIPFORMAT;
 #elif qStroika_FeatureSupported_XWindows
     using Led_ClipFormat = long;
@@ -377,7 +377,7 @@ namespace Stroika::Frameworks::Led {
     enum Led_ClipFormat : unsigned short {
     };
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     const Led_ClipFormat kTEXTClipFormat = CF_UNICODETEXT;
     //  const Led_ClipFormat    kPICTClipFormat =   CF_METAFILEPICT;
     const Led_ClipFormat kPICTClipFormat = CF_DIB;
@@ -405,7 +405,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual size_t GetDataLength () const;
 
     private:
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         HANDLE fOSClipHandle;
 #endif
         void* fLockedData;
@@ -421,7 +421,7 @@ namespace Stroika::Frameworks::Led {
     void          SyncronizeLedXTickCount (unsigned long xTickCount);
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     class VariantArrayPacker {
     public:
         VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts);
@@ -451,7 +451,7 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     VARIANT CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar_t* const* strsEnd);
     VARIANT CreateSafeArrayOfBSTR (const vector<const wchar_t*>& v);
     VARIANT CreateSafeArrayOfBSTR (const vector<wstring>& v);
@@ -459,7 +459,7 @@ namespace Stroika::Frameworks::Led {
     vector<wstring> UnpackVectorOfStringsFromVariantArray (const VARIANT& v);
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     void DumpSupportedInterfaces (IUnknown* obj, const char* objectName = nullptr, const char* levelPrefix = nullptr);
     void DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName = nullptr, const char* levelPrefix = nullptr);
 #endif

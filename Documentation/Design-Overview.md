@@ -204,6 +204,61 @@ pays to see at a glance which one you have:
 Function-like macros that act as language extensions - `Assert`, `Require`, `DbgTrace` - are named like the functions or keywords
 they stand in for, not with 'q'.
 
+#### Macro names
+
+A macro ignores namespaces, is visible from its `#define` on in everything that includes it, can collide with any other
+library's names, and cannot be exported from a C++ module at all. So a Stroika macro name should say that it is a macro,
+that it is Stroika's, and where it belongs - without being so long that code using it often becomes hard to read. Those
+pull against each other; these rules are how Stroika trades them off.
+
+- **Value macros** - usable in `#if`: configuration flags, feature tests, constants - are named
+  `qStroika_` + *scope* + `_` + *Name*:
+  - The scope is the library and module that own it: `qStroika_Foundation_Execution_...`,
+    `qStroika_Frameworks_WebServer_...`. Add a class or file after that only when it disambiguates
+    (`qStroika_Foundation_Execution_Thread_SupportThreadStatistics`).
+  - A few families describe the build rather than a module, so they have a fixed scope instead:
+    - `qStroika_Platform_<Platform>` - *which* platform this is: OS and ABI identity (Windows, Win32, Win64, POSIX,
+      Linux, MacOS), decided by the compiler's own predefined macros. Short, because it is tested everywhere - and
+      short enough for rc.exe (below).
+    - `qStroika_FeatureSupported_<Feature>` - *whether* a capability is available, whatever the platform (Valgrind, the
+      /proc filesystem); it may depend on what is installed or configured. Code that needs a capability tests the
+      capability, not a list of platforms - so supporting a new platform changes one definition, not every use.
+    - `qStroika_HasComponent_<Component>` - an optional third-party component is present (set by configure).
+    - `qStroika_Version_...`
+    - `qCompilerAndStdLib_<What>_Buggy` - a compiler or standard-library bug workaround, all in
+      Common/Private/CompilerAndStdLib_.h.
+  - The Name is CamelCase. A flag reads as a predicate (`Has...`, `Supports...`, `Use...`). A standard name keeps its own
+    spelling: `pid_t`, `wchar_t`, `cplusplus`.
+- **Function-like and token macros** - they expand to code or attributes, so cannot be tested in `#if` - are named
+  `Stroika_` + *scope* + `_` + *Name*, as in `Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS`. The exception is
+  the short list that acts as language extensions (`Assert`, `Require`, `Ensure`, `Verify`, `DbgTrace`,
+  `DISABLE_COMPILER_..._WARNING_START`/`_END`): they are named like the keywords or functions they stand in for, because
+  they appear everywhere and have to read like code.
+- **Private macros** end in `_` (don't use or reference these outside the file or header that defines them). One that
+  is defined and used in a single `.cpp` needs no prefix. One in a header keeps the prefix, and is `#undef`'d at the end
+  of the header when it can be.
+- **A macro users may set** is an `#ifndef`-guarded default, documented where it is defined as settable - typically by
+  adding `-D...` to the configuration.
+- **Length should shrink as use grows.** A long name is fine for an option set once in a configuration; it is not fine
+  for a name tested all over the code. The short names are the build-wide families and the language-extension macros.
+- **rc.exe** (the Windows resource compiler) truncates identifiers to 31 characters, so longer names that share their
+  first 31 characters silently become one macro. A macro tested in a `.rc`-visible header must be unique in its first
+  31 characters - or the header can test `defined(RC_INVOKED)`, since rc.exe runs only on Windows.
+- **Renaming:** a macro cannot be marked `[[deprecated]]`, so the old name stays as a plain alias, `#define qOld qNew`, in
+  a block marked `// DEPRECATED since 3.0dNN`, until the next 'a' release, and the commit carries an `UPGRADE NOTE:`. For
+  a macro users may set, the default honors a user-set old name too (`#if defined(qOld)` then `#define qNew qOld`, and
+  never redefine `qOld` then - macros expand lazily, so that would change `qNew` as well). Backward compatibility is the
+  goal, not an absolute: where keeping an old name would compromise the forward-looking choice, document the break
+  in the upgrade notes instead.
+
+##### Rationale: modules
+
+`import` brings in no macros, so every macro a Stroika user can test has to reach them through an ordinary header, even
+in a module build. Because every public macro carries the prefix, `#define qStroika_` / `#define Stroika_` (plus the
+language-extension list above) is the complete public macro surface - exactly the list a module build has to provide as
+headers, and a list that can be checked mechanically. Anything else is private. Where `#if` is not actually needed,
+prefer a `k` constant tested with `if constexpr` (see 'q' versus 'k'): it has a type, a namespace, and can be exported.
+
 #### Case
 
 - functions start with upper case (camelcase)

@@ -7,9 +7,9 @@
 #include <fstream>
 #include <random>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <windows.h>
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
 #include <unistd.h>
 #endif
 
@@ -20,7 +20,7 @@
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Throw.h"
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -35,7 +35,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
@@ -103,9 +103,9 @@ ThroughTmpFileWriter::~ThroughTmpFileWriter ()
     if (not fTmpFilePath_.empty ()) {
         DbgTrace ("ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to {}"_f, fRealFilePath_);
         // ignore errors on unlink, cuz nothing to be done in DTOR anyhow...(@todo perhaps should at least tracelog)
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         (void)::unlink (fTmpFilePath_.c_str ());
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         // if antivirus scanning prevents a delete, use this to eventually delete the file
         if (::DeleteFileW (fTmpFilePath_.c_str ()) == 0) {
             (void)::MoveFileExW (fTmpFilePath_.c_str (), nullptr, MOVEFILE_DELAY_UNTIL_REBOOT);
@@ -123,9 +123,9 @@ void ThroughTmpFileWriter::Commit ()
 
     auto activity = LazyEvalActivity ([&] () -> String { return "committing temporary file '{}' to '{}'"_f(fTmpFilePath_, fRealFilePath_); });
     DeclareActivity currentActivity{&activity};
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::rename (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()), fTmpFilePath_, fRealFilePath_);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     try {
         ThrowIfZeroGetLastError (::MoveFileExW (fTmpFilePath_.c_str (), fRealFilePath_.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
     }

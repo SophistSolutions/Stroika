@@ -115,7 +115,7 @@
         <p>This is ON by default (for windows). It degrades gracefully if no IME found.</p>
  */
 #ifndef qStroika_Frameworks_Led_ProvideIMESupport
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #define qStroika_Frameworks_Led_ProvideIMESupport 1
 #else
 #define qStroika_Frameworks_Led_ProvideIMESupport 0
@@ -143,7 +143,7 @@
     Someday soon I'll implement better smart-cut/paste like Style(on Mac) does.</p>
  */
 #ifndef qDoubleClickSelectsSpaceAfterWord
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #define qDoubleClickSelectsSpaceAfterWord 0
 #else
 #define qDoubleClickSelectsSpaceAfterWord 0
@@ -151,7 +151,7 @@
 #endif
 
 #ifndef qStroika_Frameworks_Led_SupportGDI
-#define qStroika_Frameworks_Led_SupportGDI qStroika_Foundation_Common_Platform_Windows
+#define qStroika_Frameworks_Led_SupportGDI qStroika_Platform_Windows
 #endif
 
 /*
@@ -192,7 +192,7 @@ namespace Stroika::Frameworks::Led {
  **************** Windows Specific configuration variables **************
  **************** Windows Specific configuration variables **************
  */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 /*
 @CONFIGVAR:     qUseActiveXToOpenURLs
 @DESCRIPTION:   <p><b>Win32 ONLY</b></p>
@@ -202,7 +202,7 @@ namespace Stroika::Frameworks::Led {
 #define qUseActiveXToOpenURLs 1
 #endif
 
-#endif /*qStroika_Foundation_Common_Platform_Windows*/
+#endif /*qStroika_Platform_Windows*/
 
 /*
  *************** X-Windows Specific configuration variables *************

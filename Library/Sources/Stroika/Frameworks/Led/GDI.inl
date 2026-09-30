@@ -283,7 +283,7 @@ namespace Stroika::Frameworks::Led {
     inline constexpr TWIPS TWIPS::kInch    = TWIPS{1440};
     inline constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     /*
      ********************************************************************************
      ******************************** FontObject ************************************
@@ -324,7 +324,7 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     /*
      ********************************************************************************
      *********************************** Brush **************************************
@@ -369,51 +369,51 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline Region::Region ()
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         : fRgn{::CreateRectRgn (0, 0, 0, 0)}
 #endif
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Foundation::Execution::ThrowIfNull (fRgn);
 #endif
     }
     inline Region::Region (const Led_Rect& r)
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         : fRgn (::CreateRectRgn (r.GetLeft (), r.GetTop (), r.GetRight (), r.GetBottom ()))
 #endif
     {
         Require (r.GetHeight () >= 0);
         Require (r.GetWidth () >= 0);
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Foundation::Execution::ThrowIfNull (fRgn);
 #endif
         Assert (GetBoundingRect () == r or (GetBoundingRect ().IsEmpty () and r.IsEmpty ()));
     }
     inline Region::Region (const Region& from)
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         : fRgn (::CreateRectRgn (0, 0, 0, 0))
 #endif
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Foundation::Execution::ThrowIfNull (fRgn);
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Verify (::CombineRgn (fRgn, from, from, RGN_COPY) != ERROR);
 #endif
     }
     inline const Region& Region::operator= (const Region& rhs)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Verify (::CombineRgn (fRgn, rhs, rhs, RGN_COPY) != ERROR);
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Foundation::Execution::ThrowIfNull (fRgn);
 #endif
         return *this;
     }
     inline Region::~Region ()
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (fRgn != nullptr) {
             ::DeleteObject (fRgn);
         }
@@ -421,7 +421,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool Region::IsEmpty () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         AssertNotNull (fRgn);
 #endif
         Assert (false); //NYI - not used yet - so don't worry about this right now... LGP 2002-12-03
@@ -429,7 +429,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline Led_Rect Region::GetBoundingRect () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         AssertNotNull (fRgn);
         RECT r;
         int  tmp = ::GetRgnBox (fRgn, &r);
@@ -448,7 +448,7 @@ namespace Stroika::Frameworks::Led {
     inline Region operator* (const Region& lhs, const Region& rhs)
     {
         Region result;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Verify (::CombineRgn (result, lhs, rhs, RGN_AND) != ERROR);
 #endif
         return result;
@@ -456,7 +456,7 @@ namespace Stroika::Frameworks::Led {
     inline Region operator+ (const Region& lhs, const Region& rhs)
     {
         Region result;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Verify (::CombineRgn (result, lhs, rhs, RGN_OR) != ERROR);
 #endif
         return result;
@@ -466,7 +466,7 @@ namespace Stroika::Frameworks::Led {
         Led_Rect tmp = lhs;
         return tmp *= rhs;
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline Region::operator HRGN () const
     {
         return fRgn;
@@ -513,7 +513,7 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     /*
      ********************************************************************************
      **************************************** Bitmap ********************************
@@ -550,7 +550,7 @@ namespace Stroika::Frameworks::Led {
      **************************************** Tablet ********************************
      ********************************************************************************
      */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline Tablet::operator HDC () const
     {
         return m_hDC;
@@ -563,7 +563,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline CoordinateType Tablet::CvtFromTWIPSV (TWIPS from) const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (fLogPixelsV == 0) {
             fLogPixelsV = GetDeviceCaps (LOGPIXELSY);
         }
@@ -590,7 +590,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline CoordinateType Tablet::CvtFromTWIPSH (TWIPS from) const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (fLogPixelsH == 0) {
             fLogPixelsH = GetDeviceCaps (LOGPIXELSX);
         }
@@ -617,7 +617,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline TWIPS Tablet::CvtToTWIPSV (CoordinateType from) const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (fLogPixelsV == 0) {
             fLogPixelsV = GetDeviceCaps (LOGPIXELSY);
         }
@@ -643,7 +643,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline TWIPS Tablet::CvtToTWIPSH (CoordinateType from) const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (fLogPixelsH == 0) {
             fLogPixelsH = GetDeviceCaps (LOGPIXELSX);
         }
@@ -662,7 +662,7 @@ namespace Stroika::Frameworks::Led {
 //              return TWIPS (from * 20);   // assume 72dpi on mac
 #endif
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline BOOL Tablet::BitBlt (int x, int y, int nWidth, int nHeight, Tablet* pSrcDC, int xSrc, int ySrc, DWORD dwRop)
     {
         AssertNotNull (m_hDC);
@@ -829,7 +829,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     inline void Tablet::MoveTo (const Led_Point& to)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Assert (m_hDC != nullptr);
         Verify (::MoveToEx (m_hDC, to.h, to.v, nullptr));
 #elif qStroika_FeatureSupported_XWindows
@@ -838,7 +838,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void Tablet::LineTo (const Led_Point& to)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Assert (m_hDC != nullptr);
         Verify (::LineTo (m_hDC, to.h, to.v));
 #elif qStroika_FeatureSupported_XWindows
@@ -849,7 +849,7 @@ namespace Stroika::Frameworks::Led {
     inline Region Tablet::GetClip () const
     {
         Region result;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         int r = ::GetClipRgn (*this, result);
         Assert (r == 0 or r == 1 or r == -1);
         if (r == 0) {
@@ -864,7 +864,7 @@ namespace Stroika::Frameworks::Led {
     inline bool Tablet::GetClip (Region* r) const
     {
         RequireNotNull (r);
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         int res = ::GetClipRgn (*this, *r);
         Assert (res == 0 or res == 1 or res == -1);
         if (res == 0) {
@@ -878,7 +878,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void Tablet::SetClip ()
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Verify (::SelectClipRgn (*this, nullptr) != ERROR);
 #elif qStroika_FeatureSupported_XWindows
         static Led_Rect kWideOpened = Led_Rect (-10000, -10000, 20000, 20000);
@@ -890,7 +890,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void Tablet::SetClip (const Led_Rect& clipTo)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Verify (::SelectClipRgn (*this, Region (clipTo)) != ERROR);
         Ensure (GetClip ().GetBoundingRect () == clipTo);
 #elif qStroika_FeatureSupported_XWindows
@@ -902,7 +902,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void Tablet::SetClip (const Region& clipTo)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Verify (::SelectClipRgn (*this, clipTo) != ERROR);
 #else
         Assert (false); // NYI
@@ -979,7 +979,7 @@ namespace Stroika::Frameworks::Led {
 #if qStroika_Frameworks_Led_SupportGDI
     inline bool Intersect (const Led_Rect& lhs, const Region& rhs)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Region lhsRgn = lhs;
         Region result;
         return result.CombineRgn (&lhsRgn, const_cast<Region*> (&rhs), RGN_AND) != NULLREGION;
@@ -987,7 +987,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool Intersect (const Region& lhs, const Led_Rect& rhs)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Region rhsRgn = rhs;
         Region result;
         return result.CombineRgn (const_cast<Region*> (&lhs), &rhsRgn, RGN_AND) != NULLREGION;
@@ -995,7 +995,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool Intersect (const Region& lhs, const Region& rhs)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Region result;
         return result.CombineRgn (const_cast<Region*> (&lhs), const_cast<Region*> (&rhs), RGN_AND) != NULLREGION;
 #endif
@@ -1084,7 +1084,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline Led_Rect EnsureRectOnScreen ([[maybe_unused]] Led_Rect& r)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         // Get the limits of the 'workarea'
         RECT rWorkArea;
         memset (&rWorkArea, 0, sizeof (rWorkArea));
@@ -1107,7 +1107,7 @@ namespace Stroika::Frameworks::Led {
      ************************************* Led_Point ********************************
      ********************************************************************************
      */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline Led_Point AsLedPoint (POINT p)
     {
         return Led_Point (p.y, p.x);
@@ -1170,7 +1170,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline TWIPS Led_CvtScreenPixelsToTWIPSV (CoordinateType from)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return TWIPS (::MulDiv (from, 1440, Globals::Get ().GetMainScreenLogPixelsV ()));
 #else
         return TWIPS (from * 1440 / Globals::Get ().GetMainScreenLogPixelsV ());
@@ -1184,7 +1184,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline TWIPS Led_CvtScreenPixelsToTWIPSH (CoordinateType from)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return TWIPS (::MulDiv (from, 1440, Globals::Get ().GetMainScreenLogPixelsH ()));
 #else
         return TWIPS (from * 1440 / Globals::Get ().GetMainScreenLogPixelsH ());
@@ -1197,7 +1197,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline CoordinateType Led_CvtScreenPixelsFromTWIPSV (TWIPS from)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return ::MulDiv (from, Globals::Get ().GetMainScreenLogPixelsV (), 1440);
 #else
         return TWIPS{from * Globals::Get ().GetMainScreenLogPixelsV () / 1440};
@@ -1210,7 +1210,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline CoordinateType Led_CvtScreenPixelsFromTWIPSH (TWIPS from)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return ::MulDiv (from, Globals::Get ().GetMainScreenLogPixelsH (), 1440);
 #else
         return TWIPS{from * Globals::Get ().GetMainScreenLogPixelsH () / 1440};
@@ -1224,7 +1224,7 @@ namespace Stroika::Frameworks::Led {
      ******************************* FontMetrics ************************************
      ********************************************************************************
      */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline FontMetrics::FontMetrics (const TEXTMETRIC& from)
         : fPlatformSpecific (from)
     {
@@ -1237,7 +1237,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     inline DistanceType FontMetrics::GetAscent () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return (fPlatformSpecific.tmAscent);
 #elif qStroika_FeatureSupported_XWindows
         return fPlatformSpecific.fAscent;
@@ -1245,7 +1245,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline DistanceType FontMetrics::GetDescent () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return (fPlatformSpecific.tmDescent);
 #elif qStroika_FeatureSupported_XWindows
         return fPlatformSpecific.fDescent;
@@ -1253,7 +1253,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline DistanceType FontMetrics::GetLeading () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return (fPlatformSpecific.tmExternalLeading);
 #elif qStroika_FeatureSupported_XWindows
         return (fPlatformSpecific.fLeading);
@@ -1261,7 +1261,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline DistanceType FontMetrics::GetHeight () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Assert (fPlatformSpecific.tmHeight >= 0);
         Assert (GetAscent () + GetDescent () == DistanceType (fPlatformSpecific.tmHeight));
 #endif
@@ -1273,21 +1273,21 @@ namespace Stroika::Frameworks::Led {
     }
     inline nonvirtual DistanceType FontMetrics::GetMaxCharacterWidth () const
     {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         return fPlatformSpecific.widMax;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         return fPlatformSpecific.tmMaxCharWidth;
 #elif qStroika_FeatureSupported_XWindows
         return fPlatformSpecific.fMaxCharWidth;
 #endif
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline nonvirtual DistanceType FontMetrics::GetAveCharacterWidth () const
     {
         return fPlatformSpecific.tmAveCharWidth;
     }
 #endif
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     inline FontMetrics::operator const FontInfo*() const
     {
         return &fPlatformSpecific;
@@ -1296,7 +1296,7 @@ namespace Stroika::Frameworks::Led {
     {
         return (&fPlatformSpecific);
     }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     inline FontMetrics::operator const TEXTMETRIC*() const
     {
         return &fPlatformSpecific;
@@ -1319,7 +1319,7 @@ namespace Stroika::Frameworks::Led {
         , fBlue{blueValue}
     {
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline Color::Color (COLORREF colorRef)
         : fRed (static_cast<ColorValue> (GetRValue (colorRef)) << 8)
         , fGreen (static_cast<ColorValue> (GetGValue (colorRef)) << 8)
@@ -1339,7 +1339,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fBlue;
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline COLORREF Color::GetOSRep () const
     {
         return RGB (fRed >> 8, fGreen >> 8, fBlue >> 8);
@@ -1375,7 +1375,7 @@ namespace Stroika::Frameworks::Led {
     {
         return static_cast<unsigned int> (::sqrt (static_cast<float> (Distance_Squared (lhs, rhs))));
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline unsigned int Distance_Squared (COLORREF lhs, COLORREF rhs)
     {
         int          rDiff = static_cast<int> (GetRValue (lhs)) - static_cast<int> (GetRValue (rhs));
@@ -1409,7 +1409,7 @@ namespace std {
 }
 
 namespace Stroika::Frameworks::Led {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline Pen::Pen (int nPenStyle, int nWidth, COLORREF crColor)
         : m_hObject{nullptr}
     {
@@ -1495,7 +1495,7 @@ namespace Stroika::Frameworks::Led {
      ********************** FontSpecification::FontNameSpecifier ********************
      ********************************************************************************
      */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline FontSpecification::FontNameSpecifier::FontNameSpecifier ()
     {
         fName[0] = '\0';
@@ -1508,7 +1508,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline FontSpecification::FontSpecification (const IncrementalFontSpecification& from)
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         : fFontInfo (((const FontSpecification&)from).fFontInfo)
 #else
         : fFontFamily (from.fFontFamily)
@@ -1528,7 +1528,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline SDKString FontSpecification::GetFontName () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return fFontInfo.lfFaceName;
 #else
         return fFontFamily.AsSDKString ();
@@ -1537,7 +1537,7 @@ namespace Stroika::Frameworks::Led {
     // FontName info
     inline FontSpecification::FontNameSpecifier FontSpecification::GetFontNameSpecifier () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return fFontInfo.lfFaceName;
 #else
         return fFontFamily;
@@ -1555,7 +1555,7 @@ namespace Stroika::Frameworks::Led {
         if (fSubOrSuperScript != eNoSubOrSuperscript) {
             return false;
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return (fFontInfo.lfItalic == false and fFontInfo.lfWeight <= FW_NORMAL and fFontInfo.lfUnderline == false and fFontInfo.lfStrikeOut == false);
 #else
         return not fBold and not fItalics and not fUnderline;
@@ -1569,7 +1569,7 @@ namespace Stroika::Frameworks::Led {
     inline void FontSpecification::SetStyle_Plain ()
     {
         fSubOrSuperScript = eNoSubOrSuperscript;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fFontInfo.lfItalic    = false;
         fFontInfo.lfWeight    = FW_NORMAL;
         fFontInfo.lfUnderline = false;
@@ -1582,7 +1582,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool FontSpecification::GetStyle_Bold () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return fFontInfo.lfWeight > FW_NORMAL;
 #else
         return fBold;
@@ -1590,7 +1590,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void FontSpecification::SetStyle_Bold (bool isBold)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fFontInfo.lfWeight = isBold ? FW_BOLD : FW_NORMAL;
 #elif qStroika_FeatureSupported_XWindows
         fBold = isBold;
@@ -1598,7 +1598,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool FontSpecification::GetStyle_Italic () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return !!fFontInfo.lfItalic;
 #else
         return fItalics;
@@ -1606,7 +1606,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void FontSpecification::SetStyle_Italic (bool isItalic)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fFontInfo.lfItalic = isItalic;
 #else
         fItalics = isItalic;
@@ -1614,7 +1614,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool FontSpecification::GetStyle_Underline () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return !!fFontInfo.lfUnderline;
 #else
         return fUnderline;
@@ -1622,7 +1622,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void FontSpecification::SetStyle_Underline (bool isUnderline)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fFontInfo.lfUnderline = isUnderline;
 #elif qStroika_FeatureSupported_XWindows
         fUnderline = isUnderline;
@@ -1636,7 +1636,7 @@ namespace Stroika::Frameworks::Led {
     {
         fSubOrSuperScript = subOrSuperScript;
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline bool FontSpecification::GetStyle_Strikeout () const
     {
         return !!fFontInfo.lfStrikeOut;
@@ -1649,7 +1649,7 @@ namespace Stroika::Frameworks::Led {
     // FontSize info
     inline FontSpecification::FontSize FontSpecification::GetPointSize () const
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (fFontInfo.lfHeight >= 0) {
             // I probably should be doing some magic here with subtracing internal leading, or something like that from this value -
             // See GetStaticDefaultFont () and Win32 SDK docs for LOGFONT
@@ -1672,13 +1672,13 @@ namespace Stroika::Frameworks::Led {
     }
     inline void FontSpecification::SetPointSize (FontSize pointSize)
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Globals::Get ().GetMainScreenLogPixelsV (), 72);
 #else
         fFontSize = pointSize;
 #endif
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline long FontSpecification::PeekAtTMHeight () const
     {
         return fFontInfo.lfHeight;
@@ -1696,7 +1696,7 @@ namespace Stroika::Frameworks::Led {
     {
         fTextColor = textColor;
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline LOGFONT FontSpecification::GetOSRep () const
     {
         return fFontInfo;
@@ -1723,7 +1723,7 @@ namespace Stroika::Frameworks::Led {
         fFontInfo.lfPitchAndFamily = 0;
     }
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline FontSpecification::FontSpecification (const LOGFONT& logFont)
         : fFontInfo ()
         , fSubOrSuperScript (eNoSubOrSuperscript)
@@ -1741,7 +1741,7 @@ namespace Stroika::Frameworks::Led {
         }
 
 // Style Info
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
             return false;
         }
@@ -1775,7 +1775,7 @@ namespace Stroika::Frameworks::Led {
         }
 
 // Size Info
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         // Speed tweek to avoid divide and getdevicecaps crap...
         if (lhs.PeekAtTMHeight () == rhs.PeekAtTMHeight ()) {
             return true;
@@ -1813,7 +1813,7 @@ namespace Stroika::Frameworks::Led {
         if (addInTheseAttributes.GetStyle_SubOrSuperScript_Valid ()) {
             SetStyle_SubOrSuperScript (addInTheseAttributes.GetStyle_SubOrSuperScript ());
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
             SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
         }
@@ -1821,7 +1821,7 @@ namespace Stroika::Frameworks::Led {
 
         // Font Size
         if (addInTheseAttributes.GetPointSize_Valid ()) {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
             PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
 #else
@@ -1842,7 +1842,7 @@ namespace Stroika::Frameworks::Led {
             SetTextColor (addInTheseAttributes.GetTextColor ());
         }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         // could have done somewhat earlier, but if so, must be more careful about what else gets changed... (like textcolor not part of this guy)
         if (addInTheseAttributes.GetDidSetOSRepCallFlag ()) {
             LOGFONT lf;
@@ -1865,7 +1865,7 @@ namespace Stroika::Frameworks::Led {
         , fStyleValid_Underline (true)
         , fStyleValid_SubOrSuperScript (true)
         ,
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fStyleValid_Strikeout (true)
         , fDidSetOSRepCallFlag (true)
         ,
@@ -1887,14 +1887,14 @@ namespace Stroika::Frameworks::Led {
     inline void IncrementalFontSpecification::InvalidateFontNameSpecifier ()
     {
         fFontSpecifierValid = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
     {
         fFontSpecifierValid = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetFontNameSpecifier (fontNameSpecifier);
@@ -1902,7 +1902,7 @@ namespace Stroika::Frameworks::Led {
     inline void IncrementalFontSpecification::SetFontName (const SDKString& fontName)
     {
         fFontSpecifierValid = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetFontName (fontName);
@@ -1913,7 +1913,7 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Italic);
         Require (fStyleValid_Underline);
         Require (fStyleValid_SubOrSuperScript);
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Require (fStyleValid_Strikeout);
 #endif
         return inherited::GetStyle_Plain ();
@@ -1921,7 +1921,7 @@ namespace Stroika::Frameworks::Led {
     inline bool IncrementalFontSpecification::GetStyle_Plain_Valid () const
     {
         bool isValid = fStyleValid_Bold and fStyleValid_Italic and fStyleValid_Underline and fStyleValid_SubOrSuperScript;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         isValid = isValid and fStyleValid_Strikeout;
 #endif
         return isValid;
@@ -1932,7 +1932,7 @@ namespace Stroika::Frameworks::Led {
         fStyleValid_Italic           = false;
         fStyleValid_Underline        = false;
         fStyleValid_SubOrSuperScript = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fStyleValid_Strikeout = false;
         fDidSetOSRepCallFlag  = false;
 #endif
@@ -1943,7 +1943,7 @@ namespace Stroika::Frameworks::Led {
         fStyleValid_Italic           = true;
         fStyleValid_Underline        = true;
         fStyleValid_SubOrSuperScript = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fStyleValid_Strikeout = true;
         fDidSetOSRepCallFlag  = false;
 #endif
@@ -1961,14 +1961,14 @@ namespace Stroika::Frameworks::Led {
     inline void IncrementalFontSpecification::InvalidateStyle_Bold ()
     {
         fStyleValid_Bold = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetStyle_Bold (bool isBold)
     {
         fStyleValid_Bold = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetStyle_Bold (isBold);
@@ -1985,14 +1985,14 @@ namespace Stroika::Frameworks::Led {
     inline void IncrementalFontSpecification::InvalidateStyle_Italic ()
     {
         fStyleValid_Italic = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetStyle_Italic (bool isItalic)
     {
         fStyleValid_Italic = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetStyle_Italic (isItalic);
@@ -2009,14 +2009,14 @@ namespace Stroika::Frameworks::Led {
     inline void IncrementalFontSpecification::InvalidateStyle_Underline ()
     {
         fStyleValid_Underline = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetStyle_Underline (bool isUnderline)
     {
         fStyleValid_Underline = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetStyle_Underline (isUnderline);
@@ -2033,19 +2033,19 @@ namespace Stroika::Frameworks::Led {
     inline void IncrementalFontSpecification::InvalidateStyle_SubOrSuperScript ()
     {
         fStyleValid_SubOrSuperScript = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript)
     {
         fStyleValid_SubOrSuperScript = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetStyle_SubOrSuperScript (subOrSuperScript);
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline bool IncrementalFontSpecification::GetStyle_Strikeout () const
     {
         Require (fStyleValid_Strikeout);
@@ -2058,14 +2058,14 @@ namespace Stroika::Frameworks::Led {
     inline void IncrementalFontSpecification::InvalidateStyle_Strikeout ()
     {
         fStyleValid_Strikeout = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
     {
         fStyleValid_Strikeout = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetStyle_Strikeout (isStrikeout);
@@ -2086,20 +2086,20 @@ namespace Stroika::Frameworks::Led {
     {
         fFontSizeValid          = false;
         fFontSizeIncrementValid = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetPointSize (FontSize pointSize)
     {
         fFontSizeValid = true;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetPointSize (pointSize);
         fFontSizeIncrementValid = false;
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline void IncrementalFontSpecification::PokeAtTMHeight (long tmHeight)
     {
         fFontSizeValid          = true;
@@ -2122,14 +2122,14 @@ namespace Stroika::Frameworks::Led {
     {
         fFontSizeValid          = false;
         fFontSizeIncrementValid = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetPointSizeIncrement (short pointSizeIncrement)
     {
         fFontSizeValid = false;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetPointSize ((unsigned short)pointSizeIncrement);
@@ -2153,7 +2153,7 @@ namespace Stroika::Frameworks::Led {
         fTextColorValid = true;
         inherited::SetTextColor (textColor);
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline LOGFONT IncrementalFontSpecification::GetOSRep () const
     {
         Require (fFontSpecifierValid and fStyleValid_Bold and fStyleValid_Italic and fStyleValid_Underline and fFontSizeValid);
@@ -2213,7 +2213,7 @@ namespace Stroika::Frameworks::Led {
         if (addInTheseAttributes.GetStyle_Underline_Valid ()) {
             SetStyle_Underline (addInTheseAttributes.GetStyle_Underline ());
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
             SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
         }
@@ -2221,7 +2221,7 @@ namespace Stroika::Frameworks::Led {
 
         // Font Size
         if (addInTheseAttributes.GetPointSize_Valid ()) {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
             // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
             PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
 #else
@@ -2242,7 +2242,7 @@ namespace Stroika::Frameworks::Led {
             SetTextColor (addInTheseAttributes.GetTextColor ());
         }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         fDidSetOSRepCallFlag = addInTheseAttributes.GetDidSetOSRepCallFlag ();
 #endif
     }
@@ -2294,7 +2294,7 @@ namespace Stroika::Frameworks::Led {
                 return false;
             }
         }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         {
             if (GetStyle_Strikeout_Valid () != rhs.GetStyle_Strikeout_Valid ()) {
                 return false;
@@ -2329,7 +2329,7 @@ namespace Stroika::Frameworks::Led {
                 return false;
             }
             if (GetPointSize_Valid ()) {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                 // Speed tweek to avoid divide and getdevicecaps crap...
                 if (PeekAtTMHeight () == rhs.PeekAtTMHeight ()) {
                     return true;
@@ -2368,7 +2368,7 @@ namespace Stroika::Frameworks::Led {
      */
     inline Color Led_GetTextColor ()
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return Color (::GetSysColor (COLOR_WINDOWTEXT));
 #elif qStroika_FeatureSupported_XWindows
         return (Color::kBlack);
@@ -2382,7 +2382,7 @@ namespace Stroika::Frameworks::Led {
      */
     inline Color Led_GetTextBackgroundColor ()
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         return Color (::GetSysColor (COLOR_WINDOW));
 #elif qStroika_FeatureSupported_XWindows
         return (Color::kWhite);
@@ -2398,7 +2398,7 @@ namespace Stroika::Frameworks::Led {
      */
     inline Color Led_GetSelectedTextColor ()
     {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         RGBColor hiliteRGBValue;
         LMGetHiliteRGB (&hiliteRGBValue);
         /*
@@ -2412,7 +2412,7 @@ namespace Stroika::Frameworks::Led {
         else {
             return (Color::kBlack);
         }
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         //          return Color (::GetSysColor (COLOR_CAPTIONTEXT));
         return Color (::GetSysColor (COLOR_HIGHLIGHTTEXT));
 #elif qStroika_FeatureSupported_XWindows
@@ -2421,11 +2421,11 @@ namespace Stroika::Frameworks::Led {
     }
     inline Color Led_GetSelectedTextBackgroundColor ()
     {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         RGBColor hiliteRGBValue;
         LMGetHiliteRGB (&hiliteRGBValue);
         return Color (hiliteRGBValue);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         //return Color (::GetSysColor (COLOR_ACTIVECAPTION));
         return Color (::GetSysColor (COLOR_HIGHLIGHT));
 #elif qStroika_FeatureSupported_XWindows
@@ -2446,7 +2446,7 @@ namespace Stroika::Frameworks::Led {
         , fOldClip ()
     {
         RequireNotNull (tablet);
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (::GetDeviceCaps (fTablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
             return;
         }
@@ -2460,10 +2460,10 @@ namespace Stroika::Frameworks::Led {
     {
         RequireNotNull (tablet);
         fHasOldClip = tablet->GetClip (&fOldClip);
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         Assert (fHasOldClip);
         tablet->SetClip (fOldClip * clipFurtherTo);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         /*
             *  NB: We must use IntersectClipRect instead of the above SetClip () call because the CLIP on Win32 is in
             *  device rather than logical coordinates.
@@ -2482,10 +2482,10 @@ namespace Stroika::Frameworks::Led {
     {
         RequireNotNull (tablet);
         fHasOldClip = tablet->GetClip (&fOldClip);
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         Assert (fHasOldClip);
         tablet->SetClip (fOldClip * clipFurtherTo);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         Assert (false); // NYI - see SPR#????
 #else
         Assert (false); // NYI
@@ -2494,7 +2494,7 @@ namespace Stroika::Frameworks::Led {
     inline Tablet::ClipNarrowAndRestore::~ClipNarrowAndRestore ()
     {
         AssertNotNull (fTablet);
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         if (::GetDeviceCaps (fTablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
             return;
         }
@@ -2508,7 +2508,7 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     /*
      ********************************************************************************
      ********************************** WindowDC ************************************
@@ -2536,7 +2536,7 @@ namespace Stroika::Frameworks::Led {
      *********************************** GDI_Obj_Selector ***************************
      ********************************************************************************
      */
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect)
         : fTablet (tablet)
         , fRestoreObject (nullptr)
@@ -2553,7 +2553,7 @@ namespace Stroika::Frameworks::Led {
             fRestoreAttribObject = ::SelectObject (tablet->m_hAttribDC, objToSelect);
         }
     }
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
     inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
         : fTablet (tablet)
         ,
@@ -2575,7 +2575,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     inline GDI_Obj_Selector::~GDI_Obj_Selector ()
     {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         //NB: These restore objects CAN be nullptr, if no font (or whatever) selected into DC before we do... (aside from error cases)
         if (fRestoreObject != nullptr) {
             Verify (::SelectObject (fTablet->m_hDC, fRestoreObject));
@@ -2583,7 +2583,7 @@ namespace Stroika::Frameworks::Led {
         if (fRestoreAttribObject != nullptr) {
             Verify (::SelectObject (fTablet->m_hAttribDC, fRestoreAttribObject));
         }
-#elif qStroika_Foundation_Common_Platform_MacOS
+#elif qStroika_Platform_MacOS
         GDI_RGBForeColor (fRestorePen.fPenColor.GetOSRep ());
         ::PenMode (fRestorePen.fPenStyle);
         ::PenPat (&fRestorePen.fPenPat);

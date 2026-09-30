@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <optional>
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <Windows.h>
 #endif
 
@@ -44,7 +44,7 @@ using Instruments::CPU::Options;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 #ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_ qStroika_Foundation_Common_Platform_Windows
+#define qUseWMICollectionSupport_ qStroika_Platform_Windows
 #endif
 
 #if qUseWMICollectionSupport_
@@ -76,7 +76,7 @@ namespace {
     using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
-#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if qStroika_Frameworks_SystemPerformance_CPU_SupportLoadAverage
 namespace {
     template <typename ELT>
     double EstimateRunQFromLoadAveArray_ (Time::DurationSeconds::rep backNSeconds, ELT loadAveArray[3])
@@ -104,7 +104,7 @@ namespace {
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
 namespace {
     struct POSIXSysTimeCaptureContext_ {
         double user;
@@ -224,7 +224,7 @@ namespace {
         nonvirtual Info _InternalCapture ()
         {
             Info result;
-#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if qStroika_Frameworks_SystemPerformance_CPU_SupportLoadAverage
             {
                 double loadAve[3];
                 int    lr = ::getloadavg (loadAve, std::size (loadAve));
@@ -289,7 +289,7 @@ namespace {
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 namespace {
     struct WinSysTimeCaptureContext_ {
         double IdleTime;
@@ -373,17 +373,17 @@ namespace {
 
 namespace {
     struct CPUInstrumentRep_
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
         : InstrumentRep_Linux_
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         : InstrumentRep_Windows_
 #else
         : InstrumentRepBase_<SystemPerformance::Support::Context>
 #endif
     {
-#if qStroika_Foundation_Common_Platform_Linux
+#if qStroika_Platform_Linux
         using inherited = InstrumentRep_Linux_;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         using inherited = InstrumentRep_Windows_;
 #else
         using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
@@ -415,7 +415,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::CPU::{}CPUInstrumentRep_::_InternalCapture"};
 #endif
-#if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Linux or qStroika_Platform_Windows
             Info result = inherited::_InternalCapture ();
 #else
             Info result;
@@ -432,7 +432,7 @@ namespace {
  */
 const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
     ObjectVariantMapper mapper;
-#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if qStroika_Frameworks_SystemPerformance_CPU_SupportLoadAverage
     mapper.AddClass<Info::LoadAverage> ({
         {"1-minute"_k, &Info::LoadAverage::f1MinuteAve},
         {"5-minute"_k, &Info::LoadAverage::f5MinuteAve},
@@ -441,7 +441,7 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
     mapper.AddCommonType<optional<Info::LoadAverage>> ();
 #endif
     mapper.AddClass<Info> ({
-#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#if qStroika_Frameworks_SystemPerformance_CPU_SupportLoadAverage
         {"Load-Average"_k, &Info::fLoadAverage},
 #endif
         {"Total-Logical-Cores"_k, &Info::fTotalLogicalCores},

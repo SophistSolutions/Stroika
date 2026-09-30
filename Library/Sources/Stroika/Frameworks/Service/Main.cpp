@@ -8,14 +8,14 @@
 #include <fstream>
 #include <sstream>
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
@@ -134,9 +134,9 @@ bool Main::IServiceIntegrationRep::HandleCommandLineArgument (const String& s)
  */
 shared_ptr<Main::IServiceIntegrationRep> Main::mkDefaultServiceIntegrationRep ()
 {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     return MakeSharedPtr<BasicUNIXServiceImpl> ();
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     return MakeSharedPtr<WindowsService> ();
 #else
     return MakeSharedPtr<RunNoFrillsService> ();
@@ -291,9 +291,9 @@ void Main::ForcedRestart ([[maybe_unused]] Time::DurationSeconds timeout, [[mayb
 void Main::ReReadConfiguration ()
 {
     Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::ReReadConfiguration"};
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     AssertNotImplemented ();
-#elif qStroika_Foundation_Common_Platform_POSIX
+#elif qStroika_Platform_POSIX
     [[maybe_unused]] pid_t pid = GetServicePID ();
     Assert (pid != 0); // maybe throw if non-zero???
     ThrowPOSIXErrNoIfNegative (::kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
@@ -327,7 +327,7 @@ void Main::Restart (Time::DurationSeconds timeout)
 #if 0
     Time::DurationSeconds endAt =   Time::GetTickCount () + timeout;
     IgnoreExceptionsForCall (Stop (timeout));
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     // REALY should WAIT for server to stop and only do this it fails -
     unlink (_sAppRep->_GetPIDFileName ().AsSDKString ().c_str ());
 #endif
@@ -436,7 +436,7 @@ pid_t Main::LoggerServiceWrapper::_GetServicePID () const
     return fDelegateTo_->_GetServicePID ();
 }
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 /*
  ********************************************************************************
  ******************* Service::Main::BasicUNIXServiceImpl ************************
@@ -700,7 +700,7 @@ void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 /*
  ********************************************************************************
  ************************* Service::Main::WindowsService ************************

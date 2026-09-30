@@ -65,7 +65,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  \note to assure no conflicts in multithreading/multiprocessing scenarios, the file is actually created by this function (empty), but
      *        not kept open.
      * 
-     *  \todo for qStroika_Foundation_Common_Platform_Windows/fRetryOnSharingViolationFor issue/feature, maybe check ACCESS
+     *  \todo for qStroika_Platform_Windows/fRetryOnSharingViolationFor issue/feature, maybe check ACCESS
      *        on eventual target file on CTOR, so any real issues with access caught immediately, before we write through
      *        tmp file
      */
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          */
         nonvirtual void Commit ();
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     public:
         /**
          * Sadly windows has issues with antivirus scanners. They often OPEN a file (frequently when just created like

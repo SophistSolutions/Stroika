@@ -89,7 +89,7 @@ namespace Stroika::Foundation::DataExchange {
          */
         static shared_ptr<IBackendRep> DefaultBackend ();
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     public:
         /**
          *  Use:

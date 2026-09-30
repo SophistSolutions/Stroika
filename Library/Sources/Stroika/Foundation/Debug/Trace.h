@@ -40,8 +40,7 @@ namespace Stroika::Foundation::Debug {
 #if !defined(qStroika_Foundation_Debug_TraceToFile)
 #if defined(qTraceToFile)
 #warning "use qStroika_Foundation_Debug_TraceToFile since Stroika v3.0d4 "
-#define qStroika_Foundation_Debug_TraceToFile qTraceToFile
-#define qTraceToFile 0
+#define qStroika_Foundation_Debug_TraceToFile qTraceToFile // (and leave qTraceToFile alone: redefining it would change this too)
 #else
 #define qStroika_Foundation_Debug_TraceToFile 0
 #endif

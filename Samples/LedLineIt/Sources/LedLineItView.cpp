@@ -125,9 +125,9 @@ public:
     virtual void DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override
     {
         Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback> delegator (callback);
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 #elif qStroika_FeatureSupported_XWindows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
@@ -310,13 +310,13 @@ LedLineItView::LedLineItView ()
     const TWIPS kLedItViewBottomMargin = TWIPS (0);
     const TWIPS kLedItViewLHSMargin    = TWIPS (60);
     const TWIPS kLedItViewRHSMargin    = TWIPS (60);
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     // This SHOULD be available on other platforms, but only now done for WIN32
     SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin,
                                          kLedItViewRHSMargin - kLedItViewLHSMargin));
 #endif
 
-#if qStroika_Foundation_Common_Platform_MacOS || qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_MacOS || qStroika_Platform_Windows
     SetUseSecondaryHilight (true);
 #endif
 }
@@ -673,9 +673,9 @@ void LedLineItView::OnFontSizeChangeCommand (UINT cmdNum)
 
 DistanceType LedLineItView::PickOtherFontHeight (DistanceType origHeight)
 {
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     Led_StdDialogHelper_OtherFontSizeDialog dlg;
-#elif qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     Led_StdDialogHelper_OtherFontSizeDialog dlg{::AfxGetResourceHandle (), ::GetActiveWindow ()};
 #endif
     dlg.InitValues (origHeight);

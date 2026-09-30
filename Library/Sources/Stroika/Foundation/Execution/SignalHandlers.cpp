@@ -15,7 +15,7 @@
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include "Stroika/Foundation/Execution/Platform/POSIX/SemWaitableEvent.h"
 #include "Stroika/Foundation/Execution/Platform/POSIX/SignalBlock.h"
 #endif
@@ -54,7 +54,7 @@ using Containers::Set;
 // https://stackoverflow.com/questions/31117959/waking-up-thread-from-signal-handler
 // -- LGP 2017-09-10
 #ifndef qConditionVariablesSafeInAsyncSignalHanlders
-#define qConditionVariablesSafeInAsyncSignalHanlders !qStroika_Foundation_Common_Platform_POSIX
+#define qConditionVariablesSafeInAsyncSignalHanlders !qStroika_Platform_POSIX
 #endif
 
 /*
@@ -98,7 +98,7 @@ private:
     void waitForNextSig_ ()
     {
 #if qConditionVariablesSafeInAsyncSignalHanlders
-        Assert (not qStroika_Foundation_Common_Platform_POSIX); // this strategy not safe with POSIX signals
+        Assert (not qStroika_Platform_POSIX); // this strategy not safe with POSIX signals
         unique_lock<mutex> lk{fRecievedSig_NotSureWhatMutexFor_};
         fRecievedSig_.wait_for (lk, chrono::seconds (100), [this] () { return fWorkMaybeAvailable_.load (); });
 #else
@@ -108,7 +108,7 @@ private:
     void tell2WakeAfterDataUpdate_ ()
     {
 #if qConditionVariablesSafeInAsyncSignalHanlders
-        Assert (not qStroika_Foundation_Common_Platform_POSIX); // this strategy not safe with POSIX signals
+        Assert (not qStroika_Platform_POSIX); // this strategy not safe with POSIX signals
         fRecievedSig_.notify_one ();
         {
             [[maybe_unused]] auto&& lk = lock_guard{fRecievedSig_NotSureWhatMutexFor_};
@@ -380,7 +380,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
     }
 
     auto sigSetHandler = [] (SignalID signal, [[maybe_unused]] void (*fun) (int)) {
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         struct sigaction sa{};
         sa.sa_handler = fun;
         Verify (sigemptyset (&sa.sa_mask) == 0); // nb: cannot use :: on macos - macro - LGP 2016-12-30
@@ -407,7 +407,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         }
         {
 // Poor man's interlock/mutex, which avoids any memory allocation/stdc++ locks
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
             // Can easily deadlock if we try to access this lock while recieving the signal
             Platform::POSIX::ScopedBlockCurrentThreadSignal blockAllSignals2ThisThread{};
 #endif
@@ -472,7 +472,7 @@ Containers::Set<SignalID> SignalHandlerRegistry::GetStandardCrashSignals ()
     results.Add (SIGILL);
     results.Add (SIGFPE);
     results.Add (SIGSEGV);
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     results.Add (SIGSYS);
     results.Add (SIGBUS);
 #endif

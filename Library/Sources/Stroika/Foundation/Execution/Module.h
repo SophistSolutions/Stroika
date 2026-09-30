@@ -8,7 +8,7 @@
 
 #include <filesystem>
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
 #include <unistd.h>
 #endif
 
@@ -19,20 +19,14 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/LazyInitialized.h"
 
-#if !defined(qHas_pid_t)
-#error "qHas_pid_t must  be defined in StroikaConfig.h"
-#endif
-
 namespace Stroika::Foundation::Execution {
 
-#if qHas_pid_t
+#if qStroika_Platform_POSIX
     using pid_t = ::pid_t;
-#else
-#if qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Platform_Windows
     using pid_t = DWORD;
 #else
     using pid_t = int;
-#endif
 #endif
 
     /**
@@ -59,7 +53,7 @@ namespace Stroika::Foundation::Execution {
      */
     extern const LazyInitialized<Containers::Sequence<filesystem::path>> kPath;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     /**
      *  The set of system extensions to try for a given file to see if its an executable (note order matters, which is why this is a Sequence)
      * 

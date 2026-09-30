@@ -37,7 +37,7 @@ int main (int argc, const char* argv[])
     CommandLine                               cmdLine{argc, argv};
     Debug::TraceContextBumper                 ctx{"main", "argv={}"_f, cmdLine};
     SignalHandlerRegistry::SafeSignalsManager safeSignals;
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
     SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
     uint16_t              portNumber = 8080;

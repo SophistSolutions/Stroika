@@ -61,7 +61,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         SystemIDType fInternalInterfaceID;
 
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Platform_POSIX
         /**
          *  On unix, its the interface name, e.g. eth0, eth1, etc.
          *  On Windows, this is concept doesn't really exist.

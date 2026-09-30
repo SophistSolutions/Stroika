@@ -163,7 +163,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-#if qStroika_Foundation_Common_Platform_MacOS
+#if qStroika_Platform_MacOS
     /*
     @CLASS:         TextBreaks_System
     @BASES:         @'TextBreaks'

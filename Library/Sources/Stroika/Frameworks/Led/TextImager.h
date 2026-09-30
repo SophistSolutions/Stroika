@@ -853,7 +853,7 @@ namespace Stroika::Frameworks::Led {
     private:
         mutable FontSpecification fCachedFontSpec;
         mutable FontMetrics       fCachedFontInfo;
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         mutable FontObject* fCachedFont;
 #else
         mutable bool fCachedFontValid;
@@ -871,7 +871,7 @@ namespace Stroika::Frameworks::Led {
         private:
             const TextImager* fImager;
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         private:
             Tablet* fTablet;
             HGDIOBJ fRestoreObject;

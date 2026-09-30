@@ -3,9 +3,9 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 #include <Windows.h>
-#elif qStroika_Foundation_Common_Platform_Linux
+#elif qStroika_Platform_Linux
 #include <sched.h>
 #endif
 
@@ -37,9 +37,9 @@ namespace {
      *  in a 32-bit build and 64 in a 64-bit one, while glibc's cpu_set_t holds CPU_SETSIZE (1024).
      */
     constexpr unsigned int kMaxRepresentableCore_ =
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         static_cast<unsigned int> (sizeof (DWORD_PTR) * 8)
-#elif qStroika_Foundation_Common_Platform_Linux
+#elif qStroika_Platform_Linux
         static_cast<unsigned int> (CPU_SETSIZE)
 #else
         0
@@ -48,7 +48,7 @@ namespace {
 }
 
 namespace {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     /*
      *  Windows affinity is a DWORD_PTR bitmask over the process's single processor GROUP, so it tops out at
      *  64 logical cores (32 in a 32-bit build). Beyond that needs SetThreadGroupAffinity and a group
@@ -75,7 +75,7 @@ namespace {
         }
         return cores;
     }
-#elif qStroika_Foundation_Common_Platform_Linux
+#elif qStroika_Platform_Linux
     cpu_set_t mkMask_ (const LogicalCPUCoreSet& cores)
     {
         cpu_set_t cpuSet;
@@ -106,14 +106,14 @@ namespace {
  */
 optional<LogicalCPUCoreSet> Execution::GetCPUAffinity ()
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     DWORD_PTR processMask{};
     DWORD_PTR systemMask{};
     if (::GetProcessAffinityMask (::GetCurrentProcess (), &processMask, &systemMask) == 0) {
         return nullopt;
     }
     return mkSet_ (processMask);
-#elif qStroika_Foundation_Common_Platform_Linux
+#elif qStroika_Platform_Linux
     // pid 0 == the calling thread. See the PROCESS SCOPE note in CPUAffinity.h for why that is the right
     // answer here even though it is not literally process-wide on Linux.
     cpu_set_t cpuSet;
@@ -149,11 +149,11 @@ void Execution::SetCPUAffinity ([[maybe_unused]] const LogicalCPUCoreSet& cores)
     if (kCPUAffinitySupported and not cores.All ([] (unsigned int c) { return c < kMaxRepresentableCore_; })) {
         Throw (Execution::Exception<runtime_error>{"CPU core number is too large for this platform's affinity mask"sv});
     }
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     if (::SetProcessAffinityMask (::GetCurrentProcess (), mkMask_ (cores)) == 0) {
         ThrowSystemErrNo ();
     }
-#elif qStroika_Foundation_Common_Platform_Linux
+#elif qStroika_Platform_Linux
     cpu_set_t cpuSet = mkMask_ (cores);
     ThrowPOSIXErrNoIfNegative (::sched_setaffinity (0, sizeof (cpuSet), &cpuSet));
 #else

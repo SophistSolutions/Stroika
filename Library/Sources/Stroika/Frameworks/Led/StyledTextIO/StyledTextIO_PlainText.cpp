@@ -79,7 +79,7 @@ void StyledTextIOWriter_PlainText::Write ()
     Led_tChar buf[8 * 1024];
     size_t    bytesRead = 0;
     while ((bytesRead = GetSrcStream ().readNTChars (buf, std::size (buf))) != 0) {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         Led_tChar buf2[2 * std::size (buf)];
 #else
         Led_tChar buf2[std::size (buf)];

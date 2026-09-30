@@ -37,7 +37,7 @@ namespace {
 #if qSupportSyntaxColoring
         SyntaxColoringOption fSyntaxColoring{SyntaxColoringOption::eSyntaxColoringNone};
 #endif
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
         bool fCheckFileAssocAtStartup{true};
         BLOB fDefaultNewDocFont;
 #endif
@@ -80,7 +80,7 @@ namespace {
                                     {L"Syntax-Coloring", &Options_::fSyntaxColoring},
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
                                     {L"Check-File-Assoc-At-Startup", &Options_::fCheckFileAssocAtStartup},
                                     {L"Default-New-Doc-Font", &Options_::fDefaultNewDocFont},
 #endif
@@ -131,7 +131,7 @@ void Options::SetSearchParameters (const SearchParameters& searchParameters)
     });
 }
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 const CDockState& Options::GetDocBarState () const
 {
     static CDockState     dockState; // keep static copy and clear each time cuz CDocState doesn't support copy CTOR - LGP971214
@@ -225,7 +225,7 @@ void Options::SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption
 }
 #endif
 
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
 bool Options::GetCheckFileAssocsAtStartup () const
 {
     return sOptions_.Get ().fCheckFileAssocAtStartup;
@@ -242,7 +242,7 @@ void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 
 FontSpecification Options::GetDefaultNewDocFont () const
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     BLOB bytes = sOptions_.Get ().fDefaultNewDocFont;
     if (not bytes.empty ()) {
         if (bytes.size () == sizeof (LOGFONT)) {
@@ -264,7 +264,7 @@ FontSpecification Options::GetDefaultNewDocFont () const
 
 void Options::SetDefaultNewDocFont ([[maybe_unused]] const FontSpecification& defaultNewDocFont)
 {
-#if qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Platform_Windows
     sOptions_.Update ([&] (Options_ d) {
         d.fDefaultNewDocFont = BLOB::FromRaw (defaultNewDocFont.GetOSRep ());
         return d;
