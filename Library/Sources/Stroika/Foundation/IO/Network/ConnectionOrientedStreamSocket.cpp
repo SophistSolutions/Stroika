@@ -60,7 +60,7 @@ namespace {
                 try {
                 again:
                     (void)ioReady.WaitUntil (timeOutAt);
-                    qStroika_ATTRIBUTE_INDETERMINATE char data[1024];
+                    Stroika_ATTRIBUTE_INDETERMINATE char data[1024];
 #if qStroika_Platform_POSIX
                     int nb = ::read (fSD_, data, std::size (data));
 #elif qStroika_Platform_Windows
@@ -114,7 +114,7 @@ namespace {
                     case EINTR:
                         break; // ignore - try again
                     case EINPROGRESS: {
-                        qStroika_ATTRIBUTE_INDETERMINATE fd_set myset;
+                        Stroika_ATTRIBUTE_INDETERMINATE fd_set myset;
                         FD_ZERO (&myset);
                         FD_SET (fSD_, &myset);
                         timeval time_out = timeout.As<timeval> ();
@@ -157,10 +157,10 @@ namespace {
                     Execution::ThrowSystemErrNo (::WSAGetLastError ()); // connection failed
                 }
                 // connection pending
-                qStroika_ATTRIBUTE_INDETERMINATE fd_set setW;
+                Stroika_ATTRIBUTE_INDETERMINATE fd_set setW;
                 FD_ZERO (&setW);
                 FD_SET (fSD_, &setW);
-                qStroika_ATTRIBUTE_INDETERMINATE fd_set setE;
+                Stroika_ATTRIBUTE_INDETERMINATE fd_set setE;
                 FD_ZERO (&setE);
                 FD_SET (fSD_, &setE);
                 timeval time_out = timeout.As<timeval> ();
@@ -241,7 +241,7 @@ namespace {
             }
 #if qStroika_Platform_POSIX or qStroika_Platform_Windows
             {
-                qStroika_ATTRIBUTE_INDETERMINATE fd_set input;
+                Stroika_ATTRIBUTE_INDETERMINATE fd_set input;
                 FD_ZERO (&input);
                 FD_SET (fSD_, &input);
                 struct timeval timeout{};

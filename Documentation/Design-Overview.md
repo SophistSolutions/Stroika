@@ -30,10 +30,10 @@ In Release builds, `Assert`, `Require` and `Ensure` expand to `[[assume (conditi
 
 **What compilers do with it today.**
 
-- clang ignores any assumption whose condition might have side effects, such as a function call - which describes most of Stroika's - and warns (`-Wassume`) about each one. `qStroika_ATTRIBUTE_ASSUME` silences that warning for its own expansions only, so code using Stroika still gets it for its own `[[assume]]`s.
+- clang ignores any assumption whose condition might have side effects, such as a function call - which describes most of Stroika's - and warns (`-Wassume`) about each one. `Stroika_ATTRIBUTE_ASSUME` silences that warning for its own expansions only, so code using Stroika still gets it for its own `[[assume]]`s.
 - Measured in September 2026 on the performance regression test (Tests/52, g++-16 Release with LTO): no measurable overall change, but individual benchmarks moved by as much as 20-40% in both directions. Assumptions change code generation (inlining, layout), and not always for the better.
 
-**When chasing a Release-only failure**, one quick experiment is to rebuild with the assumptions removed (define `qStroika_ATTRIBUTE_ASSUME` empty in `Common/StdCompat.h`): if the failure goes away, look for a wrong assertion.
+**When chasing a Release-only failure**, one quick experiment is to rebuild with the assumptions removed (define `Stroika_ATTRIBUTE_ASSUME` empty in `Common/StdCompat.h`): if the failure goes away, look for a wrong assertion.
 
 ---
 
@@ -230,7 +230,9 @@ pull against each other; these rules are how Stroika trades them off.
   - The Name is CamelCase. A flag reads as a predicate (`Has...`, `Supports...`, `Use...`). A standard name keeps its own
     spelling: `pid_t`, `wchar_t`, `cplusplus`.
 - **Function-like and token macros** - they expand to code or attributes, so cannot be tested in `#if` - are named
-  `Stroika_` + *scope* + `_` + *Name*, as in `Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS`. The exception is
+  `Stroika_` + *scope* + `_` + *Name*, as in `Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS`. Portable spellings
+  of standard C++ attributes are a build-wide family, `Stroika_ATTRIBUTE_<Attribute>` (`Stroika_ATTRIBUTE_ASSUME (X)`,
+  `Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS`). The exception is
   the short list that acts as language extensions (`Assert`, `Require`, `Ensure`, `Verify`, `DbgTrace`,
   `DISABLE_COMPILER_..._WARNING_START`/`_END`): they are named like the keywords or functions they stand in for, because
   they appear everywhere and have to read like code.

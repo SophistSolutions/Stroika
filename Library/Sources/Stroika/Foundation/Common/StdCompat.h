@@ -407,63 +407,63 @@ namespace Stroika::Foundation::Common::StdCompat {
 #endif
 
     /**
-     * \brief qStroika_ATTRIBUTE_INDETERMINATE is used where you would use a C++ attribute for a variable that is intentionally uninitialized
+     * \brief Stroika_ATTRIBUTE_INDETERMINATE is used where you would use a C++ attribute for a variable that is intentionally uninitialized
      * 
      * [[indeterminate]]
      * https://en.cppreference.com/w/cpp/language/attributes/indeterminate.html
      * 
      *  \par Example Usage
      *      \code
-     *         qStroika_ATTRIBUTE_INDETERMINATE byte r[1024]; // don't initialize explicitly cuz filled in below before used (performance)
+     *         Stroika_ATTRIBUTE_INDETERMINATE byte r[1024]; // don't initialize explicitly cuz filled in below before used (performance)
      *      \endcode
      */
 #if __has_cpp_attribute(indeterminate)
-#define qStroika_ATTRIBUTE_INDETERMINATE [[indeterminate]]
+#define Stroika_ATTRIBUTE_INDETERMINATE [[indeterminate]]
 #else
-#define qStroika_ATTRIBUTE_INDETERMINATE
+#define Stroika_ATTRIBUTE_INDETERMINATE
 #endif
 
     /**
-     * \brief qStroika_ATTRIBUTE_ASSUME(C) is used where you would put a C++ attribute assume expression, to assume a condition is true for a given block.
+     * \brief Stroika_ATTRIBUTE_ASSUME(C) is used where you would put a C++ attribute assume expression, to assume a condition is true for a given block.
      *
      *  The assume attribute was introduced in c++23, and Stroika OPTIONALLY supports this, but doesn't require it as of Stroika v3.
-     *  So use qStroika_ATTRIBUTE_ASSUME () to conditionally use [[assume(X)]]
+     *  So use Stroika_ATTRIBUTE_ASSUME () to conditionally use [[assume(X)]]
      */
 #if __has_cpp_attribute(assume) && defined(__clang__)
     // clang warns by default (-Wassume) whenever it ignores an assumption whose expression might have side effects, such as
     // a function call. That helps someone who wrote [[assume]] by hand for its effect; for the Assert/Require/Ensure that
     // expand to this - conditions written as documentation first - it is only noise. So silence it for these expansions
     // only, not for other code's own [[assume]]s.
-#define qStroika_ATTRIBUTE_ASSUME(X)                                                                                                       \
+#define Stroika_ATTRIBUTE_ASSUME(X)                                                                                                        \
     _Pragma ("clang diagnostic push") _Pragma ("clang diagnostic ignored \"-Wassume\"") [[assume (X)]];                                    \
     _Pragma ("clang diagnostic pop")
 #elif __has_cpp_attribute(assume)
-#define qStroika_ATTRIBUTE_ASSUME(X) [[assume (X)]];
+#define Stroika_ATTRIBUTE_ASSUME(X) [[assume (X)]];
 #elif _MSC_VER
     // Docs not clear.
     // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p1774r4.pdf suggests this hack. BUT...
     // https://github.com/MicrosoftDocs/cpp-docs/blob/main/docs/build/optimization-best-practices.md seems to hint __assume doesn't evaluate X, except to pay attention to simple a>constant compares so this should be OK
-#define qStroika_ATTRIBUTE_ASSUME(X) __assume (X);
+#define Stroika_ATTRIBUTE_ASSUME(X) __assume (X);
 #else
-#define qStroika_ATTRIBUTE_ASSUME(X)
+#define Stroika_ATTRIBUTE_ASSUME(X)
 #endif
 
     /**
-     * \brief qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS - used for the attribute [[no_unique_address]]
+     * \brief Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS - used for the attribute [[no_unique_address]]
      * 
      *  MSVC accepts [[no_unique_address]] but ignores it, to keep its ABI, and supports [[msvc::no_unique_address]] instead
      *  (see qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy)
      */
 #if qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy && defined(_MSC_VER)
 #if qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
-#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#define Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 #else
-#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#define Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
 #endif
 #elif __has_cpp_attribute(no_unique_address)
-#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS [[no_unique_address]]
+#define Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS [[no_unique_address]]
 #else
-#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#define Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 #endif
 
     /**
@@ -471,18 +471,26 @@ namespace Stroika::Foundation::Common::StdCompat {
      *        on things where its not broken.
      */
 #if qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
-#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE [[msvc::no_unique_address]]
+#define Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE [[msvc::no_unique_address]]
 #else
-#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#define Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 #endif
 
     /**
-     * \brief qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY same as qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+     * \brief Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY same as Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
      * 
-     * EMPHASIZE that this is qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
-     * and not qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE cuz its known buggy
+     * EMPHASIZE that this is Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+     * and not Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE cuz its known buggy
      */
-#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#define Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+
+// DEPRECATED NAMES - since 3.0d25 (to be removed in v3.0a1): these expand to attributes, not values, so by
+// Design-Overview.md "Macro names" they take the Stroika_ prefix, not q
+#define qStroika_ATTRIBUTE_INDETERMINATE Stroika_ATTRIBUTE_INDETERMINATE
+#define qStroika_ATTRIBUTE_ASSUME Stroika_ATTRIBUTE_ASSUME
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY
 
 }
 

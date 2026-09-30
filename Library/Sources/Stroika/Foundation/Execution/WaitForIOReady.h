@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::TimePointSeconds timeoutAt = Time::TimePointSeconds{Time::kInfinity});
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         // @todo   Consider Mapping<T, TypeOfMonitorSet> here instead of an Iterable of pairs - @see https://github.com/SophistSolutions/Stroika/issues/1176
         const Traversal::Iterable<pair<T, TypeOfMonitorSet>>    fPollData_;
         const optional<pair<SDKPollableType, TypeOfMonitorSet>> fPollable2Wakeup_;

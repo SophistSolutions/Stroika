@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Common {
          *              static constexpr Activity                            kContructing_WSAPI_WebServer_{L"constructing WSAPI webserver"sv};
          *              optional<DeclareActivity<Activity<wstring_view>>>    fEstablishActivity1_{&kContructing_WSAPI_WebServer_};
          *              ConnectionManager                                    fWSConnectionMgr_;
-         *              qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS EmptyObjectForSideEffects fIgnore1_{[this]() { fEstablishActivity1_.reset (); }};
+         *              Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS EmptyObjectForSideEffects fIgnore1_{[this]() { fEstablishActivity1_.reset (); }};
          *              ...
          *          };
          *      \endcode

@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Execution {
         virtual Characters::String AsString () const override;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE CTOR_ARG fArg_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE CTOR_ARG fArg_;
     };
 
     /**

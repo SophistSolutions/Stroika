@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const EQUALS_COMPARER fEqualsComparer_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const EQUALS_COMPARER fEqualsComparer_;
 
         // Iterable<typename TRAITS::CountedValueType>::_IRep overrides
     public:
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             size_t                                                   index = Find_ (tmp);
             if (index != kNotFound_) {
                 Assert (index < fData_.size ());
-                qStroika_ATTRIBUTE_INDETERMINATE size_t result;
+                Stroika_ATTRIBUTE_INDETERMINATE size_t result;
                 if (tmp.fCount > count) {
                     tmp.fCount -= count;
                     Assert (tmp.fCount > 0);
@@ -209,8 +209,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_                       fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        DataStructureImplType_                      fData_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:
         static constexpr size_t kNotFound_ = (size_t)-1;

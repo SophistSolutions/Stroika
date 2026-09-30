@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Debug {
      *          Since the DEBUG version will allocate memory, which may fail, those failures trigger assertion failure and abort.
      *
      *  \note   typically used as
-     *              qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+     *              Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
      *
      *  \note Satisfies Concepts:
      *      o   movable<AssertExternallySynchronizedChecker>
@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Debug {
      *  \par Example Usage
      *      \code
      *          struct foo   {
-     *              qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+     *              Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
      *                  AssertExternallySynchronizedChecker::WriteContext declareContext { fThisAssertExternallySynchronized_ };

@@ -366,7 +366,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             virtual void SetJournalMode (JournalModeType journalMode) = 0;
 
         public:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronizedChecker;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronizedChecker;
 
         private:
             friend class Ptr;

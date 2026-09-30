@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto                                                     i = fData_.Find (item);
             Require (i != fData_.end ());
             if (i != fData_.end ()) {
-                qStroika_ATTRIBUTE_INDETERMINATE size_t result;
+                Stroika_ATTRIBUTE_INDETERMINATE size_t result;
                 if (i->fValue > count) {
                     i.UpdateValue (i->fValue - count);
                     result = count;
@@ -194,8 +194,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_, IterTraits_>;
 
     private:
-        DataStructureImplType_                       fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        DataStructureImplType_                      fData_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:
         friend inherited;

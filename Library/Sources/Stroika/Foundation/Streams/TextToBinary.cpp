@@ -110,11 +110,11 @@ namespace {
         }
 
     protected:
-        InputStream::Ptr<Character>                  fSrc_;
-        byte                                         fSrcBufferedRawBytes_[4]; // not used directly, but always through fSrcBufferedSpan_
-        span<byte>                                   fSrcBufferedSpan_;
-        SeekOffsetType                               _fOffset{0};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        InputStream::Ptr<Character>                 fSrc_;
+        byte                                        fSrcBufferedRawBytes_[4]; // not used directly, but always through fSrcBufferedSpan_
+        span<byte>                                  fSrcBufferedSpan_;
+        SeekOffsetType                              _fOffset{0};
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 }
 

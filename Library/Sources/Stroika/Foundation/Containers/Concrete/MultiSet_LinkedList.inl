@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const EQUALS_COMPARER fEqualsComparer_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const EQUALS_COMPARER fEqualsComparer_;
 
         // Iterable<typename TRAITS::CountedValueType>::_IRep overrides
     public:
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.AtEnd (); ++it) {
                 auto current = *it;
                 if (fEqualsComparer_ (current.fValue, item)) {
-                    qStroika_ATTRIBUTE_INDETERMINATE size_t result;
+                    Stroika_ATTRIBUTE_INDETERMINATE size_t result;
                     if (current.fCount > count) {
                         current.fCount -= count;
                         fData_.SetAt (it, current);
@@ -207,8 +207,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_                       fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        DataStructureImplType_                      fData_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Cache {
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline bool TimedCache<KEY, VALUE, TRAITS>::Expired_ (const MyResult_& r, TimeStampType now) const
     {
-        qStroika_ATTRIBUTE_INDETERMINATE TimeStampType expiresAt;
+        Stroika_ATTRIBUTE_INDETERMINATE TimeStampType expiresAt;
         if constexpr (kTrackExpiration) {
             expiresAt = r.fExpiresAt;
         }

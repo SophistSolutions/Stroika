@@ -368,7 +368,7 @@ namespace Stroika::Foundation::Common {
         constexpr bool operator() (LT&& lhs, RT&& rhs) const;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE BASE_COMPARER fBASE_COMPARER_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE BASE_COMPARER fBASE_COMPARER_;
     };
     template <typename BASE_COMPARER>
     EqualsComparerAdapter (BASE_COMPARER bc)
@@ -398,7 +398,7 @@ namespace Stroika::Foundation::Common {
         constexpr bool operator() (LT&& lhs, RT&& rhs) const;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE BASE_COMPARER fBASE_COMPARER_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE BASE_COMPARER fBASE_COMPARER_;
     };
     template <typename BASE_COMPARER>
     InOrderComparerAdapter (BASE_COMPARER bc)
@@ -426,7 +426,7 @@ namespace Stroika::Foundation::Common {
         constexpr strong_ordering operator() (LT&& lhs, RT&& rhs) const;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE BASE_COMPARER fBASE_COMPARER_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE BASE_COMPARER fBASE_COMPARER_;
     };
     template <typename BASE_COMPARER>
     ThreeWayComparerAdapter (BASE_COMPARER bc)
@@ -446,7 +446,7 @@ namespace Stroika::Foundation::Common {
         constexpr strong_ordering operator() (const optional<ARG_T>& lhs, const optional<ARG_T>& rhs) const;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE TCOMPARER fTComparer_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE TCOMPARER fTComparer_;
     };
 
     /**

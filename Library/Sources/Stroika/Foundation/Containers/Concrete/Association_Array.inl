@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         // [ RUN      ] Foundation_Containers_Association.Association_Array
         // unknown file: error: SEH exception with code 0xc0000005 thrown in the test body.
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
 
         // Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep overrides
     public:
@@ -170,8 +170,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_                       fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        DataStructureImplType_                      fData_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:
         friend inherited; // for ArrayBasedContainerRepImpl

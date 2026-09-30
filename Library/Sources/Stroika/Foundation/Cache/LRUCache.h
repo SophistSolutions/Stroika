@@ -448,8 +448,8 @@ namespace Stroika::Foundation::Cache {
 
     private:
         struct KeyValuePair_ {
-            KEY                                          fKey;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fValue;
+            KEY                                         fKey;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fValue;
         };
 
     private:
@@ -460,12 +460,12 @@ namespace Stroika::Foundation::Cache {
         // note if shared_mutex, it must be mutable, cuz shared locks still must be done
         using MaybeMutexType_ =
             conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized, shared_timed_mutex, Debug::AssertExternallySynchronizedChecker>;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MaybeMutexType_ fMaybeMutex_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MaybeMutexType_ fMaybeMutex_;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const KeyEqualsCompareFunctionType         fKeyEqualsComparer_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const typename TRAITS::KeyHashFunctionType fHashFunction_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE StatsType                                  fStats_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const KeyEqualsCompareFunctionType         fKeyEqualsComparer_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const typename TRAITS::KeyHashFunctionType fHashFunction_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE StatsType                                  fStats_;
 
         struct CacheElement_;
         struct CacheIterator_;

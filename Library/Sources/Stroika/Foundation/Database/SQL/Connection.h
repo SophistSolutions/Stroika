@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Database::SQL {
             nonvirtual bool operator== (nullptr_t) const noexcept;
 
         public:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronizedChecker;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronizedChecker;
 
         protected:
             shared_ptr<IRep> _fRep;

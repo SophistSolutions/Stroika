@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
             typename InputOutputStream::Ptr<ELEMENT_TYPE> fRealStream_;
             typename OutputStream::Ptr<ELEMENT_TYPE>      fLogInput_;
             typename OutputStream::Ptr<ELEMENT_TYPE>      fLogOutput_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
 

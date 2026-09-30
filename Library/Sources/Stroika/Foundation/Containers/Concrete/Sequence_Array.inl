@@ -175,8 +175,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using RandomAccessIteratorRep_ = Private::RandomAccessIteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_                       fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        DataStructureImplType_                      fData_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:
         friend class Private::ArrayBasedContainer<Sequence_Array, Sequence<T>, false>;

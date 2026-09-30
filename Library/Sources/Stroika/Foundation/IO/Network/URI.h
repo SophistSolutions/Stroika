@@ -400,7 +400,7 @@ namespace Stroika::Foundation::IO::Network {
         String               fPath_;      // Can be empty string, but documented as always 'present' even as empty so model that way
         optional<String>     fQuery_;     // ditto
         optional<String>     fFragment_;  // ditto
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
     static_assert (totally_ordered<URI>);
 

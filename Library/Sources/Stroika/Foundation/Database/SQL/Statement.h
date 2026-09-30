@@ -269,7 +269,7 @@ namespace Stroika::Foundation::Database::SQL {
         nonvirtual String ToString () const;
 
     protected:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker _fAssertExternallySynchronizedChecker;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker _fAssertExternallySynchronizedChecker;
 
     protected:
         unique_ptr<IRep> _fRep;
@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Database::SQL {
         virtual optional<Row> GetNextRow () = 0;
 
     protected:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker _fAssertExternallySynchronizedChecker;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker _fAssertExternallySynchronizedChecker;
     };
 
 }

@@ -242,8 +242,8 @@ namespace Stroika::Foundation::Streams {
         nonvirtual SeekableFlag GetSeekability () const;
 
     protected:
-        // qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY because else: Tests/Test53.exe crashes release
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized; // refers to PTR not REP
+        // Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY because else: Tests/Test53.exe crashes release
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized; // refers to PTR not REP
 
     private:
         shared_ptr<IRep<ELEMENT_TYPE>> fRep_;

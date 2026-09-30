@@ -187,12 +187,12 @@ namespace Stroika::Frameworks::SystemPerformance {
         }
 
     private:
-        InstrumentNameType                           fInstrumentName_;
-        Mapping<type_index, MeasurementType>         fType2MeasurementTypes_;
-        Set<MeasurementType>                         fCapturedMeasurementTypes_;
-        DataExchange::ObjectVariantMapper            fObjectVariantMapper_;
-        unique_ptr<IRep>                             fCaptureRep_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        InstrumentNameType                          fInstrumentName_;
+        Mapping<type_index, MeasurementType>        fType2MeasurementTypes_;
+        Set<MeasurementType>                        fCapturedMeasurementTypes_;
+        DataExchange::ObjectVariantMapper           fObjectVariantMapper_;
+        unique_ptr<IRep>                            fCaptureRep_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
 
 }

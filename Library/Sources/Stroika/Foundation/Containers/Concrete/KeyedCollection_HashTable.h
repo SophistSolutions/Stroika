@@ -83,8 +83,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             {
                 return fKeyComparer (fKeyExtractor (lhs), fKeyExtractor (rhs));
             };
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const KeyExtractorType    fKeyExtractor;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const KEY_EQUALS_COMPARER fKeyComparer;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const KeyExtractorType    fKeyExtractor;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const KEY_EQUALS_COMPARER fKeyComparer;
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
         };
 
@@ -113,8 +113,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             {
                 return fKeyHasher (fKeyExtractor (v));
             }
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyExtractorType fKeyExtractor;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KEY_HASHER       fKeyHasher;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyExtractorType fKeyExtractor;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KEY_HASHER       fKeyHasher;
 
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
         };

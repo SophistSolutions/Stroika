@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Debug {
      *              GetAssertionHandler () (...)
      *          }
      *
-     *  \note When qStroika_Foundation_Debug_AssertionsChecked is false, this expands to qStroika_ATTRIBUTE_ASSUME - [[assume(X)]]
+     *  \note When qStroika_Foundation_Debug_AssertionsChecked is false, this expands to Stroika_ATTRIBUTE_ASSUME - [[assume(X)]]
      *        wherever the compiler supports it (g++ 13+, clang 19+, even in C++20 mode), or __assume on MSVC. So though the arguments
      *        are not evaluated in a release build, they must be syntactic (new requirement in Stroika v3.0), and a false one is
      *        undefined behavior - @see Documentation/Design-Overview.md "Release Builds and [[assume]]".
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_AssertionsChecked
 #define Assert(c) AssertExpression (c)
 #else
-#define Assert(c) qStroika_ATTRIBUTE_ASSUME (c)
+#define Assert(c) Stroika_ATTRIBUTE_ASSUME (c)
 #endif
 
     /**
@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_AssertionsChecked
 #define Require(c) RequireExpression (c)
 #else
-#define Require(c) qStroika_ATTRIBUTE_ASSUME (c)
+#define Require(c) Stroika_ATTRIBUTE_ASSUME (c)
 #endif
 
     /**
@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_AssertionsChecked
 #define Ensure(c) EnsureExpression (c)
 #else
-#define Ensure(c) qStroika_ATTRIBUTE_ASSUME (c)
+#define Ensure(c) Stroika_ATTRIBUTE_ASSUME (c)
 #endif
 
     /**

@@ -71,8 +71,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             {
                 return fKeyComparer (l, r);
             }
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS KeyExtractorType fKeyExtractor;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS KEY_COMPARER     fKeyComparer;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS KeyExtractorType fKeyExtractor;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS KEY_COMPARER     fKeyComparer;
         };
 
         /**

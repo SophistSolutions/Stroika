@@ -110,7 +110,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual String ToString () const;
 
     protected:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized;
 
     private:
         String  fHTTPVersion_;

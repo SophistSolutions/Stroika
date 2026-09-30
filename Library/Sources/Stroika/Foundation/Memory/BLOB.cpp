@@ -204,8 +204,8 @@ namespace {
         {
         }
         struct REP : InputStream::IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<REP> {
-            bool                                                                             fIsOpenForRead_{true};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+            bool                                                                            fIsOpenForRead_{true};
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
             BLOB fSavedBLOB_; // save ref to BLOB in case it goes out of scope before stream
             REP (const BLOB& b)
                 : fSavedBLOB_{b}

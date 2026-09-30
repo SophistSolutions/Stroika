@@ -26,8 +26,8 @@ namespace Stroika::Foundation::Traversal {
     public:
         struct Rep : Iterator<T>::IRep {
             using IRep = typename Iterator<T>::IRep;
-            Iterator<T>                                             fDelegateTo;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE EXTRA_DATA fExtraData;
+            Iterator<T>                                            fDelegateTo;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE EXTRA_DATA fExtraData;
             Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA{});
             virtual unique_ptr<IRep> Clone () const override;
             virtual bool             AtEnd () const override;

@@ -726,9 +726,9 @@ namespace {
             else {
                 xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (nullptr, nullptr, nullptr, 0, "in-stream.xml" /*filename*/);
                 Execution::ThrowIfNull (ctxt);
-                [[maybe_unused]] auto&&               cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-                MyLibXML2StructuredErrGrabber_        errCatcher{ctxt};
-                qStroika_ATTRIBUTE_INDETERMINATE byte buf[1024];
+                [[maybe_unused]] auto&&              cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
+                MyLibXML2StructuredErrGrabber_       errCatcher{ctxt};
+                Stroika_ATTRIBUTE_INDETERMINATE byte buf[1024];
                 while (auto n = in.ReadBlocking (span{buf}).size ()) {
                     if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
                         AssertNotNull (errCatcher.fCapturedException); // double check I understood API properly - and error handler getting called
@@ -901,7 +901,7 @@ namespace {
         xmlDoc* fLibRep_{nullptr};
         xmlNs* fXmlnsNamespace2Use{nullptr}; // some APIs require this existing, but not sure where to put it??? and dont want to create a bunch of them... --LGP 2024-02-04
         list<xmlNsPtr> fNSs2Free_; // There probably is a better way with limxml2, but I cannot see how to avoid leaking these namespaces without this
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
     DocRep_* GetWrapperDoc_ (xmlDoc* d)
     {

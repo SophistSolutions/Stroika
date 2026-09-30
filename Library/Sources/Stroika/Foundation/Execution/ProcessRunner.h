@@ -389,13 +389,13 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     private:
-        optional<filesystem::path>                   fExecutable_; // if omitted, derived from fArgs[0]
-        CommandLine                                  fArgs_;
-        Options                                      fOptions_;
-        Streams::InputStream::Ptr<byte>              fStdIn_;  // just while we support deprecated API
-        Streams::OutputStream::Ptr<byte>             fStdOut_; // ""
-        Streams::OutputStream::Ptr<byte>             fStdErr_; // ""
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        optional<filesystem::path>                  fExecutable_; // if omitted, derived from fArgs[0]
+        CommandLine                                 fArgs_;
+        Options                                     fOptions_;
+        Streams::InputStream::Ptr<byte>             fStdIn_;  // just while we support deprecated API
+        Streams::OutputStream::Ptr<byte>            fStdOut_; // ""
+        Streams::OutputStream::Ptr<byte>            fStdErr_; // ""
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
     public:
         [[deprecated ("Since Stroika v3.0d12 - pass stdin/stdout/stderr to ProcessRunner Run() method (if needed)")]] ProcessRunner (
@@ -602,8 +602,8 @@ namespace Stroika::Foundation::Execution {
             Thread::CleanupPtr               fProcessRunner{Thread::CleanupPtr::eAbortBeforeWaiting};
             shared_ptr<DetailedRunnableRep_> fDetailedRunnableRep_;
         };
-        shared_ptr<Rep_>                             fRep_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        shared_ptr<Rep_>                            fRep_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
     private:
         friend class ProcessRunner;

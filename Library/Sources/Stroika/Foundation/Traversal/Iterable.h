@@ -1665,7 +1665,7 @@ namespace Stroika::Foundation::Traversal {
         const Iterable<T>*  fIterableEnvelope_;
 
 #if qStroika_Foundation_Debug_AssertionsChecked
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker::ReadContext fAssertReadLock_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker::ReadContext fAssertReadLock_;
 #endif
     };
     //static_assert (movable<Iterable<int>::_SafeReadRepAccessor<REP_SUB_TYPE>> and not copyable<Iterable<int>::_SafeReadRepAccessor<REP_SUB_TYPE>>);
@@ -1703,7 +1703,7 @@ namespace Stroika::Foundation::Traversal {
     private:
         REP_SUB_TYPE* fRepReference_;
 #if qStroika_Foundation_Debug_AssertionsChecked
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker::WriteContext fAssertWriteLock_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker::WriteContext fAssertWriteLock_;
         Iterable<T>* fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qStroika_Foundation_Debug_AssertionsChecked this field (as we do for read accessor)
 #endif
     };
@@ -1881,8 +1881,8 @@ namespace Stroika::Foundation::Traversal {
         constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {});
         [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the CTOR without it")]] constexpr SequentialEqualsComparer (
             const T_EQUALS_COMPARER& elementComparer, bool useIterableSize);
-        nonvirtual bool                                                operator() (const Iterable& lhs, const Iterable& rhs) const;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE T_EQUALS_COMPARER fElementComparer;
+        nonvirtual bool                                               operator() (const Iterable& lhs, const Iterable& rhs) const;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE T_EQUALS_COMPARER fElementComparer;
     };
 
     /**
@@ -1895,8 +1895,8 @@ namespace Stroika::Foundation::Traversal {
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
     struct Iterable<T>::SequentialThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer = {});
-        nonvirtual auto                                                  operator() (const Iterable& lhs, const Iterable& rhs) const;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE T_THREEWAY_COMPARER fElementComparer;
+        nonvirtual auto                                                 operator() (const Iterable& lhs, const Iterable& rhs) const;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE T_THREEWAY_COMPARER fElementComparer;
     };
 
 #if !qCompilerAndStdLib_constructible_Buggy

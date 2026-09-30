@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE> fUnwrittenAppends_{};
             typename OutputStream::Ptr<ELEMENT_TYPE>            fRealOut_{};
             bool                                                fAborted_{false};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         };
     }
 

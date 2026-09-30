@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Private::SkipListBasedContainerRepImpl<Rep_<COMPARER>, IImplRepBase_>;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyExtractorType fKeyExtractor_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyExtractorType fKeyExtractor_;
 
     public:
         Rep_ (const KeyExtractorType& keyExtractor, const COMPARER& comparer)
@@ -177,8 +177,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_, IterTraits_>;
 
     private:
-        DataStructureImplType_                       fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        DataStructureImplType_                      fData_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:
         friend inherited;

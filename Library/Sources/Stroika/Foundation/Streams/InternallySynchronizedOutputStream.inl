@@ -58,8 +58,8 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
             }
 
         private:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE OPTIONS fOptions_;
-            mutable typename OPTIONS::MutexType                  fCriticalSection_;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE OPTIONS fOptions_;
+            mutable typename OPTIONS::MutexType                 fCriticalSection_;
         };
         template <typename ELEMENT_TYPE, typename OPTIONS>
         struct Rep2_ : OutputStream::IRep<ELEMENT_TYPE> {

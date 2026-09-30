@@ -651,10 +651,10 @@ namespace Stroika::Foundation::Cache {
          * @brief everything here is optional ;-) But typically, its fKey, fValue, fLastRefreshedAt
          */
         struct CacheElement {
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<KEY, NonKeyedKeySentinalType>, Common::Empty, KEY> fKey;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fValue;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<KEY, NonKeyedKeySentinalType>, Common::Empty, KEY> fKey;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fValue;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
         };
 
     public:
@@ -1093,11 +1093,11 @@ namespace Stroika::Foundation::Cache {
         // note if shared_mutex, it must be mutable, cuz shared locks still must be done
         using MaybeMutexType_ =
             conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized, shared_timed_mutex, Debug::AssertExternallySynchronizedChecker>;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MaybeMutexType_ fMaybeMutex_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MaybeMutexType_ fMaybeMutex_;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kPerCacheMaxAge, TimeStampDifferenceType, Common::Empty> fMaxAge_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kPerCacheMaxAge, TimeStampDifferenceType, Common::Empty> fMaxAge_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE
             conditional_t<TRAITS::kAutomaticPurgeFrequency == TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal}, Common::Empty, TimeStampType>
                 fNextAutoClearAt_;
 
@@ -1110,9 +1110,9 @@ namespace Stroika::Foundation::Cache {
     private:
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
         struct MyResult_ {
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fResult;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fResult;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
 
             template <typename K = KEY>
             nonvirtual CacheElement MakeCacheElement (const K& key) const;
@@ -1137,7 +1137,7 @@ namespace Stroika::Foundation::Cache {
         nonvirtual VALUE LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller);
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;
     };
     static_assert (ICache<TimedCache<int, int>, int, int>); // see Satisfies Concepts
     static_assert (movable<TimedCache<int, int>>);
