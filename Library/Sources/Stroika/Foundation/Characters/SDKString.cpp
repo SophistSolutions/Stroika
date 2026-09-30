@@ -40,24 +40,43 @@ namespace {
         CodeCvt<wchar_t> fAllowMissingToWide; // U+FFFD - decoding can always produce it
         CodeCvt<wchar_t> fAllowMissingToSDK; // U+FFFD if the locale can encode it (the "C" locale cannot), else '?', which every locale can
     };
+    LocaleCodeCvts_ MakeLocaleCodeCvts_ (const locale& l)
+    {
+        auto toSDK = kAllowMissing_;
+        if (not LocaleCanEncode_ (l, *toSDK.fInvalidCharacterReplacement)) {
+            toSDK.fInvalidCharacterReplacement = '?';
+        }
+        return LocaleCodeCvts_{l, CodeCvt<wchar_t>{l}, CodeCvt<wchar_t>{l, kAllowMissing_}, CodeCvt<wchar_t>{l, toSDK}};
+    }
+
+    // Set when this thread's cache (below) is destroyed. Trivially destructible, so still readable afterwards - while the
+    // thread's other thread_locals are destroyed, and on the main thread while static destructors run.
+    thread_local bool tLocaleCodeCvtsCacheGone_{false};
 
     // Constructing a CodeCvt from a locale is costly (it builds a codecvt_byname), so each thread keeps the ones for the
     // global locale until that changes. So a locale::global () takes effect at the next conversion, just as with no cache:
-    // CodeCvt depends only on the locale's name, and that is what locale's operator== compares.
+    // CodeCvt depends only on the locale's name, and that is what locale's operator== compares. Once the cache is gone,
+    // each call builds its own.
     CodeCvt<wchar_t> GetCodeCvt_ (CodeCvt<wchar_t> LocaleCodeCvts_::* which)
     {
-        static thread_local optional<LocaleCodeCvts_> tCache_;
-        locale                                        l{};
-        if (not tCache_ or tCache_->fLocale != l) [[unlikely]] {
-            auto toSDK = kAllowMissing_;
-            if (not LocaleCanEncode_ (l, *toSDK.fInvalidCharacterReplacement)) {
-                toSDK.fInvalidCharacterReplacement = '?';
+        locale l{};
+        if (tLocaleCodeCvtsCacheGone_) [[unlikely]] {
+            return MakeLocaleCodeCvts_ (l).*which;
+        }
+        struct Cache_ {
+            optional<LocaleCodeCvts_> fEntry;
+            ~Cache_ ()
+            {
+                tLocaleCodeCvtsCacheGone_ = true;
             }
-            tCache_.emplace (LocaleCodeCvts_{l, CodeCvt<wchar_t>{l}, CodeCvt<wchar_t>{l, kAllowMissing_}, CodeCvt<wchar_t>{l, toSDK}});
+        };
+        static thread_local Cache_ tCache_;
+        if (not tCache_.fEntry or tCache_.fEntry->fLocale != l) [[unlikely]] {
+            tCache_.fEntry.emplace (MakeLocaleCodeCvts_ (l));
         }
         // a copy (it shares the rep), so it stays valid even if a nested call - a Throw () traced mid-conversion - finds
         // the global locale changed, and rebuilds the cache
-        return (*tCache_).*which;
+        return (*tCache_.fEntry).*which;
     }
 }
 #endif

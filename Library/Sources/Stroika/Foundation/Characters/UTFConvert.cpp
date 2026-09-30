@@ -195,6 +195,42 @@ namespace {
             return true;
         }
 
+        /*
+         * Could [source, end) - fewer bytes than the character its first byte starts - be the start of a legal
+         * character? If not, it is malformed now; if so, the rest may just not have arrived yet.
+         */
+        bool isLegalUTF8Prefix_ (const char8_t* source, const char8_t* end)
+        {
+            char8_t lead = *source;
+            if (lead < 0xC2 or lead > 0xF4) {
+                return false;
+            }
+            for (const char8_t* p = source + 1; p < end; ++p) {
+                char8_t lo = 0x80;
+                char8_t hi = 0xBF;
+                if (p == source + 1) {
+                    switch (lead) {
+                        case 0xE0:
+                            lo = 0xA0;
+                            break;
+                        case 0xED:
+                            hi = 0x9F;
+                            break;
+                        case 0xF0:
+                            lo = 0x90;
+                            break;
+                        case 0xF4:
+                            hi = 0x8F;
+                            break;
+                    }
+                }
+                if (*p < lo or *p > hi) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         inline ConversionResult ConvertUTF8toUTF16_ (const char8_t** sourceStart, const char8_t* sourceEnd, char16_t** targetStart,
                                                      char16_t* targetEnd, optional<char32_t> missingCharacterReplacement)
         {
@@ -214,18 +250,23 @@ namespace {
             while (source < sourceEnd) {
                 char32_t       ch               = 0;
                 unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
-                if (source + extraBytesToRead >= sourceEnd) {
-                    result = sourceExhausted;
-                    break;
-                }
-                if (!isLegalUTF8_ (source, extraBytesToRead + 1)) {
-                    if (missingCharacterReplacement) {
-                        AssertNotImplemented (); // @todo - not hard - but not done
-                    }
-                    else {
+                bool           cutShort         = source + extraBytesToRead >= sourceEnd;
+                if (cutShort ? not isLegalUTF8Prefix_ (source, sourceEnd) : not isLegalUTF8_ (source, extraBytesToRead + 1)) {
+                    if (not missingCharacterReplacement) {
                         result = sourceIllegal;
                         break;
                     }
+                    if (target >= targetEnd) [[unlikely]] {
+                        result = targetExhausted;
+                        break;
+                    }
+                    addMissing ();
+                    ++source; // resynchronize at the next byte
+                    continue;
+                }
+                if (cutShort) {
+                    result = sourceExhausted;
+                    break;
                 }
                 /*
                  * The cases all fall through. See "Note A" below.
@@ -517,18 +558,23 @@ namespace {
             while (source < sourceEnd) {
                 char32_t       ch               = 0;
                 unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
-                if (source + extraBytesToRead >= sourceEnd) [[unlikely]] {
-                    result = sourceExhausted;
-                    break;
-                }
-                if (!isLegalUTF8_ (source, extraBytesToRead + 1)) {
-                    if (missingCharacterReplacement) {
-                        AssertNotImplemented (); // @todo - not hard - but not done
-                    }
-                    else {
+                bool           cutShort         = source + extraBytesToRead >= sourceEnd;
+                if (cutShort ? not isLegalUTF8Prefix_ (source, sourceEnd) : not isLegalUTF8_ (source, extraBytesToRead + 1)) {
+                    if (not missingCharacterReplacement) {
                         result = sourceIllegal;
                         break;
                     }
+                    if (target >= targetEnd) [[unlikely]] {
+                        result = targetExhausted;
+                        break;
+                    }
+                    *target++ = *missingCharacterReplacement;
+                    ++source; // resynchronize at the next byte
+                    continue;
+                }
+                if (cutShort) [[unlikely]] {
+                    result = sourceExhausted;
+                    break;
                 }
                 /*
                  * The cases all fall through. See "Note A" below.

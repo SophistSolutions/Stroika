@@ -452,14 +452,20 @@ namespace Stroika::Foundation::Characters {
             size_t             charsDone = 0;
         continueWith:
             auto r = fCodeCvt_->in (ignoredMBState, _First1 + bytesDone, _Last1, _Mid1, _First2 + charsDone, _Last2, _Mid2);
+            // An invalid byte is 'error' to most codecvts, but 'partial' to some (libc++) - and only fewer than max_length ()
+            // bytes can be a character that the input ends inside of
+            if (r == STD_CODE_CVT_T::partial and _Last1 - _Mid1 >= fCodeCvt_->max_length ()) {
+                r = STD_CODE_CVT_T::error;
+            }
             if (r == STD_CODE_CVT_T::partial) {
-                *from = from->subspan (charsDone + static_cast<size_t> (_Mid2 - _First2)); // reference remaining bytes, could be partial character at end of multibyte sequence
+                *from = from->subspan (static_cast<size_t> (_Mid1 - _First1)); // the remaining bytes - a character the input ends inside of
                 Assert (from->size () != 0);
             }
             else if (r != STD_CODE_CVT_T::ok) {
                 if (fInvalidCharacterReplacement_) {
                     bytesDone = _Mid1 - _First1 + 1; // skip one byte and try again (no idea how many bytes would have been best to skip)
                     charsDone = _Mid2 - _First2;
+                    ignoredMBState = mbstate_t{}; // unspecified after an error
 
                     Memory::StackBuffer<CHAR_T> badCharTmpBuf;
                     span<const CHAR_T>          badCharReplaceSpan = fInvalidCharacterReplacement_->As<CHAR_T> (&badCharTmpBuf);
@@ -770,6 +776,21 @@ namespace Stroika::Foundation::Characters {
         size_t origSize = from.size ();
         auto   result   = fRep_->Bytes2Characters (&from, to);
         if (not from.empty ()) {
+            // the input ends inside a character: with a replacement, that is one more invalid character
+            if (optional<Character> replacement = GetOptions ().fInvalidCharacterReplacement) {
+                if constexpr (same_as<CHAR_T, Character>) {
+                    Require (result.size () < to.size ());
+                    to[result.size ()] = *replacement;
+                    return to.subspan (0, result.size () + 1);
+                }
+                else {
+                    Memory::StackBuffer<CHAR_T> replacementBuf;
+                    span<const CHAR_T>          replacementChars = replacement->As<CHAR_T> (&replacementBuf);
+                    Require (result.size () + replacementChars.size () <= to.size ());
+                    span<CHAR_T> copied = Memory::CopyBytes (replacementChars, to.subspan (result.size ()));
+                    return to.subspan (0, result.size () + copied.size ());
+                }
+            }
             Private_::ThrowErrorConvertingBytes2Characters_ (origSize - from.size ());
         }
         return result;
@@ -811,12 +832,9 @@ namespace Stroika::Foundation::Characters {
     template <constructible_from<const CHAR_T*, const CHAR_T*> STRINGISH>
     STRINGISH CodeCvt<CHAR_T>::Bytes2String (span<const byte> from) const
     {
-        size_t                      origSize = from.size ();
-        Memory::StackBuffer<CHAR_T> buf{this->ComputeTargetCharacterBufferSize (from)};
-        span<CHAR_T>                r = this->Bytes2Characters (&from, span{buf});
-        if (not from.empty ()) {
-            Private_::ThrowErrorConvertingBytes2Characters_ (origSize - from.size ());
-        }
+        // + 2: room for a replacement (even a surrogate pair) after a character the input ends inside of
+        Memory::StackBuffer<CHAR_T> buf{this->ComputeTargetCharacterBufferSize (from) + 2};
+        span<CHAR_T>                r = this->Bytes2Characters (from, span{buf});
         return STRINGISH{r.data (), r.data () + r.size ()};
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>

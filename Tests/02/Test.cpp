@@ -4,9 +4,11 @@
 //  TEST    Foundation::Characters
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <atomic>
 #include <cstdarg>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/CharacterEncodingException.h"
@@ -1458,7 +1460,8 @@ namespace {
         optional<CodeCvt<wchar_t>> cvt;
         EXPECT_NO_THROW (cvt.emplace (locale::classic (), kReplaceWithFFFD_));
         if (cvt) {
-            wstring w = cvt->Bytes2String<wstring> (as_bytes (span{kBadByte_}));
+            wstring w;
+            EXPECT_NO_THROW (w = cvt->Bytes2String<wstring> (as_bytes (span{kBadByte_})));
             EXPECT_EQ (w.size (), 3u);
             EXPECT_NE (w[1], L'?');
             EXPECT_THROW (cvt->String2Bytes<string> (span{kUnencodable_}), CharacterEncodingException);
@@ -1476,6 +1479,71 @@ namespace {
         EXPECT_NO_THROW (s = Wide2SDK (span{kUnencodable_}, eIgnoreErrors));
         EXPECT_TRUE (s.size () >= 3 and s.front () == 'a' and s.back () == 'b') << s;
 #endif
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Characters, UTF8DecodeReplacement_)
+    {
+        Debug::TraceContextBumper ctx{"UTF8DecodeReplacement_"};
+        // Each malformed sequence decodes to one replacement character, and decoding goes on after it
+        const char kBadByte_[]         = {'a', '\xFF', 'b'}; // never valid in UTF-8
+        const char kBadContinuation_[] = {'\xC3', '(', 'b'}; // a lead byte, then no continuation byte
+        const char kTruncated_[]       = {'a', '\xC3'};      // input ends inside a character
+        auto       check               = [&]<typename CHAR_T> () {
+            const CodeCvt<CHAR_T> cvt{
+                UnicodeExternalEncodings::eUTF8,
+                typename CodeCvt<CHAR_T>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter}};
+            using S              = basic_string<CHAR_T>;
+            constexpr CHAR_T kR_ = static_cast<CHAR_T> (0xFFFD);
+            S                s;
+            EXPECT_NO_THROW (s = cvt.template Bytes2String<S> (as_bytes (span{kBadByte_})));
+            EXPECT_EQ (s, (S{CHAR_T{'a'}, kR_, CHAR_T{'b'}}));
+            EXPECT_NO_THROW (s = cvt.template Bytes2String<S> (as_bytes (span{kBadContinuation_})));
+            EXPECT_EQ (s, (S{kR_, CHAR_T{'('}, CHAR_T{'b'}}));
+            EXPECT_NO_THROW (s = cvt.template Bytes2String<S> (as_bytes (span{kTruncated_})));
+            EXPECT_EQ (s, (S{CHAR_T{'a'}, kR_}));
+            // and with no replacement, each still throws
+            const CodeCvt<CHAR_T> strict{UnicodeExternalEncodings::eUTF8};
+            EXPECT_THROW (strict.template Bytes2String<S> (as_bytes (span{kBadByte_})), CharacterEncodingException);
+            EXPECT_THROW (strict.template Bytes2String<S> (as_bytes (span{kBadContinuation_})), CharacterEncodingException);
+            EXPECT_THROW (strict.template Bytes2String<S> (as_bytes (span{kTruncated_})), CharacterEncodingException);
+        };
+        check.template operator()<char16_t> ();
+        check.template operator()<char32_t> ();
+        check.template operator()<wchar_t> ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Characters, ConversionsDuringThreadExit_)
+    {
+        Debug::TraceContextBumper ctx{"ConversionsDuringThreadExit_"};
+        // A thread_local destroyed after the per-thread conversion caches converts in its destructor - just what Trace
+        // does from static destructors, after the main thread's thread_locals are gone. A conversion must not use its
+        // cache then (ASan reports the use-after-free if it does).
+        static atomic<bool> sConvertedOK{false};
+        struct ConvertInDestructor_ {
+            ~ConvertInDestructor_ ()
+            {
+                bool ok = String{"hi"}.AsNarrowSDKString (eIgnoreErrors) == "hi" and String{"hi"}.AsNarrowString (locale::classic ()) == "hi" and
+                          String::FromNarrowString (string{"hi"}, locale::classic ()) == "hi";
+#if not qTargetPlatformSDKUseswchar_t
+                ok = ok and SDK2Wide (SDKString{"hi"}) == L"hi" and Wide2SDK (wstring{L"hi"}, eIgnoreErrors) == "hi";
+#endif
+                sConvertedOK = ok;
+            }
+        };
+        std::thread{[] () {
+            static thread_local ConvertInDestructor_ tConvertAtExit; // constructed before the caches, so destroyed after them
+            (void)&tConvertAtExit;
+            (void)String{"hi"}.AsNarrowSDKString (eIgnoreErrors); // builds this thread's caches
+            (void)String{"hi"}.AsNarrowString (locale::classic ());
+#if not qTargetPlatformSDKUseswchar_t
+            (void)SDK2Wide (SDKString{"hi"});
+#endif
+        }}.join ();
+        EXPECT_TRUE (sConvertedOK);
     }
 }
 

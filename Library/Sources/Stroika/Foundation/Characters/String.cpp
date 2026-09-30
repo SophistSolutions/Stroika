@@ -524,21 +524,35 @@ namespace {
 
     using CodeCvtByName_ = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
 
+    // Set when this thread's cache (below) is destroyed. Trivially destructible, so still readable afterwards - while the
+    // thread's other thread_locals are destroyed, and on the main thread while static destructors run (Trace converts then).
+    thread_local bool tCodeCvtByNameCacheGone_{false};
+
     // Constructing a codecvt_byname is costly (in any locale but "C", a newlocale ()), so each thread keeps the last one it
     // built, until asked for another locale. It depends only on the locale's name, and that is what locale's operator==
     // compares - so this returns just what constructing one would. Shared, so it stays valid even if a nested call
-    // replaces the cache entry.
+    // replaces the cache entry. Once the cache is gone, each call builds its own.
     shared_ptr<const CodeCvtByName_> GetCodeCvtByName_ (const locale& l)
     {
+        if (tCodeCvtByNameCacheGone_) [[unlikely]] {
+            return MakeSharedPtr<CodeCvtByName_> (l.name ());
+        }
         struct Entry_ {
             locale                           fLocale;
             shared_ptr<const CodeCvtByName_> fCodeCvt;
         };
-        static thread_local optional<Entry_> tCache_;
-        if (not tCache_ or tCache_->fLocale != l) [[unlikely]] {
-            tCache_.emplace (Entry_{l, MakeSharedPtr<CodeCvtByName_> (l.name ())});
+        struct Cache_ {
+            optional<Entry_> fEntry;
+            ~Cache_ ()
+            {
+                tCodeCvtByNameCacheGone_ = true;
+            }
+        };
+        static thread_local Cache_ tCache_;
+        if (not tCache_.fEntry or tCache_.fEntry->fLocale != l) [[unlikely]] {
+            tCache_.fEntry.emplace (Entry_{l, MakeSharedPtr<CodeCvtByName_> (l.name ())});
         }
-        return tCache_->fCodeCvt;
+        return tCache_.fEntry->fCodeCvt;
     }
 }
 
