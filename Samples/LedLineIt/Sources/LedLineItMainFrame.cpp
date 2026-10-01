@@ -173,7 +173,7 @@ int LedLineItMainFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
 
     CMenu* menuBar = GetMenu ();
     AssertNotNull (menuBar);
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
     FixupFontMenu (menuBar->GetSubMenu (2)->GetSubMenu (7));
 #else
     FixupFontMenu (menuBar->GetSubMenu (2)->GetSubMenu (6));

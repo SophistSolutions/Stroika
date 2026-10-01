@@ -26,7 +26,7 @@
 
 #include "StyledTextIO_RTF.h"
 
-#define qUseCompiledSetHack true
+#define qUseCompiledSetHack_ true
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -3774,7 +3774,7 @@ void StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars)
 {
     RequireNotNull (setOfChars);
 
-#if qUseCompiledSetHack
+#if qUseCompiledSetHack_
     bitset<256> compiledSet;
     for (auto p = setOfChars; *p != '\0'; ++p) {
         compiledSet[(unsigned char)*p] = true;
@@ -3786,7 +3786,7 @@ void StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars)
             if (c == RTFIO::kRTFQuoteNextCharChar) { // avoid getting confused by embedded '{' etc characters in the actual text.
                 continue;
             }
-#if qUseCompiledSetHack
+#if qUseCompiledSetHack_
             if (compiledSet[(unsigned char)c]) {
                 PutBackLastChar ();
                 return;
@@ -4428,7 +4428,7 @@ bool StyledTextIOWriter_RTF::PossiblyWriteOLERTFEmbedding (WriterContext& /*writ
 // back myself consistently. BUt then - neither does MSWord! I can dump a picture into MSWord 2000 - and save, and reopen - using no app but MSWord 2000 - and it
 // loses the image (sometimes only transiently).
 // Anyhow - Writing as DIB seems like the best option for the time being...
-#define qWriteAsDIB 1
+#define qWriteAsDIB_ 1
 bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
 {
     // Now see if it is an OLE RTF embedding, and if so, write it out.
@@ -4438,7 +4438,7 @@ bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
         WriteTag ("pict");
         const Led_DIB* dib  = aPictEmbedding->GetDIBData ();
         Led_Size       size = Led_GetDIBImageSize (dib);
-#if !qWriteAsDIB
+#if !qWriteAsDIB_
         int vEnhSize = size.v * (1400 / 10) * 2.54;
         int hEnhSize = size.h * (1400 / 10) * 2.54;
         WriteTagNValue ("pich", size.v * 20);
@@ -4447,7 +4447,7 @@ bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
         WriteTagNValue ("pichgoal", Led_CvtScreenPixelsToTWIPSV (size.v));
         WriteTagNValue ("picwgoal", Led_CvtScreenPixelsToTWIPSH (size.h));
 
-#if qWriteAsDIB
+#if qWriteAsDIB_
         WriteTag ("dibitmap");
         const void* theDataBytes = dib;
         size_t      nBytes       = Led_GetDIBImageByteCount (dib);

@@ -116,8 +116,7 @@ namespace Stroika::Frameworks::Led {
 
 /*
     @CLASS:         LED_TCHAR_OF
-    @DESCRIPTION:   <p>Like the Win32SDK macro _T(). Except is based on the Led type @'Led_tChar', and the Led
-        macros @'qSingleByteCharacters', @'qMultiByteCharacters', and @'qWideCharacters'.</p>
+    @DESCRIPTION:   <p>Like the Win32SDK macro _T(). Except is based on the Led type @'Led_tChar' (wchar_t).</p>
     */
 #define LED_TCHAR_OF__(X) L##X
 #define LED_TCHAR_OF(X) LED_TCHAR_OF__ (X)
@@ -138,43 +137,37 @@ namespace Stroika::Frameworks::Led {
 
     /*
     @METHOD:        Led_tStrlen
-    @DESCRIPTION:   <p>Expands to any of the ANSI C++ functions, std::strlen ()/wcslen/_mbstrlen(not ansiC++), depending on
-        macros @'qSingleByteCharacters', @'qMultiByteCharacters', and @'qWideCharacters'.</p>
+    @DESCRIPTION:   <p>Like std::wcslen - @'Led_tChar' is wchar_t.</p>
     */
     size_t Led_tStrlen (const Led_tChar* s);
 
     /*
     @METHOD         Led_tStrCmp
-    @DESCRIPTION:   <p>Expands to any of the ANSI C++ functions, std::strcmp/etc, depending on
-        macros @'qSingleByteCharacters', @'qMultiByteCharacters', and @'qWideCharacters'.</p>
+    @DESCRIPTION:   <p>Like std::wcscmp - @'Led_tChar' is wchar_t.</p>
     */
     int Led_tStrCmp (const Led_tChar* l, const Led_tChar* r);
 
     /*
     @METHOD:        Led_tStrnCmp
-    @DESCRIPTION:   <p>Expands to any of the ANSI C++ functions, std::strncmp/etc, depending on
-        macros @'qSingleByteCharacters', @'qMultiByteCharacters', and @'qWideCharacters'.</p>
+    @DESCRIPTION:   <p>Like std::wcsncmp - @'Led_tChar' is wchar_t.</p>
     */
     int Led_tStrnCmp (const Led_tChar* l, const Led_tChar* r, size_t n);
 
     /*
     @METHOD:        Led_tStrniCmp
-    @DESCRIPTION:   <p>Expands to any of the ANSI C++ functions, std::strnicmp/etc, depending on
-        macros @'qSingleByteCharacters', @'qMultiByteCharacters', and @'qWideCharacters'. See also @'Led_tStriCmp'.</p>
+    @DESCRIPTION:   <p>Like std::wcsncmp, but case-insensitive - @'Led_tChar' is wchar_t. See also @'Led_tStriCmp'.</p>
     */
     int Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n);
 
     /*
     @METHOD:        Led_tStriCmp
-    @DESCRIPTION:   <p>Expands to any of the ANSI C++ functions, std::stricmp/etc, depending on
-        macros @'qSingleByteCharacters', @'qMultiByteCharacters', and @'qWideCharacters'. See also @'Led_tStrniCmp'.</p>
+    @DESCRIPTION:   <p>Like std::wcscmp, but case-insensitive - @'Led_tChar' is wchar_t. See also @'Led_tStrniCmp'.</p>
     */
     int Led_tStriCmp (const Led_tChar* l, const Led_tChar* r);
 
     /*
     @METHOD:        Led_tStrChr
-    @DESCRIPTION:   <p>Expands to any of the ANSI C++ functions, std::strchr/etc, depending on
-        macros @'qSingleByteCharacters', @'qMultiByteCharacters', and @'qWideCharacters'.</p>
+    @DESCRIPTION:   <p>Like std::wcschr - @'Led_tChar' is wchar_t.</p>
     */
     const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c);
 

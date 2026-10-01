@@ -13,14 +13,14 @@
 #endif
 
 // Didn't make it into 2.0 - sigh...LGP 960520
-#define qSupportPasteSpecial 0
+#define qSupportPasteSpecial_ 0
 
-#ifndef qSupportStyleSheets
-#define qSupportStyleSheets 0
+#ifndef qSupportStyleSheets_
+#define qSupportStyleSheets_ 0
 #endif
 
-#ifndef qIncludeBasicSpellcheckEngine
-#define qIncludeBasicSpellcheckEngine 1
+#ifndef qIncludeBasicSpellcheckEngine_
+#define qIncludeBasicSpellcheckEngine_ 1
 #endif
 
 #if defined(__cplusplus)

@@ -758,7 +758,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        WordProcessor::GetSmartQuoteMode
     @DESCRIPTION:   <p>If true, then when a user types a quote character (&quot;) - it will be replaced
                 with either an OPEN quote character or a CLOSE quote character (depending on text context).
-                    <p>Note this defaults ON if in UNICODE mode (@'qWideCharacters') and is unavailable otherwise.</p>
+                    <p>Note this defaults ON.</p>
                     <p>See also @'WordProcessor::SetSmartQuoteMode'</p>
     */
     inline bool WordProcessor::GetSmartQuoteMode () const

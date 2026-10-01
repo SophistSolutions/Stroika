@@ -126,11 +126,11 @@ Begin
 		MenuItem	SEPARATOR
 		MenuItem	"Shift Left\tCtrl+Shift+Tab",	kShiftLeftCmdID
 		MenuItem	"Shift Right\tCtrl+Tab",		kShiftRightCmdID
-	#if		qIncludeBasicSpellcheckEngine
+	#if		qIncludeBasicSpellcheckEngine_
 		MenuItem	SEPARATOR
 		MenuItem	"&Check Spelling...\tCtrl+L",	kSpellCheckCmd
 	#endif
-	#if		qSupportGenRandomCombosCommand
+	#if		qSupportGenRandomCombosCommand_
 		MenuItem	SEPARATOR
 		MenuItem	"&Generate Random Combos\tCtrl+1",		kGenRandomCombosCmdID
 	#endif
@@ -142,7 +142,7 @@ Begin
 		MenuItem	"&Auto Indent",					kToggleAutoIndentOptionCmd
 		MenuItem	"Selection Tab &indents text",	kToggleTreatTabAsIndentCharOptionCmd
 		MenuItem	"S&mart Cut and Paste",			kToggleUseSmartCutNPasteCmdID
-#if		qSupportSyntaxColoring
+#if		qSupportSyntaxColoring_
  		PopUp	"Sy&ntax Coloring"
 		Begin
 			MenuItem	"None",						kNoSyntaxColoringCmd
@@ -245,11 +245,11 @@ Begin
 		MenuItem	SEPARATOR
 		MenuItem	"Shift Left\tCtrl+Shift+Tab",	kShiftLeftCmdID
 		MenuItem	"Shift Right\tCtrl+Tab",		kShiftRightCmdID
-	#if		qIncludeBasicSpellcheckEngine
+	#if		qIncludeBasicSpellcheckEngine_
 		MenuItem	SEPARATOR
 		MenuItem	"&Check Spelling...\tCtrl+L",	kSpellCheckCmd
 	#endif
-	#if		qSupportGenRandomCombosCommand
+	#if		qSupportGenRandomCombosCommand_
 		MenuItem	SEPARATOR
 		MenuItem	"&Generate Random Combos\tCtrl+1",		kGenRandomCombosCmdID
 	#endif
@@ -330,11 +330,11 @@ Begin
 		MenuItem	SEPARATOR
 		MenuItem	"Shift Left\tCtrl+Shift+Tab",	kShiftLeftCmdID
 		MenuItem	"Shift Right\tCtrl+Tab",		kShiftRightCmdID
-	#if		qIncludeBasicSpellcheckEngine
+	#if		qIncludeBasicSpellcheckEngine_
 		MenuItem	SEPARATOR
 		MenuItem	"&Check Spelling...\tCtrl+L",	kSpellCheckCmd
 	#endif
-	#if		qSupportGenRandomCombosCommand
+	#if		qSupportGenRandomCombosCommand_
 		MenuItem	SEPARATOR
 		MenuItem	"&Generate Random Combos\tCtrl+1",		kGenRandomCombosCmdID
 	#endif
@@ -346,7 +346,7 @@ Begin
 		MenuItem	"&Auto Indent",					kToggleAutoIndentOptionCmd
 		MenuItem	"Selection Tab &indents text",	kToggleTreatTabAsIndentCharOptionCmd
 		MenuItem	"S&mart Cut and Paste",			kToggleUseSmartCutNPasteCmdID
-#if		qSupportSyntaxColoring
+#if		qSupportSyntaxColoring_
 		PopUp	"Sy&ntax Coloring"
 		Begin
 			MenuItem	"None",						kNoSyntaxColoringCmd
@@ -420,10 +420,10 @@ Begin
 	"E",			kEnterFindStringCmd,	VIRTKEY,CONTROL
 	"H",			kReplaceCmd,			VIRTKEY,CONTROL
 	"R",			kReplaceAgainCmd,		VIRTKEY,CONTROL
-#if		qIncludeBasicSpellcheckEngine
+#if		qIncludeBasicSpellcheckEngine_
 	"L",			kSpellCheckCmd,			VIRTKEY,CONTROL
 #endif
-#if		qSupportGenRandomCombosCommand
+#if		qSupportGenRandomCombosCommand_
 	"1",			kGenRandomCombosCmdID,	VIRTKEY,CONTROL
 #endif
 	"G",			kGotoLineCmdID,			VIRTKEY,CONTROL
@@ -451,10 +451,10 @@ Begin
 	"E",			kEnterFindStringCmd,	VIRTKEY,CONTROL
 	"H",			kReplaceCmd,			VIRTKEY,CONTROL
 	"R",			kReplaceAgainCmd,		VIRTKEY,CONTROL
-#if		qIncludeBasicSpellcheckEngine
+#if		qIncludeBasicSpellcheckEngine_
 	"L",			kSpellCheckCmd,			VIRTKEY,CONTROL
 #endif
-#if		qSupportGenRandomCombosCommand
+#if		qSupportGenRandomCombosCommand_
 	"1",			kGenRandomCombosCmdID,	VIRTKEY,CONTROL
 #endif
 	"G",			kGotoLineCmdID,			VIRTKEY,CONTROL
@@ -485,10 +485,10 @@ Begin
 	"E",			kEnterFindStringCmd,	VIRTKEY,CONTROL
 	"H",			kReplaceCmd,			VIRTKEY,CONTROL
 	"R",			kReplaceAgainCmd,		VIRTKEY,CONTROL
-#if		qIncludeBasicSpellcheckEngine
+#if		qIncludeBasicSpellcheckEngine_
 	"L",			kSpellCheckCmd,			VIRTKEY,CONTROL
 #endif
-#if		qSupportGenRandomCombosCommand
+#if		qSupportGenRandomCombosCommand_
 	"1",			kGenRandomCombosCmdID,	VIRTKEY,CONTROL
 #endif
 	"G",			kGotoLineCmdID,			VIRTKEY,CONTROL
@@ -522,10 +522,10 @@ Begin
 	"E",			kEnterFindStringCmd,	VIRTKEY,CONTROL
 	"H",			kReplaceCmd,			VIRTKEY,CONTROL
 	"R",			kReplaceAgainCmd,		VIRTKEY,CONTROL
-#if		qIncludeBasicSpellcheckEngine
+#if		qIncludeBasicSpellcheckEngine_
 	"L",			kSpellCheckCmd,			VIRTKEY,CONTROL
 #endif
-#if		qSupportGenRandomCombosCommand
+#if		qSupportGenRandomCombosCommand_
 	"1",			kGenRandomCombosCmdID,	VIRTKEY,CONTROL
 #endif
 	"G",			kGotoLineCmdID,			VIRTKEY,CONTROL
@@ -749,10 +749,10 @@ Begin
 	kEnterFindStringCmd     "Make the currently selected text what is searched for on the next 'Find Again' command.\nEnter Find String"
 	kReplaceCmd           	"Replace the specified text with the specified replacement text\nReplace"
 	kReplaceAgainCmd        "Find the same text last searched for again, and replace with the last replaced string. Same as Replace dialog, and just hitting OK.\nReplace Again"
-#if		qIncludeBasicSpellcheckEngine
+#if		qIncludeBasicSpellcheckEngine_
 	kSpellCheckCmd			"Find/correct the next misspelled word or set spellchecking options.\nSpellchecking Dialog"
 #endif
-#if		qSupportGenRandomCombosCommand
+#if		qSupportGenRandomCombosCommand_
 	kGenRandomCombosCmdID	"Take the words in the selected region, and generate many random combinations of those words and word-fragments\nGenerate Random Combos"
 #endif
 	kGotoLineCmdID      	"Goto the given line number. Directly click on line number in status bar to edit line#."
@@ -767,7 +767,7 @@ Begin
 	ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 	kToggleAutoIndentOptionCmd	"Insert extra initial whitespace when Enter (or Return) key pressed to match previous lines.\nToggle AutoIndent"
 	kToggleTreatTabAsIndentCharOptionCmd	"A (shift)tab when text is selected is treated as a request to (un)indent the selected region.\nToggle TabSelectionIndent"
-#if		qSupportSyntaxColoring
+#if		qSupportSyntaxColoring_
 	kToggleUseSmartCutNPasteCmdID	"Toggle use of Smart Cut and Paste (Drag and Drop). Affects space characters surrounding cut/paste/drag/drop.\nSmart Cut and Paste"
 	kNoSyntaxColoringCmd	"No Syntax Coloring.\nNo Syntax Coloring"
 	kCPlusPlusSyntaxColoringCmd	"Syntax Coloring for the 'C++' computer language.\nC++ Syntax Coloring"

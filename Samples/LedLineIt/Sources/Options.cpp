@@ -23,7 +23,7 @@ using namespace Stroika::Frameworks::Led;
 using Memory::BLOB;
 
 using SearchParameters = TextInteractor::SearchParameters;
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 using SyntaxColoringOption = Options::SyntaxColoringOption;
 #endif
 
@@ -34,7 +34,7 @@ namespace {
         bool             fSmartCutAndPaste{true};
         bool             fAutoIndent{true};
         bool             fTabsAutoShiftsText{true};
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
         SyntaxColoringOption fSyntaxColoring{SyntaxColoringOption::eSyntaxColoringNone};
 #endif
 #if qStroika_Platform_Windows
@@ -57,7 +57,7 @@ namespace {
                                 mapper.AddCommonType<vector<Led_tString>> ();
                                 mapper.AddCommonType<Memory::BLOB> ();
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
                                 mapper.AddCommonType<SyntaxColoringOption> ();
 #endif
 
@@ -76,7 +76,7 @@ namespace {
                                     {L"Auto-Indent", &Options_::fAutoIndent},
                                     {L"Tabs-Auto-Shifts-Text", &Options_::fTabsAutoShiftsText},
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
                                     {L"Syntax-Coloring", &Options_::fSyntaxColoring},
 #endif
 
@@ -210,7 +210,7 @@ void Options::SetTreatTabAsIndentChar (bool tabAsIndentChar)
     });
 }
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 Options::SyntaxColoringOption Options::GetSyntaxColoringOption () const
 {
     return sOptions_.Get ().fSyntaxColoring;

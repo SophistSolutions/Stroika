@@ -23,9 +23,9 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 
-#define qBuildWP 1
+#define qBuildWP_ 1
 
-#if qBuildWP
+#if qBuildWP_
 typedef SimpleLedWordProcessor _BASE_;
 #else
 typedef SimpleLedLineEditor _BASE_;

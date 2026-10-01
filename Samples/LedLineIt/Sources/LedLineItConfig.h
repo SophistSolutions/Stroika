@@ -17,13 +17,13 @@ static_assert (qStroika_HasComponent_ATLMFC, "Error: LedLineIt requires the ATLM
 const unsigned int kMaxNumUndoLevels = 1024;
 #endif
 
-#define qSupportGenRandomCombosCommand 0
+#define qSupportGenRandomCombosCommand_ 0
 
-#define qSupportSyntaxColoring 1
+#define qSupportSyntaxColoring_ 1
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 /*
- *  qSupportOnlyMarkersWhichOverlapVisibleRegion attempts to only keep track of markers
+ *  qSupportOnlyMarkersWhichOverlapVisibleRegion_ attempts to only keep track of markers
  *  which will overlap the region displayed
  *  currently in the window. The premise is that we would rather save the memory for all
  *  the undisplayed areas, and we wish to save the time it takes to analyze all that text
@@ -31,15 +31,15 @@ const unsigned int kMaxNumUndoLevels = 1024;
  *  quickly enuf for scrolling purposes. If any of this isn't true, you can try always
  *  computing the whole thing. Really thats easier.
  *
- *  NB: With qSupportOnlyMarkersWhichOverlapVisibleRegion TRUE,
+ *  NB: With qSupportOnlyMarkersWhichOverlapVisibleRegion_ TRUE,
  *      (a) when we've scrolled,  we must call SyntaxColoringMarkerOwner::RecheckScrolling ()
  *      (b) when font metrics changed, we must call SyntaxColoringMarkerOwner::RecheckAll ()
  */
-#ifndef qSupportOnlyMarkersWhichOverlapVisibleRegion
-#define qSupportOnlyMarkersWhichOverlapVisibleRegion 1
+#ifndef qSupportOnlyMarkersWhichOverlapVisibleRegion_
+#define qSupportOnlyMarkersWhichOverlapVisibleRegion_ 1
 #endif
 #endif
 
-#define qIncludeBasicSpellcheckEngine 1
+#define qIncludeBasicSpellcheckEngine_ 1
 
 #endif /*__LedLineItConfig__*/

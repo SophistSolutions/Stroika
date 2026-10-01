@@ -27,7 +27,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "LedItConfig.h"
 
-#if qIncludeBasicSpellcheckEngine
+#if qIncludeBasicSpellcheckEngine_
 #include "Stroika/Frameworks/Led/SpellCheckEngine_Basic.h"
 #endif
 
@@ -66,7 +66,7 @@ public:
 private:
     static LedItApplication* sThe;
 
-#if qIncludeBasicSpellcheckEngine
+#if qIncludeBasicSpellcheckEngine_
 public:
     shared_ptr<SpellCheckEngine_Basic_Simple> fSpellCheckEngine;
 #endif

@@ -25,8 +25,8 @@ using namespace Stroika::Frameworks::Led;
  *  Note that this ONLY reverses directions WITHIN a run - not the order of the runs. Thats still good enough
  *  to debug most display issues.
  */
-#ifndef qDebugHack_ReverseDirections
-#define qDebugHack_ReverseDirections 0
+#ifndef qDebugHack_ReverseDirections_
+#define qDebugHack_ReverseDirections_ 0
 #endif
 
 /*
@@ -34,8 +34,8 @@ using namespace Stroika::Frameworks::Led;
  *  as LTR characters. This hack COULD be improved to actually PRESERVE the original characters in the virtual
  *  output, but that hasn't been done yet.
  */
-#ifndef qDebugHack_UpperCaseCharsTratedAsRTL
-#define qDebugHack_UpperCaseCharsTratedAsRTL 0
+#ifndef qDebugHack_UpperCaseCharsTratedAsRTL_
+#define qDebugHack_UpperCaseCharsTratedAsRTL_ 0
 #endif
 
 /*
@@ -274,7 +274,7 @@ void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
     fVirtualText.GrowToSize (textLength);
     copy (realText, realText + textLength, static_cast<Led_tChar*> (fRealText));
 
-#if qDebugHack_UpperCaseCharsTratedAsRTL
+#if qDebugHack_UpperCaseCharsTratedAsRTL_
     for (size_t i = 0; i < textLength; ++i) {
         if ('A' <= fRealText[i] and fRealText[i] <= 'Z') {
             fRealText[i] = 0xfe7d; // random arabic character
@@ -285,7 +285,7 @@ void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
     // No bidirectional layout engine: each paragraph is one left-to-right run - see https://github.com/SophistSolutions/Stroika/issues/1182
     Construct_Default ();
 
-    if constexpr (qDebugHack_ReverseDirections) {
+    if constexpr (qDebugHack_ReverseDirections_) {
         for (auto i = fScriptRuns.begin (); i != fScriptRuns.end (); ++i) {
             ScriptRunElt& se     = *i;
             TextDirection newDir = (se.fDirection == eLeftToRight) ? eRightToLeft : eLeftToRight;

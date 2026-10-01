@@ -31,7 +31,7 @@ using namespace Stroika::Frameworks::Led;
 
 #if qStroika_Platform_Windows
 // RTL Imaging flags
-#define qUseGetCharPlacementToImage 1
+#define qUseGetCharPlacementToImage_ 1
 #endif
 
 #if qStroika_Platform_Windows
@@ -39,8 +39,8 @@ using namespace Stroika::Frameworks::Led;
  *  Used to use CreateCompatibleBitmap, but as of SPR#1271 try using a DIBSection (of a compatile depth) instead).
  *  This has no noticable effect on normal drawing, but greatly speeds HilightRectangle () code for some computers.
  */
-#ifndef qUseDIBSectionForOffscreenBitmap
-#define qUseDIBSectionForOffscreenBitmap 1
+#ifndef qUseDIBSectionForOffscreenBitmap_
+#define qUseDIBSectionForOffscreenBitmap_ 1
 #endif
 #endif
 
@@ -906,7 +906,7 @@ void Tablet::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led
 {
     // By commenting stuff in and out - I determined that virtuall ALL the time is spent in this first
     // BitBlt () - LGP 2003-03-11
-    // I also found that qUseDIBSectionForOffscreenBitmap made this BitBlt go much faster - to the point of acceptable speed
+    // I also found that qUseDIBSectionForOffscreenBitmap_ made this BitBlt go much faster - to the point of acceptable speed
     // LGP - 2003-03-12
 
     // Copy the REAL image into our 8-bit DIBSECTION
@@ -1218,7 +1218,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
              *  A bunch of different ways to get the RTL code emitted. Try them each in order (some ifdefed out). When
              *  one succeeds - just to the succcess label.
              */
-#if qUseGetCharPlacementToImage
+#if qUseGetCharPlacementToImage_
             {
                 size_t                       len = nextTabAt - textCursor;
                 Memory::StackBuffer<wchar_t> glyphs{len};
@@ -1469,7 +1469,7 @@ Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceTy
                 (void)fMemDC.SelectObject (fOldBitmapInDC);
             }
             fMemoryBitmap.DeleteObject (); // lose previous contents, if any...
-#if qUseDIBSectionForOffscreenBitmap
+#if qUseDIBSectionForOffscreenBitmap_
             if (fMemoryBitmap.CreateCompatibleDIBSection (fOrigTablet->m_hDC, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight ()) == 0) {
                 fOffscreenTablet = nullptr; // OK, just don't use...
             }
@@ -1805,8 +1805,8 @@ Led_DIB* Led::Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
  */
 IME* IME::sThe = nullptr;
 
-#ifndef qUseNewIMECode
-#define qUseNewIMECode 1
+#ifndef qUseNewIMECode_
+#define qUseNewIMECode_ 1
 #endif
 
 // Somewhat silly hack so IME gets destroyed at end of application execution. Helpful for quitting memleak detectors.
@@ -1881,7 +1881,7 @@ void IME::NotifyOfFontChange (HWND hWnd, const LOGFONT& lf)
     }
 }
 
-#if !qUseNewIMECode
+#if !qUseNewIMECode_
 void IME::SendSimpleMessage (HWND hWnd, UINT fnc, WPARAM wParam)
 {
     if (fSendIMEMessageProc != nullptr) {
@@ -1908,7 +1908,7 @@ void IME::SendSimpleMessage (HWND hWnd, UINT fnc, WPARAM wParam)
 
 void IME::IMEOn (HWND hWnd)
 {
-#if qUseNewIMECode
+#if qUseNewIMECode_
     if (fImmGetContext != nullptr and fImmSetOpenStatus != nullptr and fImmReleaseContext != nullptr) {
         HIMC hImc = NULL;
         if ((hImc = fImmGetContext (hWnd)) != NULL) {
@@ -1923,7 +1923,7 @@ void IME::IMEOn (HWND hWnd)
 
 void IME::IMEOff (HWND hWnd)
 {
-#if qUseNewIMECode
+#if qUseNewIMECode_
     if (fImmGetContext != nullptr and fImmSetOpenStatus != nullptr and fImmReleaseContext != nullptr) {
         HIMC hImc = NULL;
         if ((hImc = fImmGetContext (hWnd)) != NULL) {
@@ -1939,7 +1939,7 @@ void IME::IMEOff (HWND hWnd)
 void IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y)
 {
     if (fSendIMEMessageProc != nullptr) {
-#if qUseNewIMECode
+#if qUseNewIMECode_
         if (fImmGetContext != nullptr and fImmSetCompositionWindow != nullptr and fImmReleaseContext != nullptr) {
             HIMC hImc = NULL;
             if ((hImc = fImmGetContext (hWnd)) != NULL) {

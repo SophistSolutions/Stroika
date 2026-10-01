@@ -43,7 +43,7 @@ public:
         AddAssociation (kEnterFindStringCmd, LedLineItView::kEnterFindString_CmdID);
         AddAssociation (kReplaceCmd, LedLineItView::kReplace_CmdID);
         AddAssociation (kReplaceAgainCmd, LedLineItView::kReplaceAgain_CmdID);
-#if qIncludeBasicSpellcheckEngine
+#if qIncludeBasicSpellcheckEngine_
         AddAssociation (kSpellCheckCmd, LedLineItView::kSpellCheck_CmdID);
 #endif
     }
@@ -237,7 +237,7 @@ protected:
 BEGIN_MESSAGE_MAP (GotoLineDialog, CDialog)
 END_MESSAGE_MAP ()
 
-#if qSupportGenRandomCombosCommand
+#if qSupportGenRandomCombosCommand_
 namespace {
     struct AtStartup {
         AtStartup ()
@@ -267,7 +267,7 @@ ON_COMMAND (ID_FILE_PRINT_DIRECT, OnFilePrint)
 ON_COMMAND (ID_FILE_PRINT_PREVIEW, OnFilePrintPreview)
 
 ON_COMMAND (kGotoLineCmdID, OnGotoLineCommand)
-#if qSupportGenRandomCombosCommand
+#if qSupportGenRandomCombosCommand_
 ON_COMMAND (kGenRandomCombosCmdID, OnGenRandomCombosCommand)
 #endif
 ON_COMMAND (kShiftLeftCmdID, OnShiftLeftCommand)
@@ -287,7 +287,7 @@ LedLineItView::LedLineItView ()
     : inherited ()
     , fTabStopList (TWIPS (1440 / 3))
     , fCachedLayoutWidth (kBadDistance)
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
     , fSyntaxColoringMarkerOwner (NULL)
 #endif
 {
@@ -321,10 +321,10 @@ LedLineItView::~LedLineItView ()
 {
     SpecifyTextStore (NULL);
     SetCommandHandler (NULL);
-#if qIncludeBasicSpellcheckEngine
+#if qIncludeBasicSpellcheckEngine_
     SetSpellCheckEngine (NULL);
 #endif
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
     Assert (fSyntaxColoringMarkerOwner == NULL);
 #endif
 }
@@ -334,12 +334,12 @@ void LedLineItView::OnInitialUpdate ()
     inherited::OnInitialUpdate ();
     SpecifyTextStore (&GetDocument ().GetTextStore ());
     SetCommandHandler (&GetDocument ().GetCommandHandler ());
-#if qIncludeBasicSpellcheckEngine
+#if qIncludeBasicSpellcheckEngine_
     SetSpellCheckEngine (LedLineItApplication::Get ().fSpellCheckEngine.get ());
 #endif
 }
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 void LedLineItView::ResetSyntaxColoringTable ()
 {
     if (PeekAtTextStore () != NULL) {
@@ -363,7 +363,7 @@ void LedLineItView::ResetSyntaxColoringTable ()
         fSyntaxColoringMarkerOwner = NULL;
 
         if (analyzer != NULL) {
-#if qSupportOnlyMarkersWhichOverlapVisibleRegion
+#if qSupportOnlyMarkersWhichOverlapVisibleRegion_
             fSyntaxColoringMarkerOwner = new WindowedSyntaxColoringMarkerOwner (*this, GetTextStore (), *analyzer);
 #else
             fSyntaxColoringMarkerOwner = new SimpleSyntaxColoringMarkerOwner (*this, GetTextStore (), *analyzer);
@@ -388,7 +388,7 @@ void LedLineItView::HookGainedNewTextStore ()
 }
 #endif
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 vector<StyleRunElement> LedLineItView::SummarizeStyleMarkers (size_t from, size_t to) const
 {
     // See SPR#1293 - may want to get rid of this eventually
@@ -442,7 +442,7 @@ void LedLineItView::TabletChangedMetrics ()
     Tablet*         tablet        = tablet_;
     fTabStopList.fTWIPSPerTabStop = tablet->CvtToTWIPSH (kCharsPerTab * GetFontMetricsAt (0).GetMaxCharacterWidth ());
     fCachedLayoutWidth            = kBadDistance;
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
     if (fSyntaxColoringMarkerOwner != NULL) {
         fSyntaxColoringMarkerOwner->RecheckAll ();
     }
@@ -460,7 +460,7 @@ void LedLineItView::UpdateScrollBars ()
     // scrolling can change the longest row in window, so update our LayoutWidth
     fCachedLayoutWidth = kBadDistance;
     inherited::UpdateScrollBars ();
-#if qSupportSyntaxColoring && qSupportOnlyMarkersWhichOverlapVisibleRegion
+#if qSupportSyntaxColoring_ && qSupportOnlyMarkersWhichOverlapVisibleRegion_
     if (fSyntaxColoringMarkerOwner != NULL) {
         fSyntaxColoringMarkerOwner->RecheckScrolling ();
     }
@@ -712,7 +712,7 @@ void LedLineItView::OnGotoLineCommand ()
     }
 }
 
-#if qSupportGenRandomCombosCommand
+#if qSupportGenRandomCombosCommand_
 void LedLineItView::OnGenRandomCombosCommand ()
 {
     vector<Led_tString> srcFrags;

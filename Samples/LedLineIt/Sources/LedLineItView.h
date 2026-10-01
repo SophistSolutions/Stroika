@@ -20,7 +20,7 @@ using namespace Stroika::Frameworks::Led::Platform;
 
 DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 struct LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor>, public StyledTextImager {
 protected:
     virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const override
@@ -52,7 +52,7 @@ public:
 protected:
     virtual void OnInitialUpdate () override;
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 public:
     nonvirtual void ResetSyntaxColoringTable ();
 
@@ -61,7 +61,7 @@ protected:
     virtual void HookGainedNewTextStore () override;
 #endif
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 protected:
     virtual vector<StyleRunElement> SummarizeStyleMarkers (size_t from, size_t to) const override;
     virtual vector<StyleRunElement> SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const override;
@@ -122,7 +122,7 @@ public:
     afx_msg void    OnShiftRightCommand ();
     nonvirtual void OnShiftNCommand (bool shiftRight);
 
-#if qSupportGenRandomCombosCommand
+#if qSupportGenRandomCombosCommand_
 public:
     afx_msg void OnGenRandomCombosCommand ();
 #endif
@@ -139,9 +139,9 @@ protected:
     afx_msg void OnChooseFontCommand ();
     DECLARE_MESSAGE_MAP ()
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 private:
-#if qSupportOnlyMarkersWhichOverlapVisibleRegion
+#if qSupportOnlyMarkersWhichOverlapVisibleRegion_
     WindowedSyntaxColoringMarkerOwner* fSyntaxColoringMarkerOwner;
 #else
     SimpleSyntaxColoringMarkerOwner* fSyntaxColoringMarkerOwner;

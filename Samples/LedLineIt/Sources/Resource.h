@@ -105,7 +105,7 @@
 #define kCloseWindowCmdID kUserCommandBase + 0x4001
 #define kCloseAllWindowsCmdID kUserCommandBase + 0x4002
 
-#if qSupportGenRandomCombosCommand
+#if qSupportGenRandomCombosCommand_
 #define kGenRandomCombosCmdID kUserCommandBase + 0x4003
 #endif
 

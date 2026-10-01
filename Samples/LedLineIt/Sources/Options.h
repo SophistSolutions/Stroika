@@ -42,7 +42,7 @@ public:
     nonvirtual bool GetTreatTabAsIndentChar () const;
     nonvirtual void SetTreatTabAsIndentChar (bool tabAsIndentChar);
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 public:
     enum SyntaxColoringOption {
         eSyntaxColoringNone      = 1,

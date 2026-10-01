@@ -88,7 +88,7 @@ public:
         if (m_hMenuShared != NULL) {
             CMenu tmp;
             tmp.Attach (m_hMenuShared);
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
             FixupFontMenu (tmp.GetSubMenu (2)->GetSubMenu (7));
 #else
             FixupFontMenu (tmp.GetSubMenu (2)->GetSubMenu (6));
@@ -290,7 +290,7 @@ ON_COMMAND (kToggleTreatTabAsIndentCharOptionCmd, OnToggleTreatTabAsIndentCharOp
 ON_UPDATE_COMMAND_UI (kToggleTreatTabAsIndentCharOptionCmd, OnToggleTreatTabAsIndentCharOptionUpdateCommandUI)
 ON_COMMAND (kToggleUseSmartCutNPasteCmdID, OnToggleSmartCutNPasteOptionCommand)
 ON_UPDATE_COMMAND_UI (kToggleUseSmartCutNPasteCmdID, OnToggleSmartCutNPasteOptionUpdateCommandUI)
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 ON_COMMAND_RANGE (kNoSyntaxColoringCmd, kVBSyntaxColoringCmd, OnSyntaxColoringOptionCommand)
 ON_UPDATE_COMMAND_UI_RANGE (kNoSyntaxColoringCmd, kVBSyntaxColoringCmd, OnSyntaxColoringOptionUpdateCommandUI)
 #endif
@@ -304,7 +304,7 @@ LedLineItApplication* LedLineItApplication::sThe = NULL;
 
 LedLineItApplication::LedLineItApplication ()
     :
-#if qIncludeBasicSpellcheckEngine
+#if qIncludeBasicSpellcheckEngine_
     fSpellCheckEngine ()
     ,
 #endif
@@ -373,7 +373,7 @@ BOOL LedLineItApplication::InitInstance ()
     fOleTemplateServer.UpdateRegistry (OAT_INPLACE_SERVER);
     COleObjectFactory::UpdateRegistryAll ();
 
-#if qIncludeBasicSpellcheckEngine && qStroika_Foundation_Debug_AssertionsChecked
+#if qIncludeBasicSpellcheckEngine_ && qStroika_Foundation_Debug_AssertionsChecked
     if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         SpellCheckEngine_Basic::RegressionTest ();
     }
@@ -702,7 +702,7 @@ void LedLineItApplication::OnToggleSmartCutNPasteOptionUpdateCommandUI (CCmdUI* 
     pCmdUI->SetCheck (Options{}.GetSmartCutAndPaste ());
 }
 
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
 void LedLineItApplication::OnSyntaxColoringOptionCommand (UINT cmdNum)
 {
     Options o;
@@ -785,7 +785,7 @@ void LedLineItApplication::UpdateViewsForPrefsChange ()
                 LedLineItView* lv = dynamic_cast<LedLineItView*> (v);
                 if (lv != NULL) {
                     lv->SetSmartCutAndPasteMode (smartCutNPaste);
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
                     lv->ResetSyntaxColoringTable ();
 #endif
                 }
@@ -797,11 +797,10 @@ void LedLineItApplication::UpdateViewsForPrefsChange ()
 BOOL LedLineItApplication::ProcessShellCommand (CCommandLineInfo& rCmdInfo)
 {
     try {
-/*
+        /*
         *   SPR#0775. MFC doesnt' keep track of all the files requested to open. So walk the list of file arguments
         *   a SECOND TIME! PATHETIC!
         */
-#if !qNo_argc_argv_MacrosSupported
         if (rCmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen) {
             for (int i = 1; i < __argc; ++i) {
                 LPCTSTR pszParam = __targv[i];
@@ -839,7 +838,6 @@ BOOL LedLineItApplication::ProcessShellCommand (CCommandLineInfo& rCmdInfo)
             }
             return true;
         }
-#endif
         return inherited::ProcessShellCommand (rCmdInfo);
     }
     STD_EXCEPT_CATCHER (*this);

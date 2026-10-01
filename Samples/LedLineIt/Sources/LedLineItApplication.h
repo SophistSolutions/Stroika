@@ -20,7 +20,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "LedLineItConfig.h"
 
-#if qIncludeBasicSpellcheckEngine
+#if qIncludeBasicSpellcheckEngine_
 #include "Stroika/Frameworks/Led/SpellCheckEngine_Basic.h"
 #endif
 
@@ -44,7 +44,7 @@ private:
 public:
     virtual BOOL InitInstance () override;
 
-#if qIncludeBasicSpellcheckEngine
+#if qIncludeBasicSpellcheckEngine_
 public:
     shared_ptr<SpellCheckEngine_Basic_Simple> fSpellCheckEngine;
 #endif
@@ -80,7 +80,7 @@ private:
     afx_msg void OnToggleTreatTabAsIndentCharOptionUpdateCommandUI (CCmdUI* pCmdUI);
     afx_msg void OnToggleSmartCutNPasteOptionCommand ();
     afx_msg void OnToggleSmartCutNPasteOptionUpdateCommandUI (CCmdUI* pCmdUI);
-#if qSupportSyntaxColoring
+#if qSupportSyntaxColoring_
     afx_msg void OnSyntaxColoringOptionCommand (UINT cmdNum);
     afx_msg void OnSyntaxColoringOptionUpdateCommandUI (CCmdUI* pCmdUI);
 #endif

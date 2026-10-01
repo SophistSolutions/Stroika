@@ -965,8 +965,8 @@ void ChunkedArrayTextStore::AddMarker (Marker* marker, size_t lhs, size_t length
     Invariant ();
 }
 
-#ifndef qKeepTrackOfChildCountAndAvoidSomePossiblyAdds
-#define qKeepTrackOfChildCountAndAvoidSomePossiblyAdds 1
+#ifndef qKeepTrackOfChildCountAndAvoidSomePossiblyAdds_
+#define qKeepTrackOfChildCountAndAvoidSomePossiblyAdds_ 1
 #endif
 
 void ChunkedArrayTextStore::AddMarker1 (Marker* marker, Marker* insideMarker, bool canAddHackMarkers)
@@ -998,7 +998,7 @@ void ChunkedArrayTextStore::AddMarker1 (Marker* marker, Marker* insideMarker, bo
      */
     Marker* specificInsideMarker = insideMarker;
 Again:
-#if qKeepTrackOfChildCountAndAvoidSomePossiblyAdds
+#if qKeepTrackOfChildCountAndAvoidSomePossiblyAdds_
     size_t specificInsideMarkerChildCount = 0; // use in PossiblyAddHackMarkers optimization below
 #endif
     Marker* prevMarker = NULL;
@@ -1006,7 +1006,7 @@ Again:
          (prevMarker = curChild), (curChild = OurStuff (curChild)->fNextSubMarker)) {
         Assert (marker != curChild);
 
-#if qKeepTrackOfChildCountAndAvoidSomePossiblyAdds
+#if qKeepTrackOfChildCountAndAvoidSomePossiblyAdds_
         ++specificInsideMarkerChildCount;
 #endif
 
@@ -1073,7 +1073,7 @@ Again:
         }
     }
 
-#if qKeepTrackOfChildCountAndAvoidSomePossiblyAdds
+#if qKeepTrackOfChildCountAndAvoidSomePossiblyAdds_
     if (specificInsideMarkerChildCount < kEnufChildrenToApplyHackMarkers) {
         canAddHackMarkers = false;
     }

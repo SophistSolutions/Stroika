@@ -270,7 +270,7 @@ Begin
 		MenuItem	"&Cut\tCtrl+X",					ID_EDIT_CUT
 		MenuItem	"&Copy\tCtrl+C",				ID_EDIT_COPY
 		MenuItem	"&Paste\tCtrl+V",				ID_EDIT_PASTE
-	#if		qSupportPasteSpecial
+	#if		qSupportPasteSpecial_
 		MenuItem	"&Paste Special...",			ID_EDIT_PASTE_SPECIAL
 	#endif
 		MenuItem	"&Clear\tDel",					ID_EDIT_CLEAR
@@ -369,7 +369,7 @@ Begin
 			MenuItem	"&Other...",					kFontColorOtherCmd
 		End
 		MenuItem	"&Choose Font Dialog...\tCtrl+D", 	kChooseFontDialogCmd
-		#if		qSupportStyleSheets
+		#if		qSupportStyleSheets_
 		MenuItem	SEPARATOR
 		MenuItem	"&Define Styles",                0
 		MenuItem	SEPARATOR
@@ -459,7 +459,7 @@ Begin
 		MenuItem	"&Cut\tCtrl+X",					ID_EDIT_CUT
 		MenuItem	"&Copy\tCtrl+C",				ID_EDIT_COPY
 		MenuItem	"&Paste\tCtrl+V",				ID_EDIT_PASTE
-	#if		qSupportPasteSpecial
+	#if		qSupportPasteSpecial_
 		MenuItem	"&Paste Special...",			ID_EDIT_PASTE_SPECIAL
 	#endif
 		MenuItem	"&Clear\tDel",					ID_EDIT_CLEAR
@@ -567,7 +567,7 @@ Begin
 			MenuItem	"&Other...",					kFontColorOtherCmd
 		End
 		MenuItem	"&Choose Font Dialog...\tCtrl+D",	kChooseFontDialogCmd
-		#if		qSupportStyleSheets
+		#if		qSupportStyleSheets_
 		MenuItem	SEPARATOR
 		MenuItem	"&Define Styles",                0
 		MenuItem	SEPARATOR
@@ -646,7 +646,7 @@ Begin
 		MenuItem	"&Cut\tCtrl+X",                ID_EDIT_CUT
 		MenuItem	"&Copy\tCtrl+C",               ID_EDIT_COPY
 		MenuItem	"&Paste\tCtrl+V",              ID_EDIT_PASTE
-	#if		qSupportPasteSpecial
+	#if		qSupportPasteSpecial_
 		MenuItem	"&Paste Special...",           ID_EDIT_PASTE_SPECIAL
 	#endif
 		MenuItem	"&Clear\tDel",					ID_EDIT_CLEAR
@@ -754,7 +754,7 @@ Begin
 			MenuItem	"&Other...",						kFontColorOtherCmd
 		End
 		MenuItem	"&Choose Font Dialog...\tCtrl+D",	kChooseFontDialogCmd
-		#if		qSupportStyleSheets
+		#if		qSupportStyleSheets_
 		MenuItem	SEPARATOR
 		MenuItem	"&Define Styles",					0
 		MenuItem	SEPARATOR
@@ -1148,7 +1148,7 @@ Begin
 	ID_VIEW_RULER			"Show or hide the ruler\nToggle Ruler"
 	ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 	ID_EDIT_PASTE_LINK      "Insert Clipboard contents and a link to its source\nPaste Link"
-	#if		qSupportPasteSpecial
+	#if		qSupportPasteSpecial_
 	ID_EDIT_PASTE_SPECIAL	"Insert Clipboard contents with options\nPaste Special"
 	#endif
 	kIncreaseIndentCmd,		"Indent selected list items further right\nIncrease Indent"

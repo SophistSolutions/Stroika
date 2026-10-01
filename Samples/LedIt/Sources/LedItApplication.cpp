@@ -576,7 +576,7 @@ BOOL LedItApplication::InitInstance ()
         return false;
     }
 
-#if qIncludeBasicSpellcheckEngine
+#if qIncludeBasicSpellcheckEngine_
 #if qStroika_Foundation_Debug_AssertionsChecked
     SpellCheckEngine_Basic::RegressionTest ();
 #endif
