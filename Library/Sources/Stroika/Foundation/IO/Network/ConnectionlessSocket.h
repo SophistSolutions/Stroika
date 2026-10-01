@@ -6,9 +6,13 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <variant>
+
 #include "Socket.h"
 
 namespace Stroika::Foundation::IO::Network {
+
+    struct Interface;
 
     /**
      *  \brief ConnectionlessSocket is typically a UDP socket you use for packet oriented communications (ie not tcp/streams)
@@ -53,13 +57,48 @@ namespace Stroika::Foundation::IO::Network {
 
         public:
             /**
+             *  Join the multicast group iaddr (IPv4 or IPv6) - so this socket receives what is sent to it - on one interface: best
+             *  given as an Interface (its index is looked up at the call - @see Interface::GetCurrentIndex), else by one of its
+             *  addresses, or by its index (Interface::fIndex). V4::kAddrAny, V6::kAddrAny or Interface::kAnyIndex: the OS picks one.
+             *
+             *  \note RACE: an index is right only for now - give the Interface, or get the index just before the call (and again
+             *        for the matching LeaveMulticastGroup) - @see Interface::fIndex
+             *
+             *  \note For IPv6, give an Interface (or index) rather than an address - a link-local address can be on more than one
+             *        interface.
+             *
+             *  \note macOS (as of 26.5) cannot pick the interface for a link-local-scope IPv6 group (ff02::...): it has no route
+             *        to choose one by, so the join fails (EADDRNOTAVAIL) - name the interface.
              */
-            nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const;
+            nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const Interface& onInterface) const;
+            nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const; ///< \brief join group iaddr on the interface with this address (V4::kAddrAny or V6::kAddrAny: the OS picks one)
+            nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, unsigned int onInterfaceIndex) const; ///< \brief join group iaddr on the interface whose Interface::fIndex this is (Interface::kAnyIndex: the OS picks one)
 
         public:
             /**
+             *  Leave a group this socket joined (JoinMulticastGroup), on the interface it joined it on - best given as an Interface.
+             *  Fails if there is no such membership - including when the interface went away since the join, as the OS drops a
+             *  membership with its interface.
+             *
+             *  \note RACE: given by index, look the index up again rather than reusing the one joined with - @see Interface::fIndex
              */
-            nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const;
+            nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const Interface& onInterface) const;
+            nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const; ///< \brief leave group iaddr on the interface with this address
+            nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, unsigned int onInterfaceIndex) const; ///< \brief leave group iaddr on the interface whose Interface::fIndex this is (Interface::kAnyIndex: the one the OS picked)
+
+        public:
+            /**
+             *  Choose the interface multicast datagrams sent from this socket go out of - else the OS picks one, on a machine with
+             *  several networks often not the one wanted. Best given as an Interface - looked up at the call: for an IPv6 socket
+             *  its current index (@see Interface::GetCurrentIndex), for an IPv4 socket one of its IPv4 addresses; else by one of
+             *  its addresses, or (for an IPv6 socket) by its index (Interface::fIndex) - there is no portable way to choose an IPv4
+             *  socket's by index.
+             *
+             *  \note RACE: the socket keeps the choice as given - set it again when the interfaces change - @see Interface::fIndex
+             */
+            nonvirtual void SetMulticastInterface (const Interface& i) const;
+            nonvirtual void SetMulticastInterface (const InternetAddress& interfaceAddress) const; ///< \brief the interface with this address
+            nonvirtual void SetMulticastInterface (unsigned int interfaceIndex) const; ///< \brief IPv6 socket: the interface whose Interface::fIndex this is (Interface::kAnyIndex: the OS's default again)
 
         public:
             /**
@@ -149,12 +188,14 @@ namespace Stroika::Foundation::IO::Network {
 
             virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) = 0;
             virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) = 0;
-            virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
-            virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-            virtual uint8_t GetMulticastTTL () const                                                               = 0;
-            virtual void    SetMulticastTTL (uint8_t ttl)                                                          = 0;
-            virtual bool    GetMulticastLoopMode () const                                                          = 0;
-            virtual void    SetMulticastLoopMode (bool loopMode)                                                   = 0;
+            // the interface: by address or by index (as the Ptr's overloads take it)
+            virtual void JoinMulticastGroup (const InternetAddress& iaddr, const variant<InternetAddress, unsigned int>& onInterface)  = 0;
+            virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const variant<InternetAddress, unsigned int>& onInterface) = 0;
+            virtual void SetMulticastInterface (const variant<InternetAddress, unsigned int>& onInterface)                             = 0;
+            virtual uint8_t GetMulticastTTL () const                                                                                   = 0;
+            virtual void    SetMulticastTTL (uint8_t ttl)                                                                              = 0;
+            virtual bool    GetMulticastLoopMode () const                                                                              = 0;
+            virtual void    SetMulticastLoopMode (bool loopMode)                                                                       = 0;
         };
 
         /**

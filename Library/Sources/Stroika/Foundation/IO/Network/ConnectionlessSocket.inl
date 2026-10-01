@@ -52,6 +52,26 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().LeaveMulticastGroup (iaddr, onInterface);
     }
+    inline void ConnectionlessSocket::Ptr::JoinMulticastGroup (const InternetAddress& iaddr, unsigned int onInterfaceIndex) const
+    {
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        _ref ().JoinMulticastGroup (iaddr, onInterfaceIndex);
+    }
+    inline void ConnectionlessSocket::Ptr::LeaveMulticastGroup (const InternetAddress& iaddr, unsigned int onInterfaceIndex) const
+    {
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        _ref ().LeaveMulticastGroup (iaddr, onInterfaceIndex);
+    }
+    inline void ConnectionlessSocket::Ptr::SetMulticastInterface (const InternetAddress& interfaceAddress) const
+    {
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        _ref ().SetMulticastInterface (interfaceAddress);
+    }
+    inline void ConnectionlessSocket::Ptr::SetMulticastInterface (unsigned int interfaceIndex) const
+    {
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        _ref ().SetMulticastInterface (interfaceIndex);
+    }
     inline void ConnectionlessSocket::Ptr::SendTo (span<const byte> data, const SocketAddress& sockAddr) const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};

@@ -7,9 +7,9 @@
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/IO/Network/Interface.h"
+#include "Stroika/Foundation/IO/Network/Socket-Private_.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
-
-#include "Socket-Private_.h"
 
 #include "ConnectionlessSocket.h"
 
@@ -27,6 +27,51 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
 using Debug::AssertExternallySynchronizedChecker;
+
+namespace {
+    // for RFC 3678's protocol-independent MCAST_JOIN_GROUP/MCAST_LEAVE_GROUP: the group as a sockaddr, the interface by index
+    ::group_req MakeGroupReq_ (const InternetAddress& group, unsigned int onInterfaceIndex)
+    {
+        ::group_req r{};
+        r.gr_interface = onInterfaceIndex;
+        r.gr_group     = SocketAddress{group}.As<sockaddr_storage> ();
+#if qStroika_Platform_MacOS
+        // a BSD sockaddr carries its own length - which bind () and sendto () take from their argument instead, but which
+        // MCAST_JOIN_GROUP checks (EINVAL)
+        r.gr_group.ss_len = static_cast<uint8_t> (SocketAddress{group}.GetRequiredSize ());
+#endif
+        return r;
+    }
+    // the index of the interface with this address (an exact match - not merely on its subnet); kAddrAny: kAnyIndex
+    unsigned int InterfaceIndexOf_ (const InternetAddress& interfaceAddress)
+    {
+        if (interfaceAddress == V4::kAddrAny or interfaceAddress == V6::kAddrAny) {
+            return Interface::kAnyIndex;
+        }
+        for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
+            if (i.fIndex and i.fBindings.fAddresses.Contains (interfaceAddress)) {
+                return *i.fIndex;
+            }
+        }
+        Execution::Throw (SystemErrorException{make_error_code (errc::no_such_device)}); // what IP_ADD_MEMBERSHIP reported for this (on Linux)
+    }
+    // i's index now - or ENODEV if it is gone (as IP_ADD_MEMBERSHIP reports for a missing interface, on Linux)
+    unsigned int CurrentIndexOf_ (const Interface& i)
+    {
+        if (optional<unsigned int> index = i.GetCurrentIndex ()) {
+            return *index;
+        }
+        Execution::Throw (SystemErrorException{make_error_code (errc::no_such_device)});
+    }
+    // the interface as IPv6 names it: by index (an address is looked up)
+    unsigned int InterfaceIndex_ (const variant<InternetAddress, unsigned int>& onInterface)
+    {
+        if (const unsigned int* index = get_if<unsigned int> (&onInterface)) {
+            return *index;
+        }
+        return InterfaceIndexOf_ (get<InternetAddress> (onInterface));
+    }
+}
 
 namespace {
     struct Rep_ : BackSocketImpl_<ConnectionlessSocket::_IRep> {
@@ -114,49 +159,70 @@ namespace {
             AssertNotImplemented ();
 #endif
         }
-        virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
+        virtual void JoinMulticastGroup (const InternetAddress& iaddr, const variant<InternetAddress, unsigned int>& onInterface) override
         {
-            Debug::TraceContextBumper ctx{"IO::Network::Socket::JoinMulticastGroup",
-                                          Stroika_Foundation_Debug_OptionalizeTraceArgs ("iaddr={} onInterface={}"_f, iaddr, onInterface)};
+            Debug::TraceContextBumper ctx{
+                "IO::Network::Socket::JoinMulticastGroup",
+                Stroika_Foundation_Debug_OptionalizeTraceArgs ("iaddr={} onInterface={}"_f, iaddr, Characters::ToString (onInterface))};
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
-            Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);
-            auto                       activity = Execution::LazyEvalActivity{[&] () -> Characters::String {
+            auto                                              activity = Execution::LazyEvalActivity{[&] () -> Characters::String {
                 return "joining multicast group "sv + Characters::ToString (iaddr) + " on interface "sv + Characters::ToString (onInterface);
             }};
-            Execution::DeclareActivity activityDeclare{&activity};
-            switch (iaddr.GetAddressFamily ()) {
+            Execution::DeclareActivity                        activityDeclare{&activity};
+            SetMembership_ (iaddr, onInterface, true);
+        }
+        virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const variant<InternetAddress, unsigned int>& onInterface) override
+        {
+            Debug::TraceContextBumper ctx{"IO::Network::Socket::LeaveMulticastGroup", "iaddr={} onInterface={}"_f, iaddr,
+                                          Characters::ToString (onInterface)};
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
+            SetMembership_ (iaddr, onInterface, false);
+        }
+        /*
+         *  Each case names the interface as the OS's own call does, so the kernel resolves it: IPv4's classic join takes an
+         *  interface ADDRESS (INADDR_ANY: the OS picks one), IPv6's an index (kAnyIndex: the OS picks one). An IPv4 interface
+         *  given by index uses RFC 3678's MCAST_JOIN_GROUP - but BSD/macOS refuse kAnyIndex there (EADDRNOTAVAIL), so that is
+         *  INADDR_ANY.
+         *  IPv6 has no join by address, so an address is looked up.
+         */
+        void SetMembership_ (const InternetAddress& group, const variant<InternetAddress, unsigned int>& onInterface, bool join)
+        {
+            switch (group.GetAddressFamily ()) {
                 case InternetAddress::AddressFamily::V4: {
-                    ::ip_mreq m{};
-                    m.imr_multiaddr = iaddr.As<in_addr> ();
-                    m.imr_interface = onInterface.As<in_addr> ();
-                    setsockopt (IPPROTO_IP, IP_ADD_MEMBERSHIP, m);
+                    if (const unsigned int* index = get_if<unsigned int> (&onInterface); index != nullptr and *index != Interface::kAnyIndex) {
+                        setsockopt (IPPROTO_IP, join ? MCAST_JOIN_GROUP : MCAST_LEAVE_GROUP, MakeGroupReq_ (group, *index));
+                    }
+                    else {
+                        ::ip_mreq m{};
+                        m.imr_multiaddr = group.As<in_addr> ();
+                        if (const InternetAddress* address = get_if<InternetAddress> (&onInterface); address != nullptr and *address != V6::kAddrAny) {
+                            m.imr_interface = address->As<in_addr> (); // else INADDR_ANY: the OS picks
+                        }
+                        setsockopt (IPPROTO_IP, join ? IP_ADD_MEMBERSHIP : IP_DROP_MEMBERSHIP, m);
+                    }
                 } break;
                 case InternetAddress::AddressFamily::V6: {
                     ::ipv6_mreq m{};
-                    m.ipv6mr_multiaddr = iaddr.As<in6_addr> ();
-                    m.ipv6mr_interface = 0; //??? seems to mean any
-                    setsockopt (IPPROTO_IPV6, IPV6_JOIN_GROUP, m);
+                    m.ipv6mr_multiaddr = group.As<in6_addr> ();
+                    m.ipv6mr_interface = InterfaceIndex_ (onInterface);
+                    setsockopt (IPPROTO_IPV6, join ? IPV6_JOIN_GROUP : IPV6_LEAVE_GROUP, m);
                 } break;
                 default:
                     RequireNotReached ();
             }
         }
-        virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
+        virtual void SetMulticastInterface (const variant<InternetAddress, unsigned int>& onInterface) override
         {
-            Debug::TraceContextBumper ctx{"IO::Network::Socket::LeaveMulticastGroup", "iaddr={} onInterface={}"_f, iaddr, onInterface};
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
-            switch (iaddr.GetAddressFamily ()) {
-                case InternetAddress::AddressFamily::V4: {
-                    ::ip_mreq m{};
-                    m.imr_multiaddr = iaddr.As<in_addr> ();
-                    m.imr_interface = onInterface.As<in_addr> ();
-                    setsockopt (IPPROTO_IP, IP_DROP_MEMBERSHIP, m);
+            switch (GetAddressFamily ()) {
+                case SocketAddress::INET: {
+                    // by one of its addresses - there is no portable way to choose an IPv4 interface by index
+                    const InternetAddress* address = get_if<InternetAddress> (&onInterface);
+                    Require (address != nullptr and address->GetAddressFamily () == InternetAddress::AddressFamily::V4);
+                    setsockopt (IPPROTO_IP, IP_MULTICAST_IF, address->As<in_addr> ());
                 } break;
-                case InternetAddress::AddressFamily::V6: {
-                    ::ipv6_mreq m{};
-                    m.ipv6mr_multiaddr = iaddr.As<in6_addr> ();
-                    m.ipv6mr_interface = 0; ///??? seems to mean any
-                    setsockopt (IPPROTO_IPV6, IPV6_LEAVE_GROUP, m);
+                case SocketAddress::INET6: {
+                    setsockopt<unsigned int> (IPPROTO_IPV6, IPV6_MULTICAST_IF, InterfaceIndex_ (onInterface)); // an unsigned int (a DWORD on Windows)
                 } break;
                 default:
                     RequireNotReached ();
@@ -231,6 +297,37 @@ namespace {
             }
         }
     };
+}
+
+/*
+ ********************************************************************************
+ ************************** ConnectionlessSocket::Ptr ***************************
+ ********************************************************************************
+ */
+void ConnectionlessSocket::Ptr::JoinMulticastGroup (const InternetAddress& iaddr, const Interface& onInterface) const
+{
+    JoinMulticastGroup (iaddr, CurrentIndexOf_ (onInterface));
+}
+
+void ConnectionlessSocket::Ptr::LeaveMulticastGroup (const InternetAddress& iaddr, const Interface& onInterface) const
+{
+    LeaveMulticastGroup (iaddr, CurrentIndexOf_ (onInterface));
+}
+
+void ConnectionlessSocket::Ptr::SetMulticastInterface (const Interface& i) const
+{
+    if (GetAddressFamily () == SocketAddress::INET) {
+        // by one of its addresses - there is no portable way to choose an IPv4 interface by index
+        optional<InternetAddress> a = i.fBindings.fAddresses.First (
+            [] (const InternetAddress& ia) { return ia.GetAddressFamily () == InternetAddress::AddressFamily::V4; });
+        if (not a) {
+            Execution::Throw (SystemErrorException{make_error_code (errc::address_not_available)}); // no IPv4 on that interface
+        }
+        SetMulticastInterface (*a);
+    }
+    else {
+        SetMulticastInterface (CurrentIndexOf_ (i));
+    }
 }
 
 /*

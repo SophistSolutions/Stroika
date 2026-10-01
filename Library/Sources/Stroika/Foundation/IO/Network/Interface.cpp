@@ -58,6 +58,7 @@
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
+#include "ConnectionlessSocket.h"
 #include "Socket.h"
 
 #include "Interface.h"
@@ -140,6 +141,43 @@ String Interface::Bindings::ToString () const
  *********************************** Interface **********************************
  ********************************************************************************
  */
+optional<unsigned int> Interface::GetCurrentIndex () const
+{
+#if qStroika_Platform_Linux
+    // SIOCGIFINDEX, not if_nametoindex () - @see GetInterfaces_POSIX_mkInterface_
+    int                     sd      = Execution::ThrowPOSIXErrNoIfNegative (::socket (AF_INET, SOCK_DGRAM, 0));
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([sd] () noexcept { ::close (sd); });
+    ifreq                   r{};
+    CString::Copy (r.ifr_name, std::size (r.ifr_name), fInternalInterfaceID.AsNarrowSDKString ().c_str ());
+    if (::ioctl (sd, SIOCGIFINDEX, &r) == 0 and r.ifr_ifindex > 0) {
+        return static_cast<unsigned int> (r.ifr_ifindex);
+    }
+#elif qStroika_Platform_MacOS
+    if (unsigned int index = ::if_nametoindex (fInternalInterfaceID.AsNarrowSDKString ().c_str ()); index != kAnyIndex) {
+        return index;
+    }
+#elif qStroika_Platform_Windows
+    // fInternalInterfaceID is the adapter's GUID (IP_ADAPTER_ADDRESSES::AdapterName)
+    ::GUID guid;
+    try {
+        Common::GUID g{fInternalInterfaceID};
+        static_assert (sizeof (guid) == sizeof (g));
+        ::memcpy (&guid, &g, sizeof (guid));
+    }
+    catch (...) {
+        return nullopt; // not a GUID, so not an adapter's
+    }
+    NET_LUID    luid{};
+    NET_IFINDEX index{};
+    if (::ConvertInterfaceGuidToLuid (&guid, &luid) == NO_ERROR and ::ConvertInterfaceLuidToIndex (&luid, &index) == NO_ERROR and index != kAnyIndex) {
+        return index;
+    }
+#else
+    AssertNotImplemented ();
+#endif
+    return nullopt;
+}
+
 String Interface::ToString () const
 {
     StringBuilder sb;
@@ -157,6 +195,9 @@ String Interface::ToString () const
     }
     if (fType) {
         sb << ", type: "sv << *fType;
+    }
+    if (fIndex) {
+        sb << ", index: "sv << *fIndex;
     }
     if (fHardwareAddress) {
         sb << ", hardwareAddress: "sv << *fHardwareAddress;
@@ -258,6 +299,20 @@ namespace {
         Interface newInterface;
         newInterface.fInternalInterfaceID = String::FromSDKString (name);
         newInterface.fFriendlyName = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
+#if qStroika_Platform_Linux
+        {
+            // SIOCGIFINDEX, not if_nametoindex (): that needs <net/if.h>, which can clash with the <linux/...> headers used here
+            ifreq tmp{};
+            CString::Copy (tmp.ifr_name, std::size (tmp.ifr_name), name);
+            if (::ioctl (sd, SIOCGIFINDEX, &tmp) == 0 and tmp.ifr_ifindex > 0) {
+                newInterface.fIndex = static_cast<unsigned int> (tmp.ifr_ifindex);
+            }
+        }
+#elif qStroika_Platform_MacOS
+        if (unsigned int index = ::if_nametoindex (name); index != 0) {
+            newInterface.fIndex = index;
+        }
+#endif
 #if qStroika_Platform_Linux
         auto getWirelessFlag = [] (int sd, const char* name) -> bool {
 #if defined(SIOCGIWNAME)
@@ -903,6 +958,12 @@ namespace {
                         }
                     }
                 }
+                if (currAddresses->IfIndex != 0) {
+                    newInterface.fIndex = currAddresses->IfIndex;
+                }
+                else if (currAddresses->Ipv6IfIndex != 0) {
+                    newInterface.fIndex = currAddresses->Ipv6IfIndex; // an interface with no IPv4
+                }
                 if (currAddresses->PhysicalAddressLength == 6) {
                     newInterface.fHardwareAddress = PrintMacAddr_ (currAddresses->PhysicalAddress, currAddresses->PhysicalAddress + 6);
                 }
@@ -1015,5 +1076,43 @@ optional<Interface> SystemInterfacesMgr::GetContainingAddress (const InternetAdd
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"interface %s not found", internalInterfaceID.c_str ());
 #endif
+    return nullopt;
+}
+
+/*
+ ********************************************************************************
+ ********************** Network::GetLocalAddressToReach *************************
+ ********************************************************************************
+ */
+optional<InternetAddress> Network::GetLocalAddressToReach (const SocketAddress& peer)
+{
+    Require (peer.IsInternetAddress ());
+    // connect () needs a port (Windows refuses 0), but any will do: connecting a UDP socket sends nothing - it only looks up
+    // the route, which fixes the local address. Keep an IPv6 peer's scope id (needed for a link-local one).
+    SocketAddress usePeer = peer;
+    if (peer.GetPort () == 0) {
+        constexpr PortType kAnyPort_ = 9; // 'discard'
+        if (peer.GetAddressFamily () == SocketAddress::INET6) {
+            sockaddr_in6 withPort  = SocketAddress{peer.GetInternetAddress (), kAnyPort_}.As<sockaddr_in6> ();
+            withPort.sin6_scope_id = peer.As<sockaddr_in6> ().sin6_scope_id;
+            usePeer                = SocketAddress{withPort};
+        }
+        else {
+            usePeer = SocketAddress{peer.GetInternetAddress (), kAnyPort_};
+        }
+    }
+    try {
+        ConnectionlessSocket::Ptr s  = ConnectionlessSocket::New (usePeer.GetAddressFamily (), Socket::DGRAM);
+        sockaddr_storage          ss = usePeer.As<sockaddr_storage> ();
+        if (::connect (s.GetNativeSocket (), reinterpret_cast<const sockaddr*> (&ss), static_cast<int> (usePeer.GetRequiredSize ())) != 0) {
+            return nullopt; // no route to peer
+        }
+        if (optional<SocketAddress> local = s.GetLocalAddress (); local and local->IsInternetAddress ()) {
+            return local->GetInternetAddress ();
+        }
+    }
+    catch (...) {
+        DbgTrace ("GetLocalAddressToReach ({}) failed: {}"_f, peer, current_exception ());
+    }
     return nullopt;
 }

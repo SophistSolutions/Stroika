@@ -19,6 +19,10 @@
 #elif qStroika_Platform_MacOS
 #include <net/if_dl.h>
 #endif
+#elif qStroika_Platform_Windows
+#include <WinSock2.h>
+
+#include <WS2tcpip.h>
 #endif
 
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -742,6 +746,182 @@ GTEST_TEST (Foundation_IO_Network, Test3_PrimaryInternetAddress_)
             << Characters::ToString (primary).AsNarrowSDKString () << " is not an IPv4 address of an up, running, non-loopback interface";
     }
 #endif
+}
+
+GTEST_TEST (Foundation_IO_Network, Test3_LocalAddressToReach_)
+{
+    Debug::TraceContextBumper trcCtx{"Test3_LocalAddressToReach_"};
+    // reaching loopback is done from loopback
+    EXPECT_EQ (GetLocalAddressToReach (SocketAddress{V4::kLocalhost}), V4::kLocalhost);
+    // and reaching one of this machine's own addresses, from that address (not link-local ones: those need a scope id)
+    for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
+        for (const InternetAddress& a : i.fBindings.fAddresses) {
+            if (not a.IsLinkLocalAddress ()) {
+                EXPECT_EQ (GetLocalAddressToReach (SocketAddress{a}), a)
+                    << Characters::ToString (a).AsNarrowSDKString () << " on " << i.fInternalInterfaceID.AsNarrowSDKString ();
+            }
+        }
+    }
+}
+
+GTEST_TEST (Foundation_IO_Network, Test3_InterfaceIndex_)
+{
+    Debug::TraceContextBumper trcCtx{"Test3_InterfaceIndex_"};
+    {
+        Interface gone;
+#if qStroika_Platform_Windows
+        gone.fInternalInterfaceID = Common::GUID::GenerateNew ().As<Characters::String> (); // as an adapter's GUID, but no adapter's
+#else
+        gone.fInternalInterfaceID = "stroika-nosuch"sv;
+#endif
+        EXPECT_EQ (gone.GetCurrentIndex (), nullopt);
+        ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+        EXPECT_THROW (s.JoinMulticastGroup (InternetAddress{"239.255.255.250"sv}, gone), system_error);
+    }
+    for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
+        EXPECT_TRUE (i.fIndex.has_value ()) << i.fInternalInterfaceID.AsNarrowSDKString ();
+        EXPECT_NE (i.fIndex, optional<unsigned int>{Interface::kAnyIndex}) << i.fInternalInterfaceID.AsNarrowSDKString ();
+        EXPECT_EQ (i.GetCurrentIndex (), i.fIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
+        if (i.fIndex) {
+            Interface stale = i; // as if read before its index changed: GetCurrentIndex goes by fInternalInterfaceID, not fIndex
+            stale.fIndex    = *i.fIndex + 1000;
+            EXPECT_EQ (stale.GetCurrentIndex (), i.fIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
+        }
+#if qStroika_Platform_POSIX
+        EXPECT_EQ (i.fIndex, optional<unsigned int>{::if_nametoindex (i.fInternalInterfaceID.AsNarrowSDKString ().c_str ())})
+            << i.fInternalInterfaceID.AsNarrowSDKString ();
+#endif
+    }
+}
+
+GTEST_TEST (Foundation_IO_Network, Test3_MulticastInterface_)
+{
+    // the interface multicasts go out of is the one set (read back with getsockopt); and a group joined on an interface - by
+    // index, or by one of its addresses - is joined on THAT interface: leaving it by the interface's index fails otherwise.
+    // Only running, non-loopback interfaces - loopback's multicast support varies by OS.
+    Debug::TraceContextBumper    trcCtx{"Test3_MulticastInterface_"};
+    static const InternetAddress kSSDPGroupV4_{"239.255.255.250"sv};
+    static const InternetAddress kSSDPGroupV6_{"ff02::c"sv};
+    unsigned int                 nChecked = 0;
+    // join group on onInterface; a join the environment refuses is only a warning - but EINVAL or EADDRNOTAVAIL is a malformed
+    // or misdirected request: our bug
+    auto tryJoin = [] (const ConnectionlessSocket::Ptr& s, const InternetAddress& group, const auto& onInterface, const Characters::String& where) -> bool {
+        try {
+            s.JoinMulticastGroup (group, onInterface);
+            return true;
+        }
+        catch (...) {
+            bool ourBug = false;
+            try {
+                throw;
+            }
+            catch (const system_error& e) {
+                ourBug = Execution::IsA (e, errc::invalid_argument) or Execution::IsA (e, errc::address_not_available);
+            }
+            catch (...) {
+            }
+            Characters::String msg = "could not join {} on {} (as {}): {}"_f(group, where, onInterface, current_exception ());
+            EXPECT_FALSE (ourBug) << msg.AsNarrowSDKString ();
+            if (not ourBug) {
+                Stroika::Frameworks::Test::WarnTestIssue (("Test3_MulticastInterface_: "sv + msg).AsNarrowSDKString ().c_str ());
+            }
+            return false;
+        }
+    };
+    // join group on interface i (named as onInterface), then leave by i's index
+    auto joinThenLeaveByIndex = [&] (SocketAddress::FamilyType family, const InternetAddress& group, const Interface& i, const auto& onInterface) {
+        ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (family, Socket::DGRAM);
+        if (tryJoin (s, group, onInterface, i.fInternalInterfaceID)) {
+            EXPECT_NO_THROW (s.LeaveMulticastGroup (group, *i.fIndex)) << Characters::ToString (group).AsNarrowSDKString () << " joined on "
+                                                                       << Characters::ToString (onInterface).AsNarrowSDKString ()
+                                                                       << " is not joined on " << i.fInternalInterfaceID.AsNarrowSDKString ();
+            ++nChecked;
+        }
+    };
+    auto multicastIndexOf = [] (const ConnectionlessSocket::Ptr& s) {
+        unsigned int got = 0;
+        socklen_t    len = sizeof (got);
+        EXPECT_EQ (::getsockopt (s.GetNativeSocket (), IPPROTO_IPV6, IPV6_MULTICAST_IF, reinterpret_cast<char*> (&got), &len), 0);
+        return got;
+    };
+    bool anyV4 = false;
+    bool anyV6 = false;
+    for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
+        if (i.fType == Interface::Type::eLoopback or not(i.fStatus and i.fStatus->Contains (Interface::Status::eRunning)) or not i.fIndex) {
+            continue;
+        }
+        bool hasV4 = false;
+        bool hasV6 = false;
+        for (const InternetAddress& a : i.fBindings.fAddresses) {
+            if (a.GetAddressFamily () == InternetAddress::AddressFamily::V4) {
+                hasV4                       = true;
+                anyV4                       = true;
+                ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+                s.SetMulticastInterface (a);
+                in_addr   got{};
+                socklen_t len = sizeof (got);
+                EXPECT_EQ (::getsockopt (s.GetNativeSocket (), IPPROTO_IP, IP_MULTICAST_IF, reinterpret_cast<char*> (&got), &len), 0);
+                EXPECT_EQ (InternetAddress{got}, a) << i.fInternalInterfaceID.AsNarrowSDKString ();
+                ++nChecked;
+                joinThenLeaveByIndex (SocketAddress::INET, kSSDPGroupV4_, i, a);
+            }
+            else if (a.GetAddressFamily () == InternetAddress::AddressFamily::V6) {
+                hasV6 = true;
+                anyV6 = true;
+                if (not a.IsLinkLocalAddress ()) { // a link-local address can be on more than one interface
+                    ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
+                    s.SetMulticastInterface (a); // looked up - IPv6 names an interface by index
+                    EXPECT_EQ (multicastIndexOf (s), *i.fIndex) << Characters::ToString (a).AsNarrowSDKString ();
+                    ++nChecked;
+                    joinThenLeaveByIndex (SocketAddress::INET6, kSSDPGroupV6_, i, a);
+                }
+            }
+        }
+        if (hasV4) {
+            joinThenLeaveByIndex (SocketAddress::INET, kSSDPGroupV4_, i, *i.fIndex);
+            joinThenLeaveByIndex (SocketAddress::INET, kSSDPGroupV4_, i, i);
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            s.SetMulticastInterface (i); // one of its IPv4 addresses
+            in_addr   got{};
+            socklen_t len = sizeof (got);
+            EXPECT_EQ (::getsockopt (s.GetNativeSocket (), IPPROTO_IP, IP_MULTICAST_IF, reinterpret_cast<char*> (&got), &len), 0);
+            EXPECT_TRUE (i.fBindings.fAddresses.Contains (InternetAddress{got})) << i.fInternalInterfaceID.AsNarrowSDKString ();
+            ++nChecked;
+        }
+        if (hasV6) {
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
+            s.SetMulticastInterface (*i.fIndex);
+            EXPECT_EQ (multicastIndexOf (s), *i.fIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
+            ++nChecked;
+            joinThenLeaveByIndex (SocketAddress::INET6, kSSDPGroupV6_, i, *i.fIndex);
+            joinThenLeaveByIndex (SocketAddress::INET6, kSSDPGroupV6_, i, i);
+            ConnectionlessSocket::Ptr s6 = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
+            s6.SetMulticastInterface (i); // its current index
+            EXPECT_EQ (multicastIndexOf (s6), *i.fIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
+            ++nChecked;
+        }
+    }
+    // and 'the OS picks the interface' - kAddrAny or index 0 - as SSDP's responder joins
+    if (anyV4) {
+        ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+        if (tryJoin (s, kSSDPGroupV4_, V4::kAddrAny, "any interface"sv)) {
+            EXPECT_NO_THROW (s.LeaveMulticastGroup (kSSDPGroupV4_, V4::kAddrAny));
+            ++nChecked;
+        }
+    }
+#if qStroika_Platform_MacOS
+    anyV6 = false; // macOS (as of 26.5) cannot pick the interface for a link-local-scope group like ff02::c (EADDRNOTAVAIL)
+#endif
+    if (anyV6) {
+        ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
+        if (tryJoin (s, kSSDPGroupV6_, Interface::kAnyIndex, "any interface"sv)) {
+            EXPECT_NO_THROW (s.LeaveMulticastGroup (kSSDPGroupV6_, Interface::kAnyIndex));
+            ++nChecked;
+        }
+    }
+    if (nChecked == 0) {
+        Stroika::Frameworks::Test::WarnTestIssue ("Test3_MulticastInterface_: no running, non-loopback interface - nothing checked");
+    }
 }
 
 GTEST_TEST (Foundation_IO_Network, Test4_DNS_)

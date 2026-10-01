@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
 /**
  *  \file
@@ -68,6 +69,42 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual String GetInterfaceName () const;
 #endif
+
+        /**
+         *  Never a real interface's index - the OS numbers them from 1, and uses 0 for 'none'. Passed where an interface index
+         *  is wanted, it means any interface - the OS picks one (as V4::kAddrAny and V6::kAddrAny do for an address).
+         */
+        static constexpr unsigned int kAnyIndex = 0;
+
+        /**
+         *  The operating system's number for the interface - how IPv6 names an interface (in its multicast APIs, and in a
+         *  link-local address's scope). Called its index, but NOT its position in the list SystemInterfacesMgr::GetAll ()
+         *  returns. POSIX: if_nametoindex (); Windows: IP_ADAPTER_ADDRESSES::IfIndex (Ipv6IfIndex when the interface has no
+         *  IPv4). Never kAnyIndex.
+         *
+         *  \note RACE: an index looks like a lasting identity, but is not one - and unlike an address or a name changing, which
+         *        is expected (other programs add and remove interfaces), this is easy to miss. An index names an interface only
+         *        while that interface exists: no OS promises not to reuse it, so once an interface goes away, its index may be
+         *        given to a DIFFERENT interface, and code still holding it silently acts on the wrong one. And an interface that
+         *        goes away and comes back (an adapter disabled and re-enabled, a VPN reconnecting, a USB adapter replugged) may
+         *        come back with a different index; none survives a reboot.
+         *
+         *        So get an interface's index just before using it - GetCurrentIndex () - rather than keeping one; better still,
+         *        pass the Interface itself where an API takes one (as ConnectionlessSocket's multicast calls do), which does that
+         *        for you. In particular, to undo what was done by index (leave a multicast group, say), look the index up again
+         *        rather than reuse the number it was done with. And redo whatever was done by index when the interfaces change
+         *        (LinkMonitor) - a socket keeps the multicast interface it was given, say. (A multicast membership, though, is
+         *        tied to the interface itself, so goes away with it.) For an identity that lasts, use fInternalInterfaceID.
+         */
+        optional<unsigned int> fIndex;
+
+        /**
+         *  \brief This interface's index NOW - looked up (cheaply) by fInternalInterfaceID - rather than fIndex, the one it had
+         *         when this Interface was read; nullopt if there is no such interface any more.
+         *
+         *  @see fIndex's RACE note
+         */
+        nonvirtual optional<unsigned int> GetCurrentIndex () const;
 
         /**
          *  This is a generally good display name to describe a network interface.
@@ -350,6 +387,8 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          *  Collect all the interfaces (and their status) from the operating system.
+         *
+         *  \note An Interface's position in this list means nothing - its index is Interface::fIndex (@see its RACE note).
          */
         nonvirtual Traversal::Iterable<Interface> GetAll ();
 
@@ -369,6 +408,17 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual optional<Interface> GetContainingAddress (const InternetAddress& ia);
     };
+
+    /**
+     *  \brief This machine's address for reaching peer - the local address a datagram sent to peer would carry, so the address
+     *         peer can reach this machine at, on the network between them.
+     *
+     *  Asks the routing table (via a UDP socket connected to peer - which sends nothing). peer's port does not matter. A
+     *  link-local IPv6 peer must carry its scope id - as the sender's address from ConnectionlessSocket::Ptr::ReceiveFrom does.
+     *
+     *  Returns nullopt if there is no route to peer.
+     */
+    optional<InternetAddress> GetLocalAddressToReach (const SocketAddress& peer);
 
 }
 
