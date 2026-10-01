@@ -342,6 +342,7 @@ namespace {
         {ERROR_NETNAME_DELETED, errc::connection_aborted},
         {ERROR_CANCELLED, errc::operation_canceled},
         {ERROR_CONNECTION_REFUSED, errc::connection_refused},
+        {ERROR_PORT_UNREACHABLE, errc::connection_refused}, // as Boost.Asio maps it (UDP: the peer's port is closed)
         {ERROR_NETWORK_UNREACHABLE, errc::network_unreachable},
         {ERROR_HOST_UNREACHABLE, errc::host_unreachable},
         {ERROR_CONNECTION_ABORTED, errc::connection_aborted},

@@ -323,6 +323,7 @@ namespace {
                          {ERROR_HTTP_INVALID_SERVER_RESPONSE, errc::protocol_error, "ERROR_HTTP_INVALID_SERVER_RESPONSE"},
                          // winerror.h's own - std maps only their Winsock twins
                          {ERROR_CONNECTION_REFUSED, errc::connection_refused, "ERROR_CONNECTION_REFUSED"},
+                         {ERROR_PORT_UNREACHABLE, errc::connection_refused, "ERROR_PORT_UNREACHABLE"}, // as Boost.Asio maps it
                          {ERROR_NETWORK_UNREACHABLE, errc::network_unreachable, "ERROR_NETWORK_UNREACHABLE"},
                          {ERROR_HOST_UNREACHABLE, errc::host_unreachable, "ERROR_HOST_UNREACHABLE"},
                          {ERROR_CONNECTION_ABORTED, errc::connection_aborted, "ERROR_CONNECTION_ABORTED"},
