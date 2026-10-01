@@ -7,6 +7,7 @@
 #include <afx.h>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Common/StroikaVersion.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
@@ -592,7 +593,7 @@ void LedLineItApplication::OnAppAbout ()
 #else
 #define kUNICODE_NAME_ADORNER " [Internal UNICODE]"
 #endif
-                ::SetWindowText (w, _T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")"));
+                ::SetWindowText (w, _T ("Stroika ") _T (qStroika_Version_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")"));
             }
 
             // Place hidden buttons which map to URLs

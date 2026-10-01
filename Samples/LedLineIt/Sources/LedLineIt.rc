@@ -7,6 +7,8 @@
 #include	<winver.h>
 #include	<afxres.h>
 
+#include	"Stroika/Foundation/Common/StroikaVersion.h"
+
 #include	"Stroika/Frameworks/Led/StdDialogs.h"
 
 #include	"LedLineItConfig.h"
@@ -634,10 +636,10 @@ End
 // Version
 //
 VS_VERSION_INFO		VERSIONINFO
-	FILEVERSION			qLed_Version_Major,qLed_Version_Minor,qLed_Version_Stage,qLed_Version_SubStage
-	PRODUCTVERSION		qLed_Version_Major,qLed_Version_Minor,qLed_Version_Stage,qLed_Version_SubStage
+	FILEVERSION			qStroika_Version_Major,qStroika_Version_Minor,qStroika_Version_Stage,qStroika_Version_SubStage
+	PRODUCTVERSION		qStroika_Version_Major,qStroika_Version_Minor,qStroika_Version_Stage,qStroika_Version_SubStage
 	FILEFLAGSMASK 		VS_FFI_FILEFLAGSMASK
-#if		qLed_Version_FinalBuild
+#if		qStroika_Version_FinalBuild
 	FILEFLAGS			0 // final version
 #else
 	FILEFLAGS			VS_FF_DEBUG | VS_FF_PRIVATEBUILD | VS_FF_PRERELEASE
@@ -652,13 +654,13 @@ Begin
 		Begin 
 			VALUE	"CompanyName",		"Sophist Solutions, Inc.\0"
 			VALUE	"FileDescription",	"LedLineIt! is a simple, line-based text editor.\0"
-			VALUE	"FileVersion",		qLed_ShortVersionString "\0"
+			VALUE	"FileVersion",		qStroika_Version_ShortVersionString "\0"
 			VALUE	"InternalName",		"LedLineIt!\0"
 			VALUE	"LegalCopyright",	"Copyright\251 Sophist Solutions, Inc. 1994-1999\0"
 			VALUE	"LegalTrademarks",	"\0"
 			VALUE	"OriginalFilename",	"LedLineIt.exe\0"
-			VALUE	"ProductName",		"LedLineIt!\0"
-			VALUE	"ProductVersion",	qLed_ShortVersionString "\0"
+			VALUE	"ProductName",		"Stroika LedLineIt!\0"
+			VALUE	"ProductVersion",	qStroika_Version_ShortVersionString "\0"
 		End
 	End
 	BLOCK	"VarFileInfo" 

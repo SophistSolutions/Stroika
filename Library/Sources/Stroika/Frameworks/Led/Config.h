@@ -6,9 +6,6 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Common/StroikaVersion.h"
-#include "Stroika/Foundation/Common/VersionDefs.h"
-
 /*
 @MODULE:    LedConfig
 @DESCRIPTION:
@@ -21,58 +18,6 @@
  *              overalaps and configs no longer used.
  *
  */
-
-/*
- *  This Numeric Led version is intended to allow you to conditionally compile code
- *  based on different versions of Led. The Led::kVersion string is a symbolic representation
- *  of this version.
- *
- *  Don't count on the particular hard-wirded version number. Instead - compare as follows:
- *      #if     qLed_FullVersion > MAKE_LED_FULL_VERSION (1, 0, qLed_Version_Stage_Beta, 3, 1)
- *          DOTHIS ();
- *      #else
- *          DOTHAT ();
- *      #endif
- */
-
-// This part is where we actually update the version#
-#define qLed_Version_Major 4
-#define qLed_Version_Minor 0
-#define qLed_Version_Stage qStroika_Version_Stage
-#define qLed_Version_SubStage qStroika_Version_SubStage
-#define qLed_Version_FinalBuild qStroika_Version_FinalBuild
-
-// MAJOR VERSION OF LED is 2 + VERSION OF STROIKA
-#if qStroika_Version_Major == 3 && qStroika_Version_Minor == 0
-#define qLed_MajorMinorVersionString "5.0"
-#else
-#warning "Led version needs manual update here..."
-#define qLed_MajorMinorVersionString "4.1"
-#endif
-#if qStroika_Version_Stage == qStroika_Version_Stage_Dev
-#define __vLet1__ "d"
-#elif qStroika_Version_Stage == qStroika_Version_Stage_Alpha
-#define __vLet1__ "a"
-#elif qStroika_Version_Stage == qStroika_Version_Stage_Beta
-#define __vLet1__ "b"
-#elif qStroika_Version_Stage == qStroika_Version_Stage_ReleaseCandidate
-#define __vLet1__ "rc"
-#else
-#define __vLet1__ ""
-#endif
-
-#define _STR_HELPER(x) #x
-#define _STR(x) _STR_HELPER (x)
-#define __vLet2__ _STR (qStroika_Version_SubStage)
-
-#if qLed_Version_FinalBuild
-#define qLed_ShortVersionString qLed_MajorMinorVersionString __vLet1__ __vLet2__
-#else
-#define qLed_ShortVersionString qLed_MajorMinorVersionString __vLet1__ __vLet2__ "x"
-#endif
-
-#define qLed_FullVersion                                                                                                                   \
-    Stroika_Make_FULL_VERSION (qLed_Version_Major, qLed_Version_Minor, qLed_Version_Stage, qLed_Version_SubStage, qLed_Version_FinalBuild)
 
 /*
  **************** COMMOM configuration variables ***************

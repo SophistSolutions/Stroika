@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Characters/CodePage.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/StroikaVersion.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
@@ -670,13 +671,13 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
 {
     Require (relURL.length () > 0 and relURL[0] == '/');
     char fullVersionBuf[1024];
-    (void)snprintf (fullVersionBuf, std::size (fullVersionBuf), "%d", qLed_FullVersion);
+    (void)snprintf (fullVersionBuf, std::size (fullVersionBuf), "%d", qStroika_Version_FullVersion);
     string fullURL = "http://www.sophists.com" + relURL + "?AppName=" + appName +
 #if qStroika_Platform_Windows
                      string{"&Platform=Windows"} +
 #endif
-                     "&MajorMinorVersion=" + qLed_MajorMinorVersionString + "&LedFullVersion=" + fullVersionBuf +
-                     "&ShortVersionString=" + qLed_ShortVersionString + extraArgs;
+                     "&MajorMinorVersion=" + qStroika_Version_MajorMinorVersionString + "&LedFullVersion=" + fullVersionBuf +
+                     "&ShortVersionString=" + qStroika_Version_ShortVersionString + extraArgs;
     return fullURL;
 }
 

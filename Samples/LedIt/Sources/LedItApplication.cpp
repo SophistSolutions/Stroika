@@ -12,6 +12,7 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/StroikaVersion.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Stroika/Frameworks/Led/Config.h"
@@ -323,7 +324,7 @@ public:
             AssertNotNull (w);
             const int kVERWidth = 230;
             ::MoveWindow (w, kPictWidth / 2 - kVERWidth / 2, 32, kVERWidth, 16, false);
-            ::SetWindowText (w, _T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")"));
+            ::SetWindowText (w, _T ("Stroika ") _T (qStroika_Version_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")"));
         }
 
         // Place hidden buttons which map to URLs

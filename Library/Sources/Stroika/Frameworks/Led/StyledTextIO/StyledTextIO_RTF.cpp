@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/StroikaVersion.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
@@ -4769,7 +4770,7 @@ void StyledTextIOWriter_RTF::WriteGenerator ()
 {
     write ("{\\*");
     WriteTag ("generator");
-    write ("Sophist Solutions, Inc. Led RTF IO Engine - " qLed_ShortVersionString);
+    write ("Sophist Solutions, Inc. Stroika Led RTF IO Engine - " qStroika_Version_ShortVersionString);
     write (";");
     write ("}");
 }
