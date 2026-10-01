@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Streams {
         nonvirtual SeekableFlag GetSeekability () const;
 
     protected:
-        // Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY because else: Tests/Test53.exe crashes release
+        // Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY because else: the Frameworks::WebServer regression test crashes release
         Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized; // refers to PTR not REP
 
     private:

@@ -1,95 +1,229 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-//  TEST    Frameworks::UPnP
-#include "Stroika/Frameworks/StroikaPreComp.h"
+//  TEST    Frameworks::WebService
+#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/DataExchange/XML/Common.h" // for qStroika_Foundation_DataExchange_XML_SupportParsing
+#include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
+#include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/JSON/Patch.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 
+#include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
-#include "Stroika/Frameworks/UPnP/DeviceDescription.h"
-#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/WebServer/ConnectionManager.h"
+#include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
+#include "Stroika/Frameworks/WebServer/Router.h"
+#include "Stroika/Frameworks/WebService/Server/ObjectRequestHandler.h"
+#include "Stroika/Frameworks/WebService/Server/VariantValue.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
-using namespace Stroika::Frameworks::UPnP;
+using namespace Stroika::Frameworks::WebServer;
+using namespace Stroika::Frameworks::WebService;
+using namespace Stroika::Frameworks::WebService::Server;
+
+using Common::GUID;
+using IO::Network::HTTP::ClientErrorException;
+using Memory::BLOB;
+using Time::Duration;
+
+namespace {
+    namespace TestDeflateEnc1_ {
+        const BLOB kDecoded = "TEST"_blob;
+        // Produced with echo -n TEST | openssl zlib -e | od -t x1
+        const BLOB kEncoded = "\x78\x9c\x0b\x71\x0d\x0e\x01\x00\x03\x1d\x01\x41"_blob;
+    }
+}
+
+namespace {
+    // simple object to create keyed collection of, to test
+    struct ObjMapperableObj_ {
+        GUID id;
+
+        static const inline ObjectVariantMapper kMapper = [] () {
+            ObjectVariantMapper mapper;
+            mapper.AddCommonType<GUID> ();
+            mapper.AddClass<ObjMapperableObj_> ({
+                {"id", &ObjMapperableObj_::id},
+            });
+            return mapper;
+        }();
+    };
+
+    /*
+     */
+    struct MyObjectWebServiceWebServer_ {
+
+        using MyKeyedCollection_ = KeyedCollection<
+            ObjMapperableObj_, GUID,
+            KeyedCollection_DefaultTraits<ObjMapperableObj_, GUID, decltype ([] (const ObjMapperableObj_& t) -> GUID { return t.id; })>>;
+
+        static const inline ObjectVariantMapper kMapper = [] () {
+            ObjectVariantMapper mapper;
+            mapper += ObjMapperableObj_::kMapper;
+            mapper.AddCommonType<MyKeyedCollection_> ();
+            mapper.AddCommonType<Sequence<ObjMapperableObj_>> ();
+            mapper.AddCommonType<GUID> ();
+            mapper.AddCommonType<Sequence<GUID>> ();
+            return mapper;
+        }();
+
+        static inline Synchronized<MyKeyedCollection_> sData_;
+
+        const Sequence<Route> kRoutes_;
+        ConnectionManager     fConnectionMgr_;
+
+        MyObjectWebServiceWebServer_ (uint16_t portNumber)
+            : kRoutes_{
+
+                  Route{"api/objs/?"_RegEx, ObjectRequestHandler::Factory{{kMapper},
+                                                                          [] () -> Sequence<GUID> {
+                                                                              return sData_.cget ().cref ().Map<Sequence<GUID>> (
+                                                                                  [] (const ObjMapperableObj_& r) { return r.id; });
+                                                                          }}}
+
+                  ,
+                  Route{"api/objs-context/?"_RegEx,
+                        ObjectRequestHandler::Factory{{kMapper},
+                                                      [] ([[maybe_unused]] const ObjectRequestHandler::Context& c) -> Sequence<GUID> {
+                                                          return sData_.cget ().cref ().Map<Sequence<GUID>> (
+                                                              [] (const ObjMapperableObj_& r) { return r.id; });
+                                                      }}}
+
+                  // PATCH could be implemented using ObjectRequestHandler::Factory, but it adds little value, and good to show
+                  // mixing direct RequestHandlers with ObjectRequestHandler based ones
+                  ,
+                  Route{IO::Network::HTTP::MethodsRegEx::kPatch, "api/objs/(.+)"_RegEx,
+                        [] (Message& m, const String& id) {
+                            using DataExchange::VariantValue;
+                            using JSON::Patch::OperationItemsType;
+                            OperationItemsType patch = ClientErrorException::TreatExceptionsAsClientError ([&] () {
+                                return OperationItemsType::kMapper.ToObject<OperationItemsType> (m.rwRequest ().GetBodyVariantValue ());
+                            });
+                            // automatic / generic patch implemented using the VariantValue representation - if that's good enuf for your purposes, easy to use
+                            ObjMapperableObj_ obj2Patch =
+                                sData_.cget ().cref ().LookupChecked (id, ClientErrorException{"obj with that ID not found"sv});
+                            VariantValue obj2PatchVV = patch.Apply (kMapper.FromObject (obj2Patch));
+                            obj2Patch                = kMapper.ToObject<ObjMapperableObj_> (obj2PatchVV);
+                            sData_.rwget ().rwref ().Add (obj2Patch);
+                            m.rwResponse ().status = IO::Network::HTTP::StatusCodes::kNoContent;
+                        }}
+
+                  ,
+                  Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs/?"_RegEx,
+                        // redo so can POST raw data and arguments as query-args!
+                        // break ObjectRequestHandler into parts/phases so can be used directly from regular message handler
+                        ObjectRequestHandler::Factory{{kMapper},
+                                                      [] (const ObjMapperableObj_& r) -> GUID {
+                                                          ObjMapperableObj_ rr = r;
+                                                          rr.id                = GUID::GenerateNew ();
+                                                          sData_.rwget ().rwref ().Add (rr);
+                                                          return rr.id;
+                                                      }}}
+
+                  ,
+                  Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/objs-context/?"_RegEx,
+                        ObjectRequestHandler::Factory{{kMapper},
+                                                      [] (const ObjMapperableObj_& r, [[maybe_unused]] const ObjectRequestHandler::Context& c) -> GUID {
+                                                          ObjMapperableObj_ rr = r;
+                                                          rr.id                = GUID::GenerateNew ();
+                                                          sData_.rwget ().rwref ().Add (rr);
+                                                          return rr.id;
+                                                      }}}
+
+              }
+
+            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
+        {
+        }
+    };
+}
 
 #if qStroika_HasComponent_googletest
 namespace {
-    GTEST_TEST (Frameworks_UPnP, SSDP_Notify_RoundTrip_)
+    GTEST_TEST (Frameworks_WebService, TestVariantValueSupport)
     {
-        Debug::TraceContextBumper ctx{"SSDP_Notify_RoundTrip_"};
-        for (bool alive : {true, false}) {
-            SSDP::Advertisement a;
-            a.fAlive    = alive;
-            a.fUSN      = "uuid:315caae0-1335-57bf-a178-24c9ee756627::upnp:rootdevice"sv;
-            a.fLocation = URI{"http://192.168.1.2:8080/device.xml"sv};
-            a.fServer   = "Linux/6.8 UPnP/1.0 StroikaTest/1.0"sv;
-            a.fTarget   = SSDP::kTarget_UPNPRootDevice;
-
-            Memory::BLOB data = SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a);
-
-            String              headLine;
-            SSDP::Advertisement b;
-            SSDP::DeSerialize (data, &headLine, &b);
-            EXPECT_EQ (headLine, "NOTIFY * HTTP/1.1"sv);
-            EXPECT_EQ (b.fAlive, a.fAlive);
-            EXPECT_EQ (b.fUSN, a.fUSN);
-            EXPECT_EQ (b.fLocation, a.fLocation);
-            EXPECT_EQ (b.fServer, a.fServer);
-            EXPECT_EQ (b.fTarget, a.fTarget);
-            // and every header the packet carried is kept, raw
-            EXPECT_EQ (b.fRawHeaders.LookupValue ("Host"sv), "239.255.255.250:1900"sv);
-            EXPECT_EQ (b.fRawHeaders.LookupValue ("NTS"sv), alive ? "ssdp:alive"sv : "ssdp:byebye"sv);
-        }
-    }
-
-    GTEST_TEST (Frameworks_UPnP, DeviceDescription_RoundTrip_)
-    {
-        Debug::TraceContextBumper ctx{"DeviceDescription_RoundTrip_"};
-        DeviceDescription         dd;
-        dd.fPresentationURL  = URI{"http://www.sophists.com/"sv};
-        dd.fDeviceType       = "urn:sophists.com:device:deviceType:1.0"sv;
-        dd.fManufactureName  = "Sophist Solutions, Inc."sv;
-        dd.fFriendlyName     = "Stroika regression test device"sv;
-        dd.fManufacturingURL = URI{"http://www.sophists.com/"sv};
-        dd.fModelDescription = "long user-friendly title"sv;
-        dd.fModelName        = "model name"sv;
-        dd.fModelNumber      = "model number"sv;
-        dd.fModelURL         = URI{"http://www.sophists.com/"sv};
-        dd.fSerialNumber     = "manufacturer's serial number"sv;
-        dd.fUDN              = "uuid:315caae0-1335-57bf-a178-24c9ee756627"sv;
-
-        Memory::BLOB xml = UPnP::Serialize (dd);
-        DbgTrace ("xml: {}"_f, String::FromUTF8 (xml.As<string> ()));
-#if qStroika_Foundation_DataExchange_XML_SupportParsing
-        DeviceDescription back = UPnP::DeSerialize (xml);
-        EXPECT_EQ (back.fPresentationURL, dd.fPresentationURL);
-        EXPECT_EQ (back.fDeviceType, dd.fDeviceType);
-        EXPECT_EQ (back.fManufactureName, dd.fManufactureName);
-        EXPECT_EQ (back.fFriendlyName, dd.fFriendlyName);
-        EXPECT_EQ (back.fManufacturingURL, dd.fManufacturingURL);
-        EXPECT_EQ (back.fModelDescription, dd.fModelDescription);
-        EXPECT_EQ (back.fModelName, dd.fModelName);
-        EXPECT_EQ (back.fModelNumber, dd.fModelNumber);
-        EXPECT_EQ (back.fModelURL, dd.fModelURL);
-        EXPECT_EQ (back.fSerialNumber, dd.fSerialNumber);
-        EXPECT_EQ (back.fUDN, dd.fUDN);
-#else
-        Stroika::Frameworks::Test::WarnTestIssue (
-            "DeviceDescription_RoundTrip_ only checks Serialize: this configuration has no XML parser");
-#endif
+        using namespace WebService::Server::VariantValue;
+        // @todo - move this to some framework-specific regtests...
+        using VariantValue = DataExchange::VariantValue;
+        Sequence<VariantValue> tmp =
+            OrderParamValues (Iterable<String>{"page", "xxx"}, PickoutParamValuesFromURL (URI{"http://www.sophist.com?page=5"}));
+        Assert (tmp.size () == 2);
+        Assert (tmp[0].ConvertTo (VariantValue::eInteger) == 5);
+        Assert (tmp[1] == nullptr);
     }
 }
+
+namespace {
+    GTEST_TEST (Frameworks_WebService, TestWebServiceObjectRequestHandler1)
+    {
+        EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
+        const IO::Network::PortType  portNumber = 8083;
+        MyObjectWebServiceWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists
+        try {
+            auto c = IO::Network::Transfer::Connection::New ();
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
+
+        // @todo do some calls to test api...
+        //
+        //
+
+        //IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/TEST"sv});
+        //EXPECT_TRUE (r.GetSucceeded ());
+        //EXPECT_GT (r.GetData ().size (), 1u);
+        //String response = r.GetDataTextInputStream ().ReadAll ();
+        ////DbgTrace (L"response={}"_f, response);
+        //EXPECT_EQ (response, "TEST");
+        //// @todo enhance this test so we force accept-encoding none, and force accept-encoding : deflate, and check raw
+        //// result???
+    }
+}
+
+namespace {
+    GTEST_TEST (Frameworks_WebService, DurationPrecision)
+    {
+        Debug::TraceContextBumper ctx{"DurationPrecision"};
+        using DataExchange::VariantValue;
+        {
+            ObjectVariantMapper m;
+            m.AddCommonType<Duration> ();
+            VariantValue vv = m.FromObject (Duration{numbers::pi});
+            EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.14159S\"");
+        }
+        {
+            ObjectVariantMapper m;
+            m.AddCommonType<Duration> (FloatConversion::SignificantFigures{2});
+            VariantValue vv = m.FromObject (Duration{numbers::pi});
+            EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.1S\"");
+        }
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])

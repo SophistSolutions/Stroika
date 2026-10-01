@@ -1,323 +1,93 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-//  TEST    Frameworks::WebServe
-#include "Stroika/Foundation/StroikaPreComp.h"
+//  TEST    Frameworks::UPnP
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <iostream>
 
-#include "Stroika/Foundation/Common/GUID.h"
-#include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Containers/KeyedCollection.h"
-#include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
-#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "Stroika/Foundation/DataExchange/JSON/Patch.h"
-#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
-#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
-#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h" // for qStroika_Foundation_DataExchange_XML_SupportParsing
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/Execution/Module.h"
-#include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
-#include "Stroika/Foundation/Execution/Synchronized.h"
-#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
-#include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
-#include "Stroika/Foundation/Streams/BinaryToText.h"
 
-#include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
-#include "Stroika/Frameworks/WebServer/ConnectionManager.h"
-#include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
-#include "Stroika/Frameworks/WebServer/Router.h"
+#include "Stroika/Frameworks/UPnP/DeviceDescription.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::DataExchange;
-using namespace Stroika::Foundation::Execution;
-using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Frameworks;
-using namespace Stroika::Frameworks::WebServer;
-
-using Common::GUID;
-using Debug::TraceContextBumper;
-using IO::Network::HTTP::ClientErrorException;
-using Memory::BLOB;
-using Time::Duration;
-
-namespace {
-    namespace TestDeflateEnc1_ {
-        const BLOB kDecoded = "TEST"_blob;
-        // Produced with echo -n TEST | openssl zlib -e | od -t x1
-        const BLOB kEncoded = "\x78\x9c\x0b\x71\x0d\x0e\x01\x00\x03\x1d\x01\x41"_blob;
-    }
-}
-
-namespace {
-    /*
-     *  It's often helpful to structure together, routes, special interceptors, with your connection manager, to package up
-     *  all the logic /options for HTTP interface.
-     *
-     *  This particular organization also makes it easy to save instance variables with the webserver (like a pointer to a handler)
-     *  and access them from the Route handler functions.
-     */
-    struct MyWebServer_ {
-
-        /**
-         *  Routes specify the 'handlers' for the various web urls your webserver will support.
-         */
-        const Sequence<Route> kRoutes_;
-
-        /**
-         *  The connectionMgr specifies parameters that govern the behavior of your webserver.
-         *  For example, caching settings go here, thread pool settings, network bindings, and so on.
-         */
-        ConnectionManager fConnectionMgr_;
-
-        optional<HTTP ::TransferEncoding> fUseTransferEncoding_;
-
-        MyWebServer_ (uint16_t portNumber, optional<HTTP::TransferEncoding> transferEncoding)
-            : kRoutes_{Route{""_RegEx, [this] (Request& req, Response& res) { DefaultPage_ (req, res); }},
-                       Route{"test-chunked-transfer.*"_RegEx, [] (Request& req, Response& res) { TestOptionalTransferChunking_ (req, res); }},
-                       Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, [this] (Message& message) { SetAppState_ (message); }},
-                       Route{HTTP::MethodsRegEx::kPost, "SetAppState2"_RegEx, [this] (Message& message) { SetAppState2_ (message); }},
-                       Route{"FRED"_RegEx,
-                             [] (Request&, Response& response) {
-                                 response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                                 response.write ("FRED");
-                             }},
-                       Route{"TEST"_RegEx,
-                             [] (Request&, Response& response) {
-                                 response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                                 response.write (TestDeflateEnc1_::kDecoded);
-                             }}}
-            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_}
-            , fUseTransferEncoding_{transferEncoding}
-        {
-        }
-        // Can declare arguments as Request*,Response*
-        void DefaultPage_ (Request&, Response& response)
-        {
-            //constexpr bool kUseTransferCoding_ = true;
-            //            constexpr bool kUseTransferCoding_ = false;
-            //          if (kUseTransferCoding_) {
-            //            response.rwHeaders ().transferEncoding = HTTP::TransferEncoding::kChunked;
-            //      }
-            if (fUseTransferEncoding_) {
-                response.rwHeaders ().transferEncoding = *fUseTransferEncoding_;
-            }
-            response.contentType = DataExchange::InternetMediaTypes::kHTML;
-            response.writeln ("<html><body>"sv);
-            response.writeln ("<p>Hi Mom</p>"sv);
-            response.writeln ("<ul>"sv);
-            response.writeln ("Run the service (under the debugger if you wish)"sv);
-            response.writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
-            response.writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
-            response.writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
-            response.writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
-            response.writeln ("</ul>"sv);
-            response.writeln ("</body></html>"sv);
-        }
-        static void TestOptionalTransferChunking_ (Request& request, Response& response)
-        {
-            if (request.url ().LookupQueryArg ("useChunked"sv) == "true"sv) {
-                response.automaticTransferChunkSize = 25;
-            }
-            else if (request.url ().LookupQueryArg ("useChunked"sv) == "false"sv) {
-                response.automaticTransferChunkSize = Response::kNoChunkedTransfer;
-            }
-            else {
-                // default behavior...
-            }
-            DbgTrace ("response.automaticTransferChunkSize={}"_f, response.automaticTransferChunkSize ());
-            response.contentType = DataExchange::InternetMediaTypes::kHTML;
-            response.writeln ("<html><body>"sv);
-            response.writeln ("<p>Hi Mom</p>"sv);
-            response.writeln ("<ul>"sv);
-            response.writeln ("Run the service (under the debugger if you wish)"sv);
-            response.writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
-            response.writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
-            response.writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
-            response.writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
-            response.writeln ("</ul>"sv);
-            response.writeln ("</body></html>"sv);
-        }
-        void SetAppState_ (Message& message)
-        {
-            if (fUseTransferEncoding_) {
-                message.rwResponse ().rwHeaders ().transferEncoding = *fUseTransferEncoding_;
-            }
-            message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
-            String argsAsString               = Streams::BinaryToText::Reader::New (message.rwRequest ().GetBody ()).ReadAll ();
-            message.rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
-        }
-        void SetAppState2_ (Message& message)
-        {
-            if (fUseTransferEncoding_) {
-                message.rwResponse ().rwHeaders ().transferEncoding = *fUseTransferEncoding_;
-            }
-            message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-            String argsAsString               = DataExchange::Variant::JSON::Reader{}
-                                                    .Read (message.rwRequest ().GetBody ())
-                                                    .As<Mapping<String, DataExchange::VariantValue>> ()
-                                                    .LookupChecked ("AppState", Execution::Exception<runtime_error>{"oops"})
-                                                    .As<String> ();
-            message.rwResponse ().write (argsAsString);
-        }
-    };
-}
+using namespace Stroika::Frameworks::UPnP;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    GTEST_TEST (Frameworks_WebServer, SimpleStartStopServerTest)
+    GTEST_TEST (Frameworks_UPnP, SSDP_Notify_RoundTrip_)
     {
-        TraceContextBumper ctx{"SimpleStartStopServerTest"};
-        const auto         portNumber = 8082;
-        const auto         quitAfter  = 1s;
-        MyWebServer_       myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        WaitableEvent{}.WaitQuietly (quitAfter);             // leave it running for a bit
-    }
-}
+        Debug::TraceContextBumper ctx{"SSDP_Notify_RoundTrip_"};
+        for (bool alive : {true, false}) {
+            SSDP::Advertisement a;
+            a.fAlive    = alive;
+            a.fUSN      = "uuid:315caae0-1335-57bf-a178-24c9ee756627::upnp:rootdevice"sv;
+            a.fLocation = URI{"http://192.168.1.2:8080/device.xml"sv};
+            a.fServer   = "Linux/6.8 UPnP/1.0 StroikaTest/1.0"sv;
+            a.fTarget   = SSDP::kTarget_UPNPRootDevice;
 
-namespace {
-    GTEST_TEST (Frameworks_WebServer, SimpleCurlTestTalk2Server)
-    {
-        TraceContextBumper          ctx{"SimpleCurlTestTalk2Server"};
-        const IO::Network::PortType portNumber = 8082;
-        MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        try {
-            auto                            c = IO::Network::Transfer::Connection::New ();
-            IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
-            EXPECT_TRUE (r.GetSucceeded ());
-            EXPECT_GT (r.GetData ().size (), 1u);
-            String response = r.GetDataTextInputStream ().ReadAll ();
-            //DbgTrace (L"response={}"_f, response);
-            EXPECT_TRUE (response.StartsWith ("<html>"));
-            EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
-        }
-        catch (const RequiredComponentMissingException&) {
-            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+            Memory::BLOB data = SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a);
+
+            String              headLine;
+            SSDP::Advertisement b;
+            SSDP::DeSerialize (data, &headLine, &b);
+            EXPECT_EQ (headLine, "NOTIFY * HTTP/1.1"sv);
+            EXPECT_EQ (b.fAlive, a.fAlive);
+            EXPECT_EQ (b.fUSN, a.fUSN);
+            EXPECT_EQ (b.fLocation, a.fLocation);
+            EXPECT_EQ (b.fServer, a.fServer);
+            EXPECT_EQ (b.fTarget, a.fTarget);
+            // and every header the packet carried is kept, raw
+            EXPECT_EQ (b.fRawHeaders.LookupValue ("Host"sv), "239.255.255.250:1900"sv);
+            EXPECT_EQ (b.fRawHeaders.LookupValue ("NTS"sv), alive ? "ssdp:alive"sv : "ssdp:byebye"sv);
         }
     }
-}
 
-namespace {
-    GTEST_TEST (Frameworks_WebServer, SimpleCurlTestWithChunkedEncodingResponse)
+    GTEST_TEST (Frameworks_UPnP, DeviceDescription_RoundTrip_)
     {
-        TraceContextBumper          ctx{"SimpleCurlTestWithChunkedEncodingResponse"};
-        const IO::Network::PortType portNumber = 8082;
-        MyWebServer_ myWebServer{portNumber, HTTP::TransferEncoding::kChunked}; // listen and dispatch while this object exists
-        try {
-            auto                            c = IO::Network::Transfer::Connection::New ();
-            IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}});
-            EXPECT_TRUE (r.GetSucceeded ());
-            EXPECT_GT (r.GetData ().size (), 1u);
-            //DbgTrace ("headers={}"_f, r.GetHeaders ());
-            //DbgTrace ("data=byte[{}]{}"_f, r.GetData ().size (), r.GetData ());
-            String response = r.GetDataTextInputStream ().ReadAll ();
-            //DbgTrace (L"response={}"_f, response);
-            EXPECT_TRUE (response.StartsWith ("<html>"));
-            EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
-        }
-        catch (const RequiredComponentMissingException&) {
-            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
-        }
-    }
-}
+        Debug::TraceContextBumper ctx{"DeviceDescription_RoundTrip_"};
+        DeviceDescription         dd;
+        dd.fPresentationURL  = URI{"http://www.sophists.com/"sv};
+        dd.fDeviceType       = "urn:sophists.com:device:deviceType:1.0"sv;
+        dd.fManufactureName  = "Sophist Solutions, Inc."sv;
+        dd.fFriendlyName     = "Stroika regression test device"sv;
+        dd.fManufacturingURL = URI{"http://www.sophists.com/"sv};
+        dd.fModelDescription = "long user-friendly title"sv;
+        dd.fModelName        = "model name"sv;
+        dd.fModelNumber      = "model number"sv;
+        dd.fModelURL         = URI{"http://www.sophists.com/"sv};
+        dd.fSerialNumber     = "manufacturer's serial number"sv;
+        dd.fUDN              = "uuid:315caae0-1335-57bf-a178-24c9ee756627"sv;
 
-namespace {
-    GTEST_TEST (Frameworks_WebServer, TestPOST)
-    {
-        TraceContextBumper          ctx{"TestPOST"};
-        const IO::Network::PortType portNumber = 8082;
-        MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        try {
-            auto c = IO::Network::Transfer::Connection::New ();
-            using namespace DataExchange;
-            using DataExchange::VariantValue;
-            auto                            arg    = VariantValue{Mapping<String, VariantValue>{{"AppState", "Start"}}};
-            auto                            toJson = [] (const VariantValue& v) { return Variant::JSON::Writer{}.WriteAsBLOB (v); };
-            IO::Network::Transfer::Response r = c.POST (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/SetAppState2"sv},
-                                                        TypedBLOB{toJson (arg), DataExchange::InternetMediaTypes::kJSON});
-            EXPECT_TRUE (r.GetSucceeded ());
-            EXPECT_GT (r.GetData ().size (), 1u);
-            String response = r.GetDataTextInputStream ().ReadAll ();
-            //DbgTrace (L"response={}"_f, response);
-            EXPECT_EQ (response, "Start");
-        }
-        catch (const RequiredComponentMissingException&) {
-            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Frameworks_WebServer, TestEncContent)
-    {
-        TraceContextBumper ctx{"TestEncContent"};
-        // @todo add tests with different flags about allowed compression - and add asserts about returned content-encoding headers.
-        /// @todo - add tests with different Accept-Encoding headers
-
-        EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
-        const IO::Network::PortType portNumber = 8082;
-        MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        try {
-            auto                            c = IO::Network::Transfer::Connection::New ();
-            IO::Network::Transfer::Response r = c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/TEST"sv});
-            EXPECT_TRUE (r.GetSucceeded ());
-            EXPECT_GT (r.GetData ().size (), 1u);
-            String response = r.GetDataTextInputStream ().ReadAll ();
-            //DbgTrace (L"response={}"_f, response);
-            EXPECT_EQ (response, "TEST");
-            // @todo enhance this test so we force accept-encoding none, and force accept-endcing : deflate, and check raw
-            // result???
-        }
-        catch (const RequiredComponentMissingException&) {
-            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Frameworks_WebServer, TestChunkedTransfer_)
-    {
-        TraceContextBumper ctx{"TestChunkedTransfer_"};
-
-        // @todo add tests with different flags about allowed compression - and add asserts about returned content-encoding headers.
-        const IO::Network::PortType portNumber = 8082;
-        MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        try {
-            auto c = IO::Network::Transfer::Connection::New ();
-            {
-                IO::Network::Transfer::Response r =
-                    c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/test-chunked-transfer"sv});
-                EXPECT_TRUE (r.GetSucceeded ());
-                EXPECT_GT (r.GetData ().size (), 100u);
-                //DbgTrace ("respheaders={}"_f, r.GetHeaders ());
-            }
-            {
-                c = IO::Network::Transfer::Connection::New ();
-                IO::Network::Transfer::Response r =
-                    c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/test-chunked-transfer", "useChunked=true"sv});
-                EXPECT_TRUE (r.GetSucceeded ());
-                //DbgTrace ("respheaders={}"_f, r.GetHeaders ());
-                EXPECT_TRUE (r.GetHeaders ().LookupValue (IO ::Network::HTTP::HeaderName::kTransferEncoding).Contains ("chunked"));
-                EXPECT_GT (r.GetData ().size (), 100u);
-            }
-            {
-                IO::Network::Transfer::Response r =
-                    c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/test-chunked-transfer", "useChunked=false"sv});
-                //DbgTrace ("respheaders={}"_f, r.GetHeaders ());
-                EXPECT_TRUE (r.GetSucceeded ());
-                EXPECT_EQ (r.GetHeaders ().Lookup (IO ::Network::HTTP::HeaderName::kTransferEncoding), nullopt);
-                EXPECT_GT (r.GetData ().size (), 100u);
-            }
-        }
-        catch (const RequiredComponentMissingException&) {
-            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
-        }
+        Memory::BLOB xml = UPnP::Serialize (dd);
+        DbgTrace ("xml: {}"_f, String::FromUTF8 (xml.As<string> ()));
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
+        DeviceDescription back = UPnP::DeSerialize (xml);
+        EXPECT_EQ (back.fPresentationURL, dd.fPresentationURL);
+        EXPECT_EQ (back.fDeviceType, dd.fDeviceType);
+        EXPECT_EQ (back.fManufactureName, dd.fManufactureName);
+        EXPECT_EQ (back.fFriendlyName, dd.fFriendlyName);
+        EXPECT_EQ (back.fManufacturingURL, dd.fManufacturingURL);
+        EXPECT_EQ (back.fModelDescription, dd.fModelDescription);
+        EXPECT_EQ (back.fModelName, dd.fModelName);
+        EXPECT_EQ (back.fModelNumber, dd.fModelNumber);
+        EXPECT_EQ (back.fModelURL, dd.fModelURL);
+        EXPECT_EQ (back.fSerialNumber, dd.fSerialNumber);
+        EXPECT_EQ (back.fUDN, dd.fUDN);
+#else
+        Stroika::Frameworks::Test::WarnTestIssue (
+            "DeviceDescription_RoundTrip_ only checks Serialize: this configuration has no XML parser");
+#endif
     }
 }
 #endif

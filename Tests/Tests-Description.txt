@@ -50,6 +50,6 @@
 [50]	Foundation::Time
 [51]	Foundation::Traversal
 [52]	Foundation::PERFORMANCE
-[53]	Frameworks::WebServer
-[54]	Frameworks::WebService
-[55]	Frameworks::UPnP
+[53]	Frameworks::UPnP
+[54]	Frameworks::WebServer
+[55]	Frameworks::WebService
