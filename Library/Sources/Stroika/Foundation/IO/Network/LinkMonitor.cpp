@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
 
@@ -19,6 +20,7 @@
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #elif qStroika_Platform_MacOS
+#include <net/if_dl.h>
 #include <net/route.h>
 #endif
 #elif qStroika_Platform_Windows
@@ -41,6 +43,7 @@
 #endif
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "ConnectionlessSocket.h"
 
@@ -219,13 +222,48 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
         }
     }
 #elif qStroika_Platform_Windows
-    IP_ADAPTER_INFO adapterInfo[10];
-    DWORD           dwBufLen = sizeof (adapterInfo);
-    Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetAdaptersInfo (adapterInfo, &dwBufLen));
-    for (PIP_ADAPTER_INFO pi = adapterInfo; pi != nullptr; pi = pi->Next) {
-        // check attributes - IF TEST to see if good adaptoer
-        // @todo
-        return printMacAddr (pi->Address);
+    // GetAdaptersInfo () fills a caller-sized buffer, and says how big it must be when it overflows (a fixed array of 10 threw
+    // ERROR_BUFFER_OVERFLOW on any machine with more adapters, which Hyper-V, WSL and VPNs make common). So grow to that and
+    // retry - as GetInterfaces_Windows_ does for GetAdaptersAddresses () - which allocates only if it outgrows the stack buffer.
+    Memory::StackBuffer<IP_ADAPTER_INFO> adapterInfo;
+Again:
+    ULONG bufLen = static_cast<ULONG> (adapterInfo.GetSize () * sizeof (IP_ADAPTER_INFO));
+    DWORD r      = ::GetAdaptersInfo (adapterInfo.begin (), &bufLen);
+    if (r == ERROR_BUFFER_OVERFLOW) {
+        adapterInfo.GrowToSize_uninitialized (bufLen / sizeof (IP_ADAPTER_INFO) + 1);
+        goto Again;
+    }
+    if (r == ERROR_NO_DATA) {
+        return String{}; // no adapters
+    }
+    Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (r);
+    for (PIP_ADAPTER_INFO pi = adapterInfo.begin (); pi != nullptr; pi = pi->Next) {
+        if (pi->AddressLength == 6) {
+            return printMacAddr (pi->Address);
+        }
+    }
+#elif qStroika_Platform_MacOS
+    // As the Linux code above: the hardware address of the first non-loopback interface with an IPv4 address. macOS has no
+    // SIOCGIFHWADDR - each interface's link-layer address is its getifaddrs () AF_LINK entry (a sockaddr_dl, often longer than
+    // the struct, so copied by sa_len)
+    ifaddrs* ifa = nullptr;
+    if (::getifaddrs (&ifa) != 0) {
+        Execution::ThrowPOSIXErrNo ();
+    }
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([ifa] () noexcept { ::freeifaddrs (ifa); });
+    for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
+        if (p->ifa_addr != nullptr and p->ifa_addr->sa_family == AF_INET and not(p->ifa_flags & IFF_LOOPBACK)) {
+            for (const ifaddrs* q = ifa; q != nullptr; q = q->ifa_next) {
+                if (q->ifa_addr != nullptr and q->ifa_addr->sa_family == AF_LINK and ::strcmp (q->ifa_name, p->ifa_name) == 0) {
+                    alignas (sockaddr_dl) uint8_t buf[sizeof (sockaddr_storage)]{};
+                    ::memcpy (buf, q->ifa_addr, min<size_t> (q->ifa_addr->sa_len, sizeof (buf)));
+                    const sockaddr_dl* sdl = reinterpret_cast<const sockaddr_dl*> (buf);
+                    if (sdl->sdl_alen == 6 and offsetof (sockaddr_dl, sdl_data) + sdl->sdl_nlen + 6 <= sizeof (buf)) {
+                        return printMacAddr (reinterpret_cast<const uint8_t*> (LLADDR (sdl)));
+                    }
+                }
+            }
+        }
     }
 #else
     AssertNotImplemented ();

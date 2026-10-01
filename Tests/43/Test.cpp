@@ -8,13 +8,21 @@
 #include <iostream>
 
 #if qStroika_Platform_POSIX
+#include <cstddef>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#if qStroika_Platform_Linux
+#include <net/if_arp.h>
+#include <netpacket/packet.h>
+#elif qStroika_Platform_MacOS
+#include <net/if_dl.h>
+#endif
 #endif
 
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -537,6 +545,49 @@ namespace {
             return bits;
         }
         // every interface name getifaddrs () lists (with or without an address), and every IPv4/IPv6 address on each
+        // every interface's 6-byte link-layer (MAC) address, as getifaddrs () reports it (on Linux, Ethernet ones only - the
+        // ones Stroika reports there), formatted as Stroika formats it (aa:bb:cc:dd:ee:ff)
+        Containers::Mapping<Characters::String, Characters::String> GetHardwareAddresses_ ()
+        {
+            ifaddrs* ifa = nullptr;
+            EXPECT_EQ (::getifaddrs (&ifa), 0);
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([ifa] () noexcept { ::freeifaddrs (ifa); });
+            Containers::Mapping<Characters::String, Characters::String> result;
+            for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
+                if (p->ifa_addr == nullptr) {
+                    continue;
+                }
+                uint8_t mac[6];
+                bool    found = false;
+#if qStroika_Platform_Linux
+                if (p->ifa_addr->sa_family == AF_PACKET) {
+                    sockaddr_ll ll{};
+                    ::memcpy (&ll, p->ifa_addr, sizeof (ll));
+                    if (ll.sll_hatype == ARPHRD_ETHER and ll.sll_halen == 6) {
+                        ::memcpy (mac, ll.sll_addr, 6);
+                        found = true;
+                    }
+                }
+#elif qStroika_Platform_MacOS
+                if (p->ifa_addr->sa_family == AF_LINK) {
+                    // a sockaddr_dl is often longer than the struct (name + address can exceed sdl_data) - so copy by sa_len
+                    alignas (sockaddr_dl) uint8_t buf[sizeof (sockaddr_storage)]{};
+                    ::memcpy (buf, p->ifa_addr, min<size_t> (p->ifa_addr->sa_len, sizeof (buf)));
+                    const sockaddr_dl* sdl = reinterpret_cast<const sockaddr_dl*> (buf);
+                    if (sdl->sdl_alen == 6 and offsetof (sockaddr_dl, sdl_data) + sdl->sdl_nlen + 6 <= sizeof (buf)) {
+                        ::memcpy (mac, LLADDR (sdl), 6);
+                        found = true;
+                    }
+                }
+#endif
+                if (found) {
+                    char txt[18];
+                    (void)::snprintf (txt, sizeof (txt), "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+                    result.Add (Characters::String::FromSDKString (p->ifa_name), Characters::String{txt});
+                }
+            }
+            return result;
+        }
         pair<Containers::Set<Characters::String>, Containers::Sequence<IFAddr_>> GetIFAddrs_ ()
         {
             ifaddrs* ifa = nullptr;
@@ -597,6 +648,58 @@ GTEST_TEST (Foundation_IO_Network, Test3_NetworkInterfaceList_)
             EXPECT_TRUE (addrs.Any ([&] (const IFAddr_& a) { return a.fInterface == i.fInternalInterfaceID and a.fAddress == ia; }))
                 << "bogus address " << Characters::ToString (ia).AsNarrowSDKString () << " on " << i.fInternalInterfaceID.AsNarrowSDKString ();
         }
+    }
+#endif
+}
+
+GTEST_TEST (Foundation_IO_Network, Test3_HardwareAddresses_)
+{
+    Debug::TraceContextBumper trcCtx{"Test3_HardwareAddresses_"};
+#if qStroika_Platform_Linux or qStroika_Platform_MacOS
+    using namespace Test3_NetworkInterfaceList_Private_;
+    Containers::Mapping<Characters::String, Characters::String> expected = GetHardwareAddresses_ ();
+    // each interface's hardware address is the one the system reports for it - and none where it reports none
+    for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
+        EXPECT_EQ (i.fHardwareAddress, expected.Lookup (i.fInternalInterfaceID)) << i.fInternalInterfaceID.AsNarrowSDKString ();
+    }
+    // the 'primary' MAC address is that of a non-loopback interface with an IPv4 address - or none, if no such interface has one
+    Characters::String primary = GetPrimaryNetworkDeviceMacAddress ();
+    DbgTrace ("GetPrimaryNetworkDeviceMacAddress () = {}"_f, primary);
+    Containers::Set<Characters::String> candidates;
+    {
+        ifaddrs* ifa = nullptr;
+        EXPECT_EQ (::getifaddrs (&ifa), 0);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([ifa] () noexcept { ::freeifaddrs (ifa); });
+        for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
+            if (p->ifa_addr != nullptr and p->ifa_addr->sa_family == AF_INET and not(p->ifa_flags & IFF_LOOPBACK)) {
+                if (optional<Characters::String> mac = expected.Lookup (Characters::String::FromSDKString (p->ifa_name))) {
+                    candidates.Add (*mac);
+                }
+            }
+        }
+    }
+    if (candidates.empty ()) {
+        EXPECT_TRUE (primary.empty ()) << primary.AsNarrowSDKString ();
+    }
+    else {
+        EXPECT_TRUE (candidates.Contains (primary))
+            << "'" << primary.AsNarrowSDKString () << "' is not the MAC address of a non-loopback interface with an IPv4 address";
+    }
+#else
+    // the 'primary' MAC address is one of the interfaces' - or none, if no interface has one
+    Characters::String primary = GetPrimaryNetworkDeviceMacAddress ();
+    DbgTrace ("GetPrimaryNetworkDeviceMacAddress () = {}"_f, primary);
+    Containers::Set<Characters::String> candidates;
+    for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
+        if (i.fHardwareAddress) {
+            candidates.Add (*i.fHardwareAddress);
+        }
+    }
+    if (candidates.empty ()) {
+        EXPECT_TRUE (primary.empty ()) << primary.AsNarrowSDKString ();
+    }
+    else {
+        EXPECT_TRUE (candidates.Contains (primary)) << "'" << primary.AsNarrowSDKString () << "' is not the MAC address of any interface";
     }
 #endif
 }

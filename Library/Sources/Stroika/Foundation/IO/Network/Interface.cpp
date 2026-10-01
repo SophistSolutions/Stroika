@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
@@ -23,6 +24,7 @@
 #include <linux/wireless.h>
 #elif qStroika_Platform_MacOS
 #include <net/if.h>
+#include <net/if_dl.h>
 #endif
 #elif qStroika_Platform_Windows
 #include <WinSock2.h>
@@ -230,6 +232,25 @@ namespace {
         }
         return prefixLen;
     }
+
+#if qStroika_Platform_MacOS
+    // a getifaddrs () AF_LINK entry's 6-byte link-layer (MAC) address, if it has one. A sockaddr_dl is often longer than the
+    // struct (name and address can exceed sdl_data), so it is copied by sa_len into a buffer that holds all of it
+    optional<String> GetHardwareAddress_ (const sockaddr* sa)
+    {
+        if (sa == nullptr or sa->sa_family != AF_LINK) {
+            return nullopt;
+        }
+        alignas (sockaddr_dl) uint8_t buf[sizeof (sockaddr_storage)]{};
+        ::memcpy (buf, sa, min<size_t> (sa->sa_len, sizeof (buf)));
+        const sockaddr_dl* sdl = reinterpret_cast<const sockaddr_dl*> (buf);
+        if (sdl->sdl_alen != 6 or offsetof (sockaddr_dl, sdl_data) + sdl->sdl_nlen + 6 > sizeof (buf)) {
+            return nullopt;
+        }
+        const uint8_t* mac = reinterpret_cast<const uint8_t*> (LLADDR (sdl));
+        return PrintMacAddr_ (mac, mac + 6);
+    }
+#endif
 
     // everything about one interface except its addresses - GetInterfaces_POSIX_ adds those, one per getifaddrs () entry
     Interface GetInterfaces_POSIX_mkInterface_ (int sd, const char* name, unsigned int flags)
@@ -461,6 +482,12 @@ namespace {
                 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
                 newInterface.fBindings.fAddresses.Add (*ia);
             }
+#if qStroika_Platform_MacOS
+            // macOS has no SIOCGIFHWADDR (as Linux uses above): the hardware address is the interface's AF_LINK entry
+            if (optional<String> mac = GetHardwareAddress_ (p->ifa_addr)) {
+                newInterface.fHardwareAddress = mac;
+            }
+#endif
             results.Add (newInterface);
         }
         return move (results);
