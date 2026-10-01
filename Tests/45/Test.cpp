@@ -53,6 +53,21 @@ namespace {
         o.fMaxAutomaticRedirects = 2;
         return o;
     }();
+
+    /*
+     *  These tests talk to real servers (google, httpbin, cnn), so a timeout or a connection dropped mid-transfer says
+     *  something about the server or the network, not about Stroika's HTTP client - such errors are warned about, not failed.
+     */
+    bool IsTransientNetworkError_ (const system_error& e)
+    {
+        // io_error: a failure sending or receiving mid-transfer (as libcurl reports CURLE_SEND_ERROR / CURLE_RECV_ERROR)
+        for (errc c : {errc::timed_out, errc::connection_reset, errc::connection_aborted, errc::io_error}) {
+            if (Execution::IsA (e, c)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 namespace {
@@ -86,8 +101,8 @@ namespace {
                     GTEST_SKIP () << "libcurl built without SSL support";
                 }
 #endif
-                if (not Execution::IsA (e, errc::timed_out)) {
-                    ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                if (not IsTransientNetworkError_ (e)) {
+                    ReThrow (); // only a network failure (see IsTransientNetworkError_) is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
@@ -110,8 +125,8 @@ namespace {
                 }
             }
             catch (const system_error& e) {
-                if (not Execution::IsA (e, errc::timed_out)) {
-                    ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                if (not IsTransientNetworkError_ (e)) {
+                    ReThrow (); // only a network failure (see IsTransientNetworkError_) is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
@@ -306,8 +321,8 @@ namespace {
                     return;
                 }
 #endif
-                if (not Execution::IsA (e, errc::timed_out)) {
-                    ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                if (not IsTransientNetworkError_ (e)) {
+                    ReThrow (); // only a network failure (see IsTransientNetworkError_) is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
@@ -381,8 +396,8 @@ namespace {
                 }
             }
             catch (const system_error& e) {
-                if (not Execution::IsA (e, errc::timed_out)) {
-                    ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                if (not IsTransientNetworkError_ (e)) {
+                    ReThrow (); // only a network failure (see IsTransientNetworkError_) is tolerated here - real errors must still fail the test
                 }
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
@@ -443,8 +458,8 @@ namespace {
             }
         }
         catch (const system_error& e) {
-            if (not Execution::IsA (e, errc::timed_out)) {
-                ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+            if (not IsTransientNetworkError_ (e)) {
+                ReThrow (); // only a network failure (see IsTransientNetworkError_) is tolerated here - real errors must still fail the test
             }
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
         }
@@ -593,8 +608,8 @@ namespace {
                     }
                 }
                 catch (const system_error& e) {
-                    if (not Execution::IsA (e, errc::timed_out)) {
-                        ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+                    if (not IsTransientNetworkError_ (e)) {
+                        ReThrow (); // only a network failure (see IsTransientNetworkError_) is tolerated here - real errors must still fail the test
                     }
                     Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
                 }
@@ -691,8 +706,8 @@ namespace {
             }
         }
         catch (const system_error& e) {
-            if (not Execution::IsA (e, errc::timed_out)) {
-                ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+            if (not IsTransientNetworkError_ (e)) {
+                ReThrow (); // only a network failure (see IsTransientNetworkError_) is tolerated here - real errors must still fail the test
             }
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
         }
@@ -725,8 +740,8 @@ namespace {
             DbgTrace ("e={}"_f, e);
         }
         catch (const system_error& e) {
-            if (not Execution::IsA (e, errc::timed_out)) {
-                ReThrow (); // only a timeout is tolerated here - real errors must still fail the test
+            if (not IsTransientNetworkError_ (e)) {
+                ReThrow (); // only a network failure (see IsTransientNetworkError_) is tolerated here - real errors must still fail the test
             }
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
         }
@@ -760,6 +775,28 @@ namespace {
         // the category must map libcurl's own numbering onto the portable conditions ...
         EXPECT_TRUE ((error_code{CURLE_OPERATION_TIMEDOUT, LibCurl::error_category ()} == errc::timed_out));
         EXPECT_TRUE ((error_code{CURLE_OUT_OF_MEMORY, LibCurl::error_category ()} == errc::not_enough_memory));
+        // ... including the network failures a caller may want to treat as transient (@see IsTransientNetworkError_)
+        EXPECT_TRUE ((error_code{CURLE_SEND_ERROR, LibCurl::error_category ()} == errc::io_error));
+        EXPECT_TRUE ((error_code{CURLE_RECV_ERROR, LibCurl::error_category ()} == errc::io_error));
+        EXPECT_TRUE ((error_code{CURLE_GOT_NOTHING, LibCurl::error_category ()} == errc::connection_reset));
+        EXPECT_TRUE ((error_code{CURLE_COULDNT_CONNECT, LibCurl::error_category ()} == errc::connection_refused));
+        EXPECT_TRUE ((error_code{CURLE_COULDNT_RESOLVE_HOST, LibCurl::error_category ()} == errc::no_such_device)); // as DNS maps EAI_NONAME
+        EXPECT_TRUE ((error_code{CURLE_COULDNT_RESOLVE_PROXY, LibCurl::error_category ()} == errc::no_such_device));
+        EXPECT_TRUE ((error_code{CURLE_PARTIAL_FILE, LibCurl::error_category ()} == errc::io_error));
+        EXPECT_TRUE ((error_code{CURLE_AGAIN, LibCurl::error_category ()} == errc::resource_unavailable_try_again));
+        // ... and the rest of what has a sensible portable meaning
+        EXPECT_TRUE ((error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()} == errc::protocol_not_supported));
+        EXPECT_TRUE ((error_code{CURLE_NOT_BUILT_IN, LibCurl::error_category ()} == errc::not_supported));
+        EXPECT_TRUE ((error_code{CURLE_URL_MALFORMAT, LibCurl::error_category ()} == errc::invalid_argument));
+        EXPECT_TRUE ((error_code{CURLE_BAD_FUNCTION_ARGUMENT, LibCurl::error_category ()} == errc::invalid_argument));
+        EXPECT_TRUE ((error_code{CURLE_WEIRD_SERVER_REPLY, LibCurl::error_category ()} == errc::protocol_error));
+        EXPECT_TRUE ((error_code{CURLE_PEER_FAILED_VERIFICATION, LibCurl::error_category ()} == errc::protocol_error));
+        EXPECT_TRUE ((error_code{CURLE_REMOTE_ACCESS_DENIED, LibCurl::error_category ()} == errc::permission_denied));
+        EXPECT_TRUE ((error_code{CURLE_REMOTE_FILE_NOT_FOUND, LibCurl::error_category ()} == errc::no_such_file_or_directory));
+        EXPECT_TRUE ((error_code{CURLE_FILESIZE_EXCEEDED, LibCurl::error_category ()} == errc::file_too_large));
+        EXPECT_TRUE ((error_code{CURLE_WRITE_ERROR, LibCurl::error_category ()} == errc::io_error));
+        EXPECT_TRUE ((error_code{CURLE_READ_ERROR, LibCurl::error_category ()} == errc::io_error));
+        EXPECT_TRUE ((error_code{CURLE_ABORTED_BY_CALLBACK, LibCurl::error_category ()} == errc::operation_canceled));
 
         // ... and throwing one must surface as something a caller can test portably, WITHOUT knowing it came
         // from libcurl. Note e.code () still reports the original libcurl code and category.
@@ -788,7 +825,9 @@ namespace {
             EXPECT_TRUE (false);
         }
 
-        // an unmapped libcurl code must NOT masquerade as a timeout
+        // an unmapped libcurl code must NOT masquerade as a timeout (or as any of the network failures above)
+        EXPECT_FALSE ((error_code{CURLE_TOO_MANY_REDIRECTS, LibCurl::error_category ()} == errc::timed_out));
+        EXPECT_FALSE ((error_code{CURLE_TOO_MANY_REDIRECTS, LibCurl::error_category ()} == errc::io_error));
         EXPECT_FALSE ((error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()} == errc::timed_out));
 #endif
     }

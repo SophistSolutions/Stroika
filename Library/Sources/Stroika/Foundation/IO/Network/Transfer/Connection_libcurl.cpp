@@ -77,24 +77,56 @@ const std::error_category& Transfer::LibCurl::error_category () noexcept
         virtual error_condition default_error_condition ([[maybe_unused]] int ev) const noexcept override
         {
             switch (ev) {
+                // the network itself, or the server at the other end
+                case CURLE_OPERATION_TIMEDOUT:
+                    return errc::timed_out;
+                case CURLE_COULDNT_CONNECT:
+                    return errc::connection_refused;
+                case CURLE_COULDNT_RESOLVE_HOST:
+                case CURLE_COULDNT_RESOLVE_PROXY:
+                    return errc::no_such_device; // as DNS maps EAI_NONAME - there is no 'name not found' errc
+                case CURLE_GOT_NOTHING:
+                    return errc::connection_reset; // the server closed the connection without replying
+                case CURLE_SEND_ERROR:
+                case CURLE_RECV_ERROR:
+                case CURLE_PARTIAL_FILE:
+                case CURLE_WRITE_ERROR:
+                case CURLE_READ_ERROR:
+                    return errc::io_error;
+                case CURLE_AGAIN:
+                    return errc::resource_unavailable_try_again;
+                case CURLE_WEIRD_SERVER_REPLY:
+                    return errc::protocol_error;
+
+                // SSL
                 case CURLE_SSL_ENGINE_NOTFOUND:
                     return errc::protocol_not_supported; //?
                 case CURLE_USE_SSL_FAILED:
-                    return errc::protocol_error; //?
                 case CURLE_SSL_CONNECT_ERROR:
+                case CURLE_PEER_FAILED_VERIFICATION:
                     return errc::protocol_error; //?
+
+                // the request, or what it asked for
+                case CURLE_UNSUPPORTED_PROTOCOL:
+                    return errc::protocol_not_supported;
+                case CURLE_NOT_BUILT_IN:
+                    return errc::not_supported;
+                case CURLE_URL_MALFORMAT:
+                case CURLE_BAD_FUNCTION_ARGUMENT:
+                    return errc::invalid_argument;
+                case CURLE_AUTH_ERROR:
+                case CURLE_LOGIN_DENIED:
+                case CURLE_REMOTE_ACCESS_DENIED:
+                    return errc::permission_denied;
+                case CURLE_REMOTE_FILE_NOT_FOUND:
+                    return errc::no_such_file_or_directory;
+                case CURLE_FILESIZE_EXCEEDED:
+                    return errc::file_too_large;
+                case CURLE_ABORTED_BY_CALLBACK:
+                    return errc::operation_canceled;
+
                 case CURLE_OUT_OF_MEMORY:
                     return errc::not_enough_memory;
-                case CURLE_OPERATION_TIMEDOUT:
-                    return errc::timed_out;
-                case CURLE_AUTH_ERROR:
-                    return errc::permission_denied;
-                case CURLE_LOGIN_DENIED:
-                    return errc::permission_denied;
-                case CURLE_SEND_ERROR:
-                    return errc::io_error;
-                case CURLE_RECV_ERROR:
-                    return errc::io_error;
             }
             // @todo - not sure how todo this - except by defining new conditions
             //switch (ev) {
