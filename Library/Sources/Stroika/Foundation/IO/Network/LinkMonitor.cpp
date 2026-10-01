@@ -18,6 +18,8 @@
 #if qStroika_Platform_Linux
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
+#elif qStroika_Platform_MacOS
+#include <net/route.h>
 #endif
 #elif qStroika_Platform_Windows
 #include <WinSock2.h>
@@ -336,6 +338,51 @@ struct LinkMonitor::Rep_ {
         */
         if (fMonitorHandler_ == INVALID_HANDLE_VALUE) {
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, this, FALSE, &fMonitorHandler_));
+        }
+#elif qStroika_Platform_MacOS
+        if (fMonitorThread_ == nullptr) {
+            // very slight race starting this but not worth worrying about
+            fMonitorThread_ = Execution::Thread::New ([this] () {
+                // As the Linux netlink loop above, via the BSD routing socket: report each IPv4 address added (RTM_NEWADDR).
+                ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_ROUTE), Socket::RAW, AF_UNSPEC);
+                byte    buffer[4096];
+                ssize_t len;
+                while ((len = ::recv (sock.GetNativeSocket (), buffer, sizeof (buffer), 0)) > 0) {
+                    // Every routing message starts {u_short msglen; u_char version; u_char type}. Copied out, never cast in
+                    // place: like SIOCGIFCONF's records, these are packed
+                    for (size_t offset = 0; offset + sizeof (ifa_msghdr) <= static_cast<size_t> (len);) {
+                        ifa_msghdr ifam;
+                        ::memcpy (&ifam, buffer + offset, sizeof (ifam));
+                        if (ifam.ifam_msglen == 0) {
+                            break;
+                        }
+                        size_t end = min<size_t> (offset + ifam.ifam_msglen, len);
+                        if (ifam.ifam_type == RTM_NEWADDR) {
+                            // its addresses follow the header: one per bit set in ifam_addrs, in RTAX_ order, each padded to 4 bytes
+                            size_t a = offset + sizeof (ifam);
+                            for (int i = 0; i < RTAX_MAX and a < end; ++i) {
+                                if (not(ifam.ifam_addrs & (1 << i))) {
+                                    continue;
+                                }
+                                uint8_t saLen = static_cast<uint8_t> (buffer[a]);
+                                if (i == RTAX_IFA and saLen >= sizeof (sockaddr_in) and a + sizeof (sockaddr_in) <= end) {
+                                    sockaddr_in sin;
+                                    ::memcpy (&sin, buffer + a, sizeof (sin));
+                                    char name[IF_NAMESIZE]{};
+                                    if (sin.sin_family == AF_INET and ::if_indextoname (ifam.ifam_index, name) != nullptr) {
+                                        SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name),
+                                                      InternetAddress{sin.sin_addr}.As<String> ());
+                                    }
+                                }
+                                a += saLen > 0 ? (1 + ((saLen - 1) | (sizeof (uint32_t) - 1))) : sizeof (uint32_t);
+                            }
+                        }
+                        offset += ifam.ifam_msglen;
+                    }
+                }
+            });
+            fMonitorThread_.SetThreadName ("Network LinkMonitor thread"sv);
+            fMonitorThread_.Start ();
         }
 #else
         AssertNotImplemented ();

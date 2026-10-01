@@ -224,6 +224,15 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     // there is an active listening socket bound to the address. When the listening socket is bound
     // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
     setsockopt<int> (SOL_SOCKET, SO_REUSEADDR, bindFlags.fSO_REUSEADDR ? 1 : 0);
+#if qStroika_Platform_MacOS
+    // BSD's SO_REUSEADDR only lets a UDP socket share a PORT bound to a different internet address; sharing the same socket
+    // address - what fSO_REUSEADDR means, and what SO_REUSEADDR alone gives on Linux and Windows - takes SO_REUSEPORT too (as
+    // libuv does for UDP). Not for TCP: there SO_REUSEADDR already means the same thing everywhere (rebind while TIME_WAIT),
+    // and SO_REUSEPORT would go further, letting two live listeners share the address.
+    if (getsockopt<Type> (SOL_SOCKET, SO_TYPE) == Type::DGRAM) {
+        setsockopt<int> (SOL_SOCKET, SO_REUSEPORT, bindFlags.fSO_REUSEADDR ? 1 : 0);
+    }
+#endif
 
     sockaddr_storage     useSockAddr = sockAddr.As<sockaddr_storage> ();
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
