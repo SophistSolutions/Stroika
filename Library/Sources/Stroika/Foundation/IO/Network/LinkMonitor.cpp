@@ -4,9 +4,11 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdio>
+#include <cstring>
 
 #if qStroika_Platform_POSIX
 #include <arpa/inet.h>
+#include <ifaddrs.h>
 #include <net/if.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -29,6 +31,7 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #if qStroika_Platform_Windows
 #include "Platform/Windows/WinSock.h"
@@ -159,43 +162,22 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     }
     return InternetAddress{};
 #elif qStroika_Platform_POSIX
-    auto getFlags = [] (int sd, const char* name) -> int {
-        struct ::ifreq ifreq{};
-        Characters::CString::Copy (ifreq.ifr_name, std::size (ifreq.ifr_name), name);
-        int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
-        // Since this is used only to filter the list of addresses, if we get an error, don't throw but
-        // return 0
-        if (r < 0) {
-            DbgTrace ("ioctl on getFlags returned {}, errno={}"_f, r, errno);
-            return 0;
-        }
-        Assert (r == 0);
-        return ifreq.ifr_flags;
-    };
-
-    struct ::ifreq  ifreqs[32]{};
-    struct ::ifconf ifconf{};
-    ifconf.ifc_req = ifreqs;
-    ifconf.ifc_len = sizeof (ifreqs);
-
-    int sd = ::socket (PF_INET, SOCK_STREAM, 0);
-    Assert (sd >= 0);
-
-    [[maybe_unused]] int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
-    Assert (r == 0);
-
-    InternetAddress result;
-    for (int i = 0; i < ifconf.ifc_len / sizeof (struct ifreq); ++i) {
-        int flags = getFlags (sd, ifreqs[i].ifr_name);
-        if ((flags & IFF_UP) and (not(flags & IFF_LOOPBACK)) and (flags & IFF_RUNNING)) {
-            result = InternetAddress{((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr};
-            break;
-        }
-        //printf ("%s: %s\n", ifreqs[i].ifr_name, inet_ntoa (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr));
-        //printf (" flags: %s\n", flags (sd, ifreqs[i].ifr_name));
+    // the first IPv4 address of an interface that is up, running and not loopback (getifaddrs, not SIOCGIFCONF - whose
+    // records macOS packs to varying lengths, starting with AF_LINK ones, so they cannot be indexed as an array)
+    ifaddrs* ifa = nullptr;
+    if (::getifaddrs (&ifa) != 0) {
+        Execution::ThrowPOSIXErrNo ();
     }
-    ::close (sd);
-    return result;
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([ifa] () noexcept { ::freeifaddrs (ifa); });
+    for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
+        if (p->ifa_addr != nullptr and p->ifa_addr->sa_family == AF_INET and (p->ifa_flags & IFF_UP) and (p->ifa_flags & IFF_RUNNING) and
+            not(p->ifa_flags & IFF_LOOPBACK)) {
+            sockaddr_in a{};
+            ::memcpy (&a, p->ifa_addr, sizeof (a));
+            return InternetAddress{a.sin_addr};
+        }
+    }
+    return InternetAddress{};
 #endif
 }
 

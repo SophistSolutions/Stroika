@@ -117,11 +117,6 @@ Generally will track stuff here between releases
      Xerces globals, `symaddr.exe EXE SYMBOL` + `dumpbin /disasm /range:` shows the code; the failing copy is kept
      there to compare. Candidate workaround: build Xerces without `-GL` under MSVC.
 
-   - **`Network::GetPrimaryInternetAddress ()` (IO/Network/LinkMonitor.cpp) - the same SIOCGIFCONF misuse that
-     `GetInterfaces_POSIX_` had** (that one now uses `getifaddrs`). Its POSIX path indexes `ifreqs[i]` as a fixed-size array
-     and never checks `sa_family` - on macOS the records are variable-length and the first are AF_LINK, so the "primary"
-     address is very likely garbage there (not yet measured). Same fix: walk `getifaddrs`.
-
   - DO PLANNING for CMAKE change
     - discuss staging
     - Maybe first step is the MACRO for the build root(discuss if that is done in a way to mirror fit with cmake)

@@ -9,6 +9,7 @@
 
 #if qStroika_Platform_POSIX
 #include <ifaddrs.h>
+#include <net/if.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #endif
@@ -25,6 +26,7 @@
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
+#include "Stroika/Foundation/IO/Network/LinkMonitor.h"
 #include "Stroika/Foundation/IO/Network/Neighbors.h"
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
@@ -595,6 +597,35 @@ GTEST_TEST (Foundation_IO_Network, Test3_NetworkInterfaceList_)
             EXPECT_TRUE (addrs.Any ([&] (const IFAddr_& a) { return a.fInterface == i.fInternalInterfaceID and a.fAddress == ia; }))
                 << "bogus address " << Characters::ToString (ia).AsNarrowSDKString () << " on " << i.fInternalInterfaceID.AsNarrowSDKString ();
         }
+    }
+#endif
+}
+
+GTEST_TEST (Foundation_IO_Network, Test3_PrimaryInternetAddress_)
+{
+    Debug::TraceContextBumper trcCtx{"Test3_PrimaryInternetAddress_"};
+    InternetAddress           primary = GetPrimaryInternetAddress ();
+    DbgTrace ("GetPrimaryInternetAddress () = {}"_f, primary);
+#if qStroika_Platform_POSIX
+    // an IPv4 address of an interface that is up, running, and not loopback - or none if there is no such interface
+    Containers::Sequence<InternetAddress> candidates;
+    ifaddrs*                              ifa = nullptr;
+    EXPECT_EQ (::getifaddrs (&ifa), 0);
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([ifa] () noexcept { ::freeifaddrs (ifa); });
+    for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
+        if (p->ifa_addr != nullptr and p->ifa_addr->sa_family == AF_INET and (p->ifa_flags & IFF_UP) and (p->ifa_flags & IFF_RUNNING) and
+            not(p->ifa_flags & IFF_LOOPBACK)) {
+            sockaddr_in a{};
+            ::memcpy (&a, p->ifa_addr, sizeof (a));
+            candidates += InternetAddress{a.sin_addr};
+        }
+    }
+    if (candidates.empty ()) {
+        EXPECT_TRUE (primary.empty ()) << Characters::ToString (primary).AsNarrowSDKString ();
+    }
+    else {
+        EXPECT_TRUE (candidates.Contains (primary))
+            << Characters::ToString (primary).AsNarrowSDKString () << " is not an IPv4 address of an up, running, non-loopback interface";
     }
 #endif
 }
