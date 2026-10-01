@@ -41,7 +41,8 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
         if (h.code ().category () == Stroika::Foundation::Execution::Platform::Windows::HRESULT_error_category ()) {                       \
             return h.code ().value ();                                                                                                     \
         }                                                                                                                                  \
-        if (h.code ().category () == system_category ()) {                                                                                 \
+        if (h.code ().category () == system_category () or                                                                                 \
+            h.code ().category () == Stroika::Foundation::Execution::Platform::Windows::Win32_error_category ()) {                         \
             return (HRESULT_FROM_WIN32 (h.code ().value ()));                                                                              \
         }                                                                                                                                  \
         return DISP_E_EXCEPTION;                                                                                                           \

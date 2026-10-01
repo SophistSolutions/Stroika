@@ -299,21 +299,83 @@ namespace {
                 }
             }
 #if qStroika_Platform_Windows
+            /*
+             *  @see Platform::Windows::Win32_error_category, and https://github.com/SophistSolutions/Stroika/issues/1192 for
+             *  why: std's system_category maps none of these first rows onto a portable condition.
+             */
+            void Win32_error_category_ ()
+            {
+                using Execution::Platform::Windows::IsWin32Error;
+                using Execution::Platform::Windows::Win32_error_category;
+                struct Mapping_ {
+                    int         fCode;
+                    errc        fCondition;
+                    const char* fName;
+                };
+                for (const Mapping_& i : initializer_list<Mapping_>{
+                         // WinINet - WinHTTP's ERROR_WINHTTP_* share these numbers
+                         {ERROR_INTERNET_TIMEOUT, errc::timed_out, "ERROR_INTERNET_TIMEOUT"},
+                         {ERROR_INTERNET_CANNOT_CONNECT, errc::connection_refused, "ERROR_INTERNET_CANNOT_CONNECT"},
+                         {ERROR_INTERNET_CONNECTION_ABORTED, errc::connection_aborted, "ERROR_INTERNET_CONNECTION_ABORTED"},
+                         {ERROR_INTERNET_CONNECTION_ABORTED, errc::connection_reset, "ERROR_INTERNET_CONNECTION_ABORTED (one-to-many)"},
+                         {ERROR_INTERNET_CONNECTION_RESET, errc::connection_reset, "ERROR_INTERNET_CONNECTION_RESET"},
+                         {ERROR_INTERNET_NAME_NOT_RESOLVED, errc::no_such_device, "ERROR_INTERNET_NAME_NOT_RESOLVED"}, // as DNS maps EAI_NONAME
+                         {ERROR_HTTP_INVALID_SERVER_RESPONSE, errc::protocol_error, "ERROR_HTTP_INVALID_SERVER_RESPONSE"},
+                         // winerror.h's own - std maps only their Winsock twins
+                         {ERROR_CONNECTION_REFUSED, errc::connection_refused, "ERROR_CONNECTION_REFUSED"},
+                         {ERROR_NETWORK_UNREACHABLE, errc::network_unreachable, "ERROR_NETWORK_UNREACHABLE"},
+                         {ERROR_HOST_UNREACHABLE, errc::host_unreachable, "ERROR_HOST_UNREACHABLE"},
+                         {ERROR_CONNECTION_ABORTED, errc::connection_aborted, "ERROR_CONNECTION_ABORTED"},
+                         {ERROR_NETNAME_DELETED, errc::connection_reset, "ERROR_NETNAME_DELETED"},
+                         {ERROR_NETNAME_DELETED, errc::connection_aborted, "ERROR_NETNAME_DELETED (one-to-many)"},
+                         {ERROR_CANCELLED, errc::operation_canceled, "ERROR_CANCELLED"},
+                         // ... and what std's system_category already maps must still work
+                         {WAIT_TIMEOUT, errc::timed_out, "WAIT_TIMEOUT"},
+                         {ERROR_ACCESS_DENIED, errc::permission_denied, "ERROR_ACCESS_DENIED"},
+                     }) {
+                    EXPECT_TRUE ((error_code{i.fCode, Win32_error_category ()} == i.fCondition)) << i.fName;
+                    // the same number in std::system_category () - from the standard library, say - matches when asked via IsA ()
+                    EXPECT_TRUE (IsA (error_code{i.fCode, system_category ()}, i.fCondition)) << i.fName << " in system_category";
+                    // and a thrown one keeps its raw value and category, answering both forms of the question
+                    try {
+                        ThrowSystemErrNo (i.fCode);
+                        EXPECT_TRUE (false) << i.fName << ": nothing thrown";
+                    }
+                    catch (const system_error& e) {
+                        EXPECT_TRUE (IsA (e, i.fCondition)) << i.fName;
+                        EXPECT_TRUE (e.code () == i.fCondition) << i.fName;
+                        EXPECT_EQ (e.code ().value (), i.fCode) << i.fName;
+                        EXPECT_TRUE (e.code ().category () == Win32_error_category ()) << i.fName;
+                        EXPECT_TRUE (IsWin32Error (e.code (), i.fCode)) << i.fName;
+                    }
+                }
+                // an unmapped code stays unmapped
+                EXPECT_FALSE ((error_code{ERROR_GEN_FAILURE, Win32_error_category ()} == errc::timed_out));
+                EXPECT_FALSE (IsA (error_code{ERROR_GEN_FAILURE, system_category ()}, errc::timed_out));
+
+                // the accepted cost: a RAW compare of a std::system_category () code does not get the extra mappings
+                if ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out)) {
+                    DbgTrace ("std's system_category now maps ERROR_INTERNET_TIMEOUT - revisit issue 1192"_f);
+                }
+
+                // same name as Microsoft's, but a real message where theirs says "unknown error"
+                EXPECT_STREQ (Win32_error_category ().name (), system_category ().name ());
+                string m = Win32_error_category ().message (ERROR_INTERNET_TIMEOUT);
+                EXPECT_TRUE (not m.empty () and m != system_category ().message (ERROR_INTERNET_TIMEOUT)) << m;
+                EXPECT_EQ (Win32_error_category ().message (ERROR_ACCESS_DENIED), system_category ().message (ERROR_ACCESS_DENIED));
+
+                // IsWin32Error: either category, exact value only
+                EXPECT_TRUE (IsWin32Error (error_code{ERROR_SHARING_VIOLATION, system_category ()}, ERROR_SHARING_VIOLATION));
+                EXPECT_TRUE (IsWin32Error (error_code{ERROR_SHARING_VIOLATION, Win32_error_category ()}, ERROR_SHARING_VIOLATION));
+                EXPECT_FALSE (IsWin32Error (error_code{ERROR_SHARING_VIOLATION, system_category ()}, ERROR_ACCESS_DENIED));
+                EXPECT_FALSE (IsWin32Error (error_code{ERROR_SHARING_VIOLATION, generic_category ()}, ERROR_SHARING_VIOLATION));
+            }
             void Bug2_Windows_Errors_Mapped_To_Conditions_ ()
             {
                 EXPECT_TRUE ((error_code{ERROR_NOT_ENOUGH_MEMORY, system_category ()} == errc::not_enough_memory));
                 EXPECT_TRUE ((error_code{ERROR_OUTOFMEMORY, system_category ()} == errc::not_enough_memory));
-#if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
-                if ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out)) {
-                    DbgTrace ("FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy"_f);
-                }
-                if ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out)) {
-                    DbgTrace ("FIXED"_f);
-                }
-#else
-                EXPECT_TRUE ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out));
-                EXPECT_TRUE ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out));
-#endif
+                EXPECT_TRUE ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out)); // std maps this one (every supported MSVC)
+                // ... but not ERROR_INTERNET_TIMEOUT - @see Win32_error_category_ () above, and issue 1192
 
                 try {
                     ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY);
@@ -389,6 +451,7 @@ namespace {
         Test5_error_code_condition_compares_::Private::IsA_overloads_ ();
 #if qStroika_Platform_Windows
         Test5_error_code_condition_compares_::Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
+        Test5_error_code_condition_compares_::Private::Win32_error_category_ ();
 #endif
     }
 }

@@ -190,7 +190,11 @@ namespace Stroika::Foundation::Execution {
         TraceContenxtBumper tctx{"Execution::ThrowSystemErrNo", "{}"_f, sysErr};
 #endif
         Require (sysErr != 0);
+#if qStroika_Platform_Windows
+        ThrowError (error_code{sysErr, Platform::Windows::Win32_error_category ()}); // system_category (), plus what Microsoft's misses
+#else
         ThrowError (error_code{sysErr, system_category ()});
+#endif
     }
 
     /*

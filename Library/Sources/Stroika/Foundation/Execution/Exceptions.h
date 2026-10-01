@@ -440,9 +440,20 @@ namespace Stroika::Foundation::Execution {
      *  \note   stdc++ uses 'int' for the type of this error number, but Windows generally defines the type to be
      *          DWORD.
      *
-     *   \note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  -
-     *          "That object’s category() member shall return std::system_category() for errors originating
-     *          from the operating system, or a reference to an implementation"
+     *  \par Which error_category it uses
+     *      o   POSIX:   std::system_category ()
+     *      o   Windows: Platform::Windows::Win32_error_category () - the same value and name () ("system")
+     *          as std::system_category (), but it maps more codes onto the portable errc conditions
+     *          (@see Platform::Windows::Win32_error_category)
+     *
+     *      So test what you catch with IsA (e, errc::...), or on Windows Platform::Windows::IsWin32Error
+     *      (e.code (), ERROR_X) - never by comparing with error_code{n, system_category ()}.
+     *
+     *  \note   This follows the rule the standard library sets for its own errors ([value.error.codes],
+     *          http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf): "That object's category()
+     *          member shall return std::system_category() for errors originating from the operating system,
+     *          or a reference to an implementation-defined error_category object for errors originating
+     *          elsewhere." Windows is the deliberate exception - why: https://github.com/SophistSolutions/Stroika/issues/1192
      *
      *  \par Example Usage
      *      \code
@@ -462,7 +473,7 @@ namespace Stroika::Foundation::Execution {
      */
     [[noreturn]] void ThrowSystemErrNo (int sysErr);
 #if qStroika_Platform_POSIX or qStroika_Platform_Windows
-    [[noreturn]] void ThrowSystemErrNo ();
+    [[noreturn]] void ThrowSystemErrNo (); ///< \brief ThrowSystemErrNo (errno) on POSIX, ThrowSystemErrNo (::GetLastError ()) on Windows
 #endif
 
     /**
@@ -543,10 +554,10 @@ namespace Stroika::Foundation::Execution {
      *      o   Usually nothing: the error_code is passed through untouched, and only the thrown type is chosen
      *          from it. `e.code ().category ()` still names where the error came from, which is what makes
      *          library-specific diagnosis possible.
-     *      o   Windows `WAIT_TIMEOUT` / `ERROR_INTERNET_TIMEOUT` are rewritten to
-     *          `make_error_code (errc::timed_out)`, giving up the raw value and the category. MSVC's
-     *          system_category does not map either onto that condition, so without the rewrite a genuine
-     *          Windows timeout would satisfy no timeout test at all. The raw value survives in the message.
+     *      o   Windows codes keep their raw value: the conditions MSVC's system_category leaves out (a WinHTTP
+     *          timeout, a refused connection, ...) come from @see Platform::Windows::Win32_error_category, which
+     *          ThrowSystemErrNo () tags them with - so nothing needs rewriting (as WAIT_TIMEOUT and
+     *          ERROR_INTERNET_TIMEOUT once were).
      *      o   `errc::not_enough_memory` becomes `std::bad_alloc`, giving up the error_code entirely - bad_alloc
      *          has no code () - because that is the type C++ has always expected you to catch for allocation
      *          failure. This is also why it needs its own catch handler, and why GetAssociatedErrorCode ()
@@ -625,7 +636,7 @@ namespace Stroika::Foundation::Execution {
      *      | function               | category used                                             |
      *      |------------------------|-----------------------------------------------------------|
      *      | `ThrowError (ec)`      | whatever category you put in the error_code               |
-     *      | `ThrowSystemErrNo (n)` | `system_category ()`                                      |
+     *      | `ThrowSystemErrNo (n)` | `system_category ()` (on Windows `Platform::Windows::Win32_error_category ()`) |
      *      | `ThrowPOSIXErrNo (n)`  | `system_category ()` on POSIX, else `generic_category ()` |
      *
      *      So on a POSIX system ThrowPOSIXErrNo and ThrowSystemErrNo are the same call - errno IS the
@@ -633,13 +644,15 @@ namespace Stroika::Foundation::Execution {
      *      where errno and GetLastError () are distinct numbering spaces and must not be tagged with the
      *      same category. Pick whichever names where your number actually came from.
      *
-     *      **The category is not just a label.** It supplies default_error_condition (), which is what every
-     *      `e.code () == errc::something` test - and the bad_alloc promotion above - is matched against. So
-     *      tagging a number with the wrong category does not merely mislabel the error, it silently changes
-     *      which conditions the error appears to satisfy. A Win32 timeout code tagged with system_category ()
-     *      compares equal to errc::timed_out; the same number tagged with generic_category () is interpreted
-     *      as an errno instead, and matches something else or nothing at all. That - not tidiness - is why
-     *      these two functions must stay separate on Windows.
+     *      **The category is not just a label.** It supplies default_error_condition () and equivalent (), which
+     *      is what every `e.code () == errc::something` test - and the bad_alloc promotion above - is matched
+     *      against. So tagging a number with the wrong category does not merely mislabel the error, it silently
+     *      changes which conditions the error appears to satisfy. WAIT_TIMEOUT in a Win32 category compares
+     *      equal to errc::timed_out; the same number tagged with generic_category () is interpreted as an errno
+     *      instead, and matches something else or nothing at all. That - not tidiness - is why these two
+     *      functions must stay separate on Windows. (And it is why Win32 codes get Stroika's
+     *      Win32_error_category () rather than plain system_category (), whose mapping misses, for example,
+     *      ERROR_WINHTTP_TIMEOUT.)
      *
      *  \note   Matching is driven by the CONDITION, not the raw value, so any category which maps its own
      *          numbering onto std::errc (as the LibCurl and DNS categories both do) participates automatically.
@@ -776,6 +789,11 @@ namespace Stroika::Foundation::Execution {
      *
      *          `e.code () == errc::X` remains perfectly correct, and existing code using it is fine.
      *
+     *  \note   On Windows, IsA () also answers for a Win32 code that arrived in std::system_category () (from the
+     *          standard library, say) as if it were in Platform::Windows::Win32_error_category () - so it gets the
+     *          conditions Microsoft's mapping leaves out. A raw `e.code () == errc::X` does not get that for such a
+     *          code; IsA () is the one portable test.
+     *
      *  \note   The exception_ptr and exception overloads answer false for anything that carries no error
      *          code, which includes a null exception_ptr. They never throw.
      *
@@ -797,6 +815,43 @@ namespace Stroika::Foundation::Execution {
     inline auto TranslateExceptionToOptional (F&& f) -> optional<remove_cvref_t<invoke_result_t<F>>>;
 
 }
+
+#if qStroika_Platform_Windows
+namespace Stroika::Foundation::Execution::Platform::Windows {
+
+    /**
+     *  \brief The error_category Stroika tags Win32 error numbers (GetLastError ()) with: std::system_category (), plus the
+     *         portable conditions Microsoft's leaves out.
+     *
+     *  MSVC's system_category maps a Win32 code onto a portable condition with one flat, one-to-one table, which knows
+     *  nothing of the WinINet / WinHTTP range (so ERROR_WINHTTP_TIMEOUT is not errc::timed_out) and misses winerror.h's
+     *  own connection errors (ERROR_CONNECTION_REFUSED, ...) although it maps their Winsock twins. Its message () also
+     *  says "unknown error" for codes whose text lives in a module (wininet.dll / winhttp.dll). This category answers
+     *  those, and delegates everything else - name () included - to std::system_category ().
+     *
+     *  Mapping a numbering onto conditions is what an error_category is FOR, so this keeps the raw code (unlike
+     *  rewriting it at throw time), and both `e.code () == errc::X` and IsA () work. It maps a code onto MORE than one
+     *  condition where the meaning is ambiguous (via equivalent ()), since Win32 codes do not divide as neatly as
+     *  POSIX errno does. @see https://github.com/SophistSolutions/Stroika/issues/1192 for the alternatives considered.
+     *
+     *  \note   A Win32 error_code in std::system_category () - from the standard library or another library - is
+     *          still a different code from the same number in this category. Execution::IsA () treats it as this
+     *          category, so test with IsA (), or with IsWin32Error () for an exact code - not `ec == error_code{...}`.
+     *
+     *  This object lives forever (like other error categories).
+     */
+    const error_category& Win32_error_category () noexcept;
+
+    /**
+     *  \brief Is ec the given Win32 error number - in Win32_error_category () or std::system_category ()?
+     *
+     *  Use this instead of `ec == error_code{ERROR_X, system_category ()}`, which no longer matches errors Stroika throws
+     *  (@see Win32_error_category).
+     */
+    bool IsWin32Error (const error_code& ec, int win32Err) noexcept;
+
+}
+#endif
 
 /*
  ********************************************************************************

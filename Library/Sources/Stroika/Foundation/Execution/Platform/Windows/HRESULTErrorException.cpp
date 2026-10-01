@@ -35,13 +35,20 @@ namespace {
         }
         virtual error_condition default_error_condition ([[maybe_unused]] int ev) const noexcept override
         {
-            if (HRESULT_CODE (ev) || ev == 0) {
-                // system error condition
-                return system_category ().default_error_condition (HRESULT_CODE (ev));
+            if (HRESULT_CODE (ev) or ev == 0) {
+                // a wrapped Win32 code: what it means unwrapped (@see Win32_error_category)
+                return Win32_error_category ().default_error_condition (HRESULT_CODE (ev));
             }
             else {
-                return {ev, HRESULT_error_category_ ()}; // special error condition
+                return {ev, HRESULT_error_category ()}; // special error condition (the immortal object - NOT a temporary)
             }
+        }
+        virtual bool equivalent (int ev, const error_condition& cond) const noexcept override
+        {
+            if (HRESULT_CODE (ev) or ev == 0) {
+                return Win32_error_category ().equivalent (HRESULT_CODE (ev), cond); // all it means unwrapped - not just its default
+            }
+            return error_category::equivalent (ev, cond);
         }
         virtual string message (int hr) const override
         {
@@ -70,7 +77,7 @@ namespace {
                     return "REGDB_E_CLASSNOTREG";
             }
             if (HRESULT_FACILITY (hr) == FACILITY_WIN32) {
-                return system_category ().message (HRESULT_CODE (hr));
+                return Win32_error_category ().message (HRESULT_CODE (hr));
             }
             if (HRESULT_FACILITY (hr) == FACILITY_INTERNET) {
                 unsigned int wCode = HRESULT_CODE (hr);
@@ -78,7 +85,7 @@ namespace {
                     wCode += INTERNET_ERROR_BASE; // because the HRESULT_CODE doesn't (at least sometimes) include the INTERNET_ERROR_BASE
                     // included in the constants below...
                 }
-                return system_category ().message (HRESULT_CODE (wCode));
+                return Win32_error_category ().message (HRESULT_CODE (wCode));
             }
             char buf[1024];
             (void)::snprintf (buf, std::size (buf), "HRESULT error code: 0x%x", hr);

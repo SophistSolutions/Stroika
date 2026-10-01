@@ -12,6 +12,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Linguistics/MessageUtilities.h"
 
@@ -127,6 +128,20 @@ NestedException::NestedException (const exception_ptr& basedOnException)
  ***************** Private_::SystemErrorExceptionPrivate_ ***********************
  ********************************************************************************
  */
+namespace {
+    // the category the OS's own error numbers arrive in: on Windows Stroika tags them with Win32_error_category (), but the
+    // standard library (and others) still use system_category ()
+    bool IsNativeSystemCategory_ (const error_category& c) noexcept
+    {
+#if qStroika_Platform_Windows
+        if (c == Execution::Platform::Windows::Win32_error_category ()) {
+            return true;
+        }
+#endif
+        return c == system_category ();
+    }
+}
+
 #if qStroika_Platform_Windows
 
 // for InternetGetConnectedState
@@ -136,7 +151,7 @@ NestedException::NestedException (const exception_ptr& basedOnException)
 
 optional<String> TryToOverrideDefaultWindowsSystemCategoryMessage_ (error_code errCode)
 {
-    if (errCode.category () == system_category ()) {
+    if (IsNativeSystemCategory_ (errCode.category ())) {
         switch (errCode.value ()) {
             case ERROR_NOT_ENOUGH_MEMORY:
                 return "Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)"sv;
@@ -208,7 +223,7 @@ Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombined
     if (errCode.category () == generic_category ()) {
         sb += "{{errno: {}}}"_f(errCode.value ());
     }
-    else if (errCode.category () == system_category ()) {
+    else if (IsNativeSystemCategory_ (errCode.category ())) {
 #if qStroika_Platform_POSIX
         sb += "{{errno: {}}}"_f(errCode.value ());
 #elif qStroika_Platform_Windows
@@ -223,28 +238,11 @@ Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombined
     return sb;
 }
 
-void Execution::Private_::SystemErrorExceptionPrivate_::ThrowTranslatedExceptionIfNeeded_ (error_code errCode, const String* message)
+void Execution::Private_::SystemErrorExceptionPrivate_::ThrowTranslatedExceptionIfNeeded_ (error_code errCode, [[maybe_unused]] const String* message)
 {
-#if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
-    // Normalize FIRST, so every condition test below - and the caller's own e.code () == errc::timed_out -
-    // sees a code which actually compares equal. MSVC's system_category does not map these onto
-    // errc::timed_out, so without this a genuine timeout satisfies no timeout test at all.
-    // The raw Windows value is dropped from code (), but survives in the message text; and unlike the
-    // pre-v3.0d25 workaround (which threw a shared static TimeOutException) a caller-supplied message
-    // survives too.
-    if (errCode.category () == system_category ()) {
-        switch (errCode.value ()) {
-            case WAIT_TIMEOUT:           // errc::timed_out
-            case ERROR_INTERNET_TIMEOUT: // ""
-                if (message == nullptr) {
-                    ThrowError (make_error_code (errc::timed_out));
-                }
-                else {
-                    ThrowError (make_error_code (errc::timed_out), *message);
-                }
-        }
-    }
-#endif
+    // Windows codes are NOT rewritten here (as WAIT_TIMEOUT / ERROR_INTERNET_TIMEOUT once were): the conditions Microsoft's
+    // system_category leaves out come from Win32_error_category (), so code () keeps the raw value.
+    // @see https://github.com/SophistSolutions/Stroika/issues/1192
     if (errCode == errc::not_enough_memory) {
         // Deliberately lossy - 'message' and the Activity stack are both dropped. @see ThrowError () for why
         // enriching this one is a bad trade.
@@ -252,12 +250,10 @@ void Execution::Private_::SystemErrorExceptionPrivate_::ThrowTranslatedException
     }
     // double check the compare-with-conditions code working the way I think its supposed to...  matching multiple error codes -- LGP 2019-02-04
 #if qStroika_Platform_Windows && qStroika_Foundation_Debug_AssertionsChecked
-    if (errCode.category () == system_category ()) {
+    if (IsNativeSystemCategory_ (errCode.category ())) {
         switch (errCode.value ()) {
             case ERROR_NOT_ENOUGH_MEMORY: // errc::not_enough_memory
             case ERROR_OUTOFMEMORY:       // ""
-            case WAIT_TIMEOUT:            // errc::timed_out
-            case ERROR_INTERNET_TIMEOUT:  // ""
                 AssertNotReached (); // should have been caught above in if (ec == errc::... checks) - so thats not working - maybe need to add this switch or debug
                 break;
         }
@@ -290,18 +286,25 @@ optional<error_code> Execution::GetAssociatedErrorCode (const exception_ptr& e) 
  */
 bool Execution::IsA (const error_code& ec, error_condition cond) noexcept
 {
+#if qStroika_Platform_Windows
+    // A Win32 code in std::system_category () - from the standard library, or another library - is asked as Stroika's
+    // Win32_error_category (), so it gets the conditions Microsoft's leaves out. @see Execution::Platform::Windows::Win32_error_category
+    if (ec.category () == system_category ()) {
+        return error_code{ec.value (), Execution::Platform::Windows::Win32_error_category ()} == cond;
+    }
+#endif
     return ec == cond;
 }
 
 bool Execution::IsA (const system_error& e, error_condition cond) noexcept
 {
-    return e.code () == cond;
+    return IsA (e.code (), cond);
 }
 
 bool Execution::IsA (const exception& e, error_condition cond) noexcept
 {
     if (const system_error* se = dynamic_cast<const system_error*> (&e)) {
-        return se->code () == cond;
+        return IsA (se->code (), cond);
     }
     return false;
 }
@@ -315,5 +318,114 @@ bool Execution::IsA (const exception_ptr& e, error_condition cond) noexcept
         return false;
     }
     optional<error_code> ec = GetAssociatedErrorCode (e);
-    return ec.has_value () and *ec == cond;
+    return ec.has_value () and IsA (*ec, cond);
 }
+
+#if qStroika_Platform_Windows
+/*
+ ********************************************************************************
+ *************** Execution::Platform::Windows::Win32_error_category *************
+ ********************************************************************************
+ */
+namespace {
+    // Win32 codes std::system_category () maps onto no condition (or not onto all the ones they mean). A code may be listed more
+    // than once: its FIRST row is its default_error_condition (). @see Win32_error_category and
+    // https://github.com/SophistSolutions/Stroika/issues/1192 (and the earlier report to Microsoft about their _Winerror_map,
+    // https://developercommunity.visualstudio.com/content/problem/484206/const-int-posv-winerror-map-errval-should-probably.html)
+    struct Win32ConditionMapping_ {
+        int  fWin32;
+        errc fCondition;
+    };
+    constexpr Win32ConditionMapping_ kWin32ConditionMappings_[] = {
+        // winerror.h's own network errors - std maps only their Winsock (WSAE*) twins
+        {ERROR_NETNAME_DELETED, errc::connection_reset},
+        {ERROR_NETNAME_DELETED, errc::connection_aborted},
+        {ERROR_CANCELLED, errc::operation_canceled},
+        {ERROR_CONNECTION_REFUSED, errc::connection_refused},
+        {ERROR_NETWORK_UNREACHABLE, errc::network_unreachable},
+        {ERROR_HOST_UNREACHABLE, errc::host_unreachable},
+        {ERROR_CONNECTION_ABORTED, errc::connection_aborted},
+
+        // WinINet - WinHTTP's ERROR_WINHTTP_* share these numbers (ERROR_WINHTTP_CONNECTION_ERROR is "reset or terminated")
+        {ERROR_INTERNET_TIMEOUT, errc::timed_out},
+        {ERROR_INTERNET_NAME_NOT_RESOLVED, errc::no_such_device}, // as DNS maps EAI_NONAME - there is no 'name not found' errc
+        {ERROR_INTERNET_CANNOT_CONNECT, errc::connection_refused},
+        {ERROR_INTERNET_CONNECTION_ABORTED, errc::connection_aborted},
+        {ERROR_INTERNET_CONNECTION_ABORTED, errc::connection_reset},
+        {ERROR_INTERNET_CONNECTION_RESET, errc::connection_reset},
+        {ERROR_HTTP_INVALID_SERVER_RESPONSE, errc::protocol_error},
+    };
+
+    // WinINet / WinHTTP keep their message text in their own module, so FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM) - all
+    // std's system_category ().message () uses - says "unknown error" for them
+    optional<string> GetModuleMessage_ (int ev)
+    {
+        static const HMODULE kModules_[] = {
+            ::LoadLibraryExW (L"winhttp.dll", nullptr, LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_SEARCH_SYSTEM32),
+            ::LoadLibraryExW (L"wininet.dll", nullptr, LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_SEARCH_SYSTEM32),
+        }; // loaded once (as data), and never freed - like the category itself
+        for (HMODULE m : kModules_) {
+            if (m == nullptr) {
+                continue;
+            }
+            char*  buf = nullptr;
+            DWORD  n   = ::FormatMessageA (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_IGNORE_INSERTS, m,
+                                           static_cast<DWORD> (ev), 0, reinterpret_cast<char*> (&buf), 0, nullptr);
+            string result{buf == nullptr ? string{} : string{buf, n}};
+            ::LocalFree (buf);
+            while (not result.empty () and (result.back () == '\n' or result.back () == '\r' or result.back () == ' ')) {
+                result.pop_back ();
+            }
+            if (not result.empty ()) {
+                return result;
+            }
+        }
+        return nullopt;
+    }
+
+    class Win32_error_category_ : public error_category {
+    public:
+        virtual const char* name () const noexcept override
+        {
+            return system_category ().name (); // same name as Microsoft's - @see Win32_error_category
+        }
+        virtual string message (int ev) const override
+        {
+            if (INTERNET_ERROR_BASE <= ev and ev < INTERNET_ERROR_BASE + 1000) { // the WinINet / WinHTTP block (WinHTTP runs past INTERNET_ERROR_LAST)
+                if (optional<string> m = GetModuleMessage_ (ev)) {
+                    return *m;
+                }
+            }
+            return system_category ().message (ev);
+        }
+        virtual error_condition default_error_condition (int ev) const noexcept override
+        {
+            for (const Win32ConditionMapping_& i : kWin32ConditionMappings_) {
+                if (i.fWin32 == ev and ev != 0) {
+                    return make_error_condition (i.fCondition);
+                }
+            }
+            return system_category ().default_error_condition (ev);
+        }
+        virtual bool equivalent (int ev, const error_condition& cond) const noexcept override
+        {
+            for (const Win32ConditionMapping_& i : kWin32ConditionMappings_) {
+                if (i.fWin32 == ev and ev != 0 and make_error_condition (i.fCondition) == cond) {
+                    return true;
+                }
+            }
+            return system_category ().equivalent (ev, cond);
+        }
+    };
+}
+
+const error_category& Execution::Platform::Windows::Win32_error_category () noexcept
+{
+    return Common::Immortalize<Win32_error_category_> ();
+}
+
+bool Execution::Platform::Windows::IsWin32Error (const error_code& ec, int win32Err) noexcept
+{
+    return ec.value () == win32Err and (ec.category () == Win32_error_category () or ec.category () == system_category ());
+}
+#endif

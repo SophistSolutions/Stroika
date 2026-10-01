@@ -777,7 +777,7 @@ namespace {
             wirelessInfo2Merge = GetInterfaces_Windows_WirelessInfo_ ();
         }
         catch (const std::system_error& e) {
-            if (e.code () == error_code{ERROR_SERVICE_NOT_ACTIVE, system_category ()}) {
+            if (Execution::Platform::Windows::IsWin32Error (e.code (), ERROR_SERVICE_NOT_ACTIVE)) {
                 // this just means no wireless services active, so leave wirelessInfo2Merge empty
             }
             else {

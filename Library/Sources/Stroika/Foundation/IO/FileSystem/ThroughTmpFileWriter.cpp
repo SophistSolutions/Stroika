@@ -132,7 +132,8 @@ void ThroughTmpFileWriter::Commit ()
     catch (const system_error& we) {
         // Sadly this happens pretty often on Windoze, due to virus scanners. But when that is the cause, retrying
         // a little later should do the trick --LGP 2026-02-07
-        if (we.code () == error_code{ERROR_SHARING_VIOLATION, system_category ()} or we.code () == error_code{ERROR_ACCESS_DENIED, system_category ()}) {
+        if (Execution::Platform::Windows::IsWin32Error (we.code (), ERROR_SHARING_VIOLATION) or
+            Execution::Platform::Windows::IsWin32Error (we.code (), ERROR_ACCESS_DENIED)) {
             auto retryLoop = [&] () {
                 if (fRetryOnSharingViolationFor != kRetryOnSharingViolationFor_Disable) {
                     DbgTrace ("ThroughTmpFileWriter::Commit: {}, so retrying for {}"_f,

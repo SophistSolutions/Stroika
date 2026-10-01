@@ -65,7 +65,11 @@ void Exception::ThrowSystemErrNo (int sysErr, const path& p1, const path& p2)
     Debug::TraceContextBumper ctx{"IO::FileSystem::Exception::ThrowSystemErrNo", "sysErr={}, p1={}, p2={}"_f, sysErr, p1, p2};
 #endif
     Require (sysErr != 0);
+#if qStroika_Platform_Windows
+    error_code ec{sysErr, Execution::Platform::Windows::Win32_error_category ()};
+#else
     error_code ec{sysErr, system_category ()};
+#endif
     Throw (Exception{ec, p1, p2});
 }
 

@@ -2122,36 +2122,6 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 
 #endif
 
-/*
- * SEE https://developercommunity.visualstudio.com/content/problem/484206/const-int-posv-winerror-map-errval-should-probably.html
- *
- *  to test if fixed, run
- *      Test37 (execution::Exceptions) on windows and look in tracelog for 
- *          FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
- * 
- * FAILED: RegressionTestFailure; (error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out);;C:\Sandbox\Stroika\DevRoot\Tests\36\Test.cpp: 218
- *     [36] Foundation::Execution::Exceptions - ../Builds/Debug/Tests/Test36.exe --gtest_brief
-FAILED: Assert; Not Reached;Stroika::Foundation::Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_;C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Exceptions.cpp: 187
-         C:\Sandbox\Stroika\DevRoot\Tests\36\Test.cpp(216): error: Value of: (error_code{(12000 + 2), system_category ()} == errc::timed_out)           Actual: false         Expected: true
- */
-#ifndef qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
-
-#if defined(_MSC_VER)
-// Verified still broken in _MSC_VER_2k22_17Pt9_
-// Verified still broken in _MSC_VER_2k22_17Pt10_
-// Verified still broken in _MSC_VER_2k22_17Pt11_
-// Verified still broken in _MSC_VER_2k22_17Pt12_
-// Verified still broken in _MSC_VER_2k22_17Pt13_
-// Verified still broken in _MSC_VER_2k22_17Pt14_
-// Verified still broken in _MSC_VER_v145_1951_
-#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy                                                                           \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
-#else
-#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy 0
-#endif
-
-#endif
-
 /**
  // _mkgmtime64 not portable, but seems to be defined everywhere I've tried - add a qSupported if/when needed
  https://msdn.microsoft.com/en-us/library/2093ets1.aspx
