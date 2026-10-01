@@ -1,8 +1,8 @@
 ﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#ifndef _Stroia_Foundation_Execution_Exceptions_h_
-#define _Stroia_Foundation_Execution_Exceptions_h_ 1
+#ifndef _Stroika_Foundation_Execution_Exceptions_h_
+#define _Stroika_Foundation_Execution_Exceptions_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -477,7 +477,7 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     /**
-     *  \brief throw a SystemErrorException with the given error_code, applying the standard type promotions documented below.
+     *  \brief throw a SystemErrorException with the given error_code - or std::bad_alloc for errc::not_enough_memory, the one type promotion documented below.
      *
      *  \par This throws EITHER a SystemErrorException (a subclass of system_error), OR std::bad_alloc.
      *
@@ -535,16 +535,16 @@ namespace Stroika::Foundation::Execution {
      *      to catch by its own standard type. Folding it in as just another error_code would be more uniform but
      *      would fight decades of convention, so it is called out separately instead.
      *
-     *  \par Guaranteed type promotions
+     *  \par The one type promotion
      *      The rule is deliberately narrow: **promote only to a type the C++ standard itself already defines for
-     *      that condition.** That yields exactly one permanent entry. The second is transitional.
+     *      that condition.** That yields exactly one entry:
      *
-     *      | condition                 | thrown type                   | still a SystemErrorException? |
-     *      |---------------------------|-------------------------------|-------------------------------|
-     *      | `errc::not_enough_memory` | `std::bad_alloc`              | **no**                        |
-     *      | `errc::timed_out`         | `Execution::TimeOutException` | yes - **DEPRECATED**          |
+     *      | condition                 | thrown type      | still a SystemErrorException? |
+     *      |---------------------------|------------------|-------------------------------|
+     *      | `errc::not_enough_memory` | `std::bad_alloc` | **no**                        |
      *
-     *      Every other error_code throws a plain SystemErrorException.
+     *      Every other error_code - errc::timed_out included - throws a plain SystemErrorException: test a
+     *      timeout with `Execution::IsA (e, errc::timed_out)`.
      *
      *  \par What is preserved, and what is not
      *      **ThrowError () preserves what the error MEANS. It does not promise to preserve how that meaning is
@@ -595,15 +595,6 @@ namespace Stroika::Foundation::Execution {
      *      "why this condition and not permission_denied, or connection_refused?" - and the answer is that C++
      *      defines std::bad_alloc and defines no counterpart for the others. Nothing is invented.
      *
-     *  \note   ***DEPRECATED since v3.0d25: the errc::timed_out row.*** @see TimeOutException. It is retained
-     *          purely so existing `catch (const TimeOutException&)` clauses keep matching; nothing in Stroika
-     *          names that type any more. Write `Execution::IsA (e, errc::timed_out)` instead - that also catches
-     *          timeouts raised OUTSIDE Stroika, which catching by type never did (libcurl's
-     *          CURLE_OPERATION_TIMEDOUT being the case that forced the issue).
-     *
-     *  \note   That row and the TimeOutException class must be removed TOGETHER. Dropping the promotion while
-     *          leaving the class would leave every such catch clause still compiling, and silently never firing -
-     *          strictly worse than the compile error you get when both go.
      *  \par How Stroika treats errc::timed_out, and what its default message says
      *      **Stroika treats errc::timed_out as the generic "the time limit for this operation expired"
      *      condition** - nothing connection-specific. Every Stroika timeout answers to it: a Synchronized<>
@@ -860,4 +851,4 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
  */
 #include "Exceptions.inl"
 
-#endif /*_Stroia_Foundation_Execution_Exceptions_h_*/
+#endif /*_Stroika_Foundation_Execution_Exceptions_h_*/

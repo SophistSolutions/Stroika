@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#ifndef _Stroia_Foundation_Execution_DLLSupport_h_
-#define _Stroia_Foundation_Execution_DLLSupport_h_ 1
+#ifndef _Stroika_Foundation_Execution_DLLSupport_h_
+#define _Stroika_Foundation_Execution_DLLSupport_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -84,4 +84,4 @@ namespace Stroika::Foundation::Execution {
  */
 #include "DLLSupport.inl"
 
-#endif /*_Stroia_Foundation_Execution_DLLSupport_h_*/
+#endif /*_Stroika_Foundation_Execution_DLLSupport_h_*/

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#ifndef _Stroia_Foundation_Execution_Throw_h_
-#define _Stroia_Foundation_Execution_Throw_h_ 1
+#ifndef _Stroika_Foundation_Execution_Throw_h_
+#define _Stroika_Foundation_Execution_Throw_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -82,17 +82,16 @@ namespace Stroika::Foundation::Execution {
      *                  did not specify one - see below - which adds to what the exception reports without
      *                  changing what it is.)
      *
-     *          The consequence is that constructing a SystemErrorException yourself and throwing it here gets
-     *          you NONE of the promotions documented at @see Execution::ThrowError - so a code whose condition
-     *          is errc::not_enough_memory arrives as a SystemErrorException rather than std::bad_alloc, and a
+     *          The consequence is that constructing a SystemErrorException yourself and throwing it here skips
+     *          the promotion documented at @see Execution::ThrowError - so a code whose condition is
+     *          errc::not_enough_memory arrives as a SystemErrorException rather than std::bad_alloc, and a
      *          caller who wrote catch (const bad_alloc&) does not see it.
      *
      *          Doing that is perfectly legal, and occasionally what you want. But it is almost never what you
-     *          want when the error_code came from the OS or from a library with its own error_category: there,
-     *          you want ThrowError (ec). This is not a hypothetical - Connection_libcurl did exactly the wrong
-     *          one of these, it read correctly, and the resulting missed timeouts were not diagnosed for years.
+     *          want when the error_code came from the OS or from a library with its own error_category
+     *          (libcurl's CURLE_OUT_OF_MEMORY, say): there, you want ThrowError (ec).
      *          **If you have an error_code, reach for ThrowError () first, and use Throw () only if you have a
-     *          reason to want the promotions suppressed.**
+     *          reason to want the promotion suppressed.**
      *
      *  \note   ***Changed in Stroika v3.0d25*** Throw () stamps the CURRENT Activity stack into the exception -
      *          but only when the exception did not specify one (GetActivities () == nullopt). It imbues a COPY,
@@ -192,4 +191,4 @@ namespace Stroika::Foundation::Execution {
  */
 #include "Throw.inl"
 
-#endif /*_Stroia_Foundation_Execution_Throw_h_*/
+#endif /*_Stroika_Foundation_Execution_Throw_h_*/

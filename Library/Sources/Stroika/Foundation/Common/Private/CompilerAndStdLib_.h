@@ -2757,8 +2757,6 @@ TRIED alignas to fix on the array but no luck
 #define Stroika_Foundation_Common_STRUCT_PACKED(...) __VA_ARGS__ __attribute__ ((__packed__))
 #endif
 
-#endif /*defined(__cplusplus)*/
-
 /*
  * DEFINING #define PSTL_USAGE_WARNINGS 0
 #define _PSTL_USAGE_WARNINGS 0
@@ -2769,5 +2767,7 @@ TRIED alignas to fix on the array but no luck
 #undef _PSTL_PRAGMA_MESSAGE
 #define _PSTL_PRAGMA_MESSAGE(x)
 #endif
+
+#endif /*defined(__cplusplus)*/
 
 #endif /*_Stroika_Foundation_Common_Private_CompilerAndStdLib_h_*/

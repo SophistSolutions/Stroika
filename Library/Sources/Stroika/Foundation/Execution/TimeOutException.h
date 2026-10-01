@@ -47,6 +47,10 @@ namespace Stroika::Foundation::Execution {
      *          }
      *      \endcode
      *      That also matches timeouts raised outside Stroika, which catching by type never did.
+     *
+     *  \note   Nothing throws this type: ThrowError (errc::timed_out) throws a plain SystemErrorException. So a
+     *          `catch (const TimeOutException&)` never fires - its deprecation warning is the cue to replace it
+     *          with the test above.
      */
     class [[deprecated ("Since Stroika v3.0d25 - catch (const system_error& e) and test Execution::IsA (e, errc::timed_out)")]]
     TimeOutException : public Execution::SystemErrorException {

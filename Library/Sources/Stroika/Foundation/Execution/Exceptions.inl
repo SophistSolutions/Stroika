@@ -3,7 +3,12 @@
  */
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define   Stroika_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+#if Stroika_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#endif
 
 namespace Stroika::Foundation::Execution {
 
@@ -153,8 +158,9 @@ namespace Stroika::Foundation::Execution {
      */
     inline void ThrowPOSIXErrNo (errno_t errNo)
     {
-#if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx{"Execution::ThrowPOSIXErrNo", "{}"_f, errNo};
+#if Stroika_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
+        using namespace Characters::Literals;
+        Debug::TraceContextBumper tctx{"Execution::ThrowPOSIXErrNo", "{}"_f, errNo};
 #endif
         Require (errNo != 0);
 #if qStroika_Platform_POSIX
@@ -186,8 +192,9 @@ namespace Stroika::Foundation::Execution {
      */
     inline void ThrowSystemErrNo (int sysErr)
     {
-#if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx{"Execution::ThrowSystemErrNo", "{}"_f, sysErr};
+#if Stroika_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
+        using namespace Characters::Literals;
+        Debug::TraceContextBumper tctx{"Execution::ThrowSystemErrNo", "{}"_f, sysErr};
 #endif
         Require (sysErr != 0);
 #if qStroika_Platform_Windows

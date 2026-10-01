@@ -8,12 +8,10 @@
 
 #include <shellapi.h>
 #include <winerror.h>
-#include <wininet.h> // for error codes
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Common.h"
@@ -31,68 +29,6 @@ using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Platform;
 using namespace Stroika::Foundation::Execution::Platform::Windows;
-
-// for InternetGetConnectedState
-#if _MSC_VER
-#pragma comment(lib, "Wininet.lib")
-#endif
-
-namespace {
-    inline SDKString Win32Error2String_ (DWORD win32Err)
-    {
-        switch (win32Err) {
-            case ERROR_NOT_ENOUGH_MEMORY:
-                return SDKSTR ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
-            case ERROR_OUTOFMEMORY:
-                return SDKSTR ("Not enough memory to complete that operation (ERROR_OUTOFMEMORY)");
-            case WSAEADDRNOTAVAIL:
-                return SDKSTR ("Socket address not available (WSAEADDRNOTAVAIL)");
-        }
-        if (INTERNET_ERROR_BASE <= win32Err and win32Err < INTERNET_ERROR_BASE + INTERNET_ERROR_LAST) {
-            switch (win32Err) {
-                case ERROR_INTERNET_INVALID_URL:
-                    return SDKSTR ("ERROR_INTERNET_INVALID_URL");
-                case ERROR_INTERNET_CANNOT_CONNECT:
-                    return SDKSTR ("Failed to connect to internet URL (ERROR_INTERNET_CANNOT_CONNECT)");
-                case ERROR_INTERNET_NAME_NOT_RESOLVED:
-                    return SDKSTR ("ERROR_INTERNET_NAME_NOT_RESOLVED");
-                case ERROR_INTERNET_INCORRECT_HANDLE_STATE:
-                    return SDKSTR ("ERROR_INTERNET_INCORRECT_HANDLE_STATE");
-                case ERROR_INTERNET_TIMEOUT:
-                    return SDKSTR ("Operation timed out (ERROR_INTERNET_TIMEOUT)");
-                case ERROR_INTERNET_CONNECTION_ABORTED:
-                    return SDKSTR ("ERROR_INTERNET_CONNECTION_ABORTED");
-                case ERROR_INTERNET_CONNECTION_RESET:
-                    return SDKSTR ("ERROR_INTERNET_CONNECTION_RESET");
-                case ERROR_HTTP_INVALID_SERVER_RESPONSE:
-                    return SDKSTR ("Invalid Server Response (ERROR_HTTP_INVALID_SERVER_RESPONSE)");
-                case ERROR_INTERNET_PROTOCOL_NOT_FOUND: {
-                    DWORD r = 0;
-                    if (::InternetGetConnectedState (&r, 0) and (r & INTERNET_CONNECTION_OFFLINE) == 0) {
-                        return SDKSTR ("ERROR_INTERNET_PROTOCOL_NOT_FOUND");
-                    }
-                    else {
-                        return SDKSTR ("ERROR_INTERNET_PROTOCOL_NOT_FOUND (offline mode)");
-                    }
-                }
-                default: {
-                    TCHAR buf[1024];
-                    (void)::_stprintf_s (buf, SDKSTR ("INTERNET error code: %d"), win32Err);
-                    return buf;
-                }
-            }
-        }
-        TCHAR* lpMsgBuf = nullptr;
-        if (not ::FormatMessage (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr,
-                                 win32Err, MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                                 reinterpret_cast<TCHAR*> (&lpMsgBuf), 0, nullptr)) {
-            return CString::Format (SDKSTR ("Win32 error# %d"), static_cast<DWORD> (win32Err));
-        }
-        SDKString result = lpMsgBuf;
-        ::LocalFree (lpMsgBuf);
-        return CString::Trim (result);
-    }
-}
 
 /*
  ********************************************************************************
@@ -116,7 +52,7 @@ void Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
             case ERROR_PATH_NOT_FOUND:
                 ThrowSystemErrNo (ERROR_PATH_NOT_FOUND); //  The specified path was not found.
             case ERROR_BAD_FORMAT:
-                ThrowSystemErrNo (ERROR_BAD_FORMAT); //  The .exe file is invalid (non-Microsoft Win32� .exe or error in .exe image).
+                ThrowSystemErrNo (ERROR_BAD_FORMAT); //  The .exe file is invalid (non-Microsoft Win32 .exe or error in .exe image).
             case SE_ERR_ACCESSDENIED:
                 ThrowError (error_code{E_ACCESSDENIED, HRESULT_error_category ()}); //  The operating system denied access to the specified file.
             case SE_ERR_ASSOCINCOMPLETE:
