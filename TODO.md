@@ -117,23 +117,10 @@ Generally will track stuff here between releases
      Xerces globals, `symaddr.exe EXE SYMBOL` + `dumpbin /disasm /range:` shows the code; the failing copy is kept
      there to compare. Candidate workaround: build Xerces without `-GL` under MSVC.
 
-   - **`GetInterfaces_POSIX_` (IO/Network/Interface.cpp) - SIOCGIFCONF is the wrong API; decide the fix**
-     (#1177 bucket 1, the last live bug; parked 2026-09-26, no code changed). `qMacUBSanitizerifreqAlignmentIssue_Buggy`
-     only silences UBSan on the misaligned `const ifreq*` walk - macOS packs the records (`IFNAMSIZ + sa_len`), so
-     most are not 8-aligned. Probing on lewis-Mac2 / stroika-dev-2604 found that is the least of it:
-       - macOS: all 6 IPv6 addresses come back as GARBAGE (`::1` -> `::ee:ce6f:100:0`) - `SocketAddress{i->ifr_addr}`
-         copies `sizeof (sockaddr)` = 16 of `sockaddr_in6`'s 28 bytes, and the rest is uninitialized stack
-       - macOS: even the whole sockaddr is wrong for link-local - the kernel embeds the scope id in the address
-         (`fe80:6::...` for `fe80::...%en0`); `getifaddrs` undoes that, SIOCGIFCONF does not
-       - macOS: each IPv6 CIDR gets the interface's IPv4 prefix - `getNetMaskAsPrefix` uses SIOCGIFNETMASK (IPv4 only)
-       - Linux: SIOCGIFCONF returns only AF_INET, so Stroika reports NO IPv6 addresses at all (getifaddrs has `lo ::1`)
-     Options: (a) replace the walk with `getifaddrs` (aligned, full IPv6, scope fixed, `ifa_netmask` replaces the
-     SIOCGIFNETMASK lambda; behavior change + UPGRADE NOTE: Linux gains IPv6 and no-IPv4 interfaces) - recommended;
-     (b) alignment only (memcpy each record into an aligned `ifreq`: 8 UBSan reports -> 0, same 24 records) + file the
-     IPv6 bug; (c) patch SIOCGIFCONF in place (full copy + manual scope fixup + SIOCGIFNETMASK_IN6; Linux still no
-     IPv6). Test-first for (a)/(c): Tests/43 `Test3_NetworkInterfaceList_` only DbgTraces - make it check every reported
-     address is one `getifaddrs` reports for that interface (fails on macOS today). Probes: C:/Sandbox/claude/skips/
-     ifreq.cpp (alignment), ifaddr.cpp (IPv6 vs getifaddrs), ifconf-linux.cpp.
+   - **`Network::GetPrimaryInternetAddress ()` (IO/Network/LinkMonitor.cpp) - the same SIOCGIFCONF misuse that
+     `GetInterfaces_POSIX_` had** (that one now uses `getifaddrs`). Its POSIX path indexes `ifreqs[i]` as a fixed-size array
+     and never checks `sa_family` - on macOS the records are variable-length and the first are AF_LINK, so the "primary"
+     address is very likely garbage there (not yet measured). Same fix: walk `getifaddrs`.
 
   - DO PLANNING for CMAKE change
     - discuss staging

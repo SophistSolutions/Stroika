@@ -4,12 +4,22 @@
 //  TEST    Foundation::IO::Network
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <cstring>
 #include <iostream>
 
+#if qStroika_Platform_POSIX
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#endif
+
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
@@ -488,12 +498,105 @@ GTEST_TEST (Foundation_IO_Network, Test2_InternetAddress_)
     }
 }
 
+#if qStroika_Platform_POSIX
+namespace {
+    namespace Test3_NetworkInterfaceList_Private_ {
+        // what getifaddrs () reports - the system's own answer, which SystemInterfacesMgr::GetAll () must agree with
+        struct IFAddr_ {
+            Characters::String     fInterface;
+            InternetAddress        fAddress;
+            optional<unsigned int> fPrefixLength;
+        };
+        // the prefix length a netmask encodes - read as the ADDRESS's family (macOS can leave the netmask's own sa_family 0,
+        // and its sa_len short)
+        optional<unsigned int> PrefixLength_ (const sockaddr* netmask, int family)
+        {
+            if (netmask == nullptr) {
+                return nullopt;
+            }
+            sockaddr_storage ss{};
+#if qStroika_Platform_MacOS
+            ::memcpy (&ss, netmask, min<size_t> (netmask->sa_len, sizeof (ss)));
+#else
+            ::memcpy (&ss, netmask, family == AF_INET ? sizeof (sockaddr_in) : sizeof (sockaddr_in6));
+#endif
+            const uint8_t* p = family == AF_INET ? reinterpret_cast<const uint8_t*> (&reinterpret_cast<const sockaddr_in*> (&ss)->sin_addr)
+                                                 : reinterpret_cast<const uint8_t*> (&reinterpret_cast<const sockaddr_in6*> (&ss)->sin6_addr);
+            size_t       n    = family == AF_INET ? 4 : 16;
+            unsigned int bits = 0;
+            for (size_t i = 0; i < n; ++i) {
+                for (int b = 7; b >= 0; --b) {
+                    if (not(p[i] & (1 << b))) {
+                        return bits;
+                    }
+                    ++bits;
+                }
+            }
+            return bits;
+        }
+        // every interface name getifaddrs () lists (with or without an address), and every IPv4/IPv6 address on each
+        pair<Containers::Set<Characters::String>, Containers::Sequence<IFAddr_>> GetIFAddrs_ ()
+        {
+            ifaddrs* ifa = nullptr;
+            EXPECT_EQ (::getifaddrs (&ifa), 0);
+            [[maybe_unused]] auto&&             cleanup = Execution::Finally ([ifa] () noexcept { ::freeifaddrs (ifa); });
+            Containers::Set<Characters::String> names;
+            Containers::Sequence<IFAddr_>       addrs;
+            for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
+                Characters::String name = Characters::String::FromSDKString (p->ifa_name);
+                names.Add (name);
+                if (p->ifa_addr != nullptr and p->ifa_addr->sa_family == AF_INET) {
+                    sockaddr_in a{};
+                    ::memcpy (&a, p->ifa_addr, sizeof (a));
+                    addrs += IFAddr_{name, InternetAddress{a.sin_addr}, PrefixLength_ (p->ifa_netmask, AF_INET)};
+                }
+                else if (p->ifa_addr != nullptr and p->ifa_addr->sa_family == AF_INET6) {
+                    sockaddr_in6 a{};
+                    ::memcpy (&a, p->ifa_addr, sizeof (a));
+                    addrs += IFAddr_{name, InternetAddress{a.sin6_addr}, PrefixLength_ (p->ifa_netmask, AF_INET6)};
+                }
+            }
+            return {names, addrs};
+        }
+    }
+}
+#endif
+
 GTEST_TEST (Foundation_IO_Network, Test3_NetworkInterfaceList_)
 {
-    Debug::TraceContextBumper trcCtx{"Test3_NetworkInterfaceList_"};
-    for (Interface iFace : SystemInterfacesMgr{}.GetAll ()) {
+    Debug::TraceContextBumper       trcCtx{"Test3_NetworkInterfaceList_"};
+    Containers::Sequence<Interface> interfaces{SystemInterfacesMgr{}.GetAll ()};
+    for (const Interface& iFace : interfaces) {
         DbgTrace ("iFace: {}"_f, iFace);
     }
+#if qStroika_Platform_POSIX
+    using namespace Test3_NetworkInterfaceList_Private_;
+    auto find = [&] (const Characters::String& name) -> optional<Interface> {
+        return interfaces.First ([&] (const Interface& i) { return i.fInternalInterfaceID == name; });
+    };
+    auto [names, addrs] = GetIFAddrs_ ();
+    // every interface the system lists - including one with no address at all
+    for (const Characters::String& n : names) {
+        EXPECT_TRUE (find (n).has_value ()) << "missing interface " << n.AsNarrowSDKString ();
+    }
+    // every address it lists, on the same interface, with the same prefix
+    for (const IFAddr_& a : addrs) {
+        if (optional<Interface> i = find (a.fInterface)) {
+            EXPECT_TRUE (i->fBindings.fAddresses.Contains (a.fAddress))
+                << "missing address " << Characters::ToString (a.fAddress).AsNarrowSDKString () << " on " << a.fInterface.AsNarrowSDKString ();
+            EXPECT_TRUE (i->fBindings.fAddressRanges.Contains (CIDR{a.fAddress, a.fPrefixLength}))
+                << "missing or wrong range for " << Characters::ToString (CIDR{a.fAddress, a.fPrefixLength}).AsNarrowSDKString () << " on "
+                << a.fInterface.AsNarrowSDKString ();
+        }
+    }
+    // and nothing else - no address the system does not have (an IPv6 address read from too few bytes, say)
+    for (const Interface& i : interfaces) {
+        for (const InternetAddress& ia : i.fBindings.fAddresses) {
+            EXPECT_TRUE (addrs.Any ([&] (const IFAddr_& a) { return a.fInterface == i.fInternalInterfaceID and a.fAddress == ia; }))
+                << "bogus address " << Characters::ToString (ia).AsNarrowSDKString () << " on " << i.fInternalInterfaceID.AsNarrowSDKString ();
+        }
+    }
+#endif
 }
 
 GTEST_TEST (Foundation_IO_Network, Test4_DNS_)

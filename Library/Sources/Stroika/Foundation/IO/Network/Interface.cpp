@@ -4,11 +4,13 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdio>
+#include <cstring>
 #include <filesystem>
 #include <random>
 
 #if qStroika_Platform_POSIX
 #include <arpa/inet.h>
+#include <ifaddrs.h>
 #include <net/if_arp.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -185,25 +187,56 @@ String Interface::ToString () const
 #if qStroika_Platform_POSIX
 namespace {
 
-    // NB: On macos, we get:
-    //   Interface.cpp:210:71: runtime error: member access within misaligned address 0x70000a774c74 for type 'const ifreq', which requires 8 byte alignment
-    //        0x70000a774c74: note: pointer points here
-#if qMacUBSanitizerifreqAlignmentIssue_Buggy
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
-#endif
-        Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i, optional<Interface> prevInterfaceObject2Update)
+    // a getifaddrs () address, if it is an IPv4 or IPv6 one - copied into the right sockaddr type, so an IPv6 address is read whole
+    optional<InternetAddress> GetInternetAddress_ (const sockaddr* sa)
     {
-        Interface newInterface            = prevInterfaceObject2Update.value_or (Interface{});
-        newInterface.fInternalInterfaceID = String::FromSDKString (i->ifr_name);
+        if (sa != nullptr and sa->sa_family == AF_INET) {
+            sockaddr_in a{};
+            ::memcpy (&a, sa, sizeof (a));
+            return InternetAddress{a.sin_addr};
+        }
+        if (sa != nullptr and sa->sa_family == AF_INET6) {
+            sockaddr_in6 a{};
+            ::memcpy (&a, sa, sizeof (a));
+            return InternetAddress{a.sin6_addr};
+        }
+        return nullopt;
+    }
+
+    // the prefix length a getifaddrs () netmask encodes - read as the ADDRESS's family: macOS can leave the netmask's own
+    // sa_family 0, and its sa_len short of the whole sockaddr (the trailing zero bytes left off)
+    optional<unsigned int> GetPrefixLength_ (const sockaddr* netmask, int family)
+    {
+        if (netmask == nullptr) {
+            return nullopt;
+        }
+        sockaddr_storage ss{};
+#if qStroika_Platform_MacOS
+        ::memcpy (&ss, netmask, min<size_t> (netmask->sa_len, sizeof (ss)));
+#else
+        ::memcpy (&ss, netmask, family == AF_INET ? sizeof (sockaddr_in) : sizeof (sockaddr_in6));
+#endif
+        ss.ss_family                   = static_cast<sa_family_t> (family);
+        optional<InternetAddress> mask = GetInternetAddress_ (reinterpret_cast<const sockaddr*> (&ss));
+        if (not mask) {
+            return nullopt;
+        }
+        unsigned int prefixLen{};
+        for (bool b : mask->As<vector<bool>> ()) {
+            if (not b) {
+                break;
+            }
+            ++prefixLen;
+        }
+        return prefixLen;
+    }
+
+    // everything about one interface except its addresses - GetInterfaces_POSIX_ adds those, one per getifaddrs () entry
+    Interface GetInterfaces_POSIX_mkInterface_ (int sd, const char* name, unsigned int flags)
+    {
+        Interface newInterface;
+        newInterface.fInternalInterfaceID = String::FromSDKString (name);
         newInterface.fFriendlyName = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
-        auto getFlags              = [] (int sd, const char* name) {
-            ifreq ifreq{};
-            CString::Copy (ifreq.ifr_name, std::size (ifreq.ifr_name), name);
-            int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
-            Assert (r == 0 or errno == ENXIO); // ENXIO happens on MacOS sometimes, but never seen on linux
-            return r == 0 ? ifreq.ifr_flags : 0;
-        };
-        int flags = getFlags (sd, i->ifr_name);
 #if qStroika_Platform_Linux
         auto getWirelessFlag = [] (int sd, const char* name) -> bool {
 #if defined(SIOCGIWNAME)
@@ -220,7 +253,7 @@ namespace {
             newInterface.fType = Interface::Type::eLoopback;
         }
 #if qStroika_Platform_Linux
-        else if (getWirelessFlag (sd, i->ifr_name)) {
+        else if (getWirelessFlag (sd, name)) {
             newInterface.fType = Interface::Type::eWIFI;
         }
 #endif
@@ -231,42 +264,13 @@ namespace {
 
 #if qStroika_Platform_Linux
         {
-            ifreq tmp = *i;
+            ifreq tmp{};
+            CString::Copy (tmp.ifr_name, std::size (tmp.ifr_name), name);
             if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
                 newInterface.fHardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data),
                                                                reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
             }
         }
-#endif
-
-#if qStroika_Platform_Linux || qStroika_Platform_MacOS
-        auto getNetMaskAsPrefix = [] (int sd, const char* name) -> optional<unsigned int> {
-            ifreq ifreq{};
-            CString::Copy (ifreq.ifr_name, std::size (ifreq.ifr_name), name);
-            int r = ::ioctl (sd, SIOCGIFNETMASK, (char*)&ifreq);
-            // On MacOS this often fails, but I've never seen it fail on Linux
-            if (r == 0) {
-#if qStroika_Platform_Linux
-                SocketAddress sa{ifreq.ifr_netmask};
-#elif qStroika_Platform_MacOS
-                SocketAddress sa{ifreq.ifr_addr};
-#endif
-                if (sa.IsInternetAddress ()) {
-                    InternetAddress ia = sa.GetInternetAddress ();
-                    size_t          prefixLen{};
-                    for (bool b : ia.As<vector<bool>> ()) {
-                        if (b) {
-                            prefixLen++;
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    return prefixLen;
-                }
-            }
-            return nullopt;
-        };
 #endif
 
 #if qStroika_Platform_Linux || qStroika_Platform_MacOS
@@ -346,12 +350,8 @@ namespace {
             }
             return nullopt;
         };
-        if (auto gw = getDefaultGateway (i->ifr_name)) {
-            auto gws = newInterface.fGateways.value_or (Containers::Sequence<InternetAddress>{});
-            if (not gws.Contains (*gw)) {
-                gws += *gw;
-                newInterface.fGateways = gws;
-            }
+        if (auto gw = getDefaultGateway (name)) {
+            newInterface.fGateways = Containers::Sequence<InternetAddress>{*gw};
         }
 #endif
 
@@ -385,12 +385,12 @@ namespace {
                     return nullopt;
             }
         };
-        newInterface.fTransmitSpeedBaud    = getSpeed (sd, i->ifr_name);
+        newInterface.fTransmitSpeedBaud    = getSpeed (sd, name);
         newInterface.fReceiveLinkSpeedBaud = newInterface.fTransmitSpeedBaud;
 #endif
 
         {
-            Containers::Set<Interface::Status> status = Memory::NullCoalesce (newInterface.fStatus);
+            Containers::Set<Interface::Status> status;
             if (flags & IFF_RUNNING) {
                 // see https://stackoverflow.com/questions/11679514/what-is-the-difference-between-iff-up-and-iff-running for difference between IFF_UP and IFF_RUNNING
                 status.Add (Interface::Status::eConnected);
@@ -414,73 +414,54 @@ namespace {
                     }
                     return false; // unknown if this fails
                 };
-                if (checkCarrierKnownSet (i->ifr_name)) {
+                if (checkCarrierKnownSet (name)) {
                     status.Add (Interface::Status::eConnected);
                 }
 #endif
             }
             newInterface.fStatus = status;
         }
-        {
-            SocketAddress sa{i->ifr_addr};
-            if (sa.IsInternetAddress ()) {
-#if qStroika_Platform_Linux || qStroika_Platform_MacOS
-                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
-                newInterface.fBindings.fAddressRanges.Add (CIDR{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
-#else
-                newInterface.fBindings.fAddressRanges.Add (sa.GetInternetAddress ());
-#endif
-                newInterface.fBindings.fAddresses.Add (sa.GetInternetAddress ());
-            }
-        }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("GetInterfaces_POSIX_mkInterface_ returns {}"_f, newInterface);
 #endif
         return newInterface;
     }
-#if qMacUBSanitizerifreqAlignmentIssue_Buggy
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
-#endif
-        Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
+
+    Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
     {
-        KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
+        ifaddrs* ifa = nullptr;
+        if (::getifaddrs (&ifa) != 0) {
+            ThrowPOSIXErrNo ();
+        }
+        [[maybe_unused]] auto&& cleanupIfa = Execution::Finally ([ifa] () noexcept { ::freeifaddrs (ifa); });
 
-        ifreq  ifreqs[128]{};
-        ifconf ifconf{sizeof (ifreqs), {reinterpret_cast<char*> (ifreqs)}};
-
-        int sd = ::socket (PF_INET, SOCK_STREAM, 0);
+        int sd = ::socket (PF_INET, SOCK_STREAM, 0); // for the per-interface ioctls
         Assert (sd >= 0);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([sd] () noexcept { ::close (sd); });
 
-        [[maybe_unused]] int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
-        Assert (r == 0);
-
-        for (const ifreq* i = std::begin (ifreqs);
-             reinterpret_cast<const char*> (i) - reinterpret_cast<const char*> (std::begin (ifreqs)) < ifconf.ifc_len;) {
+        /*
+         *  getifaddrs () has one entry per (interface, address) - and for each interface one more, with no internet address
+         *  (AF_PACKET on Linux, AF_LINK on macOS) - so an interface with no IP address is listed too.
+         *
+         *  Not SIOCGIFCONF, which this used until v3.0d25: on Linux it reports IPv4 addresses only (so interfaces with
+         *  no IPv4 address went missing); on macOS its records are packed (misaligned), each holds just a struct sockaddr
+         *  (too small for an IPv6 address), and link-local addresses come with the scope id embedded in them.
+         */
+        KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
+        for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("interface: ifr_name={}; ifr_addr.sa_family = {}"_f, i->ifr_name, i->ifr_addr.sa_family);
+            DbgTrace ("interface: ifa_name={}; ifa_addr.sa_family = {}"_f, p->ifa_name, p->ifa_addr == nullptr ? -1 : p->ifa_addr->sa_family);
 #endif
-            String interfaceName{String::FromSDKString (i->ifr_name)};
-
-            // @todo - On MacOS - we get multiple copies of the same interface (one for each address family on that interface). Redo this code
-            // to be smarter about merging these
-            Interface newInterface = GetInterfaces_POSIX_mkInterface_ (sd, i, results.Lookup (interfaceName));
-
+            String              interfaceName = String::FromSDKString (p->ifa_name);
+            optional<Interface> prev          = results.Lookup (interfaceName);
+            Interface           newInterface  = prev ? *prev : GetInterfaces_POSIX_mkInterface_ (sd, p->ifa_name, p->ifa_flags);
+            if (optional<InternetAddress> ia = GetInternetAddress_ (p->ifa_addr)) {
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
+                newInterface.fBindings.fAddressRanges.Add (CIDR{*ia, GetPrefixLength_ (p->ifa_netmask, p->ifa_addr->sa_family)});
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
+                newInterface.fBindings.fAddresses.Add (*ia);
+            }
             results.Add (newInterface);
-
-            // On MacOS (at least) I needed to use IFNAMESIZ + addr.size - as suggested
-            // in https://gist.githubusercontent.com/OrangeTide/909204/raw/ed097cf0fc73eb0c44de1b26118f041a36424e3f/showif.c
-            //
-            // https://linux.die.net/man/7/netdevice strongly suggests ("array of structures" to treat as array - fixed offset per element
-            //
-            // We'll have to see what other OSes require... --LGP 2018-09-27
-#if qStroika_Platform_Linux
-            size_t len = sizeof (*i);
-#else
-            size_t len = IFNAMSIZ + i->ifr_addr.sa_len;
-#endif
-            i = reinterpret_cast<const ifreq*> (reinterpret_cast<const byte*> (i) + len);
         }
         return move (results);
     }

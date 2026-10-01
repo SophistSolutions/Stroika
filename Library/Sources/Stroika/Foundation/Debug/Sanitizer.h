@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Debug {
      *          #if qSomeBugFlag
      *              Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
      *          #endif
-     *              Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i) {...}
+     *              void WalkPackedRecords_ (const SomeRecord* r) {...}
      *      \endcode
      */
 #if defined(__has_attribute)
