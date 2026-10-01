@@ -539,6 +539,14 @@ VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep "^==" | wc -l`
 XW=`cat $TEST_OUT_FILE | grep -E -i "warning.*:" | wc -l`
 ### each test executable that skipped any (GTEST_SKIP, SkipTestPart) ends with '[  SKIPPED ] N test(s).' - sum the N's
 XS=`cat $TEST_OUT_FILE | grep -oE '\[  SKIPPED \] [0-9]+ tests?' | awk '{ s += $4 } END { print s + 0 }'`
+### a test executable built without googletest runs nothing, and says '[  SKIPPED ] every test' in place of its '[  PASSED  ]':
+### it accounts for one expected result (so it is not a missing one), but it is not counted as a success
+XSE=`cat $TEST_OUT_FILE | grep -F "[  SKIPPED ] every test" | wc -l`
+LESS_SKIPPED_=""
+if [ $XSE -gt 0 ]; then
+	TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($TOTAL_REGTESTS_EXPECTED_TO_PASS - $XSE))
+	LESS_SKIPPED_=" - $XSE skipped"
+fi
 
 if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
@@ -549,14 +557,18 @@ TOTAL_WARNINGS_EXPECTED=0
 TOTAL_WARNINGS_EXPECTED=$(expr $TOTAL_WARNINGS_EXPECTED + $(cat $TEST_OUT_FILE | grep fFailConnectionIfSSLCertificateInvalid | wc -l))
 
 if [ $X1 -eq $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
-	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
-	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
+	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS$LESS_SKIPPED_)"
+	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS$LESS_SKIPPED_)">>$TEST_OUT_FILE 2>&1
 else
-	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
-	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
+	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS$LESS_SKIPPED_)"
+	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS$LESS_SKIPPED_)">>$TEST_OUT_FILE 2>&1
 fi
 echo "   $XS tests skipped (see '[  SKIPPED ]' for which, and the 'Skipped' lines above them for why)"
 echo "   $XS tests skipped (see '[  SKIPPED ]' for which, and the 'Skipped' lines above them for why)">>$TEST_OUT_FILE 2>&1
+if [ $XSE -gt 0 ]; then
+	echo "   $XSE test executables skipped every test (built without googletest - see '[  SKIPPED ] every test')"
+	echo "   $XSE test executables skipped every test (built without googletest - see '[  SKIPPED ] every test')">>$TEST_OUT_FILE 2>&1
+fi
 echo "   $XF items failed (expected 0)"
 echo "   $XF items failed (expected 0)">>$TEST_OUT_FILE 2>&1
 echo "   $XE items error (expected 0)"
