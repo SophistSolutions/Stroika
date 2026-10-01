@@ -1812,7 +1812,10 @@ CommandLine.cpp:124:20: error: unable to find string literal operator ‘operato
  *  (2026-09). Only valgrind memcheck notices: the overread runs through a StackBuffer's uninitialized tail, which usually
  *  holds a zero byte before ASan's bounds would matter. The workaround NUL-terminates the buffer given to from_chars.
  *
- *  @see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=127666
+ *  @see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=127666 - a fix was posted 2026-10-01, targeted at GCC 14.5
+ *       (https://gcc.gnu.org/pipermail/gcc-patches/2026-October/733201.html). _GLIBCXX_RELEASE is only the major version, so
+ *       it cannot tell 14.4 from a fixed 14.5: once fixed releases ship, gate on __GLIBCXX__ (the release date) instead, or
+ *       on the first major release that has the fix.
  *  @see https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/src/c++17/floating_from_chars.cc (pattern)
  */
 #ifndef qCompilerAndStdLib_from_chars_reads_past_end_Buggy

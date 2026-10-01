@@ -11,3 +11,11 @@ namespace Stroika::Foundation::IO::Network {
      */
 
 }
+
+namespace Stroika::Foundation::Common {
+    template <>
+    constexpr EnumNames<IO::Network::LinkMonitor::LinkChange> DefaultNames<IO::Network::LinkMonitor::LinkChange>::k{{{
+        {IO::Network::LinkMonitor::LinkChange::eAdded, L"Added"},
+        {IO::Network::LinkMonitor::LinkChange::eRemoved, L"Removed"},
+    }}};
+}

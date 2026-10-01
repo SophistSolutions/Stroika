@@ -17,6 +17,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 
@@ -83,9 +84,14 @@ namespace Stroika::Foundation::IO::Network {
         LinkMonitor& operator= (LinkMonitor&& rhs) noexcept = default;
         LinkMonitor& operator= (const LinkMonitor&)         = delete;
 
+        /**
+         *  \note   Common::DefaultNames<> supported
+         */
         enum class LinkChange {
             eAdded,
             eRemoved,
+
+            Stroika_Define_Enum_Bounds (eAdded, eRemoved)
         };
         using Callback = Execution::Function<void (LinkChange, const String& linkName, const String& ipAddr)>;
         nonvirtual void AddCallback (const Callback& callback);
