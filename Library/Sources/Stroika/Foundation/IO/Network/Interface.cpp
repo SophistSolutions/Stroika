@@ -882,13 +882,7 @@ namespace {
                         newInterface.fBindings.fAddresses.Add (sa.GetInternetAddress ());
                     }
                 }
-                for (PIP_ADAPTER_MULTICAST_ADDRESS pm = currAddresses->FirstMulticastAddress; pm != nullptr; pm = pm->Next) {
-                    SocketAddress sa{pm->Address};
-                    if (sa.IsInternetAddress ()) {
-                        newInterface.fBindings.fAddressRanges.Add (sa.GetInternetAddress ());
-                        newInterface.fBindings.fAddresses.Add (sa.GetInternetAddress ());
-                    }
-                }
+                // not FirstMulticastAddress: those are the groups joined (by any process), not this interface's addresses
                 for (PIP_ADAPTER_GATEWAY_ADDRESS_LH pa = currAddresses->FirstGatewayAddress; pa != nullptr; pa = pa->Next) {
                     SocketAddress sa{pa->Address};
                     if (sa.IsInternetAddress ()) {

@@ -650,6 +650,17 @@ GTEST_TEST (Foundation_IO_Network, Test3_NetworkInterfaceList_)
         }
     }
 #endif
+    // an interface's bindings are its own addresses - not the multicast groups it has joined
+    for (const Interface& i : interfaces) {
+        for (const InternetAddress& ia : i.fBindings.fAddresses) {
+            EXPECT_FALSE (ia.IsMulticastAddress ()) << "multicast address " << Characters::ToString (ia).AsNarrowSDKString () << " on "
+                                                    << i.fInternalInterfaceID.AsNarrowSDKString ();
+        }
+        for (const CIDR& r : i.fBindings.fAddressRanges) {
+            EXPECT_FALSE (r.GetBaseInternetAddress ().IsMulticastAddress ())
+                << "multicast range " << Characters::ToString (r).AsNarrowSDKString () << " on " << i.fInternalInterfaceID.AsNarrowSDKString ();
+        }
+    }
 }
 
 GTEST_TEST (Foundation_IO_Network, Test3_HardwareAddresses_)
