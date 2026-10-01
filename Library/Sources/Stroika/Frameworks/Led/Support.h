@@ -64,6 +64,7 @@ namespace Stroika::Frameworks::Led {
     /*
     @CLASS:         Led_tChar
             @todo LOSE THIS TYPE!!!!  - use Stroika::FoundationL::Character::Charactrer
+                   See https://github.com/SophistSolutions/Stroika/issues/1191 (low priority) for the plan.
 
                    STILL need define for chararcter encoding version of GDI API (qStroika_Foundation_Characters_SDKUseswchar_t)
 

@@ -75,6 +75,10 @@ namespace Stroika::Frameworks::Led {
                     and not really need to store many - if any - markers. By accessing the file
                     data on a demand-basis (memory mapped file?)- you could save a significant amount
                     of startup time, and time overall if not the entire file is viewed.
+
+                    <li>Store text compactly, the way Stroika's String does (1, 2 or 4 bytes per character,
+                    chosen per chunk), behind a Character-based API.</li><br>
+                    See https://github.com/SophistSolutions/Stroika/issues/1191 (low priority).
                 </ul>
     */
     class TextStore : public virtual MarkerOwner {
