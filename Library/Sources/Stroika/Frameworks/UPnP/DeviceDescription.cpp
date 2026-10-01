@@ -289,7 +289,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
             {Name{"modelName"sv}, &DeviceDescription::fModelName},
             {Name{"modelNumber"sv}, &DeviceDescription::fModelNumber},
             {Name{"modelURL"sv}, &DeviceDescription::fModelURL},
-            {Name{"serialNum"sv}, &DeviceDescription::fSerialNumber},
+            {Name{"serialNumber"sv}, &DeviceDescription::fSerialNumber},
             {Name{"UDN"sv}, &DeviceDescription::fUDN},
             {Name{"UPC"sv}, &DeviceDescription::fUPC},
             {Name{"iconList"sv}, &DeviceDescription::fIcons},

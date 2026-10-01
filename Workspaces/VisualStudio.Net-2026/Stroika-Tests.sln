@@ -369,6 +369,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test54", "..\..\Tests\Proje
 		{91C825D0-2702-4800-98DD-B83727D51F5E} = {91C825D0-2702-4800-98DD-B83727D51F5E}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test55", "..\..\Tests\Projects\VisualStudio.Net-2026\55\Test55.vcxproj", "{7D00C690-AF90-4515-95F8-6FF22B494DAA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+		{91C825D0-2702-4800-98DD-B83727D51F5E} = {91C825D0-2702-4800-98DD-B83727D51F5E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Unspecified = Debug|Unspecified
@@ -1277,6 +1283,22 @@ Global
 		{C71EA54A-985D-4898-8BF7-1BCCAED80C4A}.Release-x86_64|Unspecified.Build.0 = Release-x86_64|Win32
 		{C71EA54A-985D-4898-8BF7-1BCCAED80C4A}.Release-x86|Unspecified.ActiveCfg = Release-x86|Win32
 		{C71EA54A-985D-4898-8BF7-1BCCAED80C4A}.Release-x86|Unspecified.Build.0 = Release-x86|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Debug|Unspecified.ActiveCfg = Debug|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Debug|Unspecified.Build.0 = Debug|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Debug-x86_64|Unspecified.ActiveCfg = Debug-x86_64|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Debug-x86_64|Unspecified.Build.0 = Debug-x86_64|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Debug-x86|Unspecified.ActiveCfg = Debug-x86|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Debug-x86|Unspecified.Build.0 = Debug-x86|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Profile|Unspecified.ActiveCfg = Profile|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Profile|Unspecified.Build.0 = Profile|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Release|Unspecified.ActiveCfg = Release|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Release|Unspecified.Build.0 = Release|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Release-Logging|Unspecified.ActiveCfg = Release-Logging|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Release-Logging|Unspecified.Build.0 = Release-Logging|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Release-x86_64|Unspecified.ActiveCfg = Release-x86_64|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Release-x86_64|Unspecified.Build.0 = Release-x86_64|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Release-x86|Unspecified.ActiveCfg = Release-x86|Win32
+		{7D00C690-AF90-4515-95F8-6FF22B494DAA}.Release-x86|Unspecified.Build.0 = Release-x86|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
