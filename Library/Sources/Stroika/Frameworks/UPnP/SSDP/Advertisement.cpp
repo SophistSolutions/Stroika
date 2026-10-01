@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
@@ -115,6 +116,7 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
  */
 void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* advertisement)
 {
+    using namespace Characters::Literals;
     RequireNotNull (headLine);
     RequireNotNull (advertisement);
     *advertisement = Advertisement{};
@@ -144,9 +146,17 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
         }
         constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};
         if (kLabelComparer_ (label, "Location"sv) == 0) {
-            advertisement->fLocation = IO::Network::URI{value};
+            try {
+                advertisement->fLocation = IO::Network::URI{value};
+            }
+            catch (...) {
+                // an unparsable LOCATION is treated as missing - as one with no LOCATION header at all is - rather than
+                // losing the rest of what the device said
+                DbgTrace ("Ignoring unparsable SSDP Location {}: {}"_f, value, current_exception ());
+            }
         }
-        else if (kLabelComparer_ (label, "NT"sv) == 0) {
+        else if (kLabelComparer_ (label, "NT"sv) == 0 or kLabelComparer_ (label, "ST"sv) == 0) {
+            // NT in a NOTIFY, ST in a search (and in a search response)
             advertisement->fTarget = value;
         }
         else if (kLabelComparer_ (label, "USN"sv) == 0) {

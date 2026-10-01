@@ -141,8 +141,7 @@ public:
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
                     Assert (nBytesRead <= std::size (buf));
-                    using namespace Streams;
-                    ReadPacketAndNotifyCallbacks_ (BinaryToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})));
+                    ReadPacketAndNotifyCallbacks_ (span{buf, nBytesRead});
                 }
                 catch (const Thread::AbortException&) {
                     ReThrow ();
@@ -158,51 +157,20 @@ public:
             }
         }
     }
-    void ReadPacketAndNotifyCallbacks_ (const Streams::InputStream::Ptr<Character>& in)
+    void ReadPacketAndNotifyCallbacks_ (span<const byte> packet)
     {
-        String firstLine = in.ReadLine ().Trim ();
-
+        String              headLine;
+        SSDP::Advertisement d;
+        SSDP::DeSerialize (Memory::BLOB{packet}, &headLine, &d);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Read Reply"};
-        DbgTrace ("firstLine: {}"_f, firstLine);
+        DbgTrace ("headLine: {}"_f, headLine);
 #endif
-
-        static const String kOKRESPONSELEAD_ = "HTTP/1.1 200"sv;
-        if (firstLine.length () >= kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
-            SSDP::Advertisement d;
-            while (true) {
-                String line = in.ReadLine ().Trim ();
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"reply-line: {}"_f, line);
-#endif
-                if (line.empty ()) {
-                    break;
-                }
-
-                // Need to simplify this code (stroika string util)
-                if (optional<size_t> n = line.Find (':')) {
-                    String label = line.SubString (0, *n);
-                    String value = line.SubString (*n + 1).Trim ();
-                    if (String::ThreeWayComparer{eCaseInsensitive}(label, "Location"sv) == 0) {
-                        d.fLocation = IO::Network::URI{value};
-                    }
-                    else if (String::ThreeWayComparer{eCaseInsensitive}(label, "ST"sv) == 0) {
-                        d.fTarget = value;
-                    }
-                    else if (String::ThreeWayComparer{eCaseInsensitive}(label, "USN"sv) == 0) {
-                        d.fUSN = value;
-                    }
-                    else if (String::ThreeWayComparer{eCaseInsensitive}(label, "Server"sv) == 0) {
-                        d.fServer = value;
-                    }
-                }
-            }
-            {
-                // bad practice to keep mutex lock here - DEADLOCK CITY - find nice CLEAN way todo this...
-                [[maybe_unused]] lock_guard critSec{fCritSection_};
-                for (const auto& i : fFoundCallbacks_) {
-                    i (d);
-                }
+        if (headLine.StartsWith ("HTTP/1.1 200"sv)) {
+            // bad practice to keep mutex lock here - DEADLOCK CITY - find nice CLEAN way todo this...
+            [[maybe_unused]] lock_guard critSec{fCritSection_};
+            for (const auto& i : fFoundCallbacks_) {
+                i (d);
             }
         }
     }
@@ -219,7 +187,7 @@ private:
  ********************************** Search **************************************
  ********************************************************************************
  */
-const String Search::kSSDPAny    = "ssdp:any"sv;
+const String Search::kSSDPAny    = SSDP::kTarget_SSDPAll;
 const String Search::kRootDevice = "upnp:rootdevice"sv;
 
 Search::Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)

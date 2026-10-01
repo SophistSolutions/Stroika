@@ -95,8 +95,7 @@ public:
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
                     Assert (nBytesRead <= std::size (buf));
-                    using namespace Streams;
-                    ParsePacketAndNotifyCallbacks_ (BinaryToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})));
+                    ParsePacketAndNotifyCallbacks_ (span{buf, nBytesRead});
                 }
                 catch (const Thread::AbortException&) {
                     ReThrow ();
@@ -112,70 +111,19 @@ public:
             }
         }
     }
-    void ParsePacketAndNotifyCallbacks_ (Streams::InputStream::Ptr<Character> in)
+    void ParsePacketAndNotifyCallbacks_ (span<const byte> packet)
     {
-        String firstLine = in.ReadLine ().Trim ();
-
+        String              headLine;
+        SSDP::Advertisement d;
+        SSDP::DeSerialize (Memory::BLOB{packet}, &headLine, &d);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Read SSDP Packet"};
-        DbgTrace ("firstLine: {}"_f, firstLine);
+        DbgTrace ("headLine: {}"_f, headLine);
 #endif
-        const String kNOTIFY_LEAD = "NOTIFY "sv;
-        if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
-            SSDP::Advertisement d;
-            while (true) {
-                String line = in.ReadLine ().Trim ();
-                if (line.empty ()) {
-                    break;
-                }
-
-                // Need to simplify this code (stroika string util)
-                String label;
-                String value;
-                if (optional<size_t> n = line.Find (':')) {
-                    label = line.SubString (0, *n);
-                    value = line.SubString (*n + 1).Trim ();
-                }
-                if (not label.empty ()) {
-                    d.fRawHeaders.Add (label, value);
-                }
-                constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};
-                if (kLabelComparer_ (label, "Location"sv) == 0) {
-                    try {
-                        d.fLocation = IO::Network::URI{value};
-                    }
-                    catch (...) {
-                        DbgTrace ("A notification without a valid location probably won't be useful, so we could allow the exception to "
-                                  "propagate and the notification to be ignored. However, we don't throw when the location is missing "
-                                  "altogether. So for now, treat as missing: e={}"_f,
-                                  current_exception ());
-                    }
-                }
-                else if (kLabelComparer_ (label, "NT"sv) == 0) {
-                    d.fTarget = value;
-                }
-                else if (kLabelComparer_ (label, "USN"sv) == 0) {
-                    d.fUSN = value;
-                }
-                else if (kLabelComparer_ (label, "Server"sv) == 0) {
-                    d.fServer = value;
-                }
-                else if (kLabelComparer_ (label, "NTS"sv) == 0) {
-                    constexpr auto kValueComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};
-                    if (kValueComparer_ (value, "ssdp:alive"sv) == 0) {
-                        d.fAlive = true;
-                    }
-                    else if (kValueComparer_ (value, "ssdp:byebye"sv) == 0) {
-                        d.fAlive = false;
-                    }
-                }
-            }
-
-            {
-                [[maybe_unused]] lock_guard critSec{fCritSection_};
-                for (const auto& i : fFoundCallbacks_) {
-                    i (d);
-                }
+        if (headLine.StartsWith ("NOTIFY "sv)) {
+            [[maybe_unused]] lock_guard critSec{fCritSection_};
+            for (const auto& i : fFoundCallbacks_) {
+                i (d);
             }
         }
     }

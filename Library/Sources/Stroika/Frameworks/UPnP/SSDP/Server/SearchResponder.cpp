@@ -40,42 +40,19 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 ********************************************************************************
 */
 namespace {
-    void ParsePacketAndRespond_ (Streams::InputStream::Ptr<Character> in, const Iterable<Advertisement>& advertisements,
+    void ParsePacketAndRespond_ (span<const byte> packet, const Iterable<Advertisement>& advertisements,
                                  ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo)
     {
-        String firstLine = in.ReadLine ().Trim ();
-
+        String              headLine;
+        SSDP::Advertisement da;
+        SSDP::DeSerialize (Memory::BLOB{packet}, &headLine, &da);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Read SSDP Packet"};
-        DbgTrace (L"firstLine: %s", firstLine.c_str ());
+        DbgTrace ("headLine: {}"_f, headLine);
 #endif
-        static const String kNOTIFY_LEAD = "M-SEARCH "sv;
-        if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
-            SSDP::Advertisement da;
-            while (true) {
-                String line = in.ReadLine ().Trim ();
-                if (line.empty ()) {
-                    break;
-                }
-
-                // Need to simplify this code (stroika string util)
-                String label;
-                String value;
-                if (optional<size_t> n = line.Find (':')) {
-                    label = line.SubString (0, *n);
-                    value = line.SubString (*n + 1).Trim ();
-                }
-                if (not label.empty ()) {
-                    da.fRawHeaders.Add (label, value);
-                }
-                constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};
-                if (kLabelComparer_ (label, "ST"sv) == 0) {
-                    da.fTarget = value;
-                }
-            }
-
-            bool matches          = false;
+        if (headLine.StartsWith ("M-SEARCH "sv)) {
             auto targetEqComparer = String::EqualsComparer{eCaseInsensitive};
+            bool matches          = false;
             if (targetEqComparer (da.fTarget, kTarget_UPNPRootDevice)) {
                 matches = true;
             }
@@ -184,9 +161,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                         byte          buf[4 * 1024]; // not sure of max packet size
                         size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
                         Assert (nBytesRead <= std::size (buf));
-                        using namespace Streams;
-                        ParsePacketAndRespond_ (BinaryToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})),
-                                                advertisements, s, from);
+                        ParsePacketAndRespond_ (span{buf, nBytesRead}, advertisements, s, from);
                     }
                 }
                 catch (const Thread::AbortException&) {

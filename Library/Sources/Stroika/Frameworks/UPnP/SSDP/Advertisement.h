@@ -80,6 +80,11 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     BLOB Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad);
 
     /**
+     *  \brief Parse any SSDP packet - a NOTIFY, an M-SEARCH, or a search response ("HTTP/1.1 200 OK")
+     *
+     *  *headLine is the packet's first line - which says which of those it is; the caller checks it. fTarget is the NT header
+     *  (a NOTIFY) or the ST header (a search or search response), fAlive the NTS header, and every header lands in fRawHeaders
+     *  too. A Location that does not parse as a URI is treated as missing (traced, not thrown).
      */
     void DeSerialize (const BLOB& b, String* headLine, Advertisement* advertisement);
 
