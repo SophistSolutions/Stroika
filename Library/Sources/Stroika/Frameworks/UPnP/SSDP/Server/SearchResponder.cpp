@@ -116,12 +116,26 @@ namespace {
     }
 }
 
-SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements, const LocationProvider& location,
-                                  ::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const Options& options)
 {
     if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
     }
+    StartListening_ (advertisements, location, options); // here, so construction fails if it cannot bind
+    if (options.fFollowNetworkChanges) {
+        fLinkMonitor_ = SSDP::Private_::FollowNetworkChanges ([this, advertisements = Sequence<Advertisement>{advertisements}, location, options] () {
+            // a network appeared: listen there too - on new sockets, joined afresh (the old listening thread uses the old
+            // ones, so it stops first)
+            [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+            fListenThread_.AbortAndWaitForDone ();
+            StartListening_ (advertisements, location, options);
+        });
+    }
+}
+
+void SearchResponder::StartListening_ (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const Options& options)
+{
+    InterfaceFilter interfaceFilter = options.fInterfaces;
 
     // Construction of search responder will fail if we cannot bind - instead of failing quietly inside the loop
     Collection<pair<ConnectionlessSocket::Ptr, SocketAddress>> sockets;
@@ -129,14 +143,14 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
         static constexpr Activity kActivity_{"SSDP Binding in SearchResponder"sv};
         DeclareActivity           da{&kActivity_};
         constexpr unsigned int    kMaxHops_ = 4;
-        if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
+        if (InternetProtocol::IP::SupportIPV4 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
             s.SetMulticastTTL (kMaxHops_);
             sockets += make_pair (s, UPnP::SSDP::V4::kSocketAddress);
         }
-        if (InternetProtocol::IP::SupportIPV6 (ipVersion)) {
+        if (InternetProtocol::IP::SupportIPV6 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
@@ -148,35 +162,18 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
     // Use a thread to wait on a set of sockets we are listening for requests on
     static const String kThreadName_{"SSDP Search Responder"sv};
     fListenThread_ = Thread::New (
-        [advertisements, location, sockets] () {
+        [this, advertisements, location, interfaceFilter, sockets] () {
             Debug::TraceContextBumper ctx{"SSDP SearchResponder thread loop"};
             // join the group on every interface (running, not loopback) with an address of its family - so searches arriving
             // on any of them are heard; until at least one join works (e.g. started before there was a network), keep trying
             for (Time::DurationSeconds wait = 1s;; wait = min<Time::DurationSeconds> (wait * 2, 60s)) {
-                unsigned int nJoined = 0;
-                for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
-                    if (i.fType == Interface::Type::eLoopback or not(i.fStatus and i.fStatus->Contains (Interface::Status::eRunning))) {
-                        continue;
-                    }
-                    for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
-                        InternetAddress group = s.second.GetInternetAddress ();
-                        if (not i.fBindings.fAddresses.Any (
-                                [&] (const InternetAddress& a) { return a.GetAddressFamily () == group.GetAddressFamily (); })) {
-                            continue;
-                        }
-                        try {
-                            s.first.JoinMulticastGroup (group, i);
-                            ++nJoined;
-                        }
-                        catch (const Thread::AbortException&) {
-                            ReThrow ();
-                        }
-                        catch (...) {
-                            DbgTrace ("SSDP SearchResponder: could not join {} on {}: {}"_f, group, i.fInternalInterfaceID, current_exception ());
-                        }
-                    }
+                Containers::Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>> toJoin;
+                for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
+                    toJoin += make_pair (s.first, s.second.GetInternetAddress ());
                 }
-                if (nJoined != 0) {
+                Containers::Sequence<Interface> listeningOn = SSDP::Private_::JoinOnEveryInterface (toJoin, interfaceFilter);
+                fListeningOn_.store (listeningOn);
+                if (not listeningOn.empty ()) {
                     break;
                 }
                 // SEE https://github.com/SophistSolutions/Stroika/issues/1094 (STK-962) - BasicServer also restarts this when a network appears
@@ -207,4 +204,9 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
             }
         },
         Thread::eAutoStart, kThreadName_);
+}
+
+Traversal::Iterable<Interface> SearchResponder::GetNetworkInterfaces () const
+{
+    return fListeningOn_.load ();
 }

@@ -13,6 +13,7 @@
 
 #include "Stroika/Frameworks/UPnP/Device.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 
 /**
 *  \file
@@ -53,13 +54,49 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
     public:
         /**
+         *  \par Example Usage
+         *      \code
+         *          Listener listener{callOnFinds, Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only}, Listener::eAutoStart};
+         *      \endcode
          */
-        Listener (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds,
-                  IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds,
-                  IO::Network::InternetProtocol::IP::IPVersionSupport  ipVersion, AutoStart);
-        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, AutoStart);
+        struct Options {
+            /**
+             *  Which SSDP channels to listen on: IPv4 (239.255.255.250) and/or IPv6 (ff02::c).
+             */
+            IO::Network::InternetProtocol::IP::IPVersionSupport fIPVersion{IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT};
+
+            /**
+             *  Which network interfaces to listen on (@see SSDP::InterfaceFilter).
+             */
+            InterfaceFilter fInterfaces{DefaultInterfaceFilter};
+
+            /**
+             *  When a network appears, listen there too (it re-joins the multicast group on every interface).
+             *  It costs a LinkMonitor: a thread waiting on the OS's address-change notifications. Where the OS cannot
+             *  tell (e.g. some containers), it is just not done. As of v3.0d25 LinkMonitor reports IPv4 addresses only, so a
+             *  network that gains only an IPv6 address is not noticed.
+             */
+            bool fFollowNetworkChanges{true};
+        };
+        static const Options kDefaultOptions;
+
+    public:
+        /**
+         *  Listen for SSDP NOTIFY messages, calling callOnFinds - and any callback added with AddOnFoundCallback - with each one
+         *  heard. Listening starts with Start (), or right away given eAutoStart.
+         *
+         *  \note THREADS: callOnFinds is called on the listener's own thread, not the caller's - so it must be thread-safe, and
+         *        whatever it shares with other threads needs synchronizing (e.g. Execution::Synchronized).
+         *
+         *  \note NETWORKS: it listens on every network interface options.fInterfaces accepts (by default, every one running and
+         *        not loopback) - and, given Options::fFollowNetworkChanges, on each that appears later. If there is none (e.g.
+         *        no network yet), it hears nothing until there is.
+         */
+        Listener (const Options& options = kDefaultOptions);
+        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options = kDefaultOptions); ///< \brief callOnFinds: called on the listener's own thread
+        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options,
+                  AutoStart); ///< \brief ... and Start (); callOnFinds: called on the listener's own thread
+        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, AutoStart); ///< \brief ... and Start (); callOnFinds: called on the listener's own thread
         Listener (Listener&&)      = default;
         Listener (const Listener&) = delete;
 
@@ -76,10 +113,31 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
         /**
          *  Using std::function, no way to compare for operator==, so no way to remove.
          *  @todo    RETHINK!
-         *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
          *  This can be done after the listening has started.
+         *
+         *  \note THREADS: callOnFinds is called on the listener's own thread, not the caller's - so it must be thread-safe.
          */
         void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
+
+    public:
+        /**
+         *  \brief The network interfaces it is listening on now - as they were when it joined them (so with the addresses they
+         *         had then). Safe to call from any thread.
+         *
+         *  \par Example Usage
+         *      \code
+         *          // Listener's constructor threw no_such_device before v3.0d25 when it could listen on no network; to fail as
+         *          // it did - or more usefully, unless it is listening on a network you care about:
+         *          Listener listener{callOnFinds, Listener::eAutoStart};
+         *          if (not listener.GetNetworkInterfaces ().Any ([] (const Interface& i) {
+         *                  return i.fType == Interface::Type::eWiredEthernet or i.fType == Interface::Type::eWIFI;
+         *              })) {
+         *              Execution::Throw (SystemErrorException{make_error_code (errc::no_such_device)});
+         *          }
+         *          // (though given Options::fFollowNetworkChanges, it starts listening on such a network as soon as one appears)
+         *      \endcode
+         */
+        nonvirtual Traversal::Iterable<IO::Network::Interface> GetNetworkInterfaces () const;
 
     public:
         /**

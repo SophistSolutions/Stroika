@@ -29,7 +29,12 @@ namespace Stroika::Frameworks::UPnP {
     class Device {
     public:
         String fDeviceID; // this is the UUID (e.g. 315CAAE0-668D-47C7-A178-24C9EE756627)
-        URI    fLocation;
+
+        /**
+         *  Where the device's description is - the LOCATION it advertises.
+         */
+        URI fLocation;
+
         String fServer;
 
         /**

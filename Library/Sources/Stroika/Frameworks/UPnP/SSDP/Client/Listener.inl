@@ -3,4 +3,7 @@
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Client {
+
+    inline const Listener::Options Listener::kDefaultOptions{};
+
 }

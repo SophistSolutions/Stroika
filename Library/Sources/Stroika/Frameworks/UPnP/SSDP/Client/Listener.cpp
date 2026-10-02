@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
@@ -47,23 +48,14 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Client;
  */
 class Listener::Rep_ {
 public:
-    Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+    Rep_ (const Options& options)
+        : fOptions_{options}
     {
         static constexpr Activity kConstructingSSDPListener_{"constructing SSDP Listener"sv};
         DeclareActivity           activity{&kConstructingSSDPListener_};
-        Socket::BindFlags         bindFlags = Socket::BindFlags{};
-        bindFlags.fSO_REUSEADDR             = true;
-        if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
-            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
-            s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, bindFlags);
-            s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
-            fSockets_.Add (s);
-        }
-        if (InternetProtocol::IP::SupportIPV6 (ipVersion)) {
-            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
-            s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, bindFlags);
-            s.JoinMulticastGroup (UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
-            fSockets_.Add (s);
+        fSockets_ = MakeSockets_ ();
+        if (options.fFollowNetworkChanges) {
+            fLinkMonitor_ = SSDP::Private_::FollowNetworkChanges ([this] () { Rejoin_ (); });
         }
     }
     ~Rep_ () = default;
@@ -74,14 +66,62 @@ public:
     }
     void Start ()
     {
+        [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+        StartThread_ ();
+    }
+    void Stop ()
+    {
+        [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+        StopThread_ ();
+    }
+    Traversal::Iterable<Interface> GetNetworkInterfaces () const
+    {
+        return fListeningOn_.load ();
+    }
+    // bound, and joined on every interface fOptions_.fInterfaces accepts - so notifications arriving on any of them are heard
+    Collection<ConnectionlessSocket::Ptr> MakeSockets_ ()
+    {
+        Socket::BindFlags bindFlags = Socket::BindFlags{};
+        bindFlags.fSO_REUSEADDR     = true;
+        Collection<ConnectionlessSocket::Ptr>                                  sockets;
+        Containers::Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>> toJoin;
+        if (InternetProtocol::IP::SupportIPV4 (fOptions_.fIPVersion)) {
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, bindFlags);
+            toJoin += make_pair (s, UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
+            sockets.Add (s);
+        }
+        if (InternetProtocol::IP::SupportIPV6 (fOptions_.fIPVersion)) {
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
+            s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, bindFlags);
+            toJoin += make_pair (s, UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
+            sockets.Add (s);
+        }
+        fListeningOn_.store (SSDP::Private_::JoinOnEveryInterface (toJoin, fOptions_.fInterfaces));
+        return sockets;
+    }
+    void StartThread_ ()
+    {
         static const String kThreadName_ = "SSDP Listener"sv;
         fThread_                         = Thread::New ([this] () { DoRun_ (); }, Thread::eAutoStart, kThreadName_);
     }
-    void Stop ()
+    void StopThread_ ()
     {
         if (fThread_ != nullptr) {
             fThread_.AbortAndWaitForDone ();
             fThread_ = nullptr;
+        }
+    }
+    // a network appeared: listen there too - on new sockets, joined afresh (the listening thread uses the sockets, so it stops
+    // meanwhile)
+    void Rejoin_ ()
+    {
+        [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+        bool                        wasRunning = fThread_ != nullptr;
+        StopThread_ ();
+        fSockets_ = MakeSockets_ ();
+        if (wasRunning) {
+            StartThread_ ();
         }
     }
     void DoRun_ ()
@@ -129,10 +169,14 @@ public:
     }
 
 private:
+    const Options                                         fOptions_;
+    mutex                                                 fLifecycleMutex_; // Start, Stop and Rejoin_ (called on the LinkMonitor's thread)
     recursive_mutex                                       fCritSection_;
     vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                 fSockets_;
+    Synchronized<Containers::Sequence<Interface>>         fListeningOn_; // what fSockets_ are joined on
     Thread::CleanupPtr                                    fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
+    optional<IO::Network::LinkMonitor>                    fLinkMonitor_; // last, so destroyed first: no Rejoin_ while the rest goes away
 };
 
 /*
@@ -140,19 +184,19 @@ private:
  ************************************* Listener *********************************
  ********************************************************************************
  */
-Listener::Listener (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : fRep_{Memory::MakeSharedPtr<Rep_> (ipVersion)}
+Listener::Listener (const Options& options)
+    : fRep_{Memory::MakeSharedPtr<Rep_> (options)}
 {
 }
 
-Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : Listener{ipVersion}
+Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options)
+    : Listener{options}
 {
     AddOnFoundCallback (callOnFinds);
 }
 
-Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion, AutoStart)
-    : Listener{callOnFinds, ipVersion}
+Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options, AutoStart)
+    : Listener{callOnFinds, options}
 {
     Start ();
 }
@@ -161,6 +205,11 @@ Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnF
     : Listener{callOnFinds}
 {
     Start ();
+}
+
+Traversal::Iterable<Interface> Listener::GetNetworkInterfaces () const
+{
+    return fRep_->GetNetworkInterfaces ();
 }
 
 Listener::~Listener ()

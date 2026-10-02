@@ -12,6 +12,7 @@
 
 #include "Stroika/Frameworks/UPnP/Device.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 
 /**
  *  \file
@@ -40,16 +41,53 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
     class Search {
     public:
         /**
-         * see @see Start () for possible values for initialSearch and autoRetryInterval
+         *  \par Example Usage
+         *      \code
+         *          Search search{callOnFinds, Search::kRootDevice, Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+         *      \endcode
          */
-        Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds,
-                IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        struct Options {
+            /**
+             *  Which SSDP channels to search on: IPv4 (239.255.255.250) and/or IPv6 (ff02::c).
+             */
+            IO::Network::InternetProtocol::IP::IPVersionSupport fIPVersion{IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT};
+
+            /**
+             *  Which network interfaces to search on - asked of each one, for each send (@see SSDP::InterfaceFilter).
+             */
+            InterfaceFilter fInterfaces{DefaultInterfaceFilter};
+
+            /**
+             *  When a network appears, search there right away, rather than at the next retry (it starts the search over).
+             *  It costs a LinkMonitor: a thread waiting on the OS's address-change notifications. Where the OS cannot
+             *  tell (e.g. some containers), it is just not done. As of v3.0d25 LinkMonitor reports IPv4 addresses only, so a
+             *  network that gains only an IPv6 address is not noticed.
+             */
+            bool fFollowNetworkChanges{true};
+        };
+        static const Options kDefaultOptions;
+
+    public:
+        /**
+         *  Search for SSDP devices, calling callOnFinds - and any callback added with AddOnFoundCallback - with each answer. The
+         *  search starts given initialSearch, else with Start (); @see Start () for possible values for initialSearch and
+         *  autoRetryInterval.
+         *
+         *  \note THREADS: callOnFinds is called on the searcher's own thread, not the caller's - so it must be thread-safe, and
+         *        whatever it shares with other threads needs synchronizing (e.g. Execution::Synchronized).
+         *
+         *  \note NETWORKS: each M-SEARCH goes out of every network interface options.fInterfaces accepts (by default, every one
+         *        running and not loopback) - listed afresh for each send, so networks that come and go are picked up (a new
+         *        one right away, given Options::fFollowNetworkChanges). If it accepts none (or there is no network yet),
+         *        nothing is sent until there is one.
+         */
+        Search (const Options& options = kDefaultOptions);
+        Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options = kDefaultOptions); ///< \brief callOnFinds: called on the searcher's own thread
         Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch,
-                IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+                const Options& options = kDefaultOptions); ///< \brief ... and Start (initialSearch); callOnFinds: called on the searcher's own thread
         Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch,
                 const optional<Time::Duration>& autoRetryInterval,
-                IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+                const Options& options = kDefaultOptions); ///< \brief ... and Start (initialSearch, autoRetryInterval); callOnFinds: called on the searcher's own thread
         Search (Search&&)      = default;
         Search (const Search&) = delete;
 
@@ -66,10 +104,18 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
         /**
          *  Using std::function, no way to compare for operator==, so no way to remove.
          *  @todo    RETHINK!
-         *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
-         *  This can be done after the listening has started.
+         *  This can be done after the search has started.
+         *
+         *  \note THREADS: callOnFinds is called on the searcher's own thread, not the caller's - so it must be thread-safe.
          */
         void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
+
+    public:
+        /**
+         *  \brief The network interfaces its last M-SEARCH went out of - as they were then (so with the addresses they had then).
+         *         Safe to call from any thread.
+         */
+        nonvirtual Traversal::Iterable<IO::Network::Interface> GetNetworkInterfaces () const;
 
     public:
         /**

@@ -45,7 +45,7 @@ namespace Stroika::Foundation::IO::Network {
     struct Interface {
         /**
          *      This is a somewhat artificial concept - which is introduced in Stroika. This is only guaranteed
-         *   unique or the life of one program lifetime (@todo - not even sure we can do that much).
+         *   unique for the life of one program lifetime (@todo - not even sure we can do that much).
          *
          *      UNIX:
          *          interface name - e.g. eth0 - in the first column reported in ifconfig.
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::IO::Network {
          *        for you. In particular, to undo what was done by index (leave a multicast group, say), look the index up again
          *        rather than reuse the number it was done with. And redo whatever was done by index when the interfaces change
          *        (LinkMonitor) - a socket keeps the multicast interface it was given, say. (A multicast membership, though, is
-         *        tied to the interface itself, so goes away with it.) For an identity that lasts, use fInternalInterfaceID.
+         *        tied to the interface itself, so goes away with it.) For a longer-lasting name, use fInternalInterfaceID.
          */
         optional<unsigned int> fIndex;
 

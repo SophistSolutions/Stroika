@@ -8,7 +8,6 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
-#include "Stroika/Foundation/IO/Network/LinkMonitor.h"
 #include "Stroika/Foundation/IO/Network/Socket.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
@@ -39,15 +38,12 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
  */
 class BasicServer::Rep_ final {
 public:
-    Sequence<Advertisement>                             fAdvertisements; // without fLocation: the notifier and responder fill that in
-    LocationProvider                                    fLocation;
-    FrequencyInfo                                       fFrequencyInfo;
-    IO::Network::InternetProtocol::IP::IPVersionSupport fIPVersion;
-    Rep_ (const Device& d, const DeviceDescription& dd, const LocationProvider& location, const FrequencyInfo& fi,
-          IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+    Sequence<Advertisement> fAdvertisements; // without fLocation: the notifier and responder fill that in
+    LocationProvider        fLocation;
+    Options                 fOptions;
+    Rep_ (const Device& d, const DeviceDescription& dd, const LocationProvider& location, const Options& options)
         : fLocation{location}
-        , fFrequencyInfo{fi}
-        , fIPVersion{ipVersion}
+        , fOptions{options}
     {
         {
             SSDP::Advertisement dan;
@@ -69,35 +65,19 @@ public:
             }
         }
 
-        // SEE https://github.com/SophistSolutions/Stroika/issues/1094 (STK-962) - make resilient to failures setting up watchers, to retry
-
-        Start_ ();
-
-        using LinkMonitor = IO::Network::LinkMonitor;
-        LinkMonitor lm;
-        lm.AddCallback ([this] (LinkMonitor::LinkChange lc, String netName, String ipNum) {
-            Debug::TraceContextBumper ctx{"Basic SSDP server - LinkMonitor callback", "lc = {}, netName={}, ipNum={}"_f, lc, netName, ipNum};
-            if (lc == LinkMonitor::LinkChange::eAdded) {
-                this->Restart_ ();
-            }
-        });
-        fLinkMonitor_ = optional<LinkMonitor>{move (lm)};
+        // the notifier and responder each follow network changes themselves (Options::fFollowNetworkChanges)
+        fNotifier_ = make_unique<PeriodicNotifier> (fAdvertisements, fLocation,
+                                                    PeriodicNotifier::Options{.fFrequencyInfo        = fOptions.fFrequencyInfo,
+                                                                              .fIPVersion            = fOptions.fIPVersion,
+                                                                              .fInterfaces           = fOptions.fInterfaces,
+                                                                              .fFollowNetworkChanges = fOptions.fFollowNetworkChanges});
+        fSearchResponder_ = make_unique<SearchResponder> (fAdvertisements, fLocation,
+                                                          SearchResponder::Options{.fIPVersion  = fOptions.fIPVersion,
+                                                                                   .fInterfaces = fOptions.fInterfaces,
+                                                                                   .fFollowNetworkChanges = fOptions.fFollowNetworkChanges});
     }
-    void Start_ ()
-    {
-        fNotifier_        = make_unique<PeriodicNotifier> (fAdvertisements, fLocation, fFrequencyInfo, fIPVersion);
-        fSearchResponder_ = make_unique<SearchResponder> (fAdvertisements, fLocation, fIPVersion);
-    }
-    void Restart_ ()
-    {
-        Debug::TraceContextBumper ctx{"Restarting Basic SSDP server threads"};
-        fNotifier_.reset ();
-        fSearchResponder_.reset ();
-        Start_ (); // joining the group on any new interfaces
-    }
-    unique_ptr<PeriodicNotifier>       fNotifier_;
-    unique_ptr<SearchResponder>        fSearchResponder_;
-    optional<IO::Network::LinkMonitor> fLinkMonitor_; // optional so we can delete it first on shutdown (so no restart while stopping stuff)
+    unique_ptr<PeriodicNotifier> fNotifier_;
+    unique_ptr<SearchResponder>  fSearchResponder_;
 };
 
 /*
@@ -105,8 +85,16 @@ public:
 ********************************** BasicServer *********************************
 ********************************************************************************
 */
-BasicServer::BasicServer (const Device& d, const DeviceDescription& dd, const LocationProvider& location, const FrequencyInfo& fi,
-                          IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : fRep_{MakeSharedPtr<Rep_> (d, dd, location, fi, ipVersion)}
+BasicServer::BasicServer (const Device& d, const DeviceDescription& dd, const LocationProvider& location, const Options& options)
+    : fRep_{MakeSharedPtr<Rep_> (d, dd, location, options)}
 {
+}
+
+Traversal::Iterable<Interface> BasicServer::GetNetworkInterfaces () const
+{
+    Containers::Sequence<Interface> both;
+    both.AppendAll (fRep_->fNotifier_->GetNetworkInterfaces ());
+    both.AppendAll (fRep_->fSearchResponder_->GetNetworkInterfaces ());
+    // each from its own listing: an interface on both is reported once - matched by fInternalInterfaceID
+    return both.Distinct ([] (const Interface& a, const Interface& b) { return a.fInternalInterfaceID == b.fInternalInterfaceID; });
 }

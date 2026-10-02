@@ -10,11 +10,13 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h" // for qStroika_Foundation_DataExchange_XML_SupportParsing
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
@@ -23,6 +25,7 @@
 #include "Stroika/Frameworks/UPnP/Device.h"
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Client/Listener.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/Search.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
@@ -358,20 +361,19 @@ namespace {
 
         Device d;
         d.fDeviceID = deviceID;
-        d.fLocation.SetScheme (URI::SchemeType{"http"sv});
-        d.fLocation.SetAuthority (URI::Authority{nullopt, kPort_}); // no host - LocationFillingInHost fills in one of ours
-        d.fLocation.SetPath ("/device.xml"sv);
-        d.fServer = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        const URI location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, kPort_}, "/device.xml"sv}; // no host: each network's own
         DeviceDescription dd;
         dd.fDeviceType   = deviceType;
         dd.fFriendlyName = "Stroika regression test device"sv;
         dd.fUDN          = "uuid:" + deviceID;
 
+        // Synchronized: the search's callback, and the server's location provider, run on their own threads, not this one
         Execution::Synchronized<optional<SSDP::Advertisement>> found;
         Execution::WaitableEvent                               foundEvent;
         // BasicServer's default provider, recording what each search response asks it
         Execution::Synchronized<Containers::Sequence<SSDP::Server::LocationContext>> askedFor;
-        SSDP::Server::LocationProvider fillInHost          = SSDP::Server::LocationFillingInHost (d.fLocation);
+        SSDP::Server::LocationProvider fillInHost          = SSDP::Server::LocationFillingInHost (location);
         SSDP::Server::LocationProvider recordingFillInHost = [&] (const SSDP::Server::LocationContext& c) {
             if (c.fAsker) {
                 askedFor.rwget ()->Append (c);
@@ -380,15 +382,19 @@ namespace {
         };
         try {
             using IO::Network::InternetProtocol::IP::IPVersionSupport;
-            SSDP::Server::BasicServer server{d, dd, recordingFillInHost, SSDP::Server::BasicServer::FrequencyInfo{}, IPVersionSupport::eIPV4Only};
+            SSDP::Server::BasicServer server{d, dd, recordingFillInHost, SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
             SSDP::Client::Search search{[&] (const SSDP::Advertisement& a) {
                                             if (a.fTarget == deviceType) {
                                                 found.store (a);
                                                 foundEvent.Set ();
                                             }
                                         },
-                                        deviceType, nullopt, IPVersionSupport::eIPV4Only};
-            (void)foundEvent.WaitQuietly (10s);
+                                        deviceType, nullopt, SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            if (foundEvent.WaitQuietly (10s) == Execution::WaitableEvent::WaitStatus::eTriggered) {
+                // it searched somewhere - and only where the default filter lets it
+                EXPECT_FALSE (search.GetNetworkInterfaces ().empty ());
+                EXPECT_TRUE (search.GetNetworkInterfaces ().All ([] (const Interface& i) { return SSDP::DefaultInterfaceFilter (i); }));
+            }
         }
         catch (...) {
             Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_Search_ skipped - could not run an SSDP server and search here: {}"_f(current_exception ())
@@ -430,6 +436,130 @@ namespace {
         }
         EXPECT_TRUE (fromUs.Any ([&] (const SSDP::Server::LocationContext& c) { return c.fLocalAddress == host; }))
             << Characters::ToString (a->fLocation).AsNarrowSDKString ();
+    }
+
+    /*
+     *  Our own Listener hearing our own BasicServer's NOTIFY, both in this process: the server sends one out of each network
+     *  interface its Options::fInterfaces accepts, with that network's own address as its LOCATION, and the Listener listens on
+     *  each. As in SSDP_Loopback_Search_, anything that keeps the exchange from happening is a test issue; a wrong NOTIFY is a
+     *  failure.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_Notify_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_Notify_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        constexpr uint16_t kPort_ = 49152; // only advertised - nothing listens on it
+        const URI location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, kPort_}, "/device.xml"sv}; // no host: each network's own
+
+        // our Listener (on every interface) hearing our server, which advertises on the interfaces serverInterfaces accepts: the
+        // NOTIFYs heard - or nullopt if the exchange could not happen here
+        auto exchange = [&] (const SSDP::InterfaceFilter& serverInterfaces) -> optional<Containers::Sequence<SSDP::Advertisement>> {
+            const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+            const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackNotify-{}:1"_f(deviceID);
+            Device       d;
+            d.fDeviceID = deviceID;
+            d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+            DeviceDescription dd;
+            dd.fDeviceType   = deviceType;
+            dd.fFriendlyName = "Stroika regression test device"sv;
+            dd.fUDN          = "uuid:" + deviceID;
+            Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> heard; // Synchronized: the listener calls back on its own thread
+            Execution::WaitableEvent heardEvent;
+            try {
+                // the listener first, so it hears the server's very first NOTIFYs (sent as it starts)
+                SSDP::Client::Listener    listener{[&] (const SSDP::Advertisement& a) {
+                                                    if (a.fTarget == deviceType) {
+                                                        heard.rwget ()->Append (a);
+                                                        heardEvent.Set ();
+                                                    }
+                                                   },
+                                                   SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only},
+                                                   SSDP::Client::Listener::eAutoStart};
+                SSDP::Server::BasicServer server{
+                    d, dd, SSDP::Server::LocationFillingInHost (location),
+                    SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only, .fInterfaces = serverInterfaces}};
+                if (heardEvent.WaitQuietly (10s) == Execution::WaitableEvent::WaitStatus::eTriggered) {
+                    Execution::Sleep (1s); // and the ones out of the other interfaces
+                    EXPECT_FALSE (listener.GetNetworkInterfaces ().empty ());
+                    EXPECT_FALSE (server.GetNetworkInterfaces ().empty ());
+                    EXPECT_TRUE (server.GetNetworkInterfaces ().All ([&] (const Interface& i) { return serverInterfaces (i); }));
+                }
+            }
+            catch (...) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "SSDP_Loopback_Notify_ skipped - could not run an SSDP server and listener here: {}"_f(current_exception ())
+                        .AsNarrowSDKString ()
+                        .c_str ());
+                return nullopt;
+            }
+            Containers::Sequence<SSDP::Advertisement> notifies = heard.load ();
+            if (notifies.empty ()) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "SSDP_Loopback_Notify_ skipped - our own NOTIFY was not heard within 10 seconds (this environment probably blocks "
+                    "multicast, or UDP 1900)");
+                return nullopt;
+            }
+            for (const SSDP::Advertisement& a : notifies) {
+                DbgTrace ("heard: {}"_f, a);
+                EXPECT_EQ (a.fAlive, true);
+                EXPECT_EQ (a.fUSN, "uuid:{}::{}"_f(deviceID, deviceType));
+                EXPECT_EQ (a.fLocation.GetPath (), "/device.xml"sv);
+                optional<URI::Authority> authority = a.fLocation.GetAuthority ();
+                EXPECT_TRUE (authority and authority->GetPort () == kPort_);
+            }
+            return notifies;
+        };
+        auto hostOf = [] (const SSDP::Advertisement& a) -> optional<InternetAddress> {
+            optional<URI::Authority> authority = a.fLocation.GetAuthority ();
+            return authority and authority->GetHost () ? authority->GetHost ()->AsInternetAddress () : nullopt;
+        };
+        const Containers::Sequence<Interface> interfaces{SystemInterfacesMgr{}.GetAll ()};
+        auto                                  interfaceWith = [&] (const InternetAddress& a) {
+            return interfaces.First ([&] (const Interface& i) { return i.fBindings.fAddresses.Contains (a); });
+        };
+
+        // on every interface (the default): each NOTIFY carries one of this machine's own addresses
+        optional<Containers::Sequence<SSDP::Advertisement>> everywhere = exchange (SSDP::DefaultInterfaceFilter);
+        if (not everywhere) {
+            return;
+        }
+        Containers::Set<InternetAddress> hosts;
+        for (const SSDP::Advertisement& a : *everywhere) {
+            optional<InternetAddress> host = hostOf (a);
+            EXPECT_TRUE (host and interfaceWith (*host)) << Characters::ToString (a.fLocation).AsNarrowSDKString () << " - not one of ours";
+            if (host) {
+                hosts += *host;
+            }
+        }
+        DbgTrace ("on every interface: heard {} NOTIFYs, with LOCATION hosts {}"_f, everywhere->size (), hosts);
+
+        // on one interface only - one we just heard from: every NOTIFY then carries that interface's address
+        optional<Interface> only = hosts.empty () ? nullopt : interfaceWith (*hosts.First ());
+        if (not only) {
+            return; // (already a failure, above)
+        }
+        const Characters::String onlyID = only->fInternalInterfaceID;
+        if (optional<Containers::Sequence<SSDP::Advertisement>> there =
+                exchange ([onlyID] (const Interface& i) { return SSDP::DefaultInterfaceFilter (i) and i.fInternalInterfaceID == onlyID; })) {
+            for (const SSDP::Advertisement& a : *there) {
+                optional<InternetAddress> host = hostOf (a);
+                EXPECT_TRUE (host and only->fBindings.fAddresses.Contains (*host))
+                    << Characters::ToString (a.fLocation).AsNarrowSDKString () << " - not on " << onlyID.AsNarrowSDKString ();
+            }
+        }
+    }
+
+    /*
+     *  A Listener that can listen on no interface (none its Options::fInterfaces accepts, or no network yet) is still made: it
+     *  just hears nothing until there is one.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Listener_NoInterface_)
+    {
+        Debug::TraceContextBumper ctx{"SSDP_Listener_NoInterface_"};
+        SSDP::Client::Listener    listener{
+            SSDP::Client::Listener::Options{.fInterfaces = [] ([[maybe_unused]] const Interface& i) { return false; }}};
+        EXPECT_TRUE (listener.GetNetworkInterfaces ().empty ());
     }
 }
 #endif

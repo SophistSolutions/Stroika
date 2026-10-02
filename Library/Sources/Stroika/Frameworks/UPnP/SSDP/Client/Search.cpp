@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
@@ -41,20 +42,24 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Client;
 
 class Search::Rep_ final {
 public:
-    Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+    Rep_ (const Options& options)
+        : fInterfaceFilter_{options.fInterfaces}
     {
         static constexpr Activity kConstructingSSDPSearcher_{"constructing SSDP searcher"sv};
         DeclareActivity           activity{&kConstructingSSDPSearcher_};
-        if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
+        if (InternetProtocol::IP::SupportIPV4 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             fSockets_.Add (s);
         }
-        if (InternetProtocol::IP::SupportIPV6 (ipVersion)) {
+        if (InternetProtocol::IP::SupportIPV6 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             fSockets_.Add (s);
         }
         for (ConnectionlessSocket::Ptr cs : fSockets_) {
             cs.SetMulticastLoopMode (true); // possible should make this configurable
+        }
+        if (options.fFollowNetworkChanges) {
+            fLinkMonitor_ = SSDP::Private_::FollowNetworkChanges ([this] () { SearchAgain_ (); });
         }
     }
     ~Rep_ () = default;
@@ -65,15 +70,36 @@ public:
     }
     void Start (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
     {
-        if (fThread_ != nullptr) {
-            fThread_.AbortAndWaitForDone ();
-        }
-        fThread_ = Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); }, Thread::eAutoStart, "SSDP Searcher"sv);
+        [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+        StartThread_ (serviceType, autoRetryInterval);
+    }
+    Traversal::Iterable<Interface> GetNetworkInterfaces () const
+    {
+        return fSearchingOn_.load ();
     }
     void Stop ()
     {
+        [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
         if (fThread_ != nullptr) {
             fThread_.AbortAndWaitForDone ();
+        }
+        fSearching_ = nullopt;
+    }
+    void StartThread_ (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
+    {
+        if (fThread_ != nullptr) {
+            fThread_.AbortAndWaitForDone ();
+        }
+        fSearching_ = make_pair (serviceType, autoRetryInterval);
+        fThread_ = Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); }, Thread::eAutoStart, "SSDP Searcher"sv);
+    }
+    // a network appeared: search there right away, rather than at the next retry - by starting the search over (it sends out
+    // of every interface as it starts)
+    void SearchAgain_ ()
+    {
+        [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+        if (fSearching_) {
+            StartThread_ (fSearching_->first, fSearching_->second);
         }
     }
     void DoRun_ (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
@@ -90,6 +116,9 @@ public:
         else if (autoRetryInterval.has_value ()) {
             retrySendAt = Time::GetTickCount () + *autoRetryInterval;
         }
+        // listed once for the round, so each interface appears once in what GetNetworkInterfaces () reports
+        const Containers::Sequence<Interface> candidates{SSDP::Private_::GetSSDPInterfaces (fInterfaceFilter_)};
+        vector<bool>                          sentOn (candidates.size ());
         for (ConnectionlessSocket::Ptr s : fSockets_) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Sending M-SEARCH"sv};
@@ -129,8 +158,36 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("DETAILS: {}"_f, request);
 #endif
-            s.SendTo (span{reinterpret_cast<const byte*> (request.c_str ()), request.length ()}, useSocketAddress);
+            // out of each interface with an address of this socket's family - so devices on every network hear it (the answers
+            // all come back to this one socket)
+            const span<const byte>         data{reinterpret_cast<const byte*> (request.c_str ()), request.length ()};
+            InternetAddress::AddressFamily family = useSocketAddress.GetInternetAddress ().GetAddressFamily ();
+            for (size_t k = 0; k < candidates.size (); ++k) {
+                const Interface i = candidates[k];
+                if (not i.fBindings.fAddresses.Any ([&] (const InternetAddress& a) { return a.GetAddressFamily () == family; })) {
+                    continue;
+                }
+                try {
+                    s.SetMulticastInterface (i);
+                    s.SendTo (data, useSocketAddress);
+                    sentOn[k] = true;
+                }
+                catch (const Thread::AbortException&) {
+                    ReThrow ();
+                }
+                catch (...) {
+                    DbgTrace ("SSDP Search: could not send M-SEARCH on {}: {}"_f, i.fInternalInterfaceID, current_exception ());
+                }
+            }
         }
+
+        Containers::Sequence<Interface> searchedOn;
+        for (size_t k = 0; k < candidates.size (); ++k) {
+            if (sentOn[k]) {
+                searchedOn += candidates[k];
+            }
+        }
+        fSearchingOn_.store (searchedOn);
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
         WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
@@ -178,8 +235,13 @@ public:
 private:
     recursive_mutex                                       fCritSection_;
     vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
-    Collection<ConnectionlessSocket::Ptr>                 fSockets_;
-    Thread::CleanupPtr                                    fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
+    InterfaceFilter                                       fInterfaceFilter_;
+    mutex                                            fLifecycleMutex_; // Start, Stop and SearchAgain_ (called on the LinkMonitor's thread)
+    optional<pair<String, optional<Time::Duration>>> fSearching_; // the search started, and not stopped: serviceType, autoRetryInterval
+    Collection<ConnectionlessSocket::Ptr>            fSockets_;
+    Synchronized<Containers::Sequence<Interface>>    fSearchingOn_; // what the last M-SEARCH went out of
+    Thread::CleanupPtr                               fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
+    optional<IO::Network::LinkMonitor>               fLinkMonitor_; // last, so destroyed first: no SearchAgain_ while the rest goes away
 };
 
 /*
@@ -190,29 +252,33 @@ private:
 const String Search::kSSDPAny    = SSDP::kTarget_SSDPAll;
 const String Search::kRootDevice = "upnp:rootdevice"sv;
 
-Search::Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : fRep_{MakeSharedPtr<Rep_> (ipVersion)}
+Search::Search (const Options& options)
+    : fRep_{MakeSharedPtr<Rep_> (options)}
 {
 }
 
-Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : Search{ipVersion}
+Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options)
+    : Search{options}
 {
     AddOnFoundCallback (callOnFinds);
 }
 
-Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch,
-                IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : Search{callOnFinds, ipVersion}
+Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, const Options& options)
+    : Search{callOnFinds, options}
 {
     Start (initialSearch);
 }
 
 Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch,
-                const optional<Time::Duration>& autoRetryInterval, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : Search{callOnFinds, ipVersion}
+                const optional<Time::Duration>& autoRetryInterval, const Options& options)
+    : Search{callOnFinds, options}
 {
     Start (initialSearch, autoRetryInterval);
+}
+
+Traversal::Iterable<Interface> Search::GetNetworkInterfaces () const
+{
+    return fRep_->GetNetworkInterfaces ();
 }
 
 Search::~Search ()

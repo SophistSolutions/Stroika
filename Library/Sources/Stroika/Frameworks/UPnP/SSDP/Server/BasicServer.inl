@@ -3,4 +3,7 @@
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Server {
+
+    inline const BasicServer::Options BasicServer::kDefaultOptions{};
+
 }
