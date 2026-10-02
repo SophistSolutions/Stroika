@@ -68,6 +68,25 @@ namespace {
         }
     }
 
+    GTEST_TEST (Frameworks_UPnP, Device_Mapper_)
+    {
+        // each field serialized under a name saying what it holds - and back
+        Debug::TraceContextBumper ctx{"Device_Mapper_"};
+        Device                    d;
+        d.fDeviceID = "315CAAE0-668D-47C7-A178-24C9EE756627"sv;
+        d.fLocation = URI{"http://192.168.1.2:8080/device.xml"};
+        d.fServer   = "Linux/6.1 UPnP/1.0 Stroika/3.0"sv;
+        Containers::Mapping<String, DataExchange::VariantValue> m =
+            Device::kMapper.FromObject (d).As<Containers::Mapping<String, DataExchange::VariantValue>> ();
+        EXPECT_EQ (m.Keys ().As<Containers::Set<String>> (), (Containers::Set<String>{"Device-ID"sv, "Location"sv, "Server"sv}));
+        EXPECT_EQ (m.LookupValue ("Device-ID"sv).As<String> (), d.fDeviceID);
+        EXPECT_EQ (m.LookupValue ("Location"sv).As<String> (), d.fLocation.As<String> ());
+        Device back = Device::kMapper.ToObject<Device> (Device::kMapper.FromObject (d));
+        EXPECT_EQ (back.fDeviceID, d.fDeviceID);
+        EXPECT_EQ (back.fLocation, d.fLocation);
+        EXPECT_EQ (back.fServer, d.fServer);
+    }
+
     GTEST_TEST (Frameworks_UPnP, DeviceDescription_RoundTrip_)
     {
         Debug::TraceContextBumper ctx{"DeviceDescription_RoundTrip_"};

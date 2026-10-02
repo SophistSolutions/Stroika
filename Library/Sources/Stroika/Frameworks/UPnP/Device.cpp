@@ -22,8 +22,8 @@ using namespace Stroika::Frameworks::UPnP;
 const ObjectVariantMapper Device::kMapper = [] () {
     ObjectVariantMapper mapper;
     mapper.AddClass<Device> ({
-        {"Alive"sv, &Device::fDeviceID},
-        {"USN"sv, &Device::fLocation},
+        {"Device-ID"sv, &Device::fDeviceID},
+        {"Location"sv, &Device::fLocation},
         {"Server"sv, &Device::fServer},
     });
     return mapper;
