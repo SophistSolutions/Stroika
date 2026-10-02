@@ -575,7 +575,7 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
     mapper.AddCommonType<Set<Interface::Status>> ();
     mapper.AddCommonType<optional<Set<Interface::Status>>> ();
     mapper.AddClass<InterfaceInfo::Interface> ({
-        {"Interface-Internal-ID"sv, &InterfaceInfo::Interface::fInterfaceID},
+        {"Interface-ID"sv, &InterfaceInfo::Interface::fInterfaceID},
         {"Friendly-Name"sv, &InterfaceInfo::Interface::fFriendlyName},
         {"Description"sv, &InterfaceInfo::Interface::fDescription},
         {"Interface-Type"sv, &InterfaceInfo::Interface::fType},
