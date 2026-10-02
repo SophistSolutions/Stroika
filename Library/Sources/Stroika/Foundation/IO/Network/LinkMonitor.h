@@ -111,7 +111,9 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  \brief What a callback is told: an address added to (or removed from) an interface.
          *
-         *  \note As of v3.0d25 only IPv4 addresses are reported - and on Linux and macOS, only their being added.
+         *  \note IPv4 and IPv6 addresses. Only an address's coming and going is reported - not a change to one already there
+         *        (its lifetime renewed, say). On Linux an IPv6 address is reported once its duplicate-address check is done (it
+         *        cannot be used before).
          */
         struct Event {
             /**
@@ -121,13 +123,13 @@ namespace Stroika::Foundation::IO::Network {
 
             /**
              *  The interface's Interface::fInterfaceID - so SystemInterfacesMgr::GetById () finds the rest of it, if it is still
-             *  there. Empty where the OS no longer knows it (Windows, for an address removed with its interface).
+             *  there. Empty where the OS no longer knows the interface (an address removed along with it, say).
              */
             Interface::SystemIDType fInterfaceID;
 
             /**
              *  The address added (or removed) - always given: each Event is about one address. Linux: the netlink message's
-             *  IFA_LOCAL; macOS: the routing message's RTAX_IFA; Windows: MIB_UNICASTIPADDRESS_ROW::Address.
+             *  IFA_LOCAL (else IFA_ADDRESS, as for IPv6); macOS: the routing message's RTAX_IFA; Windows: MIB_UNICASTIPADDRESS_ROW::Address.
              */
             InternetAddress fAddress;
 

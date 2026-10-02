@@ -52,8 +52,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
             /**
              *  When a network appears, listen for searches there too (it re-joins the multicast group on every interface).
              *  It costs a LinkMonitor (all share one thread, waiting on the OS's address-change notifications). Where the OS cannot
-             *  tell (e.g. some containers), it is just not done. As of v3.0d25 LinkMonitor reports IPv4 addresses only, so a
-             *  network that gains only an IPv6 address is not noticed.
+             *  tell (e.g. some containers), it is just not done.
              */
             bool fFollowNetworkChanges{true};
         };

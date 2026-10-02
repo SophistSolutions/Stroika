@@ -291,6 +291,55 @@ namespace {
     }
 #endif
 
+#if qStroika_Platform_POSIX
+    // an address on an interface - the interface by its index, as the OS's messages name it
+    using IndexAndAddress_ = pair<unsigned int, InternetAddress>;
+
+    // BSD's kernel puts the interface's index in bytes 2-3 of a link-local IPv6 address it hands out (KAME's 'embedded scope');
+    // the address itself has 0 there. (As of macOS 26.5 getifaddrs () clears them itself; a routing message may not.)
+    in6_addr WithoutEmbeddedScope_ (in6_addr a)
+    {
+        if (a.s6_addr[0] == 0xfe and (a.s6_addr[1] & 0xc0) == 0x80) {
+            a.s6_addr[2] = 0;
+            a.s6_addr[3] = 0;
+        }
+        return a;
+    }
+
+    // the addresses on the interfaces now - so one reported again (its lifetime renewed, say) is not taken for one added
+    Containers::Set<IndexAndAddress_> CurrentAddresses_ ()
+    {
+        Containers::Set<IndexAndAddress_> result;
+        ifaddrs*                          ifa = nullptr;
+        Execution::ThrowPOSIXErrNoIfNegative (::getifaddrs (&ifa));
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([ifa] () noexcept { ::freeifaddrs (ifa); });
+        for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
+            if (p->ifa_addr == nullptr) {
+                continue;
+            }
+            string device{p->ifa_name};
+            if (size_t colon = device.find (':'); colon != string::npos) {
+                device.erase (colon); // a Linux address label (eth0:1): the address is its device's
+            }
+            unsigned int index = ::if_nametoindex (device.c_str ());
+            if (index == 0) {
+                continue;
+            }
+            if (p->ifa_addr->sa_family == AF_INET) {
+                sockaddr_in sin;
+                ::memcpy (&sin, p->ifa_addr, sizeof (sin));
+                result.Add (IndexAndAddress_{index, InternetAddress{sin.sin_addr}});
+            }
+            else if (p->ifa_addr->sa_family == AF_INET6) {
+                sockaddr_in6 sin6;
+                ::memcpy (&sin6, p->ifa_addr, sizeof (sin6));
+                result.Add (IndexAndAddress_{index, InternetAddress{WithoutEmbeddedScope_ (sin6.sin6_addr)}});
+            }
+        }
+        return result;
+    }
+#endif
+
     // what one LinkMonitor has registered. fMutex is held while its callbacks run - so taking it waits for any running on
     // another thread; recursive, so a callback can add or remove callbacks itself
     struct Subscriber_ {
@@ -346,6 +395,19 @@ namespace {
         }
 
     private:
+#if qStroika_Platform_POSIX
+        // on the monitor thread: an address added or removed - reported only if it really was (known: the addresses there)
+        void Changed_ (Containers::Set<IndexAndAddress_>* known, LinkChange c, unsigned int index, const InternetAddress& a)
+        {
+            if (c == LinkChange::eAdded ? known->AddIf (IndexAndAddress_{index, a}) : known->RemoveIf (IndexAndAddress_{index, a})) {
+                char name[IF_NAMESIZE]{};
+                Notify_ (Event{.fChange      = c,
+                               .fInterfaceID = ::if_indextoname (index, name) == nullptr ? String{} : String::FromNarrowSDKString (name),
+                               .fAddress     = a});
+            }
+        }
+#endif
+
         void Notify_ (const Event& e)
         {
             tNotifying_                     = true;
@@ -381,7 +443,8 @@ namespace {
                     Event e{.fChange = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded,
                             .fInterfaceID =
                                 (::ConvertInterfaceLuidToGuid (&Address->InterfaceLuid, &guid) == NO_ERROR) ? AdapterNameOf_ (guid) : String{},
-                            .fAddress = InternetAddress{Address->Address.Ipv4.sin_addr}};
+                            .fAddress = Address->Address.si_family == AF_INET6 ? InternetAddress{Address->Address.Ipv6.sin6_addr}
+                                                                               : InternetAddress{Address->Address.Ipv4.sin_addr}};
                     reinterpret_cast<Backend_*> (callerContext)->Notify_ (e);
                 }
                 catch (...) {
@@ -401,12 +464,11 @@ namespace {
             {
                 sockaddr_nl addr{};
                 addr.nl_family = AF_NETLINK;
-                addr.nl_groups = RTMGRP_IPV4_IFADDR;
+                addr.nl_groups = RTMGRP_IPV4_IFADDR | RTMGRP_IPV6_IFADDR;
                 Execution::ThrowPOSIXErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof (addr)));
             }
-            fMonitorThread_ = Execution::Thread::New ([this, sock] () {
-                // for now - only handle adds, but removes SB easy too...
-
+            // (listed after the socket is bound, so no change is missed between)
+            fMonitorThread_ = Execution::Thread::New ([this, sock, known = CurrentAddresses_ ()] () mutable {
                 // wait here, not in ReceiveFrom: with no timeout, that can miss an Abort () that comes just before it blocks
                 Execution::WaitForIOReady ready{sock.GetNativeSocket ()};
                 alignas (nlmsghdr) byte   buffer[4096];
@@ -418,22 +480,35 @@ namespace {
                     }
                     for (nlmsghdr* nlh = reinterpret_cast<nlmsghdr*> (buffer); NLMSG_OK (nlh, len) and nlh->nlmsg_type != NLMSG_DONE;
                          nlh           = NLMSG_NEXT (nlh, len)) {
-                        if (nlh->nlmsg_type == RTM_NEWADDR) {
+                        if (nlh->nlmsg_type == RTM_NEWADDR or nlh->nlmsg_type == RTM_DELADDR) {
                             struct ifaddrmsg* ifa = (struct ifaddrmsg*)NLMSG_DATA (nlh);
-                            struct rtattr*    rth = IFA_RTA (ifa);
-                            int               rtl = IFA_PAYLOAD (nlh);
-                            while (rtl and RTA_OK (rth, rtl)) {
-                                if (rth->rta_type == IFA_LOCAL and ifa->ifa_family == AF_INET and RTA_PAYLOAD (rth) >= sizeof (in_addr)) {
-                                    in_addr a;
-                                    ::memcpy (&a, RTA_DATA (rth), sizeof (a));
-                                    char name[IF_NAMESIZE]{};
-                                    if (::if_indextoname (ifa->ifa_index, name) != nullptr) {
-                                        Notify_ (Event{.fChange      = LinkChange::eAdded,
-                                                       .fInterfaceID = String::FromNarrowSDKString (name),
-                                                       .fAddress     = InternetAddress{a}});
+                            // one still checking it is no duplicate (IPv6) is not usable yet: reported when that is done
+                            if (nlh->nlmsg_type == RTM_NEWADDR and (ifa->ifa_flags & (IFA_F_TENTATIVE | IFA_F_DADFAILED))) {
+                                continue;
+                            }
+                            // IFA_LOCAL is this end's address where there is a peer (IFA_ADDRESS then being the peer's); IPv6
+                            // gives only IFA_ADDRESS
+                            optional<InternetAddress> local;
+                            optional<InternetAddress> address;
+                            struct rtattr*            rth = IFA_RTA (ifa);
+                            int                       rtl = IFA_PAYLOAD (nlh);
+                            for (; RTA_OK (rth, rtl); rth = RTA_NEXT (rth, rtl)) {
+                                if (rth->rta_type == IFA_LOCAL or rth->rta_type == IFA_ADDRESS) {
+                                    optional<InternetAddress>& into = rth->rta_type == IFA_LOCAL ? local : address;
+                                    if (ifa->ifa_family == AF_INET and RTA_PAYLOAD (rth) >= sizeof (in_addr)) {
+                                        in_addr a;
+                                        ::memcpy (&a, RTA_DATA (rth), sizeof (a));
+                                        into = InternetAddress{a};
+                                    }
+                                    else if (ifa->ifa_family == AF_INET6 and RTA_PAYLOAD (rth) >= sizeof (in6_addr)) {
+                                        in6_addr a;
+                                        ::memcpy (&a, RTA_DATA (rth), sizeof (a));
+                                        into = InternetAddress{a};
                                     }
                                 }
-                                rth = RTA_NEXT (rth, rtl);
+                            }
+                            if (optional<InternetAddress> a = local ? local : address) {
+                                Changed_ (&known, nlh->nlmsg_type == RTM_NEWADDR ? LinkChange::eAdded : LinkChange::eRemoved, ifa->ifa_index, *a);
                             }
                         }
                     }
@@ -446,12 +521,12 @@ namespace {
              * @todo    Minor - but we maybe should be using NotifyIpInterfaceChange... - not sure we get stragiht up/down issues this
              *          way...
              */
-            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, this, FALSE, &fMonitorHandler_));
+            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_UNSPEC, &CB_, this, FALSE, &fMonitorHandler_));
 #elif qStroika_Platform_MacOS
-            // as the Linux netlink loop above (the socket made here, too), via the BSD routing socket: report each IPv4 address
-            // added (RTM_NEWADDR)
+            // as the Linux netlink loop above (the socket made, and the addresses listed, here too), via the BSD routing socket:
+            // each address added or removed (RTM_NEWADDR, RTM_DELADDR)
             ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_ROUTE), Socket::RAW, AF_UNSPEC);
-            fMonitorThread_ = Execution::Thread::New ([this, sock] () {
+            fMonitorThread_ = Execution::Thread::New ([this, sock, known = CurrentAddresses_ ()] () mutable {
                 // wait here, not in ReceiveFrom: with no timeout, that can miss an Abort () that comes just before it blocks
                 Execution::WaitForIOReady ready{sock.GetNativeSocket ()};
                 byte                      buffer[4096];
@@ -470,7 +545,7 @@ namespace {
                             break;
                         }
                         size_t end = min<size_t> (offset + ifam.ifam_msglen, len);
-                        if (ifam.ifam_type == RTM_NEWADDR) {
+                        if (ifam.ifam_type == RTM_NEWADDR or ifam.ifam_type == RTM_DELADDR) {
                             // its addresses follow the header: one per bit set in ifam_addrs, in RTAX_ order, each padded to 4 bytes
                             size_t a = offset + sizeof (ifam);
                             for (int i = 0; i < RTAX_MAX and a < end; ++i) {
@@ -478,14 +553,18 @@ namespace {
                                     continue;
                                 }
                                 uint8_t saLen = static_cast<uint8_t> (buffer[a]);
-                                if (i == RTAX_IFA and saLen >= sizeof (sockaddr_in) and a + sizeof (sockaddr_in) <= end) {
-                                    sockaddr_in sin;
-                                    ::memcpy (&sin, buffer + a, sizeof (sin));
-                                    char name[IF_NAMESIZE]{};
-                                    if (sin.sin_family == AF_INET and ::if_indextoname (ifam.ifam_index, name) != nullptr) {
-                                        Notify_ (Event{.fChange      = LinkChange::eAdded,
-                                                       .fInterfaceID = String::FromNarrowSDKString (name),
-                                                       .fAddress     = InternetAddress{sin.sin_addr}});
+                                if (i == RTAX_IFA and a + 2 <= end) {
+                                    LinkChange c      = ifam.ifam_type == RTM_NEWADDR ? LinkChange::eAdded : LinkChange::eRemoved;
+                                    uint8_t    family = static_cast<uint8_t> (buffer[a + 1]); // a BSD sockaddr: {sa_len, sa_family, ...}
+                                    if (family == AF_INET and saLen >= sizeof (sockaddr_in) and a + sizeof (sockaddr_in) <= end) {
+                                        sockaddr_in sin;
+                                        ::memcpy (&sin, buffer + a, sizeof (sin));
+                                        Changed_ (&known, c, ifam.ifam_index, InternetAddress{sin.sin_addr});
+                                    }
+                                    else if (family == AF_INET6 and saLen >= sizeof (sockaddr_in6) and a + sizeof (sockaddr_in6) <= end) {
+                                        sockaddr_in6 sin6;
+                                        ::memcpy (&sin6, buffer + a, sizeof (sin6));
+                                        Changed_ (&known, c, ifam.ifam_index, InternetAddress{WithoutEmbeddedScope_ (sin6.sin6_addr)});
                                     }
                                 }
                                 a += saLen > 0 ? (1 + ((saLen - 1) | (sizeof (uint32_t) - 1))) : sizeof (uint32_t);
