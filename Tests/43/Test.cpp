@@ -34,6 +34,8 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
@@ -1100,6 +1102,63 @@ GTEST_TEST (Foundation_IO_Network, MulticastOptions_)
             s->SetMulticastTTL (ttl);
             EXPECT_EQ (s->GetMulticastTTL (), ttl) << name;
         }
+    }
+}
+
+GTEST_TEST (Foundation_IO_Network, LinkMonitor_)
+{
+    // LinkMonitors share one backend - on POSIX, a thread waiting on the OS's address-change notifications (on Windows an OS
+    // registration, so no thread) - started by the first to add a callback, and stopped when the last goes away
+    Debug::TraceContextBumper ctx{"LinkMonitor_"};
+    namespace Thread = Execution::Thread;
+    auto addCallback = [] (LinkMonitor& lm) -> bool {
+        try {
+            lm.AddCallback ([] (LinkMonitor::LinkChange, const Characters::String&, const Characters::String&) {});
+            return true;
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                ("LinkMonitor_: cannot monitor links here: {}"_f(current_exception ())).AsNarrowSDKString ().c_str ());
+            return false;
+        }
+    };
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+    const Containers::Set<Thread::IDType> before{Thread::GetStatistics ().fRunningThreads};
+    auto                                  newThreads = [&] () {
+        return Thread::GetStatistics ().fRunningThreads.Where ([&] (Thread::IDType id) { return not before.Contains (id); }).size ();
+    };
+#endif
+    {
+        LinkMonitor lm1;
+        LinkMonitor lm2;
+        LinkMonitor lm3;
+        if (not(addCallback (lm1) and addCallback (lm2) and addCallback (lm3))) {
+            return;
+        }
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+        EXPECT_LE (newThreads (), 1u) << "three LinkMonitors share one backend";
+#endif
+    }
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+    for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 5s; newThreads () != 0 and Time::GetTickCount () < giveUpAt;) {
+        Execution::Sleep (10ms);
+    }
+    EXPECT_EQ (newThreads (), 0u) << "the backend stops when the last LinkMonitor goes";
+#endif
+    // and many come and go at once, from several threads - so starting and stopping the backend race each other
+    Containers::Sequence<Thread::Ptr> churners;
+    for (int t = 0; t < 4; ++t) {
+        churners += Thread::New (
+            [] () {
+                for (int i = 0; i < 25; ++i) {
+                    LinkMonitor lm;
+                    lm.AddCallback ([] (LinkMonitor::LinkChange, const Characters::String&, const Characters::String&) {});
+                }
+            },
+            Thread::eAutoStart, "LinkMonitor_ churn {}"_f(t));
+    }
+    for (const Thread::Ptr& t : churners) {
+        t.Join (5min);
     }
 }
 

@@ -29,10 +29,6 @@
  * TODO:
  *      @todo   Should this API be renamed InterfaceMonitor? Probably yes?
  *
- *      @todo   Optimize of listener is STATIC - and so we only register one (and esp on linux with threads)
- *              only one thread - and fan out to all subscribers. SB pretty easy - just make data static,
- *              but I guess one trick is then you need to be able to remove callbacks (ours - need Function).
- *
  *      @todo   LinkMonitor rnetlink support DELETE
  *
  *      @todo   Support remove callback (once we have new FUNCTION helper - copyable stdfunction) - and usethat
@@ -69,6 +65,20 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  Create an instance of this class, and add callbacks to it, and they will be notified
      *  when a network connection comes up or down.
+     *
+     *  All LinkMonitors share one watcher of the OS's address changes - on Linux and macOS a thread, on Windows an OS
+     *  registration (NotifyUnicastIpAddressChange) - started by the first to add a callback, and stopped when the last of those
+     *  goes. So several cost about what one does.
+     *
+     *  \note  Callbacks run on that thread (on Windows, the OS's), not the caller's - so a slow one delays the others' - and
+     *         one LinkMonitor's one at a time. An exception from one is logged and ignored.
+     *
+     *  \note  Once RemoveCallback () returns, or the LinkMonitor is destroyed, that callback is not running and is not called
+     *         again (except that, done from within the callback itself, the call already running finishes). A callback may
+     *         add or remove callbacks, and create or destroy LinkMonitors - but not destroy the last one: that would have to
+     *         stop the thread calling it.
+     *
+     *  \note  AddCallback () and RemoveCallback () may be called from any thread, at once.
      *
      *  @todo  POSIX code is not really posix but assumes linux==posix =- relaly need separate define to check for netlink
      *         and a windoze impl.

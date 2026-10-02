@@ -15,7 +15,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
             const Foundation::Traversal::Iterable<pair<Foundation::IO::Network::ConnectionlessSocket::Ptr, Foundation::IO::Network::InternetAddress>>& socketsAndGroups,
             const InterfaceFilter& filter);
 
-        // a LinkMonitor calling onNetworkAppeared (on its own thread) whenever an address is added - so the caller can act on
+        // a LinkMonitor calling onNetworkAppeared (on its thread) whenever an address is added - so the caller can act on
         // the new network; nullopt (and logged) if the OS cannot tell. An exception from onNetworkAppeared is only logged.
         optional<Foundation::IO::Network::LinkMonitor> FollowNetworkChanges (const function<void ()>& onNetworkAppeared);
     }

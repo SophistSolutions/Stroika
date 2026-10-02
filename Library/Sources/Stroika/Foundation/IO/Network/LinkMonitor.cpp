@@ -36,7 +36,9 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #if qStroika_Platform_Windows
 #include "Platform/Windows/WinSock.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
@@ -271,52 +273,112 @@ Again:
     return String{};
 }
 
-struct LinkMonitor::Rep_ {
-    void AddCallback (const Callback& callback)
-    {
-        fCallbacks_.Add (callback);
-        StartMonitorIfNeeded_ ();
-    }
-    void RemoveCallback (const Callback& callback)
-    {
-        fCallbacks_.Remove (callback);
-        // @todo - add some such StopMonitorIfNeeded_();
-    }
-    Containers::Collection<Callback> fCallbacks_;
+namespace {
+    using Callback   = LinkMonitor::Callback;
+    using LinkChange = LinkMonitor::LinkChange;
+
+    // what one LinkMonitor has registered. fMutex is held while its callbacks run - so taking it waits for any running on
+    // another thread; recursive, so a callback can add or remove callbacks itself
+    struct Subscriber_ {
+        recursive_mutex                  fMutex;
+        Containers::Collection<Callback> fCallbacks; // guarded by fMutex
+    };
+
+    // The one watcher of the OS's address changes, shared by every LinkMonitor with a callback: on Linux and macOS a thread
+    // (reading a netlink or routing socket), on Windows a NotifyUnicastIpAddressChange registration. Started by the first
+    // LinkMonitor to add a callback, and stopped when the last such goes - so it never outlives them (as no Stroika thread may
+    // outlive main).
+    struct Backend_ {
+        static shared_ptr<Backend_> Get ()
+        {
+            [[maybe_unused]] lock_guard critSec{sMutex_};
+            if (shared_ptr<Backend_> b = sCurrent_.lock ()) {
+                return b;
+            }
+            shared_ptr<Backend_> b = Memory::MakeSharedPtr<Backend_> ();
+            b->Start_ ();
+            sCurrent_ = b;
+            return b;
+        }
+
+        Backend_ ()                = default;
+        Backend_ (const Backend_&) = delete;
+        ~Backend_ ()
+        {
+            // the last LinkMonitor destroyed from within one of its callbacks: this cannot stop (and wait for) what is calling it
+            Require (not tNotifying_);
 #if qStroika_Platform_POSIX
-    Execution::Thread::Ptr fMonitorThread_;
+            Execution::Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
+            if (fMonitorThread_ != nullptr) {
+                fMonitorThread_.AbortAndWaitForDone ();
+            }
+#elif qStroika_Platform_Windows
+            if (fMonitorHandler_ != INVALID_HANDLE_VALUE) {
+                // @todo should check error result, but then do what?
+                // also - does this blcok until pending notifies done?
+                // assuming so!!!
+                ::CancelMibChangeNotify2 (fMonitorHandler_);
+            }
 #endif
-#if qStroika_Platform_Windows
-    HANDLE fMonitorHandler_ = INVALID_HANDLE_VALUE;
-#endif
-
-    void SendNotifies (LinkChange lc, const String& linkName, const String& ipAddr)
-    {
-        for (const auto& cb : fCallbacks_) {
-            cb (lc, linkName, ipAddr);
         }
-    }
+
+        void Add (const shared_ptr<Subscriber_>& s)
+        {
+            fSubscribers_.rwget ().rwref ().Add (s);
+        }
+        void Remove (const shared_ptr<Subscriber_>& s)
+        {
+            fSubscribers_.rwget ().rwref ().Remove (s);
+        }
+
+    private:
+        void Notify_ (LinkChange lc, const String& linkName, const String& ipAddr)
+        {
+            tNotifying_                     = true;
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { tNotifying_ = false; });
+            // each from a copy - a callback may add or remove callbacks, or LinkMonitors - but one removed meanwhile is not called
+            for (const shared_ptr<Subscriber_>& sub : fSubscribers_.load ()) {
+                [[maybe_unused]] lock_guard critSec{sub->fMutex};
+                for (const Callback& cb : Containers::Collection<Callback>{sub->fCallbacks}) {
+                    if (sub->fCallbacks.Contains (cb)) {
+                        try {
+                            cb (lc, linkName, ipAddr);
+                        }
+                        catch (const Execution::Thread::AbortException&) {
+                            Execution::ReThrow ();
+                        }
+                        catch (...) {
+                            // not let out: it would stop the notifications to every LinkMonitor
+                            DbgTrace ("LinkMonitor: ignoring exception from a callback: {}"_f, current_exception ());
+                        }
+                    }
+                }
+            }
+        }
 
 #if qStroika_Platform_Windows
-    // cannot use LAMBDA cuz we need WINAPI call convention
-    static void WINAPI CB_ (void* callerContext, PMIB_UNICASTIPADDRESS_ROW Address, MIB_NOTIFICATION_TYPE NotificationType)
-    {
-        Rep_* rep = reinterpret_cast<Rep_*> (callerContext);
-        if (Address != NULL) {
-            char ipAddrBuf[1024];
-            (void)snprintf (ipAddrBuf, std::size (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
-                            Address->Address.Ipv4.sin_addr.s_host, Address->Address.Ipv4.sin_addr.s_lh, Address->Address.Ipv4.sin_addr.s_impno);
-            LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
-            rep->SendNotifies (lc, String{}, String{ipAddrBuf});
+        // cannot use LAMBDA cuz we need WINAPI call convention
+        static void WINAPI CB_ (void* callerContext, PMIB_UNICASTIPADDRESS_ROW Address, MIB_NOTIFICATION_TYPE NotificationType)
+        {
+            if (Address != NULL) {
+                char ipAddrBuf[1024];
+                (void)snprintf (ipAddrBuf, std::size (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
+                                Address->Address.Ipv4.sin_addr.s_host, Address->Address.Ipv4.sin_addr.s_lh, Address->Address.Ipv4.sin_addr.s_impno);
+                LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
+                try {
+                    reinterpret_cast<Backend_*> (callerContext)->Notify_ (lc, String{}, String{ipAddrBuf});
+                }
+                catch (...) {
+                    // nothing may escape to the OS's thread
+                    DbgTrace ("LinkMonitor: {}"_f, current_exception ());
+                }
+            }
         }
-    }
 #endif
 
-    void StartMonitorIfNeeded_ ()
-    {
+        void Start_ ()
+        {
 #if qStroika_Platform_Linux
-        if (fMonitorThread_ == nullptr) {
-            // very slight race starting this but not worth worrying about
             fMonitorThread_ = Execution::Thread::New ([this] () {
                 // for now - only handle adds, but removes SB easy too...
 
@@ -330,17 +392,17 @@ struct LinkMonitor::Rep_ {
                     Execution::ThrowPOSIXErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof (addr)));
                 }
 
-                //
-                /// @todo - PROBABLY REDO USING Socket::Recv () - but we have none right now!!!
-                //          -- LGP 2014-01-23
-                //
-
-                int              len;
-                char             buffer[4096];
-                struct nlmsghdr* nlh;
-                nlh = (struct nlmsghdr*)buffer;
-                while ((len = ::recv (sock.GetNativeSocket (), nlh, 4096, 0)) > 0) {
-                    while ((NLMSG_OK (nlh, len)) and (nlh->nlmsg_type != NLMSG_DONE)) {
+                // wait here, not in ReceiveFrom: with no timeout, that can miss an Abort () that comes just before it blocks
+                Execution::WaitForIOReady ready{sock.GetNativeSocket ()};
+                alignas (nlmsghdr) byte   buffer[4096];
+                while (true) {
+                    (void)ready.Wait ();
+                    int len = static_cast<int> (sock.ReceiveFrom (span{buffer}, 0, nullptr).size ());
+                    if (len <= 0) {
+                        break;
+                    }
+                    for (nlmsghdr* nlh = reinterpret_cast<nlmsghdr*> (buffer); NLMSG_OK (nlh, len) and nlh->nlmsg_type != NLMSG_DONE;
+                         nlh           = NLMSG_NEXT (nlh, len)) {
                         if (nlh->nlmsg_type == RTM_NEWADDR) {
                             struct ifaddrmsg* ifa = (struct ifaddrmsg*)NLMSG_DATA (nlh);
                             struct rtattr*    rth = IFA_RTA (ifa);
@@ -356,39 +418,39 @@ struct LinkMonitor::Rep_ {
                                         char ipAddrBuf[1024];
                                         ::snprintf (ipAddrBuf, std::size (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,
                                                     (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
-                                        SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String{ipAddrBuf});
+                                        Notify_ (LinkChange::eAdded, String::FromNarrowSDKString (name), String{ipAddrBuf});
                                     }
                                 }
                                 rth = RTA_NEXT (rth, rtl);
                             }
                         }
-                        nlh = NLMSG_NEXT (nlh, len);
                     }
                 }
             });
             fMonitorThread_.SetThreadName ("Network LinkMonitor thread"sv);
             fMonitorThread_.Start ();
-        }
 #elif qStroika_Platform_Windows
-        /*
-        * @todo    Minor - but we maybe should be using NotifyIpInterfaceChange... - not sure we get stragiht up/down issues this
-        *          way...
-        */
-        if (fMonitorHandler_ == INVALID_HANDLE_VALUE) {
+            /*
+             * @todo    Minor - but we maybe should be using NotifyIpInterfaceChange... - not sure we get stragiht up/down issues this
+             *          way...
+             */
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, this, FALSE, &fMonitorHandler_));
-        }
 #elif qStroika_Platform_MacOS
-        if (fMonitorThread_ == nullptr) {
-            // very slight race starting this but not worth worrying about
             fMonitorThread_ = Execution::Thread::New ([this] () {
                 // As the Linux netlink loop above, via the BSD routing socket: report each IPv4 address added (RTM_NEWADDR).
                 ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_ROUTE), Socket::RAW, AF_UNSPEC);
-                byte    buffer[4096];
-                ssize_t len;
-                while ((len = ::recv (sock.GetNativeSocket (), buffer, sizeof (buffer), 0)) > 0) {
+                // wait here, not in ReceiveFrom: with no timeout, that can miss an Abort () that comes just before it blocks
+                Execution::WaitForIOReady ready{sock.GetNativeSocket ()};
+                byte                      buffer[4096];
+                while (true) {
+                    (void)ready.Wait ();
+                    size_t len = sock.ReceiveFrom (span{buffer}, 0, nullptr).size ();
+                    if (len == 0) {
+                        break;
+                    }
                     // Every routing message starts {u_short msglen; u_char version; u_char type}. Copied out, never cast in
                     // place: like SIOCGIFCONF's records, these are packed
-                    for (size_t offset = 0; offset + sizeof (ifa_msghdr) <= static_cast<size_t> (len);) {
+                    for (size_t offset = 0; offset + sizeof (ifa_msghdr) <= len;) {
                         ifa_msghdr ifam;
                         ::memcpy (&ifam, buffer + offset, sizeof (ifam));
                         if (ifam.ifam_msglen == 0) {
@@ -408,8 +470,7 @@ struct LinkMonitor::Rep_ {
                                     ::memcpy (&sin, buffer + a, sizeof (sin));
                                     char name[IF_NAMESIZE]{};
                                     if (sin.sin_family == AF_INET and ::if_indextoname (ifam.ifam_index, name) != nullptr) {
-                                        SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name),
-                                                      InternetAddress{sin.sin_addr}.As<String> ());
+                                        Notify_ (LinkChange::eAdded, String::FromNarrowSDKString (name), InternetAddress{sin.sin_addr}.As<String> ());
                                     }
                                 }
                                 a += saLen > 0 ? (1 + ((saLen - 1) | (sizeof (uint32_t) - 1))) : sizeof (uint32_t);
@@ -421,28 +482,50 @@ struct LinkMonitor::Rep_ {
             });
             fMonitorThread_.SetThreadName ("Network LinkMonitor thread"sv);
             fMonitorThread_.Start ();
-        }
 #else
-        AssertNotImplemented ();
+            AssertNotImplemented ();
 #endif
-    }
+        }
 
+        Execution::Synchronized<Containers::Collection<shared_ptr<Subscriber_>>> fSubscribers_;
+#if qStroika_Platform_POSIX
+        Execution::Thread::Ptr fMonitorThread_;
+#elif qStroika_Platform_Windows
+        HANDLE fMonitorHandler_ = INVALID_HANDLE_VALUE;
+#endif
+        static inline mutex              sMutex_; // guards sCurrent_
+        static inline weak_ptr<Backend_> sCurrent_;
+        static inline thread_local bool  tNotifying_{false};
+    };
+}
+
+struct LinkMonitor::Rep_ {
     ~Rep_ ()
     {
-#if qStroika_Platform_POSIX
-        Execution::Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
-        if (fMonitorThread_ != nullptr) {
-            fMonitorThread_.AbortAndWaitForDone ();
+        if (fBackend_ != nullptr) {
+            fBackend_->Remove (fSubscriber_); // no more notifications to it
+            // and none still running - unless here, a callback destroying its own LinkMonitor: then it calls none of the rest
+            [[maybe_unused]] lock_guard critSec{fSubscriber_->fMutex};
+            fSubscriber_->fCallbacks.clear ();
         }
-#elif qStroika_Platform_Windows
-        if (fMonitorHandler_ != INVALID_HANDLE_VALUE) {
-            // @todo should check error result, but then do what?
-            // also - does this blcok until pending notifies done?
-            // assuming so!!!
-            ::CancelMibChangeNotify2 (fMonitorHandler_);
-        }
-#endif
+        // then fBackend_ goes - so it stops, if this was the last LinkMonitor using it
     }
+    void AddCallback (const Callback& callback)
+    {
+        [[maybe_unused]] lock_guard critSec{fSubscriber_->fMutex};
+        if (fBackend_ == nullptr) {
+            fBackend_ = Backend_::Get ();
+            fBackend_->Add (fSubscriber_);
+        }
+        fSubscriber_->fCallbacks.Add (callback);
+    }
+    void RemoveCallback (const Callback& callback)
+    {
+        [[maybe_unused]] lock_guard critSec{fSubscriber_->fMutex}; // waits for it, if running on another thread
+        fSubscriber_->fCallbacks.Remove (callback);
+    }
+    const shared_ptr<Subscriber_> fSubscriber_{Memory::MakeSharedPtr<Subscriber_> ()};
+    shared_ptr<Backend_>          fBackend_; // from the first AddCallback; guarded by fSubscriber_->fMutex
 };
 
 /*
