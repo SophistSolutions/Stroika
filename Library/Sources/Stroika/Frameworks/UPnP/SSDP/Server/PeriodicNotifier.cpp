@@ -35,7 +35,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
  ********************************************************************************
  */
 PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const Options& options)
-    : fNotifyingOn_{Memory::MakeSharedPtr<Execution::Synchronized<Containers::Sequence<Interface>>> ()}
+    : fNotifyingOn_{Memory::MakeSharedPtr<Execution::Synchronized<InterfacesByID>> ()}
 {
     InterfaceFilter interfaceFilter = options.fInterfaces;
 
@@ -68,9 +68,9 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
     }
 
     // the NOTIFYs go out on the IntervalTimer's thread, and - right after a network appears - the LinkMonitor's: one at a time
-    shared_ptr<mutex>                                                    sendingNotifies = Memory::MakeSharedPtr<mutex> ();
-    shared_ptr<Execution::Synchronized<Containers::Sequence<Interface>>> notifyingOn     = fNotifyingOn_;
-    Execution::IntervalTimer::TimerCallback                              callback        = [=] () mutable {
+    shared_ptr<mutex>                                   sendingNotifies = Memory::MakeSharedPtr<mutex> ();
+    shared_ptr<Execution::Synchronized<InterfacesByID>> notifyingOn     = fNotifyingOn_;
+    Execution::IntervalTimer::TimerCallback             callback        = [=] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - notifications"};
         for ([[maybe_unused]] const auto& a : advertisements) {
@@ -84,12 +84,11 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
 #endif
         }
 #endif
-        [[maybe_unused]] lock_guard     critSec{*sendingNotifies};
-        Containers::Sequence<Interface> sentOn;
+        [[maybe_unused]] lock_guard critSec{*sendingNotifies};
+        InterfacesByID              sentOn;
         try {
             // out of each interface, with that interface's own LOCATION
             for (const Interface& i : SSDP::Private_::GetSSDPInterfaces (interfaceFilter)) {
-                bool notifiedHere = false;
                 for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
                     try {
                         InternetAddress::AddressFamily family = s.second.GetInternetAddress ().GetAddressFamily ();
@@ -112,18 +111,14 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
                             a.fLocation = *url;
                             s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a), s.second);
                         }
-                        notifiedHere = true;
+                        sentOn.Add (i);
                     }
                     catch (const Execution::Thread::AbortException&) {
                         Execution::ReThrow ();
                     }
                     catch (...) {
-                        DbgTrace ("Ignoring inability to send SSDP notify packets on {}: {} (try again later)"_f, i.fInternalInterfaceID,
-                                  current_exception ());
+                        DbgTrace ("Ignoring inability to send SSDP notify packets on {}: {} (try again later)"_f, i.fInterfaceID, current_exception ());
                     }
-                }
-                if (notifiedHere) {
-                    sentOn += i; // listed once for the cycle, so each interface once
                 }
             }
         }
@@ -142,7 +137,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
     }
 }
 
-Traversal::Iterable<Interface> PeriodicNotifier::GetNetworkInterfaces () const
+InterfacesByID PeriodicNotifier::GetNetworkInterfaces () const
 {
     return fNotifyingOn_->load ();
 }

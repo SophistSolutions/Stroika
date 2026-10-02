@@ -141,48 +141,11 @@ String Interface::Bindings::ToString () const
  *********************************** Interface **********************************
  ********************************************************************************
  */
-optional<unsigned int> Interface::GetCurrentIndex () const
-{
-#if qStroika_Platform_Linux
-    // SIOCGIFINDEX, not if_nametoindex () - @see GetInterfaces_POSIX_mkInterface_
-    int                     sd      = Execution::ThrowPOSIXErrNoIfNegative (::socket (AF_INET, SOCK_DGRAM, 0));
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([sd] () noexcept { ::close (sd); });
-    ifreq                   r{};
-    CString::Copy (r.ifr_name, std::size (r.ifr_name), fInternalInterfaceID.AsNarrowSDKString ().c_str ());
-    if (::ioctl (sd, SIOCGIFINDEX, &r) == 0 and r.ifr_ifindex > 0) {
-        return static_cast<unsigned int> (r.ifr_ifindex);
-    }
-#elif qStroika_Platform_MacOS
-    if (unsigned int index = ::if_nametoindex (fInternalInterfaceID.AsNarrowSDKString ().c_str ()); index != kAnyIndex) {
-        return index;
-    }
-#elif qStroika_Platform_Windows
-    // fInternalInterfaceID is the adapter's GUID (IP_ADAPTER_ADDRESSES::AdapterName)
-    ::GUID guid;
-    try {
-        Common::GUID g{fInternalInterfaceID};
-        static_assert (sizeof (guid) == sizeof (g));
-        ::memcpy (&guid, &g, sizeof (guid));
-    }
-    catch (...) {
-        return nullopt; // not a GUID, so not an adapter's
-    }
-    NET_LUID    luid{};
-    NET_IFINDEX index{};
-    if (::ConvertInterfaceGuidToLuid (&guid, &luid) == NO_ERROR and ::ConvertInterfaceLuidToIndex (&luid, &index) == NO_ERROR and index != kAnyIndex) {
-        return index;
-    }
-#else
-    AssertNotImplemented ();
-#endif
-    return nullopt;
-}
-
 String Interface::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "internalInterfaceID: "sv << fInternalInterfaceID;
+    sb << "interfaceID: "sv << fInterfaceID;
 #if qStroika_Platform_POSIX
     sb << ", interfaceName: "sv << GetInterfaceName ();
 #endif
@@ -297,8 +260,8 @@ namespace {
     Interface GetInterfaces_POSIX_mkInterface_ (int sd, const char* name, unsigned int flags)
     {
         Interface newInterface;
-        newInterface.fInternalInterfaceID = String::FromSDKString (name);
-        newInterface.fFriendlyName = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
+        newInterface.fInterfaceID  = String::FromSDKString (name);
+        newInterface.fFriendlyName = newInterface.fInterfaceID; // not great - maybe find better name - but this will do for now...
 #if qStroika_Platform_Linux
         {
             // SIOCGIFINDEX, not if_nametoindex (): that needs <net/if.h>, which can clash with the <linux/...> headers used here
@@ -503,7 +466,7 @@ namespace {
         return newInterface;
     }
 
-    Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
+    InterfacesByID GetInterfaces_POSIX_ ()
     {
         ifaddrs* ifa = nullptr;
         if (::getifaddrs (&ifa) != 0) {
@@ -523,7 +486,7 @@ namespace {
          *  no IPv4 address went missing); on macOS its records are packed (misaligned), each holds just a struct sockaddr
          *  (too small for an IPv6 address), and link-local addresses come with the scope id embedded in them.
          */
-        KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
+        InterfacesByID results;
         for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("interface: ifa_name={}; ifa_addr.sa_family = {}"_f, p->ifa_name, p->ifa_addr == nullptr ? -1 : p->ifa_addr->sa_family);
@@ -553,7 +516,7 @@ namespace {
 #endif
             results.Add (newInterface);
         }
-        return move (results);
+        return results;
     }
 }
 #endif
@@ -841,7 +804,7 @@ namespace {
         return results;
     }
 
-    Traversal::Iterable<Interface> GetInterfaces_Windows_ ()
+    InterfacesByID GetInterfaces_Windows_ ()
     {
         Mapping<Common::GUID, WirelessInfoPlus_> wirelessInfo2Merge;
         try {
@@ -856,10 +819,10 @@ namespace {
                 Execution::ReThrow ();
             }
         }
-        KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
-        ULONG                              flags  = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_GATEWAYS;
-        ULONG                              family = AF_UNSPEC; // Both IPv4 and IPv6 addresses
-        Memory::StackBuffer<byte>          buf;
+        InterfacesByID            results;
+        ULONG                     flags  = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_GATEWAYS;
+        ULONG                     family = AF_UNSPEC; // Both IPv4 and IPv6 addresses
+        Memory::StackBuffer<byte> buf;
     Again:
         ULONG                 ulOutBufLen = static_cast<ULONG> (buf.GetSize ());
         PIP_ADAPTER_ADDRESSES pAddresses  = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());
@@ -872,10 +835,10 @@ namespace {
         if (dwRetVal == NO_ERROR) {
             for (PIP_ADAPTER_ADDRESSES currAddresses = pAddresses; currAddresses != nullptr; currAddresses = currAddresses->Next) {
                 String    adapterName{String::FromNarrowSDKString (currAddresses->AdapterName)};
-                Interface newInterface            = results.LookupValue (adapterName);
-                newInterface.fInternalInterfaceID = adapterName;
-                newInterface.fFriendlyName        = currAddresses->FriendlyName;
-                newInterface.fDescription         = currAddresses->Description;
+                Interface newInterface     = results.LookupValue (adapterName);
+                newInterface.fInterfaceID  = adapterName;
+                newInterface.fFriendlyName = currAddresses->FriendlyName;
+                newInterface.fDescription  = currAddresses->Description;
 
                 static constexpr Common::GUID kZeroGUID_{};
                 if (memcmp (&currAddresses->NetworkGuid, &kZeroGUID_, sizeof (kZeroGUID_)) != 0) {
@@ -982,7 +945,7 @@ namespace {
 #endif
 
                 if (newInterface.fType == Interface::Type::eWIFI) {
-                    if (auto owinfo = wirelessInfo2Merge.Lookup (newInterface.fInternalInterfaceID)) {
+                    if (auto owinfo = wirelessInfo2Merge.Lookup (newInterface.fInterfaceID)) {
                         newInterface.fWirelessInfo = *owinfo;
                         WeakAssert (not newInterface.fTransmitSpeedBaud.has_value () or newInterface.fTransmitSpeedBaud == owinfo->fTransmitSpeedBaud);
                         WeakAssert (not newInterface.fReceiveLinkSpeedBaud.has_value () or newInterface.fReceiveLinkSpeedBaud == owinfo->fReceiveLinkSpeedBaud);
@@ -992,11 +955,11 @@ namespace {
                     else {
                         // This happens for down/wifi-direct interfaces
                         // no biggie.
-                        // DbgTrace ("Oops - didn't find wireless interface we should have: {}, avail-keys={}"_f, newInterface.fInternalInterfaceID, wirelessInfo2Merge.Keys ());
+                        // DbgTrace ("Oops - didn't find wireless interface we should have: {}, avail-keys={}"_f, newInterface.fInterfaceID, wirelessInfo2Merge.Keys ());
                     }
                 }
                 else {
-                    WeakAssert (not wirelessInfo2Merge.ContainsKey (newInterface.fInternalInterfaceID));
+                    WeakAssert (not wirelessInfo2Merge.ContainsKey (newInterface.fInterfaceID));
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"newInterface={}"_f, newInterface);
@@ -1028,15 +991,15 @@ namespace {
  ************************* Network::SystemInterfacesMgr *************************
  ********************************************************************************
  */
-Traversal::Iterable<Interface> SystemInterfacesMgr::GetAll ()
+InterfacesByID SystemInterfacesMgr::GetAll ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"SystemInterfacesMgr::GetAll"};
 #endif
 #if qStroika_Platform_POSIX
-    Traversal::Iterable<Interface> results = GetInterfaces_POSIX_ ();
+    InterfacesByID results = GetInterfaces_POSIX_ ();
 #elif qStroika_Platform_Windows
-    Traversal::Iterable<Interface> results = GetInterfaces_Windows_ ();
+    InterfacesByID results = GetInterfaces_Windows_ ();
 #else
     AssertNotImplemented ();
 #endif
@@ -1046,25 +1009,10 @@ Traversal::Iterable<Interface> SystemInterfacesMgr::GetAll ()
     return results;
 }
 
-optional<Interface> SystemInterfacesMgr::GetById (const Interface::SystemIDType& internalInterfaceID)
+optional<Interface> SystemInterfacesMgr::GetById (const Interface::SystemIDType& interfaceID)
 {
-    // Made some progress but must refactor the above a little more to be able avoid iterating and just fetch the desired interface (esp on macos).
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Network::GetById"};
-#endif
     // @todo - a much more efficent implementation - maybe good enuf to use caller staleness cache with a few seconds staleness
-    for (const Interface& i : GetAll ()) {
-        if (i.fInternalInterfaceID == internalInterfaceID) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"found interface %s", internalInterfaceID.c_str ());
-#endif
-            return i;
-        }
-    }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"interface %s not found", internalInterfaceID.c_str ());
-#endif
-    return nullopt;
+    return GetAll ().Lookup (interfaceID);
 }
 
 optional<Interface> SystemInterfacesMgr::GetContainingAddress (const InternetAddress& ia)
@@ -1076,13 +1024,13 @@ optional<Interface> SystemInterfacesMgr::GetContainingAddress (const InternetAdd
     for (const Interface& i : GetAll ()) {
         if (i.fBindings.fAddressRanges.Any ([&ia] (CIDR c) { return c.GetRange ().Contains (ia); })) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"found interface %s", internalInterfaceID.c_str ());
+            DbgTrace ("found interface {}"_f, i.fInterfaceID);
 #endif
             return i;
         }
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"interface %s not found", internalInterfaceID.c_str ());
+    DbgTrace ("no interface contains {}"_f, ia);
 #endif
     return nullopt;
 }

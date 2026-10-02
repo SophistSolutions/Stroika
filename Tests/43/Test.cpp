@@ -636,7 +636,7 @@ GTEST_TEST (Foundation_IO_Network, Test3_NetworkInterfaceList_)
 #if qStroika_Platform_POSIX
     using namespace Test3_NetworkInterfaceList_Private_;
     auto find = [&] (const Characters::String& name) -> optional<Interface> {
-        return interfaces.First ([&] (const Interface& i) { return i.fInternalInterfaceID == name; });
+        return interfaces.First ([&] (const Interface& i) { return i.fInterfaceID == name; });
     };
     auto [names, addrs] = GetIFAddrs_ ();
     // every interface the system lists - including one with no address at all
@@ -656,20 +656,20 @@ GTEST_TEST (Foundation_IO_Network, Test3_NetworkInterfaceList_)
     // and nothing else - no address the system does not have (an IPv6 address read from too few bytes, say)
     for (const Interface& i : interfaces) {
         for (const InternetAddress& ia : i.fBindings.fAddresses) {
-            EXPECT_TRUE (addrs.Any ([&] (const IFAddr_& a) { return a.fInterface == i.fInternalInterfaceID and a.fAddress == ia; }))
-                << "bogus address " << Characters::ToString (ia).AsNarrowSDKString () << " on " << i.fInternalInterfaceID.AsNarrowSDKString ();
+            EXPECT_TRUE (addrs.Any ([&] (const IFAddr_& a) { return a.fInterface == i.fInterfaceID and a.fAddress == ia; }))
+                << "bogus address " << Characters::ToString (ia).AsNarrowSDKString () << " on " << i.fInterfaceID.AsNarrowSDKString ();
         }
     }
 #endif
     // an interface's bindings are its own addresses - not the multicast groups it has joined
     for (const Interface& i : interfaces) {
         for (const InternetAddress& ia : i.fBindings.fAddresses) {
-            EXPECT_FALSE (ia.IsMulticastAddress ()) << "multicast address " << Characters::ToString (ia).AsNarrowSDKString () << " on "
-                                                    << i.fInternalInterfaceID.AsNarrowSDKString ();
+            EXPECT_FALSE (ia.IsMulticastAddress ())
+                << "multicast address " << Characters::ToString (ia).AsNarrowSDKString () << " on " << i.fInterfaceID.AsNarrowSDKString ();
         }
         for (const CIDR& r : i.fBindings.fAddressRanges) {
             EXPECT_FALSE (r.GetBaseInternetAddress ().IsMulticastAddress ())
-                << "multicast range " << Characters::ToString (r).AsNarrowSDKString () << " on " << i.fInternalInterfaceID.AsNarrowSDKString ();
+                << "multicast range " << Characters::ToString (r).AsNarrowSDKString () << " on " << i.fInterfaceID.AsNarrowSDKString ();
         }
     }
 }
@@ -682,7 +682,7 @@ GTEST_TEST (Foundation_IO_Network, Test3_HardwareAddresses_)
     Containers::Mapping<Characters::String, Characters::String> expected = GetHardwareAddresses_ ();
     // each interface's hardware address is the one the system reports for it - and none where it reports none
     for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
-        EXPECT_EQ (i.fHardwareAddress, expected.Lookup (i.fInternalInterfaceID)) << i.fInternalInterfaceID.AsNarrowSDKString ();
+        EXPECT_EQ (i.fHardwareAddress, expected.Lookup (i.fInterfaceID)) << i.fInterfaceID.AsNarrowSDKString ();
     }
     // the 'primary' MAC address is that of a non-loopback interface with an IPv4 address - or none, if no such interface has one
     Characters::String primary = GetPrimaryNetworkDeviceMacAddress ();
@@ -765,7 +765,7 @@ GTEST_TEST (Foundation_IO_Network, Test3_LocalAddressToReach_)
         for (const InternetAddress& a : i.fBindings.fAddresses) {
             if (not a.IsLinkLocalAddress ()) {
                 EXPECT_EQ (GetLocalAddressToReach (SocketAddress{a}), a)
-                    << Characters::ToString (a).AsNarrowSDKString () << " on " << i.fInternalInterfaceID.AsNarrowSDKString ();
+                    << Characters::ToString (a).AsNarrowSDKString () << " on " << i.fInterfaceID.AsNarrowSDKString ();
             }
         }
     }
@@ -773,7 +773,7 @@ GTEST_TEST (Foundation_IO_Network, Test3_LocalAddressToReach_)
 
 GTEST_TEST (Foundation_IO_Network, Test3_InterfaceIDs_)
 {
-    // fInternalInterfaceID is the OS's own identity for an interface (unique among those there at one moment): checked
+    // fInterfaceID is the OS's own identity for an interface (unique among those there at one moment): checked
     // against the OS's own list of its interfaces, with their indexes - not against how Interface.cpp derives it. (On Linux,
     // an IPv4 address with a label - eth0:1 - still belongs to its device, eth0.)
     Debug::TraceContextBumper                             trcCtx{"Test3_InterfaceIDs_"};
@@ -800,15 +800,19 @@ GTEST_TEST (Foundation_IO_Network, Test3_InterfaceIDs_)
         break;
     }
 #endif
-    Containers::Sequence<Interface> interfaces{SystemInterfacesMgr{}.GetAll ()};
+    InterfacesByID interfaces = SystemInterfacesMgr{}.GetAll ();
     for (const Interface& i : interfaces) {
-        optional<unsigned int> osIndex = osInterfaces.Lookup (i.fInternalInterfaceID);
-        EXPECT_TRUE (osIndex.has_value ()) << "not one of the OS's interfaces: " << i.fInternalInterfaceID.AsNarrowSDKString ();
-        EXPECT_EQ (i.fIndex, osIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
+        optional<unsigned int> osIndex = osInterfaces.Lookup (i.fInterfaceID);
+        EXPECT_TRUE (osIndex.has_value ()) << "not one of the OS's interfaces: " << i.fInterfaceID.AsNarrowSDKString ();
+        EXPECT_EQ (i.fIndex, osIndex) << i.fInterfaceID.AsNarrowSDKString ();
     }
     for (const auto& kv : osInterfaces) {
-        EXPECT_TRUE (interfaces.Any ([&] (const Interface& i) { return i.fInternalInterfaceID == kv.fKey; }))
-            << "missing interface " << kv.fKey.AsNarrowSDKString ();
+        EXPECT_TRUE (interfaces.Contains (kv.fKey)) << "missing interface " << kv.fKey.AsNarrowSDKString ();
+    }
+    // and found by its ID
+    if (optional<Interface> any = interfaces.First ()) {
+        optional<Interface> found = SystemInterfacesMgr{}.GetById (any->fInterfaceID);
+        EXPECT_TRUE (found and found->fInterfaceID == any->fInterfaceID) << any->fInterfaceID.AsNarrowSDKString ();
     }
 }
 
@@ -818,26 +822,24 @@ GTEST_TEST (Foundation_IO_Network, Test3_InterfaceIndex_)
     {
         Interface gone;
 #if qStroika_Platform_Windows
-        gone.fInternalInterfaceID = Common::GUID::GenerateNew ().As<Characters::String> (); // as an adapter's GUID, but no adapter's
+        gone.fInterfaceID = Common::GUID::GenerateNew ().As<Characters::String> (); // as an adapter's GUID, but no adapter's
 #else
-        gone.fInternalInterfaceID = "stroika-nosuch"sv;
+        gone.fInterfaceID = "stroika-nosuch"sv;
 #endif
-        EXPECT_EQ (gone.GetCurrentIndex (), nullopt);
+        // with a real interface's index, as if one had since taken the index it had - joining on it still fails: it is looked
+        // up by its fInterfaceID
+        if (optional<Interface> real = SystemInterfacesMgr{}.GetAll ().First ([] (const Interface& i) { return i.fIndex.has_value (); })) {
+            gone.fIndex = real->fIndex;
+        }
         ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
         EXPECT_THROW (s.JoinMulticastGroup (InternetAddress{"239.255.255.250"sv}, gone), system_error);
     }
     for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
-        EXPECT_TRUE (i.fIndex.has_value ()) << i.fInternalInterfaceID.AsNarrowSDKString ();
-        EXPECT_NE (i.fIndex, optional<unsigned int>{Interface::kAnyIndex}) << i.fInternalInterfaceID.AsNarrowSDKString ();
-        EXPECT_EQ (i.GetCurrentIndex (), i.fIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
-        if (i.fIndex) {
-            Interface stale = i; // as if read before its index changed: GetCurrentIndex goes by fInternalInterfaceID, not fIndex
-            stale.fIndex    = *i.fIndex + 1000;
-            EXPECT_EQ (stale.GetCurrentIndex (), i.fIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
-        }
+        EXPECT_TRUE (i.fIndex.has_value ()) << i.fInterfaceID.AsNarrowSDKString ();
+        EXPECT_NE (i.fIndex, optional<unsigned int>{Interface::kAnyIndex}) << i.fInterfaceID.AsNarrowSDKString ();
 #if qStroika_Platform_POSIX
-        EXPECT_EQ (i.fIndex, optional<unsigned int>{::if_nametoindex (i.fInternalInterfaceID.AsNarrowSDKString ().c_str ())})
-            << i.fInternalInterfaceID.AsNarrowSDKString ();
+        EXPECT_EQ (i.fIndex, optional<unsigned int>{::if_nametoindex (i.fInterfaceID.AsNarrowSDKString ().c_str ())})
+            << i.fInterfaceID.AsNarrowSDKString ();
 #endif
     }
 }
@@ -845,7 +847,8 @@ GTEST_TEST (Foundation_IO_Network, Test3_InterfaceIndex_)
 GTEST_TEST (Foundation_IO_Network, Test3_MulticastInterface_)
 {
     // the interface multicasts go out of is the one set (read back with getsockopt); and a group joined on an interface - by
-    // index, or by one of its addresses - is joined on THAT interface: leaving it by the interface's index fails otherwise.
+    // index, by one of its addresses, or as an Interface (even one whose fIndex is stale) - is joined on THAT interface: leaving
+    // it by the interface's index fails otherwise.
     // Only running, non-loopback interfaces - loopback's multicast support varies by OS.
     Debug::TraceContextBumper    trcCtx{"Test3_MulticastInterface_"};
     static const InternetAddress kSSDPGroupV4_{"239.255.255.250"sv};
@@ -879,10 +882,10 @@ GTEST_TEST (Foundation_IO_Network, Test3_MulticastInterface_)
     // join group on interface i (named as onInterface), then leave by i's index
     auto joinThenLeaveByIndex = [&] (SocketAddress::FamilyType family, const InternetAddress& group, const Interface& i, const auto& onInterface) {
         ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (family, Socket::DGRAM);
-        if (tryJoin (s, group, onInterface, i.fInternalInterfaceID)) {
-            EXPECT_NO_THROW (s.LeaveMulticastGroup (group, *i.fIndex)) << Characters::ToString (group).AsNarrowSDKString () << " joined on "
-                                                                       << Characters::ToString (onInterface).AsNarrowSDKString ()
-                                                                       << " is not joined on " << i.fInternalInterfaceID.AsNarrowSDKString ();
+        if (tryJoin (s, group, onInterface, i.fInterfaceID)) {
+            EXPECT_NO_THROW (s.LeaveMulticastGroup (group, *i.fIndex))
+                << Characters::ToString (group).AsNarrowSDKString () << " joined on "
+                << Characters::ToString (onInterface).AsNarrowSDKString () << " is not joined on " << i.fInterfaceID.AsNarrowSDKString ();
             ++nChecked;
         }
     };
@@ -898,8 +901,10 @@ GTEST_TEST (Foundation_IO_Network, Test3_MulticastInterface_)
         if (i.fType == Interface::Type::eLoopback or not(i.fStatus and i.fStatus->Contains (Interface::Status::eRunning)) or not i.fIndex) {
             continue;
         }
-        bool hasV4 = false;
-        bool hasV6 = false;
+        bool      hasV4 = false;
+        bool      hasV6 = false;
+        Interface stale = i; // as if read before its index changed: an Interface is joined on by its fInterfaceID, not fIndex
+        stale.fIndex    = *i.fIndex + 1000;
         for (const InternetAddress& a : i.fBindings.fAddresses) {
             if (a.GetAddressFamily () == InternetAddress::AddressFamily::V4) {
                 hasV4                       = true;
@@ -909,7 +914,7 @@ GTEST_TEST (Foundation_IO_Network, Test3_MulticastInterface_)
                 in_addr   got{};
                 socklen_t len = sizeof (got);
                 EXPECT_EQ (::getsockopt (s.GetNativeSocket (), IPPROTO_IP, IP_MULTICAST_IF, reinterpret_cast<char*> (&got), &len), 0);
-                EXPECT_EQ (InternetAddress{got}, a) << i.fInternalInterfaceID.AsNarrowSDKString ();
+                EXPECT_EQ (InternetAddress{got}, a) << i.fInterfaceID.AsNarrowSDKString ();
                 ++nChecked;
                 joinThenLeaveByIndex (SocketAddress::INET, kSSDPGroupV4_, i, a);
             }
@@ -928,24 +933,26 @@ GTEST_TEST (Foundation_IO_Network, Test3_MulticastInterface_)
         if (hasV4) {
             joinThenLeaveByIndex (SocketAddress::INET, kSSDPGroupV4_, i, *i.fIndex);
             joinThenLeaveByIndex (SocketAddress::INET, kSSDPGroupV4_, i, i);
+            joinThenLeaveByIndex (SocketAddress::INET, kSSDPGroupV4_, i, stale);
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.SetMulticastInterface (i); // one of its IPv4 addresses
             in_addr   got{};
             socklen_t len = sizeof (got);
             EXPECT_EQ (::getsockopt (s.GetNativeSocket (), IPPROTO_IP, IP_MULTICAST_IF, reinterpret_cast<char*> (&got), &len), 0);
-            EXPECT_TRUE (i.fBindings.fAddresses.Contains (InternetAddress{got})) << i.fInternalInterfaceID.AsNarrowSDKString ();
+            EXPECT_TRUE (i.fBindings.fAddresses.Contains (InternetAddress{got})) << i.fInterfaceID.AsNarrowSDKString ();
             ++nChecked;
         }
         if (hasV6) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             s.SetMulticastInterface (*i.fIndex);
-            EXPECT_EQ (multicastIndexOf (s), *i.fIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
+            EXPECT_EQ (multicastIndexOf (s), *i.fIndex) << i.fInterfaceID.AsNarrowSDKString ();
             ++nChecked;
             joinThenLeaveByIndex (SocketAddress::INET6, kSSDPGroupV6_, i, *i.fIndex);
             joinThenLeaveByIndex (SocketAddress::INET6, kSSDPGroupV6_, i, i);
+            joinThenLeaveByIndex (SocketAddress::INET6, kSSDPGroupV6_, i, stale);
             ConnectionlessSocket::Ptr s6 = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             s6.SetMulticastInterface (i); // its current index
-            EXPECT_EQ (multicastIndexOf (s6), *i.fIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
+            EXPECT_EQ (multicastIndexOf (s6), *i.fIndex) << i.fInterfaceID.AsNarrowSDKString ();
             ++nChecked;
         }
     }

@@ -137,7 +137,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *          // (though given Options::fFollowNetworkChanges, it starts listening on such a network as soon as one appears)
          *      \endcode
          */
-        nonvirtual Traversal::Iterable<IO::Network::Interface> GetNetworkInterfaces () const;
+        nonvirtual IO::Network::InterfacesByID GetNetworkInterfaces () const;
 
     public:
         /**

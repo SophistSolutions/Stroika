@@ -242,8 +242,8 @@ namespace {
                         ii.fInterface = *info;
                     }
                     else {
-                        ii.fInterface.fInternalInterfaceID = line[0];
-                        ii.fInterface.fFriendlyName        = line[0];
+                        ii.fInterface.fInterfaceID  = line[0];
+                        ii.fInterface.fFriendlyName = line[0];
                     }
                     ii.fIOStatistics.fTotalBytesReceived   = Characters::String2Int<uint64_t> (line[1]);
                     ii.fIOStatistics.fTotalBytesSent       = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
@@ -255,7 +255,7 @@ namespace {
                         Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
                     TimePointSeconds now = Time::GetTickCount ();
-                    if (auto o = _fContext.cget ().cref ()->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
+                    if (auto o = _fContext.cget ().cref ()->fLast.Lookup (ii.fInterface.fInterfaceID)) {
                         DurationSeconds scanTime = now - o->fAt;
                         if (scanTime > _fOptions.fMinimumAveragingInterval) {
                             ii.fIOStatistics.fBytesPerSecondReceived =
@@ -269,9 +269,9 @@ namespace {
                     }
                     (*accumSummary) += ii.fIOStatistics;
                     interfaceResults->Add (ii);
-                    _fContext.rwget ().rwref ()->fLast.Add (ii.fInterface.fInternalInterfaceID,
-                                                            Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent,
-                                                                 *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
+                    _fContext.rwget ().rwref ()->fLast.Add (
+                        ii.fInterface.fInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent,
+                                                         *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
                 }
                 else {
                     DbgTrace ("Line {} bad in file {}"_f, nLine, kProcFileName_);
@@ -413,7 +413,7 @@ namespace {
                 for (const IO::Network::Interface& networkInterface : networkInterfacs) {
                     InterfaceInfo ii;
 #if 0
-                    ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
+                    ii.fInterfaceID = networkInterface.fInterfaceID;
                     ii.fDisplayName = networkInterface.fFriendlyName;
                     ii.fInterfaceType = networkInterface.fType;
                     ii.fInterfaceStatus = networkInterface.fStatus;
@@ -575,7 +575,7 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
     mapper.AddCommonType<Set<Interface::Status>> ();
     mapper.AddCommonType<optional<Set<Interface::Status>>> ();
     mapper.AddClass<InterfaceInfo::Interface> ({
-        {"Interface-Internal-ID"sv, &InterfaceInfo::Interface::fInternalInterfaceID},
+        {"Interface-Internal-ID"sv, &InterfaceInfo::Interface::fInterfaceID},
         {"Friendly-Name"sv, &InterfaceInfo::Interface::fFriendlyName},
         {"Description"sv, &InterfaceInfo::Interface::fDescription},
         {"Interface-Type"sv, &InterfaceInfo::Interface::fType},

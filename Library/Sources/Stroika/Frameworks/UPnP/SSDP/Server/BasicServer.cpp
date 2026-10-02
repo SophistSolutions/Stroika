@@ -90,11 +90,9 @@ BasicServer::BasicServer (const Device& d, const DeviceDescription& dd, const Lo
 {
 }
 
-Traversal::Iterable<Interface> BasicServer::GetNetworkInterfaces () const
+InterfacesByID BasicServer::GetNetworkInterfaces () const
 {
-    Containers::Sequence<Interface> both;
-    both.AppendAll (fRep_->fNotifier_->GetNetworkInterfaces ());
-    both.AppendAll (fRep_->fSearchResponder_->GetNetworkInterfaces ());
-    // each from its own listing: an interface on both is reported once - matched by fInternalInterfaceID
-    return both.Distinct ([] (const Interface& a, const Interface& b) { return a.fInternalInterfaceID == b.fInternalInterfaceID; });
+    InterfacesByID result = fRep_->fNotifier_->GetNetworkInterfaces ();
+    result += fRep_->fSearchResponder_->GetNetworkInterfaces (); // one on both is there once: they are keyed by fInterfaceID
+    return result;
 }

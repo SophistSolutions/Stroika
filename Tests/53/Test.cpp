@@ -539,9 +539,9 @@ namespace {
         if (not only) {
             return; // (already a failure, above)
         }
-        const Characters::String onlyID = only->fInternalInterfaceID;
+        const Characters::String onlyID = only->fInterfaceID;
         if (optional<Containers::Sequence<SSDP::Advertisement>> there =
-                exchange ([onlyID] (const Interface& i) { return SSDP::DefaultInterfaceFilter (i) and i.fInternalInterfaceID == onlyID; })) {
+                exchange ([onlyID] (const Interface& i) { return SSDP::DefaultInterfaceFilter (i) and i.fInterfaceID == onlyID; })) {
             for (const SSDP::Advertisement& a : *there) {
                 optional<InternetAddress> host = hostOf (a);
                 EXPECT_TRUE (host and only->fBindings.fAddresses.Contains (*host))

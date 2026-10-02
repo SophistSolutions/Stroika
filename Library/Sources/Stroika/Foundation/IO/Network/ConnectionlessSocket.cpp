@@ -3,7 +3,18 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#if qStroika_Platform_POSIX
+#include <net/if.h>
+#elif qStroika_Platform_Windows
+#include <WinSock2.h>
+
+#include <Iphlpapi.h>
+#include <netioapi.h>
+#endif
+
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
@@ -27,6 +38,10 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
 using Debug::AssertExternallySynchronizedChecker;
+
+#if defined(_MSC_VER)
+#pragma comment(lib, "Iphlpapi.lib") // ConvertInterfaceGuidToLuid ()
+#endif
 
 namespace {
     // for RFC 3678's protocol-independent MCAST_JOIN_GROUP/MCAST_LEAVE_GROUP: the group as a sockaddr, the interface by index
@@ -55,12 +70,35 @@ namespace {
         }
         Execution::Throw (SystemErrorException{make_error_code (errc::no_such_device)}); // what IP_ADD_MEMBERSHIP reported for this (on Linux)
     }
-    // i's index now - or ENODEV if it is gone (as IP_ADD_MEMBERSHIP reports for a missing interface, on Linux)
+    // i's index now - looked up by i.fInterfaceID, not i.fIndex, which may be stale (@see Interface::fIndex) - or ENODEV if it is
+    // gone (as IP_ADD_MEMBERSHIP reports for a missing interface, on Linux)
     unsigned int CurrentIndexOf_ (const Interface& i)
     {
-        if (optional<unsigned int> index = i.GetCurrentIndex ()) {
-            return *index;
+#if qStroika_Platform_POSIX
+        // fInterfaceID is the device's name
+        if (unsigned int index = ::if_nametoindex (i.fInterfaceID.AsNarrowSDKString ().c_str ()); index != Interface::kAnyIndex) {
+            return index;
         }
+#elif qStroika_Platform_Windows
+        // fInterfaceID is the adapter's GUID (IP_ADAPTER_ADDRESSES::AdapterName) - so one that is not a GUID is no adapter's
+        optional<::GUID> guid;
+        try {
+            Common::GUID g{i.fInterfaceID};
+            static_assert (sizeof (::GUID) == sizeof (g));
+            guid.emplace ();
+            ::memcpy (&*guid, &g, sizeof (::GUID));
+        }
+        catch (const DataExchange::BadFormatException&) {
+        }
+        NET_LUID    luid{};
+        NET_IFINDEX index{};
+        if (guid and ::ConvertInterfaceGuidToLuid (&*guid, &luid) == NO_ERROR and
+            ::ConvertInterfaceLuidToIndex (&luid, &index) == NO_ERROR and index != Interface::kAnyIndex) {
+            return index;
+        }
+#else
+        AssertNotImplemented ();
+#endif
         Execution::Throw (SystemErrorException{make_error_code (errc::no_such_device)});
     }
     // the interface as IPv6 names it: by index (an address is looked up)

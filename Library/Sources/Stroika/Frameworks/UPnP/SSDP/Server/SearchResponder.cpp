@@ -171,7 +171,7 @@ void SearchResponder::StartListening_ (const Iterable<Advertisement>& advertisem
                 for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
                     toJoin += make_pair (s.first, s.second.GetInternetAddress ());
                 }
-                Containers::Sequence<Interface> listeningOn = SSDP::Private_::JoinOnEveryInterface (toJoin, interfaceFilter);
+                InterfacesByID listeningOn = SSDP::Private_::JoinOnEveryInterface (toJoin, interfaceFilter);
                 fListeningOn_.store (listeningOn);
                 if (not listeningOn.empty ()) {
                     break;
@@ -206,7 +206,7 @@ void SearchResponder::StartListening_ (const Iterable<Advertisement>& advertisem
         Thread::eAutoStart, kThreadName_);
 }
 
-Traversal::Iterable<Interface> SearchResponder::GetNetworkInterfaces () const
+InterfacesByID SearchResponder::GetNetworkInterfaces () const
 {
     return fListeningOn_.load ();
 }

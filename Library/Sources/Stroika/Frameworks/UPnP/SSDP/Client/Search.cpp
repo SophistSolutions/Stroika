@@ -73,7 +73,7 @@ public:
         [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
         StartThread_ (serviceType, autoRetryInterval);
     }
-    Traversal::Iterable<Interface> GetNetworkInterfaces () const
+    InterfacesByID GetNetworkInterfaces () const
     {
         return fSearchingOn_.load ();
     }
@@ -116,9 +116,8 @@ public:
         else if (autoRetryInterval.has_value ()) {
             retrySendAt = Time::GetTickCount () + *autoRetryInterval;
         }
-        // listed once for the round, so each interface appears once in what GetNetworkInterfaces () reports
-        const Containers::Sequence<Interface> candidates{SSDP::Private_::GetSSDPInterfaces (fInterfaceFilter_)};
-        vector<bool>                          sentOn (candidates.size ());
+        const InterfacesByID candidates = SSDP::Private_::GetSSDPInterfaces (fInterfaceFilter_); // listed once for the round
+        InterfacesByID       searchedOn;
         for (ConnectionlessSocket::Ptr s : fSockets_) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Sending M-SEARCH"sv};
@@ -162,31 +161,24 @@ public:
             // all come back to this one socket)
             const span<const byte>         data{reinterpret_cast<const byte*> (request.c_str ()), request.length ()};
             InternetAddress::AddressFamily family = useSocketAddress.GetInternetAddress ().GetAddressFamily ();
-            for (size_t k = 0; k < candidates.size (); ++k) {
-                const Interface i = candidates[k];
+            for (const Interface& i : candidates) {
                 if (not i.fBindings.fAddresses.Any ([&] (const InternetAddress& a) { return a.GetAddressFamily () == family; })) {
                     continue;
                 }
                 try {
                     s.SetMulticastInterface (i);
                     s.SendTo (data, useSocketAddress);
-                    sentOn[k] = true;
+                    searchedOn.Add (i);
                 }
                 catch (const Thread::AbortException&) {
                     ReThrow ();
                 }
                 catch (...) {
-                    DbgTrace ("SSDP Search: could not send M-SEARCH on {}: {}"_f, i.fInternalInterfaceID, current_exception ());
+                    DbgTrace ("SSDP Search: could not send M-SEARCH on {}: {}"_f, i.fInterfaceID, current_exception ());
                 }
             }
         }
 
-        Containers::Sequence<Interface> searchedOn;
-        for (size_t k = 0; k < candidates.size (); ++k) {
-            if (sentOn[k]) {
-                searchedOn += candidates[k];
-            }
-        }
         fSearchingOn_.store (searchedOn);
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
@@ -239,7 +231,7 @@ private:
     mutex                                            fLifecycleMutex_; // Start, Stop and SearchAgain_ (called on the LinkMonitor's thread)
     optional<pair<String, optional<Time::Duration>>> fSearching_; // the search started, and not stopped: serviceType, autoRetryInterval
     Collection<ConnectionlessSocket::Ptr>            fSockets_;
-    Synchronized<Containers::Sequence<Interface>>    fSearchingOn_; // what the last M-SEARCH went out of
+    Synchronized<InterfacesByID>                     fSearchingOn_; // what the last M-SEARCH went out of
     Thread::CleanupPtr                               fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
     optional<IO::Network::LinkMonitor>               fLinkMonitor_; // last, so destroyed first: no SearchAgain_ while the rest goes away
 };
@@ -276,7 +268,7 @@ Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds
     Start (initialSearch, autoRetryInterval);
 }
 
-Traversal::Iterable<Interface> Search::GetNetworkInterfaces () const
+InterfacesByID Search::GetNetworkInterfaces () const
 {
     return fRep_->GetNetworkInterfaces ();
 }

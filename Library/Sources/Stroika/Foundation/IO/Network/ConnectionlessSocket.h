@@ -58,7 +58,7 @@ namespace Stroika::Foundation::IO::Network {
         public:
             /**
              *  Join the multicast group iaddr (IPv4 or IPv6) - so this socket receives what is sent to it - on one interface: best
-             *  given as an Interface (its index is looked up at the call - @see Interface::GetCurrentIndex), else by one of its
+             *  given as an Interface (its index is looked up - by Interface::fInterfaceID - at the call), else by one of its
              *  addresses, or by its index (Interface::fIndex). V4::kAddrAny, V6::kAddrAny or Interface::kAnyIndex: the OS picks one.
              *
              *  \note RACE: an index is right only for now - give the Interface, or get the index just before the call (and again
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::IO::Network {
             /**
              *  Choose the interface multicast datagrams sent from this socket go out of - else the OS picks one, on a machine with
              *  several networks often not the one wanted. Best given as an Interface - looked up at the call: for an IPv6 socket
-             *  its current index (@see Interface::GetCurrentIndex), for an IPv4 socket one of its IPv4 addresses; else by one of
+             *  its current index (by Interface::fInterfaceID), for an IPv4 socket one of its IPv4 addresses; else by one of
              *  its addresses, or (for an IPv6 socket) by its index (Interface::fIndex) - there is no portable way to choose an IPv4
              *  socket's by index.
              *

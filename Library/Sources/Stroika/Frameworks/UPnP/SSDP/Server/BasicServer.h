@@ -92,9 +92,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     public:
         /**
          *  \brief The network interfaces it is advertising on now: those its NOTIFYs last went out of, and those it listens for
-         *         searches on. One on both is listed once (matched by fInternalInterfaceID). Safe to call from any thread.
+         *         searches on. One on both is listed once (matched by fInterfaceID). Safe to call from any thread.
          */
-        nonvirtual Traversal::Iterable<IO::Network::Interface> GetNetworkInterfaces () const;
+        nonvirtual IO::Network::InterfacesByID GetNetworkInterfaces () const;
 
     private:
         class Rep_;

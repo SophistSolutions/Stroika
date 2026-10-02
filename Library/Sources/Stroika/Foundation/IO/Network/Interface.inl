@@ -16,7 +16,7 @@ namespace Stroika::Foundation::IO::Network {
      */
     inline String Interface::GetInterfaceName () const
     {
-        return fInternalInterfaceID;
+        return fInterfaceID;
     }
 #endif
 

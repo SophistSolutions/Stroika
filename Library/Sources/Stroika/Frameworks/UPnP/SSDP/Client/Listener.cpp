@@ -74,7 +74,7 @@ public:
         [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
         StopThread_ ();
     }
-    Traversal::Iterable<Interface> GetNetworkInterfaces () const
+    InterfacesByID GetNetworkInterfaces () const
     {
         return fListeningOn_.load ();
     }
@@ -174,7 +174,7 @@ private:
     recursive_mutex                                       fCritSection_;
     vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                 fSockets_;
-    Synchronized<Containers::Sequence<Interface>>         fListeningOn_; // what fSockets_ are joined on
+    Synchronized<InterfacesByID>                          fListeningOn_; // what fSockets_ are joined on
     Thread::CleanupPtr                                    fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
     optional<IO::Network::LinkMonitor>                    fLinkMonitor_; // last, so destroyed first: no Rejoin_ while the rest goes away
 };
@@ -207,7 +207,7 @@ Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnF
     Start ();
 }
 
-Traversal::Iterable<Interface> Listener::GetNetworkInterfaces () const
+InterfacesByID Listener::GetNetworkInterfaces () const
 {
     return fRep_->GetNetworkInterfaces ();
 }

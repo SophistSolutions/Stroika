@@ -94,7 +94,7 @@ namespace {
                 if (s.length () >= 2) {
                     curInterface = s[1];
                     if (auto iface = sysInterfacesMgr.GetContainingAddress (InternetAddress{curInterface})) {
-                        curInterface = iface->fInternalInterfaceID;
+                        curInterface = iface->fInterfaceID;
                     }
                     else {
                         WeakAssert (false); // bad -

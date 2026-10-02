@@ -115,7 +115,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *  \brief The network interfaces its last M-SEARCH went out of - as they were then (so with the addresses they had then).
          *         Safe to call from any thread.
          */
-        nonvirtual Traversal::Iterable<IO::Network::Interface> GetNetworkInterfaces () const;
+        nonvirtual IO::Network::InterfacesByID GetNetworkInterfaces () const;
 
     public:
         /**

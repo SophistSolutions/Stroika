@@ -89,7 +89,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          *  \brief The network interfaces its last NOTIFYs went out of - as they were then (so with the addresses they had then).
          *         Safe to call from any thread.
          */
-        nonvirtual Traversal::Iterable<IO::Network::Interface> GetNetworkInterfaces () const;
+        nonvirtual IO::Network::InterfacesByID GetNetworkInterfaces () const;
 
 #if 0
         //...
@@ -101,8 +101,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
         // thread as needed, does responses etc.
 #endif
     private:
-        shared_ptr<Execution::Synchronized<Containers::Sequence<IO::Network::Interface>>> fNotifyingOn_; // shared with the timer's callback
-        unique_ptr<Execution::IntervalTimer::Adder>                                       fIntervalTimerAdder_;
+        shared_ptr<Execution::Synchronized<IO::Network::InterfacesByID>> fNotifyingOn_; // shared with the timer's callback
+        unique_ptr<Execution::IntervalTimer::Adder>                      fIntervalTimerAdder_;
         optional<IO::Network::LinkMonitor> fLinkMonitor_; // last, so destroyed first: no NOTIFY while the rest goes away
     };
 

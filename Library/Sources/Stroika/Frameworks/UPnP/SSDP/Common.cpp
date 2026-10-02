@@ -49,9 +49,9 @@ bool UPnP::SSDP::DefaultInterfaceFilter (const Interface& i)
  ********************** SSDP::Private_::GetSSDPInterfaces ***********************
  ********************************************************************************
  */
-Traversal::Iterable<Interface> UPnP::SSDP::Private_::GetSSDPInterfaces (const InterfaceFilter& filter)
+InterfacesByID UPnP::SSDP::Private_::GetSSDPInterfaces (const InterfaceFilter& filter)
 {
-    return Containers::Sequence<Interface>{SystemInterfacesMgr{}.GetAll ().Where ([&] (const Interface& i) { return filter (i); })};
+    return SystemInterfacesMgr{}.GetAll ().Where ([&] (const Interface& i) { return filter (i); });
 }
 
 /*
@@ -59,11 +59,10 @@ Traversal::Iterable<Interface> UPnP::SSDP::Private_::GetSSDPInterfaces (const In
  ********************* SSDP::Private_::JoinOnEveryInterface *********************
  ********************************************************************************
  */
-Containers::Sequence<Interface>
-UPnP::SSDP::Private_::JoinOnEveryInterface (const Traversal::Iterable<pair<ConnectionlessSocket::Ptr, InternetAddress>>& socketsAndGroups,
-                                            const InterfaceFilter&                                                       filter)
+InterfacesByID UPnP::SSDP::Private_::JoinOnEveryInterface (const Traversal::Iterable<pair<ConnectionlessSocket::Ptr, InternetAddress>>& socketsAndGroups,
+                                                           const InterfaceFilter& filter)
 {
-    Containers::Sequence<Interface> joinedOn;
+    InterfacesByID joinedOn;
     for (const Interface& i : GetSSDPInterfaces (filter)) {
         bool joined = false;
         for (const pair<ConnectionlessSocket::Ptr, InternetAddress>& sg : socketsAndGroups) {
@@ -79,11 +78,11 @@ UPnP::SSDP::Private_::JoinOnEveryInterface (const Traversal::Iterable<pair<Conne
                 Execution::ReThrow ();
             }
             catch (...) {
-                DbgTrace ("SSDP: could not join {} on {}: {}"_f, sg.second, i.fInternalInterfaceID, current_exception ());
+                DbgTrace ("SSDP: could not join {} on {}: {}"_f, sg.second, i.fInterfaceID, current_exception ());
             }
         }
         if (joined) {
-            joinedOn += i;
+            joinedOn.Add (i);
         }
     }
     return joinedOn;

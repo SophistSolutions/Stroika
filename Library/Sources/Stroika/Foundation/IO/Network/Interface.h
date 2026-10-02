@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
@@ -66,7 +67,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          * @see SystemIDType
          */
-        SystemIDType fInternalInterfaceID;
+        SystemIDType fInterfaceID;
 
 #if qStroika_Platform_POSIX
         /**
@@ -95,22 +96,15 @@ namespace Stroika::Foundation::IO::Network {
          *        goes away and comes back (an adapter disabled and re-enabled, a VPN reconnecting, a USB adapter replugged) may
          *        come back with a different index; none survives a reboot.
          *
-         *        So get an interface's index just before using it - GetCurrentIndex () - rather than keeping one; better still,
-         *        pass the Interface itself where an API takes one (as ConnectionlessSocket's multicast calls do), which does that
-         *        for you. In particular, to undo what was done by index (leave a multicast group, say), look the index up again
-         *        rather than reuse the number it was done with. And redo whatever was done by index when the interfaces change
-         *        (LinkMonitor) - a socket keeps the multicast interface it was given, say. (A multicast membership, though, is
-         *        tied to the interface itself, so goes away with it.) For a longer-lasting name, use fInternalInterfaceID.
+         *        So rather than keep an index, pass the Interface itself where an API takes one (as ConnectionlessSocket's
+         *        multicast calls do), which looks its index up - by fInterfaceID - at the call; else re-read the interface
+         *        (SystemInterfacesMgr::GetById) just before using its index. In particular, to undo what was done by index
+         *        (leave a multicast group, say), look the index up again rather than reuse the number it was done with. And redo
+         *        whatever was done by index when the interfaces change (LinkMonitor) - a socket keeps the multicast interface it
+         *        was given, say. (A multicast membership, though, is tied to the interface itself, so goes away with it.) For a
+         *        longer-lasting name, use fInterfaceID.
          */
         optional<unsigned int> fIndex;
-
-        /**
-         *  \brief This interface's index NOW - looked up (cheaply) by fInternalInterfaceID - rather than fIndex, the one it had
-         *         when this Interface was read; nullopt if there is no such interface any more.
-         *
-         *  @see fIndex's RACE note
-         */
-        nonvirtual optional<unsigned int> GetCurrentIndex () const;
 
         /**
          *  This is a generally good display name to describe a network interface.
@@ -379,7 +373,27 @@ namespace Stroika::Foundation::IO::Network {
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+
+        /**
+         *  An Interface's fInterfaceID - the key of InterfacesByID. (A struct, not a lambda: a lambda's type in a header
+         *  would be an ODR violation.)
+         */
+        struct IDExtractor {
+            SystemIDType operator() (const Interface& i) const noexcept
+            {
+                return i.fInterfaceID;
+            }
+        };
     };
+
+    /**
+     *  \brief Interfaces seen at one moment (e.g. one SystemInterfacesMgr::GetAll ()), keyed by fInterfaceID.
+     *
+     *  \note fInterfaceID is unique only among the interfaces there at one moment (@see Interface::SystemIDType) - so
+     *        interfaces kept across time (a history of the networks seen, say) do not belong in one of these.
+     */
+    using InterfacesByID =
+        Containers::KeyedCollection<Interface, Interface::SystemIDType, Containers::KeyedCollection_DefaultTraits<Interface, Interface::SystemIDType, Interface::IDExtractor>>;
 
     /**
      *  \todo   @todo https://github.com/SophistSolutions/Stroika/issues/844 (STK-710)
@@ -392,19 +406,19 @@ namespace Stroika::Foundation::IO::Network {
     class SystemInterfacesMgr {
     public:
         /**
-         *  Collect all the interfaces (and their status) from the operating system.
+         *  Collect all the interfaces (and their status) from the operating system - keyed by their fInterfaceID.
          *
          *  \note An Interface's position in this list means nothing - its index is Interface::fIndex (@see its RACE note).
          */
-        nonvirtual Traversal::Iterable<Interface> GetAll ();
+        nonvirtual InterfacesByID GetAll ();
 
     public:
         /**
          *  Find the interface object with the given ID.
          *
-         *  @see Interface::fInternalInterfaceID
+         *  @see Interface::fInterfaceID
          */
-        nonvirtual optional<Interface> GetById (const Interface::SystemIDType& internalInterfaceID);
+        nonvirtual optional<Interface> GetById (const Interface::SystemIDType& interfaceID);
 
     public:
         /**

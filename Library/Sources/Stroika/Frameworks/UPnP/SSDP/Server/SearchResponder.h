@@ -80,7 +80,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          *  \brief The network interfaces it is listening for searches on now - as they were when it joined them (so with the
          *         addresses they had then). Safe to call from any thread.
          */
-        nonvirtual Traversal::Iterable<IO::Network::Interface> GetNetworkInterfaces () const;
+        nonvirtual IO::Network::InterfacesByID GetNetworkInterfaces () const;
 
 #if 0
         //...
@@ -96,7 +96,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
     private:
         mutex fLifecycleMutex_; // (re)starting the listening - also done on the LinkMonitor's thread
-        Execution::Synchronized<Containers::Sequence<IO::Network::Interface>> fListeningOn_; // set by the listening thread (so declared before it, outliving it)
+        Execution::Synchronized<IO::Network::InterfacesByID> fListeningOn_; // set by the listening thread (so declared before it, outliving it)
         Execution::Thread::CleanupPtr      fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
         optional<IO::Network::LinkMonitor> fLinkMonitor_; // last, so destroyed first: no restart while the rest goes away
     };
