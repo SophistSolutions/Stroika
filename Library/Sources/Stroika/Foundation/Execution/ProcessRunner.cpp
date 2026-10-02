@@ -357,11 +357,11 @@ void ProcessRunner::BackgroundProcess::Terminate ()
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     // @todo? set thread to null when done -
     //
-    // @todo - Note - UNTESTED, and probably not 100% right (esp error checking!!!
+    // @todo - probably not 100% right (esp error checking!!!
     //
     if (optional<pid_t> o = fRep_->fDetailedRunnableRep_->fRunningPID.load ()) {
 #if qStroika_Platform_POSIX
-        ::kill (SIGTERM, *o);
+        ::kill (*o, SIGTERM);
 #elif qStroika_Platform_Windows
         // @todo - if this OpenProcess gives us any trouble, we can return the handle directory from the 'CreateRunnable' where we invoke the process
         HANDLE processHandle = ::OpenProcess (PROCESS_TERMINATE, false, *o);

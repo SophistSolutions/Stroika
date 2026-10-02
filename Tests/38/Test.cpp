@@ -142,6 +142,23 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, Terminate)
+    {
+        // Terminate () ends a running child - here, long before it would end itself
+        Debug::TraceContextBumper        ctx{"Terminate"};
+        ProcessRunner::BackgroundProcess bp = ProcessRunner{"sleep 60"}.RunInBackground ();
+        bp.WaitForStarted ();
+        bp.Terminate ();
+        EXPECT_NO_THROW (bp.WaitForDone (10s)) << "still running 10 seconds after Terminate ()";
+#if qStroika_Platform_POSIX
+        if (optional<ProcessRunner::ProcessResultType> r = bp.GetProcessResult ()) {
+            EXPECT_TRUE (r->fTerminatedByUncaughtSignalNumber == SIGTERM) << Characters::ToString (*r).AsNarrowSDKString ();
+        }
+#endif
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMomThroughIntraStroikaPipe)
     {
         Debug::TraceContextBumper        ctx{"EchoHiMomThroughIntraStroikaPipe"};
