@@ -632,7 +632,7 @@ GTEST_TEST (Foundation_IO_Network, Test3_NetworkInterfaceList_)
 {
     Debug::TraceContextBumper       trcCtx{"Test3_NetworkInterfaceList_"};
     Containers::Sequence<Interface> interfaces{SystemInterfacesMgr{}.GetAll ()};
-    for (const Interface& iFace : interfaces) {
+    for ([[maybe_unused]] const Interface& iFace : interfaces) {
         DbgTrace ("iFace: {}"_f, iFace);
     }
 #if qStroika_Platform_POSIX
