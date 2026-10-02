@@ -87,6 +87,11 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *  \note THREADS: callOnFinds is called on the listener's own thread, not the caller's - so it must be thread-safe, and
          *        whatever it shares with other threads needs synchronizing (e.g. Execution::Synchronized).
          *
+         *  \note Keep callOnFinds quick: Stop (), destruction and - given Options::fFollowNetworkChanges - listening on a network
+         *        that appears all wait for one running (that last on the thread all SSDP objects share for network changes).
+         *        Hand slow work - fetching the device description, say - to another thread, or give it a timeout: an HTTP fetch
+         *        from a device that has just gone can take minutes (IO::Network::Transfer::Connection has no timeout of its own).
+         *
          *  \note NETWORKS: it listens on every network interface options.fInterfaces accepts (by default, every one running and
          *        not loopback) - and, given Options::fFollowNetworkChanges, on each that appears later. If there is none (e.g.
          *        no network yet), it hears nothing until there is.
