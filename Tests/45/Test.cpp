@@ -20,9 +20,11 @@
 #include "Stroika/Foundation/Debug/Valgrind.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Activity.h"
+#include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #if qStroika_HasComponent_libcurl
 #include "Stroika/Foundation/IO/Network/Transfer/Connection_libcurl.h"
 #endif
@@ -719,6 +721,90 @@ namespace {
 #else
             ReThrow ();
 #endif
+        }
+    }
+}
+
+namespace {
+    // a Connection to nothing - enough to see what a ConnectionPool hands out, without a network or an HTTP client
+    struct FakeConnectionRep_ : Connection::IRep {
+        URI                         fSchemeAndAuthority;
+        virtual Connection::Options GetOptions () const override
+        {
+            return {};
+        }
+        virtual URI GetSchemeAndAuthority () const override
+        {
+            return fSchemeAndAuthority;
+        }
+        virtual void SetSchemeAndAuthority (const URI& schemeAndAuthority) override
+        {
+            fSchemeAndAuthority = schemeAndAuthority;
+        }
+        virtual Time::DurationSeconds GetTimeout () const override
+        {
+            return 1s;
+        }
+        virtual void SetTimeout (Time::DurationSeconds) override
+        {
+        }
+        virtual void Close () override
+        {
+        }
+        virtual Response Send (const Request&) override
+        {
+            Execution::Throw (Execution::OperationNotSupportedException{"FakeConnectionRep_::Send"sv});
+        }
+    };
+    GTEST_TEST (Foundation_IO_Network_Transfer, ConnectionPoolLimits_)
+    {
+        Debug::TraceContextBumper ctx{"{}::ConnectionPoolLimits_"};
+        unsigned int              made    = 0; // called under the pool's lock
+        auto                      factory = [&made] () -> Connection::Ptr {
+            ++made;
+            return Connection::Ptr{Memory::MakeSharedPtr<FakeConnectionRep_> ()};
+        };
+        {
+            // with no limit given, as many as are asked for
+            ConnectionPool            pool{ConnectionPool::Options{nullopt, factory}};
+            optional<Connection::Ptr> a;
+            optional<Connection::Ptr> b;
+            EXPECT_NO_THROW (a = pool.New ()) << "no limit given, yet none handed out";
+            EXPECT_NO_THROW (b = pool.New ());
+            EXPECT_EQ (made, 2u);
+        }
+        made = 0;
+        {
+            // at its limit, New () waits for one to come back - and gets that one, not a new one
+            ConnectionPool            pool{ConnectionPool::Options{1, factory}};
+            optional<Connection::Ptr> first    = pool.New ();
+            Thread::Ptr               giveBack = Thread::New (
+                [&first] () {
+                    Execution::Sleep (200ms);
+                    first = nullopt;
+                },
+                Thread::eAutoStart);
+            optional<Connection::Ptr> second;
+            EXPECT_NO_THROW (second = pool.New (10s)) << "waited for none to come back";
+            giveBack.Join ();
+            EXPECT_EQ (made, 1u);
+        }
+        made = 0;
+        {
+            // and if none comes back in time, it waits that long, then throws timed_out - or, if asked, hands out one from outside
+            ConnectionPool         pool{ConnectionPool::Options{1, factory}};
+            Connection::Ptr        held  = pool.New ();
+            Time::TimePointSeconds start = Time::GetTickCount ();
+            try {
+                [[maybe_unused]] Connection::Ptr c = pool.New (300ms);
+                ADD_FAILURE () << "a second connection from a pool of one";
+            }
+            catch (const system_error& e) {
+                EXPECT_TRUE (Execution::IsA (e, errc::timed_out)) << e.what ();
+            }
+            EXPECT_GE (Time::GetTickCount () - start, 250ms) << "did not wait";
+            Connection::Ptr outside = pool.New (ConnectionPool::eAllocateGloballyIfTimeout, 100ms);
+            EXPECT_EQ (made, 2u);
         }
     }
 }

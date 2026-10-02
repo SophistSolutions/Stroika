@@ -129,17 +129,18 @@ public:
         if (not poolEntryResult) {
             lock_guard critSec{fAvailableConnectionsChanged.fMutex};
             size_t     totalAllocated = fAvailableConnections.size () + fOutstandingConnections;
-            if (totalAllocated < fOptions.fMaxConnections) {
+            if (not fOptions.fMaxConnections or totalAllocated < *fOptions.fMaxConnections) {
                 fAvailableConnections += fOptions.fConnectionFactory ();
                 goto again; // multithreaded, someone else could allocate, or return a better match
                             // no need to notify_all () since we will try again anyhow
             }
         }
-        if (not poolEntryResult and Time::GetTickCount () > timeoutAt) {
-            // Let's see if we can wait a little
+        if (not poolEntryResult and Time::GetTickCount () < timeoutAt) {
+            // wait for one to come back - checked under the wait's own lock, so one returned since we looked is not missed
             unique_lock lock{fAvailableConnectionsChanged.fMutex};
-            if (fAvailableConnectionsChanged.wait_until (lock, Time::Pin2SafeSeconds (timeoutAt)) == cv_status::no_timeout) {
-                goto again; // a new one maybe available
+            if (fAvailableConnectionsChanged.wait_until (lock, Time::Pin2SafeSeconds (timeoutAt),
+                                                         [this] () { return not fAvailableConnections.empty (); })) {
+                goto again; // (another New () may take it first)
             }
         }
         if (not poolEntryResult) {
@@ -160,9 +161,10 @@ public:
         lock_guard critSec{fAvailableConnectionsChanged.fMutex};
         for (auto i = fAvailableConnections.begin (); i != fAvailableConnections.end (); ++i) {
             if (i->GetSchemeAndAuthority () == matchScemeAndAuthority) {
+                Connection::Ptr result = *i; // before the Remove () invalidates i
                 fAvailableConnections.Remove (i);
                 ++fOutstandingConnections;
-                return *i;
+                return result;
             }
         }
         return nullopt;

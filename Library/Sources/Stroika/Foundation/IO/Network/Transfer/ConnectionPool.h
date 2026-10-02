@@ -41,7 +41,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
                      const function<Connection::Ptr ()>& connectionFactory = (Connection::Ptr (*) ())&Connection::New);
 
             /**
-             *  Default options for each connection
+             *  The most connections the pool holds - handed out, or idle in it; nullopt: no limit.
              */
             optional<unsigned int> fMaxConnections;
 
