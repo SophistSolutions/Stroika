@@ -291,9 +291,17 @@ namespace {
     }
 #endif
 
-#if qStroika_Platform_POSIX
     // an address on an interface - the interface by its index, as the OS's messages name it
     using IndexAndAddress_ = pair<unsigned int, InternetAddress>;
+
+#if qStroika_Platform_Windows
+    InternetAddress AddressOf_ (const SOCKADDR_INET& a)
+    {
+        return a.si_family == AF_INET6 ? InternetAddress{a.Ipv6.sin6_addr} : InternetAddress{a.Ipv4.sin_addr};
+    }
+#endif
+
+#if qStroika_Platform_POSIX
 
     // BSD's kernel puts the interface's index in bytes 2-3 of a link-local IPv6 address it hands out (KAME's 'embedded scope');
     // the address itself has 0 there. (As of macOS 26.5 getifaddrs () clears them itself; a routing message may not.)
@@ -436,21 +444,38 @@ namespace {
         // cannot use LAMBDA cuz we need WINAPI call convention
         static void WINAPI CB_ (void* callerContext, PMIB_UNICASTIPADDRESS_ROW Address, MIB_NOTIFICATION_TYPE NotificationType)
         {
-            // an address added or removed - not MibParameterNotification, a change to one already there (its lifetime, say)
-            if (Address != NULL and (NotificationType == MibAddInstance or NotificationType == MibDeleteInstance)) {
-                try {
+            if (Address == NULL) {
+                return; // MibInitialNotification (not asked for)
+            }
+            try {
+                Backend_* b = reinterpret_cast<Backend_*> (callerContext);
+                // Whether the address is usable (its DAD state Preferred) is what counts - not its being added or deleted:
+                // Windows keeps an address whose network goes (Wi-Fi off, within its DHCP lease), marking it Deprecated, and
+                // Preferred again when the network is back, telling of each only as a MibParameterNotification. (And it adds an
+                // address Tentative, while it checks it is no duplicate.) The row given holds only the keys, so its state is
+                // looked up.
+                MIB_UNICASTIPADDRESS_ROW now{};
+                now.Address       = Address->Address;
+                now.InterfaceLuid = Address->InterfaceLuid;
+                bool usable = NotificationType != MibDeleteInstance and ::GetUnicastIpAddressEntry (&now) == NO_ERROR and now.DadState == IpDadStatePreferred;
+                InternetAddress a = AddressOf_ (Address->Address);
+                bool            changed;
+                {
+                    [[maybe_unused]] lock_guard critSec{b->fUsableMutex_};
+                    changed = usable ? b->fUsable_.AddIf (IndexAndAddress_{Address->InterfaceIndex, a})
+                                     : b->fUsable_.RemoveIf (IndexAndAddress_{Address->InterfaceIndex, a});
+                }
+                if (changed) {
                     ::GUID guid{};
-                    Event e{.fChange = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded,
-                            .fInterfaceID =
-                                (::ConvertInterfaceLuidToGuid (&Address->InterfaceLuid, &guid) == NO_ERROR) ? AdapterNameOf_ (guid) : String{},
-                            .fAddress = Address->Address.si_family == AF_INET6 ? InternetAddress{Address->Address.Ipv6.sin6_addr}
-                                                                               : InternetAddress{Address->Address.Ipv4.sin_addr}};
-                    reinterpret_cast<Backend_*> (callerContext)->Notify_ (e);
+                    b->Notify_ (Event{.fChange = usable ? LinkChange::eAdded : LinkChange::eRemoved,
+                                      .fInterfaceID = (::ConvertInterfaceLuidToGuid (&Address->InterfaceLuid, &guid) == NO_ERROR) ? AdapterNameOf_ (guid)
+                                                                                                                                  : String{},
+                                      .fAddress = a});
                 }
-                catch (...) {
-                    // nothing may escape to the OS's thread
-                    DbgTrace ("LinkMonitor: {}"_f, current_exception ());
-                }
+            }
+            catch (...) {
+                // nothing may escape to the OS's thread
+                DbgTrace ("LinkMonitor: {}"_f, current_exception ());
             }
         }
 #endif
@@ -522,6 +547,17 @@ namespace {
              *          way...
              */
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_UNSPEC, &CB_, this, FALSE, &fMonitorHandler_));
+            // the addresses usable now (listed after registering, so no change is missed between) - so only a change is reported
+            PMIB_UNICASTIPADDRESS_TABLE table = nullptr;
+            if (::GetUnicastIpAddressTable (AF_UNSPEC, &table) == NO_ERROR) {
+                [[maybe_unused]] auto&&     cleanup = Execution::Finally ([table] () noexcept { ::FreeMibTable (table); });
+                [[maybe_unused]] lock_guard critSec{fUsableMutex_};
+                for (ULONG i = 0; i < table->NumEntries; ++i) {
+                    if (table->Table[i].DadState == IpDadStatePreferred) {
+                        fUsable_.Add (IndexAndAddress_{table->Table[i].InterfaceIndex, AddressOf_ (table->Table[i].Address)});
+                    }
+                }
+            }
 #elif qStroika_Platform_MacOS
             // as the Linux netlink loop above (the socket made, and the addresses listed, here too), via the BSD routing socket:
             // each address added or removed (RTM_NEWADDR, RTM_DELADDR)
@@ -585,7 +621,9 @@ namespace {
 #if qStroika_Platform_POSIX
         Execution::Thread::Ptr fMonitorThread_;
 #elif qStroika_Platform_Windows
-        HANDLE fMonitorHandler_ = INVALID_HANDLE_VALUE;
+        HANDLE                            fMonitorHandler_ = INVALID_HANDLE_VALUE;
+        mutex                             fUsableMutex_; // the OS's callbacks may come on more than one of its threads
+        Containers::Set<IndexAndAddress_> fUsable_;      // the addresses usable now (DAD state Preferred)
 #endif
         static inline mutex              sMutex_; // guards sCurrent_
         static inline weak_ptr<Backend_> sCurrent_;

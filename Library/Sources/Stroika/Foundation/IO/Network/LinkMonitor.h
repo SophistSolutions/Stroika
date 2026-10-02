@@ -111,9 +111,11 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  \brief What a callback is told: an address added to (or removed from) an interface.
          *
-         *  \note IPv4 and IPv6 addresses. Only an address's coming and going is reported - not a change to one already there
-         *        (its lifetime renewed, say). On Linux an IPv6 address is reported once its duplicate-address check is done (it
-         *        cannot be used before).
+         *  \note IPv4 and IPv6 addresses. Only an address's becoming usable, and ceasing to be, is reported - not a change that
+         *        leaves it as it was (its lifetime renewed, say). So an address still checking it is no duplicate is reported
+         *        once that is done (Linux, Windows), and on Windows - which keeps the address of a network that goes (Wi-Fi off,
+         *        within its DHCP lease), marking it deprecated - the network's going and coming back is reported as the
+         *        address's removal and addition.
          */
         struct Event {
             /**
