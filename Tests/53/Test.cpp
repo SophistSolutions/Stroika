@@ -8,6 +8,8 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h" // for qStroika_Foundation_DataExchange_XML_SupportParsing
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -24,6 +26,7 @@
 #include "Stroika/Frameworks/UPnP/SSDP/Client/Search.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Server/LocationProvider.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -289,6 +292,51 @@ namespace {
     }
 
     /*
+     *  The ready-made location providers - what each advertises where.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_LocationProviders_)
+    {
+        Debug::TraceContextBumper ctx{"SSDP_LocationProviders_"};
+        using namespace SSDP::Server;
+        const InternetAddress kLAN_{"192.168.1.5"sv};
+        const InternetAddress kOtherLAN_{"10.0.0.7"sv};
+        const InternetAddress kV6_{"2001:db8::5"sv};
+        const InternetAddress kV6LinkLocal_{"fe80::5"sv};
+        auto                  at  = [] (const InternetAddress& a) { return LocationContext{a, nullopt}; };
+        auto                  str = [] (const optional<URI>& u) { return u ? optional<String>{u->As<String> ()} : nullopt; };
+        // LocationFromBindings: a wildcard binding covers its own family only; a specific one only its own address
+        {
+            LocationProvider p = LocationFromBindings (Containers::Sequence<SocketAddress>{SocketAddress{V4::kAddrAny, 8080}}, "/d.xml"sv);
+            EXPECT_EQ (str (p (at (kLAN_))), "http://192.168.1.5:8080/d.xml"sv);
+            EXPECT_EQ (str (p (at (kV6_))), nullopt); // the web server listens only on IPv4
+        }
+        {
+            LocationProvider p = LocationFromBindings (Containers::Sequence<SocketAddress>{SocketAddress{V6::kAddrAny, 8080}}, "/d.xml"sv);
+            EXPECT_EQ (str (p (at (kV6_))), "http://[2001:db8::5]:8080/d.xml"sv);
+            EXPECT_EQ (str (p (at (kLAN_))), nullopt);
+            EXPECT_EQ (str (p (at (kV6LinkLocal_))), nullopt); // its URL would need a zone naming OUR interface
+        }
+        {
+            LocationProvider p =
+                LocationFromBindings (Containers::Sequence<SocketAddress>{SocketAddress{V4::kAddrAny, 9090}, SocketAddress{kLAN_, 8080}});
+            EXPECT_EQ (str (p (at (kLAN_))), "http://192.168.1.5:8080/"sv); // its own binding, not the wildcard
+            EXPECT_EQ (str (p (at (kOtherLAN_))), "http://10.0.0.7:9090/"sv);
+        }
+        {
+            LocationProvider p = LocationFromBindings (Containers::Sequence<SocketAddress>{SocketAddress{kLAN_, 8080}});
+            EXPECT_EQ (str (p (at (kOtherLAN_))), nullopt); // listens on another network's address only
+        }
+        // FixedLocation: always that URL
+        EXPECT_EQ (str (FixedLocation (URI{"https://device.example/d.xml"sv}) (at (kLAN_))), "https://device.example/d.xml"sv);
+        // LocationFillingInHost: a host given is kept; a missing one is filled in - but never with a link-local IPv6 address
+        EXPECT_EQ (str (LocationFillingInHost (URI{"http://device.example:8000/d.xml"sv}) (at (kLAN_))), "http://device.example:8000/d.xml"sv);
+        const URI noHost{URI::SchemeType{"http"sv}, URI::Authority{nullopt, PortType{8080}}, "/d.xml"sv};
+        EXPECT_EQ (str (LocationFillingInHost (noHost) (at (kLAN_))), "http://192.168.1.5:8080/d.xml"sv);
+        EXPECT_EQ (str (LocationFillingInHost (noHost) (at (kV6_))), "http://[2001:db8::5]:8080/d.xml"sv);
+        EXPECT_EQ (str (LocationFillingInHost (noHost) (at (kV6LinkLocal_))), nullopt);
+    }
+
+    /*
      *  A real SSDP exchange: our own BasicServer answering our own Search, both in this process (the server's responder
      *  turns multicast loopback on).
      *
@@ -311,7 +359,7 @@ namespace {
         Device d;
         d.fDeviceID = deviceID;
         d.fLocation.SetScheme (URI::SchemeType{"http"sv});
-        d.fLocation.SetAuthority (URI::Authority{nullopt, kPort_}); // no host - BasicServer fills in one of ours
+        d.fLocation.SetAuthority (URI::Authority{nullopt, kPort_}); // no host - LocationFillingInHost fills in one of ours
         d.fLocation.SetPath ("/device.xml"sv);
         d.fServer = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
         DeviceDescription dd;
@@ -321,16 +369,25 @@ namespace {
 
         Execution::Synchronized<optional<SSDP::Advertisement>> found;
         Execution::WaitableEvent                               foundEvent;
+        // BasicServer's default provider, recording what each search response asks it
+        Execution::Synchronized<Containers::Sequence<SSDP::Server::LocationContext>> askedFor;
+        SSDP::Server::LocationProvider fillInHost          = SSDP::Server::LocationFillingInHost (d.fLocation);
+        SSDP::Server::LocationProvider recordingFillInHost = [&] (const SSDP::Server::LocationContext& c) {
+            if (c.fAsker) {
+                askedFor.rwget ()->Append (c);
+            }
+            return fillInHost (c);
+        };
         try {
             using IO::Network::InternetProtocol::IP::IPVersionSupport;
-            SSDP::Server::BasicServer server{d, dd, SSDP::Server::BasicServer::FrequencyInfo{}, IPVersionSupport::eIPV4Only};
-            SSDP::Client::Search      search{[&] (const SSDP::Advertisement& a) {
+            SSDP::Server::BasicServer server{d, dd, recordingFillInHost, SSDP::Server::BasicServer::FrequencyInfo{}, IPVersionSupport::eIPV4Only};
+            SSDP::Client::Search search{[&] (const SSDP::Advertisement& a) {
                                             if (a.fTarget == deviceType) {
                                                 found.store (a);
                                                 foundEvent.Set ();
                                             }
-                                             },
-                                             deviceType, nullopt, IPVersionSupport::eIPV4Only};
+                                        },
+                                        deviceType, nullopt, IPVersionSupport::eIPV4Only};
             (void)foundEvent.WaitQuietly (10s);
         }
         catch (...) {
@@ -352,14 +409,27 @@ namespace {
         EXPECT_EQ (a->fLocation.GetPath (), "/device.xml"sv);
         optional<URI::Authority> authority = a->fLocation.GetAuthority ();
         EXPECT_TRUE (authority and authority->GetPort () == kPort_);
+        Containers::Collection<InternetAddress> ourAddresses;
+        for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
+            ourAddresses.AddAll (i.fBindings.fAddresses);
+        }
+        auto isOurs = [&] (const InternetAddress& ia) { return ia.IsLocalhostAddress () or ourAddresses.Contains (ia); };
         // the host filled in must be one of this machine's own addresses
         optional<InternetAddress> host = authority and authority->GetHost () ? authority->GetHost ()->AsInternetAddress () : nullopt;
         EXPECT_TRUE (host.has_value ()) << Characters::ToString (a->fLocation).AsNarrowSDKString ();
         if (host) {
-            bool mine = host->IsLocalhostAddress () or
-                        SystemInterfacesMgr{}.GetAll ().Any ([&] (const Interface& i) { return i.fBindings.fAddresses.Contains (*host); });
-            EXPECT_TRUE (mine) << Characters::ToString (*host).AsNarrowSDKString () << " is not one of this machine's addresses";
+            EXPECT_TRUE (isOurs (*host)) << Characters::ToString (*host).AsNarrowSDKString () << " is not one of this machine's addresses";
         }
+        // and it is this machine's address as the asker reaches it - which, for a search from this machine (ours: others on
+        // the network search too), is the very address the search came from
+        Containers::Sequence<SSDP::Server::LocationContext> fromUs{
+            askedFor.load ().Where ([&] (const SSDP::Server::LocationContext& c) { return isOurs (c.fAsker->GetInternetAddress ()); })};
+        EXPECT_FALSE (fromUs.empty ());
+        for (const SSDP::Server::LocationContext& c : fromUs) {
+            EXPECT_EQ (c.fLocalAddress, c.fAsker->GetInternetAddress ()) << Characters::ToString (c).AsNarrowSDKString ();
+        }
+        EXPECT_TRUE (fromUs.Any ([&] (const SSDP::Server::LocationContext& c) { return c.fLocalAddress == host; }))
+            << Characters::ToString (a->fLocation).AsNarrowSDKString ();
     }
 }
 #endif

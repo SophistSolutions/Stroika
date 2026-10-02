@@ -12,6 +12,8 @@
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
 #include "Stroika/Frameworks/UPnP/Device.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Server/LocationProvider.h"
 
 /*
  *  \file
@@ -38,8 +40,11 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     class SearchResponder {
     public:
         /**
+         *  Listens for searches on every network interface (running, not loopback - as they are when this starts), and answers
+         *  each search the advertisements match with the LOCATION location gives for the asker: the context's fLocalAddress is
+         *  this machine's address as the asker reaches it. The advertisements' own fLocation is not used.
          */
-        SearchResponder (const Iterable<Advertisement>& advertisements,
+        SearchResponder (const Iterable<Advertisement>& advertisements, const LocationProvider& location,
                          IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         SearchResponder (const SearchResponder&) = delete;
 

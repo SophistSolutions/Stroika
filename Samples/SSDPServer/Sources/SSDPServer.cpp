@@ -85,8 +85,6 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     try {
         Device d;
-        d.fLocation.SetScheme (URI::SchemeType{"http"sv});
-        d.fLocation.SetAuthority (URI::Authority{nullopt, portForOurWS});
         d.fServer   = UPnP::SSDP::MakeServerHeaderValue ("MyStroikaBasedSampleProduct/1.0"sv);
         d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID ("315CAAE0-1335-57BF-A178-24C9EE756627"sv);
 
@@ -104,7 +102,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         deviceInfo.fUDN              = "uuid:" + d.fDeviceID;
 
         WebServerForDeviceDescription_ deviceWS{portForOurWS, deviceInfo};
-        BasicServer                    b{d, deviceInfo};
+        BasicServer b{d, deviceInfo, Server::LocationFromBindings (deviceWS.bindings ())}; // on each network, where deviceWS listens
         WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
     }
     catch (const system_error& e) {

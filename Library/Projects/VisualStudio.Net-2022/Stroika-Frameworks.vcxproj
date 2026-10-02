@@ -304,6 +304,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\LocationProvider.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.inl" />
@@ -319,6 +320,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Search.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\LocationProvider.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.cpp" />
   </ItemGroup>
@@ -333,6 +335,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Search.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\LocationProvider.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.h" />
   </ItemGroup>

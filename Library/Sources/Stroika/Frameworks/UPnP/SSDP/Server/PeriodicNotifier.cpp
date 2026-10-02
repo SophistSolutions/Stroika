@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
+#include "Stroika/Foundation/IO/Network/Interface.h"
 
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
@@ -33,8 +34,8 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
  ******************************** PeriodicNotifier ******************************
  ********************************************************************************
  */
-PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi,
-                                    IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const LocationProvider& location,
+                                    const FrequencyInfo& fi, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
 {
     if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
@@ -60,7 +61,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
     if constexpr (qStroika_Foundation_Debug_DefaultTracingOn) {
         Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - first time notifications"};
         for ([[maybe_unused]] const auto& a : advertisements) {
-            DbgTrace ("(alive,loc={},usn={},...)"_f, a.fLocation, a.fUSN);
+            DbgTrace ("(alive,usn={},...)"_f, a.fUSN);
         }
     }
 
@@ -79,11 +80,41 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         }
 #endif
         try {
-            for (auto a : advertisements) {
-                a.fAlive          = true; // periodic notifier must announce alive (we don't support 'going down' yet)
-                Memory::BLOB data = SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a);
-                for (pair<ConnectionlessSocket::Ptr, SocketAddress> s : sockets) {
-                    s.first.SendTo (data, s.second);
+            // out of each interface, with that interface's own LOCATION
+            for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
+                if (i.fType == Interface::Type::eLoopback or not(i.fStatus and i.fStatus->Contains (Interface::Status::eRunning))) {
+                    continue;
+                }
+                for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
+                    try {
+                        InternetAddress::AddressFamily family = s.second.GetInternetAddress ().GetAddressFamily ();
+                        optional<InternetAddress>      local  = SSDP::Server::Private_::AdvertisableAddress (i, family);
+                        if (not local) {
+                            continue; // no address of this channel's family there
+                        }
+                        optional<URI> url = location (LocationContext{*local, nullopt});
+                        if (not url) {
+                            continue; // nothing to advertise there
+                        }
+                        if (family == InternetAddress::AddressFamily::V4) {
+                            s.first.SetMulticastInterface (*local);
+                        }
+                        else {
+                            s.first.SetMulticastInterface (i);
+                        }
+                        for (Advertisement a : advertisements) {
+                            a.fAlive    = true; // periodic notifier must announce alive (we don't support 'going down' yet)
+                            a.fLocation = *url;
+                            s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a), s.second);
+                        }
+                    }
+                    catch (const Execution::Thread::AbortException&) {
+                        Execution::ReThrow ();
+                    }
+                    catch (...) {
+                        DbgTrace ("Ignoring inability to send SSDP notify packets on {}: {} (try again later)"_f, i.fInternalInterfaceID,
+                                  current_exception ());
+                    }
                 }
             }
         }

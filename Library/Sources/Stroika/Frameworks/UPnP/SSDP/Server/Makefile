@@ -8,6 +8,7 @@ vpath %cpp $(SrcDir)
 
 Objs	:=	\
 	$(ObjDir)BasicServer${OBJ_SUFFIX}\
+	$(ObjDir)LocationProvider${OBJ_SUFFIX}\
 	$(ObjDir)PeriodicNotifier${OBJ_SUFFIX}\
 	$(ObjDir)SearchResponder${OBJ_SUFFIX}\
 

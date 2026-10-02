@@ -13,6 +13,7 @@
 
 #include "Stroika/Frameworks/UPnP/Device.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Server/LocationProvider.h"
 
 /*
  *  \file
@@ -47,12 +48,14 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
     public:
         /**
-         *  Note this binds to the sockets on construction, and then keeps notifying through IntervalTimer wakeups, until
-         *  this object is destroyed.
+         *  Binds the sockets on construction, then sends the advertisements - out of every network interface (running, not
+         *  loopback), each with the LOCATION location gives for that interface - right away and every fi.fRepeatInterval
+         *  after, until this object is destroyed. The interfaces are listed afresh each time, so networks that come and go
+         *  are picked up. The advertisements' own fLocation is not used.
          * 
          *  Errors doing sends are just logged with DbgTrace()
          */
-        PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi,
+        PeriodicNotifier (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const FrequencyInfo& fi,
                           IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         PeriodicNotifier (const PeriodicNotifier&) = delete;
 

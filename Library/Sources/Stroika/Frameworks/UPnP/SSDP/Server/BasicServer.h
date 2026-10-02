@@ -30,7 +30,7 @@
 namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
     /**
-     *  \brief handle the multicast part of UPnP SSDP - listening for searches and sending periodic notifications
+     *  \brief SSDP Server Implementation: handle the multicast part of UPnP SSDP - listening for searches and sending periodic notifications
      *
      *  When this object is instantiated, it fires off threads to notify and respond to
      *  searches. When it is destroyed, it stops doing that.
@@ -44,13 +44,17 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
         using FrequencyInfo = PeriodicNotifier::FrequencyInfo;
 
     public:
-        /*
-         *  if the HOST part of d.fLocation is empty, it will dynamically be populated with the hosts primary IP address
-         *  see IO::Network::GetPrimaryInternetAddress () - when the server broadcasts it
+        /**
+         *  Advertise the device on every network interface, each with the LOCATION location gives for it: where its device
+         *  description is to be found, from that network (@see LocationProvider). For a Stroika web server, that is usually
+         *  LocationFromBindings (theWebServer.bindings ()). d.fLocation is not used.
+         *
+         *  ipVersion is which SSDP channels to use (IPv4 239.255.255.250, IPv6 ff02::c); each LOCATION is of the same family as
+         *  its channel.
          */
-        BasicServer (const BasicServer&) = delete;
-        BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi = FrequencyInfo{},
+        BasicServer (const Device& d, const DeviceDescription& dd, const LocationProvider& location, const FrequencyInfo& fi = FrequencyInfo{},
                      IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        BasicServer (const BasicServer&)                  = delete;
         const BasicServer& operator= (const BasicServer&) = delete;
 
     private:

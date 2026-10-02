@@ -908,6 +908,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.inl">
       <Filter>UPnP\SSDP\Server</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\LocationProvider.inl">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.inl">
       <Filter>UPnP\SSDP\Server</Filter>
     </None>
@@ -943,6 +946,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.cpp">
       <Filter>UPnP\SSDP\Server</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\LocationProvider.cpp">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.cpp">
       <Filter>UPnP\SSDP\Server</Filter>
     </ClCompile>
@@ -967,6 +973,9 @@
       <Filter>UPnP\SSDP\Server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.h">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\LocationProvider.h">
       <Filter>UPnP\SSDP\Server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.h">
