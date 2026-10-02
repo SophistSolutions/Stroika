@@ -25,6 +25,8 @@
 #elif qStroika_Platform_MacOS
 #include <net/if.h>
 #include <net/if_dl.h>
+#include <net/route.h>
+#include <sys/sysctl.h>
 #endif
 #elif qStroika_Platform_Windows
 #include <WinSock2.h>
@@ -51,12 +53,9 @@
 #if qStroika_Platform_Windows
 #include "Stroika/Foundation/../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
-#include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/Memory/Optional.h"
-#include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "ConnectionlessSocket.h"
 #include "Socket.h"
@@ -257,7 +256,101 @@ namespace {
 #endif
 
     // everything about one interface except its addresses - GetInterfaces_POSIX_ adds those, one per getifaddrs () entry
-    Interface GetInterfaces_POSIX_mkInterface_ (int sd, const char* name, unsigned int flags)
+#if qStroika_Platform_Linux or qStroika_Platform_MacOS
+    // each interface's IPv4 default gateway (its first, if it has several), by interface name - read once for a listing
+    Containers::Mapping<String, InternetAddress> GetDefaultGateways_ ()
+    {
+        Containers::Mapping<String, InternetAddress> result;
+        try {
+#if qStroika_Platform_Linux
+            DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
+            static const filesystem::path                          kFileName_{"/proc/net/route"};
+            /*
+             * EXAMPLE OUTPUT:
+             *        cat /proc/net/route
+             *        Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+             *        eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
+             *        eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0
+             */
+            // Note - /procfs files always unseekable
+            for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
+                if (line.size () >= 3 and line[1] == "00000000"sv and not result.ContainsKey (line[0])) {
+                    int tmp[4]{};
+                    swscanf (line[2].As<wstring> ().c_str (), L"%02x%02x%02x%02x", &tmp[3], &tmp[2], &tmp[1], &tmp[0]);
+                    result.Add (line[0], InternetAddress{static_cast<byte> (tmp[0]), static_cast<byte> (tmp[1]), static_cast<byte> (tmp[2]),
+                                                         static_cast<byte> (tmp[3])});
+                }
+            }
+#elif qStroika_Platform_MacOS
+            // the kernel's routing table - the routes with a gateway - as netstat -rn shows it. (Not 'route get default', as until
+            // v3.0d25: a process per interface - most of a listing's time - finding only the primary default route, its gateway
+            // given as a DNS name to look up again.)
+            int          mib[] = {CTL_NET, PF_ROUTE, 0, AF_INET, NET_RT_FLAGS, RTF_GATEWAY};
+            vector<byte> buf;
+            size_t       len = 0;
+            for (int tries = 0;; ++tries) {
+                Execution::ThrowPOSIXErrNoIfNegative (::sysctl (mib, static_cast<u_int> (std::size (mib)), nullptr, &len, nullptr, 0));
+                buf.resize (len + len / 8 + 1024); // room for routes added meanwhile
+                len = buf.size ();
+                if (::sysctl (mib, static_cast<u_int> (std::size (mib)), buf.data (), &len, nullptr, 0) == 0) {
+                    break;
+                }
+                if (errno != ENOMEM or tries == 3) {
+                    Execution::ThrowPOSIXErrNo ();
+                }
+            }
+            // each route a routing message: a header, then its addresses - one per bit set in rtm_addrs, in RTAX_ order, each
+            // padded to 4 bytes. Copied out, never cast in place: they are packed (as LinkMonitor's are)
+            for (size_t offset = 0; offset + sizeof (rt_msghdr) <= len;) {
+                rt_msghdr rtm;
+                ::memcpy (&rtm, buf.data () + offset, sizeof (rtm));
+                if (rtm.rtm_msglen == 0) {
+                    break;
+                }
+                size_t            end = min<size_t> (offset + rtm.rtm_msglen, len);
+                optional<in_addr> dst;
+                optional<in_addr> gateway;
+                optional<in_addr> mask;
+                for (size_t i = 0, a = offset + sizeof (rtm); i < RTAX_MAX and a < end; ++i) {
+                    if (not(rtm.rtm_addrs & (1 << i))) {
+                        continue;
+                    }
+                    uint8_t saLen = static_cast<uint8_t> (buf[a]);
+                    if (i == RTAX_DST or i == RTAX_GATEWAY or i == RTAX_NETMASK) {
+                        // by sa_len - a netmask's is often short, its trailing zero bytes left off (or 0: all zero)
+                        sockaddr_in sin{};
+                        ::memcpy (&sin, buf.data () + a, min (min<size_t> (saLen, sizeof (sin)), end - a));
+                        if (i == RTAX_NETMASK) {
+                            mask = sin.sin_addr; // (its family is not always set)
+                        }
+                        else if (sin.sin_family == AF_INET) {
+                            (i == RTAX_DST ? dst : gateway) = sin.sin_addr;
+                        }
+                    }
+                    a += saLen > 0 ? (1 + ((saLen - 1) | (sizeof (uint32_t) - 1))) : sizeof (uint32_t);
+                }
+                // a default route: to 0.0.0.0, with a zero mask (not, say, a VPN's 0.0.0.0/1)
+                char name[IF_NAMESIZE]{};
+                if (dst and dst->s_addr == INADDR_ANY and not(rtm.rtm_flags & RTF_HOST) and (not mask or mask->s_addr == 0) and gateway and
+                    ::if_indextoname (rtm.rtm_index, name) != nullptr) {
+                    String interfaceName = String::FromNarrowSDKString (name);
+                    if (not result.ContainsKey (interfaceName)) {
+                        result.Add (interfaceName, InternetAddress{*gateway});
+                    }
+                }
+                offset += rtm.rtm_msglen;
+            }
+#endif
+        }
+        catch (...) {
+            // lot's of reasons this could fail, including running WSL on Windows (2018-12-03)
+        }
+        return result;
+    }
+#endif
+
+    Interface GetInterfaces_POSIX_mkInterface_ (int sd, const char* name, unsigned int flags,
+                                                [[maybe_unused]] const Containers::Mapping<String, InternetAddress>& defaultGateways)
     {
         Interface newInterface;
         newInterface.fInterfaceID  = String::FromSDKString (name);
@@ -312,84 +405,8 @@ namespace {
         }
 #endif
 
-#if qStroika_Platform_Linux || qStroika_Platform_MacOS
-        auto getDefaultGateway = [] (const char* name) -> optional<InternetAddress> {
-            try {
-#if qStroika_Platform_Linux
-                DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-                static const filesystem::path                          kFileName_{"/proc/net/route"};
-                /*
-                 * EXAMPLE OUTPUT:
-                 *        cat /proc/net/route
-                 *        Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-                 *        eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
-                 *        eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0
-                 */
-                // Note - /procfs files always unseekable
-                for (const Sequence<String>& line :
-                     reader.ReadMatrix (FileInputStream::New (kFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
-                    if (line.size () >= 3 and line[0] == String::FromNarrowSDKString (name) and line[1] == "00000000"sv) {
-                        //
-                        int tmp[4]{};
-                        swscanf (line[2].As<wstring> ().c_str (), L"%02x%02x%02x%02x", &tmp[3], &tmp[2], &tmp[1], &tmp[0]);
-                        return InternetAddress{static_cast<byte> (tmp[0]), static_cast<byte> (tmp[1]), static_cast<byte> (tmp[2]),
-                                               static_cast<byte> (tmp[3])};
-                    }
-                }
-#elif qStroika_Platform_MacOS
-                /*
-                 *  NOTE: Could ALSO use netstat -nr   - https://unh.edu/it/kb/article/how-to-route-print-mac-os-x.html
-                 *
-                 * EXAMPLE OUTPUT:
-                 *      >route get default
-                 *         route to: default
-                 *      destination: default
-                 *             mask: default
-                 *          gateway: router.asus.com
-                 *        interface: en0
-                 *            flags: <UP,GATEWAY,DONE,STATIC,PRCLONING>
-                 *       recvpipe  sendpipe  ssthresh  rtt,msec    rttvar  hopcount      mtu     expire
-                 *             0         0         0         0         0         0      1500         0
-                 */
-                ProcessRunner                    pr{"route get default"sv};
-                Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
-                pr.Run (nullptr, useStdOut);
-                DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':'}};
-                optional<String>                                       forInterface;
-                optional<String>                                       gateway;
-                for (const Sequence<String>& line : reader.ReadMatrix (useStdOut)) {
-                    if (line.size () == 2 and line[0] == "interface"sv) {
-                        forInterface = line[1];
-                    }
-                    else if (line.size () == 2 and line[0] == "gateway"sv) {
-                        gateway = line[1];
-                    }
-                }
-                if (forInterface == String::FromNarrowSDKString (name) and gateway) {
-                    try {
-                        return InternetAddress{*gateway};
-                    }
-                    catch (...) {
-                        // frequently fails - cuz its a dns name
-                    }
-                    try {
-                        auto s = IO::Network::DNS::kThe.GetHostAddresses (*gateway);
-                        if (not s.empty ()) {
-                            return InternetAddress{s.Nth (0)};
-                        }
-                    }
-                    catch (...) {
-                        DbgTrace ("got exception converting gateway to address (dns): {}"_f, current_exception ()); // should work...
-                    }
-                }
-#endif
-            }
-            catch (...) {
-                // lot's of reasons this could fail, including running WSL on Windows (2018-12-03)
-            }
-            return nullopt;
-        };
-        if (auto gw = getDefaultGateway (name)) {
+#if qStroika_Platform_Linux or qStroika_Platform_MacOS
+        if (optional<InternetAddress> gw = defaultGateways.Lookup (String::FromNarrowSDKString (name))) {
             newInterface.fGateways = Containers::Sequence<InternetAddress>{*gw};
         }
 #endif
@@ -486,6 +503,12 @@ namespace {
          *  no IPv4 address went missing); on macOS its records are packed (misaligned), each holds just a struct sockaddr
          *  (too small for an IPv6 address), and link-local addresses come with the scope id embedded in them.
          */
+        const Containers::Mapping<String, InternetAddress> defaultGateways =
+#if qStroika_Platform_Linux or qStroika_Platform_MacOS
+            GetDefaultGateways_ ();
+#else
+            {};
+#endif
         InterfacesByID results;
         for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -501,7 +524,7 @@ namespace {
 #endif
             String              interfaceName = String::FromSDKString (deviceName);
             optional<Interface> prev          = results.Lookup (interfaceName);
-            Interface           newInterface  = prev ? *prev : GetInterfaces_POSIX_mkInterface_ (sd, deviceName.c_str (), p->ifa_flags);
+            Interface newInterface = prev ? *prev : GetInterfaces_POSIX_mkInterface_ (sd, deviceName.c_str (), p->ifa_flags, defaultGateways);
             if (optional<InternetAddress> ia = GetInternetAddress_ (p->ifa_addr)) {
                 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
                 newInterface.fBindings.fAddressRanges.Add (CIDR{*ia, GetPrefixLength_ (p->ifa_netmask, p->ifa_addr->sa_family)});
