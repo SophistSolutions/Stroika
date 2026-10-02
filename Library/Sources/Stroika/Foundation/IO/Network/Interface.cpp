@@ -528,9 +528,17 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("interface: ifa_name={}; ifa_addr.sa_family = {}"_f, p->ifa_name, p->ifa_addr == nullptr ? -1 : p->ifa_addr->sa_family);
 #endif
-            String              interfaceName = String::FromSDKString (p->ifa_name);
+            // the interface the entry is for - on Linux, an IPv4 address with a label (eth0:1, from ifconfig or 'ip addr add ...
+            // label') comes named by its label, but belongs to its device: eth0 (a device's name cannot contain ':')
+            string deviceName{p->ifa_name};
+#if qStroika_Platform_Linux
+            if (size_t colon = deviceName.find (':'); colon != string::npos) {
+                deviceName.erase (colon);
+            }
+#endif
+            String              interfaceName = String::FromSDKString (deviceName);
             optional<Interface> prev          = results.Lookup (interfaceName);
-            Interface           newInterface  = prev ? *prev : GetInterfaces_POSIX_mkInterface_ (sd, p->ifa_name, p->ifa_flags);
+            Interface           newInterface  = prev ? *prev : GetInterfaces_POSIX_mkInterface_ (sd, deviceName.c_str (), p->ifa_flags);
             if (optional<InternetAddress> ia = GetInternetAddress_ (p->ifa_addr)) {
                 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
                 newInterface.fBindings.fAddressRanges.Add (CIDR{*ia, GetPrefixLength_ (p->ifa_netmask, p->ifa_addr->sa_family)});

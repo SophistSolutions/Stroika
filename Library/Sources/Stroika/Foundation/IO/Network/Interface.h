@@ -44,16 +44,22 @@ namespace Stroika::Foundation::IO::Network {
      */
     struct Interface {
         /**
-         *      This is a somewhat artificial concept - which is introduced in Stroika. This is only guaranteed
-         *   unique for the life of one program lifetime (@todo - not even sure we can do that much).
+         *  The OS's own identity for the interface:
+         *      POSIX:      its name - e.g. eth0, en0 (on Linux the device's name - not that of an IPv4 address's label, such as
+         *                  eth0:1, whose address belongs to eth0)
+         *      Windows:    IP_ADAPTER_ADDRESSES::AdapterName - its GUID (not very printable; @see fFriendlyName)
          *
-         *      UNIX:
-         *          interface name - e.g. eth0 - in the first column reported in ifconfig.
+         *  Unique among the interfaces there at any one moment - the OS ensures that (Linux: within the process's network
+         *  namespace) - so it identifies an interface within one listing (@see SystemInterfacesMgr::GetAll).
          *
-         *      WINDOWS:
-         *          IP_ADAPTER_ADDRESSES::fAdapterName
+         *  \note But it is not a lasting identity. On POSIX an interface can be renamed, and once one goes away its name may be
+         *        given to another (e.g. a VPN's utun3, or a replugged USB adapter's en5). On Windows the GUID lasts for a real
+         *        adapter, but a re-created virtual one (a VPN's, a Hyper-V switch) gets a new one.
          *
-         *          This is interface AdapterName, which is not particularly printable (usualy a GUID)
+         *        So key a collection of Interfaces by it only when they were all there at one moment (one listing). One kept
+         *        across time - a history of the networks seen, say - can hold two different interfaces with the same ID, and
+         *        the same interface under two IDs, so it needs some other notion of identity (its hardware address, perhaps,
+         *        where it has one).
          */
         using SystemIDType = String;
 

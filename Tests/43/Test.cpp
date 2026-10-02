@@ -23,6 +23,7 @@
 #include <WinSock2.h>
 
 #include <WS2tcpip.h>
+#include <iphlpapi.h>
 #endif
 
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -43,6 +44,7 @@
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -601,6 +603,11 @@ namespace {
             Containers::Sequence<IFAddr_>       addrs;
             for (const ifaddrs* p = ifa; p != nullptr; p = p->ifa_next) {
                 Characters::String name = Characters::String::FromSDKString (p->ifa_name);
+#if qStroika_Platform_Linux
+                if (optional<size_t> colon = name.Find (':')) {
+                    name = name.SubString (0, *colon); // an IPv4 address's label (eth0:1): the address is its device's, eth0's
+                }
+#endif
                 names.Add (name);
                 if (p->ifa_addr != nullptr and p->ifa_addr->sa_family == AF_INET) {
                     sockaddr_in a{};
@@ -761,6 +768,47 @@ GTEST_TEST (Foundation_IO_Network, Test3_LocalAddressToReach_)
                     << Characters::ToString (a).AsNarrowSDKString () << " on " << i.fInternalInterfaceID.AsNarrowSDKString ();
             }
         }
+    }
+}
+
+GTEST_TEST (Foundation_IO_Network, Test3_InterfaceIDs_)
+{
+    // fInternalInterfaceID is the OS's own identity for an interface (unique among those there at one moment): checked
+    // against the OS's own list of its interfaces, with their indexes - not against how Interface.cpp derives it. (On Linux,
+    // an IPv4 address with a label - eth0:1 - still belongs to its device, eth0.)
+    Debug::TraceContextBumper                             trcCtx{"Test3_InterfaceIDs_"};
+    Containers::Mapping<Characters::String, unsigned int> osInterfaces; // the OS's ID -> index
+#if qStroika_Platform_POSIX
+    struct if_nameindex* all = ::if_nameindex ();
+    ASSERT_NE (all, nullptr) << "if_nameindex () failed"; // else the comparison below would be with nothing, and prove nothing
+    for (const struct if_nameindex* p = all; p->if_index != 0; ++p) {
+        osInterfaces.Add (Characters::String::FromSDKString (p->if_name), p->if_index);
+    }
+    ::if_freenameindex (all);
+#elif qStroika_Platform_Windows
+    Memory::StackBuffer<std::byte> buf;
+    for (ULONG size = 16 * 1024;;) {
+        buf.GrowToSize_uninitialized (size);
+        DWORD r = ::GetAdaptersAddresses (AF_UNSPEC, 0, nullptr, reinterpret_cast<IP_ADAPTER_ADDRESSES*> (buf.data ()), &size);
+        if (r == ERROR_BUFFER_OVERFLOW) {
+            continue;
+        }
+        ASSERT_EQ (r, static_cast<DWORD> (NO_ERROR));
+        for (const IP_ADAPTER_ADDRESSES* a = reinterpret_cast<IP_ADAPTER_ADDRESSES*> (buf.data ()); a != nullptr; a = a->Next) {
+            osInterfaces.Add (Characters::String::FromNarrowSDKString (a->AdapterName), a->IfIndex != 0 ? a->IfIndex : a->Ipv6IfIndex);
+        }
+        break;
+    }
+#endif
+    Containers::Sequence<Interface> interfaces{SystemInterfacesMgr{}.GetAll ()};
+    for (const Interface& i : interfaces) {
+        optional<unsigned int> osIndex = osInterfaces.Lookup (i.fInternalInterfaceID);
+        EXPECT_TRUE (osIndex.has_value ()) << "not one of the OS's interfaces: " << i.fInternalInterfaceID.AsNarrowSDKString ();
+        EXPECT_EQ (i.fIndex, osIndex) << i.fInternalInterfaceID.AsNarrowSDKString ();
+    }
+    for (const auto& kv : osInterfaces) {
+        EXPECT_TRUE (interfaces.Any ([&] (const Interface& i) { return i.fInternalInterfaceID == kv.fKey; }))
+            << "missing interface " << kv.fKey.AsNarrowSDKString ();
     }
 }
 
