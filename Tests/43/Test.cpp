@@ -811,6 +811,14 @@ GTEST_TEST (Foundation_IO_Network, Test3_InterfaceIDs_)
     for (const auto& kv : osInterfaces) {
         EXPECT_TRUE (interfaces.Contains (kv.fKey)) << "missing interface " << kv.fKey.AsNarrowSDKString ();
     }
+#if qStroika_Platform_Windows
+    // the adapter's GUID as AdapterName spells it - upper case, in braces - which is how LinkMonitor names an interface (from
+    // the GUID the OS gives it)
+    for (const Interface& i : interfaces) {
+        const Characters::String& id = i.fInterfaceID;
+        EXPECT_TRUE (id.size () == 38 and id.StartsWith ("{"sv) and id.EndsWith ("}"sv) and id == id.ToUpperCase ()) << id.AsNarrowSDKString ();
+    }
+#endif
     // and found by its ID
     if (optional<Interface> any = interfaces.First ()) {
         optional<Interface> found = SystemInterfacesMgr{}.GetById (any->fInterfaceID);
@@ -1113,7 +1121,7 @@ GTEST_TEST (Foundation_IO_Network, LinkMonitor_)
     namespace Thread = Execution::Thread;
     auto addCallback = [] (LinkMonitor& lm) -> bool {
         try {
-            lm.AddCallback ([] (LinkMonitor::LinkChange, const Characters::String&, const Characters::String&) {});
+            lm.AddCallback ([] (const LinkMonitor::Event&) {});
             return true;
         }
         catch (...) {
@@ -1152,7 +1160,7 @@ GTEST_TEST (Foundation_IO_Network, LinkMonitor_)
             [] () {
                 for (int i = 0; i < 25; ++i) {
                     LinkMonitor lm;
-                    lm.AddCallback ([] (LinkMonitor::LinkChange, const Characters::String&, const Characters::String&) {});
+                    lm.AddCallback ([] (const LinkMonitor::Event&) {});
                 }
             },
             Thread::eAutoStart, "LinkMonitor_ churn {}"_f(t));

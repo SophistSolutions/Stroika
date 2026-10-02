@@ -33,6 +33,8 @@
 #endif
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Finally.h"
@@ -275,7 +277,19 @@ Again:
 
 namespace {
     using Callback   = LinkMonitor::Callback;
+    using Event      = LinkMonitor::Event;
     using LinkChange = LinkMonitor::LinkChange;
+
+#if qStroika_Platform_Windows
+    // a GUID as IP_ADAPTER_ADDRESSES::AdapterName spells it - so as Interface::fInterfaceID: upper case, in braces
+    String AdapterNameOf_ (const ::GUID& g)
+    {
+        char buf[64];
+        (void)::snprintf (buf, std::size (buf), "{%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}", g.Data1, g.Data2, g.Data3,
+                          g.Data4[0], g.Data4[1], g.Data4[2], g.Data4[3], g.Data4[4], g.Data4[5], g.Data4[6], g.Data4[7]);
+        return String{buf};
+    }
+#endif
 
     // what one LinkMonitor has registered. fMutex is held while its callbacks run - so taking it waits for any running on
     // another thread; recursive, so a callback can add or remove callbacks itself
@@ -332,7 +346,7 @@ namespace {
         }
 
     private:
-        void Notify_ (LinkChange lc, const String& linkName, const String& ipAddr)
+        void Notify_ (const Event& e)
         {
             tNotifying_                     = true;
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { tNotifying_ = false; });
@@ -342,7 +356,7 @@ namespace {
                 for (const Callback& cb : Containers::Collection<Callback>{sub->fCallbacks}) {
                     if (sub->fCallbacks.Contains (cb)) {
                         try {
-                            cb (lc, linkName, ipAddr);
+                            cb (e);
                         }
                         catch (const Execution::Thread::AbortException&) {
                             Execution::ReThrow ();
@@ -360,13 +374,15 @@ namespace {
         // cannot use LAMBDA cuz we need WINAPI call convention
         static void WINAPI CB_ (void* callerContext, PMIB_UNICASTIPADDRESS_ROW Address, MIB_NOTIFICATION_TYPE NotificationType)
         {
-            if (Address != NULL) {
-                char ipAddrBuf[1024];
-                (void)snprintf (ipAddrBuf, std::size (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
-                                Address->Address.Ipv4.sin_addr.s_host, Address->Address.Ipv4.sin_addr.s_lh, Address->Address.Ipv4.sin_addr.s_impno);
-                LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
+            // an address added or removed - not MibParameterNotification, a change to one already there (its lifetime, say)
+            if (Address != NULL and (NotificationType == MibAddInstance or NotificationType == MibDeleteInstance)) {
                 try {
-                    reinterpret_cast<Backend_*> (callerContext)->Notify_ (lc, String{}, String{ipAddrBuf});
+                    ::GUID guid{};
+                    Event e{.fChange = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded,
+                            .fInterfaceID =
+                                (::ConvertInterfaceLuidToGuid (&Address->InterfaceLuid, &guid) == NO_ERROR) ? AdapterNameOf_ (guid) : String{},
+                            .fAddress = InternetAddress{Address->Address.Ipv4.sin_addr}};
+                    reinterpret_cast<Backend_*> (callerContext)->Notify_ (e);
                 }
                 catch (...) {
                     // nothing may escape to the OS's thread
@@ -379,18 +395,17 @@ namespace {
         void Start_ ()
         {
 #if qStroika_Platform_Linux
-            fMonitorThread_ = Execution::Thread::New ([this] () {
+            // the socket made (and bound) here, not on the thread: so a change from when AddCallback () returns is seen, and an
+            // OS that cannot tell (some containers) makes AddCallback () throw - rather than the thread silently ending
+            ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE);
+            {
+                sockaddr_nl addr{};
+                addr.nl_family = AF_NETLINK;
+                addr.nl_groups = RTMGRP_IPV4_IFADDR;
+                Execution::ThrowPOSIXErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof (addr)));
+            }
+            fMonitorThread_ = Execution::Thread::New ([this, sock] () {
                 // for now - only handle adds, but removes SB easy too...
-
-                ConnectionlessSocket::Ptr sock =
-                    ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE);
-
-                {
-                    sockaddr_nl addr{};
-                    addr.nl_family = AF_NETLINK;
-                    addr.nl_groups = RTMGRP_IPV4_IFADDR;
-                    Execution::ThrowPOSIXErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof (addr)));
-                }
 
                 // wait here, not in ReceiveFrom: with no timeout, that can miss an Abort () that comes just before it blocks
                 Execution::WaitForIOReady ready{sock.GetNativeSocket ()};
@@ -408,17 +423,14 @@ namespace {
                             struct rtattr*    rth = IFA_RTA (ifa);
                             int               rtl = IFA_PAYLOAD (nlh);
                             while (rtl and RTA_OK (rth, rtl)) {
-                                if (rth->rta_type == IFA_LOCAL) {
-                                    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-                                    uint32_t ipaddr = htonl (*((uint32_t*)RTA_DATA (rth))); //NB no '::' cuz some systems use macro
-                                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-                                    char name[IFNAMSIZ];
-                                    ::if_indextoname (ifa->ifa_index, name);
-                                    {
-                                        char ipAddrBuf[1024];
-                                        ::snprintf (ipAddrBuf, std::size (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,
-                                                    (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
-                                        Notify_ (LinkChange::eAdded, String::FromNarrowSDKString (name), String{ipAddrBuf});
+                                if (rth->rta_type == IFA_LOCAL and ifa->ifa_family == AF_INET and RTA_PAYLOAD (rth) >= sizeof (in_addr)) {
+                                    in_addr a;
+                                    ::memcpy (&a, RTA_DATA (rth), sizeof (a));
+                                    char name[IF_NAMESIZE]{};
+                                    if (::if_indextoname (ifa->ifa_index, name) != nullptr) {
+                                        Notify_ (Event{.fChange      = LinkChange::eAdded,
+                                                       .fInterfaceID = String::FromNarrowSDKString (name),
+                                                       .fAddress     = InternetAddress{a}});
                                     }
                                 }
                                 rth = RTA_NEXT (rth, rtl);
@@ -436,9 +448,10 @@ namespace {
              */
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, this, FALSE, &fMonitorHandler_));
 #elif qStroika_Platform_MacOS
-            fMonitorThread_ = Execution::Thread::New ([this] () {
-                // As the Linux netlink loop above, via the BSD routing socket: report each IPv4 address added (RTM_NEWADDR).
-                ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_ROUTE), Socket::RAW, AF_UNSPEC);
+            // as the Linux netlink loop above (the socket made here, too), via the BSD routing socket: report each IPv4 address
+            // added (RTM_NEWADDR)
+            ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_ROUTE), Socket::RAW, AF_UNSPEC);
+            fMonitorThread_ = Execution::Thread::New ([this, sock] () {
                 // wait here, not in ReceiveFrom: with no timeout, that can miss an Abort () that comes just before it blocks
                 Execution::WaitForIOReady ready{sock.GetNativeSocket ()};
                 byte                      buffer[4096];
@@ -470,7 +483,9 @@ namespace {
                                     ::memcpy (&sin, buffer + a, sizeof (sin));
                                     char name[IF_NAMESIZE]{};
                                     if (sin.sin_family == AF_INET and ::if_indextoname (ifam.ifam_index, name) != nullptr) {
-                                        Notify_ (LinkChange::eAdded, String::FromNarrowSDKString (name), InternetAddress{sin.sin_addr}.As<String> ());
+                                        Notify_ (Event{.fChange      = LinkChange::eAdded,
+                                                       .fInterfaceID = String::FromNarrowSDKString (name),
+                                                       .fAddress     = InternetAddress{sin.sin_addr}});
                                     }
                                 }
                                 a += saLen > 0 ? (1 + ((saLen - 1) | (sizeof (uint32_t) - 1))) : sizeof (uint32_t);
@@ -533,6 +548,17 @@ struct LinkMonitor::Rep_ {
  ************************* IO::Network::LinkMonitor *****************************
  ********************************************************************************
  */
+String LinkMonitor::Event::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb << "{"sv;
+    sb << "change: "sv << fChange;
+    sb << ", interfaceID: "sv << fInterfaceID;
+    sb << ", address: "sv << fAddress;
+    sb << "}"sv;
+    return sb;
+}
+
 LinkMonitor::LinkMonitor ()
     : fRep_{Memory::MakeSharedPtr<Rep_> ()}
 {

@@ -97,9 +97,9 @@ optional<LinkMonitor> UPnP::SSDP::Private_::FollowNetworkChanges (const function
 {
     try {
         LinkMonitor lm;
-        lm.AddCallback ([onNetworkAppeared] (LinkMonitor::LinkChange lc, const String& linkName, const String& ipAddr) {
-            if (lc == LinkMonitor::LinkChange::eAdded) {
-                Debug::TraceContextBumper ctx{"SSDP: a network appeared", "linkName={}, ipAddr={}"_f, linkName, ipAddr};
+        lm.AddCallback ([onNetworkAppeared] (const LinkMonitor::Event& e) {
+            if (e.fChange == LinkMonitor::LinkChange::eAdded) {
+                Debug::TraceContextBumper ctx{"SSDP: a network appeared", "{}"_f, e};
                 try {
                     onNetworkAppeared ();
                 }

@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 
 /**
@@ -70,6 +71,9 @@ namespace Stroika::Foundation::IO::Network {
      *  registration (NotifyUnicastIpAddressChange) - started by the first to add a callback, and stopped when the last of those
      *  goes. So several cost about what one does.
      *
+     *  \note  A change from when AddCallback () returns is reported. Where the OS cannot tell (e.g. some containers),
+     *         AddCallback () throws.
+     *
      *  \note  Callbacks run on that thread (on Windows, the OS's), not the caller's - so a slow one delays the others' - and
      *         one LinkMonitor's one at a time. An exception from one is logged and ignored.
      *
@@ -103,7 +107,37 @@ namespace Stroika::Foundation::IO::Network {
 
             Stroika_Define_Enum_Bounds (eAdded, eRemoved)
         };
-        using Callback = Execution::Function<void (LinkChange, const String& linkName, const String& ipAddr)>;
+
+        /**
+         *  \brief What a callback is told: an address added to (or removed from) an interface.
+         *
+         *  \note As of v3.0d25 only IPv4 addresses are reported - and on Linux and macOS, only their being added.
+         */
+        struct Event {
+            /**
+             *  Whether fAddress was added to the interface, or removed from it.
+             */
+            LinkChange fChange;
+
+            /**
+             *  The interface's Interface::fInterfaceID - so SystemInterfacesMgr::GetById () finds the rest of it, if it is still
+             *  there. Empty where the OS no longer knows it (Windows, for an address removed with its interface).
+             */
+            Interface::SystemIDType fInterfaceID;
+
+            /**
+             *  The address added (or removed) - always given: each Event is about one address. Linux: the netlink message's
+             *  IFA_LOCAL; macOS: the routing message's RTAX_IFA; Windows: MIB_UNICASTIPADDRESS_ROW::Address.
+             */
+            InternetAddress fAddress;
+
+            /**
+             *  @see Characters::ToString ();
+             */
+            nonvirtual String ToString () const;
+        };
+
+        using Callback = Execution::Function<void (const Event&)>;
         nonvirtual void AddCallback (const Callback& callback);
         nonvirtual void RemoveCallback (const Callback& callback);
 
