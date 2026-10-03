@@ -9,7 +9,12 @@ namespace Stroika::Foundation::Common {
      ********************************* Common::GUID *********************************
      ********************************************************************************
      */
-#if qStroika_Platform_Windows
+#if qStroika_Platform_MacOS
+    inline GUID::GUID (const uuid_t& src) noexcept
+        : GUID{FromRFC9562Bytes (as_bytes (span<const unsigned char, 16>{src}))}
+    {
+    }
+#elif qStroika_Platform_Windows
     constexpr GUID::GUID (const ::GUID& src) noexcept
         : Data1{src.Data1}
         , Data2{src.Data2}
@@ -20,6 +25,35 @@ namespace Stroika::Foundation::Common {
         }
     }
 #endif
+    constexpr GUID GUID::FromRFC9562Bytes (span<const byte, 16> bytes) noexcept
+    {
+        // by shifting, not copying - so whatever this machine's byte order
+        auto b = [&] (size_t i) { return static_cast<uint32_t> (bytes[i]); };
+        GUID r;
+        r.Data1 = (b (0) << 24) | (b (1) << 16) | (b (2) << 8) | b (3);
+        r.Data2 = static_cast<uint16_t> ((b (4) << 8) | b (5));
+        r.Data3 = static_cast<uint16_t> ((b (6) << 8) | b (7));
+        for (size_t i = 0; i < std::size (r.Data4); ++i) {
+            r.Data4[i] = static_cast<uint8_t> (bytes[8 + i]);
+        }
+        return r;
+    }
+    constexpr array<byte, 16> GUID::AsRFC9562Bytes () const noexcept
+    {
+        array<byte, 16> r{};
+        r[0] = static_cast<byte> (Data1 >> 24);
+        r[1] = static_cast<byte> (Data1 >> 16);
+        r[2] = static_cast<byte> (Data1 >> 8);
+        r[3] = static_cast<byte> (Data1);
+        r[4] = static_cast<byte> (Data2 >> 8);
+        r[5] = static_cast<byte> (Data2);
+        r[6] = static_cast<byte> (Data3 >> 8);
+        r[7] = static_cast<byte> (Data3);
+        for (size_t i = 0; i < std::size (Data4); ++i) {
+            r[8 + i] = static_cast<byte> (Data4[i]);
+        }
+        return r;
+    }
     namespace Private_ {
         template <Characters::IConvertibleToString STRISH_TYPE>
         inline string AsAscii (STRISH_TYPE&& src)

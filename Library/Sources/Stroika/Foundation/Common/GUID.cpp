@@ -75,14 +75,17 @@ Common::GUID::operator Memory::BLOB () const
 
 Common::GUID Common::GUID::GenerateNew () noexcept
 {
-    array<uint8_t, 16>         randomData;
+    array<std::byte, 16>       randomData;
     random_device              rd;
     mt19937                    gen{rd ()}; //Standard mersenne_twister_engine seeded with rd()
     uniform_int_distribution<> uniformDist{0, 255};
     for (size_t i = 0; i < 16; ++i) {
-        randomData[i] = static_cast<uint8_t> (uniformDist (gen));
+        randomData[i] = static_cast<std::byte> (uniformDist (gen));
     }
-    return GUID{randomData};
+    // an RFC 9562 version 4 UUID: random but for its version and variant bits (in RFC 9562's byte order)
+    randomData[6] = (randomData[6] & std::byte{0x0f}) | std::byte{0x40}; // version 4
+    randomData[8] = (randomData[8] & std::byte{0x3f}) | std::byte{0x80}; // variant: RFC 9562
+    return FromRFC9562Bytes (randomData);
 }
 
 /*

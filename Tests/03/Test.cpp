@@ -208,6 +208,48 @@ namespace {
             EXPECT_EQ (GUID{g1.As<string> ()}, g1);
             EXPECT_EQ (GUID{g1.As<Memory::BLOB> ()}, g1);
         }
+        {
+            // operator<=> orders GUIDs as their text does - and their RFC 9562 bytes - not as their in-memory bytes (As<BLOB> ())
+            for (int i = 0; i < 64; ++i) {
+                GUID a = GUID::GenerateNew ();
+                GUID b = GUID::GenerateNew ();
+                EXPECT_EQ (a < b, a.As<string> () < b.As<string> ());
+                EXPECT_EQ (a < b, a.AsRFC9562Bytes () < b.AsRFC9562Bytes ());
+            }
+            GUID lo{"00000001-0000-0000-0000-000000000000"sv};
+            GUID hi{"00000100-0000-0000-0000-000000000000"sv};
+            EXPECT_LT (lo, hi);
+            EXPECT_LT (lo.As<string> (), hi.As<string> ());
+            if (Common::GetEndianness () == Common::Endian::eX86) {
+                EXPECT_GT (::memcmp (lo.data (), hi.data (), lo.size ()), 0); // in memory, Data1's low byte first: 01 vs 00
+            }
+        }
+        {
+            // GenerateNew () makes RFC 9562 version 4 (random) UUIDs: its version digit 4, its variant 8, 9, a or b
+            for (int i = 0; i < 32; ++i) {
+                string s = GUID::GenerateNew ().As<string> ();
+                EXPECT_EQ (s[14], '4') << s;
+                EXPECT_TRUE (s[19] == '8' or s[19] == '9' or s[19] == 'a' or s[19] == 'b') << s;
+            }
+        }
+        {
+            // RFC 9562's byte order is the order the text is written in - whatever this machine's own
+            array<std::byte, 16> b{};
+            for (size_t i = 0; i < b.size (); ++i) {
+                b[i] = static_cast<std::byte> (i);
+            }
+            GUID g = GUID::FromRFC9562Bytes (b);
+            EXPECT_EQ (g.As<Characters::String> (), "00010203-0405-0607-0809-0a0b0c0d0e0f");
+            EXPECT_TRUE (g.AsRFC9562Bytes () == b);
+            GUID g1 = GUID::GenerateNew ();
+            EXPECT_EQ (GUID::FromRFC9562Bytes (g1.AsRFC9562Bytes ()), g1);
+            static_assert (GUID::FromRFC9562Bytes (array<std::byte, 16>{std::byte{0x12}, std::byte{0x34}, std::byte{0x56}, std::byte{0x78}}).Data1 == 0x12345678);
+#if qStroika_Platform_MacOS
+            uuid_t u{};
+            EXPECT_EQ (::uuid_parse ("61E4D49D-8C26-3480-F5C8-564E155C67A6", u), 0);
+            EXPECT_EQ (GUID{u}.As<Characters::String> (), "61e4d49d-8c26-3480-f5c8-564e155c67a6");
+#endif
+        }
     }
 }
 
