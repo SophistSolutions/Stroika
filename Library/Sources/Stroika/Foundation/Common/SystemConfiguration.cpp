@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <cctype>
 #include <climits>
 #include <filesystem>
 #include <thread>
@@ -32,6 +33,8 @@
 #endif
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
+#include "Stroika/Foundation/Cryptography/Digest/Digester.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #if qStroika_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
@@ -173,6 +176,7 @@ String SystemConfiguration::ToString () const
     sb << ", actualOperatingSystem: "sv << fActualOperatingSystem;
     sb << ", apparentOperatingSystem: "sv << fApparentOperatingSystem;
     sb << ", computerNames: "sv << fComputerNames;
+    sb << ", machineID: "sv << (fMachineID ? "(not shown: confidential)"sv : "none"sv);
     sb << "}"sv;
     return sb;
 };
@@ -906,6 +910,85 @@ SystemConfiguration::ComputerNames Common::GetSystemConfiguration_ComputerNames 
 
 /*
  ********************************************************************************
+ ****************** Common::GetSystemConfiguration_MachineID ********************
+ ********************************************************************************
+ */
+namespace {
+    // from its 32 hex digits, in the order its text is written in (RFC 9562's), as /etc/machine-id holds them
+    optional<Common::GUID> GUIDFromHexDigits_ (const string& text)
+    {
+        array<std::byte, 16> bytes{};
+        size_t               n = 0;
+        for (size_t i = 0; i < text.size () and not ::isspace (static_cast<unsigned char> (text[i])); i += 2) {
+            if (n == bytes.size () or i + 1 >= text.size () or not ::isxdigit (static_cast<unsigned char> (text[i])) or
+                not ::isxdigit (static_cast<unsigned char> (text[i + 1]))) {
+                return nullopt;
+            }
+            bytes[n++] = static_cast<std::byte> (std::stoi (text.substr (i, 2), nullptr, 16));
+        }
+        if (n != bytes.size ()) {
+            return nullopt;
+        }
+        return Common::GUID::FromRFC9562Bytes (bytes);
+    }
+}
+
+optional<Common::GUID> Common::GetSystemConfiguration_MachineID ()
+{
+    try {
+#if qStroika_Platform_Linux
+        // systemd's, else D-Bus's (from before systemd, and some containers): 32 hex digits and a newline
+        for (const char* path : {"/etc/machine-id", "/var/lib/dbus/machine-id"}) {
+            ifstream in{path};
+            string   line;
+            if (getline (in, line)) {
+                if (optional<Common::GUID> id = GUIDFromHexDigits_ (line)) {
+                    return id;
+                }
+            }
+        }
+#elif qStroika_Platform_MacOS
+        uuid_t         id{};
+        const timespec wait{5, 0}; // how long it may take - it can come from a daemon
+        if (::gethostuuid (id, &wait) == 0) {
+            return Common::GUID{id};
+        }
+#elif qStroika_Platform_Windows
+        // from the registry's 64-bit view: a 32-bit process's own (WOW64) view has no MachineGuid
+        const Platform::Windows::RegistryKey key{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography"sv, KEY_READ | KEY_WOW64_64KEY};
+        if (auto o = key.Lookup ("MachineGuid"sv)) {
+            return Common::GUID{o.As<String> ()}; // its usual text: 8-4-4-4-12 hex digits
+        }
+#endif
+    }
+    catch (...) {
+        DbgTrace ("GetSystemConfiguration_MachineID: none ({})"_f, current_exception ());
+    }
+    return nullopt;
+}
+
+optional<Common::GUID> Common::GetSystemConfiguration_MachineID (const Common::GUID& applicationKey)
+{
+    optional<Common::GUID> machineID = GetSystemConfiguration_MachineID ();
+    if (not machineID) {
+        return nullopt;
+    }
+    // RFC 9562 version 3 (name-based, MD5): the digest of the namespace (applicationKey) then the name (the machine ID), each
+    // as its 16 bytes in the order written, with the version and variant bits set. As systemd's sd_id128_get_machine_app_specific
+    // does (with HMAC-SHA256): one-way, so the ID can go on a network without revealing the machine's own.
+    array<std::byte, 16> ns   = applicationKey.AsRFC9562Bytes ();
+    array<std::byte, 16> name = machineID->AsRFC9562Bytes ();
+    array<std::byte, 32> in{};
+    std::copy (ns.begin (), ns.end (), in.begin ());
+    std::copy (name.begin (), name.end (), in.begin () + ns.size ());
+    array<uint8_t, 16> h = Cryptography::Digest::ComputeDigest<Cryptography::Digest::Algorithm::MD5> (span<const std::byte>{in});
+    h[6]                 = static_cast<uint8_t> ((h[6] & 0x0f) | 0x30); // version 3
+    h[8]                 = static_cast<uint8_t> ((h[8] & 0x3f) | 0x80); // variant: RFC 9562
+    return Common::GUID::FromRFC9562Bytes (as_bytes (span{h}));
+}
+
+/*
+ ********************************************************************************
  ************************ Common::GetNumberOfLogicalCPUCores ********************
  ********************************************************************************
  */
@@ -948,5 +1031,6 @@ SystemConfiguration Common::GetSystemConfiguration ()
                                GetSystemConfiguration_Memory (),
                                GetSystemConfiguration_ActualOperatingSystem (),
                                GetSystemConfiguration_ApparentOperatingSystem (),
-                               GetSystemConfiguration_ComputerNames ()};
+                               GetSystemConfiguration_ComputerNames (),
+                               GetSystemConfiguration_MachineID ()};
 }

@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
@@ -32,6 +33,13 @@ namespace Stroika::Foundation::Common {
     using Characters::String;
 
     /**
+     *  \brief What can be told of the machine this runs on - GetSystemConfiguration () gets it all, each
+     *         GetSystemConfiguration_Xxx () a part.
+     *
+     *  \note Logging it: ToString () leaves out fMachineID (saying only whether there is one), but code writing the fields out
+     *        itself - a serializer, say - must leave it out too (or use GetSystemConfiguration_MachineID (applicationKey) instead).
+     *        And even without it, a SystemConfiguration - its host name, operating system, CPU and so on - can identify the
+     *        machine: mind where it is written.
      */
     struct SystemConfiguration {
 
@@ -254,10 +262,17 @@ namespace Stroika::Foundation::Common {
         ComputerNames   fComputerNames;
 
         /**
+         *  The OS's own ID for this machine - @see GetSystemConfiguration_MachineID (). Confidential, so ToString () says only
+         *  whether there is one (@see SystemConfiguration's note on logging it).
          */
-        SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& oi, const ComputerNames& cn);
+        optional<GUID> fMachineID;
+
+        /**
+         */
+        SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& oi, const ComputerNames& cn,
+                             const optional<GUID>& machineID = nullopt);
         SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS,
-                             const OperatingSystem& apparentOS, const ComputerNames& cn);
+                             const OperatingSystem& apparentOS, const ComputerNames& cn, const optional<GUID>& machineID = nullopt);
 
         /**
          *  @see Characters::ToString ();
@@ -303,6 +318,44 @@ namespace Stroika::Foundation::Common {
     /**
      */
     SystemConfiguration::ComputerNames GetSystemConfiguration_ComputerNames ();
+
+    /**
+     *  \brief The operating system's own ID for this machine - exactly as the OS keeps it, the same every time (it survives
+     *         reboots); nullopt if the OS has none, or it cannot be read.
+     *
+     *  Each OS supported keeps a 128-bit ID for the machine, returned unaltered - its text (As<String> ()) is the OS's own, but
+     *  for case and dashes:
+     *      Linux:      /etc/machine-id (else /var/lib/dbus/machine-id) - made when the OS is installed: by systemd, a random
+     *                  UUID; by older tools, 128 random bits, not always marked as a UUID
+     *      Windows:    the registry's MachineGuid (HKEY_LOCAL_MACHINE, under SOFTWARE, Microsoft, Cryptography) - a GUID made
+     *                  when the OS is installed
+     *      macOS:      gethostuuid () - the hardware's UUID (as IOPlatformUUID), so it survives a reinstall
+     *      Others:     nullopt for now. A platform supported later (a BSD, say) returns its own ID, unaltered, where it keeps
+     *                  one; where it does not, its entry here will say what is returned instead (perhaps derived from what it
+     *                  does keep) - or nullopt.
+     *
+     *  The applicationKey overload returns not the OS's ID but one DERIVED from it, for that application: a name-based UUID
+     *  (RFC 9562 version 3 - the MD5 of applicationKey and the machine's ID). So it is the same each time for that application
+     *  on this machine, and different for another application, or machine - and does not reveal the machine's own ID (nullopt
+     *  where that is).
+     *
+     *  \note Not a promise of uniqueness: a cloned virtual machine (or a Windows image not sysprepped) has its original's ID,
+     *        and a container may have none - or share its image's.
+     *
+     *  \note Treat it as confidential: systemd's docs say not to expose it on a network. For an ID that leaves the machine
+     *        (a UPnP device ID, say), derive one for your application with the applicationKey overload.
+     *
+     *  \par Example Usage
+     *      \code
+     *          // a UPnP device ID - the same each time, and different on another machine (as UPnP requires)
+     *          static const Common::GUID kMyProduct_{"315CAAE0-1335-57BF-A178-24C9EE756627"sv};
+     *          if (optional<Common::GUID> id = Common::GetSystemConfiguration_MachineID (kMyProduct_)) {
+     *              device.fDeviceID = id->As<String> ();
+     *          }
+     *      \endcode
+     */
+    optional<GUID> GetSystemConfiguration_MachineID ();
+    optional<GUID> GetSystemConfiguration_MachineID (const GUID& applicationKey); ///< \brief one derived for an application
 
     /**
      *  \brief return the number of currently available CPU cores on this (virtual) machine

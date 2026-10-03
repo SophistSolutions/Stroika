@@ -4,6 +4,7 @@
 //  TEST    Foundation::Common
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <fstream>
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/String.h"
@@ -426,6 +427,53 @@ namespace {
         DbgTrace ("systemConfig={}"_f, sc);
         DbgTrace ("systemConfig.actualOS={}"_f, sc.fActualOperatingSystem);
         DbgTrace ("systemConfig.apparentOS={}"_f, sc.fApparentOperatingSystem);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Common, SystemConfiguration_MachineID_)
+    {
+        using namespace Characters::Literals;
+        Debug::TraceContextBumper ctx{"{}::SystemConfiguration_MachineID_"};
+        using namespace Common;
+        optional<Common::GUID> id = GetSystemConfiguration_MachineID (); // (not traced: it is meant to stay on the machine)
+#if qStroika_Platform_Windows or qStroika_Platform_MacOS
+        EXPECT_TRUE (id.has_value ()); // every Windows install has a MachineGuid, every Mac a hardware UUID
+#endif
+#if qStroika_Platform_Linux
+        // the OS's own: /etc/machine-id holds its 32 hex digits
+        {
+            ifstream in{"/etc/machine-id"};
+            string   line;
+            if (getline (in, line) and line.size () == 32) {
+                ASSERT_TRUE (id.has_value ());
+                EXPECT_EQ (id->As<Characters::String> ().ReplaceAll ("-"sv, ""sv).ToLowerCase (),
+                           Characters::String::FromNarrowSDKString (line).ToLowerCase ());
+            }
+        }
+#endif
+        if (not id) {
+            Stroika::Frameworks::Test::WarnTestIssue ("SystemConfiguration_MachineID_: this machine has no ID (a container?)");
+            return;
+        }
+        EXPECT_TRUE (GetSystemConfiguration_MachineID () == id); // the same every time
+        // and in the whole SystemConfiguration - but not in its text, which is traced
+        SystemConfiguration sc = GetSystemConfiguration ();
+        EXPECT_TRUE (sc.fMachineID == id);
+        EXPECT_FALSE (sc.ToString ().ToLowerCase ().Contains (id->As<Characters::String> ().ToLowerCase ()));
+        // derived for an application: the same each time for it, different for another - and not the machine's own
+        static const Common::GUID kApp1_{"315CAAE0-1335-57BF-A178-24C9EE756627"sv};
+        static const Common::GUID kApp2_{"0F0E0D0C-0B0A-0908-0706-050403020100"sv};
+        optional<Common::GUID>    a1 = GetSystemConfiguration_MachineID (kApp1_);
+        ASSERT_TRUE (a1.has_value ());
+        DbgTrace ("machine ID for kApp1_={}"_f, *a1);
+        EXPECT_TRUE (*a1 != *id);
+        EXPECT_TRUE (GetSystemConfiguration_MachineID (kApp1_) == a1);
+        EXPECT_TRUE (GetSystemConfiguration_MachineID (kApp2_) != a1);
+        // an RFC 9562 version 3 UUID: its version digit 3, its variant 8, 9, a or b
+        string s = a1->As<string> ();
+        EXPECT_EQ (s[14], '3') << s;
+        EXPECT_TRUE (s[19] == '8' or s[19] == '9' or s[19] == 'a' or s[19] == 'b') << s;
     }
 }
 
