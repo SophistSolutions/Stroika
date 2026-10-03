@@ -354,7 +354,7 @@ namespace Stroika::Foundation::Common {
      *          // a UPnP device ID - the same each time, and different on another machine (as UPnP requires)
      *          static const Common::GUID kMyProduct_{"315CAAE0-1335-57BF-A178-24C9EE756627"sv};
      *          if (optional<Common::GUID> id = Common::GetSystemConfiguration_MachineID (kMyProduct_)) {
-     *              device.fDeviceID = id->As<String> ();
+     *              device.fDeviceID = *id;
      *          }
      *      \endcode
      */

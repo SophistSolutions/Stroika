@@ -79,7 +79,7 @@ namespace {
         Containers::Mapping<String, DataExchange::VariantValue> m =
             Device::kMapper.FromObject (d).As<Containers::Mapping<String, DataExchange::VariantValue>> ();
         EXPECT_EQ (m.Keys ().As<Containers::Set<String>> (), (Containers::Set<String>{"Device-ID"sv, "Location"sv, "Server"sv}));
-        EXPECT_EQ (m.LookupValue ("Device-ID"sv).As<String> (), d.fDeviceID);
+        EXPECT_EQ (m.LookupValue ("Device-ID"sv).As<String> (), "315caae0-668d-47c7-a178-24c9ee756627"sv); // a GUID's text: lower case
         EXPECT_EQ (m.LookupValue ("Location"sv).As<String> (), d.fLocation.As<String> ());
         Device back = Device::kMapper.ToObject<Device> (Device::kMapper.FromObject (d));
         EXPECT_EQ (back.fDeviceID, d.fDeviceID);

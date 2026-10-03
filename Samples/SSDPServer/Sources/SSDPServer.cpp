@@ -91,7 +91,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         // the device's ID: the same each time it runs here, and different on another machine (as UPnP requires) - this machine's
         // own ID, derived for this product (so not revealing it). Where the OS has none (some containers), a new one each run.
         static const Common::GUID kThisProduct_{"315CAAE0-1335-57BF-A178-24C9EE756627"sv};
-        d.fDeviceID = Common::GetSystemConfiguration_MachineID (kThisProduct_).value_or (Common::GUID::GenerateNew ()).As<String> ();
+        d.fDeviceID = Common::GetSystemConfiguration_MachineID (kThisProduct_).value_or (Common::GUID::GenerateNew ());
 
         DeviceDescription deviceInfo;
         deviceInfo.fPresentationURL  = URI{"http://www.sophists.com/"sv};
@@ -104,7 +104,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         deviceInfo.fModelNumber      = "model number"sv;
         deviceInfo.fModelURL         = URI{"http://www.sophists.com/"sv};
         deviceInfo.fSerialNumber     = "manufacturer's serial number"sv;
-        deviceInfo.fUDN              = "uuid:" + d.fDeviceID;
+        deviceInfo.fUDN              = "uuid:" + d.fDeviceID.As<String> ();
 
         WebServerForDeviceDescription_ deviceWS{portForOurWS, deviceInfo};
         BasicServer b{d, deviceInfo, Server::LocationFromBindings (deviceWS.bindings ())}; // on each network, where deviceWS listens

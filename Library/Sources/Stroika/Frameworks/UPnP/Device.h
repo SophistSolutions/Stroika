@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 
@@ -28,7 +29,11 @@ namespace Stroika::Frameworks::UPnP {
      */
     class Device {
     public:
-        String fDeviceID; // this is the UUID (e.g. 315CAAE0-668D-47C7-A178-24C9EE756627)
+        /**
+         *  The device's UUID - a UPnP device MUST use a 128-bit UUID, written 8-4-4-4-12 hex digits (UPnP Device Architecture
+         *  1.1, section 1.1.4). Its UDN is "uuid:" and this.
+         */
+        Common::GUID fDeviceID;
 
         /**
          *  Where the device's description is - the LOCATION it advertises.
