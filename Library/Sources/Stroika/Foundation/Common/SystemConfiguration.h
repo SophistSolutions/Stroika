@@ -275,6 +275,10 @@ namespace Stroika::Foundation::Common {
                              const OperatingSystem& apparentOS, const ComputerNames& cn, const optional<GUID>& machineID = nullopt);
 
         /**
+         *  \note Leaves out fMachineID - saying only whether there is one - so tracing a whole SystemConfiguration is safe. How
+         *        to keep it (and other identifying data) out of logs and serialized copies more generally:
+         *        https://github.com/SophistSolutions/Stroika/issues/1196
+         *
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;

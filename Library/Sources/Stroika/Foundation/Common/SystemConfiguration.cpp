@@ -176,7 +176,7 @@ String SystemConfiguration::ToString () const
     sb << ", actualOperatingSystem: "sv << fActualOperatingSystem;
     sb << ", apparentOperatingSystem: "sv << fApparentOperatingSystem;
     sb << ", computerNames: "sv << fComputerNames;
-    sb << ", machineID: "sv << (fMachineID ? "(not shown: confidential)"sv : "none"sv);
+    sb << ", machineID: "sv << (fMachineID ? "(not shown: confidential)"sv : "none"sv); // never its value: https://github.com/SophistSolutions/Stroika/issues/1196
     sb << "}"sv;
     return sb;
 };
