@@ -90,6 +90,15 @@ WarnIfAffectedMSYS2Runtime_ ()
 	if [ "$DETECTED_HOST_OS_" != "MSYS" ] ; then
 		return 0
 	fi
+	#	Only a build whose output is on a console can hang - with stdout and stderr both redirected it is
+	#	immune (that IS the workaround below). So stay quiet then: this script inherits make's stdout and
+	#	stderr, so this asks of the build exactly what matters. That silences the warning where it could
+	#	never be true - GitHub Actions, and `docker exec` without -t (RunLocalWindowsDockerRegressionTests) -
+	#	so it is not something people learn to skip past. The cost, given the once-per-tree stamp: a tree whose
+	#	FIRST build was redirected never warns, even if later built on a console.
+	if [ ! -t 1 ] && [ ! -t 2 ] ; then
+		return 0
+	fi
 	local unameR_
 	unameR_=$(uname -r)		# eg "3.6.10-8fbd9808" (affected), "3.6.9-01d6c708" (last good)
 	if [[ ! "$unameR_" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] ; then
