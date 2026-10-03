@@ -7,6 +7,8 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
@@ -85,8 +87,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     try {
         Device d;
-        d.fServer   = UPnP::SSDP::MakeServerHeaderValue ("MyStroikaBasedSampleProduct/1.0"sv);
-        d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID ("315CAAE0-1335-57BF-A178-24C9EE756627"sv);
+        d.fServer = UPnP::SSDP::MakeServerHeaderValue ("MyStroikaBasedSampleProduct/1.0"sv);
+        // the device's ID: the same each time it runs here, and different on another machine (as UPnP requires) - this machine's
+        // own ID, derived for this product (so not revealing it). Where the OS has none (some containers), a new one each run.
+        static const Common::GUID kThisProduct_{"315CAAE0-1335-57BF-A178-24C9EE756627"sv};
+        d.fDeviceID = Common::GetSystemConfiguration_MachineID (kThisProduct_).value_or (Common::GUID::GenerateNew ()).As<String> ();
 
         DeviceDescription deviceInfo;
         deviceInfo.fPresentationURL  = URI{"http://www.sophists.com/"sv};

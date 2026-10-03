@@ -43,10 +43,6 @@ namespace Stroika::Frameworks::UPnP {
         static const Foundation::DataExchange::ObjectVariantMapper kMapper;
     };
 
-    /**
-     */
-    String MungePrimaryMacAddrIntoBaseDeviceID (String baseDeviceID);
-
 }
 
 /*
