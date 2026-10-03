@@ -424,21 +424,21 @@ namespace {
                     (qStroika_Foundation_Debug_AssertionsChecked or Debug::IsRunningUnderValgrind ()) ? 50u : 1000u}; // tweak count cuz too slow
                 Sequence<int> tmp{Traversal::DiscreteRange<int>{1, 1000}};
                 Thread::Ptr   t1 = Thread::New ([&tmp] () {
-                    for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                    for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                         for (int j : tmp) {
                             EXPECT_TRUE (1 <= j and j <= 1000);
                         }
                     }
                 });
                 Thread::Ptr   t2 = Thread::New ([&tmp] () {
-                    for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                    for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                         for (int j : tmp) {
                             EXPECT_TRUE (1 <= j and j <= 1000);
                         }
                     }
                 });
                 Thread::Ptr   t3 = Thread::New ([&tmp] () {
-                    for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                    for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                         if (tmp.size () == 1000) {
                             EXPECT_EQ (tmp.IndexOf (6), 5u);
                             EXPECT_EQ (*tmp.First (), 1);
