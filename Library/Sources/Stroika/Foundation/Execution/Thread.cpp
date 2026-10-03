@@ -505,16 +505,12 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 
 void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
 {
-    // NOTE - SAW not IsDone_ FAIL ONCE - 2024-09-27 - MacOS - github - https://github.com/SophistSolutions/Stroika/actions/runs/11062067662/job/30735869523
-    // and https://github.com/SophistSolutions/Stroika/actions/runs/11230328605/job/31217486475 MACOS ONLY - 2024-10-08
-    // and https://github.com/SophistSolutions/Stroika/actions/runs/12872068258/job/35888537430 MACOS ONLY - 2025-01-20
-    // and https://github.com/SophistSolutions/Stroika/actions/runs/15288729158/job/43004184991 MACOS ONLY - 2025-05-28
-    // and https://github.com/SophistSolutions/Stroika/actions/runs/21410430792/job/61645759448 MACOS ONLY - 2026-01-27
-    // AND https://github.com/SophistSolutions/Stroika/actions/runs/27315495550/job/80699126534 - windows-vs2k22-msys-x86-Debug, windows-2025 - 2026-06-11
-    // AND https://github.com/SophistSolutions/Stroika/actions/runs/31757601642/job/94636758814 - ubuntu-25.04-g++-15-debug-smaller-container, g++-15, ubuntu-latest
-    //maybe make fTriggered atomic in WaitableEvent::WE?
-    Require (not IsDone_ ());
-
+    /*
+     *  The thread may already be done - or finish while we are in here. Abort () sets fAbortRequested_ BEFORE it checks
+     *  IsDone (), and the target thread can see that flag (any CheckForInterruption) and run to completion at any moment
+     *  after, so Abort's IsDone () check is only an optimization. So everything below must be harmless on a finished thread.
+     *  (This was a Require (not IsDone_ ()), which failed sporadically in Test40 on every platform 2024-2026).
+     */
     Require (fAbortRequested_);
     //TraceContextBumper ctx{"Thread::Rep_::NotifyOfAbortFromAnyThread_"};
 
@@ -541,9 +537,12 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
                 sHandlerInstalled_ = true;
             }
         }
-        (void)SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
+        (void)SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ()); // ESRCH if the thread has exited - fine
 #elif qStroika_Platform_Windows
-        Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
+        if (not ::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this))) [[unlikely]] {
+            // fails (ERROR_GEN_FAILURE) once the thread has exited - fine, nothing left to interrupt
+            Assert (IsDone_ ());
+        }
 #endif
     }
 }
