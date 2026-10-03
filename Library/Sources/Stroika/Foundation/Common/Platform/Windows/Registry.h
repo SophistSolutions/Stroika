@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Common::Platform::Windows {
      *
      *  \par Example Usage
      *      \code
-     *          if (auto tmp = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.c_str ()))) {
+     *          if (auto tmp = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format ("MIME\\Database\\Content Type\\{}\\Extension", ct))) {
      *              return tmp.As<String> ();
      *          }
      *      \endcode
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Common::Platform::Windows {
          *
          *  The overload taking 'owned' argument determines if the key is destroyed at the end of ownership.
          *
-         *  'samDesired' must be KEY_READ or some other permission that doesn't cause creation.
+         *  'samDesired' must be KEY_READ (optionally with KEY_WOW64_64KEY or KEY_WOW64_32KEY, to read that view of the registry).
          */
         constexpr RegistryKey (HKEY hkey, bool owned = false);
         RegistryKey (HKEY parentKey, const Characters::String& path, REGSAM samDesired = KEY_READ);

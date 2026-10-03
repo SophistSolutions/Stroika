@@ -51,7 +51,8 @@ HKEY RegistryKey::OpenPath_ (HKEY parentKey, const String& path, REGSAM samDesir
 #endif
     Require (parentKey != nullptr);
     Require (parentKey != INVALID_HANDLE_VALUE);
-    Require (samDesired == KEY_READ); // @todo - for now - later allow others so long as they are non-destructive/readonly
+    // KEY_READ - and which view of the registry to read (KEY_WOW64_64KEY or KEY_WOW64_32KEY), which grants nothing more
+    Require ((samDesired & ~(KEY_WOW64_64KEY | KEY_WOW64_32KEY)) == KEY_READ); // @todo - later allow others so long as they are non-destructive/readonly
     HKEY result{};
     ThrowIfNotERROR_SUCCESS (::RegOpenKeyEx (parentKey, path.AsSDKString ().c_str (), 0, samDesired, &result));
     Ensure (result != nullptr and result != INVALID_HANDLE_VALUE);
