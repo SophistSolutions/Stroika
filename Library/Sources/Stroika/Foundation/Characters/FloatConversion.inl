@@ -530,13 +530,32 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
+        // format "{:.{}f}" - val in fixed notation, with precision digits after the decimal point
+        template <floating_point T>
+        inline string formatFixed_ (T val, unsigned int precision)
+        {
+#if qCompilerAndStdLib_format_dynamic_spec_Buggy
+            return Common::StdCompat::vformat ("{:.{}f}", Common::StdCompat::make_format_args (val, precision));
+#else
+            return Common::StdCompat::format ("{:.{}f}", val, precision);
+#endif
+        }
+        template <floating_point T>
+        inline wstring formatFixed_ (const locale& l, T val, unsigned int precision)
+        {
+#if qCompilerAndStdLib_format_dynamic_spec_Buggy
+            return Common::StdCompat::vformat (l, L"{:.{}f}", Common::StdCompat::make_wformat_args (val, precision));
+#else
+            return Common::StdCompat::format (l, L"{:.{}f}", val, precision);
+#endif
+        }
         template <floating_point T>
         inline String formatNonScientific_ (T val, unsigned int nSignificantFigures)
         {
             auto compute = [&] () {
                 if (val == 0.0) {
                     // special case for zero cuz cannot compute log10(0)
-                    return String{Common::StdCompat::format ("{:.{}f}", 0.0, nSignificantFigures)};
+                    return String{formatFixed_ (0.0, nSignificantFigures)};
                 }
                 else {
                     // Calculate digits before the decimal point
@@ -545,9 +564,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     // Precision for 'f' (fixed) is the number of digits AFTER the decimal
                     unsigned int precision = static_cast<unsigned int> (max (0, static_cast<int> (nSignificantFigures) - digits_before));
 
-                    // Use dynamic precision syntax: {:.{}f}
-                    // The first {} refers to the value, the second .{} refers to precision
-                    return String{Common::StdCompat::format ("{:.{}f}", val, precision)};
+                    return String{formatFixed_ (val, precision)};
                 }
             };
             String r = compute ();
@@ -564,7 +581,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             auto compute = [&] () {
                 if (val == 0.0) {
                     // special case for zero cuz cannot compute log10(0)
-                    return Common::StdCompat::format (l, L"{:.{}f}", 0.0, nSignificantFigures);
+                    return formatFixed_ (l, 0.0, nSignificantFigures);
                 }
                 else {
                     // Calculate digits before the decimal point
@@ -573,9 +590,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     // Precision for 'f' (fixed) is the number of digits AFTER the decimal
                     unsigned int precision = static_cast<unsigned int> (max (0, static_cast<int> (nSignificantFigures) - digits_before));
 
-                    // Use dynamic precision syntax: {:.{}f}
-                    // The first {} refers to the value, the second .{} refers to precision
-                    return Common::StdCompat::format (l, L"{:.{}f}", val, precision);
+                    return formatFixed_ (l, val, precision);
                 }
             };
             String r = compute ();

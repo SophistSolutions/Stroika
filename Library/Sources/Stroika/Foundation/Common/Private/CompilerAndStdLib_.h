@@ -1778,6 +1778,35 @@ static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::t
 #endif
 
 /**
+ *  clang with libstdc++ 15 or later in C++26 cannot check, at compile time, a format string with a dynamic width or precision:
+ *
+ *      std::string f (double val, unsigned n) { return std::format ("{:.{}f}", val, n); }
+ *
+ *  error: call to consteval function 'std::basic_format_string<char, double, unsigned int &>::basic_format_string<char[8]>' is not a constant expression
+ *  note: undefined function '__check_dynamic_spec<int, unsigned int, long long, unsigned long long>' cannot be used in a constant expression
+ *
+ *  libstdc++ declares that consteval member template in basic_format_parse_context and defines it out of line, ahead of
+ *  basic_format_string's constructor, but clang never instantiates it - so this looks like a clang bug. Inside a lambda the
+ *  same failure shows instead as "call to immediate function '...::(lambda)::operator()' is not a constant expression" at
+ *  the lambda's call (P2564 makes the lambda consteval).
+ *
+ *  Broken with clang++ 20, 21 and 22 using libstdc++ 15 and 16 (_GLIBCXX_RELEASE 16 is Ubuntu 26.04's 16-20260322 snapshot);
+ *  fine with libstdc++ 13 and 14 (no check_dynamic_spec), with libc++, and with g++ 16. Workaround: vformat - checked at run
+ *  time instead.
+ */
+#ifndef qCompilerAndStdLib_format_dynamic_spec_Buggy
+#if defined(__clang__) and not defined(__APPLE__) and defined(_GLIBCXX_RELEASE) and defined(__cpp_lib_format)
+#if __cpp_lib_format >= 202305L
+#define qCompilerAndStdLib_format_dynamic_spec_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 22)
+#else
+#define qCompilerAndStdLib_format_dynamic_spec_Buggy 0
+#endif
+#else
+#define qCompilerAndStdLib_format_dynamic_spec_Buggy 0
+#endif
+#endif
+
+/**
  mmandLine.cpp:121:20: error: unable to find string literal operator ‘operator""_f’ with ‘const char [17]’, ‘long unsigned int’ arguments
   121 |             return "(-{} {}|--{}={})"_f(*fSingleCharName, argName, *fLongName, argName);
       |                    ^~~~~~~~~~~~~~~~~~~~
