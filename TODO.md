@@ -88,6 +88,13 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
+   - **SSDP, AFTER 3.0d25** (https://github.com/SophistSolutions/Stroika/issues/1194 - the rest of it is done):
+       - **a network change waits for a running SSDP callback.** Listener's `Rejoin_` and Search's `SearchAgain_`
+         stop (AbortAndWaitForDone) the thread that runs callOnFinds - so one doing a slow HTTP fetch (WTF's does) holds up the
+         re-join, on the LinkMonitor thread every SSDP object shares. Documented ("Keep callOnFinds quick") for 3.0d25; the fix
+         is to re-join without stopping the thread that calls back (or call back from another).
+       - a reconnect re-joins / re-searches once per address it brings up (IPv4, then each IPv6), several in a row -
+         `SSDP::Private_::FollowNetworkChanges` acts on every `eAdded`. Collapse a burst into one.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
