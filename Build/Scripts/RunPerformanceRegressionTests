@@ -58,10 +58,12 @@ if [ "$DETECTED_HOST_OS" == "Darwin" ] ; then
     CMDRUN_PREFIX="nice -10 $PIN_PREFIX"
 elif [ "$DETECTED_HOST_OS" == "Linux" ] ; then
     # Do something under GNU/Linux platform
+    # These names must track Build/Scripts/MakeRegressionTestConfigurations - when they drifted (++2b renamed
+    # ++23 there, but not here), 22.04 found nothing to run, and 24.04 silently switched from g++-12 to g++-14.
     EXE=${EXE-"Builds/g++-optimized/Tests/$PERF_TEST"}
 	if [ ! -e "$EXE" ] ; then EXE="Builds/Release/Tests/$PERF_TEST"; fi
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-12-release++2b/Tests/$PERF_TEST"; fi
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-13-release++2b/Tests/$PERF_TEST"; fi
+	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-12-release++23/Tests/$PERF_TEST"; fi
+	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-13-release++23/Tests/$PERF_TEST"; fi
 	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-14-release++23/Tests/$PERF_TEST"; fi
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="linux-g++-7.3-x64"; fi
     CMDRUN_PREFIX="nice -10 $PIN_PREFIX"
@@ -100,10 +102,14 @@ CheckDump ()
 }
 
 OUT1="Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP$VER.txt"
-if [ ! -e "$EXE" ] ; then echo "Warning: $EXE not found"; fi
-echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > $OUT1 ... "
-$CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > "$OUT1"
-CheckDump "$OUT1"
+if [ ! -e "$EXE" ] ; then
+	# Write nothing, rather than an empty dump that looks like a result and gets committed with the rest
+	echo "*** WARNING: $EXE not found - no performance dump written"
+else
+	echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > $OUT1 ... "
+	$CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > "$OUT1"
+	CheckDump "$OUT1"
+fi
 
 if [ -e "$EXE2" ] ; then
     OUT2="Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP2$VER.txt"
