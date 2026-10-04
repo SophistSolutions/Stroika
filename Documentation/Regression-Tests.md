@@ -167,8 +167,12 @@ hit a since-fixed build failure, f272c414f6, and never built the samples).
   to raspberrypi and run INSIDE an arm container of the build host's own Ubuntu release
   (`RASPBERRYPI_REMOTE_DOCKER_IMAGE`). That makes the test's runtime match the sysroot the cross
   compiler built against, whatever OS the Pi itself runs: a binary built on Ubuntu N can need up to
-  Ubuntu N's glibc (26.04's Test02 needs `GLIBC_2.43`). Drop `RASPBERRYPI_REMOTE_DOCKER_IMAGE` to run
-  natively on the Pi instead. The aarch64 configurations run the same way in
+  Ubuntu N's glibc (26.04's Test02 needs `GLIBC_2.43`). The image is Docker's `buildpack-deps:CODENAME`
+  (jammy, noble, resolute) rather than plain `ubuntu:N`: the same Ubuntu underneath, so the same glibc,
+  plus tools some tests run - `make`, `awk`, `openssl` - which plain `ubuntu` lacks, so those tests warn
+  instead (https://github.com/SophistSolutions/Stroika/issues/1200). The price is about 800 MB per image
+  on the Pi's SD card, pulled once. Drop `RASPBERRYPI_REMOTE_DOCKER_IMAGE` to run natively on the Pi
+  instead. The aarch64 configurations run the same way in
   `RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64`, and have no native option (the Pi's userland is armhf):
   left unset, they are built but their tests are skipped. The Pi needs docker (Raspberry Pi OS 13,
   64-bit kernel - see https://github.com/SophistSolutions/Stroika/issues/1171). Pi test time,
@@ -187,7 +191,7 @@ hit a since-fixed build failure, f272c414f6, and never built the samples).
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2204-Cross-Compile2RaspberryPi \
       RASPBERRYPI_REMOTE_MACHINE=raspberrypi.lan \
-      RASPBERRYPI_REMOTE_DOCKER_IMAGE=arm32v7/ubuntu:22.04 \
+      RASPBERRYPI_REMOTE_DOCKER_IMAGE=arm32v7/buildpack-deps:jammy \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
@@ -203,8 +207,8 @@ hit a since-fixed build failure, f272c414f6, and never built the samples).
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2404-Cross-Compile2RaspberryPi \
       RASPBERRYPI_REMOTE_MACHINE=raspberrypi.lan \
-      RASPBERRYPI_REMOTE_DOCKER_IMAGE=arm32v7/ubuntu:24.04 \
-      RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64=arm64v8/ubuntu:24.04 \
+      RASPBERRYPI_REMOTE_DOCKER_IMAGE=arm32v7/buildpack-deps:noble \
+      RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64=arm64v8/buildpack-deps:noble \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
@@ -220,8 +224,8 @@ hit a since-fixed build failure, f272c414f6, and never built the samples).
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2604-Cross-Compile2RaspberryPi \
       RASPBERRYPI_REMOTE_MACHINE=raspberrypi.lan \
-      RASPBERRYPI_REMOTE_DOCKER_IMAGE=arm32v7/ubuntu:26.04 \
-      RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64=arm64v8/ubuntu:26.04 \
+      RASPBERRYPI_REMOTE_DOCKER_IMAGE=arm32v7/buildpack-deps:resolute \
+      RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64=arm64v8/buildpack-deps:resolute \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests \

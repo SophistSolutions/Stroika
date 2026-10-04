@@ -30,10 +30,10 @@ fi
 
 : ${RASPBERRYPI_REMOTE_MACHINE:=raspberrypi.local}
 : ${RASPBERRYPI_REMOTE_WITH_LOGIN:=lewis@${RASPBERRYPI_REMOTE_MACHINE}}
-# If set, each raspberrypi test runs on the Pi inside this docker image (eg. arm32v7/ubuntu:26.04), so its runtime
+# If set, each raspberrypi test runs on the Pi inside this docker image (eg. arm32v7/buildpack-deps:resolute), so its runtime
 # matches the BUILD host's release rather than the Pi's own OS - see Tests/Scripts/RunTest. Empty = run natively.
 : ${RASPBERRYPI_REMOTE_DOCKER_IMAGE:=}
-# The same for the aarch64 (64-bit ARM) raspberrypi configurations (eg. arm64v8/ubuntu:26.04). These have no native
+# The same for the aarch64 (64-bit ARM) raspberrypi configurations (eg. arm64v8/buildpack-deps:resolute). These have no native
 # option - the Pi's userland is armhf and cannot load an aarch64 binary - so when this is empty they are skipped.
 : ${RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64:=}
 

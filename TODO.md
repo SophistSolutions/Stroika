@@ -46,8 +46,6 @@ Generally will track stuff here between releases
       @@ -0,0 +1,60 @@
 
 
-  - take steps to reduce warnings/skips on rasp pi
-
   - do a pass at some point to see if DISABLE_COMPILER_MSC_WARNING_START(anod other compiler) warning supressions still needed
     and still properly balanced.
 

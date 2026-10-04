@@ -57,7 +57,7 @@ help:
 	@$(ECHO) "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost;"
 	@$(ECHO) "                                 [VALGRIND=memcheck, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "                                 EG: VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp\" make VALGRIND=memcheck run-tests"
-	@$(ECHO) "                                 [REMOTE_DOCKER_IMAGE=] with REMOTE=, run each test in that image on REMOTE (eg. arm32v7/ubuntu:26.04)"
+	@$(ECHO) "                                 [REMOTE_DOCKER_IMAGE=] with REMOTE=, run each test in that image on REMOTE (eg. arm32v7/buildpack-deps:resolute)"
 	@$(ECHO) "                                 [REMOTE_DOCKER_ARGS=] extra 'docker run' args; [REMOTE_DIR=] where on REMOTE tests go (default /tmp)"
 
 
