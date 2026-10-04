@@ -8,15 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-  - **clang-22 + libstdc++-16, C++26: Stroika does not compile** (found 2026-09-28, stroika-dev-2604). clang rejects
-    [FloatConversion.inl:553 and :581](Library/Sources/Stroika/Foundation/Characters/FloatConversion.inl#L553) with
-    `call to immediate function 'formatNonScientific_ (...)::(lambda)'` - consteval propagation (P2564): a lambda whose body
-    calls format with a compile-time-checked format string becomes an immediate function itself. g++-16 C++26 and
-    clang-22 + libc++ C++26 compile fine. (Its C++23 sibling - clang 20-22 in C++23 not compiling, at the
-    formattable<filesystem::path> assert - was fixed by the format_kind / __cpp_lib_format_path change.)
-      - Repro: `clang++-22 -stdlib=libstdc++ -std=c++26 -fsyntax-only` on any TU that includes `Characters/FloatConversion.h`.
-      - Not hit today: no configuration builds C++26.
-
   - https://github.com/SophistSolutions/Stroika/issues/1075
     Issue generates: on WTF:....
         (use "git push" to publish your local commits)
