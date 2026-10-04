@@ -113,6 +113,10 @@ echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64=$RASPBERRY
 echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    DETECTED_HOST_OS=$DETECTED_HOST_OS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    uname -a=`uname -a`" >>$TEST_OUT_FILE 2>&1
+# Run time depends heavily on the filesystem (e.g. WSL's drvfs /mnt/c is far slower than its own disk) - record it
+BUILD_DIR_FS_=""
+if [ "$DETECTED_HOST_OS" == "Linux" ] ; then BUILD_DIR_FS_=" (`stat -f -c %T . 2>/dev/null`)"; fi
+echo "$PREFIX_OUT_LABEL" "    BUILD DIRECTORY: $StroikaRoot$BUILD_DIR_FS_" >>$TEST_OUT_FILE 2>&1
 GIT_COMMIT=`git describe --tags`
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    GIT COMMIT: $GIT_COMMIT" >>$TEST_OUT_FILE 2>&1

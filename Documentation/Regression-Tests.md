@@ -70,12 +70,13 @@ Times below are approximate, from what the runs actually recorded - every run en
   grep -h 'Finished at' Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-OUT.txt
   ```
 
-Last updated from the 3.0d25x runs (2026-09-26 to 28). The Windows in-docker and WSL times are still
-from 3.0d24: those were not rerun.
+Last updated from the 3.0d25x runs (2026-09-30 to 10-04), after configuration changes that made many of them
+much faster. Not re-measured: WSL (a guess), and Ubuntu2604_x86_64 (still from 2026-09-26 to 28 - its 09-30 rerun
+hit a since-fixed build failure, f272c414f6, and never built the samples).
 
 - \$TEST_TARGET=MacOS_XCode26_m1
 
-  (takes about 3 h)
+  (takes about 2.5 h)
 
   ```bash
   MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode26_m1 PARALELLMAKEFLAG=-j5 \
@@ -85,7 +86,7 @@ from 3.0d24: those were not rerun.
 
 - \$TEST_TARGET=Windows_VS2k22
 
-  (on windows bash shell run; takes about 5.5 h on medusa-windows-dev vm)
+  (on windows bash shell run; takes about 6 h on medusa-windows-dev vm)
 
   ```bash
   USE_TEST_BASENAME=Windows_`./Build/Scripts/DetectedHostOS`_VS2k22 PLATFORM=VisualStudio.Net-2022 \
@@ -95,7 +96,7 @@ from 3.0d24: those were not rerun.
 
 - \$TEST_TARGET=Windows_VS2k26
 
-  (on windows bash shell run; takes about 5 h on medusa-windows-dev vm)
+  (on windows bash shell run; takes about 6 h on medusa-windows-dev vm)
 
   ```bash
   USE_TEST_BASENAME=Windows_`./Build/Scripts/DetectedHostOS`_VS2k26 PLATFORM=VisualStudio.Net-2026 \
@@ -119,7 +120,7 @@ from 3.0d24: those were not rerun.
 
 - \$TEST_TARGET=Ubuntu2404_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 13 h)
+  (remote execute on machine medusa using docker and copy back results; takes about 9.5 h)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -133,7 +134,7 @@ from 3.0d24: those were not rerun.
 
 - \$TEST_TARGET=Ubuntu2504_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 3.5 h)
+  (remote execute on machine medusa using docker and copy back results; takes about 4 h)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -196,7 +197,7 @@ from 3.0d24: those were not rerun.
 
 - \$TEST_TARGET=Ubuntu2404-Cross-Compile2RaspberryPi
 
-  (takes about 2 h, builds included)
+  (takes about 2.5 h, builds included)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -231,7 +232,7 @@ from 3.0d24: those were not rerun.
 
 - Docker windows tests
 
-  (takes about 12 h each, and there are four of them - much the most expensive target)
+  (takes under 6 h each, and there are four of them - much the most expensive target)
 
 Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
@@ -258,7 +259,7 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
 - WSL (tested on Ubuntu 24.04) test
   (inside WSL2 bash prompt)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
-  (takes about 8 h)
+  (probably takes about 4-5 h - not yet measured since the configuration changes)
 
 On WINDOWS:
 

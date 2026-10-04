@@ -24,7 +24,7 @@ echo "Clearing and checking out $BRANCH from $STROIKA_GIT_REMOTE (into $STROIKA_
 rm -rf "$STROIKA_WSL_REGTEST_DIR"
 git clone "$STROIKA_GIT_REMOTE" "$STROIKA_WSL_REGTEST_DIR" --branch $BRANCH
 
-echo "Running WSL build (usually takes about 10 hrs)"
+echo "Running WSL build (usually takes about 4-5 hrs)"
 (cd "$STROIKA_WSL_REGTEST_DIR" && ./Build/Scripts/RegressionTests)
 
 echo "Done with build, so copying out results"
