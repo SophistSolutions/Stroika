@@ -259,7 +259,8 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue () = default;
         VariantValue (nullopt_t);
         VariantValue (nullptr_t);
-        VariantValue (bool val);
+        template <same_as<bool> BOOL_T>
+        VariantValue (BOOL_T val); ///< exactly bool: a pointer converts to bool, but is not a VariantValue
         VariantValue (const BLOB& val);
         VariantValue (signed char val);
         VariantValue (short int val);

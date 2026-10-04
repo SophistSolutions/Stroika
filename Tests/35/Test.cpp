@@ -179,6 +179,20 @@ namespace {
             EXPECT_EQ (VariantValue{8}, VariantValue{8});
             EXPECT_NE (VariantValue{8}, VariantValue{9}); // FAILED: Ensure; EqualsComparer{}(*this, rhs) == (ThreeWayComparer{}(*this, rhs) == 0);
         }
+        {
+            // VariantValue (bool) takes exactly a bool: any pointer converts to bool, but must not quietly become VariantValue{true}
+            EXPECT_TRUE ((convertible_to<bool, VariantValue>));
+            EXPECT_EQ (VariantValue{true}.GetType (), VariantValue::eBoolean);
+            EXPECT_FALSE ((constructible_from<VariantValue, const int*>));
+            EXPECT_FALSE ((convertible_to<const VariantValue*, VariantValue>));
+            // were a pointer a VariantValue, a standard library with the C++26 draft's span (initializer_list) constructor (P2447,
+            // withdrawn by P4144 - but in libstdc++ 16 and libc++ 22) would make the span{&item, 1} Append passes on a list of TWO
+            Sequence<VariantValue> s;
+            s.Append (VariantValue{3});
+            s.Insert (0, VariantValue{"x"sv});
+            EXPECT_EQ (s.size (), 2u);
+            EXPECT_EQ (s[1], VariantValue{3});
+        }
     }
 }
 

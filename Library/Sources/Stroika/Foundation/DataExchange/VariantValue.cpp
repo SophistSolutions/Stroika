@@ -101,13 +101,6 @@ struct VariantValue::TIRep_ final : VariantValue::IRep_, public Memory::UseBlock
 const shared_ptr<VariantValue::IRep_> VariantValue::kFalseRep_ = MakeSharedPtr<TIRep_<bool>> (false);
 const shared_ptr<VariantValue::IRep_> VariantValue::kTrueRep_  = MakeSharedPtr<TIRep_<bool>> (true);
 
-VariantValue::VariantValue (bool val)
-    : fVal_{val ? kTrueRep_ : kFalseRep_}
-{
-    // not inline so this is guaranteed true (to inline would need to be defs for TIRep_ stuff into .inl file)
-    // due to link time codegen/inlining, probably not needed
-}
-
 VariantValue::VariantValue (const Memory::BLOB& val)
     : fVal_{MakeSharedPtr<TIRep_<Memory::BLOB>> (val)}
 {

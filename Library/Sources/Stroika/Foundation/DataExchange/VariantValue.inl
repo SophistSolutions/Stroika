@@ -25,6 +25,11 @@ namespace Stroika::Foundation::DataExchange {
         : VariantValue{}
     {
     }
+    template <same_as<bool> BOOL_T>
+    inline VariantValue::VariantValue (BOOL_T val)
+        : fVal_{val ? kTrueRep_ : kFalseRep_}
+    {
+    }
     inline VariantValue::VariantValue (const vector<VariantValue>& val)
         : VariantValue{Sequence<VariantValue> (val)}
     {
