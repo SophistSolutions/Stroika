@@ -437,6 +437,10 @@ namespace Stroika::Foundation::IO::Network {
      *  link-local IPv6 peer must carry its scope id - as the sender's address from ConnectionlessSocket::Ptr::ReceiveFrom does.
      *
      *  Returns nullopt if there is no route to peer.
+     *
+     *  \note peer is a SocketAddress, not an InternetAddress, only because an InternetAddress cannot hold the scope id a
+     *        link-local IPv6 peer needs. Once it can, this should take an InternetAddress -
+     *        https://github.com/SophistSolutions/Stroika/issues/1201
      */
     optional<InternetAddress> GetLocalAddressToReach (const SocketAddress& peer);
 

@@ -46,6 +46,8 @@
  *              Note - there is the Scope, and then the ScoeeID (not sure?)
  *              IPAddress.ScopeId
  *              http://msdn.microsoft.com/en-us/library/system.net.ipaddress.scopeid(v=vs.110).aspx
+ *              The scope id (zone id) - needed for a usable link-local IPv6 address - is
+ *              https://github.com/SophistSolutions/Stroika/issues/1201
  *
  *      @todo   Also add IPAddress.IsIPv4MappedToIPv6 Property
  *              http://msdn.microsoft.com/en-us/library/system.net.ipaddress.isipv4mappedtoipv6(v=vs.110).aspx
