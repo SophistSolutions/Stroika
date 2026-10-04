@@ -226,8 +226,20 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual ConnectionManager& operator= (const ConnectionManager&) = delete;
 
     private:
+#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
+        // a named key extractor: g++ <= 14 gives the lambda's type internal linkage, and warns (-Wsubobject-linkage) of the
+        // field connections, whose type uses it
+        struct StatsSocketID_ {
+            auto operator() (const Connection::Stats& t) const
+            {
+                return t.fSocketID;
+            }
+        };
+        using My_Traits_ = Containers::KeyedCollection_DefaultTraits<Connection::Stats, Socket::PlatformNativeHandle, StatsSocketID_>;
+#else
         using My_Traits_ = Containers::KeyedCollection_DefaultTraits<Connection::Stats, Socket::PlatformNativeHandle,
                                                                      decltype ([] (const Connection::Stats& t) { return t.fSocketID; })>;
+#endif
 
     public:
         using ConnectionStatsCollection = Containers::KeyedCollection<Connection::Stats, Socket::PlatformNativeHandle, My_Traits_>;

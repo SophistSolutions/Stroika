@@ -603,8 +603,8 @@ namespace {
             char c;
         };
 #pragma pack(pop)
-        DISABLE_COMPILER_MSC_WARNING_END (4121);
         DISABLE_COMPILER_MSC_WARNING_END (4324);
+        DISABLE_COMPILER_MSC_WARNING_END (4121);
     }
 
     GTEST_TEST (Foundation_Memory_, Test14_OffsetOf_)

@@ -51,8 +51,8 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     Assert (readLen <= bufLen);
     const char* startOfBuf = reinterpret_cast<const char*> (static_cast<const byte*> (buf));
     return Characters::MapUNICODETextWithMaybeBOMTowstring (startOfBuf, startOfBuf + readLen);
-    DISABLE_COMPILER_MSC_WARNING_END (6237)
     DISABLE_COMPILER_MSC_WARNING_END (4127)
+    DISABLE_COMPILER_MSC_WARNING_END (6237)
 }
 
 wstring Streams::iostream::ReadTextStream (wistream& in)

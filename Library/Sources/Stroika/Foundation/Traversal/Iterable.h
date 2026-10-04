@@ -1618,6 +1618,9 @@ namespace Stroika::Foundation::Traversal {
         using _IteratorRepSharedPtr [[deprecated ("Since Stroika v3.0d1 use unique_ptr<typename Iterator<T>::IRep> directly")]] =
             unique_ptr<typename Iterator<T>::IRep>;
     };
+#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
+#endif
 
 #if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
@@ -1904,6 +1907,10 @@ namespace Stroika::Foundation::Traversal {
     //      @todo would be nice to include these tests generically as part of template declaration, but cannot figure out how
     //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
     static_assert (copyable<Iterable<int>>);
+#endif
+
+#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
 #endif
 
 }
