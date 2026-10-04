@@ -453,8 +453,8 @@ namespace {
         }
 #endif
         if (not id) {
-            Stroika::Frameworks::Test::WarnTestIssue ("SystemConfiguration_MachineID_: this machine has no ID (a container?)");
-            return;
+            // normal in a container - Docker's Ubuntu images have no /etc/machine-id - so not a problem with the test machine
+            GTEST_SKIP () << "this machine has no ID (eg. a container without /etc/machine-id)";
         }
         EXPECT_TRUE (GetSystemConfiguration_MachineID () == id); // the same every time
         // and in the whole SystemConfiguration - but not in its text, which is traced

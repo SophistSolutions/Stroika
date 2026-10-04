@@ -694,12 +694,16 @@ GTEST_TEST (Foundation_IO_Network, Test3_LocalAddressToReach_)
     Debug::TraceContextBumper trcCtx{"Test3_LocalAddressToReach_"};
     // reaching loopback is done from loopback
     EXPECT_EQ (GetLocalAddressToReach (SocketAddress{V4::kLocalhost}), V4::kLocalhost);
-    // and reaching one of this machine's own addresses, from that address (not link-local ones: those need a scope id)
+    // and reaching one of this machine's own addresses, from an address of that same interface - usually that very address,
+    // but Linux reaches a secondary address (a second one in a subnet the interface is already on) from the interface's
+    // primary one, as 'ip route get' says (not link-local ones: those need a scope id)
     for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
         for (const InternetAddress& a : i.fBindings.fAddresses) {
             if (not a.IsLinkLocalAddress ()) {
-                EXPECT_EQ (GetLocalAddressToReach (SocketAddress{a}), a)
-                    << Characters::ToString (a).AsNarrowSDKString () << " on " << i.fInterfaceID.AsNarrowSDKString ();
+                optional<InternetAddress> from = GetLocalAddressToReach (SocketAddress{a});
+                EXPECT_TRUE (from and i.fBindings.fAddresses.Contains (*from))
+                    << Characters::ToString (a).AsNarrowSDKString () << " on " << i.fInterfaceID.AsNarrowSDKString () << ", reached from "
+                    << Characters::ToString (from).AsNarrowSDKString ();
             }
         }
     }
