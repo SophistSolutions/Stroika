@@ -6,14 +6,25 @@ if [ "$BRANCH" == "" ] ; then
 fi
 VERSION=`./Build/Scripts/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
-echo "Clearing and checking out $BRANCH"
-(cd /tmp && rm -rf stkbldtest/)
-(cd /tmp && git clone git@github.com:SophistSolutions/Stroika.git stkbldtest --branch $BRANCH)
+# Where RunRemoteRegressionTests builds on its target. On the distro's own disk, NOT under /mnt/c (where this is
+# usually run from), which is far slower. And not /tmp: on Ubuntu 25.10+ that is a RAM-backed tmpfs (half the WSL
+# VM's memory), and a 26.04 run filled it 6 minutes in ("No space left on device"). Before 25.10 /tmp was on this
+# same disk, so no faster.
+STROIKA_WSL_REGTEST_DIR="${STROIKA_WSL_REGTEST_DIR:-$HOME/Sandbox/Stroika-Build-Dir-$USE_TEST_BASENAME}"
+
+# Clone THIS tree, not GitHub, so the run tests the commits here (pushed or not) and they match the $VERSION its
+# results are filed under - same reasoning as RegressionTests' skel test. Uncommitted changes are not cloned.
+# STROIKA_GIT_REMOTE=git@github.com:SophistSolutions/Stroika.git for the old behavior.
+STROIKA_GIT_REMOTE="${STROIKA_GIT_REMOTE:-$(pwd)}"
+
+echo "Clearing and checking out $BRANCH from $STROIKA_GIT_REMOTE (into $STROIKA_WSL_REGTEST_DIR)"
+rm -rf "$STROIKA_WSL_REGTEST_DIR"
+git clone "$STROIKA_GIT_REMOTE" "$STROIKA_WSL_REGTEST_DIR" --branch $BRANCH
 
 echo "Running WSL build (usually takes about 10 hrs)"
-(cd /tmp/stkbldtest && PARALELLMAKEFLAG=-j4 ./Build/Scripts/RegressionTests)
+(cd "$STROIKA_WSL_REGTEST_DIR" && ./Build/Scripts/RegressionTests)
 
 echo "Done with build, so copying out results"
-cp /tmp/stkbldtest/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
-cp /tmp/stkbldtest/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
-echo "/tmp/stkbldtest still around to examine/post-mortem"
+cp "$STROIKA_WSL_REGTEST_DIR"/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
+cp "$STROIKA_WSL_REGTEST_DIR"/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
+echo "$STROIKA_WSL_REGTEST_DIR still around to examine/post-mortem"
