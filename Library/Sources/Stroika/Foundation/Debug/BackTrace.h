@@ -83,8 +83,9 @@ namespace Stroika::Foundation::Debug {
          *  \note The first few frames are internal to the implementation of BackTrace() so not interesting
          *
          *  \note   The stack walk can stop early. On x86 it stops at the first frame without a frame pointer - and optimized
-         *          MSVC x86 builds omit them (-Oy, the Release default) - often after a single frame. Build with -Oy- to
-         *          get whole backtraces there. x64 (table-based unwinding) is not affected.
+         *          MSVC x86 builds omit them (-Oy, the Release default) - often after a single frame, but how far it gets
+         *          differs from one call site to the next. Build with -Oy- to get whole backtraces there. x64 (table-based
+         *          unwinding) is not affected.
          */
         wstring Capture (const Options& options = {});
     }
