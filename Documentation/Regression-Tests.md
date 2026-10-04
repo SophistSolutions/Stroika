@@ -263,8 +263,12 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
 On WINDOWS:
 
   ```bash
-  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 Build/Scripts/RunLocalWSLRegressionTests
+  STROIKA_WSL_REGTEST_DIR=/var/tmp/Stroika-Build-Dir-WSL_Ubuntu_Simple MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 Build/Scripts/RunLocalWSLRegressionTests
   ```
+
+  STROIKA_WSL_REGTEST_DIR because the default, ~/Sandbox/..., is on the Windows drive (far slower) wherever ~/Sandbox
+  is a symbolic link to /mnt/c/Sandbox. /var/tmp, not /tmp - on Ubuntu 25.10+ /tmp is a RAM-backed tmpfs, too small
+  for the build.
 
 
 #### NOTES

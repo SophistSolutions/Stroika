@@ -6,11 +6,14 @@ if [ "$BRANCH" == "" ] ; then
 fi
 VERSION=`./Build/Scripts/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
-# Where RunRemoteRegressionTests builds on its target. On the distro's own disk, NOT under /mnt/c (where this is
-# usually run from), which is far slower. And not /tmp: on Ubuntu 25.10+ that is a RAM-backed tmpfs (half the WSL
-# VM's memory), and a 26.04 run filled it 6 minutes in ("No space left on device"). Before 25.10 /tmp was on this
-# same disk, so no faster.
+# Default: where RunRemoteRegressionTests builds on its target. It belongs on the distro's own disk, NOT under /mnt/c
+# (the Windows drive, far slower) - so where ~/Sandbox is a symbolic link to /mnt/c/Sandbox, as on some WSL dev boxes,
+# the invoker sets this (Documentation/Regression-Tests.md uses /var/tmp). And not /tmp: on Ubuntu 25.10+ that is a
+# RAM-backed tmpfs (half the WSL VM's memory), and a 26.04 run filled it 6 minutes in ("No space left on device").
 STROIKA_WSL_REGTEST_DIR="${STROIKA_WSL_REGTEST_DIR:-$HOME/Sandbox/Stroika-Build-Dir-$USE_TEST_BASENAME}"
+if [[ "$(realpath -m "$STROIKA_WSL_REGTEST_DIR")" == /mnt/* ]] ; then
+    echo "WARNING: $STROIKA_WSL_REGTEST_DIR is on the Windows drive ($(realpath -m "$STROIKA_WSL_REGTEST_DIR")) - the build will be far slower; set STROIKA_WSL_REGTEST_DIR (e.g. /var/tmp/Stroika-Build-Dir-$USE_TEST_BASENAME)"
+fi
 
 # Clone THIS tree, not GitHub, so the run tests the commits here (pushed or not) and they match the $VERSION its
 # results are filed under - same reasoning as RegressionTests' skel test. Uncommitted changes are not cloned.
