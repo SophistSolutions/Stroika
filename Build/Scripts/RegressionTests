@@ -180,6 +180,15 @@ if [ "$INCLUDE_RASPBERRYPI_TESTS" == "" ]; then
 fi
 
 NUM_CONFIGURATIONS=`Build/Scripts/GetConfigurations --quiet --all-default | wc -w`
+# Nothing to build means nothing gets tested - and everything after this would still print a clean summary
+# ("0 items failed (expected 0)"). Seen on a fresh WSL distro with no make or compiler: every configure line is
+# --only-if-has-compiler, so each skipped quietly, and the reasons went only to $TEST_OUT_FILE.
+if [ $NUM_CONFIGURATIONS -eq 0 ] ; then
+	echo "ERROR: no configurations to build - nothing would be tested. Reasons logged in $TEST_OUT_FILE:"
+	grep -E "Skipping configuration|command not found" $TEST_OUT_FILE | head -10
+	echo "$PREFIX_OUT_LABEL" "ERROR: no configurations to build - nothing would be tested" >>$TEST_OUT_FILE 2>&1
+	exit 1
+fi
 NUM_CROSS_COMPILE_CONFIGURATIONS=`echo $CROSS_COMPILE_CONFIGS | wc -w`
 NUM_REMOTE_CONFIGURATIONS=`echo $RASPBERRYPICONFIGS | wc -w`
 NUM_REGTESTS=`grep -c '^\[' Tests/Tests-Description.txt`
