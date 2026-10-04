@@ -3422,6 +3422,15 @@ if ($onlyGenerateIfCompilerExists) {
 			$generateBecause = "zlib is not installed";
 		 }
 	}
+	#	--valgrind enable compiles in memcheck's client requests, so every compile needs <valgrind/memcheck.h> (on
+	#	Ubuntu, from the valgrind package itself). Ask the compiler rather than look for the file, so the answer is
+	#	the include path the build will really search.
+	if ($generate && $TargettingValgrind) {
+		if (system("printf \"#include <valgrind/memcheck.h>\n\" | $COMPILER_DRIVER_CPlusPlus -fsyntax-only -x c++ - 2>/dev/null > /dev/null") != 0) {
+			$generate = false;
+			$generateBecause = "valgrind is not installed (no <valgrind/memcheck.h>)";
+		}
+	}
 
 	if ($generate && IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
