@@ -216,8 +216,6 @@ namespace {
                 case InternetAddress::AddressFamily::V4: {
                     if (const unsigned int* index = get_if<unsigned int> (&onInterface); index != nullptr and *index != Interface::kAnyIndex) {
                         // RFC 3678's protocol-independent form: the group as a sockaddr, the interface by index.
-                        // The kernel reads all of r, so copy only the GetRequiredSize () bytes of sockaddr_storage a SocketAddress
-                        // sets - not all of it (else valgrind: setsockopt "points to uninitialised byte(s)").
                         ::group_req r{};
                         r.gr_interface = *index;
                         const SocketAddress    sa{group};
