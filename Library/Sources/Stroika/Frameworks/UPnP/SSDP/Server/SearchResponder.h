@@ -51,8 +51,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
             /**
              *  When a network appears, listen for searches there too (it re-joins the multicast group on every interface).
-             *  It costs a LinkMonitor (all share one thread, waiting on the OS's address-change notifications). Where the OS cannot
-             *  tell (e.g. some containers), it is just not done.
+             *  It costs a LinkMonitor (all share one thread, waiting on the OS's address-change notifications), and a thread of
+             *  its own that waits for a burst of changes to settle. Where the OS cannot tell (e.g. some containers), it is just
+             *  not done.
              */
             bool fFollowNetworkChanges{true};
         };
@@ -94,10 +95,10 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
         nonvirtual void StartListening_ (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const Options& options);
 
     private:
-        mutex fLifecycleMutex_; // (re)starting the listening - also done on the LinkMonitor's thread
+        mutex fLifecycleMutex_; // (re)starting the listening - also done on the network-change thread
         Execution::Synchronized<IO::Network::InterfacesByID> fListeningOn_; // set by the listening thread (so declared before it, outliving it)
-        Execution::Thread::CleanupPtr      fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
-        optional<IO::Network::LinkMonitor> fLinkMonitor_; // last, so destroyed first: no restart while the rest goes away
+        Execution::Thread::CleanupPtr                   fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+        optional<SSDP::Private_::NetworkChangeFollower> fNetworkChanges_; // last, so destroyed first: no restart while the rest goes away
     };
 
 }

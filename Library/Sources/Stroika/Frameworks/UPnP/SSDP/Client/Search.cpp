@@ -59,7 +59,7 @@ public:
             cs.SetMulticastLoopMode (true); // possible should make this configurable
         }
         if (options.fFollowNetworkChanges) {
-            fLinkMonitor_ = SSDP::Private_::FollowNetworkChanges ([this] () { SearchAgain_ (); });
+            fNetworkChanges_ = SSDP::Private_::FollowNetworkChanges ([this] () { SearchAgain_ (); });
         }
     }
     ~Rep_ () = default;
@@ -228,12 +228,12 @@ private:
     recursive_mutex                                       fCritSection_;
     vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
     InterfaceFilter                                       fInterfaceFilter_;
-    mutex                                            fLifecycleMutex_; // Start, Stop and SearchAgain_ (called on the LinkMonitor's thread)
+    mutex                                            fLifecycleMutex_; // Start, Stop and SearchAgain_ (called on its network-change thread)
     optional<pair<String, optional<Time::Duration>>> fSearching_; // the search started, and not stopped: serviceType, autoRetryInterval
     Collection<ConnectionlessSocket::Ptr>            fSockets_;
     Synchronized<InterfacesByID>                     fSearchingOn_; // what the last M-SEARCH went out of
     Thread::CleanupPtr                               fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
-    optional<IO::Network::LinkMonitor>               fLinkMonitor_; // last, so destroyed first: no SearchAgain_ while the rest goes away
+    optional<SSDP::Private_::NetworkChangeFollower>  fNetworkChanges_; // last, so destroyed first: no SearchAgain_ while the rest goes away
 };
 
 /*

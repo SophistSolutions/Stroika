@@ -67,7 +67,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         }
     }
 
-    // the NOTIFYs go out on the IntervalTimer's thread, and - right after a network appears - the LinkMonitor's: one at a time
+    // the NOTIFYs go out on the IntervalTimer's thread, and - right after a network appears - the network-change thread's: one at a time
     shared_ptr<mutex>                                   sendingNotifies = Memory::MakeSharedPtr<mutex> ();
     shared_ptr<Execution::Synchronized<InterfacesByID>> notifyingOn     = fNotifyingOn_;
     Execution::IntervalTimer::TimerCallback             callback        = [=] () mutable {
@@ -133,7 +133,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
     fIntervalTimerAdder_ = make_unique<Execution::IntervalTimer::Adder> (callback, Time::Duration{options.fFrequencyInfo.fRepeatInterval},
                                                                          Execution::IntervalTimer::Adder::eRunImmediately);
     if (options.fFollowNetworkChanges) {
-        fLinkMonitor_ = SSDP::Private_::FollowNetworkChanges ([callback] () mutable { callback (); });
+        fNetworkChanges_ = SSDP::Private_::FollowNetworkChanges ([callback] () mutable { callback (); });
     }
 }
 

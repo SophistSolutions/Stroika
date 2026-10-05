@@ -123,13 +123,14 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
     }
     StartListening_ (advertisements, location, options); // here, so construction fails if it cannot bind
     if (options.fFollowNetworkChanges) {
-        fLinkMonitor_ = SSDP::Private_::FollowNetworkChanges ([this, advertisements = Sequence<Advertisement>{advertisements}, location, options] () {
-            // a network appeared: listen there too - on new sockets, joined afresh (the old listening thread uses the old
-            // ones, so it stops first)
-            [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
-            fListenThread_.AbortAndWaitForDone ();
-            StartListening_ (advertisements, location, options);
-        });
+        fNetworkChanges_ =
+            SSDP::Private_::FollowNetworkChanges ([this, advertisements = Sequence<Advertisement>{advertisements}, location, options] () {
+                // a network appeared: listen there too - on new sockets, joined afresh (the old listening thread uses the old
+                // ones, so it stops first)
+                [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+                fListenThread_.AbortAndWaitForDone ();
+                StartListening_ (advertisements, location, options);
+            });
     }
 }
 

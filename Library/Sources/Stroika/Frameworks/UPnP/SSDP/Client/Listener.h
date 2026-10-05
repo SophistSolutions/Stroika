@@ -72,8 +72,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
             /**
              *  When a network appears, listen there too (it re-joins the multicast group on every interface).
-             *  It costs a LinkMonitor (all share one thread, waiting on the OS's address-change notifications). Where the OS cannot
-             *  tell (e.g. some containers), it is just not done.
+             *  It costs a LinkMonitor (all share one thread, waiting on the OS's address-change notifications), and a thread of
+             *  its own that waits for a burst of changes to settle. Where the OS cannot tell (e.g. some containers), it is just
+             *  not done.
              */
             bool fFollowNetworkChanges{true};
         };
@@ -88,7 +89,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *        whatever it shares with other threads needs synchronizing (e.g. Execution::Synchronized).
          *
          *  \note Keep callOnFinds quick: Stop (), destruction and - given Options::fFollowNetworkChanges - listening on a network
-         *        that appears all wait for one running (that last on the thread all SSDP objects share for network changes).
+         *        that appears all wait for one running.
          *        Hand slow work - fetching the device description, say - to another thread, or give it a timeout: an HTTP fetch
          *        from a device that has just gone can take minutes (IO::Network::Transfer::Connection has no timeout of its own).
          *

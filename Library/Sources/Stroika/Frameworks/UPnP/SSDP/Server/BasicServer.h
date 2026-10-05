@@ -71,8 +71,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
             /**
              *  When a network appears, advertise there right away, and listen for searches there too.
-             *  It costs a LinkMonitor (all share one thread, waiting on the OS's address-change notifications). Where the OS cannot
-             *  tell (e.g. some containers), it is just not done. (Two: one each for the NOTIFYs and the answers.)
+             *  It costs a LinkMonitor (all share one thread, waiting on the OS's address-change notifications), and a thread of
+             *  its own that waits for a burst of changes to settle. Where the OS cannot tell (e.g. some containers), it is just
+             *  not done. (Two of each: one for the NOTIFYs, one for the answers.)
              */
             bool fFollowNetworkChanges{true};
         };

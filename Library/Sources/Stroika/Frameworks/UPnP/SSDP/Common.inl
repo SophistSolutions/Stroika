@@ -15,9 +15,24 @@ namespace Stroika::Frameworks::UPnP::SSDP {
             const Foundation::Traversal::Iterable<pair<Foundation::IO::Network::ConnectionlessSocket::Ptr, Foundation::IO::Network::InternetAddress>>& socketsAndGroups,
             const InterfaceFilter& filter);
 
-        // a LinkMonitor calling onNetworkAppeared (on its thread) whenever an address is added - so the caller can act on
-        // the new network; nullopt (and logged) if the OS cannot tell. An exception from onNetworkAppeared is only logged.
-        optional<Foundation::IO::Network::LinkMonitor> FollowNetworkChanges (const function<void ()>& onNetworkAppeared);
+        // Follows the OS's address changes, and calls onNetworkAppeared - on a thread of its own - once each burst of address
+        // additions has gone quiet, so the caller can act on the new network once: a network coming up adds its addresses
+        // one after another (IPv4, then each IPv6), and re-joining or re-searching or re-announcing for each would repeat it
+        // several times over. Being on its own thread, a slow onNetworkAppeared delays nothing else. An exception from it
+        // is only logged. Once destroyed, onNetworkAppeared is not running, and is not called again.
+        class NetworkChangeFollower {
+        public:
+            NetworkChangeFollower (const function<void ()>& onNetworkAppeared); // throws where the OS cannot tell (e.g. some containers)
+            NetworkChangeFollower (NetworkChangeFollower&&) noexcept;
+            NetworkChangeFollower& operator= (NetworkChangeFollower&&) noexcept;
+            ~NetworkChangeFollower ();
+
+        private:
+            struct Rep_;
+            unique_ptr<Rep_> fRep_;
+        };
+        // a NetworkChangeFollower - or nullopt (and logged) if the OS cannot tell
+        optional<NetworkChangeFollower> FollowNetworkChanges (const function<void ()>& onNetworkAppeared);
     }
 
 }

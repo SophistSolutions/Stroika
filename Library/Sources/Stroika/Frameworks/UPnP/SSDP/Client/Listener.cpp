@@ -55,7 +55,7 @@ public:
         DeclareActivity           activity{&kConstructingSSDPListener_};
         fSockets_ = MakeSockets_ ();
         if (options.fFollowNetworkChanges) {
-            fLinkMonitor_ = SSDP::Private_::FollowNetworkChanges ([this] () { Rejoin_ (); });
+            fNetworkChanges_ = SSDP::Private_::FollowNetworkChanges ([this] () { Rejoin_ (); });
         }
     }
     ~Rep_ () = default;
@@ -170,13 +170,13 @@ public:
 
 private:
     const Options                                         fOptions_;
-    mutex                                                 fLifecycleMutex_; // Start, Stop and Rejoin_ (called on the LinkMonitor's thread)
+    mutex                                                 fLifecycleMutex_; // Start, Stop and Rejoin_ (called on its network-change thread)
     recursive_mutex                                       fCritSection_;
     vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                 fSockets_;
     Synchronized<InterfacesByID>                          fListeningOn_; // what fSockets_ are joined on
     Thread::CleanupPtr                                    fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
-    optional<IO::Network::LinkMonitor>                    fLinkMonitor_; // last, so destroyed first: no Rejoin_ while the rest goes away
+    optional<SSDP::Private_::NetworkChangeFollower>       fNetworkChanges_; // last, so destroyed first: no Rejoin_ while the rest goes away
 };
 
 /*

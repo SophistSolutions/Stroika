@@ -58,8 +58,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
             /**
              *  When a network appears, send the NOTIFYs right away, rather than at the next cycle.
-             *  It costs a LinkMonitor (all share one thread, waiting on the OS's address-change notifications). Where the OS cannot
-             *  tell (e.g. some containers), it is just not done.
+             *  It costs a LinkMonitor (all share one thread, waiting on the OS's address-change notifications), and a thread of
+             *  its own that waits for a burst of changes to settle. Where the OS cannot tell (e.g. some containers), it is just
+             *  not done.
              */
             bool fFollowNetworkChanges{true};
         };
@@ -102,7 +103,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     private:
         shared_ptr<Execution::Synchronized<IO::Network::InterfacesByID>> fNotifyingOn_; // shared with the timer's callback
         unique_ptr<Execution::IntervalTimer::Adder>                      fIntervalTimerAdder_;
-        optional<IO::Network::LinkMonitor> fLinkMonitor_; // last, so destroyed first: no NOTIFY while the rest goes away
+        optional<SSDP::Private_::NetworkChangeFollower> fNetworkChanges_; // last, so destroyed first: no NOTIFY while the rest goes away
     };
 
 }

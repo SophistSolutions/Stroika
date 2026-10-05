@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 
 #include "Common.h"
 
@@ -90,16 +91,38 @@ InterfacesByID UPnP::SSDP::Private_::JoinOnEveryInterface (const Traversal::Iter
 
 /*
  ********************************************************************************
- ********************* SSDP::Private_::FollowNetworkChanges *********************
+ ******************** SSDP::Private_::NetworkChangeFollower *********************
  ********************************************************************************
  */
-optional<LinkMonitor> UPnP::SSDP::Private_::FollowNetworkChanges (const function<void ()>& onNetworkAppeared)
+namespace {
+    // how long address additions must stop for, before acting on them - a network coming up adds its addresses within moments
+    constexpr Time::DurationSeconds kNetworkChangesQuietPeriod_{1.0};
+}
+struct UPnP::SSDP::Private_::NetworkChangeFollower::Rep_ {
+    shared_ptr<Execution::WaitableEvent> fAddressAdded{make_shared<Execution::WaitableEvent> ()}; // set by fLinkMonitor's callback
+    Execution::Thread::CleanupPtr        fThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    LinkMonitor                          fLinkMonitor; // last, so destroyed first: no additions reported while fThread stops
+};
+
+UPnP::SSDP::Private_::NetworkChangeFollower::NetworkChangeFollower (const function<void ()>& onNetworkAppeared)
+    : fRep_{make_unique<Rep_> ()}
 {
-    try {
-        LinkMonitor lm;
-        lm.AddCallback ([onNetworkAppeared] (const LinkMonitor::Event& e) {
-            if (e.fChange == LinkMonitor::LinkChange::eAdded) {
-                Debug::TraceContextBumper ctx{"SSDP: a network appeared", "{}"_f, e};
+    static const String                  kThreadName_ = "SSDP network changes"sv;
+    shared_ptr<Execution::WaitableEvent> addressAdded = fRep_->fAddressAdded;
+    fRep_->fLinkMonitor.AddCallback ([addressAdded] (const LinkMonitor::Event& e) {
+        if (e.fChange == LinkMonitor::LinkChange::eAdded) {
+            DbgTrace ("SSDP: a network address appeared: {}"_f, e);
+            addressAdded->Set ();
+        }
+    });
+    fRep_->fThread = Execution::Thread::New (
+        [addressAdded, onNetworkAppeared] () {
+            while (true) {
+                addressAdded->WaitAndReset ();
+                while (addressAdded->WaitQuietlyAndReset (kNetworkChangesQuietPeriod_) == Execution::WaitableEvent::WaitStatus::eTriggered) {
+                    // more of the burst: wait for it to end
+                }
+                Debug::TraceContextBumper ctx{"SSDP: a network appeared"};
                 try {
                     onNetworkAppeared ();
                 }
@@ -110,8 +133,22 @@ optional<LinkMonitor> UPnP::SSDP::Private_::FollowNetworkChanges (const function
                     DbgTrace ("SSDP: could not act on the network that appeared: {}"_f, current_exception ());
                 }
             }
-        });
-        return optional<LinkMonitor>{move (lm)};
+        },
+        Execution::Thread::eAutoStart, kThreadName_);
+}
+UPnP::SSDP::Private_::NetworkChangeFollower::NetworkChangeFollower (NetworkChangeFollower&&) noexcept                    = default;
+auto UPnP::SSDP::Private_::NetworkChangeFollower::operator= (NetworkChangeFollower&&) noexcept -> NetworkChangeFollower& = default;
+UPnP::SSDP::Private_::NetworkChangeFollower::~NetworkChangeFollower ()                                                   = default;
+
+/*
+ ********************************************************************************
+ ********************* SSDP::Private_::FollowNetworkChanges *********************
+ ********************************************************************************
+ */
+optional<UPnP::SSDP::Private_::NetworkChangeFollower> UPnP::SSDP::Private_::FollowNetworkChanges (const function<void ()>& onNetworkAppeared)
+{
+    try {
+        return NetworkChangeFollower{onNetworkAppeared};
     }
     catch (const Execution::Thread::AbortException&) {
         Execution::ReThrow ();
