@@ -148,9 +148,7 @@ namespace Stroika::Foundation::Memory {
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
         copy (src.begin (), src.end (), target.data ());
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
         return target.subspan (0, src.size ());
     }
 
@@ -172,7 +170,6 @@ namespace Stroika::Foundation::Memory {
         // destination range is outside the source range) while std::copy_backward is appropriate when copying
         // to the right (end of the destination range is outside the source range).
         if (Intersects (src, target)) {
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
             span<byte>       targetBytes = as_writable_bytes (target);
             span<const byte> srcBytes    = as_bytes (src);
             // we know they overlap, so just checking which is to the left and which to the right
@@ -183,7 +180,6 @@ namespace Stroika::Foundation::Memory {
             else {
                 copy (src.begin (), src.end (), target.data ());
             }
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
             return target.subspan (0, src.size ());
         }
         else {

@@ -1539,7 +1539,6 @@ namespace Stroika::Foundation::Traversal {
         : fElementComparer{elementComparer}
     {
     }
-    DISABLE_COMPILER_MSC_WARNING_START (4701)
     template <typename T>
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
     inline auto Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
@@ -1549,7 +1548,6 @@ namespace Stroika::Foundation::Traversal {
         auto ri = rhs.begin ();
         auto re = rhs.end ();
         DISABLE_COMPILER_MSC_WARNING_START (6001)
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
         // no need for c' initialization cuz only used in else return at end, but never get there
         // unless set at least once
         optional<strong_ordering> c;
@@ -1573,8 +1571,6 @@ namespace Stroika::Foundation::Traversal {
             Assert (c == fElementComparer (*li, *ri));
             return c.value ();
         }
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
         DISABLE_COMPILER_MSC_WARNING_END (6001)
     }
-    DISABLE_COMPILER_MSC_WARNING_END (4701)
 }

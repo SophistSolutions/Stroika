@@ -27,7 +27,6 @@ namespace Stroika::Frameworks::Led {
     template <typename WORDWRAPPEDTEXTIMAGER, typename SIMPLETEXTIMAGER, typename TEXTSTORE>
     void DrawTextBox (Tablet* tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap);
 
-    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         WaterMarkHelper<TEXTSTORE,WORDPROCESSOR>
     @DESCRIPTION:   <p>TEXTSTORE defaults to @'ChunkedArrayTextStore' and WORDPROCESSOR defaults to @'WordProcessor' </p>
@@ -107,7 +106,6 @@ namespace Stroika::Frameworks::Led {
         Led_Rect      fCachedIntoRect;
         Tablet*       fCachedIntoTablet;
     };
-    DISABLE_COMPILER_MSC_WARNING_END (4250)
 
 }
 

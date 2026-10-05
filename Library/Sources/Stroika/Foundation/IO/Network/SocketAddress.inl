@@ -35,18 +35,14 @@ namespace Stroika::Foundation::IO::Network {
             case InternetAddress::AddressFamily::V4: {
                 fSocketAddress_V4_            = sockaddr_in{};
                 fSocketAddress_V4_.sin_family = AF_INET;
-                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-                fSocketAddress_V4_.sin_port = htons (portNumber);                                   //NB no '::' cuz some systems use macro
-                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");
-                fSocketAddress_V4_.sin_addr = iaddr.As<in_addr> ();
+                fSocketAddress_V4_.sin_port   = htons (portNumber); //NB no '::' cuz some systems use macro
+                fSocketAddress_V4_.sin_addr   = iaddr.As<in_addr> ();
             } break;
             case InternetAddress::AddressFamily::V6: {
                 fSocketAddress_V6_             = sockaddr_in6{};
                 fSocketAddress_V6_.sin6_family = AF_INET6;
-                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-                fSocketAddress_V6_.sin6_port = htons (portNumber);                                  //NB no ':' cuz some systems use macro
-                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");
-                fSocketAddress_V6_.sin6_addr = iaddr.As<in6_addr> ();
+                fSocketAddress_V6_.sin6_port   = htons (portNumber); //NB no ':' cuz some systems use macro
+                fSocketAddress_V6_.sin6_addr   = iaddr.As<in6_addr> ();
             } break;
             default: {
                 // just leave blank - no assert?
@@ -109,14 +105,10 @@ namespace Stroika::Foundation::IO::Network {
         Require (IsInternetAddress ());
         switch (fSocketAddress_.sa_family) {
             case AF_INET: {
-                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-                return ntohs (fSocketAddress_V4_.sin_port);                                         //NB no ':' cuz some systems use macro
-                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+                return ntohs (fSocketAddress_V4_.sin_port); //NB no ':' cuz some systems use macro
             }
             case AF_INET6: {
-                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-                return ntohs (fSocketAddress_V6_.sin6_port);                                        //NB no ':' cuz some systems use macro
-                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+                return ntohs (fSocketAddress_V6_.sin6_port); //NB no ':' cuz some systems use macro
             }
             default: {
                 AssertNotReached ();

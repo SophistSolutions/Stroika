@@ -18,9 +18,7 @@
 static_assert (qStroika_HasComponent_ATLMFC,
                "Error: Stroika::Framework::Led::Platform MFC_WordProcessor code requires the ATLMFC feature to be set true");
 
-DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include <afxwin.h>
 #include <oleidl.h>

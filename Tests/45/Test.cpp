@@ -177,8 +177,6 @@ namespace {
                 EXPECT_TRUE (vv["url"] == "http://httpbin.org/get" or vv["url"] == "https://httpbin.org/get");
             }
         }
-        DISABLE_COMPILER_MSC_WARNING_START (4102);
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-label\"")
         void T2_httpbin_SimplePOST_ (Connection::Ptr c)
         {
             Debug::TraceContextBumper ctx{"T2_httpbin_SimplePOST_"};
@@ -254,8 +252,6 @@ namespace {
                 EXPECT_TRUE (resultBLOB == roundTripTestData);
             }
         }
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-label\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4102);
         void T3_httpbin_SimplePUT_ (Connection::Ptr c)
         {
             Debug::TraceContextBumper ctx{"T3_httpbin_SimplePUT_"};

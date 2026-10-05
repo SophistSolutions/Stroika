@@ -526,9 +526,7 @@ namespace {
             optional<Interface> prev          = results.Lookup (interfaceName);
             Interface newInterface = prev ? *prev : GetInterfaces_POSIX_mkInterface_ (sd, deviceName.c_str (), p->ifa_flags, defaultGateways);
             if (optional<InternetAddress> ia = GetInternetAddress_ (p->ifa_addr)) {
-                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
                 newInterface.fBindings.fAddressRanges.Add (CIDR{*ia, GetPrefixLength_ (p->ifa_netmask, p->ifa_addr->sa_family)});
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
                 newInterface.fBindings.fAddresses.Add (*ia);
             }
 #if qStroika_Platform_MacOS

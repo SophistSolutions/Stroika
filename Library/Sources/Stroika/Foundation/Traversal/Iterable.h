@@ -111,10 +111,6 @@ namespace Stroika::Foundation::Traversal {
     static_assert (IIterableOfFrom<vector<int>, long int>);
     static_assert (not IIterableOfFrom<vector<string>, int>);
 
-#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
-#endif
-
     /**
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
      *          to traverse them.
@@ -1618,13 +1614,6 @@ namespace Stroika::Foundation::Traversal {
         using _IteratorRepSharedPtr [[deprecated ("Since Stroika v3.0d1 use unique_ptr<typename Iterator<T>::IRep> directly")]] =
             unique_ptr<typename Iterator<T>::IRep>;
     };
-#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
-#endif
-
-#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
-#endif
 
     /**
      *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure thread safety. It takes the
@@ -1907,10 +1896,6 @@ namespace Stroika::Foundation::Traversal {
     //      @todo would be nice to include these tests generically as part of template declaration, but cannot figure out how
     //      to get that working (probably due to when incomplete types evaluated) --LGP 2024-08-21
     static_assert (copyable<Iterable<int>>);
-#endif
-
-#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
 #endif
 
 }

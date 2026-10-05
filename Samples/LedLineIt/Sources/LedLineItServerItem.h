@@ -6,9 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "Stroika/Frameworks/Led/Support.h"
 

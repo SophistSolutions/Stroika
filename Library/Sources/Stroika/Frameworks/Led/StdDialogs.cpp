@@ -1558,7 +1558,6 @@ void Led_StdDialogHelper_ParagraphIndentsDialog::PreDoModalHook ()
     inherited::PreDoModalHook ();
 }
 
-DISABLE_COMPILER_MSC_WARNING_START (4706)
 void Led_StdDialogHelper_ParagraphIndentsDialog::OnOK ()
 {
     SDKString leftMargin = GetItemText (kLedStdDlg_ParagraphIndents_LeftMarginFieldID);
@@ -1577,7 +1576,6 @@ void Led_StdDialogHelper_ParagraphIndentsDialog::OnOK ()
     }
     inherited::OnOK ();
 }
-DISABLE_COMPILER_MSC_WARNING_END (4706)
 #endif
 
 #if qStroika_Platform_Windows
@@ -1652,7 +1650,6 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::PreDoModalHook ()
     inherited::PreDoModalHook ();
 }
 
-DISABLE_COMPILER_MSC_WARNING_START (4706)
 void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
 {
     SDKString spaceBefore = GetItemText (kParagraphSpacing_Dialog_SpaceBeforeFieldID);
@@ -1700,7 +1697,6 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
 
     inherited::OnOK ();
 }
-DISABLE_COMPILER_MSC_WARNING_END (4706)
 #endif
 
 #if qStroika_Platform_Windows

@@ -4,9 +4,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxodlgs.h> // MFC OLE dialog classes
-DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include <afxwin.h>
 

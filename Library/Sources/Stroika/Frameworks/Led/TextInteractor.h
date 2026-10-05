@@ -1009,7 +1009,6 @@ namespace Stroika::Frameworks::Led {
         SDKString     fText;
     };
 
-    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         TrivialImager_Interactor<TEXTSTORE,IMAGER>
     @DESCRIPTION:   <p>Handy little template, if you want to use the power of Led, but just to wrap a particular imager,
@@ -1058,7 +1057,6 @@ namespace Stroika::Frameworks::Led {
         {
         }
     };
-    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 #endif
 
 }

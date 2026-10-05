@@ -319,10 +319,8 @@ namespace Stroika::Foundation::Memory {
          */
         void** newLinks;
         if constexpr (qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_) {
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"") // crazy warning from g++-11
             newLinks = (void**)::malloc (kChunks * SIZE);
             Execution::ThrowIfNull (newLinks);
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"") // crazy warning from g++-11
         }
         else {
             newLinks = (void**)new char[kChunks * SIZE];

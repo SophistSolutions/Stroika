@@ -24,11 +24,7 @@
 static_assert (qStroika_HasComponent_ATLMFC,
                "Error: Stroika::Framework::Led::Platform MFC code requires the ATLMFC feature to be set true");
 
-DISABLE_COMPILER_MSC_WARNING_START (4459)
-DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-DISABLE_COMPILER_MSC_WARNING_END (5054)
-DISABLE_COMPILER_MSC_WARNING_END (4459)
 
 #include <afxwin.h>
 #include <oleidl.h>
@@ -564,7 +560,6 @@ namespace Stroika::Frameworks::Led::Platform {
         }
     };
 
-    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         Led_MFC_ExceptionHandlerHelper<BASECLASS>
     @BASES:         BASECLASS = @'Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>'
@@ -594,7 +589,6 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         DECLARE_MESSAGE_MAP ()
     };
-    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*

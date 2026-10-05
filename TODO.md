@@ -46,9 +46,6 @@ Generally will track stuff here between releases
       @@ -0,0 +1,60 @@
 
 
-  - do a pass at some point to see if DISABLE_COMPILER_MSC_WARNING_START(anod other compiler) warning supressions still needed
-    and still properly balanced.
-
   - Replace Ubuntu 2504 (I think no longer supported) with 26.10 (i think latest non lts)
 
   - Consider rewrite of remaining perl stuff - mostly configure - to use python?

@@ -428,7 +428,6 @@ namespace {
             return result;
         }
         DISABLE_COMPILER_MSC_WARNING_START (4701) // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
         inline ConversionResult ConvertUTF16toUTF32_ (const char16_t** sourceStart, const char16_t* sourceEnd, char32_t** targetStart,
                                                       char32_t* targetEnd, optional<char32_t> missingCharacterReplacement)
         {
@@ -485,7 +484,6 @@ namespace {
             return result;
         }
         DISABLE_COMPILER_MSC_WARNING_END (4701)
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
         inline ConversionResult ConvertUTF32toUTF16_ (const char32_t** sourceStart, const char32_t* sourceEnd, char16_t** targetStart,
                                                       char16_t* targetEnd, optional<char32_t> missingCharacterReplacement)
         {

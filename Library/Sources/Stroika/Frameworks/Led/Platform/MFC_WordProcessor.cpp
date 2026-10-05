@@ -10,9 +10,7 @@
 #include <afxext.h>
 #include <atlstr.h>
 
-DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"

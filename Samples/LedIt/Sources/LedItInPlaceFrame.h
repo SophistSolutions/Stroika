@@ -7,9 +7,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 class LedItInPlaceFrame : public COleIPFrameWnd {
     DECLARE_DYNCREATE (LedItInPlaceFrame)

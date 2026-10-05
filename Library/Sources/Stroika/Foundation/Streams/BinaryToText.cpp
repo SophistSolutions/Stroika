@@ -369,9 +369,7 @@ namespace {
                     }
                     pushIntoCacheBuf (std::begin (buf), std::begin (buf) + result->size ());
                     result = result->subspan (0, min (intoBuffer.size (), result->size ()));
-                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"");
                     (void)::memcpy (intoBuffer.data (), std::begin (buf), result->size () * sizeof (Character));
-                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"");
                     _fOffset = origOffset + result->size ();
                 }
                 return result;

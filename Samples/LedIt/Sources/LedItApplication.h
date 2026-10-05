@@ -14,9 +14,7 @@
 
 #include "Stroika/Foundation/Execution/Platform/Windows/COM.h"
 
-DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-DISABLE_COMPILER_MSC_WARNING_END (5054)
 #endif
 
 #include "Stroika/Foundation/Execution/Logger.h"

@@ -1591,13 +1591,11 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     const AFX_MSGMAP* PASCAL Led_MFC_ExceptionHandlerHelper<BASECLASS>::GetThisMessageMap ()
     {
-        using ThisClass    = Led_MFC_ExceptionHandlerHelper<BASECLASS>;
-        using TheBaseClass = BASECLASS;
-        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qStroika_Frameworks_Led_MFCRequiresCWndLeftmostBaseClass
+        using ThisClass                                 = Led_MFC_ExceptionHandlerHelper<BASECLASS>;
+        using TheBaseClass                              = BASECLASS;
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {ON_WM_CHAR () ON_MESSAGE (WM_IME_CHAR, &OnIMEChar) ON_WM_KEYDOWN () ON_MESSAGE (
             WM_PASTE, &OnMsgPaste) ON_WM_LBUTTONDOWN () ON_WM_LBUTTONUP () ON_WM_LBUTTONDBLCLK (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
-        DISABLE_COMPILER_MSC_WARNING_END (4407)
-        static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
+        static const AFX_MSGMAP       messageMap        = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
     }
 
