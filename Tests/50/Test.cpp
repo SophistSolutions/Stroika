@@ -1198,6 +1198,38 @@ namespace {
 #endif
         }
     }
+
+    /*
+     *  What DateTime.h says kISO8601Format and kRFC1123Format write, and read: each of its examples
+     */
+    GTEST_TEST (Foundation_Time, DateTime_LocaleIndependentFormats_)
+    {
+        TraceContextBumper ctx{"DateTime_LocaleIndependentFormats_"};
+        {
+            const Date     oct5{Time::Year{2026}, October, 5d};
+            const DateTime edt{oct5, TimeOfDay{17, 30, 0}, Timezone{-4 * 60}};
+            EXPECT_EQ ((DateTime{oct5, TimeOfDay{21, 30, 0}, Timezone::kUTC}.Format (DateTime::kISO8601Format)), "2026-10-05T21:30:00Z"sv);
+            EXPECT_EQ (edt.Format (DateTime::kISO8601Format), "2026-10-05T17:30:00-04:00"sv);
+            EXPECT_EQ (DateTime{oct5}.Format (DateTime::kISO8601Format), "2026-10-05"sv);
+            for (string_view s : {"2026-10-05T17:30:00-04:00"sv, "2026-10-05t17:30:00-04:00"sv, "2026-10-05 17:30:00-04:00"sv,
+                                  "2026-10-05T17:30:00.25-04:00"sv, "2026-10-05T17:30:00-0400"sv, "2026-10-05T17:30:00-04"sv}) {
+                EXPECT_EQ (DateTime::Parse (String{s}, DateTime::kISO8601Format), edt) << s;
+            }
+        }
+        {
+            EXPECT_EQ ((DateTime{Date{Time::Year{1994}, November, 6d}, TimeOfDay{8, 49, 37}, Timezone::kUTC}.Format (DateTime::kRFC1123Format)),
+                       "Sun, 06 Nov 1994 08:49:37 GMT"sv);
+            const DateTime pst{Date{Time::Year{2018}, November, 6d}, TimeOfDay{6, 25, 51}, Timezone{-8 * 60}};
+            EXPECT_EQ (pst.Format (DateTime::kRFC1123Format), "Tue, 06 Nov 2018 06:25:51 -0800"sv);
+            for (string_view s : {"Tue, 06 Nov 2018 06:25:51 -0800"sv, "06 Nov 2018 06:25:51 -0800"sv, "Tue, 6 Nov 2018 06:25:51 PST"sv,
+                                  "Tue,  6 Nov 2018  06:25:51 -0800"sv, "Tue, 6 Nov 2018 06:25:51 -0800 (PST)"sv}) {
+                EXPECT_EQ (DateTime::Parse (String{s}, DateTime::kRFC1123Format), pst) << s;
+            }
+            // but not HTTP's two obsolete forms
+            EXPECT_FALSE (DateTime::ParseQuietly ("Sunday, 06-Nov-94 08:49:37 GMT"sv, DateTime::kRFC1123Format));
+            EXPECT_FALSE (DateTime::ParseQuietly ("Sun Nov  6 08:49:37 1994"sv, DateTime::kRFC1123Format));
+        }
+    }
 }
 #endif
 

@@ -74,13 +74,12 @@ namespace Stroika::Foundation::Time {
      *          localtime changes, the DateTime then is relative to that new localtime. If the associated timezone is localtime, the
      *          interpretation of that timezone happens at the time a request requires it.
      *
-     *  \note   Why no kISO8601Format string and use of enum eISO8601 instead? https://en.cppreference.com/w/cpp/locale/time_put/put may provide
-     *          enough information (a little unclear on the Z/timezone part) to WRITE an ISO8601 format string for date time, but 
-     *          https://en.cppreference.com/w/cpp/locale/time_get/get doesn't come very close to supporting ISO 8601 format.
-     * 
-     *  \todo   consider if eRFC1123 could be done as kRFC1123Format; see note about about kISO8601Format/eISO8601, but the same issues
-     *          apply (unclear good enuf support for timezones). BUT could reconsider.
-     * 
+     *  \note   Formats: kISO8601Format and kRFC1123Format are LocaleIndependentFormat values - not strftime-style format strings, as
+     *          Date's and TimeOfDay's kISO8601Format are - since an ISO 8601 or RFC 1123 date-time has a time zone, which
+     *          std::time_put cannot quite write, nor std::time_get read. So DateTime writes and reads them itself (the
+     *          LocaleIndependentFormat overloads of Format, Parse and ParseQuietly); call sites read the same either way -
+     *          d.Format (Date::kISO8601Format), dt.Format (DateTime::kISO8601Format).
+     *
      *  \note   c++20 clocks - and clock_cast etc.
      *          This class roughly corresponds to system_clock. Sadly - for conversions to / from TickCount () - 
      *          clock_cast doesn't work - https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
@@ -147,52 +146,54 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief  LocaleIndependentFormat is a representation which a datetime can be transformed to & from
-         *
-         *  eISO8601:
-         *      This is the best (IMHO) preferred format for DateTime objects. Its simple, readable, 
-         *      sort order works naturally (alphabetical == by time) and its probably the most widely used
-         *      portable date format.
-         * 
-         *      See https://datatracker.ietf.org/doc/html/rfc3339
-         *
-         *  eRFC1123:
-         *      eRFC1123  is a very old format (same as RFC822 except 4 digit year instead of 2-digit year), but is still used in the 
-         *      current HTTP specification (e.g. for cookies).
-         *      The spec is originally documented in 
-         *          https://tools.ietf.org/html/rfc1123#5.2.14
-         *          https://tools.ietf.org/html/rfc822#section-5
-         *      EXAMPLE:  
-         *          Tue, 6 Nov 2018 06:25:51 -0800 (PST)
+         *  \brief  A date-time format DateTime writes and reads itself, whatever the locale. Use the constants kISO8601Format and
+         *          kRFC1123Format - the same values, and documented there.
          */
         enum class LocaleIndependentFormat {
-            eISO8601,
-            eRFC1123,
+            eISO8601, ///< \brief the value of kISO8601Format
+            eRFC1123, ///< \brief the value of kRFC1123Format
 
             Stroika_Define_Enum_Bounds (eISO8601, eRFC1123)
         };
 
     public:
         /**
-         *      This is the best (IMHO) preferred format for DateTime objects. Its simple, readable, 
-         *      sort order works naturally (alphabetical == by time) and its probably the most widely used
-         *      portable date format.
+         *  \brief ISO 8601's date-time, as RFC 3339 profiles it - the best (IMHO) preferred format for DateTime objects: simple,
+         *         readable, its sort order works naturally (alphabetical == by time), and probably the most widely used portable
+         *         date format.
+         *
+         *  Format writes the date, then T and the time (if it has one), then Z for UTC, or the offset - or nothing, if its time
+         *  zone is unknown:
+         *      2026-10-05T21:30:00Z
+         *      2026-10-05T17:30:00-04:00
+         *      2026-10-05
+         *
+         *  Parse takes those, with t or a space in place of the T, seconds with a fraction (dropped - a DateTime keeps whole
+         *  seconds), and an offset written -0400 or -04.
+         *
+         *  See https://datatracker.ietf.org/doc/html/rfc3339
          */
         static constexpr auto kISO8601Format = LocaleIndependentFormat::eISO8601;
 
     public:
         /**
-         *      RFC1123  is a very old format (same as RFC822 except 4 digit year instead of 2-digit year), but is still used in the 
-         *      current HTTP specification (e.g. for cookies).
-         *      The spec is originally documented in 
-         *          https://tools.ietf.org/html/rfc1123#5.2.14
-         *          https://tools.ietf.org/html/rfc822#section-5
-         *      EXAMPLE:  
-         *          Tue, 6 Nov 2018 06:25:51 -0800 (PST)
-         * 
-         *          NOTE - in this example, the -0800 redundantly says the same thing as the PST. With this format, its common
-         *          to have junk/comments like that at the end of the date, and so this format - when parsed, will just ignore that stuff
-         *          and will allow for extra whitespace in and around the date.
+         *  \brief RFC 1123's date-time (RFC 822's, with a 4-digit year) - HTTP's date format: of its Date, Expires, Last-Modified
+         *         and If-Modified-Since headers, and a cookie's Expires.
+         *
+         *  Format writes the names of the day and month in English (whatever the locale), the day of the month in 2 digits, then
+         *  GMT for UTC, or the offset - or nothing, if its time zone is unknown. So for a UTC DateTime, exactly HTTP's form (RFC
+         *  9110 section 5.6.7's IMF-fixdate) - as HTTP::Headers writes Date:
+         *      Sun, 06 Nov 1994 08:49:37 GMT
+         *      Tue, 06 Nov 2018 06:25:51 -0800
+         *
+         *  Parse takes those, and RFC 822's other forms: no day name, a 1-digit day of the month, a named zone (UT, EST, PDT ...,
+         *  or a military letter), extra spaces, and anything after the zone - as in "Tue, 6 Nov 2018 06:25:51 -0800 (PST)", whose
+         *  (PST) just repeats the -0800. But not HTTP's two obsolete forms, which an HTTP recipient must also accept (RFC 9110
+         *  section 5.6.7):
+         *      Sunday, 06-Nov-94 08:49:37 GMT      (RFC 850)
+         *      Sun Nov  6 08:49:37 1994            (asctime)
+         *
+         *  See https://tools.ietf.org/html/rfc1123#5.2.14 and https://tools.ietf.org/html/rfc822#section-5
          */
         static constexpr auto kRFC1123Format = LocaleIndependentFormat::eRFC1123;
 
@@ -438,7 +439,7 @@ namespace Stroika::Foundation::Time {
          *      struct timespec
          *      SYSTEMTIME                              (WINDOWS ONLY)
          *      Date
-         *      String                                  (Format (PrintFormat::eDEFAULT))
+         *      String                                  (Format () - so in the current locale, zeros stripped)
          *      chrono::time_point<CLOCK,DURATION>      (satisfies Common::ITimePoint)
          *
          *  NB: Intentionally NOT defined for TimeOfDay () - cuz it wouldn't make sense. A DateTime IS a Date, but its not a TimeOfDay. Time of day just
