@@ -37,7 +37,7 @@ Mapping<String, String> Cookie::GetAttributes () const
 {
     Mapping<String, String> result;
     if (fExpires) {
-        result.Add (kExpiresAttributeLabel, fExpires->Format (Time::DateTime::kISO8601Format)); // not sure this is right???
+        result.Add (kExpiresAttributeLabel, fExpires->Format (Time::DateTime::kHTTPDateFormat)); // https://tools.ietf.org/html/rfc6265#section-4.1.1
     }
     if (fMaxAge) {
         result.Add (kMaxAgeAttributeLabel, "{}"_f(*fMaxAge));
@@ -81,7 +81,7 @@ void Cookie::AddAttribute (const String& key, const String& value)
         fDomain = value;
     }
     else if (key == kExpiresAttributeLabel) {
-        fExpires = DateTime::Parse (value, DateTime::kRFC1123Format);
+        fExpires = DateTime::Parse (value, DateTime::kHTTPDateFormat);
     }
     else if (key == kMaxAgeAttributeLabel) {
         fMaxAge = String2Int<int> (value);

@@ -78,6 +78,16 @@ namespace {
                 c.fExpires.reset ();
                 EXPECT_TRUE (c.GetAttributes ().empty ());
             }
+            {
+                // and written as HTTP writes dates, in GMT - so a browser reads it, as does Parse
+                using namespace Time;
+                Cookie c{"lang", "en-US"};
+                c.fExpires = DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{6, 18, 14}, Timezone{-4 * 60}};
+                EXPECT_EQ (c.GetAttributes ().LookupValue (Cookie::kExpiresAttributeLabel), "Wed, 09 Jun 2021 10:18:14 GMT"sv);
+                EXPECT_EQ (Cookie::Parse (c.As<String> ()).fExpires, c.fExpires);
+                // and read in HTTP's other date forms - such as this, the most common in cookies (from Netscape's original spec)
+                EXPECT_EQ (Cookie::Parse ("lang=en-US; Expires=Wed, 09-Jun-2021 10:18:14 GMT"sv).fExpires, c.fExpires);
+            }
         }
     }
     namespace CacheControl_Test02_ {
