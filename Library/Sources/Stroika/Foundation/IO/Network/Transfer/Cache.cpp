@@ -101,8 +101,8 @@ namespace {
                         bool canCheckModifiedSince = o->fLastModified.has_value ();
                         if (canCheckModifiedSince) {
                             context->fCachedElement = *o;
-                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfModifiedSince,
-                                                           "\""sv + o->fLastModified->Format (DateTime::kRFC1123Format) + "\""sv);
+                            // an HTTP date - not quoted, as the ETag is
+                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfModifiedSince, o->fLastModified->Format (DateTime::kHTTPDateFormat));
                         }
                     }
                 }
@@ -212,7 +212,7 @@ Transfer::Cache::Element::Element (const Response& response)
         }
         else if (hi->fKey == HTTP::HeaderName::kExpires) {
             try {
-                fExpires = DateTime::Parse (hi->fValue, DateTime::kRFC1123Format);
+                fExpires = DateTime::Parse (hi->fValue, DateTime::kHTTPDateFormat);
             }
             catch (...) {
                 // treat invalid dates as if the resource has already expired
@@ -224,7 +224,7 @@ Transfer::Cache::Element::Element (const Response& response)
         }
         else if (hi->fKey == HTTP::HeaderName::kLastModified) {
             try {
-                fLastModified = DateTime::Parse (hi->fValue, DateTime::kRFC1123Format);
+                fLastModified = DateTime::Parse (hi->fValue, DateTime::kHTTPDateFormat);
             }
             catch (...) {
                 DbgTrace ("Malformed last-modified ({}) treated as ignored"_f, hi->fValue);
@@ -259,10 +259,10 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
         result.Add (HTTP::HeaderName::kETag, "\""sv + *fETag + "\""sv);
     }
     if (fExpires) {
-        result.Add (HTTP::HeaderName::kExpires, fExpires->Format (DateTime::kRFC1123Format));
+        result.Add (HTTP::HeaderName::kExpires, fExpires->Format (DateTime::kHTTPDateFormat));
     }
     if (fLastModified) {
-        result.Add (HTTP::HeaderName::kLastModified, fLastModified->Format (DateTime::kRFC1123Format));
+        result.Add (HTTP::HeaderName::kLastModified, fLastModified->Format (DateTime::kHTTPDateFormat));
     }
     if (fCacheControl) {
         function<String (const String& lhs, const String& rhs)> a = [] (const String& lhs, const String& rhs) -> String {

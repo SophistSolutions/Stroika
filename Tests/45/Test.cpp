@@ -25,6 +25,9 @@
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Cache.h"
 #if qStroika_HasComponent_libcurl
 #include "Stroika/Foundation/IO/Network/Transfer/Connection_libcurl.h"
 #endif
@@ -644,6 +647,34 @@ namespace {
             return WinHTTP::Connection::New (options);
         });
 #endif
+    }
+
+    /*
+     *  A cached response gone stale is asked for again conditionally: with If-Modified-Since its Last-Modified - an HTTP date, so
+     *  not in quotes - and If-None-Match its ETag (in quotes). No network: the cache's IRep, driven directly.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, Cache_StaleIsAskedForConditionally_)
+    {
+        Debug::TraceContextBumper ctx{"Cache_StaleIsAskedForConditionally_"};
+        Cache::Ptr                cache = Cache::CreateDefault (Cache::DefaultOptions{});
+        URI                       site{"http://www.example.com"sv};
+        Request                   request;
+        request.fMethod               = HTTP::Methods::kGet;
+        request.fAuthorityRelativeURL = URI{"/a"sv};
+        {
+            Cache::EvalContext context;
+            EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &request)); // nothing cached yet
+            Response response{Memory::BLOB{}, HTTP::StatusCodes::kOK,
+                              Containers::Mapping<String, String>{{String{HTTP::HeaderName::kLastModified}, "Wed, 09 Jun 2021 10:18:14 GMT"sv},
+                                                                  {String{HTTP::HeaderName::kETag}, "\"v1\""sv},
+                                                                  {String{HTTP::HeaderName::kExpires}, "Wed, 09 Jun 2021 10:18:14 GMT"sv}}};
+            cache->OnAfterFetch (context, &response);
+        }
+        // expired, so not answered from the cache - but asked for only if changed
+        Cache::EvalContext context;
+        EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &request));
+        EXPECT_EQ (request.fOverrideHeaders.LookupValue (String{HTTP::HeaderName::kIfModifiedSince}), "Wed, 09 Jun 2021 10:18:14 GMT"sv);
+        EXPECT_EQ (request.fOverrideHeaders.LookupValue (String{HTTP::HeaderName::kIfNoneMatch}), "\"v1\""sv);
     }
 }
 
