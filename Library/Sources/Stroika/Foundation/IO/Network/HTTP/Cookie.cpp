@@ -115,7 +115,7 @@ String Cookie::As<String> () const
             sb << "="sv << kvp.fValue;
         }
     }
-    return String{};
+    return sb;
 }
 
 Cookie Cookie::Parse (Streams::InputStream::Ptr<Character> src)

@@ -58,6 +58,19 @@ namespace {
                 EXPECT_TRUE (c.GetAttributes ().empty ());
             }
             {
+                // As<String> writes it as a Set-Cookie header's value - name=value, then its attributes - which Parse reads back
+                Cookie c{"lang", "en-US"};
+                c.fPath   = "/docs";
+                c.fSecure = true;
+                String s  = c.As<String> ();
+                EXPECT_TRUE (s.StartsWith ("lang=en-US"sv)) << s;
+                Cookie d = Cookie::Parse (s);
+                EXPECT_EQ (d.fKey, c.fKey);
+                EXPECT_EQ (d.fValue, c.fValue);
+                EXPECT_EQ (d.fPath, c.fPath);
+                EXPECT_EQ (d.fSecure, c.fSecure);
+            }
+            {
                 Cookie c = Cookie::Parse ("lang=en-US; Expires=Wed, 09 Jun 2021 10:18:14 GMT");
                 EXPECT_TRUE (c.fKey == "lang" and c.fValue == "en-US");
                 using namespace Time;

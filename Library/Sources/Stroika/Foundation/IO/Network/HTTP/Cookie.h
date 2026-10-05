@@ -92,15 +92,15 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual void AddAttribute (const String& key, const String& value);
 
         /**
-         *  \brief render as a string suitable for a cookie header
-         *      @see https://tools.ietf.org/html/rfc6265#section-4.2.1
+         *  \brief render as a Set-Cookie header's value: name=value, then its attributes (as HTTP::Headers writes Set-Cookie)
+         *      @see https://tools.ietf.org/html/rfc6265#section-4.1.1
          */
         template <typename T = String>
         nonvirtual String As () const;
 
         /**
-         *  Parse (decode) an http cookie into an object.
-         *      @see https://tools.ietf.org/html/rfc6265#section-4.2.1
+         *  Parse (decode) an http cookie into an object - a Set-Cookie header's value, as As<String> () writes.
+         *      @see https://tools.ietf.org/html/rfc6265#section-4.1.1
          *
          *  \pre src.IsSeekable () for InputStream overload
          */
