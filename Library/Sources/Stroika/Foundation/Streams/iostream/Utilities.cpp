@@ -38,6 +38,7 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     streamoff end = in.tellg ();
     Assert (start <= end);
     DISABLE_COMPILER_MSC_WARNING_START (6237)
+    DISABLE_COMPILER_MSC_WARNING_START (4127)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[unlikely]] {
         static const auto kException_ = Execution::Exception<runtime_error>{"stream too large"sv};
         Execution::Throw (kException_);
@@ -50,6 +51,7 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     Assert (readLen <= bufLen);
     const char* startOfBuf = reinterpret_cast<const char*> (static_cast<const byte*> (buf));
     return Characters::MapUNICODETextWithMaybeBOMTowstring (startOfBuf, startOfBuf + readLen);
+    DISABLE_COMPILER_MSC_WARNING_END (4127)
     DISABLE_COMPILER_MSC_WARNING_END (6237)
 }
 
@@ -59,6 +61,7 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
     in.seekg (0, ios_base::end);
     streamoff end = in.tellg ();
     Assert (start <= end);
+    DISABLE_COMPILER_MSC_WARNING_START (4127)
     DISABLE_COMPILER_MSC_WARNING_START (6237)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[unlikely]] {
         static const auto kException_ = Execution::Exception<runtime_error>{"stream too large"sv};
@@ -73,6 +76,7 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
     const wchar_t* startOfBuf = reinterpret_cast<const wchar_t*> (static_cast<const wchar_t*> (buf));
     return wstring (startOfBuf, startOfBuf + readLen);
     DISABLE_COMPILER_MSC_WARNING_END (6237)
+    DISABLE_COMPILER_MSC_WARNING_END (4127)
 }
 
 /*
@@ -86,6 +90,7 @@ vector<byte> Streams::iostream::ReadBytes (istream& in)
     in.seekg (0, ios_base::end);
     streamoff end = in.tellg ();
     Assert (start <= end);
+    DISABLE_COMPILER_MSC_WARNING_START (4127)
     DISABLE_COMPILER_MSC_WARNING_START (6237)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[unlikely]] {
         static const auto kException_ = Execution::Exception<runtime_error>{"stream too large"sv};
@@ -99,6 +104,7 @@ vector<byte> Streams::iostream::ReadBytes (istream& in)
     Assert (xxx <= len);
     return vector<byte> (static_cast<const byte*> (buf), static_cast<const byte*> (buf) + xxx);
     DISABLE_COMPILER_MSC_WARNING_END (6237)
+    DISABLE_COMPILER_MSC_WARNING_END (4127)
 }
 
 /*

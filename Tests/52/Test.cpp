@@ -1664,12 +1664,14 @@ namespace {
             const path jsonTestRoot = FindJSONTestRoot_ ();
             for (auto testCase : kTestCases_) {
                 DoJSONParse_ (jsonTestRoot / "small-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
+                DISABLE_COMPILER_MSC_WARNING_START (4127) // conditional expression is constant - qStroika_Foundation_Debug_AssertionsChecked is by design
                 if (not qStroika_Foundation_Debug_AssertionsChecked and not Debug::IsRunningUnderValgrind ()) {
                     // don't bother testing these except in release builds, and not under valgrind - too slow, and the
                     // parsing code they run is the same as for small-dict
                     DoJSONParse_ (jsonTestRoot / "medium-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
                     DoJSONParse_ (jsonTestRoot / "large-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
                 }
+                DISABLE_COMPILER_MSC_WARNING_END (4127)
             }
         }
 
@@ -2685,6 +2687,7 @@ namespace {
             constexpr double kWarnIfRatioAbove_{1.05}; // mutex won at all (a near-tie is not a disagreement)
             constexpr bool   kBuildCanBeJudged_ = not qStroika_Foundation_Debug_AssertionsChecked and
                                                   not Debug::kBuiltWithAddressSanitizer and not Debug::kBuiltWithThreadSanitizer;
+            DISABLE_COMPILER_MSC_WARNING_START (4127) // conditional expression is constant - kBuildCanBeJudged_ and kSpinLock_IsFasterThan_mutex are constexpr by design
             if (kBuildCanBeJudged_ and not Debug::IsRunningUnderValgrind () and measuredRatio and *measuredBaselineSeconds >= kMinBaselineSecondsToJudge_) {
                 bool measuredSaysSpinLockFaster = *measuredRatio < kWarnIfRatioBelow_;
                 bool measuredSaysMutexFaster    = *measuredRatio > kWarnIfRatioAbove_;
@@ -2699,6 +2702,7 @@ namespace {
                         "see the measured table in Execution/SpinLock.h"_f(*measuredRatio));
                 }
             }
+            DISABLE_COMPILER_MSC_WARNING_END (4127)
         }
         Tester ("Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, "wstring",
                 Test_StructWithStringsFillingAndCopying<String>, "Characters::String", 65000, 0.6, &failedTests);

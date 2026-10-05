@@ -91,6 +91,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 return nullopt; // pretty easy but @todo
             }
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-label\"");
+            DISABLE_COMPILER_MSC_WARNING_START (4102)
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
@@ -129,6 +130,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 }
                 return intoBuffer.subspan (0, nCopied); // this can be empty on EOF
             }
+            DISABLE_COMPILER_MSC_WARNING_END (4102)
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-label\"");
             virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
@@ -357,6 +359,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 Require (IsOpenRead ());
                 return nullopt; // pretty easy but @todo
             }
+            DISABLE_COMPILER_MSC_WARNING_START (4102)
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-label\"");
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
@@ -398,6 +401,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 return intoBuffer.subspan (0, nCopied); // this can be empty on EOF
             }
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-label\"");
+            DISABLE_COMPILER_MSC_WARNING_END (4102)
             virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
                 Require (not elts.empty ());
