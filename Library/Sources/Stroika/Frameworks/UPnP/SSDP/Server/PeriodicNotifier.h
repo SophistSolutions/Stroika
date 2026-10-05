@@ -31,11 +31,24 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     using Traversal::Iterable;
 
     /**
-     *  A big part of SSDP server functinality is to send periodic notifications of the Device description
+     *  A big part of SSDP server functionality is to send periodic notifications of the Device description.
+     *  Most applications want BasicServer instead, which does this and also answers searches (@see SearchResponder).
      *
      *  Instantiating the class starts the (background) notifications automatically, and they
      *  continue until the PeriodicNotifier object is destroyed.
-     * 
+     *
+     *  \par Example Usage
+     *      \code
+     *          Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // once, near the start of main ()
+     *          ...
+     *          // announce this device, as a UPnP root device - with where deviceWS serves its description
+     *          SSDP::Advertisement rootDevice;
+     *          rootDevice.fServer = SSDP::MakeServerHeaderValue ("MyProduct/1.0"sv);
+     *          rootDevice.fTarget = SSDP::kTarget_UPNPRootDevice;
+     *          rootDevice.fUSN    = Characters::Format ("uuid:{}::{}"_f, deviceID, SSDP::kTarget_UPNPRootDevice);
+     *          PeriodicNotifier notifier{Sequence<SSDP::Advertisement>{rootDevice}, LocationFromBindings (deviceWS.bindings ())};
+     *      \endcode
+     *
      *  \note requires Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator
      * 
      *  \note - this behavior differs from Stroika 2.1, where you had to explicitly call Run ()

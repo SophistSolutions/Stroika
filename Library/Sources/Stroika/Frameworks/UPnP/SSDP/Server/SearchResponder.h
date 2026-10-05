@@ -33,9 +33,22 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     using Traversal::Iterable;
 
     /**
-     *  Instantiating the class starts the (background) search automatically, and it continues
+     *  Answers SSDP searches (M-SEARCH) that the given advertisements match, with where to find the device's description.
+     *  Most applications want BasicServer instead, which does this and also announces the device (@see PeriodicNotifier).
+     *
+     *  Instantiating the class starts the (background) listening for searches automatically, and it continues
      *  until the SearchResponder object is destroyed.
-     * 
+     *
+     *  \par Example Usage
+     *      \code
+     *          // answer searches for this device, as a UPnP root device - with where deviceWS serves its description
+     *          SSDP::Advertisement rootDevice;
+     *          rootDevice.fServer = SSDP::MakeServerHeaderValue ("MyProduct/1.0"sv);
+     *          rootDevice.fTarget = SSDP::kTarget_UPNPRootDevice;
+     *          rootDevice.fUSN    = Characters::Format ("uuid:{}::{}"_f, deviceID, SSDP::kTarget_UPNPRootDevice);
+     *          SearchResponder responder{Sequence<SSDP::Advertisement>{rootDevice}, LocationFromBindings (deviceWS.bindings ())};
+     *      \endcode
+     *
      *  \note - this behavior differs from Stroika 2.1, where you had to explicitly call Run ()
      * 
      *  \note this uses its own thread, rather than using IntervalTimer, because it waits on input
