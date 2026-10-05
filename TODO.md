@@ -8,8 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-  - Replace Ubuntu 2504 (I think no longer supported) with 26.10 (i think latest non lts)
-
   - Consider rewrite of remaining perl stuff - mostly configure - to use python?
 
   - **Re-test the Ubuntu 24.04 gcc workarounds when that toolchain updates, and delete them if fixed.**
@@ -71,6 +69,11 @@ Generally will track stuff here between releases
      If it recurs: keep the failing exe + pdb; `C:/Sandbox/claude/ssdp/crashstack2.exe EXE ARGS` prints the stack and
      Xerces globals, `symaddr.exe EXE SYMBOL` + `dumpbin /disasm /range:` shows the code; the failing copy is kept
      there to compare. Candidate workaround: build Xerces without `-GL` under MSVC.
+
+- v3.0d26x - at the start
+   - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
+     been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
+     the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.
 
   - DO PLANNING for CMAKE change
     - discuss staging
