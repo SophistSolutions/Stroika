@@ -263,6 +263,8 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
   (inside WSL2 bash prompt)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
   (takes about 7.5 h on medusa-windows-dev)
+  (no TSAN, deliberately: it needs `vm.mmap_rnd_bits=28`, weakening ASLR for the whole WSL VM, and Ubuntu2604_x86_64
+  already runs it with the same g++)
 
 On WINDOWS:
 

@@ -25,7 +25,8 @@ rm -rf "$STROIKA_WSL_REGTEST_DIR"
 git clone "$STROIKA_GIT_REMOTE" "$STROIKA_WSL_REGTEST_DIR" --branch $BRANCH
 
 echo "Running WSL build (usually takes about 7.5 hrs)"
-(cd "$STROIKA_WSL_REGTEST_DIR" && ./Build/Scripts/RegressionTests)
+# No TSAN here, deliberately - see TSAN_SKIP_EXPECTED in RegressionTests
+(cd "$STROIKA_WSL_REGTEST_DIR" && TSAN_SKIP_EXPECTED="${TSAN_SKIP_EXPECTED:-1}" ./Build/Scripts/RegressionTests)
 
 echo "Done with build, so copying out results"
 cp "$STROIKA_WSL_REGTEST_DIR"/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/

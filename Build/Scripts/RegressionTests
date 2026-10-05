@@ -11,6 +11,10 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=regression-test-configurations}
 : ${USE_TEST_BASENAME:=""}
 : ${DO_SKEL_TEST:=1}
+# 1 for a target that deliberately runs no TSAN (e.g. WSL: tsan needs vm.mmap_rnd_bits=28, which weakens ASLR for the
+# whole VM, to duplicate what Ubuntu2604_x86_64 already runs) - its skip is then a note in the summary, not a WARNING.
+# Leave 0 where TSAN is expected (the medusa docker runs), so losing that sysctl there does not go unnoticed.
+: ${TSAN_SKIP_EXPECTED:=0}
 
 # Some scripts use this, especially when we invoke stuff from 'GetConfigurations'
 export StroikaRoot=`realpath .`
@@ -111,6 +115,7 @@ echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_WITH_LOGIN=$RASPBERRYPI_REMOTE_
 echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_DOCKER_IMAGE=$RASPBERRYPI_REMOTE_DOCKER_IMAGE" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64=$RASPBERRYPI_REMOTE_DOCKER_IMAGE_AARCH64" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    TSAN_SKIP_EXPECTED=$TSAN_SKIP_EXPECTED" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    DETECTED_HOST_OS=$DETECTED_HOST_OS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    uname -a=`uname -a`" >>$TEST_OUT_FILE 2>&1
 # Run time depends heavily on the filesystem (e.g. WSL's drvfs /mnt/c is far slower than its own disk) - record it
@@ -595,8 +600,13 @@ if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)" >>$TEST_OUT_FILE 2>&1
 fi
 if [ "$NTSANS" -ne 0 ] ; then
-	echo "   ***   WARNING: about sysctl vm.mmap_rnd_bits so TSAN disabled"
-	echo "   ***   WARNING: about sysctl vm.mmap_rnd_bits so TSAN disabled" >>$TEST_OUT_FILE 2>&1
+	if [ "$TSAN_SKIP_EXPECTED" -ne 0 ] ; then
+		echo "   TSAN configurations skipped, as expected for this target (vm.mmap_rnd_bits > 28)"
+		echo "   TSAN configurations skipped, as expected for this target (vm.mmap_rnd_bits > 28)" >>$TEST_OUT_FILE 2>&1
+	else
+		echo "   ***   WARNING: about sysctl vm.mmap_rnd_bits so TSAN disabled"
+		echo "   ***   WARNING: about sysctl vm.mmap_rnd_bits so TSAN disabled" >>$TEST_OUT_FILE 2>&1
+	fi
 fi
 TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STARTAT_INT )) / 60))
 echo "Finished at `date` ($TOTAL_MINUTES_SPENT minutes)"
