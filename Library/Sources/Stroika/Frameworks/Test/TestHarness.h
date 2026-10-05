@@ -16,12 +16,37 @@
 #include <gtest/gtest.h>
 #endif
 
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
-namespace Stroika::Foundation::Characters {
-    class String;
+#if qStroika_HasComponent_googletest
+/*
+ *  GoogleTest prints a value - in a failed EXPECT_EQ, say - with a printer it finds for the type, and else as the object's raw
+ *  bytes: unreadable, and on MSVC with ASan an abort, since reading the bytes it has poisoned inside a std::string or
+ *  std::vector is reported (gtest's no_sanitize_address marking is for GCC and clang only). So a value with a ToString ()
+ *  prints that instead - even if its type also has a PrintTo or operator<< (gtest's usual way to print a type).
+ *
+ *  By specializing UniversalPrinter, which every gtest printing path ends in: gtest's documented hooks (a PrintTo or
+ *  operator<<) are found only in the type's own namespace, so would take one per namespace. UniversalPrinter is gtest's
+ *  internal, so a gtest that changes it breaks the build here, rather than silently. (const T and T& go to gtest's own
+ *  specializations, which come back here for T.)
+ */
+namespace testing::internal {
+    template <typename T>
+        requires (std::same_as<T, std::remove_cvref_t<T>> and
+                  requires (const T& t) {
+                      { t.ToString () } -> std::convertible_to<Stroika::Foundation::Characters::String>;
+                  })
+    class UniversalPrinter<T> {
+    public:
+        static void Print (const T& value, ::std::ostream* os)
+        {
+            *os << Stroika::Foundation::Characters::String{value.ToString ()};
+        }
+    };
 }
+#endif
 
 namespace Stroika::Frameworks::Test {
 

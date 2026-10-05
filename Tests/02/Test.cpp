@@ -2375,6 +2375,24 @@ namespace {
                 .ColValue (2),
             "7.1");
     }
+
+    /*
+     *  GoogleTest prints a value with a ToString () - in a failed EXPECT_EQ, say - as that (Frameworks/Test/TestHarness.h),
+     *  not as the object's raw bytes.
+     */
+    struct HasToString_ {
+        int    fN;
+        String ToString () const
+        {
+            return "HasToString_ {}"_f(fN);
+        }
+    };
+    GTEST_TEST (Foundation_Characters, GTestPrintsWithToString_)
+    {
+        EXPECT_EQ (testing::PrintToString (HasToString_{3}), "HasToString_ 3");
+        IO::Network::URI u{"http://example.com/a?b"sv};
+        EXPECT_EQ (testing::PrintToString (u), Characters::ToString (u).AsNarrowSDKString ());
+    }
 }
 #endif
 
