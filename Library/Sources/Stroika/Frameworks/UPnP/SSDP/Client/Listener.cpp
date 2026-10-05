@@ -103,7 +103,8 @@ public:
     void StartThread_ ()
     {
         static const String kThreadName_ = "SSDP Listener"sv;
-        fThread_                         = Thread::New ([this] () { DoRun_ (); }, Thread::eAutoStart, kThreadName_);
+        fNewSockets_.store (nullopt);
+        fThread_ = Thread::New ([this, sockets = fSockets_] () { DoRun_ (sockets); }, Thread::eAutoStart, kThreadName_);
     }
     void StopThread_ ()
     {
@@ -112,24 +113,27 @@ public:
             fThread_ = nullptr;
         }
     }
-    // a network appeared: listen there too - on new sockets, joined afresh (the listening thread uses the sockets, so it stops
-    // meanwhile)
+    // a network appeared: listen there too - on new sockets, joined afresh. Without stopping the listening thread, which may be
+    // in a slow callOnFinds: it switches to them when it next waits for packets (what arrives meanwhile waits in them)
     void Rejoin_ ()
     {
         [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
-        bool                        wasRunning = fThread_ != nullptr;
-        StopThread_ ();
         fSockets_ = MakeSockets_ ();
-        if (wasRunning) {
-            StartThread_ ();
+        if (fThread_ != nullptr) {
+            fNewSockets_.store (fSockets_);
         }
     }
-    void DoRun_ ()
+    void DoRun_ (Collection<ConnectionlessSocket::Ptr> sockets)
     {
         // only stopped by thread abort
-        WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
+        optional<WaitForIOReady<ConnectionlessSocket::Ptr>> readyChecker{in_place, sockets};
         while (true) {
-            for (const ConnectionlessSocket::Ptr& s : readyChecker.Wait ()) {
+            if (auto newSockets = fNewSockets_.rwget (); newSockets.cref ().has_value ()) {
+                sockets = *newSockets.cref (); // the old ones close - leaving their groups - as the last reference to them goes
+                newSockets.store (nullopt);
+                readyChecker.emplace (sockets);
+            }
+            for (const ConnectionlessSocket::Ptr& s : readyChecker->WaitQuietly (kCheckForNewSocketsEvery_)) {
                 try {
                     byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;
@@ -169,14 +173,17 @@ public:
     }
 
 private:
+    static constexpr Time::DurationSeconds kCheckForNewSocketsEvery_{1.0}; // how soon the listening thread takes up Rejoin_'s sockets
+
     const Options                                         fOptions_;
     mutex                                                 fLifecycleMutex_; // Start, Stop and Rejoin_ (called on its network-change thread)
     recursive_mutex                                       fCritSection_;
     vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                 fSockets_;
     Synchronized<InterfacesByID>                          fListeningOn_; // what fSockets_ are joined on
-    Thread::CleanupPtr                                    fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
-    optional<SSDP::Private_::NetworkChangeFollower>       fNetworkChanges_; // last, so destroyed first: no Rejoin_ while the rest goes away
+    Synchronized<optional<Collection<ConnectionlessSocket::Ptr>>> fNewSockets_; // Rejoin_'s, for the listening thread to switch to (so declared before it)
+    Thread::CleanupPtr                              fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
+    optional<SSDP::Private_::NetworkChangeFollower> fNetworkChanges_; // last, so destroyed first: no Rejoin_ while the rest goes away
 };
 
 /*

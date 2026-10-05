@@ -90,17 +90,16 @@ public:
         if (fThread_ != nullptr) {
             fThread_.AbortAndWaitForDone ();
         }
-        fSearching_ = make_pair (serviceType, autoRetryInterval);
+        fSearching_   = make_pair (serviceType, autoRetryInterval);
+        fSearchAgain_ = false;
         fThread_ = Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); }, Thread::eAutoStart, "SSDP Searcher"sv);
     }
     // a network appeared: search there right away, rather than at the next retry - by starting the search over (it sends out
-    // of every interface as it starts)
+    // of every interface as it starts). Without restarting the search thread, which may be in a slow callOnFinds: it starts
+    // over when it next waits for answers
     void SearchAgain_ ()
     {
-        [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
-        if (fSearching_) {
-            StartThread_ (fSearching_->first, fSearching_->second);
-        }
+        fSearchAgain_ = true;
     }
     void DoRun_ (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
     {
@@ -184,7 +183,15 @@ public:
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
         WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (1) {
-            for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (retrySendAt.value_or (Time::TimePointSeconds{Time::kInfinity}))) {
+            if (fSearchAgain_.exchange (false)) {
+                didFirstRetry = false; // as at the start: two M-SEARCHes, a little apart
+                goto Retry;
+            }
+            Time::TimePointSeconds wakeAt = Time::GetTickCount () + kCheckForSearchAgainEvery_;
+            if (retrySendAt and *retrySendAt < wakeAt) {
+                wakeAt = *retrySendAt;
+            }
+            for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (wakeAt)) {
                 try {
                     byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;
@@ -228,7 +235,10 @@ private:
     recursive_mutex                                       fCritSection_;
     vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
     InterfaceFilter                                       fInterfaceFilter_;
-    mutex                                            fLifecycleMutex_; // Start, Stop and SearchAgain_ (called on its network-change thread)
+    static constexpr Time::DurationSeconds kCheckForSearchAgainEvery_{1.0}; // how soon the search thread acts on SearchAgain_
+
+    mutex        fLifecycleMutex_;     // Start and Stop
+    atomic<bool> fSearchAgain_{false}; // set by SearchAgain_ (on its network-change thread), for the search thread
     optional<pair<String, optional<Time::Duration>>> fSearching_; // the search started, and not stopped: serviceType, autoRetryInterval
     Collection<ConnectionlessSocket::Ptr>            fSockets_;
     Synchronized<InterfacesByID>                     fSearchingOn_; // what the last M-SEARCH went out of
