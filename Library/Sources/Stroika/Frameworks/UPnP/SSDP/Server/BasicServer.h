@@ -23,8 +23,6 @@
  *      @todo   Support SSDP::bye - sending going down notificaiton!!!
  *
  *      @todo   Add serviceList support
- *
- *      @todo   Look at http://brisa.garage.maemo.org/doc/html/upnp/ssdp.html for example server API
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Server {

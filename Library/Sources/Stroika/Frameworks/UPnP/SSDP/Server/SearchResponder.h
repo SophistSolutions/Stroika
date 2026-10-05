@@ -23,9 +23,6 @@
  *  \file
  *
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
- *
- * TODO:
- *      @todo   Look at http://brisa.garage.maemo.org/doc/html/upnp/ssdp.html for example server API
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Server {
@@ -37,7 +34,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      *  Most applications want BasicServer instead, which does this and also announces the device (@see PeriodicNotifier).
      *
      *  Instantiating the class starts the (background) listening for searches automatically, and it continues
-     *  until the SearchResponder object is destroyed.
+     *  until the SearchResponder object is destroyed. (so a smart pointer to one of these is typically kept around for the life of the application).
      *
      *  \par Example Usage
      *      \code
@@ -95,15 +92,6 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          */
         nonvirtual IO::Network::InterfacesByID GetNetworkInterfaces () const;
 
-#if 0
-        //...
-        //Get/Set supported DeviceEntries ();
-
-        //Get/Set Refresh/MaxAge (default is autocompute refresh pace based on maxage)
-
-        // smart ptr to one of these - caller keeps it around, it runs in its own
-        // thread as needed, does responses etc.
-#endif
     private:
         nonvirtual void StartListening_ (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const Options& options);
 

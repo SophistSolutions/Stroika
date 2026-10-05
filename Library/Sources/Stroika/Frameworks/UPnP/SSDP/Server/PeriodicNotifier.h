@@ -21,9 +21,6 @@
  *  \file
  *
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
- *
- * TODO:
- *      @todo   Look at http://brisa.garage.maemo.org/doc/html/upnp/ssdp.html for example server API
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Server {
@@ -35,7 +32,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      *  Most applications want BasicServer instead, which does this and also answers searches (@see SearchResponder).
      *
      *  Instantiating the class starts the (background) notifications automatically, and they
-     *  continue until the PeriodicNotifier object is destroyed.
+     *  continue until the PeriodicNotifier object is destroyed. (so a smart pointer to one of these is typically kept around
+     *  for the life of the application).
      *
      *  \par Example Usage
      *      \code
@@ -109,15 +107,6 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          */
         nonvirtual IO::Network::InterfacesByID GetNetworkInterfaces () const;
 
-#if 0
-        //...
-        //Get/Set supported DeviceEntries ();
-
-        //Get/Set Refresh/MaxAge (default is autocompute refresh pace based on maxage)
-
-        // smart ptr to one of these - caller keeps it around, it runs in its own
-        // thread as needed, does responses etc.
-#endif
     private:
         shared_ptr<Execution::Synchronized<IO::Network::InterfacesByID>> fNotifyingOn_; // shared with the timer's callback
         unique_ptr<Execution::IntervalTimer::Adder>                      fIntervalTimerAdder_;

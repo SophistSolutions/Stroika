@@ -122,7 +122,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *
          *  \note THREADS: callOnFinds is called on the listener's own thread, not the caller's - so it must be thread-safe.
          */
-        void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
+        nonvirtual void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
 
     public:
         /**
