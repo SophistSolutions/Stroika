@@ -134,6 +134,7 @@ mkMyApp_()
 
   mkdir -p $APP_ROOT/Workspaces/VSCode
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/../Shared/Skel-Templates/Common/Workspaces/VSCode/MyApp.code-workspace > $APP_ROOT/Workspaces/VSCode/$APP_NAME.code-workspace
+  cp $MY_PATH_/../Shared/Skel-Templates/Common/Workspaces/.gitignore $APP_ROOT/Workspaces/
 
   cp $MY_PATH_/../Shared/Skel-Templates/Common/VERSION $APP_ROOT/
   cp $MY_PATH_/../Shared/Skel-Templates/Common/ReadMe.md $APP_ROOT/

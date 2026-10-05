@@ -1,1 +1,4 @@
 *.VC.db
+# Links to Stroika's copies, (re)made by Skel and by 'make project-files' - see https://github.com/SophistSolutions/Stroika/issues/1075
+Microsoft.Cpp.stroika.ConfigurationBased.props
+Microsoft.Cpp.stroika.user.props
