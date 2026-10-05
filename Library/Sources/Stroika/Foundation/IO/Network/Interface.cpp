@@ -12,6 +12,7 @@
 #if qStroika_Platform_POSIX
 #include <arpa/inet.h>
 #include <ifaddrs.h>
+#include <net/if.h> // before <linux/...>, so <linux/if.h> defers to it: a second struct ifreq (vs LinkMonitor.cpp's) violates ODR (-Wodr)
 #include <net/if_arp.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -23,7 +24,6 @@
 #include <linux/sockios.h>
 #include <linux/wireless.h>
 #elif qStroika_Platform_MacOS
-#include <net/if.h>
 #include <net/if_dl.h>
 #include <net/route.h>
 #include <sys/sysctl.h>
@@ -355,20 +355,9 @@ namespace {
         Interface newInterface;
         newInterface.fInterfaceID  = String::FromSDKString (name);
         newInterface.fFriendlyName = newInterface.fInterfaceID; // not great - maybe find better name - but this will do for now...
-#if qStroika_Platform_Linux
-        {
-            // SIOCGIFINDEX, not if_nametoindex (): that needs <net/if.h>, which can clash with the <linux/...> headers used here
-            ifreq tmp{};
-            CString::Copy (tmp.ifr_name, std::size (tmp.ifr_name), name);
-            if (::ioctl (sd, SIOCGIFINDEX, &tmp) == 0 and tmp.ifr_ifindex > 0) {
-                newInterface.fIndex = static_cast<unsigned int> (tmp.ifr_ifindex);
-            }
-        }
-#elif qStroika_Platform_MacOS
         if (unsigned int index = ::if_nametoindex (name); index != 0) {
             newInterface.fIndex = index;
         }
-#endif
 #if qStroika_Platform_Linux
         auto getWirelessFlag = [] (int sd, const char* name) -> bool {
 #if defined(SIOCGIWNAME)
