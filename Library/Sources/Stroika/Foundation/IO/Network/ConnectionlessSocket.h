@@ -146,6 +146,9 @@ namespace Stroika::Foundation::IO::Network {
              * 
              *  @todo DOCUMENT WHAT HAPPENS IF PACKET DOESNT FIT IN BUF!????
              *
+             *  @todo Say which interface (and address) the packet arrived on (IP_PKTINFO) - and let SendTo pick the one it goes
+             *        out of - https://github.com/SophistSolutions/Stroika/issues/1202
+             *
              *  \note ***Cancelation Point***
              */
             nonvirtual span<byte> ReceiveFrom (span<byte> into, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout = Time::kInfinity) const;

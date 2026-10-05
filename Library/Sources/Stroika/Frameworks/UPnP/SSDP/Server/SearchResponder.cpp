@@ -44,6 +44,9 @@ namespace {
     // the LOCATION to answer asker with: location's, given this machine's address as asker reaches it
     optional<URI> LocationFor_ (const LocationProvider& location, const SocketAddress& asker)
     {
+        // @todo the address of the interface the search arrived on, not the route lookup's - where the routing table sends the
+        //       LAN elsewhere (a VPN's route covering it), the asker cannot reach that one. Exactly, that needs IP_PKTINFO -
+        //       https://github.com/SophistSolutions/Stroika/issues/1202 - or by the asker's subnet, UPnP-only (TODO.md)
         optional<InternetAddress> local = GetLocalAddressToReach (asker);
         if (not local) {
             return nullopt; // no route back
