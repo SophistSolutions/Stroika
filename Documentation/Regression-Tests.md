@@ -70,9 +70,8 @@ Times below are approximate, from what the runs actually recorded - every run en
   grep -h 'Finished at' Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-OUT.txt
   ```
 
-Last updated from the 3.0d25x runs (2026-09-30 to 10-04), after configuration changes that made many of them
-much faster. Not re-measured: WSL (a guess), and Ubuntu2604_x86_64 (still from 2026-09-26 to 28 - its 09-30 rerun
-hit a since-fixed build failure, f272c414f6, and never built the samples).
+Last updated from the 3.0d25x runs (2026-09-30 to 10-05), after configuration changes that made many of them
+much faster.
 
 - \$TEST_TARGET=MacOS_XCode26_m1
 
@@ -148,7 +147,7 @@ hit a since-fixed build failure, f272c414f6, and never built the samples).
 
 - \$TEST_TARGET=Ubuntu2604_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 9.5 h)
+  (remote execute on machine medusa using docker and copy back results; takes about 10 h)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -236,7 +235,7 @@ hit a since-fixed build failure, f272c414f6, and never built the samples).
 
 - Docker windows tests
 
-  (takes under 6 h each, and there are four of them - much the most expensive target)
+  (takes 5 to 6.5 h each, and there are four of them - much the most expensive target)
 
 Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
@@ -260,10 +259,10 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26 USE_TEST_BASENAME=Windows-MSYS-VS2k26-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests
   ```
 
-- WSL (tested on Ubuntu 24.04) test
+- WSL (tested on Ubuntu 26.04) test
   (inside WSL2 bash prompt)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
-  (probably takes about 4-5 h - not yet measured since the configuration changes)
+  (takes about 7.5 h on medusa-windows-dev)
 
 On WINDOWS:
 
