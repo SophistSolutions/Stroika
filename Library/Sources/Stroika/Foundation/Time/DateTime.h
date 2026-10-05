@@ -74,8 +74,8 @@ namespace Stroika::Foundation::Time {
      *          localtime changes, the DateTime then is relative to that new localtime. If the associated timezone is localtime, the
      *          interpretation of that timezone happens at the time a request requires it.
      *
-     *  \note   Formats: kISO8601Format and kRFC1123Format are LocaleIndependentFormat values - not strftime-style format strings, as
-     *          Date's and TimeOfDay's kISO8601Format are - since an ISO 8601 or RFC 1123 date-time has a time zone, which
+     *  \note   Formats: kISO8601Format, kRFC1123Format and kHTTPDateFormat are LocaleIndependentFormat values - not strftime-style
+     *          format strings, as Date's and TimeOfDay's kISO8601Format are - since an ISO 8601 or RFC 1123 date-time has a time zone, which
      *          std::time_put cannot quite write, nor std::time_get read. So DateTime writes and reads them itself (the
      *          LocaleIndependentFormat overloads of Format, Parse and ParseQuietly); call sites read the same either way -
      *          d.Format (Date::kISO8601Format), dt.Format (DateTime::kISO8601Format).
@@ -146,21 +146,23 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief  A date-time format DateTime writes and reads itself, whatever the locale. Use the constants kISO8601Format and
-         *          kRFC1123Format - the same values, and documented there.
+         *  \brief  A date-time format DateTime writes and reads itself, whatever the locale. Use the constants kISO8601Format,
+         *          kRFC1123Format and kHTTPDateFormat - the same values, and documented there.
          */
         enum class LocaleIndependentFormat {
-            eISO8601, ///< \brief the value of kISO8601Format
-            eRFC1123, ///< \brief the value of kRFC1123Format
+            eISO8601,  ///< \brief the value of kISO8601Format
+            eRFC1123,  ///< \brief the value of kRFC1123Format
+            eHTTPDate, ///< \brief the value of kHTTPDateFormat
 
-            Stroika_Define_Enum_Bounds (eISO8601, eRFC1123)
+            Stroika_Define_Enum_Bounds (eISO8601, eHTTPDate)
         };
 
     public:
         /**
-         *  \brief ISO 8601's date-time, as RFC 3339 profiles it - the best (IMHO) preferred format for DateTime objects: simple,
-         *         readable, its sort order works naturally (alphabetical == by time), and probably the most widely used portable
-         *         date format.
+         *  \brief ISO 8601's date-time, as RFC 3339 profiles it - the format to prefer for DateTime data you store or exchange:
+         *         simple, readable, its sort order works naturally (alphabetical == by time), and the date-time of JSON APIs, XML
+         *         Schema and most formats designed since. (RFC 1123's lives on in older protocols - HTTP, email - for
+         *         compatibility.) It is what Stroika itself writes: a VariantValue - so JSON - holds a DateTime in this format.
          *
          *  Format writes the date, then T and the time (if it has one), then Z for UTC, or the offset - or nothing, if its time
          *  zone is unknown:
@@ -177,25 +179,40 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief RFC 1123's date-time (RFC 822's, with a 4-digit year) - HTTP's date format: of its Date, Expires, Last-Modified
-         *         and If-Modified-Since headers, and a cookie's Expires.
+         *  \brief RFC 1123's date-time (RFC 822's, with a 4-digit year), as in email. HTTP's dates are a stricter form of it: for
+         *         those, use kHTTPDateFormat.
          *
          *  Format writes the names of the day and month in English (whatever the locale), the day of the month in 2 digits, then
-         *  GMT for UTC, or the offset - or nothing, if its time zone is unknown. So for a UTC DateTime, exactly HTTP's form (RFC
-         *  9110 section 5.6.7's IMF-fixdate) - as HTTP::Headers writes Date:
+         *  GMT for UTC, or the offset - or nothing, if its time zone is unknown:
          *      Sun, 06 Nov 1994 08:49:37 GMT
          *      Tue, 06 Nov 2018 06:25:51 -0800
          *
-         *  Parse takes those, and RFC 822's other forms: no day name, a 1-digit day of the month, a named zone (UT, EST, PDT ...,
-         *  or a military letter), extra spaces, and anything after the zone - as in "Tue, 6 Nov 2018 06:25:51 -0800 (PST)", whose
-         *  (PST) just repeats the -0800. But not HTTP's two obsolete forms, which an HTTP recipient must also accept (RFC 9110
-         *  section 5.6.7):
-         *      Sunday, 06-Nov-94 08:49:37 GMT      (RFC 850)
-         *      Sun Nov  6 08:49:37 1994            (asctime)
+         *  Parse takes those, and RFC 822's other forms: no day name, a 1-digit day of the month, a 2-digit year (read as the most
+         *  recent year with those last digits not more than 50 years ahead), a named zone (UT, EST, PDT ..., or a military
+         *  letter), extra spaces, and anything after the zone - as in "Tue, 6 Nov 2018 06:25:51 -0800 (PST)", whose (PST) just
+         *  repeats the -0800.
          *
          *  See https://tools.ietf.org/html/rfc1123#5.2.14 and https://tools.ietf.org/html/rfc822#section-5
          */
         static constexpr auto kRFC1123Format = LocaleIndependentFormat::eRFC1123;
+
+    public:
+        /**
+         *  \brief HTTP's date format (RFC 9110 section 5.6.7's HTTP-date): of its Date, Expires, Last-Modified and
+         *         If-Modified-Since headers, and a cookie's Expires.
+         *
+         *  Format writes the one form an HTTP sender may, IMF-fixdate: kRFC1123Format's, always in GMT, whatever the DateTime's
+         *  time zone (an unknown one taken as UTC, as AsUTC () does):
+         *      Sun, 06 Nov 1994 08:49:37 GMT
+         *
+         *  Parse takes anything kRFC1123Format reads, and HTTP's two obsolete forms, as an HTTP recipient must - both in GMT, with
+         *  RFC 850's 2-digit year read as kRFC1123Format reads one:
+         *      Sunday, 06-Nov-94 08:49:37 GMT      (RFC 850)
+         *      Sun Nov  6 08:49:37 1994            (asctime)
+         *
+         *  See https://www.rfc-editor.org/rfc/rfc9110#section-5.6.7
+         */
+        static constexpr auto kHTTPDateFormat = LocaleIndependentFormat::eHTTPDate;
 
     public:
         /**

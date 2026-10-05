@@ -1200,7 +1200,7 @@ namespace {
     }
 
     /*
-     *  What DateTime.h says kISO8601Format and kRFC1123Format write, and read: each of its examples
+     *  What DateTime.h says kISO8601Format, kRFC1123Format and kHTTPDateFormat write, and read: each of its examples
      */
     GTEST_TEST (Foundation_Time, DateTime_LocaleIndependentFormats_)
     {
@@ -1225,9 +1225,35 @@ namespace {
                                   "Tue,  6 Nov 2018  06:25:51 -0800"sv, "Tue, 6 Nov 2018 06:25:51 -0800 (PST)"sv}) {
                 EXPECT_EQ (DateTime::Parse (String{s}, DateTime::kRFC1123Format), pst) << s;
             }
-            // but not HTTP's two obsolete forms
+            // but not HTTP's two obsolete forms - kHTTPDateFormat reads those
             EXPECT_FALSE (DateTime::ParseQuietly ("Sunday, 06-Nov-94 08:49:37 GMT"sv, DateTime::kRFC1123Format));
             EXPECT_FALSE (DateTime::ParseQuietly ("Sun Nov  6 08:49:37 1994"sv, DateTime::kRFC1123Format));
+        }
+        // a 2-digit year reads as the most recent year with those last digits not more than 50 years ahead - so (until 2044) 94 is 1994
+        auto readAsTwoDigitYear = [] (const DateTime& d, int yy) {
+            int y        = static_cast<int> (d.GetDate ().GetYear ());
+            int thisYear = static_cast<int> (DateTime::NowUTC ().GetDate ().GetYear ());
+            return y % 100 == yy and thisYear - 50 < y and y <= thisYear + 50;
+        };
+        {
+            DateTime d = DateTime::Parse ("Sun, 06 Nov 94 08:49:37 GMT"sv, DateTime::kRFC1123Format);
+            EXPECT_TRUE (readAsTwoDigitYear (d, 94)) << Characters::ToString (d);
+        }
+        {
+            const DateTime sun1994{Date{Time::Year{1994}, November, 6d}, TimeOfDay{8, 49, 37}, Timezone::kUTC};
+            EXPECT_EQ (sun1994.Format (DateTime::kHTTPDateFormat), "Sun, 06 Nov 1994 08:49:37 GMT"sv);
+            // in GMT, whatever its time zone
+            const DateTime pst{Date{Time::Year{2018}, November, 6d}, TimeOfDay{6, 25, 51}, Timezone{-8 * 60}};
+            EXPECT_EQ (pst.Format (DateTime::kHTTPDateFormat), "Tue, 06 Nov 2018 14:25:51 GMT"sv);
+            EXPECT_EQ (DateTime::Parse (pst.Format (DateTime::kHTTPDateFormat), DateTime::kHTTPDateFormat), pst);
+            // reads IMF-fixdate - and leniently, all kRFC1123Format reads - and HTTP's two obsolete forms
+            EXPECT_EQ (DateTime::Parse ("Sun, 06 Nov 1994 08:49:37 GMT"sv, DateTime::kHTTPDateFormat), sun1994);
+            EXPECT_EQ (DateTime::Parse ("Tue, 6 Nov 2018 06:25:51 -0800 (PST)"sv, DateTime::kHTTPDateFormat), pst);
+            EXPECT_EQ (DateTime::Parse ("Sun Nov  6 08:49:37 1994"sv, DateTime::kHTTPDateFormat), sun1994);
+            DateTime rfc850 = DateTime::Parse ("Sunday, 06-Nov-94 08:49:37 GMT"sv, DateTime::kHTTPDateFormat);
+            EXPECT_TRUE (readAsTwoDigitYear (rfc850, 94)) << Characters::ToString (rfc850);
+            EXPECT_EQ (rfc850, (DateTime{Date{rfc850.GetDate ().GetYear (), November, 6d}, TimeOfDay{8, 49, 37}, Timezone::kUTC}));
+            EXPECT_FALSE (DateTime::ParseQuietly ("Sunday, 06-Nov-94 08:49:37 EST"sv, DateTime::kHTTPDateFormat)); // RFC 850's is only GMT
         }
     }
 }

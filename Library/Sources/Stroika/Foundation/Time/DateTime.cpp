@@ -281,6 +281,72 @@ DateTime DateTime::Parse (const String& rep, const String& formatPattern)
     return Parse (rep, locale{}, formatPattern);
 }
 
+namespace {
+    // the month a 3-letter English name names - as RFC 822 and HTTP write them - numbered from 1; or 0
+    int MonthNamed_ (const wchar_t* name)
+    {
+        constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
+                                             L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
+        for (size_t i = 0; i < std::size (kMonths_); ++i) {
+            if (::wcscmp (name, kMonths_[i]) == 0) {
+                return static_cast<int> (i + 1);
+            }
+        }
+        return 0;
+    }
+
+    // a 2-digit year (RFC 822's, RFC 850's): the most recent year with those last 2 digits not more than 50 years ahead - as RFC
+    // 9110 section 5.6.7 says to read RFC 850's
+    int FromTwoDigitYear_ (int yy)
+    {
+        int thisYear = static_cast<int> (DateTime::NowUTC ().GetDate ().GetYear ());
+        int year     = thisYear - thisYear % 100 + yy;
+        return year > thisYear + 50 ? year - 100 : year;
+    }
+
+    // HTTP's two obsolete date forms (RFC 9110 section 5.6.7), both in GMT:
+    //      Sunday, 06-Nov-94 08:49:37 GMT      (RFC 850)
+    //      Sun Nov  6 08:49:37 1994            (asctime)
+    optional<DateTime> ParseObsoleteHTTPDate_ (const String& rep, size_t* consumedCharacters)
+    {
+        wstring w = rep.As<wstring> ();
+        int     day{};
+        int     year{};
+        int     hour{};
+        int     minute{};
+        int     second{};
+        int     nConsumed{};
+        wchar_t monthStr[4]{};
+        wchar_t word[11]{}; // RFC 850's zone, or asctime's day name
+        size_t  comma = w.find (L',');
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+        bool isRFC850  = comma != wstring::npos and
+                         ::swscanf (w.c_str () + comma + 1, L" %d-%3ls-%d %d:%d:%d %10ls%n", &day, monthStr, &year, &hour, &minute, &second,
+                                    word, &nConsumed) == 7 and
+                         ::wcscmp (word, L"GMT") == 0;
+        bool isAsctime = not isRFC850 and ::swscanf (w.c_str (), L"%3ls %3ls %d %d:%d:%d %d%n", word, monthStr, &day, &hour, &minute,
+                                                     &second, &year, &nConsumed) == 7;
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        int month = MonthNamed_ (monthStr);
+        if (not(isRFC850 or isAsctime) or month == 0) {
+            return nullopt;
+        }
+        if (isRFC850) {
+            nConsumed += static_cast<int> (comma + 1);
+            if (year < 100) {
+                year = FromTwoDigitYear_ (year);
+            }
+        }
+        if (consumedCharacters != nullptr) {
+            *consumedCharacters = static_cast<size_t> (nConsumed);
+        }
+        return DateTime{Date{Year{year}, static_cast<MonthOfYear> (month), static_cast<DayOfMonth> (day), DataExchange::ValidationStrategy::eThrow},
+                        TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second),
+                                  DataExchange::ValidationStrategy::eThrow},
+                        Timezone::kUTC};
+    }
+}
+
 optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentFormat format, size_t* consumedCharacters)
 {
     if (rep.empty ()) [[unlikely]] {
@@ -447,11 +513,13 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             wchar_t monthStr[4]{};
             wchar_t tzStr[101]{};
             int     nItems;
+            int     yearStart{}; // where the year's digits start and end - to tell a 2-digit year
+            int     yearEnd{};
             {
                 int ncc{};
                 DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-                nItems = ::swscanf (tmp.As<wstring> ().c_str (), L"%d %3ls %d %d:%d:%d %100ls%n", &day, &monthStr, &year, &hour, &minute,
-                                    &second, &tzStr, &ncc);
+                nItems = ::swscanf (tmp.As<wstring> ().c_str (), L"%d %3ls %n%d%n %d:%d:%d %100ls%n", &day, &monthStr, &yearStart, &year,
+                                    &yearEnd, &hour, &minute, &second, &tzStr, &ncc);
                 DISABLE_COMPILER_MSC_WARNING_END (4996)
 
                 // tzStr captures the first token after the time, but there are often extra (ignored) tokens
@@ -464,16 +532,12 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 numCharsConsumed += ncc;
             }
 
-            constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
-                                                 L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
-            for (size_t i = 0; i < std::size (kMonths_); ++i) {
-                if (::wcscmp (monthStr, kMonths_[i]) == 0) {
-                    month = static_cast<int> (i + 1); // one-based numbering
-                    break;
-                }
-            }
+            month = MonthNamed_ (monthStr);
             if (nItems < 3) {
                 return nullopt;
+            }
+            if (yearEnd - yearStart == 2) {
+                year = FromTwoDigitYear_ (year); // RFC 822's 2-digit year
             }
             Date d = Date{Year{year}, static_cast<MonthOfYear> (month), static_cast<DayOfMonth> (day), DataExchange::ValidationStrategy::eThrow};
             optional<TimeOfDay> t;
@@ -507,6 +571,14 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 *consumedCharacters = numCharsConsumed;
             }
             return t.has_value () ? DateTime{d, *t, tz} : DateTime{d};
+        } break;
+        case LocaleIndependentFormat::eHTTPDate: {
+            // IMF-fixdate is RFC 1123's - so whatever kRFC1123Format reads (leniently, its other forms too); else one of HTTP's two
+            // obsolete forms
+            if (optional<DateTime> r = ParseQuietly (rep, LocaleIndependentFormat::eRFC1123, consumedCharacters)) {
+                return r;
+            }
+            return ParseObsoleteHTTPDate_ (rep, consumedCharacters);
         } break;
         default: {
             AssertNotReached ();
@@ -683,6 +755,9 @@ String DateTime::Format (LocaleIndependentFormat format) const
             else {
                 return result + " "sv + tz->AsRFC1123 (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
             }
+        } break;
+        case LocaleIndependentFormat::eHTTPDate: {
+            return AsUTC ().Format (LocaleIndependentFormat::eRFC1123); // IMF-fixdate: RFC 1123's, in GMT
         } break;
         default: {
             RequireNotReached ();
