@@ -655,6 +655,15 @@ sub     GetLibStdCXXStacktraceLib_
 	return undef;
 }
 
+#	Whether this compiler is installed. Probes that ask the compiler something report "found nothing" when it is missing,
+#	so check this first: otherwise every configuration --only-if-has-compiler goes on to skip prints that noise, and
+#	RegressionTests counts it as a warning (25 of the 40 in a 3.0d25 WSL run, on a box with one g++).
+sub     HasCompiler_
+{
+	my $compilerDriver = trim(shift(@_));
+	return trim (`./Build/Scripts/HasCompiler $compilerDriver`) ne "0";
+}
+
 
 sub     IsMSVCCompiler_
 {
@@ -2689,7 +2698,7 @@ sub PostProcessOptions_ ()
 	}
 
 	# Here, not where it is decided, because --lto enable is parsed only after the release defaults are applied
-	if ($gLTODefaultedOffForNoLLD and $ENABLE_LTO != true) {
+	if ($gLTODefaultedOffForNoLLD and $ENABLE_LTO != true and HasCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
 		print ("NOTE: LTO defaults OFF for $COMPILER_DRIVER here - it has no lld, and GNU ld mis-links clang LTO; install lld to get LTO\n");
 	}
 	if ($ENABLE_LTO == true) {
@@ -2902,7 +2911,7 @@ sub PostProcessOptions_ ()
 
 	if ($BuildPlatform eq 'Unix') {
 		# Ahead of the libstdc++ entries below, since it uses libstdc++
-		if (defined $STDCXXLIB and $STDCXXLIB eq "libstdc++") {
+		if (defined $STDCXXLIB and $STDCXXLIB eq "libstdc++" and HasCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
 			my $stdlibFlag = IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) ? "-stdlib=libstdc++" : "";
 			my $stacktraceLib = GetLibStdCXXStacktraceLib_ ($COMPILER_DRIVER_CPlusPlus, "$CPPSTD_VERSION_FLAG $stdlibFlag");
 			if (not defined $stacktraceLib) {
@@ -3410,7 +3419,7 @@ mkdir ($configurationFiles);
 my $generate = true;
 my $generateBecause = '';
 if ($onlyGenerateIfCompilerExists) {
-	if (trim (`./Build/Scripts/HasCompiler $COMPILER_DRIVER_CPlusPlus`) eq "0") {
+	if (not HasCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
 		$generate = false;
 		$generateBecause = "compiler $COMPILER_DRIVER_CPlusPlus not present";
 	}
