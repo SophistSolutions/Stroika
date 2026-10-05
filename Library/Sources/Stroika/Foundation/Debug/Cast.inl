@@ -17,9 +17,7 @@ namespace Stroika::Foundation::Debug {
             Require (arg != nullptr);
         }
         if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-local-typedefs\"");
-            using DECAYED_T = conditional_t<is_reference_v<T>, remove_cvref_t<T>, remove_pointer_t<remove_cvref_t<T>>>; // remove_reference_t
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-local-typedefs\"");
+            using DECAYED_T [[maybe_unused]] = conditional_t<is_reference_v<T>, remove_cvref_t<T>, remove_pointer_t<remove_cvref_t<T>>>; // remove_reference_t
             if constexpr (is_reference_v<T>) {
                 // must special case here cuz if we compare two references wont compare POINTERS, but instead call operator== on the underlying T type
                 Require (static_cast<const DECAYED_T*> (&arg) == dynamic_cast<const DECAYED_T*> (&arg));

@@ -149,11 +149,6 @@ $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ 
 my $DEFAULT_CXXWARNING_FLAGS_GCC		= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_;
 
 my $DEFAULT_CXXWARNING_FLAGS_CLANG	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_;
-$DEFAULT_CXXWARNING_FLAGS_CLANG		= $DEFAULT_CXXWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef '; 		### really needed - get alot of them - e.g. using inherited = ... - (maybe can use [[maybe_unused]])
-$DEFAULT_CXXWARNING_FLAGS_CLANG		= $DEFAULT_CXXWARNING_FLAGS_CLANG . '-Wno-future-compat ';
-
-# -Wcharacter-conversion probably GOOD warning, but no time to debug now, so leave this suppression in temporarily --LGP 2026-06-23
-my $DEFAULT_CXXWARNING_FLAGS_CLANG21	= $DEFAULT_CXXWARNING_FLAGS_CLANG . '-Wno-character-conversion ';
 
 
 my $Config_Tag = undef;   #see 	https://github.com/SophistSolutions/Stroika/issues/802 to support plural
@@ -1096,12 +1091,6 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_CLANG;
-
-			my $clangVersion = GetClangVersion_ ($COMPILER_DRIVER);
-			if (21 <= $clangVersion &&  $clangVersion < 22) {
-				# by the time clang++22 shows up, I better have removed this!!!
-				$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_CLANG21;
-			}
 		}
 	}
 
@@ -1263,45 +1252,6 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 		if ($ENABLE_LTO == true) {
 			my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER);
-			if ($itsVersion < 13.0) {
-				# Linking Test Builds/g++-12-release++2b/Tests/Test52 (Frameworks::WebServer) ... 
-				# /Sandbox/Stroika-Dev/Library/Sources/Stroika/Frameworks/WebServer/ConnectionManager.h:67:11: warning: type ‘struct ConnectionManager’ violates the C++ One Definition Rule [-Wodr]
-				# 67 |     class ConnectionManager {
-				# 	|           ^
-				# ../../Library/Sources/Stroika/Frameworks/WebServer/ConnectionManager.h:67:11: note: a different type is defined in another translation unit
-				# 67 |     class ConnectionManager {
-				# 	|           ^
-				# /Sandbox/Stroika-Dev/Library/Sources/Stroika/Frameworks/WebServer/ConnectionManager.h:262:61: note: the first difference of corresponding definitions is field ‘connections’
-				# 262 |         Common::ReadOnlyProperty<ConnectionStatsCollection> connections;
-				# 	|                                                             ^
-				# ../../Library/Sources/Stroika/Frameworks/WebServer/ConnectionManager.h:262:61: note: a field of same name but different type is defined in another translation unit
-				# 262 |         Common::ReadOnlyProperty<ConnectionStatsCollection> connections;
-				# 	|                                                             ^
-				# /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Property.h:123:11: note: type ‘struct ReadOnlyProperty’ defined in anonymous namespace cannot match across the translation unit boundary
-				# NOTE EVEN WITH THIS WE STILL GET
-				#		Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Property.h:123:11: note: type ‘struct ReadOnlyProperty’ defined in anonymous namespace cannot match across the translation unit boundary
-				$LinkerArgs_ExtraPrefix		.= ' -Wno-odr';
-			}
-			if (13.0 <= $itsVersion && $itsVersion < 14) {
-				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
-				# are hard to figure out what todo about --LGP 2023-10-04
-				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . ' -Wno-subobject-linkage';
-
-				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
-				$LinkerArgs_ExtraPrefix		.=  ' -Wno-odr';
-				$LinkerArgs_ExtraPrefix		.=  ' -Wno-lto-type-mismatch';
-			}
-
-			if (14.0 <= $itsVersion && $itsVersion < 14.1) {
-				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
-				# are hard to figure out what todo about --LGP 2023-10-04
-
-				# TEST AGAIN with the official g++-14 release (still experimental) --LGP 2024-03-26
-
-				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
-				$LinkerArgs_ExtraPrefix		.=  ' -Wno-odr';
-				$LinkerArgs_ExtraPrefix		.=  ' -Wno-lto-type-mismatch';
-			}
 
 			# In function 'copy',
 			# inlined from '__ct ' at /usr/include/c++/13/bits/basic_string.h:683:23,
@@ -3050,7 +3000,7 @@ sub PostProcessOptions_ ()
 	# wformat_args' changed in GCC 9.1" notes despite -Wno-psabi. Done HERE, after the last change to
 	# $CXXWARNING_FLAGS above (-Wno-maybe-uninitialized is exactly the kind of late warning that fires at an
 	# LTO link) and after ApplyCompilerBugWorkarounds_ () has settled $ENABLE_LTO. Prepended, so the link-only
-	# suppressions already in $LinkerArgs_ExtraPrefix (-Wno-odr etc) still come after it and win.
+	# suppressions already in $LinkerArgs_ExtraPrefix (-Wno-free-nonheap-object etc) still come after it and win.
 	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER) && $ENABLE_LTO == true) {
 		$LinkerArgs_ExtraPrefix = $CXXWARNING_FLAGS . ' ' . $LinkerArgs_ExtraPrefix;
 	}
