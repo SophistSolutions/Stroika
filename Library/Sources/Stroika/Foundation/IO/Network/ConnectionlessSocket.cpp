@@ -44,19 +44,6 @@ using Debug::AssertExternallySynchronizedChecker;
 #endif
 
 namespace {
-    // for RFC 3678's protocol-independent MCAST_JOIN_GROUP/MCAST_LEAVE_GROUP: the group as a sockaddr, the interface by index
-    ::group_req MakeGroupReq_ (const InternetAddress& group, unsigned int onInterfaceIndex)
-    {
-        ::group_req r{};
-        r.gr_interface = onInterfaceIndex;
-        r.gr_group     = SocketAddress{group}.As<sockaddr_storage> ();
-#if qStroika_Platform_MacOS
-        // a BSD sockaddr carries its own length - which bind () and sendto () take from their argument instead, but which
-        // MCAST_JOIN_GROUP checks (EINVAL)
-        r.gr_group.ss_len = static_cast<uint8_t> (SocketAddress{group}.GetRequiredSize ());
-#endif
-        return r;
-    }
     // the index of the interface with this address (an exact match - not merely on its subnet); kAddrAny: kAnyIndex
     unsigned int InterfaceIndexOf_ (const InternetAddress& interfaceAddress)
     {
@@ -228,7 +215,20 @@ namespace {
             switch (group.GetAddressFamily ()) {
                 case InternetAddress::AddressFamily::V4: {
                     if (const unsigned int* index = get_if<unsigned int> (&onInterface); index != nullptr and *index != Interface::kAnyIndex) {
-                        setsockopt (IPPROTO_IP, join ? MCAST_JOIN_GROUP : MCAST_LEAVE_GROUP, MakeGroupReq_ (group, *index));
+                        // RFC 3678's protocol-independent form: the group as a sockaddr, the interface by index.
+                        // The kernel reads all of r, so copy only the GetRequiredSize () bytes of sockaddr_storage a SocketAddress
+                        // sets - not all of it (else valgrind: setsockopt "points to uninitialised byte(s)").
+                        ::group_req r{};
+                        r.gr_interface = *index;
+                        const SocketAddress    sa{group};
+                        const sockaddr_storage ss = sa.As<sockaddr_storage> ();
+                        ::memcpy (&r.gr_group, &ss, sa.GetRequiredSize ());
+#if qStroika_Platform_MacOS
+                        // a BSD sockaddr carries its own length - which bind () and sendto () take from their argument instead,
+                        // but which MCAST_JOIN_GROUP checks (EINVAL)
+                        r.gr_group.ss_len = static_cast<uint8_t> (sa.GetRequiredSize ());
+#endif
+                        setsockopt (IPPROTO_IP, join ? MCAST_JOIN_GROUP : MCAST_LEAVE_GROUP, &r, static_cast<socklen_t> (sizeof (r)));
                     }
                     else {
                         ::ip_mreq m{};
