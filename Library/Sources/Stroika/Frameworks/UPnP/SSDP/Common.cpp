@@ -6,8 +6,9 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
-#include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "Common.h"
 
@@ -99,42 +100,78 @@ namespace {
     constexpr Time::DurationSeconds kNetworkChangesQuietPeriod_{1.0};
 }
 struct UPnP::SSDP::Private_::NetworkChangeFollower::Rep_ {
-    shared_ptr<Execution::WaitableEvent> fAddressAdded{make_shared<Execution::WaitableEvent> ()}; // set by fLinkMonitor's callback
-    Execution::Thread::CleanupPtr        fThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
-    LinkMonitor                          fLinkMonitor; // last, so destroyed first: no additions reported while fThread stops
+    Rep_ (const function<void ()>& onNetworkAppeared)
+        : fOnNetworkAppeared{onNetworkAppeared}
+    {
+    }
+
+    // on fLinkMonitor's thread: an address was added - so a burst begins, or goes on
+    void AddressAdded ()
+    {
+        static const String         kThreadName_ = "SSDP network changes"sv;
+        [[maybe_unused]] lock_guard critSec{fMutex};
+        fQuietAt = Time::GetTickCount () + kNetworkChangesQuietPeriod_;
+        if (not fFollowingBurst) {
+            if (fThread != nullptr) {
+                fThread.WaitForDone (); // the last burst's, ending: it takes fMutex no more
+            }
+            fThread         = Execution::Thread::New ([this] () { FollowBurst_ (); }, Execution::Thread::eAutoStart, kThreadName_);
+            fFollowingBurst = true;
+        }
+    }
+
+    // on fThread: once the burst goes quiet, act on it - and on any that comes meanwhile; then end
+    void FollowBurst_ ()
+    {
+        while (true) {
+            optional<Time::TimePointSeconds> waitUntil;
+            {
+                [[maybe_unused]] lock_guard critSec{fMutex};
+                if (not fQuietAt) {
+                    fFollowingBurst = false;
+                    return;
+                }
+                if (Time::GetTickCount () < *fQuietAt) {
+                    waitUntil = fQuietAt;
+                }
+                else {
+                    fQuietAt = nullopt; // so an address added from now on is acted on again
+                }
+            }
+            if (waitUntil) {
+                Execution::SleepUntil (*waitUntil);
+                continue;
+            }
+            Debug::TraceContextBumper ctx{"SSDP: a network appeared"};
+            try {
+                fOnNetworkAppeared ();
+            }
+            catch (const Execution::Thread::AbortException&) {
+                Execution::ReThrow ();
+            }
+            catch (...) {
+                DbgTrace ("SSDP: could not act on the network that appeared: {}"_f, current_exception ());
+            }
+        }
+    }
+
+    const function<void ()>          fOnNetworkAppeared;
+    mutex                            fMutex;
+    optional<Time::TimePointSeconds> fQuietAt; // guarded by fMutex: when the burst going on is over, unless another address comes first
+    bool fFollowingBurst{false}; // guarded by fMutex: fThread is running FollowBurst_, so looks at fQuietAt again before it ends
+    Execution::Thread::CleanupPtr fThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting}; // guarded by fMutex
+    LinkMonitor                   fLinkMonitor; // last, so destroyed first: no burst begins while fThread stops
 };
 
 UPnP::SSDP::Private_::NetworkChangeFollower::NetworkChangeFollower (const function<void ()>& onNetworkAppeared)
-    : fRep_{make_unique<Rep_> ()}
+    : fRep_{make_unique<Rep_> (onNetworkAppeared)}
 {
-    static const String                  kThreadName_ = "SSDP network changes"sv;
-    shared_ptr<Execution::WaitableEvent> addressAdded = fRep_->fAddressAdded;
-    fRep_->fLinkMonitor.AddCallback ([addressAdded] (const LinkMonitor::Event& e) {
+    fRep_->fLinkMonitor.AddCallback ([rep = fRep_.get ()] (const LinkMonitor::Event& e) {
         if (e.fChange == LinkMonitor::LinkChange::eAdded) {
             DbgTrace ("SSDP: a network address appeared: {}"_f, e);
-            addressAdded->Set ();
+            rep->AddressAdded ();
         }
     });
-    fRep_->fThread = Execution::Thread::New (
-        [addressAdded, onNetworkAppeared] () {
-            while (true) {
-                addressAdded->WaitAndReset ();
-                while (addressAdded->WaitQuietlyAndReset (kNetworkChangesQuietPeriod_) == Execution::WaitableEvent::WaitStatus::eTriggered) {
-                    // more of the burst: wait for it to end
-                }
-                Debug::TraceContextBumper ctx{"SSDP: a network appeared"};
-                try {
-                    onNetworkAppeared ();
-                }
-                catch (const Execution::Thread::AbortException&) {
-                    Execution::ReThrow ();
-                }
-                catch (...) {
-                    DbgTrace ("SSDP: could not act on the network that appeared: {}"_f, current_exception ());
-                }
-            }
-        },
-        Execution::Thread::eAutoStart, kThreadName_);
 }
 UPnP::SSDP::Private_::NetworkChangeFollower::NetworkChangeFollower (NetworkChangeFollower&&) noexcept                    = default;
 auto UPnP::SSDP::Private_::NetworkChangeFollower::operator= (NetworkChangeFollower&&) noexcept -> NetworkChangeFollower& = default;

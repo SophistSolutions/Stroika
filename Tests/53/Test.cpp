@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 
@@ -610,6 +611,33 @@ namespace {
         SSDP::Client::Listener    listener{
             SSDP::Client::Listener::Options{.fInterfaces = [] ([[maybe_unused]] const Interface& i) { return false; }}};
         EXPECT_TRUE (listener.GetNetworkInterfaces ().empty ());
+    }
+
+    /*
+     *  Following network changes costs no thread per SSDP object while the network stays as it is: they share LinkMonitor's
+     *  (on POSIX - on Windows an OS registration, so not even that), and each has a thread of its own only while a burst of
+     *  changes settles.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_FollowNetworkChanges_Threads_)
+    {
+        Debug::TraceContextBumper ctx{"SSDP_FollowNetworkChanges_Threads_"};
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+        namespace Thread = Execution::Thread;
+        const Containers::Set<Thread::IDType> before{Thread::GetStatistics ().fRunningThreads};
+        auto                                  newThreads = [&] () {
+            return Thread::GetStatistics ().fRunningThreads.Where ([&] (Thread::IDType id) { return not before.Contains (id); }).size ();
+        };
+        {
+            // a Search and a Listener, as a control point has - not started, so with no threads of their own to search or listen
+            SSDP::Client::Search   search{SSDP::Client::Search::Options{.fFollowNetworkChanges = true}};
+            SSDP::Client::Listener listener{SSDP::Client::Listener::Options{.fFollowNetworkChanges = true}};
+            EXPECT_LE (newThreads (), 1u) << "they share LinkMonitor's thread";
+        }
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 5s; newThreads () != 0 and Time::GetTickCount () < giveUpAt;) {
+            Execution::Sleep (10ms);
+        }
+        EXPECT_EQ (newThreads (), 0u) << "and leave none behind";
+#endif
     }
 }
 #endif

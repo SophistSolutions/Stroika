@@ -18,8 +18,10 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         // Follows the OS's address changes, and calls onNetworkAppeared - on a thread of its own - once each burst of address
         // additions has gone quiet, so the caller can act on the new network once: a network coming up adds its addresses
         // one after another (IPv4, then each IPv6), and re-joining or re-searching or re-announcing for each would repeat it
-        // several times over. Being on its own thread, a slow onNetworkAppeared delays nothing else. An exception from it
-        // is only logged. Once destroyed, onNetworkAppeared is not running, and is not called again.
+        // several times over. That thread runs only from a burst's first address until the burst is acted on; the rest of the
+        // time, following costs just a LinkMonitor (all of which share one thread). Being on its own thread, a slow
+        // onNetworkAppeared delays nothing else. An exception from it is only logged. Once destroyed, onNetworkAppeared is not
+        // running, and is not called again.
         class NetworkChangeFollower {
         public:
             NetworkChangeFollower (const function<void ()>& onNetworkAppeared); // throws where the OS cannot tell (e.g. some containers)
