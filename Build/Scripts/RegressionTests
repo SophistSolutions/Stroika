@@ -608,6 +608,42 @@ if [ "$NTSANS" -ne 0 ] ; then
 		echo "   ***   WARNING: about sysctl vm.mmap_rnd_bits so TSAN disabled" >>$TEST_OUT_FILE 2>&1
 	fi
 fi
+### COMPILER INVENTORY. Every compiler this run's configurations use (their <CXX>), with the first line of its own
+### --version, goes into the output as ')))- COMPILER: <cxx> => <version>'. It is compared with the inventory in the
+### newest EARLIER output for this target - normally the previous release's, committed with its results - and each
+### compiler that changed, appeared or went away WARNs: the trigger to re-test the compiler bug workarounds whose
+### version ranges cover it (qCompilerAndStdLib_*_Buggy in Library/Sources/Stroika/Foundation/Common/Private/
+### CompilerAndStdLib_.h, configure's ApplyCompilerBugWorkarounds_). Done here, not in configure, because a configure
+### message would reach every Stroika user, and only Stroika maintainers run this script.
+CompilerInventory_ () {
+	sed -n 's/.*<CXX>\([^<]*\)<\/CXX>.*/\1/p' ConfigurationFiles/*.xml 2>/dev/null | sort -u | while IFS= read -r CXX_; do
+		echo "$CXX_ => $("$CXX_" --version 2>&1 | head -1 | tr -d '\r')"
+	done
+}
+EchoBoth_ () {
+	echo "$1"
+	echo "$1" >>$TEST_OUT_FILE 2>&1
+}
+COMPILER_INVENTORY_=$(CompilerInventory_)
+if [ -n "$COMPILER_INVENTORY_" ] ; then
+	echo "$COMPILER_INVENTORY_" | sed "s/^/$PREFIX_OUT_LABEL COMPILER: /" >>$TEST_OUT_FILE 2>&1
+fi
+PREV_OUT_=$(for f in Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-*-OUT.txt Tests/HistoricalRegressionTestResults/*/REGRESSION-TESTS-$USE_TEST_BASENAME-*-OUT.txt; do
+	v=$(basename "$f" -OUT.txt | sed "s/^REGRESSION-TESTS-$USE_TEST_BASENAME-//")
+	[ -f "$f" ] && [ "$f" != "$TEST_OUT_FILE" ] && [[ "$v" =~ ^[0-9] ]] && echo "$v $f"
+done | sort -V | tail -1 | cut -d' ' -f2-)
+PREV_INVENTORY_=$([ -n "$PREV_OUT_" ] && sed -n "s/^$PREFIX_OUT_LABEL COMPILER: //p" "$PREV_OUT_" | tr -d '\r')
+if [ -z "$PREV_INVENTORY_" ] ; then
+	EchoBoth_ "   no earlier compiler inventory for $USE_TEST_BASENAME - this run's is recorded, and the next run compares against it"
+else
+	CHANGES_=$(awk -F' => ' 'NR == FNR {old[$1] = $2; next} {seen[$1] = 1; if (!($1 in old)) print "new compiler " $1 " (" $2 ")"; else if (old[$1] != $2) print $1 " changed: " old[$1] " -> " $2} END {for (k in old) if (!(k in seen)) print k " (" old[k] ") is no longer tested"}' <(echo "$PREV_INVENTORY_") <(echo "$COMPILER_INVENTORY_"))
+	if [ -n "$CHANGES_" ] ; then
+		while IFS= read -r c; do
+			EchoBoth_ "   ***   WARNING: since $(basename "$PREV_OUT_"): $c"
+		done <<< "$CHANGES_"
+		EchoBoth_ "   ***   WARNING: tested compilers changed - re-test the compiler bug workarounds that cover them (qCompilerAndStdLib_*_Buggy in Foundation/Common/Private/CompilerAndStdLib_.h, configure's ApplyCompilerBugWorkarounds_)"
+	fi
+fi
 TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STARTAT_INT )) / 60))
 echo "Finished at `date` ($TOTAL_MINUTES_SPENT minutes)"
 echo "$PREFIX_OUT_LABEL" "Finished at `date`  ($TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
