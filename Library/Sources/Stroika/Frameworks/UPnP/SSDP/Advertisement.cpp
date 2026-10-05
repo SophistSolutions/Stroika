@@ -3,7 +3,10 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include <cmath>
+
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -43,6 +46,9 @@ String Advertisement::ToString () const
     sb << ", location : "sv << fLocation;
     sb << ", server : "sv << fServer;
     sb << ", target : "sv << fTarget;
+    if (fMaxAge) {
+        sb << ", maxAge : "sv << *fMaxAge;
+    }
     sb << ", rawHeaders : "sv << fRawHeaders;
     sb << "}"sv;
     return sb;
@@ -53,12 +59,14 @@ ObjectVariantMapper Advertisement::kMapperGetter_ ()
     ObjectVariantMapper mapper;
     mapper.AddCommonType<Set<String>> ();
     mapper.AddCommonType<optional<Set<String>>> ();
+    mapper.AddCommonType<optional<Time::Duration>> ();
     mapper.AddClass<Advertisement> ({
         {"Alive"sv, &Advertisement::fAlive},
         {"USN"sv, &Advertisement::fUSN},
         {"Server"sv, &Advertisement::fServer},
         {"Target"sv, &Advertisement::fTarget},
         {"Raw-Headers"sv, &Advertisement::fRawHeaders},
+        {"Max-Age"sv, &Advertisement::fMaxAge},
     });
     return mapper;
 };
@@ -80,7 +88,7 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     //// SUPER ROUGH FIRST DRAFT
     textOut.Write ("{}\r\n"_f(headLine));
     textOut.Write ("Host: {}:{}\r\n"_f(SSDP::V4::kSocketAddress.GetInternetAddress (), SSDP::V4::kSocketAddress.GetPort ()));
-    textOut.Write ("Cache-Control: max-age=60\r\n"sv); // @todo fix
+    textOut.Write ("Cache-Control: max-age={}\r\n"_f(std::llround (ad.fMaxAge.value_or (kDefaultMaxAge).count ())));
     textOut.Write ("Location: {}\r\n"_f(ad.fLocation));
     if (ad.fAlive.has_value ()) {
         if (*ad.fAlive) {
@@ -164,6 +172,23 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
         }
         else if (kLabelComparer_ (label, "Server"sv) == 0) {
             advertisement->fServer = value;
+        }
+        else if (kLabelComparer_ (label, "Cache-Control"sv) == 0) {
+            // how long the advertisement is good for: "max-age=1800" (the UPnP spec writes it "max-age = 1800")
+            if (optional<size_t> i = value.Find ("max-age"sv, Characters::eCaseInsensitive)) {
+                String rest = value.SubString (*i + "max-age"sv.size ()).LTrim ();
+                if (rest.StartsWith ("="sv)) {
+                    rest           = rest.SubString (1).LTrim ();
+                    size_t nDigits = 0;
+                    while (nDigits < rest.size () and rest[nDigits].IsDigit ()) {
+                        ++nDigits;
+                    }
+                    if (nDigits != 0) {
+                        advertisement->fMaxAge =
+                            Time::Duration{static_cast<double> (Characters::String2Int<long long> (rest.SubString (0, nDigits)))};
+                    }
+                }
+            }
         }
         else if (kLabelComparer_ (label, "NTS"sv) == 0) {
             constexpr auto kValueComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};

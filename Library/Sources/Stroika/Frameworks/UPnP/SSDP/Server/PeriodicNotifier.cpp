@@ -37,7 +37,9 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const Options& options)
     : fNotifyingOn_{Memory::MakeSharedPtr<Execution::Synchronized<InterfacesByID>> ()}
 {
-    InterfaceFilter interfaceFilter = options.fInterfaces;
+    Require (options.fFrequencyInfo.fRepeatInterval < options.fFrequencyInfo.fMaxAge); // else listeners forget the device between NOTIFYs
+    InterfaceFilter       interfaceFilter = options.fInterfaces;
+    Time::DurationSeconds maxAge          = options.fFrequencyInfo.fMaxAge;
 
     if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
@@ -109,6 +111,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
                         for (Advertisement a : advertisements) {
                             a.fAlive    = true; // periodic notifier must announce alive (we don't support 'going down' yet)
                             a.fLocation = *url;
+                            a.fMaxAge   = maxAge;
                             s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a), s.second);
                         }
                         sentOn.Add (i);

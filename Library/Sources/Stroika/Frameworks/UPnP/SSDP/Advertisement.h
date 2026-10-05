@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 /**
  *  \file
@@ -42,6 +43,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         String                  fServer;
         String                  fTarget; // usually ST header (or NT for notify)
         Mapping<String, String> fRawHeaders;
+        optional<Foundation::Time::Duration> fMaxAge; // CACHE-CONTROL max-age: how long the advertisement is good for (Serialize writes kDefaultMaxAge if missing)
 
         bool operator== (const Advertisement&) const = default;
 
@@ -67,6 +69,12 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     /**
      */
     static const String kTarget_SSDPAll{"ssdp:all"sv};
+
+    /**
+     *  The CACHE-CONTROL max-age Serialize writes when an Advertisement has no fMaxAge. The UPnP Device Architecture says it
+     *  SHOULD be at least 1800 seconds.
+     */
+    inline constexpr Foundation::Time::DurationSeconds kDefaultMaxAge{1800.0};
 
     /**
      */

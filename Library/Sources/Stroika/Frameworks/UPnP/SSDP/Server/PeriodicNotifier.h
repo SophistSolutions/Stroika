@@ -56,9 +56,14 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      */
     class PeriodicNotifier {
     public:
-        // Very primitive definition - should refine - read details on spec on this...
+        /**
+         *  How often the NOTIFYs go out, and how long each says it is good for (its CACHE-CONTROL max-age) - a listener
+         *  forgets a device whose announcement is not renewed by then. So fRepeatInterval must be less than fMaxAge: the UPnP
+         *  Device Architecture recommends under half of it, and fMaxAge at least 1800 seconds.
+         */
         struct FrequencyInfo {
             Time::DurationSeconds fRepeatInterval{3 * 60.0s};
+            Time::DurationSeconds fMaxAge{kDefaultMaxAge};
         };
 
     public:

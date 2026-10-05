@@ -48,6 +48,7 @@ public:
         {
             SSDP::Advertisement dan;
             dan.fServer = d.fServer;
+            dan.fMaxAge = options.fFrequencyInfo.fMaxAge; // so answers to searches say what the NOTIFYs do
             {
                 dan.fTarget = kTarget_UPNPRootDevice;
                 dan.fUSN    = Format ("uuid:{}::{}"_f, d.fDeviceID, kTarget_UPNPRootDevice);

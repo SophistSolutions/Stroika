@@ -53,7 +53,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          */
         struct Options {
             /**
-             *  How often to send the NOTIFYs.
+             *  How often to send the NOTIFYs, and how long they - and the answers to searches - say they are good for (as
+             *  PeriodicNotifier::FrequencyInfo describes).
              */
             FrequencyInfo fFrequencyInfo{};
 

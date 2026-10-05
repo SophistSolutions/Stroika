@@ -68,6 +68,37 @@ namespace {
         }
     }
 
+    GTEST_TEST (Frameworks_UPnP, SSDP_MaxAge_)
+    {
+        Debug::TraceContextBumper ctx{"SSDP_MaxAge_"};
+        // an announcement must say it is good until at least the next one - and the UPnP Device Architecture says its
+        // CACHE-CONTROL max-age SHOULD be at least 1800 seconds
+        SSDP::Advertisement a;
+        a.fAlive    = true;
+        a.fUSN      = "uuid:315caae0-1335-57bf-a178-24c9ee756627::upnp:rootdevice"sv;
+        a.fLocation = URI{"http://192.168.1.2:8080/device.xml"sv};
+        a.fTarget   = SSDP::kTarget_UPNPRootDevice;
+        String              headLine;
+        SSDP::Advertisement b;
+        SSDP::DeSerialize (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a), &headLine, &b);
+        EXPECT_EQ (b.fRawHeaders.LookupValue ("Cache-Control"sv), "max-age=1800"sv);
+        EXPECT_EQ (b.fMaxAge, Time::Duration{1800.0});
+
+        // its own, when it has one
+        a.fMaxAge = Time::Duration{900.0};
+        SSDP::DeSerialize (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a), &headLine, &b);
+        EXPECT_EQ (b.fMaxAge, a.fMaxAge);
+
+        // and read however another device writes it
+        static const char kOtherDevice_[] = "NOTIFY * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nCACHE-CONTROL: max-age = 120\r\nNT: "
+                                            "upnp:rootdevice\r\nNTS: ssdp:alive\r\n\r\n";
+        SSDP::DeSerialize (Memory::BLOB::FromRaw (kOtherDevice_, std::size (kOtherDevice_) - 1), &headLine, &b);
+        EXPECT_EQ (b.fMaxAge, Time::Duration{120.0});
+
+        // and kept by Advertisement::kMapper
+        EXPECT_EQ (SSDP::Advertisement::kMapper->ToObject<SSDP::Advertisement> (SSDP::Advertisement::kMapper->FromObject (b)).fMaxAge, b.fMaxAge);
+    }
+
     GTEST_TEST (Frameworks_UPnP, Device_Mapper_)
     {
         // each field serialized under a name saying what it holds - and back
