@@ -53,3 +53,4 @@
 [53]	Frameworks::UPnP
 [54]	Frameworks::WebServer
 [55]	Frameworks::WebService
+[56]	Frameworks::SystemPerformance

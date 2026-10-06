@@ -26,15 +26,6 @@ Capturer::Capturer ()
         const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMostRecentMeasurements);
         return thisObj->fCurrentMeasurementSet_.load ();
     }}
-    , measurementsCallbacks{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<NewMeasurementsCallbackType> {
-              const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::measurementsCallbacks);
-              return thisObj->fCallbacks_.load ();
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& callbacks) {
-              Capturer* thisObj    = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::measurementsCallbacks);
-              thisObj->fCallbacks_ = callbacks;
-          }}
     , captureSets{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<CaptureSet> {
                       const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::captureSets);
                       return thisObj->fCaptureSets_.load ();
@@ -53,14 +44,14 @@ Capturer::Capturer (const CaptureSet& cs)
     AddCaptureSet (cs);
 }
 
-void Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb)
+auto Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb) -> MeasurementsCallbackID
 {
-    fCallbacks_.rwget ()->Add (cb);
+    return fCallbacks_.Add (cb);
 }
 
-void Capturer::RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb)
+void Capturer::RemoveMeasurementsCallback (MeasurementsCallbackID cb)
 {
-    fCallbacks_.rwget ()->Remove (cb);
+    fCallbacks_.Remove (cb);
 }
 
 void Capturer::AddCaptureSet (const CaptureSet& cs)
@@ -163,7 +154,5 @@ void Capturer::RunnerOnce_ (const CaptureSet& cs)
 void Capturer::UpdateMeasurementSet_ (const MeasurementSet& ms)
 {
     fCurrentMeasurementSet_.rwget ().rwref ().MergeAdditions (ms);
-    for (const auto& cb : fCallbacks_.load ()) {
-        cb (ms);
-    }
+    fCallbacks_.Call (ms);
 }

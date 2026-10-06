@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/CallbackRegistry.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -39,7 +39,6 @@ namespace Stroika::Frameworks::SystemPerformance {
     using Characters::String;
     using Containers::Collection;
     using Containers::Set;
-    using Execution::Function;
     using Time::Duration;
 
     /**
@@ -149,22 +148,30 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         /**
          */
-        using NewMeasurementsCallbackType = Function<void (const MeasurementSet&)>;
+        using NewMeasurementsCallbackType = function<void (const MeasurementSet&)>;
 
     public:
         /**
+         *  \brief Names a callback AddMeasurementsCallback added, for RemoveMeasurementsCallback.
          */
-        Common::Property<Collection<NewMeasurementsCallbackType>> measurementsCallbacks;
+        using MeasurementsCallbackID = Execution::CallbackRegistry<void (const MeasurementSet&)>::ID;
 
     public:
         /**
+         *  \brief Call cb with each MeasurementSet captured from now on - on the capturing thread (and, for the first capture of
+         *         a set AddCaptureSet adds, on its caller's), so cb must be thread-safe. An exception from it is logged (DbgTrace)
+         *         and ignored: the other callbacks still get the measurements, and the capturing goes on. Never waits for a
+         *         running callback.
          */
-        nonvirtual void AddMeasurementsCallback (const NewMeasurementsCallbackType& cb);
+        nonvirtual MeasurementsCallbackID AddMeasurementsCallback (const NewMeasurementsCallbackType& cb);
 
     public:
         /**
+         *  \brief Once this returns, that callback is not running, and is never called again - except that, called from within it,
+         *         the call already under way finishes. So it waits for that callback, running on another thread: do not call it
+         *         holding a lock that callback takes. Removing one not added (or already removed) does nothing.
          */
-        nonvirtual void RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb);
+        nonvirtual void RemoveMeasurementsCallback (MeasurementsCallbackID cb);
 
     public:
         /**
@@ -193,8 +200,8 @@ namespace Stroika::Frameworks::SystemPerformance {
     private:
         Execution::Synchronized<Collection<CaptureSet>> fCaptureSets_;
         uint64_t fCaptureSetChangeCount_{0}; // doesn't need to be atomic because only updated/checked holding capturesets lock
-        Execution::Synchronized<Collection<NewMeasurementsCallbackType>> fCallbacks_;
-        Execution::Synchronized<MeasurementSet>                          fCurrentMeasurementSet_;
+        Execution::CallbackRegistry<void (const MeasurementSet&)> fCallbacks_;
+        Execution::Synchronized<MeasurementSet>                   fCurrentMeasurementSet_;
         Execution::ThreadPool fThreadPool_{Execution::ThreadPool::Options{.fThreadCount = 0, .fThreadPoolName = "SystemPerformanceCapturer"}}; // Subtle - construct last so auto-destructed first (shuts down threads)
     };
 
