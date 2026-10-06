@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
     auto CallbackRegistry<void (ARGS...)>::Add (const Callback& callback) -> ID
     {
         Require (callback != nullptr);
-        auto e = make_shared<Entry_> (ID{++Private_::sCallbackRegistryLastID_}, callback);
+        auto e = Memory::MakeSharedPtr<Entry_> (ID{++Private_::sCallbackRegistryLastID_}, callback);
 
         [[maybe_unused]] lock_guard critSec{fMutex_};
         fEntries_.push_back (e);

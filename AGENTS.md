@@ -448,6 +448,9 @@ still compile". Say which one you did.
   T = ...` over `typedef`. `New()` static methods return smart pointers, not raw allocations.
   `Parse()` static methods return `optional<T>` instead of throwing, for expected-failure parsing.
   A `Quietly` suffix variant returns `nullopt`/empty instead of throwing.
+- **`Memory::MakeSharedPtr`, not `make_shared`**: the same, except that it block-allocates a type annotated for it (a
+  `Memory::UseBlockAllocationIfAppropriate<T>` base) - so use it even where the type is not annotated. The annotation suits
+  a small rep allocated often, making that indirection nearly free; elsewhere it hardly matters either way.
 - **Document every overload, with a trailing `///<`.** Doxygen and the VS Code C/C++ extension both
   attach a comment to the *immediately following* declaration only, so one block above a group of
   overloads documents the first and leaves the rest with nothing - and the common

@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 /**
  *  \file
@@ -178,7 +179,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void Call (ARGS... args);
 
     private:
-        struct Entry_ {
+        struct Entry_ : Memory::UseBlockAllocationIfAppropriate<Entry_> {
             Entry_ (ID id, const Callback& callback);
             ID                 fID;
             Callback           fCallback;
