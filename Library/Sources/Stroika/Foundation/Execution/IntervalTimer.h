@@ -143,7 +143,11 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  Can remove a repeating task, but cannot remove a oneShot, since it might not be there by the time you go to remove it.
-         * 
+         *
+         *  Once this returns, intervalTimer is not running, and is not called again: if it is running now, this waits for that call
+         *  to finish - unless called from intervalTimer itself (on the timer's thread), when that call finishes after. So do not
+         *  call this holding a lock intervalTimer takes.
+         *
          *  \pre argument intervalTimer is registered.
          */
         nonvirtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept;
@@ -199,6 +203,9 @@ namespace Stroika::Foundation::Execution {
                                    const optional<Time::Duration>& hysteresis) = 0;
 
     public:
+        /**
+         *  \brief As Manager::RemoveRepeating says: once it returns, intervalTimer is not running, and is not called again
+         */
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept = 0;
 
     public:
@@ -238,7 +245,9 @@ namespace Stroika::Foundation::Execution {
      *  While the timer is registered, it will be called periodically from some arbitrary thread.
      * 
      *  Easiest way to add/remove idle manager. Construct one and its lifetime matches time when callback is potentially aftive.
-     *  Destruction of Adder object removes from the Q. Be sure lifetime of these guys inside lifetime of main.
+     *  Destroying the Adder removes the timer (@see Manager::RemoveRepeating): once the destructor returns, the callback is not
+     *  running, and is not called again - so do not destroy one holding a lock its callback takes (the callback itself may
+     *  destroy it). Be sure lifetime of these guys inside lifetime of main.
      */
     class IntervalTimer::Adder {
     public:
@@ -279,7 +288,7 @@ namespace Stroika::Foundation::Execution {
          *          }
          *          Activator::~Activator ()
          *          {
-         *              sIntervalTimerAdder_.release ();
+         *              sIntervalTimerAdder_.reset ();
          *          }
          *      \endcode
          */

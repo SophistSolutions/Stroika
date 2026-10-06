@@ -4,7 +4,10 @@
 //  TEST    Foundation::Execution::Other
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <atomic>
 #include <iostream>
+#include <mutex>
+#include <optional>
 
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
@@ -17,10 +20,13 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Execution/LazyInitialized.h"
 #include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -414,6 +420,72 @@ namespace {
         }
         catch (...) {
             DbgTrace ("error={}"_f, current_exception ());
+        }
+    }
+}
+
+namespace {
+    /*
+     *  An IntervalTimer removed - its Adder destroyed - while its callback runs: once removed, the callback is not running, and
+     *  it is never called again.
+     */
+    GTEST_TEST (Foundation_Execution, IntervalTimer_RemovedWhileRunning_)
+    {
+        Debug::TraceContextBumper         ctx{"IntervalTimer_RemovedWhileRunning_"};
+        IntervalTimer::Manager::Activator intervalTimerMgrActivator;
+        IntervalTimer::Adder keepRunning{[] () {}, Time::Duration{1h}}; // so ours is not the last timer (removing that also stops the timer thread)
+        atomic<unsigned int>           calls{0};
+        atomic<bool>                   running{false};
+        WaitableEvent                  started;
+        optional<IntervalTimer::Adder> adder{in_place,
+                                             [&] () {
+                                                 running = true;
+                                                 ++calls;
+                                                 started.Set ();
+                                                 Execution::Sleep (500ms); // long enough to be removed while running
+                                                 running = false;
+                                             },
+                                             Time::Duration{50ms}};
+        started.Wait (10s);
+        adder.reset (); // while its callback runs
+        EXPECT_FALSE (running.load ()) << "the callback was still running after its timer was removed";
+        unsigned int callsThen = calls;
+        Execution::Sleep (1s); // twenty of its intervals
+        EXPECT_EQ (calls.load (), callsThen) << "the callback was called again after its timer was removed";
+    }
+
+    /*
+     *  A callback that removes its own timer - destroys its Adder - does not wait for itself to finish (which would be
+     *  forever), and is not called again. Also when it is the last timer, whose removal stops the timer thread: the very
+     *  thread removing it.
+     */
+    GTEST_TEST (Foundation_Execution, IntervalTimer_CallbackRemovesItself_)
+    {
+        Debug::TraceContextBumper         ctx{"IntervalTimer_CallbackRemovesItself_"};
+        IntervalTimer::Manager::Activator intervalTimerMgrActivator;
+        for (bool last : {false, true}) {
+            optional<IntervalTimer::Adder> keepRunning;
+            if (not last) {
+                keepRunning.emplace ([] () {}, Time::Duration{1h});
+            }
+            atomic<unsigned int>           calls{0};
+            WaitableEvent                  removed;
+            mutex                          adderMutex; // this thread makes the Adder; the callback, on the timer's thread, destroys it
+            optional<IntervalTimer::Adder> adder;
+            {
+                lock_guard lk{adderMutex};
+                adder.emplace (
+                    [&] () {
+                        ++calls;
+                        lock_guard lk{adderMutex};
+                        adder.reset ();
+                        removed.Set ();
+                    },
+                    Time::Duration{50ms});
+            }
+            EXPECT_TRUE (removed.WaitQuietly (10s) == WaitableEvent::WaitStatus::eTriggered) << (last ? "the last timer" : "not the last timer");
+            Execution::Sleep (500ms); // ten of its intervals
+            EXPECT_EQ (calls.load (), 1u) << (last ? "the last timer" : "not the last timer");
         }
     }
 }
