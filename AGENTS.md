@@ -334,6 +334,7 @@ Two things that quietly break that on Windows:
 **Keep messages terse.** A cleanup is a title alone; a fix is a title plus 2-4 lines of what was wrong. Verification,
 measurements and why-not-X go in the chat reply, which LGP reads - he cuts them from the log. The exception is a breaking
 change: say what changed and who is affected, plus the `UPGRADE NOTE:`. A commit touching only TODO.md is just "todo".
+Re-read this before each message in a long session - drafts drift long.
 
 **To set one file's edits aside while a commit is staged, save a patch** (`git diff -- F > F.patch && git checkout -- F`,
 later `git apply F.patch`) - not `git stash push -- F`, which still records the whole index, and on pop re-applies the
@@ -345,7 +346,8 @@ old staged versions of the commit's files.
   fields, the "Stroika Issues" project's (#1) and the organization's issue field; setting one does not set the other, so
   set both (`gh api graphql`, from a POSIX shell - PowerShell mangles the quoting).
 - **TODO.md outranks any ticket priority**: an entry there - even one that only points at a ticket - is a priority marker.
-  Never delete one unless LGP says so.
+  Never delete one unless LGP says so. In a triage, every recommendation is NOW (before the release), TICKET, or PROCESS (a
+  mechanical trigger) - never "wait for X".
 - **When a commit is about an issue, comment on the issue with the commit link** once it is pushed, saying exactly what it
   fixes. A real fix on v3-Dev is closed by hand ("Fixed in <next release>") - GitHub's `fixes #N` fires only on the
   default branch.
@@ -477,6 +479,8 @@ still compile". Say which one you did.
   targets (`wchar_t` APIs, `EnumName` tables), alone. Opportunistic, not a sweep.
 - **Comments state the invariant, not today's callers** - a reason anchored to a call site rots when it changes - and
   describe cost qualitatively ("cheap"), not with measurements ("~1ns"), which date. Numbers go in commits or issues.
+- **Keep writing code comments**: one LGP deletes still helped at review, so it is not criticism. The ones he keeps are
+  constraints and measured negative results - what stops a future reader's wrong "simplification".
 - **Claims that a tool lacks something carry a version**: "MSVC has no X, as of 19.51". And before changing a convention
   for a `-std=c++26` quirk, check the paper's status: draft features get withdrawn (P4144 removed `span` from an
   `initializer_list`).
@@ -490,7 +494,8 @@ still compile". Say which one you did.
   including everything in a deprecated directory such as `Foundation/Configuration/` - stays until the 3.0a1 cleanup,
   which also removes the warning suppressions guarding its uses. A renamed macro keeps its old name as a documented
   `#define OLD NEW` alias, plus an `UPGRADE NOTE:`. Deprecated means "still compiles and warns", not "still behaves the
-  same": build no shims to keep old behaviour.
+  same": build no shims to keep old behaviour. In analysis, don't dwell on deprecated APIs, and never invest in one - no
+  renames, fixes or forwarders.
 - **A workaround carries its own re-test trigger.** A disabled configuration's line names the issue URL; a third-party
   workaround is version-gated (`Build/Scripts/VersionCompare`) so the next bump drops it, with the exact error text in
   its comment. Before removing one, test the OLDEST supported toolchain its history names - for clang both stdlibs, and
@@ -505,6 +510,11 @@ still compile". Say which one you did.
   an old-vs-new diff of real runs. New scripts are Python, not Perl.
 - **Test coverage is a case-by-case cost/benefit call** - there is no "no redundant coverage" rule; by default keep what
   exists.
+- **No more tweaks to the hand-rolled third-party build** (LGP, 2026-09-25): those components are to come from a package
+  manager (#1157), and their builds run inside CI runners and other products' docker builds, where extra parallelism or RAM
+  has a wide, hard-to-debug blast radius - so no build caching, `jom`, or more `-MP`.
+- **Standing decisions from the workaround audit** (#1177's closing comment): clang-15 and g++-11 stay supported; Release
+  assertions stay `[[assume]]`; valgrind is memcheck only, on Release builds.
 
 ## Working with LGP
 
@@ -522,3 +532,10 @@ still compile". Say which one you did.
 - **"Stroika has no X" needs a functional search** - where that job is done today - not a grep for one name.
 - **Concurrency bugs**: show the two-thread timeline with line numbers, prove it with a test that fails on the unchanged
   code, then name the general rule (https://github.com/SophistSolutions/Stroika/issues/1205 collects them).
+- **Analyze from the real code** - class definitions, signatures, implementations - not READMEs or summaries. A bug report
+  he picks up weeks later wants the raw evidence (symbolized backtraces, syscall arguments, the file:line race window).
+- **Don't suggest release prep as filler**: a release takes 2-3 days and does nothing else; he starts one, roughly
+  monthly, when he decides.
+- **3.0dNN is development - stability is not promised.** Defer a rare, non-blocking bug without apology; argue for fixing it
+  now only if it blocks other work, is a new regression from this cycle, or will get harder to diagnose. The deadline for
+  correctness bugs is the alpha/beta boundary.
