@@ -21,6 +21,9 @@
  *  \file
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
+ *
+ * TODO:
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/1210 - a choice of what to do with a callback's exception
  */
 
 namespace Stroika::Foundation::Characters {

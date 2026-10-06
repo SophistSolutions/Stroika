@@ -46,6 +46,12 @@ Generally will track stuff here between releases
          which also fixes its ignoring byebye (below). Its contents after a wait are also the synchronous search Search.h
          had an @todo for ("sends a certain number of times, and then returns all the answers") - decide there whether that
          needs an API of its own.
+       - (not SSDP, but from it - LGP 2026-10-06: in this list, all at once while fresh) **Execution::Function's removal role
+         -> CallbackRegistry and IDs, Stroika-wide**, in commits of its own. Where a Function is compared only so it can be
+         removed: LinkMonitor and SystemPerformance::Capturer can use a CallbackRegistry; IntervalTimer::Manager,
+         SignalHandlers and ThreadPool (AddTask's result, for IsPresent / WaitForTask / AbortTask) want just an ID;
+         ProgressMonitor removes none, so a plain function. Then deprecate Execution::Function. Downstream uses only
+         IntervalTimer::Adder and ThreadPool::AddTask (ignoring its result): keep those call sites working.
        - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202) and the socket switch
          above.
        - https://github.com/SophistSolutions/Stroika/issues/715 ("-s / -l sometimes produce no results") - likely fixed by
@@ -62,12 +68,6 @@ Generally will track stuff here between releases
          does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - match by USN instead.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
-   - **Execution::Function's removal role -> CallbackRegistry and IDs, Stroika-wide** (LGP 2026-10-06: separate commits,
-     after SSDP's). Where a Function is compared only so it can be removed: LinkMonitor and SystemPerformance::Capturer can
-     use a CallbackRegistry; IntervalTimer::Manager, SignalHandlers and ThreadPool (AddTask's result, for IsPresent /
-     WaitForTask / AbortTask) want just an ID; ProgressMonitor removes none, so a plain function. Then deprecate
-     Execution::Function. Downstream uses only IntervalTimer::Adder and ThreadPool::AddTask (ignoring its result): keep
-     those call sites working.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
