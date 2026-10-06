@@ -22,13 +22,49 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **SSDP, AFTER 3.0d25** (https://github.com/SophistSolutions/Stroika/issues/1194 - the rest of it is done):
-       - **a network change waits for a running SSDP callback.** Listener's `Rejoin_` and Search's `SearchAgain_`
-         stop (AbortAndWaitForDone) the thread that runs callOnFinds - so one doing a slow HTTP fetch (WTF's does) holds up the
-         re-join, on the LinkMonitor thread every SSDP object shares. Documented ("Keep callOnFinds quick") for 3.0d25; the fix
-         is to re-join without stopping the thread that calls back (or call back from another).
-       - a reconnect re-joins / re-searches once per address it brings up (IPv4, then each IPv6), several in a row -
-         `SSDP::Private_::FollowNetworkChanges` acts on every `eAdded`. Collapse a burst into one.
+   - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
+     planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
+       - **ssdp:byebye is never sent** when a device stops (PeriodicNotifier, so BasicServer) -
+         https://github.com/SophistSolutions/Stroika/issues/989
+       - **each NOTIFY set goes out once** a cycle; the spec says more than once (at most 3), a few hundred ms apart - UDP
+         loses packets.
+       - **SearchResponder answers a multicast M-SEARCH at once**; the spec says after a random 0..MX seconds, so devices
+         do not all answer together.
+       - **PeriodicNotifier's NOTIFYs go out with the OS's default multicast TTL (1)**; Search and SearchResponder set 4
+         (the UPnP Device Architecture says 4 in 1.0, 2 in 1.1).
+       - **BasicServer advertises no services** - no NOTIFY or search answer per service type (BasicServer.h's
+         "@todo Add serviceList support"); DeviceDescription already has fServices.
+       - (optional) **re-announce at a random interval** under max-age/2, as the spec recommends -
+         FrequencyInfo::fRepeatInterval is a fixed 180s.
+       - **a network appearing drops what waits in the old sockets**: Listener switches to new sockets (a slow callOnFinds
+         lost 2 NOTIFYs on the rig), and SearchResponder restarts its thread on new ones. Fix: join the new interfaces on the
+         existing sockets ("already a member" counting as joined) - nothing to switch, so nothing lost or doubled.
+       - **answer a search with the address of the interface it arrived on**, not the route lookup's - which a Tailscale
+         subnet route covering the LAN turns into the Tailscale address (#1194's step-2 comment). UPnP-only: pick the
+         interface by the asker's subnet (Interface::fBindings.fAddressRanges; an IPv6 link-local asker's scope id names
+         it), else the route lookup. The exact way - IP_PKTINFO - is https://github.com/SophistSolutions/Stroika/issues/1202
+         (UNLIKELY for v3.0).
+       - **CachingListener is an empty stub** (just a Listener) - nothing downstream uses it: implement, or delete.
+       - **Listener and Search call callOnFinds with their callback list's mutex held** (Search.cpp: "DEADLOCK CITY") - so
+         AddOnFoundCallback from another thread waits for a slow callOnFinds.
+       - **no way to remove a callOnFinds** (Listener's and Search's AddOnFoundCallback: "@todo RETHINK!").
+       - **stale or idea @todos in Listener.h and Search.h**: NetlinkListener (done - LinkMonitor), "Fix Result object"
+         (fRawHeaders has it), an OnError callback, firewall docs, a synchronous search API, "re-read ssdp spec for exact
+         format" (M-SEARCH's MX uses the TTL's constant kMaxHops_ - both 4: valid, but unrelated).
+       - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202) and the socket switch
+         above.
+       - https://github.com/SophistSolutions/Stroika/issues/715 ("-s / -l sometimes produce no results") - likely fixed by
+         #1194: check with the SSDPClient sample on Windows and Linux, then close.
+       - https://github.com/SophistSolutions/Stroika/issues/1094 (server started with no network yet) - likely fixed by
+         #1194 and following network changes: check on the rig (a container with no network, then one appearing), then close.
+       - https://github.com/SophistSolutions/Stroika/issues/986 (IPv6 on the SSDP server, and Ping) - SSDP's part done by
+         #1194 (verify); Ping's is not SSDP.
+       - https://github.com/SophistSolutions/Stroika/issues/975 (SSDPServer sample: use the WebServer framework) - looks
+         done (it uses WebServer::ConnectionManager); check its leftover IO/Network/Listener.h include, then close.
+       - (WTF, not Stroika) **WTF ignores every ssdp:byebye**: it finds the device by its LOCATION's host, which a byebye
+         does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - match by USN instead.
+       - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
+         IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
@@ -59,6 +95,12 @@ Generally will track stuff here between releases
      there to compare. Candidate workaround: build Xerces without `-GL` under MSVC.
 
 - v3.0d26x - at the start
+   - **PRIORITY: threaded-code bugs, and Synchronized's flawed design choices** -
+     https://github.com/SophistSolutions/Stroika/issues/1205 (from IntervalTimer's five removal bugs, fixed 2026-10-05).
+     Synchronized: its recursive_mutex default hides calling out while holding a lock (#1206); it cannot wait on its own
+     lock, so handshakes need a second one (#1207); per-expression locking reads like an atomic check-then-act (#1208). Then
+     write the patterns down in Thread-Safety.md and audit Stroika for them - callback registries' unregister guarantee,
+     blocking under a lock (ThreadPool, Logger, SSDP Search), thread members declared last (#1209).
    - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
      been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
      the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.
