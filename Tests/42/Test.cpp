@@ -585,6 +585,48 @@ namespace {
         EXPECT_EQ (selfCalls, 1u);
         EXPECT_EQ (laterCalls, 0u) << "called in the very Call that removed it";
     }
+
+    /*
+     *  RemoveAll waits for a callback running on another thread, and the rest of that Call calls none; called from within a
+     *  callback, it does not wait for that one, and none is called again.
+     */
+    GTEST_TEST (Foundation_Execution, CallbackRegistry_RemoveAll_)
+    {
+        Debug::TraceContextBumper ctx{"CallbackRegistry_RemoveAll_"};
+        {
+            CallbackRegistry<void ()> callbacks;
+            atomic<unsigned int>      calls{0};
+            atomic<bool>              running{false};
+            WaitableEvent             started;
+            callbacks.Add ([&] () {
+                ++calls;
+                running = true;
+                started.Set ();
+                Execution::Sleep (200ms); // so RemoveAll, on this test's thread, finds it running
+                running = false;
+            });
+            callbacks.Add ([&] () { ++calls; });
+            Thread::Ptr caller = Thread::New ([&] () { callbacks.Call (); }, Thread::eAutoStart);
+            EXPECT_TRUE (started.WaitQuietly (10s) == WaitableEvent::WaitStatus::eTriggered);
+            callbacks.RemoveAll ();
+            EXPECT_FALSE (running.load ()) << "a callback was still running after RemoveAll returned";
+            caller.Join ();
+            callbacks.Call ();
+            EXPECT_EQ (calls.load (), 1u) << "a callback was called after RemoveAll returned";
+        }
+        {
+            CallbackRegistry<void ()> callbacks;
+            unsigned int              calls = 0;
+            callbacks.Add ([&] () {
+                ++calls;
+                callbacks.RemoveAll ();
+            });
+            callbacks.Add ([&] () { ++calls; });
+            callbacks.Call ();
+            callbacks.Call ();
+            EXPECT_EQ (calls, 1u);
+        }
+    }
 }
 #endif
 

@@ -77,6 +77,23 @@ namespace Stroika::Foundation::Execution {
                           [&] () { return all_of (e->fRunningOn.begin (), e->fRunningOn.end (), [&] (thread::id t) { return t == me; }); });
     }
     template <typename... ARGS>
+    void CallbackRegistry<void (ARGS...)>::RemoveAll () noexcept
+    {
+        unique_lock                critSec{fMutex_};
+        vector<shared_ptr<Entry_>> removed;
+        removed.swap (fEntries_);
+        for (const shared_ptr<Entry_>& e : removed) {
+            e->fRemoved = true;
+        }
+        // and wait for any of them running on another thread
+        const thread::id me = this_thread::get_id ();
+        fCallEnded_.wait (critSec, [&] () {
+            return all_of (removed.begin (), removed.end (), [&] (const shared_ptr<Entry_>& e) {
+                return all_of (e->fRunningOn.begin (), e->fRunningOn.end (), [&] (thread::id t) { return t == me; });
+            });
+        });
+    }
+    template <typename... ARGS>
     void CallbackRegistry<void (ARGS...)>::Call (ARGS... args)
     {
         using namespace Characters::Literals;

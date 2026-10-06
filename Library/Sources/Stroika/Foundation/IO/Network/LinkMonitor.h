@@ -18,7 +18,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
-#include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/CallbackRegistry.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 
@@ -31,9 +31,6 @@
  *      @todo   Should this API be renamed InterfaceMonitor? Probably yes?
  *
  *      @todo   LinkMonitor rnetlink support DELETE
- *
- *      @todo   Support remove callback (once we have new FUNCTION helper - copyable stdfunction) - and usethat
- *              for SignalHandlers as well.
  */
 
 namespace Stroika::Foundation::IO::Network {
@@ -59,7 +56,8 @@ namespace Stroika::Foundation::IO::Network {
      *         add or remove callbacks, and create or destroy LinkMonitors - but not destroy the last one: that would have to
      *         stop the thread calling it.
      *
-     *  \note  AddCallback () and RemoveCallback () may be called from any thread, at once.
+     *  \note  AddCallback () and RemoveCallback () may be called from any thread, at once - and AddCallback () never waits for a
+     *         running callback (@see Execution::CallbackRegistry).
      *
      *  @todo  POSIX code is not really posix but assumes linux==posix =- relaly need separate define to check for netlink
      *         and a windoze impl.
@@ -118,9 +116,19 @@ namespace Stroika::Foundation::IO::Network {
             nonvirtual String ToString () const;
         };
 
-        using Callback = Execution::Function<void (const Event&)>;
-        nonvirtual void AddCallback (const Callback& callback);
-        nonvirtual void RemoveCallback (const Callback& callback);
+        using Callback = function<void (const Event&)>;
+
+        /**
+         *  \brief Names a callback AddCallback added, for RemoveCallback.
+         */
+        using CallbackID = Execution::CallbackRegistry<void (const Event&)>::ID;
+
+        /**
+         *  \brief Call callback with each change from when this returns (@see LinkMonitor) - until RemoveCallback, with the ID this
+         *         returns, or until the LinkMonitor goes.
+         */
+        nonvirtual CallbackID AddCallback (const Callback& callback);
+        nonvirtual void RemoveCallback (CallbackID callback); ///< \brief Once this returns, that callback is not running, and is not called again (@see LinkMonitor)
 
     private:
         struct Rep_;

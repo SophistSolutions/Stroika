@@ -47,7 +47,9 @@ namespace Stroika::Foundation::Execution {
      *          do not call it holding a lock that callback takes.
      *      o   An exception from a callback is logged (DbgTrace) and ignored, and the rest are still called - except
      *          Thread::AbortException, which ends the Call, so its thread can end.
-     *      o   A callback added during a Call is first called by the next one.
+     *      o   'Before' and 'after' are as the registry's lock orders them - each Add, Remove and RemoveAll, and the start of
+     *          each Call, takes it in turn (from different threads at once, in no defined order). So a Call calls the callbacks
+     *          added before it started, and not removed since: one added during a Call is first called by the next.
      *
      *  Its lock is a plain (non-recursive) mutex, held only to read or update the list of callbacks - never while one runs,
      *  so nothing can re-enter it - and so cheap: one uncontended lock to Add or Remove; to Call, one, and two more for each
@@ -126,7 +128,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \pre no Call running
+         *  \pre no Call under way, on any thread - not just no callback running (@see RemoveAll)
          */
         ~CallbackRegistry ();
 
@@ -148,6 +150,25 @@ namespace Stroika::Foundation::Execution {
          *         it, the call already under way finishes. Removing one not added, or already removed, does nothing.
          */
         nonvirtual void Remove (ID id) noexcept;
+
+    public:
+        /**
+         *  \brief Remove every callback: once this returns, none is running, and none is called again - except that, called from
+         *         within one, the call already under way finishes (and the rest of that Call calls none).
+         *
+         *  Why: so an owner can go away while another thread may be calling its callbacks. Once this returns, nothing a callback
+         *  uses - the owner, what the callbacks captured - is in use, or will be, so it can be destroyed. And called from within
+         *  a callback (an owner its own callback destroys), it returns, rather than waiting forever for that callback to end.
+         *
+         *  It removes the callbacks added before it, in its lock's order (@see CallbackRegistry). One added after - even by
+         *  another thread while this waits for a running callback - is not removed, and each Call from then on calls it, as any
+         *  other. So an owner going away must first stop whatever might add one.
+         *
+         *  \note The registry itself must still outlive any Call under way, which - though it calls no more callbacks - still
+         *        takes the registry's lock: destroy it only once the thread calling Call has stopped, or keep it in a shared_ptr
+         *        that thread holds too.
+         */
+        nonvirtual void RemoveAll () noexcept;
 
     public:
         /**

@@ -1082,6 +1082,11 @@ GTEST_TEST (Foundation_IO_Network, LinkMonitor_)
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         EXPECT_LE (newThreads (), 1u) << "three LinkMonitors share one backend";
 #endif
+        // a callback removed by the ID AddCallback gave it; removing it again, or one never added, does nothing
+        LinkMonitor::CallbackID id = lm1.AddCallback ([] (const LinkMonitor::Event&) {});
+        lm1.RemoveCallback (id);
+        lm1.RemoveCallback (id);
+        lm1.RemoveCallback (LinkMonitor::CallbackID{});
     }
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
     for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 5s; newThreads () != 0 and Time::GetTickCount () < giveUpAt;) {

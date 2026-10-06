@@ -276,7 +276,6 @@ Again:
 }
 
 namespace {
-    using Callback   = LinkMonitor::Callback;
     using Event      = LinkMonitor::Event;
     using LinkChange = LinkMonitor::LinkChange;
 
@@ -348,11 +347,12 @@ namespace {
     }
 #endif
 
-    // what one LinkMonitor has registered. fMutex is held while its callbacks run - so taking it waits for any running on
-    // another thread; recursive, so a callback can add or remove callbacks itself
+    // what one LinkMonitor has registered
     struct Subscriber_ {
-        recursive_mutex                  fMutex;
-        Containers::Collection<Callback> fCallbacks; // guarded by fMutex
+        // held while its callbacks are called, and only then - so they run one at a time, though on Windows the OS's
+        // notifications may come on more than one of its threads (nothing else takes it, so it cannot deadlock with a callback)
+        mutex                                            fCalling;
+        Execution::CallbackRegistry<void (const Event&)> fCallbacks;
     };
 
     // The one watcher of the OS's address changes, shared by every LinkMonitor with a callback: on Linux and macOS a thread
@@ -420,23 +420,11 @@ namespace {
         {
             tNotifying_                     = true;
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { tNotifying_ = false; });
-            // each from a copy - a callback may add or remove callbacks, or LinkMonitors - but one removed meanwhile is not called
+            // from a copy - a callback may add or remove LinkMonitors (and its CallbackRegistry lets it add or remove callbacks,
+            // calls none removed meanwhile, and logs and ignores a callback's exception, which would stop the notifications)
             for (const shared_ptr<Subscriber_>& sub : fSubscribers_.load ()) {
-                [[maybe_unused]] lock_guard critSec{sub->fMutex};
-                for (const Callback& cb : Containers::Collection<Callback>{sub->fCallbacks}) {
-                    if (sub->fCallbacks.Contains (cb)) {
-                        try {
-                            cb (e);
-                        }
-                        catch (const Execution::Thread::AbortException&) {
-                            Execution::ReThrow ();
-                        }
-                        catch (...) {
-                            // not let out: it would stop the notifications to every LinkMonitor
-                            DbgTrace ("LinkMonitor: ignoring exception from a callback: {}"_f, current_exception ());
-                        }
-                    }
-                }
+                [[maybe_unused]] lock_guard critSec{sub->fCalling};
+                sub->fCallbacks.Call (e);
             }
         }
 
@@ -637,27 +625,28 @@ struct LinkMonitor::Rep_ {
         if (fBackend_ != nullptr) {
             fBackend_->Remove (fSubscriber_); // no more notifications to it
             // and none still running - unless here, a callback destroying its own LinkMonitor: then it calls none of the rest
-            [[maybe_unused]] lock_guard critSec{fSubscriber_->fMutex};
-            fSubscriber_->fCallbacks.clear ();
+            fSubscriber_->fCallbacks.RemoveAll ();
         }
         // then fBackend_ goes - so it stops, if this was the last LinkMonitor using it
     }
-    void AddCallback (const Callback& callback)
+    CallbackID AddCallback (const Callback& callback)
     {
-        [[maybe_unused]] lock_guard critSec{fSubscriber_->fMutex};
-        if (fBackend_ == nullptr) {
-            fBackend_ = Backend_::Get ();
-            fBackend_->Add (fSubscriber_);
+        {
+            [[maybe_unused]] lock_guard critSec{fBackendMutex_};
+            if (fBackend_ == nullptr) {
+                fBackend_ = Backend_::Get (); // (throws if the OS cannot tell: so nothing is added)
+                fBackend_->Add (fSubscriber_);
+            }
         }
-        fSubscriber_->fCallbacks.Add (callback);
+        return fSubscriber_->fCallbacks.Add (callback);
     }
-    void RemoveCallback (const Callback& callback)
+    void RemoveCallback (CallbackID callback)
     {
-        [[maybe_unused]] lock_guard critSec{fSubscriber_->fMutex}; // waits for it, if running on another thread
-        fSubscriber_->fCallbacks.Remove (callback);
+        fSubscriber_->fCallbacks.Remove (callback); // (waits for it, if running on another thread)
     }
     const shared_ptr<Subscriber_> fSubscriber_{Memory::MakeSharedPtr<Subscriber_> ()};
-    shared_ptr<Backend_>          fBackend_; // from the first AddCallback; guarded by fSubscriber_->fMutex
+    mutex                         fBackendMutex_;
+    shared_ptr<Backend_>          fBackend_; // from the first AddCallback; guarded by fBackendMutex_
 };
 
 /*
@@ -681,12 +670,12 @@ LinkMonitor::LinkMonitor ()
 {
 }
 
-void LinkMonitor::AddCallback (const Callback& callback)
+auto LinkMonitor::AddCallback (const Callback& callback) -> CallbackID
 {
-    fRep_->AddCallback (callback);
+    return fRep_->AddCallback (callback);
 }
 
-void LinkMonitor::RemoveCallback (const Callback& callback)
+void LinkMonitor::RemoveCallback (CallbackID callback)
 {
     fRep_->RemoveCallback (callback);
 }
