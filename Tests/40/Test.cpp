@@ -655,12 +655,33 @@ namespace {
             ThreadPool p{ThreadPool::Options{.fThreadCount = 1}};
         }
         {
-            ThreadPool           p{ThreadPool::Options{.fThreadCount = 1}};
-            int                  intVal = 3;
-            ThreadPool::TaskType task{[&intVal] () { intVal++; }};
-            p.AddTask (task);
+            ThreadPool         p{ThreadPool::Options{.fThreadCount = 1}};
+            int                intVal = 3;
+            ThreadPool::TaskID task   = p.AddTask ([&intVal] () { intVal++; });
             p.WaitForTask (task);
             EXPECT_TRUE (intVal == 4);
+        }
+        {
+            // tasks named by the TaskID AddTask returns: one running, one queued behind it (one thread)
+            ThreadPool         p{ThreadPool::Options{.fThreadCount = 1}};
+            WaitableEvent      started;
+            WaitableEvent      letGo;
+            ThreadPool::TaskID running = p.AddTask ([&] () {
+                started.Set ();
+                letGo.Wait ();
+            });
+            started.Wait ();
+            ThreadPool::TaskID queued = p.AddTask ([] () {});
+            EXPECT_NE (running, queued);
+            EXPECT_TRUE (p.IsRunning (running));
+            EXPECT_TRUE (p.IsPresent (queued) and not p.IsRunning (queued));
+            EXPECT_TRUE (p.GetRunningTasks ().Contains (running) and p.GetPendingTasks ().Contains (queued));
+            EXPECT_FALSE (p.IsPresent (ThreadPool::TaskID{}) or p.IsRunning (ThreadPool::TaskID{})); // names none - not the idle-thread
+            p.AbortTask (queued);                                                                    // not yet started: just dropped
+            EXPECT_FALSE (p.IsPresent (queued));
+            letGo.Set ();
+            p.WaitForTask (running);
+            EXPECT_FALSE (p.IsPresent (running));
         }
     }
 }
@@ -687,12 +708,10 @@ namespace {
         };
         {
             for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
-                ThreadPool           p{ThreadPool::Options{.fThreadCount = threadPoolSize}};
-                int                  updaterValue = 0;
-                ThreadPool::TaskType task1{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
-                ThreadPool::TaskType task2{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
-                p.AddTask (task1);
-                p.AddTask (task2);
+                ThreadPool         p{ThreadPool::Options{.fThreadCount = threadPoolSize}};
+                int                updaterValue = 0;
+                ThreadPool::TaskID task1        = p.AddTask ([&updaterValue, &doIt] () { doIt (&updaterValue); });
+                ThreadPool::TaskID task2        = p.AddTask ([&updaterValue, &doIt] () { doIt (&updaterValue); });
                 p.WaitForTask (task1);
                 p.WaitForTask (task2);
                 EXPECT_TRUE (updaterValue == 2 * 10);

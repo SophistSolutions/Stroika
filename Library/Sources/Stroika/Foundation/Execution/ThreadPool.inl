@@ -7,6 +7,16 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
+     ****************************** ThreadPool::TaskID ******************************
+     ********************************************************************************
+     */
+    constexpr ThreadPool::TaskID::TaskID (uint64_t id)
+        : fID_{id}
+    {
+    }
+
+    /*
+     ********************************************************************************
      *********************************** ThreadPool *********************************
      ********************************************************************************
      */
@@ -21,7 +31,7 @@ namespace Stroika::Foundation::Execution {
                        .fQMax              = fDefaultQMax_,
                        .fCollectStatistics = this->fCollectStatistics_};
     }
-    inline ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task, const optional<Characters::String>& name)
+    inline auto ThreadPool::AddTask (const TaskType& task, const optional<Characters::String>& name) -> TaskID
     {
         if (fDefaultQMax_) {
             return AddTask (task, *fDefaultQMax_, name);
@@ -30,7 +40,7 @@ namespace Stroika::Foundation::Execution {
             return AddTask_ (task, name);
         }
     }
-    inline void ThreadPool::WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSeconds timeout) const
+    inline void ThreadPool::WaitForTasksDone (const Traversal::Iterable<TaskID>& tasks, Time::DurationSeconds timeout) const
     {
         WaitForTasksDoneUntil (tasks, Time::GetTickCount () + timeout);
     }

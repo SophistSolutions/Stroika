@@ -6,11 +6,12 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <compare>
+#include <functional>
 #include <list>
 #include <mutex>
 
 #include "Stroika/Foundation/Containers/Collection.h"
-#include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 
@@ -50,8 +51,8 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  The ThreadPool class creates a small fixed number of Thread objects, and lets you use them
-     *  as if there were many more. You submit a task (representable as a comparable std::function - @see Function) -
-     *  and it gets eventually executed.
+     *  as if there were many more. You submit a task (a std::function) - named by the TaskID AddTask returns - and it gets
+     *  eventually executed.
      *
      *  If as Task in the thread pool raises an exception - this will be IGNORED (except for the
      *  special case of Thread::AbortException which  is used internally to end the threadpool or
@@ -155,7 +156,38 @@ namespace Stroika::Foundation::Execution {
          *          Tasks may exit via exception, but nothing will be done with that exception (beyond DbgTrace logging). So generally
          *          not a good idea, except for ThreadAbort handling.
          */
-        using TaskType = Function<void ()>;
+        using TaskType = function<void ()>;
+
+    public:
+        /**
+         *  \brief Names a task AddTask added - for AbortTask, IsPresent, IsRunning and WaitForTask. No two the same in a process, so
+         *         one from another ThreadPool names none of this one's; nor does TaskID{}.
+         *
+         *  \note Why an ID, and not the task, to name one by: @see CallbackRegistry (and the same task can be added twice, too).
+         */
+        class TaskID {
+        public:
+            constexpr TaskID () = default;
+
+        public:
+            constexpr bool            operator== (const TaskID& rhs) const  = default;
+            constexpr strong_ordering operator<=> (const TaskID& rhs) const = default;
+
+        public:
+            /**
+             *  @see Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
+
+        private:
+            constexpr explicit TaskID (uint64_t id);
+
+        private:
+            uint64_t fID_{0}; // 0: none
+
+        private:
+            friend class ThreadPool; // makes them
+        };
 
     public:
         /**
@@ -196,21 +228,15 @@ namespace Stroika::Foundation::Execution {
          *  provided (as an argument or associated with the pool, this is treated as no max, and the addition just proceeds.
          * 
          *  If qMax provided (even indirectly), assure task q length doesn't exceed argument by waiting up to the qMax
-         *  duration, and either timing out, or successfully add the task. 
-         * 
-         *  \note   Design Note:
-         *      The reason this returns as TaskType is that its easy to convert a lambda or whatever into a TaskType, but if you do
-         *      it multiple times you get different (!=) values. So to make the auto conversion work easier without needing
-         *      to first create a variable, and then do the add task, you can just do them together. And it avoids mistakes like:
-         *          function<void()> f = ...;
-         *          p.AddTask(f);
-         *          p.RemoveTask (p);   // fails cuz different 'TaskType' added - f converted to TaskType twice!
+         *  duration, and either timing out, or successfully add the task.
+         *
+         *  Returns the TaskID naming the task added - for AbortTask, IsPresent, IsRunning and WaitForTask.
          */
-        nonvirtual TaskType AddTask (const TaskType& task, const optional<Characters::String>& name = nullopt);
-        nonvirtual TaskType AddTask (const TaskType& task, QMax qmax, const optional<Characters::String>& name = nullopt);
+        nonvirtual TaskID AddTask (const TaskType& task, const optional<Characters::String>& name = nullopt);
+        nonvirtual TaskID AddTask (const TaskType& task, QMax qmax, const optional<Characters::String>& name = nullopt); ///< \brief ... waiting for (or throwing if no) room in the queue, per qmax
 
     private:
-        nonvirtual TaskType AddTask_ (const TaskType& task, const optional<Characters::String>& name);
+        nonvirtual TaskID AddTask_ (const TaskType& task, const optional<Characters::String>& name);
 
     public:
         /**
@@ -222,7 +248,7 @@ namespace Stroika::Foundation::Execution {
          * 
          *  The function doesn't return until the task has been successfully cancelled, or it throws if timeout.
          */
-        nonvirtual void AbortTask (const TaskType& task, Time::DurationSeconds timeout = Time::kInfinity);
+        nonvirtual void AbortTask (TaskID task, Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
@@ -233,31 +259,26 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  returns true if queued OR actively running.
-         *
-         *  \pre task != nullptr
          */
-        nonvirtual bool IsPresent (const TaskType& task) const;
+        nonvirtual bool IsPresent (TaskID task) const;
 
     public:
         /**
          *  returns true actively running
-         *
-         *  \pre task != nullptr
          */
-        nonvirtual bool IsRunning (const TaskType& task) const;
+        nonvirtual bool IsRunning (TaskID task) const;
 
     public:
         /**
          *  throws if timeout. Returns when task has completed (or if not in task q)
-         *
-         *  \pre task != nullptr
          */
-        nonvirtual void WaitForTask (const TaskType& task, Time::DurationSeconds timeout = Time::kInfinity) const;
+        nonvirtual void WaitForTask (TaskID task, Time::DurationSeconds timeout = Time::kInfinity) const;
 
     public:
         /**
          */
         struct TaskInfo {
+            TaskID                           fID;
             TaskType                         fTask;
             optional<Characters::String>     fName;
             optional<Time::TimePointSeconds> fRunningSince; // if missing, cuz not running
@@ -275,7 +296,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  return all tasks which are queued, but haven't yet been assigned to a thread.
          */
-        nonvirtual Containers::Collection<TaskType> GetPendingTasks () const;
+        nonvirtual Containers::Collection<TaskID> GetPendingTasks () const;
 
     public:
         /**
@@ -283,7 +304,7 @@ namespace Stroika::Foundation::Execution {
          *  \note - this is a snapshot in time of something which is often rapidly changing, so by the time
          *  you look at it, it may have changed (but since we use shared_ptrs, its always safe to look at).
          */
-        nonvirtual Containers::Collection<TaskType> GetRunningTasks () const;
+        nonvirtual Containers::Collection<TaskID> GetRunningTasks () const;
 
     public:
         /**
@@ -312,7 +333,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note ***Cancelation Point***
          */
-        nonvirtual void WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSeconds timeout = Time::kInfinity) const;
+        nonvirtual void WaitForTasksDone (const Traversal::Iterable<TaskID>& tasks, Time::DurationSeconds timeout = Time::kInfinity) const;
         nonvirtual void WaitForTasksDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
     public:
@@ -328,7 +349,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note ***Cancelation Point***
          */
-        nonvirtual void WaitForTasksDoneUntil (const Traversal::Iterable<TaskType>& tasks, Time::TimePointSeconds timeoutAt) const;
+        nonvirtual void WaitForTasksDoneUntil (const Traversal::Iterable<TaskID>& tasks, Time::TimePointSeconds timeoutAt) const;
         nonvirtual void WaitForTasksDoneUntil (Time::TimePointSeconds timeoutAt) const;
 
     public:
@@ -407,16 +428,19 @@ namespace Stroika::Foundation::Execution {
         };
 
     private:
-        // Called internally from threadpool tasks - to wait until there is a new task to run.
-        // This will not return UNTIL it has a new task to proceed with (except via exception like Thread::AbortException)
-        nonvirtual void    WaitForNextTask_ (TaskType* result, optional<Characters::String>* resultName);
-        nonvirtual TPInfo_ mkThread_ ();
-
-    private:
         struct PendingTaskInfo_ {
+            TaskID                       fID;
             TaskType                     fTask;
             optional<Characters::String> fName;
         };
+
+    private:
+        // Called internally from threadpool tasks - to wait until there is a new task to run.
+        // This will not return UNTIL it has a new task to proceed with (except via exception like Thread::AbortException)
+        nonvirtual void    WaitForNextTask_ (PendingTaskInfo_* result);
+        nonvirtual TPInfo_ mkThread_ ();
+
+    private:
         mutable mutex fCriticalSection_; // fCriticalSection_ protects fThreads_ and fPendingTasks_ and the fields of the MyRunnable_ members inside each thread (fThreads_).
         // Each should be a very short critical section, except for SetPoolSize()
         atomic<bool>                    fAborted_{false};

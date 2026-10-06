@@ -3,6 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <atomic>
+
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -38,10 +40,14 @@ public:
     }
 
 public:
-    tuple<TaskType, Time::TimePointSeconds, optional<String>> GetCurTaskInfo () const
+    // whether this thread is running a task - and if so, the task (assumes the caller holds fThreadPool.fCriticalSection_)
+    bool IsRunning () const
     {
-        // assume caller holds lock
-        return make_tuple (fCurTask, fCurTaskStartedAt, fCurName); // note curTask can be null, in which case these other things are meaningless
+        return fCurTask.fTask != nullptr;
+    }
+    bool IsRunning (TaskID task) const
+    {
+        return IsRunning () and fCurTask.fID == task;
     }
 
 public:
@@ -54,21 +60,21 @@ public:
             {
                 if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                     [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
-                    Assert (fCurTask == nullptr);
+                    Assert (not IsRunning ());
                 }
                 // Subtle point, but we must copy directly into fCurTask (WaitForNextTask_ call) so its filled in under lock
                 // while being moved so task moves from pending to in-use without ever temporarily disappearing from known tasks lists
-                fThreadPool.WaitForNextTask_ (&fCurTask, &fCurName); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
+                fThreadPool.WaitForNextTask_ (&fCurTask); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
                 if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                     [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
-                    Assert (fCurTask != nullptr);
+                    Assert (IsRunning ());
                 }
             }
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept {
                 Time::TimePointSeconds taskStartedAt;
                 {
                     [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
-                    fCurTask      = nullptr;
+                    fCurTask      = PendingTaskInfo_{};
                     taskStartedAt = fCurTaskStartedAt;
                 }
                 if (fThreadPool.fCollectStatistics_) {
@@ -83,7 +89,7 @@ public:
                 ThreadPool::TaskType task2Run;
                 {
                     [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
-                    task2Run          = fCurTask;
+                    task2Run          = fCurTask.fTask;
                     fCurTaskStartedAt = Time::GetTickCount ();
                 }
                 task2Run ();
@@ -102,11 +108,20 @@ public:
 
 public:
     ThreadPool& fThreadPool;
-    // fThreadPool.fCriticalSection_ protect access to fCurTask/fCurTaskStartedAt/fCurName - very short duration
-    ThreadPool::TaskType         fCurTask;
-    Time::TimePointSeconds       fCurTaskStartedAt{0s}; // meaningless if fCurTask==nullptr
-    optional<Characters::String> fCurName;              // ""
+    // fThreadPool.fCriticalSection_ protect access to fCurTask/fCurTaskStartedAt - very short duration
+    PendingTaskInfo_       fCurTask;              // the task running, its ID and name; fTask null if none
+    Time::TimePointSeconds fCurTaskStartedAt{0s}; // meaningless if not IsRunning ()
 };
+
+/*
+ ********************************************************************************
+ ************************** Execution::ThreadPool::TaskID ***********************
+ ********************************************************************************
+ */
+Characters::String ThreadPool::TaskID::ToString () const
+{
+    return Characters::ToString (fID_);
+}
 
 /*
  ********************************************************************************
@@ -165,8 +180,7 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
         // iterate over threads if any not busy, remove that them first
         bool anyFoundToKill = false;
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            TaskType ct{i->fRunnable->fCurTask};
-            if (ct == nullptr) {
+            if (not i->fRunnable->IsRunning ()) {
                 // since we have fCriticalSection_ - we can safely remove this thread
                 fThreads_.Remove (i);
                 anyFoundToKill = true;
@@ -181,7 +195,7 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
     }
 }
 
-auto ThreadPool::AddTask (const TaskType& task, QMax qmax, const optional<Characters::String>& name) -> TaskType
+auto ThreadPool::AddTask (const TaskType& task, QMax qmax, const optional<Characters::String>& name) -> TaskID
 {
     // also INTENTIONALLY dont hold lock long enuf to make this work 100% reliably cuz these magic numbers dont need to be precise, just approximate
     // @todo rewrite this with condition variables, so more efficient and wakes up/times out appropriately...
@@ -206,15 +220,17 @@ auto ThreadPool::AddTask (const TaskType& task, QMax qmax, const optional<Charac
     }
 }
 
-auto ThreadPool::AddTask_ (const TaskType& task, const optional<Characters::String>& name) -> TaskType
+auto ThreadPool::AddTask_ (const TaskType& task, const optional<Characters::String>& name) -> TaskID
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"ThreadPool::AddTask_"};
 #endif
     Require (not fAborted_);
+    static atomic<uint64_t> sLastTaskID_{0};
+    const TaskID            id{++sLastTaskID_};
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-        fPendingTasks_.push_back (PendingTaskInfo_{.fTask = task, .fName = name});
+        fPendingTasks_.push_back (PendingTaskInfo_{.fID = id, .fTask = task, .fName = name});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("fPendingTasks.size () now = {}"_f, (int)fPendingTasks_.size ());
 #endif
@@ -225,17 +241,17 @@ auto ThreadPool::AddTask_ (const TaskType& task, const optional<Characters::Stri
     fTasksMaybeAdded_.Set ();
     // this would be a race - if aborting and adding tasks at the same time
     Require (not fAborted_);
-    return task;
+    return id;
 }
 
-void ThreadPool::AbortTask (const TaskType& task, Time::DurationSeconds timeout)
+void ThreadPool::AbortTask (TaskID task, Time::DurationSeconds timeout)
 {
     Debug::TraceContextBumper ctx{"ThreadPool::AbortTask"};
     {
         // First see if its in the Q
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
-            if (i->fTask == task) {
+            if (i->fID == task) {
                 fPendingTasks_.erase (i);
                 return;
             }
@@ -257,8 +273,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSeconds timeout)
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            TaskType ct{i->fRunnable->fCurTask};
-            if (task == ct) {
+            if (i->fRunnable->IsRunning (task)) {
                 thread2Kill = i->fThread;
                 fThreads_.Update (i, mkThread_ ());
                 break;
@@ -294,21 +309,19 @@ void ThreadPool::AbortTasks (Time::DurationSeconds timeout)
     SetPoolSize (tps);
 }
 
-bool ThreadPool::IsPresent (const TaskType& task) const
+bool ThreadPool::IsPresent (TaskID task) const
 {
-    Require (task != nullptr);
     {
         // First see if its in the Q
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
-            if (i->fTask == task) {
+            if (i->fID == task) {
                 return true;
             }
         }
         // then check if running
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            TaskType rTask{i->fRunnable->fCurTask};
-            if (task == rTask) {
+            if (i->fRunnable->IsRunning (task)) {
                 return true;
             }
         }
@@ -316,19 +329,18 @@ bool ThreadPool::IsPresent (const TaskType& task) const
     return false;
 }
 
-bool ThreadPool::IsRunning (const TaskType& task) const
+bool ThreadPool::IsRunning (TaskID task) const
 {
-    Require (task != nullptr);
     [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-        if (task == i->fRunnable->fCurTask) {
+        if (i->fRunnable->IsRunning (task)) {
             return true;
         }
     }
     return false;
 }
 
-void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSeconds timeout) const
+void ThreadPool::WaitForTask (TaskID task, Time::DurationSeconds timeout) const
 {
     Debug::TraceContextBumper ctx{"ThreadPool::WaitForTask"};
     // Inefficient / VERY SLOPPY impl - @todo fix use WaitableEvent or condition variables...
@@ -349,29 +361,24 @@ auto ThreadPool::GetTasks () const -> Collection<TaskInfo>
     Collection<TaskInfo>        result;
     [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     for (const auto& ti : fPendingTasks_) {
-        result.Add (TaskInfo{.fTask = ti.fTask, .fName = ti.fName});
+        result.Add (TaskInfo{.fID = ti.fID, .fTask = ti.fTask, .fName = ti.fName});
     }
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-        tuple<TaskType, Time::TimePointSeconds, optional<String>> curTaskInfo = i->fRunnable->GetCurTaskInfo ();
-        if (get<TaskType> (curTaskInfo) != nullptr) {
-            result.Add (TaskInfo{
-                .fTask         = get<TaskType> (curTaskInfo),
-                .fName         = get<optional<String>> (curTaskInfo),
-                .fRunningSince = get<Time::TimePointSeconds> (curTaskInfo),
-            });
+        if (i->fRunnable->IsRunning ()) {
+            const PendingTaskInfo_& cur = i->fRunnable->fCurTask;
+            result.Add (TaskInfo{.fID = cur.fID, .fTask = cur.fTask, .fName = cur.fName, .fRunningSince = i->fRunnable->fCurTaskStartedAt});
         }
     }
     return result;
 }
 
-auto ThreadPool::GetRunningTasks () const -> Collection<TaskType>
+auto ThreadPool::GetRunningTasks () const -> Collection<TaskID>
 {
-    Collection<TaskType>        result;
+    Collection<TaskID>          result;
     [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-        TaskType task{i->fRunnable->fCurTask};
-        if (task != nullptr) {
-            result.Add (task);
+        if (i->fRunnable->IsRunning ()) {
+            result.Add (i->fRunnable->fCurTask.fID);
         }
     }
     return result;
@@ -384,19 +391,19 @@ size_t ThreadPool::GetTasksCount () const
     size_t                      count = fPendingTasks_.size ();
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
         AssertNotNull (i->fRunnable);
-        if (i->fRunnable->fCurTask != nullptr) {
+        if (i->fRunnable->IsRunning ()) {
             ++count;
         }
     }
     return count;
 }
 
-auto ThreadPool::GetPendingTasks () const -> Collection<TaskType>
+auto ThreadPool::GetPendingTasks () const -> Collection<TaskID>
 {
-    Collection<TaskType>        result;
+    Collection<TaskID>          result;
     [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     for (const auto& i : fPendingTasks_) {
-        result.Add (i.fTask);
+        result.Add (i.fID);
     }
     return result;
 }
@@ -407,7 +414,7 @@ size_t ThreadPool::GetPendingTasksCount () const
     return fPendingTasks_.size ();
 }
 
-void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::TimePointSeconds timeoutAt) const
+void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskID>& tasks, Time::TimePointSeconds timeoutAt) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
@@ -518,11 +525,10 @@ String ThreadPool::ToString () const
 }
 
 // THIS is called NOT from 'this' - but from the context of an OWNED thread of the pool
-void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String>* resultName)
+void ThreadPool::WaitForNextTask_ (PendingTaskInfo_* result)
 {
     RequireNotNull (result);
-    RequireNotNull (resultName);
-    Require (*result == nullptr);
+    Require (result->fTask == nullptr);
     while (true) {
         if (fAborted_) [[unlikely]] {
             Throw (Thread::AbortException::kThe);
@@ -531,12 +537,11 @@ void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String
         {
             [[maybe_unused]] lock_guard critSec{fCriticalSection_};
             if (not fPendingTasks_.empty ()) {
-                *result     = fPendingTasks_.front ().fTask;
-                *resultName = fPendingTasks_.front ().fName;
+                *result = fPendingTasks_.front ();
                 fPendingTasks_.pop_front ();
                 DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving pending-task-list-size = {}"_f,
                           fPendingTasks_.size ());
-                Ensure (*result != nullptr);
+                Ensure (result->fTask != nullptr);
                 return;
             }
         }
