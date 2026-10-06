@@ -481,8 +481,11 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
 					STAGE_STARTAT_INT=$(date +%s)
 					valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
-					touch valgrind-log.tmp; cat valgrind-log.tmp >> $TEST_OUT_FILE
-					rm -f valgrind-log.tmp 
+					if [ -s valgrind-log.tmp ] ; then
+						### on a line of its own, not after the '...' above - the summary finds valgrind's lines by their leading ==PID==
+						echo >> $TEST_OUT_FILE; cat valgrind-log.tmp >> $TEST_OUT_FILE
+					fi
+					rm -f valgrind-log.tmp
 					STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 					echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 					echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
@@ -598,6 +601,39 @@ echo "   $XC core dumps (expected 0)">>$TEST_OUT_FILE 2>&1
 if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)"
 	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)" >>$TEST_OUT_FILE 2>&1
+	if [ $VOL -gt 0 ] ; then
+		### WHERE they are: each line counted above, by the test whose output it is in (the '[NN] TestName - ...' header
+		### Tests/Scripts/RunTest prints, plus the configuration from its Builds/<config>/ path) or the sample app (the
+		### valgrind command echoed before it), with that one's exact error count - --gen-suppressions=all prints one
+		### <insert_a_suppression_name_here> per error. The configuration matters: a sanitizer report starts with '==' too.
+		VALGRIND_BY_SOURCE_=$(awk '
+			function Key_(  k) {
+				k = (src == "" ? "(outside any test or sample app)" : src)
+				if (!(k in lines_)) { order_[++n_] = k; lines_[k] = 0; errs_[k] = 0 }
+				return k
+			}
+			/^<\/?[A-Z]/ || /^\)\)\)- / { src = "" }
+			/^[ \t]*\[[0-9]+\] / {
+				src = $0; sub(/^[ \t]*/, "", src); sub(/ - .*/, "", src)
+				if (match($0, /Builds\/[^\/ ]+\//)) { src = src " {" substr($0, RSTART + 7, RLENGTH - 8) "}" }
+			}
+			/--log-file=valgrind-log\.tmp / { src = $0; sub(/.*--log-file=valgrind-log\.tmp /, "", src); sub(/(\.\.\.| ).*/, "", src) }
+			/^==/ && !/\[==========\]/ { k = Key_(); ++lines_[k] }
+			/<insert_a_suppression_name_here>/ { k = Key_(); ++errs_[k] }
+			END {
+				for (i = 1; i <= n_; ++i) {
+					k = order_[i]
+					if (lines_[k] == 0) continue
+					printf "      %s: %d lines", k, lines_[k]
+					if (errs_[k] > 0) printf ", %d valgrind error%s", errs_[k], (errs_[k] == 1 ? "" : "s")
+					print ""
+				}
+			}' $TEST_OUT_FILE)
+		echo "$VALGRIND_BY_SOURCE_"
+		echo "$VALGRIND_BY_SOURCE_" >>$TEST_OUT_FILE 2>&1
+		echo "      (to find each in $TEST_OUT_FILE, search for ^==[0-9]+== )"
+		echo "      (to find each in this file, search for ^==[0-9]+== )" >>$TEST_OUT_FILE 2>&1
+	fi
 fi
 if [ "$NTSANS" -ne 0 ] ; then
 	if [ "$TSAN_SKIP_EXPECTED" -ne 0 ] ; then
