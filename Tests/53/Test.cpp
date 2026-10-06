@@ -5,6 +5,8 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <iostream>
+#include <map>
+#include <set>
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
@@ -734,6 +736,82 @@ namespace {
         // one for each of its advertisements: the root device, the device itself, and its device type
         for (const String& usn : {"uuid:{}::upnp:rootdevice"_f(deviceID), "uuid:{}"_f(deviceID), "uuid:{}::{}"_f(deviceID, deviceType)}) {
             EXPECT_TRUE (byebyeUSNs.Contains (usn)) << "no ssdp:byebye for " << usn.AsNarrowSDKString ();
+        }
+    }
+
+    /*
+     *  Each set of NOTIFYs goes out more than once, a short pause apart, as UDP loses packets (UPnP Device Architecture 1.1
+     *  section 1.2.2) - the ssdp:alive set as the server starts, and the ssdp:byebye set as it stops: one
+     *  byebye for each alive (section 1.2.3). Each interface's alive carries that interface's own LOCATION, so each
+     *  advertisement's is heard more than once from each; its byebyes, with no LOCATION, more than once per interface. As in
+     *  SSDP_Loopback_Notify_, anything that keeps the exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_RepeatedSets_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_RepeatedSets_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackRepeatedSets-{}:1"_f(deviceID);
+        Device       d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        DeviceDescription dd;
+        dd.fDeviceType   = deviceType;
+        dd.fFriendlyName = "Stroika regression test device"sv;
+        dd.fUDN          = "uuid:" + deviceID;
+        Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> heard; // Synchronized: the listener calls back on its own thread
+        Execution::WaitableEvent                                           aliveHeard;
+        try {
+            SSDP::Client::Listener listener{[&] (const SSDP::Advertisement& a) {
+                                                if (a.fUSN.Contains (deviceID)) { // any of its advertisements
+                                                    heard.rwget ()->Append (a);
+                                                    if (a.fAlive == true) {
+                                                        aliveHeard.Set ();
+                                                    }
+                                                }
+                                            },
+                                            SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only},
+                                            SSDP::Client::Listener::eAutoStart};
+            {
+                SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                                 SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+                if (aliveHeard.WaitQuietly (10s) != Execution::WaitableEvent::WaitStatus::eTriggered) {
+                    Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_RepeatedSets_ skipped - our own NOTIFY was not heard within "
+                                                              "10 seconds (this environment probably blocks multicast, or UDP 1900)");
+                    return;
+                }
+                Execution::Sleep (1s); // the rest of its alive sets
+            } // the server stops
+            Execution::Sleep (1s); // its byebye sets
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_RepeatedSets_ skipped - could not run an SSDP server and listener here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        map<String, unsigned int> alives;     // by USN and LOCATION - one advertisement, from one interface
+        map<String, set<String>>  interfaces; // by USN: the LOCATIONs it was heard with - an interface each
+        map<String, unsigned int> byebyes;    // by USN
+        for (const SSDP::Advertisement& a : heard.load ()) {
+            if (a.fAlive == true) {
+                String where = Characters::ToString (a.fLocation);
+                ++alives[a.fUSN + " " + where];
+                interfaces[a.fUSN].insert (where);
+            }
+            else {
+                ++byebyes[a.fUSN];
+            }
+        }
+        for (const auto& [usnWhere, n] : alives) {
+            EXPECT_GE (n, 2u) << "ssdp:alive heard once only: " << usnWhere.AsNarrowSDKString ();
+        }
+        for (const String& usn : {"uuid:{}::upnp:rootdevice"_f(deviceID), "uuid:{}"_f(deviceID), "uuid:{}::{}"_f(deviceID, deviceType)}) {
+            EXPECT_FALSE (interfaces[usn].empty ()) << "no ssdp:alive for " << usn.AsNarrowSDKString ();
+            EXPECT_GE (byebyes[usn], 2 * interfaces[usn].size ()) << "ssdp:byebye heard once only, per interface: " << usn.AsNarrowSDKString ();
         }
     }
 

@@ -89,6 +89,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          *  options.fInterfaces accepts, each with the LOCATION location gives for that interface - right away and every
          *  options.fFrequencyInfo.fRepeatInterval after, until this object is destroyed. The interfaces are listed afresh each time, so networks that come and go
          *  are picked up. The advertisements' own fLocation is not used.
+         *
+         *  Each set of NOTIFYs goes out twice, 100 ms apart, as UDP loses packets (the UPnP Device Architecture says more than once)
+         *  - the first set during construction, so making it 100 ms slower; and destruction too, for its ssdp:byebye.
          * 
          *  Errors doing sends are just logged with DbgTrace()
          */
@@ -101,7 +104,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     public:
         /**
          *  \brief Stops the NOTIFYs, then sends an ssdp:byebye for each advertisement, out of each interface its last NOTIFYs went
-         *         out of. (A SearchResponder answering for the same device should go first, so no answer follows the byebye.)
+         *         out of - in as many sets as the NOTIFYs. (A SearchResponder answering for the same device should go first, so no
+         *         answer follows the byebye.)
          */
         ~PeriodicNotifier ();
 

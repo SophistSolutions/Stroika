@@ -24,8 +24,10 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **each NOTIFY set goes out once** a cycle; the spec says more than once (at most 3), a few hundred ms apart - UDP
-         loses packets.
+       - **no random 0-100 ms wait before the initial set of NOTIFYs** - nor when a new address or interface appears: the UPnP
+         Device Architecture's guard against network storms, when many devices start together (1.1, section 1.2.2).
+       - **Search sends each M-SEARCH once** a cycle; control points should send each more than once - UDP loses packets (1.1,
+         section 1.3.2). Client side: WTF's discovery.
        - **SearchResponder answers a multicast M-SEARCH at once**; the spec says after a random 0..MX seconds, so devices
          do not all answer together.
        - **PeriodicNotifier's NOTIFYs go out with the OS's default multicast TTL (1)**; Search and SearchResponder set 4

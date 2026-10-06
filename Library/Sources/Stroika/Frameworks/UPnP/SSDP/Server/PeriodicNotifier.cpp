@@ -29,6 +29,14 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 // Comment this in to turn on tracing in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+namespace {
+    // each set of NOTIFYs - every advertisement, out of every interface - goes out this many times, this far apart, as UDP loses
+    // packets: the UPnP Device Architecture (1.1, section 1.2.2) says more than once - "e.g. a few hundred milliseconds" apart - and
+    // not more than three times. 100 ms (libupnp's default too) keeps short the pause this adds to starting and stopping a device
+    constexpr unsigned int          kSetsSent_{2};
+    constexpr Time::DurationSeconds kBetweenSets_{100ms};
+}
+
 /*
  ********************************************************************************
  ******************************** PeriodicNotifier ******************************
@@ -96,11 +104,63 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
 #endif
         }
 #endif
-        [[maybe_unused]] lock_guard critSec{*sendingNotifies};
+        [[maybe_unused]] lock_guard critSec{*sendingNotifies}; // (through the sets' spacing too: only the other sender waits for it)
         InterfacesByID              sentOn;
-        try {
-            // out of each interface, with that interface's own LOCATION
-            for (const Interface& i : SSDP::Private_::GetSSDPInterfaces (interfaceFilter)) {
+        for (unsigned int nthSet = 0; nthSet < kSetsSent_; ++nthSet) {
+            if (nthSet != 0) {
+                Execution::Sleep (kBetweenSets_); // on the IntervalTimer's thread, which other timers share - so briefly
+            }
+            try {
+                // out of each interface, with that interface's own LOCATION
+                for (const Interface& i : SSDP::Private_::GetSSDPInterfaces (interfaceFilter)) {
+                    for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
+                        try {
+                            InternetAddress::AddressFamily family = s.second.GetInternetAddress ().GetAddressFamily ();
+                            optional<InternetAddress>      local  = SSDP::Server::Private_::AdvertisableAddress (i, family);
+                            if (not local) {
+                                continue; // no address of this channel's family there
+                            }
+                            optional<URI> url = location (LocationContext{*local, nullopt});
+                            if (not url) {
+                                continue; // nothing to advertise there
+                            }
+                            goOutOf (s.first, i, *local);
+                            for (Advertisement a : advertisements) {
+                                a.fAlive    = true; // (and ssdp:byebye as this goes - ~PeriodicNotifier)
+                                a.fLocation = *url;
+                                a.fMaxAge   = maxAge;
+                                s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a, s.second), s.second);
+                            }
+                            sentOn.Add (i);
+                        }
+                        catch (const Execution::Thread::AbortException&) {
+                            Execution::ReThrow ();
+                        }
+                        catch (...) {
+                            DbgTrace ("Ignoring inability to send SSDP notify packets on {}: {} (try again later)"_f, i.fInterfaceID,
+                                      current_exception ());
+                        }
+                    }
+                }
+            }
+            catch (const Execution::Thread::AbortException&) {
+                Execution::ReThrow ();
+            }
+            catch (...) {
+                DbgTrace ("Ignoring inability to send SSDP notify packets: {} (try again later)"_f, current_exception ());
+            }
+        }
+        notifyingOn->store (sentOn);
+    };
+    // as this goes (~PeriodicNotifier): an ssdp:byebye for each advertisement, out of each interface the last ssdp:alive went out of
+    fSayByebye_ = [sockets, advertisements, sendingNotifies, notifyingOn, goOutOf] () {
+        [[maybe_unused]] lock_guard critSec{*sendingNotifies};
+        // as many sets as of ssdp:alive: one byebye for each alive (UPnP Device Architecture 1.1, section 1.2.3)
+        for (unsigned int nthSet = 0; nthSet < kSetsSent_; ++nthSet) {
+            if (nthSet != 0) {
+                Execution::Sleep (kBetweenSets_);
+            }
+            for (const Interface& i : notifyingOn->load ()) {
                 for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
                     try {
                         InternetAddress::AddressFamily family = s.second.GetInternetAddress ().GetAddressFamily ();
@@ -108,55 +168,15 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
                         if (not local) {
                             continue; // no address of this channel's family there
                         }
-                        optional<URI> url = location (LocationContext{*local, nullopt});
-                        if (not url) {
-                            continue; // nothing to advertise there
-                        }
                         goOutOf (s.first, i, *local);
                         for (Advertisement a : advertisements) {
-                            a.fAlive    = true; // (and ssdp:byebye as this goes - ~PeriodicNotifier)
-                            a.fLocation = *url;
-                            a.fMaxAge   = maxAge;
+                            a.fAlive = false;
                             s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a, s.second), s.second);
                         }
-                        sentOn.Add (i);
-                    }
-                    catch (const Execution::Thread::AbortException&) {
-                        Execution::ReThrow ();
                     }
                     catch (...) {
-                        DbgTrace ("Ignoring inability to send SSDP notify packets on {}: {} (try again later)"_f, i.fInterfaceID, current_exception ());
+                        DbgTrace ("Ignoring inability to send SSDP byebye packets on {}: {}"_f, i.fInterfaceID, current_exception ());
                     }
-                }
-            }
-        }
-        catch (const Execution::Thread::AbortException&) {
-            Execution::ReThrow ();
-        }
-        catch (...) {
-            DbgTrace ("Ignoring inability to send SSDP notify packets: {} (try again later)"_f, current_exception ());
-        }
-        notifyingOn->store (sentOn);
-    };
-    // as this goes (~PeriodicNotifier): an ssdp:byebye for each advertisement, out of each interface the last ssdp:alive went out of
-    fSayByebye_ = [sockets, advertisements, sendingNotifies, notifyingOn, goOutOf] () {
-        [[maybe_unused]] lock_guard critSec{*sendingNotifies};
-        for (const Interface& i : notifyingOn->load ()) {
-            for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
-                try {
-                    InternetAddress::AddressFamily family = s.second.GetInternetAddress ().GetAddressFamily ();
-                    optional<InternetAddress>      local  = SSDP::Server::Private_::AdvertisableAddress (i, family);
-                    if (not local) {
-                        continue; // no address of this channel's family there
-                    }
-                    goOutOf (s.first, i, *local);
-                    for (Advertisement a : advertisements) {
-                        a.fAlive = false;
-                        s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a, s.second), s.second);
-                    }
-                }
-                catch (...) {
-                    DbgTrace ("Ignoring inability to send SSDP byebye packets on {}: {}"_f, i.fInterfaceID, current_exception ());
                 }
             }
         }
