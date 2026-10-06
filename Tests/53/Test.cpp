@@ -21,6 +21,7 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 #include "Stroika/Frameworks/UPnP/Device.h"
@@ -60,8 +61,8 @@ namespace {
             EXPECT_EQ (headLine, "NOTIFY * HTTP/1.1"sv);
             EXPECT_EQ (b.fAlive, a.fAlive);
             EXPECT_EQ (b.fUSN, a.fUSN);
-            EXPECT_EQ (b.fLocation, a.fLocation);
-            EXPECT_EQ (b.fServer, a.fServer);
+            EXPECT_EQ (b.fLocation, alive ? a.fLocation : URI{}); // an ssdp:byebye says neither where the device was, nor what it ran
+            EXPECT_EQ (b.fServer, alive ? a.fServer : String{});
             EXPECT_EQ (b.fTarget, a.fTarget);
             // and every header the packet carried is kept, raw
             EXPECT_EQ (b.fRawHeaders.LookupValue ("Host"sv), "239.255.255.250:1900"sv);
@@ -98,6 +99,68 @@ namespace {
 
         // and kept by Advertisement::kMapper
         EXPECT_EQ (SSDP::Advertisement::kMapper->ToObject<SSDP::Advertisement> (SSDP::Advertisement::kMapper->FromObject (b)).fMaxAge, b.fMaxAge);
+    }
+
+    /*
+     *  Each SSDP packet has the headers the UPnP Device Architecture gives it: a NOTIFY's HOST is the multicast group it goes
+     *  to; an ssdp:byebye has no CACHE-CONTROL, LOCATION or SERVER; a search answer has EXT and DATE, and no HOST or NTS (it goes
+     *  to the asker, not to a group).
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Serialize_Headers_)
+    {
+        Debug::TraceContextBumper ctx{"SSDP_Serialize_Headers_"};
+        SSDP::Advertisement       a;
+        a.fAlive    = true;
+        a.fUSN      = "uuid:315caae0-1335-57bf-a178-24c9ee756627::upnp:rootdevice"sv;
+        a.fLocation = URI{"http://192.168.1.2:8080/device.xml"sv};
+        a.fServer   = "Linux/6.8 UPnP/1.0 StroikaTest/1.0"sv;
+        a.fTarget   = SSDP::kTarget_UPNPRootDevice;
+        // a header of the packet - SSDP's, like HTTP's, are named in any case
+        auto header = [] (const Memory::BLOB& packet, const String& name) -> optional<String> {
+            String              headLine;
+            SSDP::Advertisement d;
+            SSDP::DeSerialize (packet, &headLine, &d);
+            for (const auto& kv : d.fRawHeaders) {
+                if (String::ThreeWayComparer{Characters::eCaseInsensitive}(kv.fKey, name) == 0) {
+                    return kv.fValue;
+                }
+            }
+            return nullopt;
+        };
+
+        Memory::BLOB alive = SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a, SSDP::V4::kSocketAddress);
+        for (string_view h : {"Host"sv, "Cache-Control"sv, "Location"sv, "NT"sv, "NTS"sv, "Server"sv, "USN"sv}) {
+            EXPECT_TRUE (header (alive, h)) << "ssdp:alive has " << h;
+        }
+        EXPECT_EQ (header (alive, "Host"sv), String{"239.255.255.250:1900"sv});
+        // and IPv6's group, for IPv6
+        optional<String> host6 = header (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a, SSDP::V6::kSocketAddress), "Host"sv);
+        EXPECT_EQ (host6 ? host6->ToLowerCase () : String{}, String{"[ff02::c]:1900"sv});
+
+        a.fAlive            = false;
+        Memory::BLOB byebye = SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a);
+        for (string_view h : {"Host"sv, "NT"sv, "NTS"sv, "USN"sv}) {
+            EXPECT_TRUE (header (byebye, h)) << "ssdp:byebye has " << h;
+        }
+        for (string_view h : {"Cache-Control"sv, "Location"sv, "Server"sv}) {
+            EXPECT_FALSE (header (byebye, h)) << "ssdp:byebye has no " << h;
+        }
+
+        a.fAlive            = true; // (and ignored there)
+        Memory::BLOB answer = SSDP::Serialize ("HTTP/1.1 200 OK"sv, SSDP::SearchOrNotify::SearchResponse, a);
+        EXPECT_EQ (header (answer, "EXT"sv), String{}) << "a search answer has EXT, with no value";
+        EXPECT_FALSE (header (answer, "Host"sv)) << "a search answer has no HOST";
+        EXPECT_FALSE (header (answer, "NTS"sv)) << "a search answer has no NTS";
+        for (string_view h : {"Cache-Control"sv, "Location"sv, "Server"sv, "ST"sv, "USN"sv}) {
+            EXPECT_TRUE (header (answer, h)) << "a search answer has " << h;
+        }
+        // and DATE: when it was sent, as an HTTP date
+        optional<String> date = header (answer, "Date"sv);
+        ASSERT_TRUE (date) << "a search answer has DATE";
+        optional<Time::DateTime> sent = Time::DateTime::ParseQuietly (*date, Time::DateTime::kHTTPDateFormat);
+        ASSERT_TRUE (sent) << "a search answer's DATE is an HTTP date";
+        EXPECT_EQ (sent->Format (Time::DateTime::kHTTPDateFormat), *date); // in the one form an HTTP date is written in
+        EXPECT_LT (std::abs ((Time::DateTime::Now () - *sent).count ()), 60) << "a search answer's DATE is when it was sent";
     }
 
     GTEST_TEST (Frameworks_UPnP, Device_Mapper_)

@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 
@@ -76,7 +77,8 @@ ObjectVariantMapper Advertisement::kMapperGetter_ ()
  ******************************* SSDP::Serialize ********************************
  ********************************************************************************
  */
-Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad)
+Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad,
+                              const optional<IO::Network::SocketAddress>& notifyGroup)
 {
     using namespace Characters::Literals;
     Require (not headLine.Contains ("\n"));
@@ -85,27 +87,37 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
     Streams::TextToBinary::Writer::Ptr textOut = Streams::TextToBinary::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
 
-    //// SUPER ROUGH FIRST DRAFT
+    // the headers the UPnP Device Architecture gives each, in its order: an ssdp:byebye says only what is going away; a search
+    // answer goes to the asker, not to a multicast group (so no HOST), and says neither alive nor byebye (so no NTS)
+    bool notify = searchOrNotify == SearchOrNotify::Notify;
+    bool byebye = notify and ad.fAlive.has_value () and not *ad.fAlive;
     textOut.Write ("{}\r\n"_f(headLine));
-    textOut.Write ("Host: {}:{}\r\n"_f(SSDP::V4::kSocketAddress.GetInternetAddress (), SSDP::V4::kSocketAddress.GetPort ()));
-    textOut.Write ("Cache-Control: max-age={}\r\n"_f(std::llround (ad.fMaxAge.value_or (kDefaultMaxAge).count ())));
-    textOut.Write ("Location: {}\r\n"_f(ad.fLocation));
-    if (ad.fAlive.has_value ()) {
-        if (*ad.fAlive) {
-            textOut.Write ("NTS: ssdp:alive\r\n"sv);
-        }
-        else {
-            textOut.Write ("NTS: ssdp:byebye\r\n"sv);
-        }
+    if (notify) {
+        IO::Network::SocketAddress group = notifyGroup.value_or (SSDP::V4::kSocketAddress);
+        textOut.Write (
+            "Host: {}\r\n"_f(IO::Network::UniformResourceIdentification::Authority{group.GetInternetAddress (), group.GetPort ()}.As<String> ()));
     }
-    if (not ad.fServer.empty ()) {
+    if (not byebye) {
+        textOut.Write ("Cache-Control: max-age={}\r\n"_f(std::llround (ad.fMaxAge.value_or (kDefaultMaxAge).count ())));
+    }
+    if (not notify) {
+        textOut.Write ("Date: {}\r\n"_f(Time::DateTime::NowUTC ().Format (Time::DateTime::kHTTPDateFormat))); // when it was sent - recommended
+        textOut.Write ("EXT:\r\n"sv); // with no value - required, for UPnP 1.0 control points
+    }
+    if (not byebye) {
+        textOut.Write ("Location: {}\r\n"_f(ad.fLocation));
+    }
+    if (notify and ad.fAlive.has_value ()) {
+        textOut.Write (*ad.fAlive ? "NTS: ssdp:alive\r\n"sv : "NTS: ssdp:byebye\r\n"sv);
+    }
+    if (not byebye and not ad.fServer.empty ()) {
         textOut.Write ("Server: {}\r\n"_f(ad.fServer));
     }
-    if (searchOrNotify == SearchOrNotify::SearchResponse) {
-        textOut.Write ("ST: {}\r\n"_f(ad.fTarget));
+    if (notify) {
+        textOut.Write ("NT: {}\r\n"_f(ad.fTarget));
     }
     else {
-        textOut.Write ("NT: {}\r\n"_f(ad.fTarget));
+        textOut.Write ("ST: {}\r\n"_f(ad.fTarget));
     }
     textOut.Write ("USN: {}\r\n"_f(ad.fUSN));
 

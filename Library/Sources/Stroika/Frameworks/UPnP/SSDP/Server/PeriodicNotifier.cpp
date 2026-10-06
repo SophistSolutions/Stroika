@@ -112,7 +112,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
                             a.fAlive    = true; // periodic notifier must announce alive (we don't support 'going down' yet)
                             a.fLocation = *url;
                             a.fMaxAge   = maxAge;
-                            s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a), s.second);
+                            s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a, s.second), s.second);
                         }
                         sentOn.Add (i);
                     }

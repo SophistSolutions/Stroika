@@ -84,8 +84,15 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     };
 
     /**
+     *  \brief The SSDP packet saying ad: a NOTIFY (ssdp:alive - or ssdp:byebye, given fAlive false), or an answer to a search
+     *         (headLine "HTTP/1.1 200 OK")
+     *
+     *  Each with the headers the UPnP Device Architecture gives it: a NOTIFY's HOST is notifyGroup - the multicast group it goes
+     *  to, V4::kSocketAddress or V6::kSocketAddress (IPv4's if not given); an ssdp:byebye has no CACHE-CONTROL, LOCATION or
+     *  SERVER; a search answer has EXT and DATE (now, as an HTTP date), and no HOST or NTS.
      */
-    BLOB Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad);
+    BLOB Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad,
+                    const optional<Foundation::IO::Network::SocketAddress>& notifyGroup = nullopt);
 
     /**
      *  \brief Parse any SSDP packet - a NOTIFY, an M-SEARCH, or a search response ("HTTP/1.1 200 OK")
