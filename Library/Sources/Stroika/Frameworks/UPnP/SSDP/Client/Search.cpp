@@ -64,10 +64,13 @@ public:
         }
     }
     ~Rep_ () = default;
-    void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
+    CallbackID AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
     {
-        [[maybe_unused]] lock_guard critSec{fCritSection_};
-        fFoundCallbacks_.push_back (callOnFinds);
+        return fFoundCallbacks_.Add (callOnFinds);
+    }
+    void RemoveOnFoundCallback (CallbackID callOnFinds)
+    {
+        fFoundCallbacks_.Remove (callOnFinds);
     }
     void Start (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
     {
@@ -218,18 +221,13 @@ public:
         DbgTrace ("headLine: {}"_f, headLine);
 #endif
         if (headLine.StartsWith ("HTTP/1.1 200"sv)) {
-            // bad practice to keep mutex lock here - DEADLOCK CITY - find nice CLEAN way todo this...
-            [[maybe_unused]] lock_guard critSec{fCritSection_};
-            for (const auto& i : fFoundCallbacks_) {
-                i (d);
-            }
+            fFoundCallbacks_.Call (d);
         }
     }
 
 private:
-    recursive_mutex                                       fCritSection_;
-    vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
-    InterfaceFilter                                       fInterfaceFilter_;
+    Execution::CallbackRegistry<void (const SSDP::Advertisement&)> fFoundCallbacks_;
+    InterfaceFilter                                                fInterfaceFilter_;
     static constexpr Time::DurationSeconds kCheckForSearchAgainEvery_{1.0}; // how soon the search thread acts on SearchAgain_
 
     mutex        fLifecycleMutex_;     // Start and Stop
@@ -283,9 +281,14 @@ Search::~Search ()
     IgnoreExceptionsForCall (fRep_->Stop ());
 }
 
-void Search::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
+auto Search::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds) -> CallbackID
 {
-    fRep_->AddOnFoundCallback (callOnFinds);
+    return fRep_->AddOnFoundCallback (callOnFinds);
+}
+
+void Search::RemoveOnFoundCallback (CallbackID callOnFinds)
+{
+    fRep_->RemoveOnFoundCallback (callOnFinds);
 }
 
 void Search::Start (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)

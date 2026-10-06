@@ -59,10 +59,13 @@ public:
         }
     }
     ~Rep_ () = default;
-    void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
+    CallbackID AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
     {
-        [[maybe_unused]] lock_guard critSec{fCritSection_};
-        fFoundCallbacks_.push_back (callOnFinds);
+        return fFoundCallbacks_.Add (callOnFinds);
+    }
+    void RemoveOnFoundCallback (CallbackID callOnFinds)
+    {
+        fFoundCallbacks_.Remove (callOnFinds);
     }
     void Start ()
     {
@@ -165,22 +168,18 @@ public:
         DbgTrace ("headLine: {}"_f, headLine);
 #endif
         if (headLine.StartsWith ("NOTIFY "sv)) {
-            [[maybe_unused]] lock_guard critSec{fCritSection_};
-            for (const auto& i : fFoundCallbacks_) {
-                i (d);
-            }
+            fFoundCallbacks_.Call (d);
         }
     }
 
 private:
     static constexpr Time::DurationSeconds kCheckForNewSocketsEvery_{1.0}; // how soon the listening thread takes up Rejoin_'s sockets
 
-    const Options                                         fOptions_;
-    mutex                                                 fLifecycleMutex_; // Start, Stop and Rejoin_ (called on its network-change thread)
-    recursive_mutex                                       fCritSection_;
-    vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
-    Collection<ConnectionlessSocket::Ptr>                 fSockets_;
-    Synchronized<InterfacesByID>                          fListeningOn_; // what fSockets_ are joined on
+    const Options fOptions_;
+    mutex         fLifecycleMutex_; // Start, Stop and Rejoin_ (called on its network-change thread)
+    Execution::CallbackRegistry<void (const SSDP::Advertisement&)> fFoundCallbacks_;
+    Collection<ConnectionlessSocket::Ptr>                          fSockets_;
+    Synchronized<InterfacesByID>                                   fListeningOn_; // what fSockets_ are joined on
     Synchronized<optional<Collection<ConnectionlessSocket::Ptr>>> fNewSockets_; // Rejoin_'s, for the listening thread to switch to (so declared before it)
     Thread::CleanupPtr                              fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
     optional<SSDP::Private_::NetworkChangeFollower> fNetworkChanges_; // last, so destroyed first: no Rejoin_ while the rest goes away
@@ -224,9 +223,14 @@ Listener::~Listener ()
     IgnoreExceptionsForCall (fRep_->Stop ());
 }
 
-void Listener::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
+auto Listener::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds) -> CallbackID
 {
-    fRep_->AddOnFoundCallback (callOnFinds);
+    return fRep_->AddOnFoundCallback (callOnFinds);
+}
+
+void Listener::RemoveOnFoundCallback (CallbackID callOnFinds)
+{
+    fRep_->RemoveOnFoundCallback (callOnFinds);
 }
 
 void Listener::Start ()

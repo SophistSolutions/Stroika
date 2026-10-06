@@ -9,6 +9,7 @@
 #include <functional>
 
 #include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Execution/CallbackRegistry.h"
 #include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
 
 #include "Stroika/Frameworks/UPnP/Device.h"
@@ -75,7 +76,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *  heard. Listening starts with Start (), or right away given eAutoStart.
          *
          *  \note THREADS: callOnFinds is called on the listener's own thread, not the caller's - so it must be thread-safe, and
-         *        whatever it shares with other threads needs synchronizing (e.g. Execution::Synchronized).
+         *        whatever it shares with other threads needs synchronizing (e.g. Execution::Synchronized). An exception from it
+         *        is logged (DbgTrace) and ignored: the other callbacks still get the NOTIFY.
          *
          *  \note Keep callOnFinds quick: Stop () and destruction wait for one running. (A network that appears does not - given
          *        Options::fFollowNetworkChanges, it is listened on at once, and what arrives there meanwhile is read once it returns.)
@@ -105,11 +107,26 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
     public:
         /**
-         *  Callbacks can be added after the listening has started - but not, yet, removed.
+         *  \brief Names a callback AddOnFoundCallback added, for RemoveOnFoundCallback.
+         */
+        using CallbackID = Execution::CallbackRegistry<void (const SSDP::Advertisement&)>::ID;
+
+    public:
+        /**
+         *  \brief Call callOnFinds too, with each NOTIFY heard from now on. From any thread, also once listening has started -
+         *         and from within a callback; it never waits for a running one.
          *
          *  \note THREADS: callOnFinds is called on the listener's own thread, not the caller's - so it must be thread-safe.
          */
-        nonvirtual void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
+        nonvirtual CallbackID AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
+
+    public:
+        /**
+         *  \brief Once this returns, that callback is not running, and is never called again - except that, called from within it,
+         *         the call already under way finishes. So it waits for that callback, running on the listener's thread: do not
+         *         call it holding a lock that callback takes. Removing one not added (or already removed) does nothing.
+         */
+        nonvirtual void RemoveOnFoundCallback (CallbackID callOnFinds);
 
     public:
         /**

@@ -40,23 +40,12 @@ Generally will track stuff here between releases
          interface by the asker's subnet (Interface::fBindings.fAddressRanges; an IPv6 link-local asker's scope id names
          it), else the route lookup. The exact way - IP_PKTINFO - is https://github.com/SophistSolutions/Stroika/issues/1202
          (UNLIKELY for v3.0).
-       - **implement CachingListener** (an empty stub since the first UPnP draft, 2013) - AFTER the callOnFinds redesign
-         below: a device cache fed by both Listener and Search, keyed by USN, refreshed by each alive or search answer,
-         expired at max-age (Advertisement::fMaxAge), dropped on ssdp:byebye, with added/removed callbacks. Then WTF can use
-         it, which also fixes its ignoring byebye (below). Its contents after a wait are also the synchronous search Search.h
+       - **implement CachingListener** (an empty stub since the first UPnP draft, 2013): a device cache fed by both Listener
+         and Search, keyed by USN, refreshed by each alive or search answer, expired at max-age (Advertisement::fMaxAge),
+         dropped on ssdp:byebye, with added/removed callbacks (an Execution::CallbackRegistry each). Then WTF can use it,
+         which also fixes its ignoring byebye (below). Its contents after a wait are also the synchronous search Search.h
          had an @todo for ("sends a certain number of times, and then returns all the answers") - decide there whether that
          needs an API of its own.
-       - **Listener and Search call callOnFinds with their callback list's mutex held** (Search.cpp: "DEADLOCK CITY") - so
-         AddOnFoundCallback from another thread waits for a slow callOnFinds. (LinkMonitor does too, deliberately: it is how
-         its RemoveCallback waits for a callback running on another thread - #1205's general question.)
-       - **no way to remove a callOnFinds** (Listener's and Search's AddOnFoundCallback had "@todo RETHINK!"). Solved
-         elsewhere in Stroika: by value, with an Execution::Function (LinkMonitor's RemoveCallback - though comparable
-         function objects go against modern C++'s function wrappers), or by a handle whose destruction removes it
-         (IntervalTimer::Adder). Either way, once removal returns, the callback is not running (LinkMonitor's guarantee).
-       - **a callOnFinds that throws is swallowed** (Listener and Search): the callbacks after it miss that packet, and the
-         thread sleeps 1 s (its guard against an error storm), with nothing reported - where LinkMonitor logs it and calls
-         the rest. Decide with the two above whether to add an OnError callback (both headers had "@todo Consider adding
-         OnError callback?").
        - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202) and the socket switch
          above.
        - https://github.com/SophistSolutions/Stroika/issues/715 ("-s / -l sometimes produce no results") - likely fixed by
@@ -73,6 +62,12 @@ Generally will track stuff here between releases
          does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - match by USN instead.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
+   - **Execution::Function's removal role -> CallbackRegistry and IDs, Stroika-wide** (LGP 2026-10-06: separate commits,
+     after SSDP's). Where a Function is compared only so it can be removed: LinkMonitor and SystemPerformance::Capturer can
+     use a CallbackRegistry; IntervalTimer::Manager, SignalHandlers and ThreadPool (AddTask's result, for IsPresent /
+     WaitForTask / AbortTask) want just an ID; ProgressMonitor removes none, so a plain function. Then deprecate
+     Execution::Function. Downstream uses only IntervalTimer::Adder and ThreadPool::AddTask (ignoring its result): keep
+     those call sites working.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
@@ -107,8 +102,8 @@ Generally will track stuff here between releases
      https://github.com/SophistSolutions/Stroika/issues/1205 (from IntervalTimer's five removal bugs, fixed 2026-10-05).
      Synchronized: its recursive_mutex default hides calling out while holding a lock (#1206); it cannot wait on its own
      lock, so handshakes need a second one (#1207); per-expression locking reads like an atomic check-then-act (#1208). Then
-     write the patterns down in Thread-Safety.md and audit Stroika for them - callback registries' unregister guarantee,
-     blocking under a lock (ThreadPool, Logger, SSDP Search), thread members declared last (#1209).
+     write the patterns down in Thread-Safety.md and audit Stroika for them - callback registries' unregister guarantee
+     (Execution::CallbackRegistry has it), blocking under a lock (ThreadPool, Logger), thread members declared last (#1209).
    - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
      been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
      the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.

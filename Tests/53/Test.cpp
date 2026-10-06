@@ -887,6 +887,166 @@ namespace {
     }
 
     /*
+     *  One callOnFinds throwing does not keep the advertisement from the others, of a Listener or of a Search: the exception
+     *  ended the loop calling them, so the callbacks after a thrower missed every advertisement it threw on. As in
+     *  SSDP_Loopback_Notify_, anything that keeps the exchange from happening - the callback BEFORE the thrower getting
+     *  nothing either - is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_CallbackThrows_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_CallbackThrows_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackCallbackThrows-{}:1"_f(deviceID);
+        Device       d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        DeviceDescription dd;
+        dd.fDeviceType   = deviceType;
+        dd.fFriendlyName = "Stroika regression test device"sv;
+        dd.fUDN          = "uuid:" + deviceID;
+        // an ssdp:alive (the Listener's) or a search answer (the Search's) for our device
+        auto ours = [&] (const SSDP::Advertisement& a) { return a.fTarget == deviceType and a.fAlive != false; };
+
+        // a callback before a throwing one, and one after it: each says when it gets one of ours
+        struct BeforeAndAfter {
+            Execution::WaitableEvent fBefore;
+            Execution::WaitableEvent fAfter;
+        };
+        auto addCallbacks = [&] (auto& listenerOrSearch, BeforeAndAfter& got) {
+            listenerOrSearch.AddOnFoundCallback ([&] (const SSDP::Advertisement& a) {
+                if (ours (a)) {
+                    got.fBefore.Set ();
+                }
+            });
+            listenerOrSearch.AddOnFoundCallback ([&] (const SSDP::Advertisement& a) {
+                if (ours (a)) {
+                    Execution::Throw (Execution::Exception<>{"a regression test's callOnFinds, throwing"sv});
+                }
+            });
+            listenerOrSearch.AddOnFoundCallback ([&] (const SSDP::Advertisement& a) {
+                if (ours (a)) {
+                    got.fAfter.Set ();
+                }
+            });
+        };
+        BeforeAndAfter byListener;
+        BeforeAndAfter bySearch;
+        try {
+            SSDP::Client::Listener listener{SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            addCallbacks (listener, byListener);
+            listener.Start (); // before the server, so it hears its very first NOTIFYs
+            SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                             SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            SSDP::Client::Search      search{SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            addCallbacks (search, bySearch);
+            search.Start (deviceType);
+            const Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s;
+            if (byListener.fBefore.WaitUntilQuietly (giveUpAt) != Execution::WaitableEvent::WaitStatus::eTriggered or
+                bySearch.fBefore.WaitUntilQuietly (giveUpAt) != Execution::WaitableEvent::WaitStatus::eTriggered) {
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_CallbackThrows_ skipped - our own device was not heard and found "
+                                                          "within 10 seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            // the callback after the thrower gets the very advertisement the one before it did (a second allows for a loaded machine)
+            EXPECT_TRUE (byListener.fAfter.WaitQuietly (1s) == Execution::WaitableEvent::WaitStatus::eTriggered)
+                << "the Listener's callback after a throwing one got nothing";
+            EXPECT_TRUE (bySearch.fAfter.WaitQuietly (1s) == Execution::WaitableEvent::WaitStatus::eTriggered)
+                << "the Search's callback after a throwing one got nothing";
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_CallbackThrows_ skipped - could not run an SSDP server, listener and search here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+        }
+    }
+
+    /*
+     *  Adding a callback does not wait for a callOnFinds running on the Listener's, or the Search's, own thread. It did: the
+     *  callbacks ran holding the lock AddOnFoundCallback takes - so a callOnFinds waiting for the thread adding one waited
+     *  forever. As in SSDP_Loopback_Notify_, anything that keeps the exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_AddCallbackWhileOneRuns_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_AddCallbackWhileOneRuns_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackAddCallbackWhileOneRuns-{}:1"_f(deviceID);
+        Device       d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        DeviceDescription dd;
+        dd.fDeviceType   = deviceType;
+        dd.fFriendlyName = "Stroika regression test device"sv;
+        dd.fUDN          = "uuid:" + deviceID;
+        // an ssdp:alive (the Listener's) or a search answer (the Search's) for our device
+        auto ours = [&] (const SSDP::Advertisement& a) { return a.fTarget == deviceType and a.fAlive != false; };
+
+        // a callback that, given its first advertisement of ours, says so - then waits, up to 5 seconds, to be let go
+        struct Waiting {
+            atomic<bool>             fStarted{false};
+            Execution::WaitableEvent fRunning;
+            Execution::WaitableEvent fLetGo;
+        };
+        auto addWaitingCallback = [&] (auto& listenerOrSearch, Waiting& w) {
+            listenerOrSearch.AddOnFoundCallback ([&] (const SSDP::Advertisement& a) {
+                if (ours (a) and not w.fStarted.exchange (true)) {
+                    w.fRunning.Set ();
+                    w.fLetGo.WaitQuietly (5s);
+                }
+            });
+        };
+        // how long adding a callback takes, with w's running - then lets w's go
+        auto secondsToAdd = [] (auto& listenerOrSearch, Waiting& w) {
+            Time::TimePointSeconds start = Time::GetTickCount ();
+            listenerOrSearch.AddOnFoundCallback ([] ([[maybe_unused]] const SSDP::Advertisement& a) {});
+            Time::DurationSeconds took = Time::GetTickCount () - start;
+            w.fLetGo.Set ();
+            return took.count ();
+        };
+        auto notRunning = [] () {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_AddCallbackWhileOneRuns_ skipped - our own device was not heard "
+                "or found within 10 seconds (this environment probably blocks multicast, or UDP 1900)");
+        };
+        // one at a time - each callback's 5 seconds run from its own start
+        Waiting inListener;
+        Waiting inSearch;
+        try {
+            SSDP::Client::Listener listener{SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            addWaitingCallback (listener, inListener);
+            listener.Start (); // before the server, so it hears its very first NOTIFYs
+            SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                             SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            if (inListener.fRunning.WaitQuietly (10s) != Execution::WaitableEvent::WaitStatus::eTriggered) {
+                notRunning ();
+                return;
+            }
+            EXPECT_LT (secondsToAdd (listener, inListener), 1.0) << "adding a callback to a Listener waited for a running one";
+
+            SSDP::Client::Search search{SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            addWaitingCallback (search, inSearch);
+            search.Start (deviceType);
+            if (inSearch.fRunning.WaitQuietly (10s) != Execution::WaitableEvent::WaitStatus::eTriggered) {
+                notRunning ();
+                return;
+            }
+            EXPECT_LT (secondsToAdd (search, inSearch), 1.0) << "adding a callback to a Search waited for a running one";
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_AddCallbackWhileOneRuns_ skipped - could not run an SSDP server, listener and search here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+        }
+    }
+
+    /*
      *  A Listener that can listen on no interface (none its Options::fInterfaces accepts, or no network yet) is still made: it
      *  just hears nothing until there is one.
      */
