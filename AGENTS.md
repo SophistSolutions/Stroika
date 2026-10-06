@@ -64,6 +64,25 @@ so to recompile one test against a changed header, delete its object first:
 `rm IntermediateFiles/Debug/Tests/07/Test.obj`. This is the cheap way to compile-check a header change
 without the ~12 minute `library-clobber` cycle.
 
+**Bug fixes are test-first**: write the regression test and watch it FAIL on the unchanged code, then fix - a test
+written after the fix only proves the fixed code does what it does. Choose assertions that observe what was actually
+broken (a defect that shows only walking backward needs a test that walks backward).
+
+Reading results:
+- Build `Debug` when the only question is "does it compile"; Release only when timing matters (Tests/52).
+- Report warnings as well as errors for every verification build, even a one-test rebuild: the builds are otherwise
+  warning-clean, so any warning is new.
+- `run-tests`' exit code proves nothing (`TEST_FAILURES_CAUSE_FAILED_MAKE=0`), and gtest's `[  FAILED  ]` misses harness
+  deaths (`FAILED: SIGNAL= SIGSEGV`, `FAILED: std::terminate () called`), tests that never ran (a loader error, a failed
+  copy) and crashes before the test framework starts (no output at all). Count each executable's `[  PASSED  ]` line
+  against the tests run; zero PASSED is never a pass.
+- `./configure --no-third-party-components` also drops googletest, and a test built without it is a STUB: it prints
+  `[  PASSED  ]` and exits 0, having run nothing. For a quicker scratch configuration drop the slow components instead
+  (`--mongo-cxx-driver no`, perhaps `--OpenSSL no`), or add `--googletest use` back.
+- To chase a failure in one named configuration, first run that build tree's existing `Builds/<CONFIG>/Tests/TestNN`
+  binaries, then compile a one-file probe with its exact flags (`make -n -B` in `Tests/NN` shows the recipe; pkg-config
+  under `Builds/<CONFIG>/lib/pkgconfig` gives the flags) - rather than rebuilding Stroika.
+
 ### Continuous integration
 `.github/workflows/build-N-test.yml` builds and runs the regression suite on push, across Linux
 (several gcc versions), Windows (VS2022/VS2026 × cygwin/msys), and macOS/XCode — so it covers
@@ -184,8 +203,9 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
   3.6.10 regressed console handling and parallel builds hang at any stage and never recover. Tell it
   apart by what is MISSING: no `cl.exe` running, nothing new under `IntermediateFiles/` for minutes,
   while `make.exe`/`sh.exe` persist. CPU proves nothing (0% or a ~2% spin, both seen) and Ctrl+C will
-  not break it. Kill the tree (`taskkill /F /IM make.exe /T`, then `sh.exe`) and re-run - make resumes
-  where it stopped, losing nothing. To avoid it, keep stdout/stderr off a console:
+  not break it. Kill that build's process tree by PID (`taskkill /F /T /PID <its make.exe>`, then any
+  `sh.exe` it left) - never by image name, which kills every other build and shell on the box too - and
+  re-run; make resumes where it stopped, losing nothing. To avoid it, keep stdout/stderr off a console:
   `set -o pipefail; make ... 2>&1 | tee build.txt`. `make check-prerequisite-tools` warns on an
   affected runtime; 3.6.9-2 is the last good one. Do NOT spend time bisecting Stroika for this.
   @see https://github.com/SophistSolutions/Stroika/issues/1169
@@ -247,6 +267,32 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
 - Third-party components (boost, curl, openssl, lzma, sqlite, xerces, zlib, mongo-cxx-driver, ...)
   live under `ThirdPartyComponents/` and are fetched/built automatically, or can be pointed at
   system-installed versions via configure flags/feature flags.
+- **One `make` per tree at a time.** Two configurations built at once in one tree race on the shared
+  `ThirdPartyComponents/<name>/CURRENT` (lzma and sqlite re-extract every build): one run fails, or builds from a
+  half-extracted source. `-jN` within one build is fine; for configurations in parallel, use separate trees.
+- **Windows shells.** Git Bash has no `make`; MSYS2 and Cygwin both do, and `~` is a different directory in each. A build
+  run through `bash.exe -lc` from another shell starts with `PATHEXT` empty, so Stroika's `FindExecutableInPath` finds no
+  `.exe` and Tests/38 fails: `export PATHEXT=".COM;.EXE;.BAT;.CMD"` first. A fresh `./configure` also needs `COMSPEC` and
+  `ProgramFiles(x86)` set, or vcvarsall silently runs nothing; the second is not a valid shell name, so pass it with
+  `env "ProgramFiles(x86)=C:\Program Files (x86)" ./configure ...`. Python is installed even when `python3` says it is
+  not (that is the Microsoft Store alias): use `py`.
+- **A hung test inside a release regression container** cannot be attached from inside (no `CAP_SYS_PTRACE`). Attach
+  from a sibling container in its PID namespace: `docker run --rm -i --pid=container:<regtest> --cap-add=SYS_PTRACE
+  --security-opt seccomp=unconfined --user root -v /Sandbox:/Sandbox <same image> gdb -batch -ex "set sysroot
+  /proc/<pid>/root" -ex "attach <pid>" -ex "thread apply all bt" <test binary>` - the `set sysroot` is what gives
+  library frames. Copy the binary out first: the next run deletes the build directory.
+
+### Shared dev boxes
+
+The dev boxes run LGP's long builds and release regression runs (one platform takes ~10 hours), often unattended:
+- **Never disturb a running build.** Do not build, configure, clobber or delete in a tree that may be mid-run unless asked
+  for that very action; read its logs rather than walking `IntermediateFiles/` or `Builds/`. `.claude/` and your own
+  scratch are fine to change. A request that seems to need disturbing a build is probably a misunderstanding - ask.
+- **Never kill processes by image name** (`taskkill /IM make.exe`, `pkill bash`, `killall make`): LGP's shells and builds
+  are the same images. Stop your own by the PID you started, or a `pkill -f` pattern unique to your command.
+- **Keep scratch in one directory of your own** (eg `/Sandbox/claude/`), check `df -h` before building several
+  configurations - the disk is shared, and has been filled - and delete scratch configurations (`Builds/<cfg>`,
+  `IntermediateFiles/<cfg>`, `ConfigurationFiles/<cfg>.xml`) as soon as you are done with them.
 
 ## Commits
 
@@ -284,6 +330,26 @@ Two things that quietly break that on Windows:
   `git ls-files -s <path>` showing 100755.
 - **`git reset` throws that away.** If a staged script gets unstaged for any reason, the `--chmod`
   has to be redone - `git add` alone will not bring it back.
+
+**Keep messages terse.** A cleanup is a title alone; a fix is a title plus 2-4 lines of what was wrong. Verification,
+measurements and why-not-X go in the chat reply, which LGP reads - he cuts them from the log. The exception is a breaking
+change: say what changed and who is affected, plus the `UPGRADE NOTE:`. A commit touching only TODO.md is just "todo".
+
+**To set one file's edits aside while a commit is staged, save a patch** (`git diff -- F > F.patch && git checkout -- F`,
+later `git apply F.patch`) - not `git stash push -- F`, which still records the whole index, and on pop re-applies the
+old staged versions of the commit's files.
+
+## Issues
+
+- **Priority is a field, never a label** - create no labels (applying existing ones is fine). There are TWO priority
+  fields, the "Stroika Issues" project's (#1) and the organization's issue field; setting one does not set the other, so
+  set both (`gh api graphql`, from a POSIX shell - PowerShell mangles the quoting).
+- **TODO.md outranks any ticket priority**: an entry there - even one that only points at a ticket - is a priority marker.
+  Never delete one unless LGP says so.
+- **When a commit is about an issue, comment on the issue with the commit link** once it is pushed, saying exactly what it
+  fixes. A real fix on v3-Dev is closed by hand ("Fixed in <next release>") - GitHub's `fixes #N` fires only on the
+  default branch.
+- In commit messages and issue comments write `#1165`, which GitHub links; full URLs only where nothing links them.
 
 ## Downstream projects
 
@@ -400,5 +466,59 @@ still compile". Say which one you did.
   Do NOT use `@copydoc` for this: doxygen expands it, the extension does not, so hover shows the raw
   `@copydoc ...` text. `@see` is dropped by the extension entirely. Apply this opportunistically when
   touching a header; a whole-tree sweep would bury real changes.
+- **`not` / `or` / `and`, not `!` / `||` / `&&`** - in expressions and in `#if` (`#if not defined(X)`), on lines you
+  write or touch, even when the neighbouring line uses the symbol. Not a sweep.
+- **Platform `#if` / `#elif` chains in alphabetical order** (Linux, MacOS, ..., Windows); insert a new platform in order.
+- **C++ source stays ASCII outside comments - use `\u` escapes in literals.** The MSVC builds pass no `/utf-8`, so a raw
+  non-ASCII character is read as cp1252 and the test fails only on Windows. Check new lines with
+  `git diff | grep -P '^\+.*[^\x00-\x7F]'`.
+- **String literals**: narrow where one initializes a `String` (`"..."sv` in library code) - but keep `L"..."_f`: a wide
+  format literal is CHEAPER than a narrow one, which is widened at run time. Leave `\u`/`\x` escapes, and genuinely wide
+  targets (`wchar_t` APIs, `EnumName` tables), alone. Opportunistic, not a sweep.
+- **Comments state the invariant, not today's callers** - a reason anchored to a call site rots when it changes - and
+  describe cost qualitatively ("cheap"), not with measurements ("~1ns"), which date. Numbers go in commits or issues.
+- **Claims that a tool lacks something carry a version**: "MSVC has no X, as of 19.51". And before changing a convention
+  for a `-std=c++26` quirk, check the paper's status: draft features get withdrawn (P4144 removed `span` from an
+  `initializer_list`).
 - Run `make format-code` (clang-format) before committing C++ changes; it's the only supported
   formatting workflow.
+
+### Changing things
+
+- **Deleting vs deprecating.** Dead code nothing downstream could use: delete it. A public name an app plausibly uses:
+  mark it DEPRECATED, stop using it, and delete it at the end of the `d` stage. Anything already DEPRECATED or OBSOLETE -
+  including everything in a deprecated directory such as `Foundation/Configuration/` - stays until the 3.0a1 cleanup,
+  which also removes the warning suppressions guarding its uses. A renamed macro keeps its old name as a documented
+  `#define OLD NEW` alias, plus an `UPGRADE NOTE:`. Deprecated means "still compiles and warns", not "still behaves the
+  same": build no shims to keep old behaviour.
+- **A workaround carries its own re-test trigger.** A disabled configuration's line names the issue URL; a third-party
+  workaround is version-gated (`Build/Scripts/VersionCompare`) so the next bump drops it, with the exact error text in
+  its comment. Before removing one, test the OLDEST supported toolchain its history names - for clang both stdlibs, and
+  the fmtlib path (no `<format>`) - and build the Samples too, not just the libraries; MSVC has two supported versions.
+- **Warnings**: removing a suppression that provably suppresses nothing is welcome. `-Wno-switch`, `-Wno-sign-compare` and
+  `-Wno-unused-function` stay on purpose (2026-10-05); never silence sign-compare with a cast - `std::cmp_less` fixes it.
+- **Kept on purpose, though nothing calls them**: toolbox scripts such as `Build/Scripts/BuildGCC`, `BuildClang` and
+  `BuildGLIBCLocally` ("unreferenced" means dead only for code paths). Led's `qStroika_Frameworks_Led_HeavyDebugging`
+  stays off - it is turned on by hand for a build or two when debugging Led. A private downstream depends on Led's
+  StyledTextIO (RTF, HTML, PlainText), WordProcessor, SimpleTextStore and HiddenText.
+- **Build logic**: hairy Makefile recipes may move into `Build/Scripts/`, keeping the output byte-compatible - proved by
+  an old-vs-new diff of real runs. New scripts are Python, not Perl.
+- **Test coverage is a case-by-case cost/benefit call** - there is no "no redundant coverage" rule; by default keep what
+  exists.
+
+## Working with LGP
+
+- **Discuss or act?** Imperatives ("do X", "fix", "next") mean act. Musings ("could", "should we consider", "one other
+  place...") mean reply with a view, the trade-offs and a recommendation - then stop. If unsure, ask in one line.
+- **One staged, tested commit per round**, then the remaining list - numbered, with ONE suggested next item - and wait for
+  his pick ("pushed; next" takes the suggestion). Never start the next item unasked. If what you find changes the plan he
+  approved, report it and offer the choice before going on.
+- **End every reply self-contained**: what is done, staged and pending, the key numbers, and the open question with its
+  options - his UI buries earlier messages, so never "see above". Start each new task with a one-line header naming it.
+- **Long runs**: `tee` to `.claude/<name>.log`, link the log in every status line, and give the expected finish as a clock
+  time ("expected around 14:35"). Check on it - a hung step never sends a completion notice.
+- **Links**: code as line-range links (`[F.cpp:12-30](path/F.cpp#L12-L30)`), and any file he might open.
+- **Numbers**: performance as OLD -> NEW absolute values, naming both sides of any ratio.
+- **"Stroika has no X" needs a functional search** - where that job is done today - not a grep for one name.
+- **Concurrency bugs**: show the two-thread timeline with line numbers, prove it with a test that fails on the unchanged
+  code, then name the general rule (https://github.com/SophistSolutions/Stroika/issues/1205 collects them).
