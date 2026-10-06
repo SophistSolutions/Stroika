@@ -338,11 +338,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-         *  Property with the optional<DateTime> value of the Date header.
+         *  \brief The Date header: when the message was sent (RFC 9110 section 6.6.1), held in UTC (a DateTime assigned is converted).
          *
-         *  \par Example Usage
-         *      \code
-         *      \endcode         
+         *  The header is read and written with DateTime::kHTTPDateFormat - written as "Sun, 06 Nov 1994 08:49:37 GMT", and read in
+         *  any of HTTP's date forms. One that cannot be read is taken as no Date header.
          */
         Common::Property<optional<Time::DateTime>> date;
 

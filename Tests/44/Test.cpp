@@ -161,18 +161,12 @@ namespace {
                 // now check older formats still work
                 h2.date = nullopt;
                 h2.Set (HTTP::HeaderName::kDate, kTest2_);
-#if 0
-                // see https://github.com/SophistSolutions/Stroika/issues/865 (STK-731) - should support parsing (not writing) older formats too
                 EXPECT_TRUE (h2.date == kReferenceTest_);
                 EXPECT_TRUE (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
-#endif
                 h2.date = nullopt;
                 h2.Set (HTTP::HeaderName::kDate, kTest3_);
-#if 0
-                // see https://github.com/SophistSolutions/Stroika/issues/865 (STK-731) - should support parsing (not writing) older formats too
                 EXPECT_TRUE (h2.date == kReferenceTest_);
                 EXPECT_TRUE (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
-#endif
             }
             {
                 IO::Network::HTTP::Headers h1;

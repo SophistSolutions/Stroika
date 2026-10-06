@@ -438,7 +438,7 @@ optional<String> Headers::LookupOne (const String& name) const
         return fCookieList_ ? fCookieList_->EncodeForCookieHeader () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kDate)) {
-        return fDate_ ? fDate_->Format (Time::DateTime::kRFC1123Format) : optional<String>{};
+        return fDate_ ? fDate_->Format (Time::DateTime::kHTTPDateFormat) : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kETag)) {
         auto e = this->ETag ();
@@ -646,10 +646,9 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kDate)) {
         optional<Time::DateTime> useDT;
-        // see https://github.com/SophistSolutions/Stroika/issues/865 (STK-731) - should support parsing (not writing) older formats too
         try {
             if (value) {
-                useDT = Time::DateTime::Parse (*value, Time::DateTime::kRFC1123Format).AsUTC ();
+                useDT = Time::DateTime::Parse (*value, Time::DateTime::kHTTPDateFormat).AsUTC (); // in any of HTTP's date forms
             }
         }
         catch (...) {
@@ -788,7 +787,7 @@ Collection<KeyValuePair<String, String>> Headers::As () const
         results.Add ({HeaderName::kCookie, fCookieList_->EncodeForCookieHeader ()});
     }
     if (fDate_) {
-        results.Add ({HeaderName::kDate, fDate_->Format (Time::DateTime::kRFC1123Format)});
+        results.Add ({HeaderName::kDate, fDate_->Format (Time::DateTime::kHTTPDateFormat)});
     }
     if (auto et = ETag ()) {
         results.Add ({HeaderName::kETag, et->As<String> ()});
