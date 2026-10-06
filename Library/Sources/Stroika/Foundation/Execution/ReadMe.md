@@ -19,7 +19,7 @@ Execution pattern classes (external process runner, exception handling support, 
 - [Exceptions.h](Exceptions.h)
 - [FeatureNotSupportedException.h](FeatureNotSupportedException.h)
 - [Finally.h](Finally.h) - very handy - try/finally like support
-- [Function.h](Function.h) - std::function<> but allow for \<, more usable equality etc (for callbacks to be removed later, prefer CallbackRegistry.h)
+- [Function.h](Function.h) - DEPRECATED (since v3.0d25): std::function<> but comparable, by identity - use std::function, and CallbackRegistry.h for callbacks to remove later
 - [Logger.h](Logger.h)
 - [Module.h](Module.h)
 - [ModuleGetterSetter.h](ModuleGetterSetter.h)

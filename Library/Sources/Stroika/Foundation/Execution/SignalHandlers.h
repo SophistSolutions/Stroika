@@ -8,11 +8,12 @@
 
 #include <compare>
 #include <csignal>
+#include <functional>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/UniqueID.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Foundation/Execution/Signals.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 
@@ -56,10 +57,10 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  A key feature of SignalHandler versus function<void(SignalID)> is that you can compare them (@see Function)
+     *  A key feature of SignalHandler versus function<void(SignalID)> is that you can compare them
      *
      *  Note that to do so, you must save the original SignalHandler you create to later remove it by value:
-     *  creating another SignalHandler (even with the same arguments) may not compare as equal.
+     *  creating another SignalHandler (even with the same arguments) does not compare equal (@see operator<=>).
      *
      *  Also, signal handlers come with a flag indicating that they are intended to be run in a 'safe' manner
      *  or a direct signal handling manner.
@@ -113,7 +114,7 @@ namespace Stroika::Foundation::Execution {
         SignalHandler (const SignalHandler&) = default;
         SignalHandler (void (*signalHandler) (SignalID) noexcept, Type type = Type::eDEFAULT);
         SignalHandler (void (*signalHandler) (SignalID), Type type = Type::eDEFAULT);
-        SignalHandler (const Function<void (SignalID)>& signalHandler, Type type = Type::eDEFAULT);
+        SignalHandler (const function<void (SignalID)>& signalHandler, Type type = Type::eDEFAULT);
 
     public:
         nonvirtual Type GetType () const;
@@ -131,12 +132,21 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief Each SignalHandler constructed is its own, kept by its copies: another made the same way - even from the same
+         *         function - is not equal to it. So to remove one, keep the one added.
          */
-        nonvirtual strong_ordering operator<=> (const SignalHandler& rhs) const = default;
+        nonvirtual strong_ordering operator<=> (const SignalHandler& rhs) const;
+
+    public:
+        /**
+         *  \brief True only for the same SignalHandler, or a copy of it - @see operator<=>
+         */
+        nonvirtual bool operator== (const SignalHandler& rhs) const;
 
     private:
-        Type                      fType_;
-        Function<void (SignalID)> fCall_;
+        Type                            fType_;
+        function<void (SignalID)>       fCall_;
+        Common::UniqueID<SignalHandler> fIdentity_{Common::UniqueID<SignalHandler>::New ()}; // a copy keeps it
     };
 
     /**

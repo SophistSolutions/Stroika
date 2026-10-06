@@ -31,6 +31,11 @@ namespace Stroika::Foundation::Characters {
     class String;
 }
 
+// Function's own definitions - here and in Function.inl - name it: only uses outside them should warn it is deprecated
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+
 namespace Stroika::Foundation::Execution {
 
     // SB in .inl file except to support qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -49,9 +54,9 @@ namespace Stroika::Foundation::Execution {
      *           lets you create an object (callback/Function) - which can then be added to a Mapping (or Set)
      *           and then later removed by value.
      *
-     *  \note   For callbacks to be removed later, prefer Execution::CallbackRegistry, which removes by the ID its Add returns:
-     *          removing by a Function works only with the Function added, or a copy of it - and a lambda, converted implicitly,
-     *          is a new one, so 'the same' lambda removes nothing (@see CallbackRegistry).
+     *  \deprecated Since Stroika v3.0d25 - use std::function; and for callbacks to remove later, Execution::CallbackRegistry, which
+     *          removes by the ID its Add returns. Removing by a Function works only with the Function added, or a copy of it -
+     *          and a lambda, converted implicitly, is a new one, so 'the same' lambda removes nothing (@see CallbackRegistry).
      *
      *  \note   This was implemented using a shared_ptr<function<...>> instead of a directly aggregated function object
      *          until Stroika v2.1d8.
@@ -60,7 +65,7 @@ namespace Stroika::Foundation::Execution {
      *          static_assert (totally_ordered<Function<...>);
      */
     template <typename FUNCTION_SIGNATURE>
-    class Function {
+    class [[deprecated ("Since Stroika v3.0d25 - use std::function; for callbacks to remove later, Execution::CallbackRegistry")]] Function {
     public:
         using STDFUNCTION = function<FUNCTION_SIGNATURE>;
 
@@ -165,5 +170,9 @@ namespace Stroika::Foundation::Execution {
  ********************************************************************************
  */
 #include "Function.inl"
+
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 #endif /*_Stroika_Foundation_Execution_Function_h_*/

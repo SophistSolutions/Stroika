@@ -15,7 +15,6 @@
 #include "Stroika/Foundation/DataExchange/Atom.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
-#include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Frameworks/SystemPerformance/Measurement.h"
 #include "Stroika/Frameworks/SystemPerformance/MeasurementSet.h"
 

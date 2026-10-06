@@ -89,6 +89,10 @@ namespace {
 }
 
 namespace {
+    // Execution::Function is deprecated (since Stroika v3.0d25) - and tested until it goes
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     GTEST_TEST (Foundation_Execution, Function_)
     {
         Debug::TraceContextBumper ctx{"Function_"};
@@ -120,6 +124,9 @@ namespace {
             EXPECT_TRUE (f1 != f2);
         }
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 }
 
 namespace {
