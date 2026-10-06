@@ -16,20 +16,9 @@
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 
 /**
-*  \file
-*
-*  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
-*
-* TODO:
- *      @todo   Should probably add Network::NetlinkListener - to check for net up/down messages, and
- *              redo multicast (as we do for server).
+ *  \file
  *
- *      @todo   Consider adding OnError callback?
- *
- *      @todo   Better docs on 'Firewall Note' - and maybe workaround suggestions.
- *
- *      @todo   Fix Result object do a better job summarizing original map of headers
- *              versus unused headers (now just all raw headers returned).
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Client {
@@ -116,9 +105,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
     public:
         /**
-         *  Using std::function, no way to compare for operator==, so no way to remove.
-         *  @todo    RETHINK!
-         *  This can be done after the listening has started.
+         *  Callbacks can be added after the listening has started - but not, yet, removed.
          *
          *  \note THREADS: callOnFinds is called on the listener's own thread, not the caller's - so it must be thread-safe.
          */

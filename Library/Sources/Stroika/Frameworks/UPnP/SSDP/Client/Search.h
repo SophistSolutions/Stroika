@@ -18,20 +18,6 @@
  *  \file
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
- *
- * TODO:
- *      @todo   must re-read ssdp spec for exact format of messages!
- *
- *      @todo   Must have some API for how often to send searches, and how long
- *              to listen for responses (maybe forever on responses?)
- *
- *      @todo   Consider adding OnError callback?
- *
- *      @todo   Fix Result object to return other interesting fields
- *
- *      @todo   Consider some synchonous API, so it sends a certian number of times, and
- *              then returns all the answers.
- *
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Client {
@@ -107,13 +93,11 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
     public:
         /**
-         *  Using std::function, no way to compare for operator==, so no way to remove.
-         *  @todo    RETHINK!
-         *  This can be done after the search has started.
+         *  Callbacks can be added after the search has started - but not, yet, removed.
          *
          *  \note THREADS: callOnFinds is called on the searcher's own thread, not the caller's - so it must be thread-safe.
          */
-        void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
+        nonvirtual void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
 
     public:
         /**

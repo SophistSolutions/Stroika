@@ -45,17 +45,26 @@ Generally will track stuff here between releases
        - **implement CachingListener** (an empty stub since the first UPnP draft, 2013) - AFTER the callOnFinds redesign
          below: a device cache fed by both Listener and Search, keyed by USN, refreshed by each alive or search answer,
          expired at max-age (Advertisement::fMaxAge), dropped on ssdp:byebye, with added/removed callbacks. Then WTF can use
-         it, which also fixes its ignoring byebye (below).
+         it, which also fixes its ignoring byebye (below). Its contents after a wait are also the synchronous search Search.h
+         had an @todo for ("sends a certain number of times, and then returns all the answers") - decide there whether that
+         needs an API of its own.
        - **Listener and Search call callOnFinds with their callback list's mutex held** (Search.cpp: "DEADLOCK CITY") - so
-         AddOnFoundCallback from another thread waits for a slow callOnFinds.
-       - **no way to remove a callOnFinds** (Listener's and Search's AddOnFoundCallback: "@todo RETHINK!").
-       - **stale or idea @todos in Listener.h and Search.h**: NetlinkListener (done - LinkMonitor), "Fix Result object"
-         (fRawHeaders has it), an OnError callback, firewall docs, a synchronous search API, "re-read ssdp spec for exact
-         format" (M-SEARCH's MX uses the TTL's constant kMaxHops_ - both 4: valid, but unrelated).
+         AddOnFoundCallback from another thread waits for a slow callOnFinds. (LinkMonitor does too, deliberately: it is how
+         its RemoveCallback waits for a callback running on another thread - #1205's general question.)
+       - **no way to remove a callOnFinds** (Listener's and Search's AddOnFoundCallback had "@todo RETHINK!"). Solved
+         elsewhere in Stroika: by value, with an Execution::Function (LinkMonitor's RemoveCallback - though comparable
+         function objects go against modern C++'s function wrappers), or by a handle whose destruction removes it
+         (IntervalTimer::Adder). Either way, once removal returns, the callback is not running (LinkMonitor's guarantee).
+       - **a callOnFinds that throws is swallowed** (Listener and Search): the callbacks after it miss that packet, and the
+         thread sleeps 1 s (its guard against an error storm), with nothing reported - where LinkMonitor logs it and calls
+         the rest. Decide with the two above whether to add an OnError callback (both headers had "@todo Consider adding
+         OnError callback?").
        - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202) and the socket switch
          above.
        - https://github.com/SophistSolutions/Stroika/issues/715 ("-s / -l sometimes produce no results") - likely fixed by
-         #1194: check with the SSDPClient sample on Windows and Linux, then close.
+         #1194: check with the SSDPClient sample on Windows and Linux, then close. Firewalls are the other suspect: rewrite
+         Listener.h's "Firewall Note" (which says only that turning off firewalls, rebooting, and trying again often helps)
+         from what that check finds.
        - https://github.com/SophistSolutions/Stroika/issues/1094 (server started with no network yet) - likely fixed by
          #1194 and following network changes: check on the rig (a container with no network, then one appearing), then close.
        - https://github.com/SophistSolutions/Stroika/issues/986 (IPv6 on the SSDP server, and Ping) - SSDP's part done by
