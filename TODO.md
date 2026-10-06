@@ -8,7 +8,7 @@ Generally will track stuff here between releases
 
 ## Open
 
-  - Consider rewrite of remaining perl stuff - mostly configure - to use python?
+- Consider rewrite of remaining perl stuff - mostly configure - to use python?
 
 - MakeBuildRoot / out-of-source builds: moved to
   https://github.com/SophistSolutions/Stroika/issues/1170 - too big for this list. The Windows
