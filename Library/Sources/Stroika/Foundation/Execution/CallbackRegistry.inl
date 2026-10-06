@@ -15,22 +15,6 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ************************** CallbackRegistry<...>::ID ***************************
-     ********************************************************************************
-     */
-    template <typename... ARGS>
-    constexpr CallbackRegistry<void (ARGS...)>::ID::ID (uint64_t id)
-        : fID_{id}
-    {
-    }
-    template <typename... ARGS>
-    inline Characters::String CallbackRegistry<void (ARGS...)>::ID::ToString () const
-    {
-        return Characters::ToString (fID_);
-    }
-
-    /*
-     ********************************************************************************
      ************************** Execution::CallbackRegistry *************************
      ********************************************************************************
      */
@@ -54,7 +38,7 @@ namespace Stroika::Foundation::Execution {
     auto CallbackRegistry<void (ARGS...)>::Add (const Callback& callback) -> ID
     {
         Require (callback != nullptr);
-        auto e = Memory::MakeSharedPtr<Entry_> (ID{++Private_::sCallbackRegistryLastID_}, callback);
+        auto e = Memory::MakeSharedPtr<Entry_> (ID::New (), callback);
 
         [[maybe_unused]] lock_guard critSec{fMutex_};
         fEntries_.push_back (e);

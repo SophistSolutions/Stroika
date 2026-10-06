@@ -6,16 +6,6 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     *************************** IntervalTimer::TimerID *****************************
-     ********************************************************************************
-     */
-    constexpr IntervalTimer::TimerID::TimerID (uint64_t id)
-        : fID_{id}
-    {
-    }
-
-    /*
-     ********************************************************************************
      *************************** IntervalTimer::Manager *****************************
      ********************************************************************************
      */
@@ -28,7 +18,7 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (intervalTimer);
         Require (when >= 0s);
         RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Activator object.
-        TimerID timer = NewTimerID_ ();
+        TimerID timer = TimerID::New ();
         fRep_->AddOneShot (timer, intervalTimer, when);
         return timer;
     }
@@ -39,7 +29,7 @@ namespace Stroika::Foundation::Execution {
         Require (repeatInterval >= 0s);
         Require (hysteresis == nullopt or hysteresis >= 0s);
         RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Activator object.
-        TimerID timer = NewTimerID_ ();
+        TimerID timer = TimerID::New ();
         fRep_->AddRepeating (timer, intervalTimer, repeatInterval, hysteresis);
         return timer;
     }

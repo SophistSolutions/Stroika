@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/UniqueID.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 /**
@@ -27,15 +28,7 @@
  *      @todo   https://github.com/SophistSolutions/Stroika/issues/1210 - a choice of what to do with a callback's exception
  */
 
-namespace Stroika::Foundation::Characters {
-    class String;
-}
-
 namespace Stroika::Foundation::Execution {
-
-    namespace Private_ {
-        inline atomic<uint64_t> sCallbackRegistryLastID_{0};
-    }
 
     /**
      *  \brief The callbacks an object calls when something happens - each added, and removed by the ID Add gave it - with the
@@ -99,29 +92,7 @@ namespace Stroika::Foundation::Execution {
          *  \brief Names a callback Add added, for Remove. No two the same in a process - so one from another CallbackRegistry
          *         removes nothing; nor does ID{}, which names none.
          */
-        class ID {
-        public:
-            constexpr ID () = default;
-
-        public:
-            constexpr bool            operator== (const ID& rhs) const  = default;
-            constexpr strong_ordering operator<=> (const ID& rhs) const = default;
-
-        public:
-            /**
-             *  @see Characters::ToString ()
-             */
-            nonvirtual Characters::String ToString () const;
-
-        private:
-            constexpr explicit ID (uint64_t id);
-
-        private:
-            uint64_t fID_{0}; // 0: none
-
-        private:
-            friend CallbackRegistry;
-        };
+        using ID = Common::UniqueID<CallbackRegistry>;
 
     public:
         CallbackRegistry ()                        = default;

@@ -25,6 +25,7 @@ Other:
 - [StroikaVersion.h](StroikaVersion.h)
 - [TemplateUtilities.h](TemplateUtilities.h)
 - [TypeHints.h](TypeHints.h)
+- [UniqueID.h](UniqueID.h) - an opaque ID, unique in the process, of a type of its own for each use - to name what was added, to remove it later
 - [Version.h](Version.h)
 - [Version.h](Version.h)
 - [VersionDefs.h](VersionDefs.h)

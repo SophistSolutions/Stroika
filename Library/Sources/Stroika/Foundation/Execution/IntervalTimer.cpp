@@ -3,7 +3,6 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <atomic>
 #include <condition_variable>
 #include <mutex>
 #include <random>
@@ -31,16 +30,6 @@ using Memory::MakeSharedPtr;
 
 namespace {
     thread_local const void* tRunnerOf_{}; // on a timer thread, the manager (DefaultRep::Rep_) it runs timers for
-}
-
-/*
- ********************************************************************************
- *************************** IntervalTimer::TimerID *****************************
- ********************************************************************************
- */
-Characters::String IntervalTimer::TimerID::ToString () const
-{
-    return Characters::ToString (fID_);
 }
 
 /*
@@ -231,17 +220,6 @@ auto IntervalTimer::Manager::DefaultRep::GetAllRegisteredTasks () const -> Regis
 {
     AssertNotNull (fHiddenRep_);
     return fHiddenRep_->GetAllRegisteredTasks ();
-}
-
-/*
- ********************************************************************************
- *************************** IntervalTimer::Manager *****************************
- ********************************************************************************
- */
-auto IntervalTimer::Manager::NewTimerID_ () -> TimerID
-{
-    static atomic<uint64_t> sLastID_{0};
-    return TimerID{++sLastID_};
 }
 
 /*

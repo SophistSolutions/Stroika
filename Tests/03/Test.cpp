@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
+#include "Stroika/Foundation/Common/UniqueID.h"
 #include "Stroika/Foundation/Common/Version.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -379,6 +380,24 @@ namespace {
         EXPECT_EQ (byteswap (byteswap (uint32_t{0x12345678})), uint32_t{0x12345678});
         EXPECT_EQ (static_cast<uint32_t> (byteswap (char16_t{0x0041})), 0x4100u);
         EXPECT_EQ (static_cast<uint32_t> (byteswap (char32_t{0x00000041})), 0x41000000u);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Common, UniqueID_)
+    {
+        Debug::TraceContextBumper ctx{"{}::UniqueID_"};
+        struct A {};
+        struct B {};
+        static_assert (not same_as<UniqueID<A>, UniqueID<B>>); // a type of its own for each TAG
+        UniqueID<A> a1 = UniqueID<A>::New ();
+        UniqueID<A> a2 = UniqueID<A>::New ();
+        EXPECT_NE (a1, a2);
+        EXPECT_NE (a1, UniqueID<A>{}); // New () never gives the one naming nothing
+        EXPECT_EQ (UniqueID<A>{}, UniqueID<A>{});
+        UniqueID<A> copy = a1;
+        EXPECT_EQ (copy, a1);
+        EXPECT_NE (a1.ToString (), a2.ToString ());
     }
 }
 

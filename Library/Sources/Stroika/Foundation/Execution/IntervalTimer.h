@@ -6,10 +6,10 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <compare>
 #include <functional>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/UniqueID.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -63,29 +63,7 @@ namespace Stroika::Foundation::Execution {
          *  \note Why an ID, and not the callback, to name a timer by: @see CallbackRegistry (the same callback can be added twice,
          *        too - two timers).
          */
-        class TimerID {
-        public:
-            constexpr TimerID () = default;
-
-        public:
-            constexpr bool            operator== (const TimerID& rhs) const  = default;
-            constexpr strong_ordering operator<=> (const TimerID& rhs) const = default;
-
-        public:
-            /**
-             *  @see Characters::ToString ()
-             */
-            nonvirtual Characters::String ToString () const;
-
-        private:
-            constexpr explicit TimerID (uint64_t id);
-
-        private:
-            uint64_t fID_{0}; // 0: none
-
-        private:
-            friend class Manager; // makes them
-        };
+        using TimerID = Common::UniqueID<IntervalTimer>;
 
     public:
         /**
@@ -121,7 +99,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  Calls the timers added to it, when due. Its backend is an IRep - DefaultRep (one thread, while it has timers) unless another
      *  is given; Manager::sThe (made by a Manager::Activator) is the one an Adder adds to, unless given another.
-     * 
+     *
      *  \note Timers can only be added after the start of main (), and must be removed before the end of main.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
@@ -214,9 +192,6 @@ namespace Stroika::Foundation::Execution {
          *  Default interval timer, but you can specify others.
          */
         static Manager sThe;
-
-    private:
-        static TimerID NewTimerID_ ();
 
     private:
         shared_ptr<IRep> fRep_;

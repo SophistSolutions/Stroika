@@ -3,8 +3,6 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <atomic>
-
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -115,16 +113,6 @@ public:
 
 /*
  ********************************************************************************
- ************************** Execution::ThreadPool::TaskID ***********************
- ********************************************************************************
- */
-Characters::String ThreadPool::TaskID::ToString () const
-{
-    return Characters::ToString (fID_);
-}
-
-/*
- ********************************************************************************
  ************************ Execution::ThreadPool::Statistics *********************
  ********************************************************************************
  */
@@ -226,8 +214,7 @@ auto ThreadPool::AddTask_ (const TaskType& task, const optional<Characters::Stri
     Debug::TraceContextBumper ctx{"ThreadPool::AddTask_"};
 #endif
     Require (not fAborted_);
-    static atomic<uint64_t> sLastTaskID_{0};
-    const TaskID            id{++sLastTaskID_};
+    const TaskID id = TaskID::New ();
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         fPendingTasks_.push_back (PendingTaskInfo_{.fID = id, .fTask = task, .fName = name});

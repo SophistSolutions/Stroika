@@ -6,11 +6,11 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <compare>
 #include <functional>
 #include <list>
 #include <mutex>
 
+#include "Stroika/Foundation/Common/UniqueID.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
@@ -165,29 +165,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note Why an ID, and not the task, to name one by: @see CallbackRegistry (and the same task can be added twice, too).
          */
-        class TaskID {
-        public:
-            constexpr TaskID () = default;
-
-        public:
-            constexpr bool            operator== (const TaskID& rhs) const  = default;
-            constexpr strong_ordering operator<=> (const TaskID& rhs) const = default;
-
-        public:
-            /**
-             *  @see Characters::ToString ()
-             */
-            nonvirtual Characters::String ToString () const;
-
-        private:
-            constexpr explicit TaskID (uint64_t id);
-
-        private:
-            uint64_t fID_{0}; // 0: none
-
-        private:
-            friend class ThreadPool; // makes them
-        };
+        using TaskID = Common::UniqueID<ThreadPool>;
 
     public:
         /**
