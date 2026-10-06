@@ -6,13 +6,13 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <functional>
 #include <mutex>
 #include <string>
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
-#include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
@@ -120,12 +120,12 @@ namespace Stroika::Foundation::Execution {
          *  in a GUI or whatever (queue it maybe).
          * 
          *      \todo revisit 'noexcept' in C++23 - see https://stackoverflow.com/questions/41293025/stdfunction-with-noexcept-in-c17
-         *            but for now, cannot declare teh function as noexcept
-         *            Execution::Function<void (const ProgressMonitor& progressMonitor) noexcept>;
+         *            but for now, cannot declare the function as noexcept
+         *            function<void (const ProgressMonitor& progressMonitor) noexcept>;
          * 
          *      \note - though un-enforced by the language, callers should still treat these callbacks as noexcept
          */
-        using ChangedCallbackType = Execution::Function<void (const ProgressMonitor& progressMonitor)>;
+        using ChangedCallbackType = function<void (const ProgressMonitor& progressMonitor)>;
 
     private:
         class Rep_;
