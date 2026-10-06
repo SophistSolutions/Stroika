@@ -156,6 +156,12 @@ namespace Stroika::Foundation::Execution {
      *  To use 'safe' signal handlers, be sure to read about and use
      *      @see SignalHandlerRegistry::SafeSignalsManager
      *
+     *  \note   Why not Execution::CallbackRegistry, and an ID to remove a handler by, as Stroika's other callbacks are: a direct
+     *          handler runs in the signal's own context, where CallbackRegistry's lock, and the copy each Call makes, are not
+     *          safe; and a signal's handlers are a set of values - got and set whole (GetSignalHandlers, SetSignalHandlers), with
+     *          kIGNORED among them meaning 'ignore it' - which an ID-based registry does not model. So a SignalHandler stays a
+     *          value with an identity: to remove one, keep the one added.
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      */
