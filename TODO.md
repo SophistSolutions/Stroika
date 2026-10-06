@@ -26,8 +26,6 @@ Generally will track stuff here between releases
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
        - **no random 0-100 ms wait before the initial set of NOTIFYs** - nor when a new address or interface appears: the UPnP
          Device Architecture's guard against network storms, when many devices start together (1.1, section 1.2.2).
-       - **Search sends each M-SEARCH once** a cycle; control points should send each more than once - UDP loses packets (1.1,
-         section 1.3.2). Client side: WTF's discovery.
        - **SearchResponder answers a multicast M-SEARCH at once**; the spec says after a random 0..MX seconds, so devices
          do not all answer together.
        - **PeriodicNotifier's NOTIFYs go out with the OS's default multicast TTL (1)**; Search and SearchResponder set 4
@@ -44,7 +42,10 @@ Generally will track stuff here between releases
          interface by the asker's subnet (Interface::fBindings.fAddressRanges; an IPv6 link-local asker's scope id names
          it), else the route lookup. The exact way - IP_PKTINFO - is https://github.com/SophistSolutions/Stroika/issues/1202
          (UNLIKELY for v3.0).
-       - **CachingListener is an empty stub** (just a Listener) - nothing downstream uses it: implement, or delete.
+       - **implement CachingListener** (an empty stub since the first UPnP draft, 2013) - AFTER the callOnFinds redesign
+         below: a device cache fed by both Listener and Search, keyed by USN, refreshed by each alive or search answer,
+         expired at max-age (Advertisement::fMaxAge), dropped on ssdp:byebye, with added/removed callbacks. Then WTF can use
+         it, which also fixes its ignoring byebye (below).
        - **Listener and Search call callOnFinds with their callback list's mutex held** (Search.cpp: "DEADLOCK CITY") - so
          AddOnFoundCallback from another thread waits for a slow callOnFinds.
        - **no way to remove a callOnFinds** (Listener's and Search's AddOnFoundCallback: "@todo RETHINK!").
