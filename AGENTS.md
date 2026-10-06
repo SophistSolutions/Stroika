@@ -464,6 +464,8 @@ still compile". Say which one you did.
     bool IsA (const error_code& ec, error_condition cond) noexcept;   // ... full /** */ block above
     bool IsA (const system_error& e, error_condition cond) noexcept;  ///< \brief Does this error MEAN the given condition?
   ```
+  The trailing `///<` is for overloads only - declarations of one name. A function of another name, however close
+  (`RemoveCallback` right after `AddCallback`), gets its own `/** */` block.
   Keep `\brief` explicit - `JAVADOC_AUTOBRIEF` is NO in `Documentation/Doxygen/Stroika-Library.cfg`.
   Do NOT use `@copydoc` for this: doxygen expands it, the extension does not, so hover shows the raw
   `@copydoc ...` text. `@see` is dropped by the extension entirely. Apply this opportunistically when

@@ -128,7 +128,11 @@ namespace Stroika::Foundation::IO::Network {
          *         returns, or until the LinkMonitor goes.
          */
         nonvirtual CallbackID AddCallback (const Callback& callback);
-        nonvirtual void RemoveCallback (CallbackID callback); ///< \brief Once this returns, that callback is not running, and is not called again (@see LinkMonitor)
+
+        /**
+         *  \brief Once this returns, that callback is not running, and is not called again (@see LinkMonitor).
+         */
+        nonvirtual void RemoveCallback (CallbackID callback);
 
     private:
         struct Rep_;
