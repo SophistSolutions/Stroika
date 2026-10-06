@@ -39,6 +39,11 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
             IO::Network::InternetProtocol::IP::IPVersionSupport fIPVersion{IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT};
 
             /**
+             *  The TTL (IPv6: hop limit) of each M-SEARCH: how many routers it may cross (@see kDefaultMulticastTTL).
+             */
+            uint8_t fMulticastTTL{kDefaultMulticastTTL};
+
+            /**
              *  Which network interfaces to search on - asked of each one, for each send (@see SSDP::InterfaceFilter).
              */
             InterfaceFilter fInterfaces{DefaultInterfaceFilter};

@@ -37,6 +37,13 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         extern const Foundation::IO::Network::SocketAddress kSocketAddress;
     }
 
+    /**
+     *  \brief The TTL (IPv6: hop limit) multicast SSDP packets - NOTIFYs and M-SEARCHes - go out with, unless an Options'
+     *         fMulticastTTL says otherwise: the UPnP Device Architecture (1.1, section 1.1) says it SHOULD default to 2, and be
+     *         configurable. A search answer is unicast, and needs no limit (section 1.3.3).
+     */
+    inline constexpr uint8_t kDefaultMulticastTTL{2};
+
     using Foundation::Characters::String;
 
     /**

@@ -57,6 +57,7 @@ public:
         }
         for (ConnectionlessSocket::Ptr cs : fSockets_) {
             cs.SetMulticastLoopMode (true); // possible should make this configurable
+            cs.SetMulticastTTL (options.fMulticastTTL);
         }
         if (options.fFollowNetworkChanges) {
             fNetworkChanges_ = SSDP::Private_::FollowNetworkChanges ([this] () { SearchAgain_ (); });
@@ -124,13 +125,8 @@ public:
             SocketAddress useSocketAddress = s.GetAddressFamily () == SocketAddress::INET ? SSDP::V4::kSocketAddress : SSDP::V6::kSocketAddress;
             string request;
             {
-                /*
-                 *  From http://www.upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0-20080424.pdf:
-                 *      To limit network congestion, the time-to-live (TTL) of each IP packet for each multicast
-                 *      message should default to 4 and should be configurable. 
-                 */
-                const unsigned int kMaxHops_ = 4;
-                stringstream       requestBuf;
+                constexpr unsigned int kMX_ = 4; // how long a device may wait, at random, to answer: 1 to 5 seconds (UPnP Device Architecture 1.1, section 1.3.2)
+                stringstream requestBuf;
                 requestBuf << "M-SEARCH * HTTP/1.1\r\n"sv;
                 UniformResourceIdentification::Authority hostAuthority = [&] () -> UniformResourceIdentification::Authority {
                     switch (s.GetAddressFamily ()) {
@@ -148,10 +144,9 @@ public:
                 requestBuf << "Host: "sv << hostAuthority.As<String> ().AsUTF8<string> () << "\r\n";
                 requestBuf << "Man: \"ssdp:discover\"\r\n"sv;
                 requestBuf << "ST: "sv << serviceType.AsUTF8<string> ().c_str () << "\r\n";
-                requestBuf << "MX: "sv << kMaxHops_ << "\r\n";
+                requestBuf << "MX: "sv << kMX_ << "\r\n";
                 requestBuf << "\r\n"sv;
                 request = requestBuf.str ();
-                s.SetMulticastTTL (kMaxHops_);
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("DETAILS: {}"_f, request);

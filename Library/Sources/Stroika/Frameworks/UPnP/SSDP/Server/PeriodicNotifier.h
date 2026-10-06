@@ -71,6 +71,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
         struct Options {
             FrequencyInfo fFrequencyInfo{}; ///< how often to send the NOTIFYs
             IO::Network::InternetProtocol::IP::IPVersionSupport fIPVersion{IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT}; ///< which SSDP channels: IPv4 (239.255.255.250) and/or IPv6 (ff02::c)
+            uint8_t fMulticastTTL{kDefaultMulticastTTL}; ///< the TTL (IPv6: hop limit) of each NOTIFY: how many routers it may cross (@see kDefaultMulticastTTL)
             InterfaceFilter fInterfaces{DefaultInterfaceFilter}; ///< which network interfaces to send them out of - asked each time (@see SSDP::InterfaceFilter)
 
             /**

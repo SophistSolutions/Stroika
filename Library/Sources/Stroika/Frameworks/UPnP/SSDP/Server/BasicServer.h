@@ -62,6 +62,12 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
             IO::Network::InternetProtocol::IP::IPVersionSupport fIPVersion{IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT};
 
             /**
+             *  The TTL (IPv6: hop limit) of each NOTIFY: how many routers it may cross (@see kDefaultMulticastTTL). Answers to
+             *  searches are unicast, and not limited.
+             */
+            uint8_t fMulticastTTL{kDefaultMulticastTTL};
+
+            /**
              *  Which network interfaces to advertise, and answer searches, on - asked each time SSDP lists them (@see
              *  SSDP::InterfaceFilter). To advertise there with no LOCATION, or some other one, @see LocationProvider.
              */

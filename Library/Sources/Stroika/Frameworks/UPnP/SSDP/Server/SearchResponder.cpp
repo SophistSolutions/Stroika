@@ -146,19 +146,18 @@ void SearchResponder::StartListening_ (const Iterable<Advertisement>& advertisem
     {
         static constexpr Activity kActivity_{"SSDP Binding in SearchResponder"sv};
         DeclareActivity           da{&kActivity_};
-        constexpr unsigned int    kMaxHops_ = 4;
+        // (no multicast TTL to set: these sockets send only answers, which are unicast and need no TTL limit - UPnP Device
+        // Architecture 1.1, section 1.3.3)
         if (InternetProtocol::IP::SupportIPV4 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
-            s.SetMulticastTTL (kMaxHops_);
             sockets += make_pair (s, UPnP::SSDP::V4::kSocketAddress);
         }
         if (InternetProtocol::IP::SupportIPV6 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
-            s.SetMulticastTTL (kMaxHops_);
             sockets += make_pair (s, UPnP::SSDP::V6::kSocketAddress);
         }
     }

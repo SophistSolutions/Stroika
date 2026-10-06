@@ -28,8 +28,6 @@ Generally will track stuff here between releases
          Device Architecture's guard against network storms, when many devices start together (1.1, section 1.2.2).
        - **SearchResponder answers a multicast M-SEARCH at once**; the spec says after a random 0..MX seconds, so devices
          do not all answer together.
-       - **PeriodicNotifier's NOTIFYs go out with the OS's default multicast TTL (1)**; Search and SearchResponder set 4
-         (the UPnP Device Architecture says 4 in 1.0, 2 in 1.1).
        - **BasicServer advertises no services** - no NOTIFY or search answer per service type (BasicServer.h's
          "@todo Add serviceList support"); DeviceDescription already has fServices.
        - (optional) **re-announce at a random interval** under max-age/2, as the spec recommends -

@@ -465,7 +465,7 @@ namespace {
      *  What IS a failure: an answer that comes back wrong.
      *
      *  The device type is unique to this run, so no other device on the network answers - and only our device's
-     *  announcements (a few seconds of them, TTL 4) reach the network.
+     *  announcements (a few seconds of them, multicast with SSDP::kDefaultMulticastTTL) reach the network.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_Search_)
     {
@@ -813,6 +813,77 @@ namespace {
             EXPECT_FALSE (interfaces[usn].empty ()) << "no ssdp:alive for " << usn.AsNarrowSDKString ();
             EXPECT_GE (byebyes[usn], 2 * interfaces[usn].size ()) << "ssdp:byebye heard once only, per interface: " << usn.AsNarrowSDKString ();
         }
+    }
+
+    /*
+     *  Options::fMulticastTTL: our own search finds our own device, and our own listener hears it announce itself, with the
+     *  M-SEARCH and the NOTIFYs multicast with a TTL other than the default. How far they would travel is not seen here (all in
+     *  this process); that each goes out with its TTL was checked by capturing them. As in SSDP_Loopback_Search_, anything that
+     *  keeps the exchange from happening is a test issue - seen as its failing with the default TTL too.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_MulticastTTL_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_MulticastTTL_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+
+        // with this TTL on the M-SEARCH and the NOTIFYs: was our device found by our search, and heard by our listener
+        auto foundAndHeard = [&] (uint8_t ttl) -> pair<bool, bool> {
+            const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+            const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackMulticastTTL-{}:1"_f(deviceID);
+            Device       d;
+            d.fDeviceID = deviceID;
+            d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+            DeviceDescription dd;
+            dd.fDeviceType   = deviceType;
+            dd.fFriendlyName = "Stroika regression test device"sv;
+            dd.fUDN          = "uuid:" + deviceID;
+            Execution::WaitableEvent found;
+            Execution::WaitableEvent heard;
+            // the listener first, so it hears the server's very first NOTIFYs (sent as it starts)
+            SSDP::Client::Listener listener{[&] (const SSDP::Advertisement& a) {
+                                                if (a.fTarget == deviceType and a.fAlive == true) {
+                                                    heard.Set ();
+                                                }
+                                            },
+                                            SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only},
+                                            SSDP::Client::Listener::eAutoStart};
+            SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                             SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only, .fMulticastTTL = ttl}};
+            SSDP::Client::Search search{[&] (const SSDP::Advertisement& a) {
+                                            if (a.fTarget == deviceType) {
+                                                found.Set ();
+                                            }
+                                        },
+                                        deviceType, nullopt,
+                                        SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only, .fMulticastTTL = ttl}};
+
+            const Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s;
+            bool                         wasFound = found.WaitUntilQuietly (giveUpAt) == Execution::WaitableEvent::WaitStatus::eTriggered;
+            bool                         wasHeard = heard.WaitUntilQuietly (giveUpAt) == Execution::WaitableEvent::WaitStatus::eTriggered;
+            return {wasFound, wasHeard};
+        };
+
+        try {
+            if (foundAndHeard (SSDP::kDefaultMulticastTTL) != pair{true, true}) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "SSDP_Loopback_MulticastTTL_ skipped - even with the default TTL, our own device was not found and heard within "
+                    "10 seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_MulticastTTL_ skipped - could not run an SSDP server, listener and search here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        pair<bool, bool> withTTL3{false, false};
+        EXPECT_NO_THROW (withTTL3 = foundAndHeard (3));
+        EXPECT_TRUE (withTTL3.first) << "not found by our own search, its M-SEARCH sent with TTL 3";
+        EXPECT_TRUE (withTTL3.second) << "not heard by our own listener, its NOTIFYs sent with TTL 3";
     }
 
     /*

@@ -70,6 +70,7 @@ public:
         fNotifier_ = make_unique<PeriodicNotifier> (fAdvertisements, fLocation,
                                                     PeriodicNotifier::Options{.fFrequencyInfo        = fOptions.fFrequencyInfo,
                                                                               .fIPVersion            = fOptions.fIPVersion,
+                                                                              .fMulticastTTL         = fOptions.fMulticastTTL,
                                                                               .fInterfaces           = fOptions.fInterfaces,
                                                                               .fFollowNetworkChanges = fOptions.fFollowNetworkChanges});
         fSearchResponder_ = make_unique<SearchResponder> (fAdvertisements, fLocation,
