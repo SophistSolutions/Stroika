@@ -484,6 +484,9 @@ still compile". Say which one you did.
   targets (`wchar_t` APIs, `EnumName` tables), alone. Opportunistic, not a sweep.
 - **Comments state the invariant, not today's callers** - a reason anchored to a call site rots when it changes - and
   describe cost qualitatively ("cheap"), not with measurements ("~1ns"), which date. Numbers go in commits or issues.
+- **A note that looks back names the version** - "before Stroika v3.0d25 it was an Execution::Function", not "it used to
+  be" - in a `\note` and an `UPGRADE NOTE:` alike. That is the release the change first ships in: while `STROIKA_VERSION`
+  says `3.0d25x`, the work is toward 3.0d25.
 - **Keep writing code comments**: one LGP deletes still helped at review, so it is not criticism. The ones he keeps are
   constraints and measured negative results - what stops a future reader's wrong "simplification".
 - **Claims that a tool lacks something carry a version**: "MSVC has no X, as of 19.51". And before changing a convention
