@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Async.h"
 #include "Stroika/Foundation/Execution/CPUAffinity.h"
+#include "Stroika/Foundation/Execution/CallbackRegistry.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
@@ -487,6 +488,102 @@ namespace {
             Execution::Sleep (500ms); // ten of its intervals
             EXPECT_EQ (calls.load (), 1u) << (last ? "the last timer" : "not the last timer");
         }
+    }
+}
+
+namespace {
+    /*
+     *  CallbackRegistry: each callback called in the order added; a removed one never again; one that throws stops none of
+     *  the others; and an ID from another registry, or one already removed, removes nothing.
+     */
+    GTEST_TEST (Foundation_Execution, CallbackRegistry_)
+    {
+        Debug::TraceContextBumper    ctx{"CallbackRegistry_"};
+        CallbackRegistry<void (int)> callbacks;
+        vector<int>                  calls;
+        auto                         first = callbacks.Add ([&] (int i) { calls.push_back (i); });
+        callbacks.Add ([] (int) { Execution::Throw (Execution::Exception<>{"a callback, throwing"sv}); });
+        auto last = callbacks.Add ([&] (int i) { calls.push_back (10 * i); });
+        EXPECT_NE (first, last);
+        callbacks.Call (1);
+        EXPECT_EQ (calls, (vector<int>{1, 10}));
+        callbacks.Remove (first);
+        callbacks.Call (2);
+        EXPECT_EQ (calls, (vector<int>{1, 10, 20}));
+        CallbackRegistry<void (int)> other;
+        callbacks.Remove (other.Add ([] (int) {})); // not one of callbacks'
+        callbacks.Remove (first);                   // already removed
+        callbacks.Remove ({});                      // names none
+        callbacks.Call (3);
+        EXPECT_EQ (calls, (vector<int>{1, 10, 20, 30}));
+    }
+
+    /*
+     *  With a callback running on another thread: Add does not wait for it; Remove does - so once Remove returns, the callback
+     *  is not running, and it is never called again.
+     */
+    GTEST_TEST (Foundation_Execution, CallbackRegistry_Threads_)
+    {
+        Debug::TraceContextBumper ctx{"CallbackRegistry_Threads_"};
+        CallbackRegistry<void ()> callbacks;
+        atomic<unsigned int>      calls{0};
+        atomic<bool>              running{false};
+        WaitableEvent             started;
+        WaitableEvent             letGo;
+        auto                      id     = callbacks.Add ([&] () {
+            ++calls;
+            running = true;
+            started.Set ();
+            letGo.WaitQuietly (10s);
+            running = false;
+        });
+        Thread::Ptr               caller = Thread::New ([&] () { callbacks.Call (); }, Thread::eAutoStart);
+        EXPECT_TRUE (started.WaitQuietly (10s) == WaitableEvent::WaitStatus::eTriggered);
+
+        // the callback waits for this thread - so an Add waiting for it would take its 10 seconds
+        Time::TimePointSeconds start = Time::GetTickCount ();
+        callbacks.Add ([] () {});
+        EXPECT_LT ((Time::GetTickCount () - start).count (), 1.0) << "Add waited for a running callback";
+
+        atomic<bool> removed{false};
+        Thread::Ptr  remover = Thread::New (
+            [&] () {
+                callbacks.Remove (id);
+                removed = true;
+            },
+            Thread::eAutoStart);
+        Execution::Sleep (200ms); // for Remove to be waiting
+        EXPECT_FALSE (removed.load ()) << "Remove did not wait for the running callback";
+        letGo.Set ();
+        remover.Join ();
+        EXPECT_FALSE (running.load ()) << "the callback was still running after Remove returned";
+        caller.Join ();
+        callbacks.Call ();
+        EXPECT_EQ (calls.load (), 1u) << "the callback was called after Remove returned";
+    }
+
+    /*
+     *  A callback that removes itself does not wait for itself to finish (which would be forever), and is not called again; nor
+     *  is one it removes that comes after it, in the very Call that removed it.
+     */
+    GTEST_TEST (Foundation_Execution, CallbackRegistry_RemoveFromCallback_)
+    {
+        Debug::TraceContextBumper     ctx{"CallbackRegistry_RemoveFromCallback_"};
+        CallbackRegistry<void ()>     callbacks;
+        unsigned int                  selfCalls  = 0;
+        unsigned int                  laterCalls = 0;
+        CallbackRegistry<void ()>::ID self;
+        CallbackRegistry<void ()>::ID later;
+        self  = callbacks.Add ([&] () {
+            ++selfCalls;
+            callbacks.Remove (self);
+            callbacks.Remove (later);
+        });
+        later = callbacks.Add ([&] () { ++laterCalls; });
+        callbacks.Call ();
+        callbacks.Call ();
+        EXPECT_EQ (selfCalls, 1u);
+        EXPECT_EQ (laterCalls, 0u) << "called in the very Call that removed it";
     }
 }
 #endif

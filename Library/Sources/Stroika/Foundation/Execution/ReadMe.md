@@ -11,6 +11,7 @@ Execution pattern classes (external process runner, exception handling support, 
 - [AbortableMutex.h](AbortableMutex.h)
 - [Activity.h](Activity.h)
 - [BlockingQueue.h](BlockingQueue.h)
+- [CallbackRegistry.h](CallbackRegistry.h) - the callbacks an object calls from its own thread: added, removed by ID (not running once removed), called holding no lock
 - [CommandLine.h](CommandLine.h) - parse command lines
 - [Common.h](Common.h)
 - [ConditionVariable.h](ConditionVariable.h) - support use of std::condition_variable
@@ -18,7 +19,7 @@ Execution pattern classes (external process runner, exception handling support, 
 - [Exceptions.h](Exceptions.h)
 - [FeatureNotSupportedException.h](FeatureNotSupportedException.h)
 - [Finally.h](Finally.h) - very handy - try/finally like support
-- [Function.h](Function.h) - std::function<> but allow for \<, more usable equality etc (key to add/remove callbacks)
+- [Function.h](Function.h) - std::function<> but allow for \<, more usable equality etc (for callbacks to be removed later, prefer CallbackRegistry.h)
 - [Logger.h](Logger.h)
 - [Module.h](Module.h)
 - [ModuleGetterSetter.h](ModuleGetterSetter.h)

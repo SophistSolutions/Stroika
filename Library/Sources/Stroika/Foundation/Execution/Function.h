@@ -49,6 +49,10 @@ namespace Stroika::Foundation::Execution {
      *           lets you create an object (callback/Function) - which can then be added to a Mapping (or Set)
      *           and then later removed by value.
      *
+     *  \note   For callbacks to be removed later, prefer Execution::CallbackRegistry, which removes by the ID its Add returns:
+     *          removing by a Function works only with the Function added, or a copy of it - and a lambda, converted implicitly,
+     *          is a new one, so 'the same' lambda removes nothing (@see CallbackRegistry).
+     *
      *  \note   This was implemented using a shared_ptr<function<...>> instead of a directly aggregated function object
      *          until Stroika v2.1d8.
      *
