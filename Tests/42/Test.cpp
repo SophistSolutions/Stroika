@@ -28,6 +28,7 @@
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -488,6 +489,45 @@ namespace {
             Execution::Sleep (500ms); // ten of its intervals
             EXPECT_EQ (calls.load (), 1u) << (last ? "the last timer" : "not the last timer");
         }
+    }
+
+    /*
+     *  An Adder given a Manager adds its timer to that one - not to Manager::sThe - and removes it from there.
+     */
+    GTEST_TEST (Foundation_Execution, IntervalTimer_AdderGivenManager_)
+    {
+        Debug::TraceContextBumper         ctx{"IntervalTimer_AdderGivenManager_"};
+        IntervalTimer::Manager::Activator intervalTimerMgrActivator;
+        IntervalTimer::Manager            other{Memory::MakeSharedPtr<IntervalTimer::Manager::DefaultRep> ()};
+        {
+            IntervalTimer::Adder adder{other, [] () {}, Time::Duration{1h}};
+            EXPECT_EQ (other.GetAllRegisteredTasks ().size (), 1u);
+            EXPECT_EQ (IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().size (), 0u);
+        }
+        EXPECT_EQ (other.GetAllRegisteredTasks ().size (), 0u);
+    }
+
+    /*
+     *  An Adder moved into another: the one assigned to removes its own timer, and takes over the moved one's - not adding it
+     *  again - which goes when the Adder now holding it does (the one moved from removes nothing).
+     */
+    GTEST_TEST (Foundation_Execution, IntervalTimer_AdderMoveAssign_)
+    {
+        Debug::TraceContextBumper         ctx{"IntervalTimer_AdderMoveAssign_"};
+        IntervalTimer::Manager::Activator intervalTimerMgrActivator;
+        {
+            IntervalTimer::Adder a{[] () {}, Time::Duration{1h}};
+            {
+                IntervalTimer::Adder b{[] () {}, Time::Duration{2h}};
+                EXPECT_EQ (IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().size (), 2u);
+                a = move (b);
+                EXPECT_EQ (IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().size (), 1u);
+            }
+            EXPECT_EQ (IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().size (), 1u) << "the Adder moved from removed the timer";
+            optional<IntervalTimer::RegisteredTask> t = IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().First ();
+            EXPECT_TRUE (t and t->fFrequency == Time::Duration{2h}) << "not the timer moved in"; // (b's: 2 hours, a's 1)
+        }
+        EXPECT_EQ (IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().size (), 0u);
     }
 }
 

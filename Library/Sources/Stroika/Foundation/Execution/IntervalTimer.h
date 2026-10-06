@@ -6,9 +6,11 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <compare>
+#include <functional>
+
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
-#include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
@@ -45,7 +47,7 @@ namespace Stroika::Foundation::Execution {
          *  
          *  \pre TimerCallback must be cancelable!
          */
-        using TimerCallback = Function<void ()>;
+        using TimerCallback = function<void ()>;
 
     public:
         class Manager;
@@ -55,9 +57,42 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief Names a timer Manager::AddOneShot or AddRepeating added - for RemoveRepeating. No two the same in a process, so
+         *         one from another Manager names none of this one's; nor does TimerID{}.
+         *
+         *  \note Why an ID, and not the callback, to name a timer by: @see CallbackRegistry (the same callback can be added twice,
+         *        too - two timers).
+         */
+        class TimerID {
+        public:
+            constexpr TimerID () = default;
+
+        public:
+            constexpr bool            operator== (const TimerID& rhs) const  = default;
+            constexpr strong_ordering operator<=> (const TimerID& rhs) const = default;
+
+        public:
+            /**
+             *  @see Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
+
+        private:
+            constexpr explicit TimerID (uint64_t id);
+
+        private:
+            uint64_t fID_{0}; // 0: none
+
+        private:
+            friend class Manager; // makes them
+        };
+
+    public:
+        /**
          *  Used for reporting from the IntervalTimer::Manager (e.g. for debugging, to dump the status).
          */
         struct RegisteredTask {
+            TimerID                  fID;
             TimerCallback            fCallback;
             Time::TimePointSeconds   fCallNextAt;
             optional<Time::Duration> fFrequency; // if missing, this is a one-shot event
@@ -72,15 +107,15 @@ namespace Stroika::Foundation::Execution {
 
     private:
         struct Key_Extractor_ {
-            TimerCallback operator() (const RegisteredTask& r) const
+            TimerID operator() (const RegisteredTask& r) const
             {
-                return r.fCallback;
+                return r.fID;
             };
         };
 
     public:
         using RegisteredTaskCollection =
-            Containers::KeyedCollection<RegisteredTask, TimerCallback, Containers::KeyedCollection_DefaultTraits<RegisteredTask, Execution::Function<void (void)>, Key_Extractor_>>;
+            Containers::KeyedCollection<RegisteredTask, TimerID, Containers::KeyedCollection_DefaultTraits<RegisteredTask, TimerID, Key_Extractor_>>;
     };
 
     /**
@@ -88,10 +123,6 @@ namespace Stroika::Foundation::Execution {
      *  and allow adders to optionally target different managers.
      * 
      *  \note Timers can only be added after the start of main (), and must be removed before the end of main.
-     * 
-     *  \note each TimerCallback must compare UNIQUE. You cannot use the same one twice in a given Manager, even with
-     *        different times. This is because we need SOME unique key for each entry, and the Function object
-     *        provides us with a convenient one.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
@@ -120,37 +151,36 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief Add a timer to be called once after duration when
-         * 
+         *  \brief Add a timer to be called once after duration when - named by the TimerID returned
+         *
          *  \pre intervalTimer valid function ptr (not null)
-         *  \pre intervalTimer not already registered
          *  \pre when >= 0
          */
-        nonvirtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when);
+        nonvirtual TimerID AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when);
 
     public:
         /**
-         *  \brief Add a timer to be called repeatedly after duration repeatInterval
-         * 
+         *  \brief Add a timer to be called repeatedly after duration repeatInterval - named by the TimerID returned, for
+         *         RemoveRepeating
+         *
          *  \pre intervalTimer valid function ptr (not null)
-         *  \pre intervalTimer not already registered
          *  \pre repeatInterval >= 0
          *  \pre hysteresis == nullopt or hysteresis >= 0
          */
-        nonvirtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
-                                      const optional<Time::Duration>& hysteresis = nullopt);
+        nonvirtual TimerID AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
+                                         const optional<Time::Duration>& hysteresis = nullopt);
 
     public:
         /**
          *  Can remove a repeating task, but cannot remove a oneShot, since it might not be there by the time you go to remove it.
          *
-         *  Once this returns, intervalTimer is not running, and is not called again: if it is running now, this waits for that call
-         *  to finish - unless called from intervalTimer itself (on the timer's thread), when that call finishes after. So do not
-         *  call this holding a lock intervalTimer takes.
+         *  Once this returns, the timer's callback is not running, and is not called again: if it is running now, this waits for
+         *  that call to finish - unless called from that callback itself (on the timer's thread), when that call finishes after.
+         *  So do not call this holding a lock that callback takes.
          *
-         *  \pre argument intervalTimer is registered.
+         *  \pre timer is registered (here)
          */
-        nonvirtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept;
+        nonvirtual void RemoveRepeating (TimerID timer) noexcept;
 
     public:
         /**
@@ -186,27 +216,31 @@ namespace Stroika::Foundation::Execution {
         static Manager sThe;
 
     private:
+        static TimerID NewTimerID_ ();
+
+    private:
         shared_ptr<IRep> fRep_;
     };
 
     /**
+     *  The Manager names each timer (its TimerID) - and a rep keeps it by that name.
      */
     class IntervalTimer::Manager::IRep {
     public:
         virtual ~IRep () = default;
 
     public:
-        virtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when) = 0;
+        virtual void AddOneShot (TimerID timer, const TimerCallback& intervalTimer, const Time::Duration& when) = 0;
 
     public:
-        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
+        virtual void AddRepeating (TimerID timer, const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
                                    const optional<Time::Duration>& hysteresis) = 0;
 
     public:
         /**
-         *  \brief As Manager::RemoveRepeating says: once it returns, intervalTimer is not running, and is not called again
+         *  \brief As Manager::RemoveRepeating says: once it returns, the timer's callback is not running, and is not called again
          */
-        virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept = 0;
+        virtual void RemoveRepeating (TimerID timer) noexcept = 0;
 
     public:
         virtual RegisteredTaskCollection GetAllRegisteredTasks () const = 0;
@@ -220,14 +254,14 @@ namespace Stroika::Foundation::Execution {
         DefaultRep ();
 
     public:
-        virtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when) override;
+        virtual void AddOneShot (TimerID timer, const TimerCallback& intervalTimer, const Time::Duration& when) override;
 
     public:
-        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
+        virtual void AddRepeating (TimerID timer, const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
                                    const optional<Time::Duration>& hysteresis) override;
 
     public:
-        virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept override;
+        virtual void RemoveRepeating (TimerID timer) noexcept override;
 
     public:
         virtual RegisteredTaskCollection GetAllRegisteredTasks () const override;
@@ -294,31 +328,33 @@ namespace Stroika::Foundation::Execution {
          */
         Adder () = delete;
         Adder (Adder&& src) noexcept;
-        Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
-        Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately,
+        Adder (const TimerCallback& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
+        Adder (const TimerCallback& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately,
                const optional<Time::Duration>& hysteresis = nullopt);
-        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval,
+        Adder (IntervalTimer::Manager& manager, const TimerCallback& f, const Time::Duration& repeatInterval,
                const optional<Time::Duration>& hysteresis = nullopt);
-        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval,
+        Adder (IntervalTimer::Manager& manager, const TimerCallback& f, const Time::Duration& repeatInterval,
                RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis = nullopt);
 
     public:
         ~Adder ();
 
     public:
-        nonvirtual Adder& operator= (const Adder&) = delete;
+        /**
+         *  \brief Removes this Adder's own timer, and takes over rhs's (not adding it again: rhs, moved from, removes nothing).
+         */
         nonvirtual Adder& operator= (Adder&& rhs) noexcept;
+        nonvirtual Adder& operator= (const Adder&) = delete;
 
     public:
         /**
          */
-        nonvirtual Function<void (void)> GetCallback () const;
+        nonvirtual TimerCallback GetCallback () const;
 
     private:
-        Time::Duration           fRepeatInterval_;
-        optional<Time::Duration> fHysteresis_;
-        IntervalTimer::Manager*  fManager_;
-        Function<void (void)>    fFunction_;
+        IntervalTimer::Manager* fManager_; // null if moved from
+        TimerCallback           fFunction_;
+        TimerID                 fTimer_;
     };
 
 }

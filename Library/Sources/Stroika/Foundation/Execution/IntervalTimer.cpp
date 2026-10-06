@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <atomic>
 #include <condition_variable>
 #include <mutex>
 #include <random>
@@ -34,6 +35,16 @@ namespace {
 
 /*
  ********************************************************************************
+ *************************** IntervalTimer::TimerID *****************************
+ ********************************************************************************
+ */
+Characters::String IntervalTimer::TimerID::ToString () const
+{
+    return Characters::ToString (fID_);
+}
+
+/*
+ ********************************************************************************
  *********************** IntervalTimer::RegisteredTask **************************
  ********************************************************************************
  */
@@ -41,7 +52,7 @@ Characters::String IntervalTimer::RegisteredTask::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "callback: "sv << fCallback;
+    sb << "id: "sv << fID;
     sb << ", callNextAt: "sv << fCallNextAt;
     sb << ", frequency: "sv << fFrequency;
     sb << ", hysteresis: "sv << fHysteresis;
@@ -57,28 +68,28 @@ Characters::String IntervalTimer::RegisteredTask::ToString () const
 struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     Rep_ ()          = default;
     virtual ~Rep_ () = default;
-    void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when)
+    void AddOneShot (TimerID timer, const TimerCallback& intervalTimer, const Time::Duration& when)
     {
         Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: AddOneShot"};
-        fData_.rwget ()->Add (RegisteredTask{intervalTimer, Time::GetTickCount () + when});
+        fData_.rwget ()->Add (RegisteredTask{timer, intervalTimer, Time::GetTickCount () + when});
         DataChanged_ (); // (holding no lock - @see RemoveRepeating)
     }
-    void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
+    void AddRepeating (TimerID timer, const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
         Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: AddRepeating"};
-        fData_.rwget ()->Add ({intervalTimer, Time::GetTickCount () + repeatInterval, repeatInterval, hysteresis});
+        fData_.rwget ()->Add ({timer, intervalTimer, Time::GetTickCount () + repeatInterval, repeatInterval, hysteresis});
         DataChanged_ (); // (holding no lock - @see RemoveRepeating)
     }
-    void RemoveRepeating (const TimerCallback& intervalTimer) noexcept
+    void RemoveRepeating (TimerID timer) noexcept
     {
         Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: RemoveRepeating"};
         {
             unique_lock runningLock{fRunningMutex_};
-            fData_.rwget ()->Remove (intervalTimer);
+            fData_.rwget ()->Remove (timer);
             // if it is running now, wait for that call to finish: once removed, it is not running, and not called again. But not
             // on the timer thread - the callback removing itself - which would wait for itself, forever
             if (tRunnerOf_ != this) {
-                fRunningChanged_.wait (runningLock, [&] () { return not(fRunning_ and *fRunning_ == intervalTimer); });
+                fRunningChanged_.wait (runningLock, [&] () { return fRunning_ != timer; });
             }
         }
         DataChanged_ (); // holding no lock: this may stop the timer thread, and wait for it - which needs them to finish
@@ -89,11 +100,11 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         return fData_.load ();
     }
 
-    // the callback the timer thread is running now, if any - so RemoveRepeating can wait for it to finish. A std::condition_variable,
-    // not a Stroika ConditionVariable: RemoveRepeating is noexcept, so its wait must not be interruptible
-    mutex                   fRunningMutex_; // taken before fData_'s
-    condition_variable      fRunningChanged_;
-    optional<TimerCallback> fRunning_;
+    // the timer whose callback the timer thread is running now, if any - so RemoveRepeating can wait for it to finish. A
+    // std::condition_variable, not a Stroika ConditionVariable: RemoveRepeating is noexcept, so its wait must not be interruptible
+    mutex              fRunningMutex_; // taken before fData_'s
+    condition_variable fRunningChanged_;
+    optional<TimerID>  fRunning_;
 
     // @todo - re-implement using priority q, with next time at top of q
     Synchronized<RegisteredTaskCollection>       fData_;
@@ -137,10 +148,10 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             for (const RegisteredTask& i : elts2Run) {
                 {
                     lock_guard runningLock{fRunningMutex_};
-                    if (not fData_.cget ()->Contains (i.fCallback)) {
+                    if (not fData_.cget ()->Contains (i.fID)) {
                         continue; // removed since the copy was taken
                     }
-                    fRunning_ = i.fCallback;
+                    fRunning_ = i.fID;
                 }
                 [[maybe_unused]] auto&& doneRunning = Finally ([this] () noexcept {
                     {
@@ -152,7 +163,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                 IgnoreExceptionsExceptThreadAbortForCall (i.fCallback ());
                 // set its next time - from when it finished - unless it was removed while running: adding it then would bring it back
                 auto rwDataLock = fData_.rwget ();
-                if (optional<RegisteredTask> current = rwDataLock->Lookup (i.fCallback)) {
+                if (optional<RegisteredTask> current = rwDataLock->Lookup (i.fID)) {
                     if (current->fFrequency.has_value ()) {
                         current->fCallNextAt = Time::GetTickCount () + *current->fFrequency;
                         if (current->fHysteresis) {
@@ -162,7 +173,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                         rwDataLock->Add (*current); // replaces it
                     }
                     else {
-                        rwDataLock->Remove (i.fCallback); // a one-shot: done
+                        rwDataLock->Remove (i.fID); // a one-shot: done
                     }
                 }
             }
@@ -197,29 +208,40 @@ IntervalTimer::Manager::DefaultRep::DefaultRep ()
 {
 }
 
-void IntervalTimer::Manager::DefaultRep::AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when)
+void IntervalTimer::Manager::DefaultRep::AddOneShot (TimerID timer, const TimerCallback& intervalTimer, const Time::Duration& when)
 {
     AssertNotNull (fHiddenRep_);
-    fHiddenRep_->AddOneShot (intervalTimer, when);
+    fHiddenRep_->AddOneShot (timer, intervalTimer, when);
 }
 
-void IntervalTimer::Manager::DefaultRep::AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
-                                                       const optional<Time::Duration>& hysteresis)
+void IntervalTimer::Manager::DefaultRep::AddRepeating (TimerID timer, const TimerCallback& intervalTimer,
+                                                       const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
 {
     AssertNotNull (fHiddenRep_);
-    fHiddenRep_->AddRepeating (intervalTimer, repeatInterval, hysteresis);
+    fHiddenRep_->AddRepeating (timer, intervalTimer, repeatInterval, hysteresis);
 }
 
-void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& intervalTimer) noexcept
+void IntervalTimer::Manager::DefaultRep::RemoveRepeating (TimerID timer) noexcept
 {
     AssertNotNull (fHiddenRep_);
-    fHiddenRep_->RemoveRepeating (intervalTimer);
+    fHiddenRep_->RemoveRepeating (timer);
 }
 
 auto IntervalTimer::Manager::DefaultRep::GetAllRegisteredTasks () const -> RegisteredTaskCollection
 {
     AssertNotNull (fHiddenRep_);
     return fHiddenRep_->GetAllRegisteredTasks ();
+}
+
+/*
+ ********************************************************************************
+ *************************** IntervalTimer::Manager *****************************
+ ********************************************************************************
+ */
+auto IntervalTimer::Manager::NewTimerID_ () -> TimerID
+{
+    static atomic<uint64_t> sLastID_{0};
+    return TimerID{++sLastID_};
 }
 
 /*
@@ -248,14 +270,12 @@ IntervalTimer::Manager::Activator::~Activator ()
  ***************************** IntervalTimer::Adder *****************************
  ********************************************************************************
  */
-IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval,
+IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const TimerCallback& f, const Time::Duration& repeatInterval,
                              RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
-    : fRepeatInterval_{repeatInterval}
-    , fHysteresis_{hysteresis}
-    , fManager_{&manager}
+    : fManager_{&manager}
     , fFunction_{f}
+    , fTimer_{manager.AddRepeating (f, repeatInterval, hysteresis)}
 {
-    Manager::sThe.AddRepeating (fFunction_, repeatInterval, hysteresis);
     if (runImmediately == RunImmediatelyFlag::eRunImmediately) {
         IgnoreExceptionsExceptThreadAbortForCall (fFunction_ ());
     }
