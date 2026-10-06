@@ -33,7 +33,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      *
      *  Instantiating the class starts the (background) notifications automatically, and they
      *  continue until the PeriodicNotifier object is destroyed. (so a smart pointer to one of these is typically kept around
-     *  for the life of the application).
+     *  for the life of the application). Destroying it says ssdp:byebye, so control points drop the device at once - rather
+     *  than when its announcements' max-age runs out.
      *
      *  \par Example Usage
      *      \code
@@ -98,7 +99,11 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
         const PeriodicNotifier operator= (const PeriodicNotifier&) = delete;
 
     public:
-        ~PeriodicNotifier () = default;
+        /**
+         *  \brief Stops the NOTIFYs, then sends an ssdp:byebye for each advertisement, out of each interface its last NOTIFYs went
+         *         out of. (A SearchResponder answering for the same device should go first, so no answer follows the byebye.)
+         */
+        ~PeriodicNotifier ();
 
     public:
         /**
@@ -109,6 +114,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
     private:
         shared_ptr<Execution::Synchronized<IO::Network::InterfacesByID>> fNotifyingOn_; // shared with the timer's callback
+        function<void ()>                                                fSayByebye_;
         unique_ptr<Execution::IntervalTimer::Adder>                      fIntervalTimerAdder_;
         optional<SSDP::Private_::NetworkChangeFollower> fNetworkChanges_; // last, so destroyed first: no NOTIFY while the rest goes away
     };

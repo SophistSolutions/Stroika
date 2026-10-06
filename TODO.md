@@ -24,8 +24,6 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **ssdp:byebye is never sent** when a device stops (PeriodicNotifier, so BasicServer) -
-         https://github.com/SophistSolutions/Stroika/issues/989
        - **each NOTIFY set goes out once** a cycle; the spec says more than once (at most 3), a few hundred ms apart - UDP
          loses packets.
        - **SearchResponder answers a multicast M-SEARCH at once**; the spec says after a random 0..MX seconds, so devices

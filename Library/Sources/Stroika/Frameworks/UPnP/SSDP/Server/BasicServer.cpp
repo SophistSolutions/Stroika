@@ -78,7 +78,7 @@ public:
                                                                                    .fFollowNetworkChanges = fOptions.fFollowNetworkChanges});
     }
     unique_ptr<PeriodicNotifier> fNotifier_;
-    unique_ptr<SearchResponder>  fSearchResponder_;
+    unique_ptr<SearchResponder>  fSearchResponder_; // last, so destroyed first: no search is answered after the notifier says ssdp:byebye
 };
 
 /*

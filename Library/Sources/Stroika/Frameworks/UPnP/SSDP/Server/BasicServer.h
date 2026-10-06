@@ -20,8 +20,6 @@
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   Support SSDP::bye - sending going down notificaiton!!!
- *
  *      @todo   Add serviceList support
  */
 
@@ -31,7 +29,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      *  \brief SSDP Server Implementation: handle the multicast part of UPnP SSDP - listening for searches and sending periodic notifications
      *
      *  When this object is instantiated, it fires off threads to notify and respond to
-     *  searches. When it is destroyed, it stops doing that.
+     *  searches. When it is destroyed, it stops doing that, and says ssdp:byebye - so control points drop the device at once,
+     *  rather than when its announcements' max-age runs out.
      * 
      *  \note   Caller must separately handle the HTTP requests for device discovery (see SSDP server sample)
      * 

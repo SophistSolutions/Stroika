@@ -583,7 +583,8 @@ namespace {
             try {
                 // the listener first, so it hears the server's very first NOTIFYs (sent as it starts)
                 SSDP::Client::Listener    listener{[&] (const SSDP::Advertisement& a) {
-                                                    if (a.fTarget == deviceType) {
+                                                    // its ssdp:alive NOTIFYs - not the byebye it says as it goes (SSDP_Loopback_Byebye_'s)
+                                                    if (a.fTarget == deviceType and a.fAlive == true) {
                                                         heard.rwget ()->Append (a);
                                                         heardEvent.Set ();
                                                     }
@@ -661,6 +662,78 @@ namespace {
                 EXPECT_TRUE (host and only->fBindings.fAddresses.Contains (*host))
                     << Characters::ToString (a.fLocation).AsNarrowSDKString () << " - not on " << onlyID.AsNarrowSDKString ();
             }
+        }
+    }
+
+    /*
+     *  A BasicServer that stops says so: an ssdp:byebye for each of its advertisements, out of each interface it announced on -
+     *  so control points drop the device at once, rather than when its max-age (30 minutes) runs out - and no ssdp:alive after
+     *  it. As in SSDP_Loopback_Notify_, anything that keeps the exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_Byebye_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_Byebye_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackByebye-{}:1"_f(deviceID);
+        Device       d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        DeviceDescription dd;
+        dd.fDeviceType   = deviceType;
+        dd.fFriendlyName = "Stroika regression test device"sv;
+        dd.fUDN          = "uuid:" + deviceID;
+        Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> heard; // Synchronized: the listener calls back on its own thread
+        Execution::WaitableEvent                                           aliveHeard;
+        Execution::WaitableEvent                                           byebyeHeard;
+        try {
+            SSDP::Client::Listener listener{[&] (const SSDP::Advertisement& a) {
+                                                if (a.fUSN.Contains (deviceID)) { // any of its advertisements
+                                                    heard.rwget ()->Append (a);
+                                                    (a.fAlive == false ? byebyeHeard : aliveHeard).Set ();
+                                                }
+                                            },
+                                            SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only},
+                                            SSDP::Client::Listener::eAutoStart};
+            {
+                SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                                 SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+                if (aliveHeard.WaitQuietly (10s) != Execution::WaitableEvent::WaitStatus::eTriggered) {
+                    Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_Byebye_ skipped - our own NOTIFY was not heard within 10 "
+                                                              "seconds (this environment probably blocks multicast, or UDP 1900)");
+                    return;
+                }
+                Execution::Sleep (1s); // and the ones out of the other interfaces: each its own socket, read in no set order
+            } // the server stops
+            EXPECT_TRUE (byebyeHeard.WaitQuietly (10s) == Execution::WaitableEvent::WaitStatus::eTriggered)
+                << "no ssdp:byebye heard after the server stopped";
+            Execution::Sleep (1s); // for anything after it
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_Byebye_ skipped - could not run an SSDP server and listener here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        bool                    byebyeYet = false;
+        Containers::Set<String> byebyeUSNs;
+        for (const SSDP::Advertisement& a : heard.load ()) {
+            DbgTrace ("heard: {}"_f, a);
+            if (a.fAlive == false) {
+                byebyeYet = true;
+                byebyeUSNs += a.fUSN;
+                EXPECT_EQ (a.fLocation, URI{}); // a byebye says only what is going away
+            }
+            else {
+                EXPECT_FALSE (byebyeYet) << "an ssdp:alive after the ssdp:byebye: " << a.fUSN.AsNarrowSDKString ();
+            }
+        }
+        // one for each of its advertisements: the root device, the device itself, and its device type
+        for (const String& usn : {"uuid:{}::upnp:rootdevice"_f(deviceID), "uuid:{}"_f(deviceID), "uuid:{}::{}"_f(deviceID, deviceType)}) {
+            EXPECT_TRUE (byebyeUSNs.Contains (usn)) << "no ssdp:byebye for " << usn.AsNarrowSDKString ();
         }
     }
 

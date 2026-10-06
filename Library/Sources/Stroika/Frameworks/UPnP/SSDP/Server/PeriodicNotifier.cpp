@@ -69,6 +69,16 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         }
     }
 
+    // NOTIFYs on socket s go out of interface i - whose own address, of s's family, is local
+    auto goOutOf = [] (const ConnectionlessSocket::Ptr& s, const Interface& i, const InternetAddress& local) {
+        if (local.GetAddressFamily () == InternetAddress::AddressFamily::V4) {
+            s.SetMulticastInterface (local);
+        }
+        else {
+            s.SetMulticastInterface (i);
+        }
+    };
+
     // the NOTIFYs go out on the IntervalTimer's thread, and - right after a network appears - the network-change thread's: one at a time
     shared_ptr<mutex>                                   sendingNotifies = Memory::MakeSharedPtr<mutex> ();
     shared_ptr<Execution::Synchronized<InterfacesByID>> notifyingOn     = fNotifyingOn_;
@@ -102,14 +112,9 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
                         if (not url) {
                             continue; // nothing to advertise there
                         }
-                        if (family == InternetAddress::AddressFamily::V4) {
-                            s.first.SetMulticastInterface (*local);
-                        }
-                        else {
-                            s.first.SetMulticastInterface (i);
-                        }
+                        goOutOf (s.first, i, *local);
                         for (Advertisement a : advertisements) {
-                            a.fAlive    = true; // periodic notifier must announce alive (we don't support 'going down' yet)
+                            a.fAlive    = true; // (and ssdp:byebye as this goes - ~PeriodicNotifier)
                             a.fLocation = *url;
                             a.fMaxAge   = maxAge;
                             s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a, s.second), s.second);
@@ -133,11 +138,45 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         }
         notifyingOn->store (sentOn);
     };
+    // as this goes (~PeriodicNotifier): an ssdp:byebye for each advertisement, out of each interface the last ssdp:alive went out of
+    fSayByebye_ = [sockets, advertisements, sendingNotifies, notifyingOn, goOutOf] () {
+        [[maybe_unused]] lock_guard critSec{*sendingNotifies};
+        for (const Interface& i : notifyingOn->load ()) {
+            for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
+                try {
+                    InternetAddress::AddressFamily family = s.second.GetInternetAddress ().GetAddressFamily ();
+                    optional<InternetAddress>      local  = SSDP::Server::Private_::AdvertisableAddress (i, family);
+                    if (not local) {
+                        continue; // no address of this channel's family there
+                    }
+                    goOutOf (s.first, i, *local);
+                    for (Advertisement a : advertisements) {
+                        a.fAlive = false;
+                        s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a, s.second), s.second);
+                    }
+                }
+                catch (...) {
+                    DbgTrace ("Ignoring inability to send SSDP byebye packets on {}: {}"_f, i.fInterfaceID, current_exception ());
+                }
+            }
+        }
+        notifyingOn->store (InterfacesByID{});
+    };
     fIntervalTimerAdder_ = make_unique<Execution::IntervalTimer::Adder> (callback, Time::Duration{options.fFrequencyInfo.fRepeatInterval},
                                                                          Execution::IntervalTimer::Adder::eRunImmediately);
     if (options.fFollowNetworkChanges) {
         fNetworkChanges_ = SSDP::Private_::FollowNetworkChanges ([callback] () mutable { callback (); });
     }
+}
+
+PeriodicNotifier::~PeriodicNotifier ()
+{
+    Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - ssdp:byebye"};
+    // no more ssdp:alive - with these gone, none is under way, nor to come - then ssdp:byebye, where they went
+    fNetworkChanges_.reset ();
+    fIntervalTimerAdder_.reset ();
+    Execution::Thread::SuppressInterruptionInContext suppressInterruption; // a destructor: finish, even on a thread being aborted
+    IgnoreExceptionsForCall (fSayByebye_ ());
 }
 
 InterfacesByID PeriodicNotifier::GetNetworkInterfaces () const
