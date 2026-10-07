@@ -3,19 +3,22 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include <atomic>
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
+#include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/XML/DOM.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
-#include "Stroika/Foundation/IO/Network/Listener.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
@@ -33,24 +36,187 @@ using namespace Stroika::Frameworks::UPnP::SSDP;
 using namespace Stroika::Frameworks::WebServer;
 
 using Containers::Sequence;
+using DataExchange::InternetMediaType;
 using Server::BasicServer;
 
+/*
+ *  A light, switched on and off over the network: the UPnP Forum's standard BinaryLight device, whose one service - SwitchPower -
+ *  does the switching (https://upnp.org/specs/ha/UPnP-ha-BinaryLight-v1-Device.pdf, UPnP-ha-SwitchPower-v1-Service.pdf).
+ *  BasicServer advertises it (SSDP), so control points find it; a web server then serves what they ask for: its description,
+ *  its service's description, and its service's actions (SOAP: UPnP Device Architecture 1.1, section 3).
+ *
+ *  Not shown: eventing (GENA - telling subscribers each change of the light's Status: section 4), so a control point asks
+ *  instead, with GetStatus. For a web service of your own design, rather than a standard UPnP one, see Samples/WebService.
+ */
 namespace {
-    struct WebServerForDeviceDescription_ : WebServer::ConnectionManager {
+    const String kSwitchPowerServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
+
+    // what UPnP's XML - its descriptions, and SOAP - is sent as (UPnP Device Architecture 1.1, sections 2.11 and 3.2.2)
+    const InternetMediaType kUPnPXML_{"text/xml"sv};
+
+    // SwitchPower's description (its SCPD): its actions, and the state they act on - as its standard gives it
+    constexpr string_view kSwitchPowerDescription_ = R"(<?xml version="1.0"?>
+<scpd xmlns="urn:schemas-upnp-org:service-1-0">
+    <specVersion>
+        <major>1</major>
+        <minor>0</minor>
+    </specVersion>
+    <actionList>
+        <action>
+            <name>SetTarget</name>
+            <argumentList>
+                <argument>
+                    <name>newTargetValue</name>
+                    <relatedStateVariable>Target</relatedStateVariable>
+                    <direction>in</direction>
+                </argument>
+            </argumentList>
+        </action>
+        <action>
+            <name>GetTarget</name>
+            <argumentList>
+                <argument>
+                    <name>RetTargetValue</name>
+                    <relatedStateVariable>Target</relatedStateVariable>
+                    <direction>out</direction>
+                </argument>
+            </argumentList>
+        </action>
+        <action>
+            <name>GetStatus</name>
+            <argumentList>
+                <argument>
+                    <name>ResultStatus</name>
+                    <relatedStateVariable>Status</relatedStateVariable>
+                    <direction>out</direction>
+                </argument>
+            </argumentList>
+        </action>
+    </actionList>
+    <serviceStateTable>
+        <stateVariable sendEvents="no">
+            <name>Target</name>
+            <dataType>boolean</dataType>
+            <defaultValue>0</defaultValue>
+        </stateVariable>
+        <stateVariable sendEvents="yes">
+            <name>Status</name>
+            <dataType>boolean</dataType>
+            <defaultValue>0</defaultValue>
+        </stateVariable>
+    </serviceStateTable>
+</scpd>
+)";
+
+    // a SOAP envelope: each control request, and each answer, is one - round its body (UPnP Device Architecture 1.1, section 3.2)
+    String SOAPEnvelope_ (const String& body)
+    {
+        return "<?xml version=\"1.0\"?>\r\n<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+               "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>{}</s:Body></s:Envelope>\r\n"_f(body);
+    }
+
+    // the value of the argument called name, in a SOAP request: an unqualified element in the action's (UPnP Device Architecture
+    // 1.1, section 3.2.1). The only XML this device reads - all the rest it writes, as text - so an XML parser (Xerces or libxml2)
+    // is optional: where the build has one, it parses the request; where not, it finds the argument as text, which is enough for
+    // the usual <name>value</name>, though not for an argument with attributes (which UPnP allows)
+    optional<String> Argument_ (const Memory::BLOB& soapRequest, const String& name)
+    {
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+        using namespace DataExchange::XML::DOM;
+        return Document::New (soapRequest.As<Streams::InputStream::Ptr<std::byte>> ()).GetRootElement ().GetValue (XPath::Expression{"//{}"_f(name)});
+#else
+        const String text     = String::FromUTF8 (soapRequest.As<string> ());
+        const String startTag = "<{}>"_f(name);
+        if (optional<size_t> start = text.Find (startTag)) {
+            if (optional<size_t> end = text.Find ("</{}>"_f(name), *start)) {
+                return text.SubString (*start + startTag.size (), *end);
+            }
+        }
+        return nullopt;
+#endif
+    }
+
+    // a UPnP boolean: 0, false or no; 1, true or yes (UPnP Device Architecture 1.1, section 2.5)
+    optional<bool> ParseBoolean_ (const String& s)
+    {
+        String v = s.Trim ().ToLowerCase ();
+        if (v == "1"sv or v == "true"sv or v == "yes"sv) {
+            return true;
+        }
+        if (v == "0"sv or v == "false"sv or v == "no"sv) {
+            return false;
+        }
+        return nullopt;
+    }
+
+    // a SwitchPower action, POSTed to its control URL as SOAP - which one, its SOAPACTION header says: the service type, # and the
+    // action's name, in quotes (UPnP Device Architecture 1.1, section 3.2.1) - answered with its out arguments, or a fault
+    void SwitchPowerAction_ (Message& m, atomic<bool>& lightOn)
+    {
+        Response& response        = m.rwResponse ();
+        response.contentType      = kUPnPXML_;
+        const String soapAction   = m.request ().headers ().LookupOne ("SOAPACTION"sv).value_or (String{}).Trim ([] (Character c) {
+            return c == '"' or c.IsWhitespace ();
+        });
+        const String actionPrefix = kSwitchPowerServiceType_ + "#"sv;
+        const String action       = soapAction.StartsWith (actionPrefix) ? soapAction.SubString (actionPrefix.size ()) : String{};
+        auto         answer       = [&] (const String& outArguments) {
+            response.write (SOAPEnvelope_ ("<u:{0}Response xmlns:u=\"{1}\">{2}</u:{0}Response>"_f(action, kSwitchPowerServiceType_, outArguments)));
+        };
+        auto fault = [&] (unsigned int errorCode, const String& errorDescription) {
+            response.status = HTTP::StatusCodes::kInternalError; // how SOAP says it failed - with a UPnPError saying how
+            response.write (SOAPEnvelope_ ("<s:Fault><faultcode>s:Client</faultcode><faultstring>UPnPError</faultstring><detail><UPnPError "
+                                           "xmlns=\"urn:schemas-upnp-org:control-1-0\"><errorCode>{}</errorCode><errorDescription>{}"
+                                           "</errorDescription></UPnPError></detail></s:Fault>"_f(errorCode, errorDescription)));
+        };
+        // the light is as it was last told: its Status is always its Target, as the standard allows a simple one to be
+        if (action == "GetStatus"sv) {
+            answer ("<ResultStatus>{}</ResultStatus>"_f(lightOn ? 1 : 0));
+        }
+        else if (action == "GetTarget"sv) {
+            answer ("<RetTargetValue>{}</RetTargetValue>"_f(lightOn ? 1 : 0));
+        }
+        else if (action == "SetTarget"sv) {
+            optional<String> newTargetValue = Argument_ (m.rwRequest ().GetBody (), "newTargetValue"sv);
+            optional<bool>   on             = newTargetValue ? ParseBoolean_ (*newTargetValue) : nullopt;
+            if (not on) {
+                fault (402, "Invalid Args"sv);
+                return;
+            }
+            lightOn = *on;
+            cout << "The light is now " << (*on ? "on" : "off") << endl;
+            answer (String{});
+        }
+        else {
+            fault (401, "Invalid Action"sv);
+        }
+    }
+
+    struct DeviceWebServer_ : WebServer::ConnectionManager {
         static inline const HTTP::Headers kDefaultResponseHeaders_{[] () {
             HTTP::Headers h;
             h.server = "stroika-ssdp-server-demo"sv;
             return h;
         }()};
-        WebServerForDeviceDescription_ (uint16_t webServerPortNumber, const DeviceDescription& dd)
+        // the device description dd - at /, the LOCATION SSDP advertises - and its service's description and actions, at the URLs dd
+        // gives them; the light, lightOn, must outlive this
+        DeviceWebServer_ (uint16_t webServerPortNumber, const DeviceDescription& dd, atomic<bool>* lightOn)
             : ConnectionManager{SocketAddresses (InternetAddresses_Any (), webServerPortNumber),
                                 Sequence<Route>{
                                     Route{""_RegEx,
                                           [dd] (Message& m) {
                                               Response& response   = m.rwResponse ();
-                                              response.contentType = DataExchange::InternetMediaTypes::kXML;
+                                              response.contentType = kUPnPXML_;
                                               response.write (Stroika::Frameworks::UPnP::Serialize (dd));
                                           }},
+                                    Route{"SwitchPower/description.xml"_RegEx,
+                                          [] (Message& m) {
+                                              Response& response   = m.rwResponse ();
+                                              response.contentType = kUPnPXML_;
+                                              response.write (kSwitchPowerDescription_);
+                                          }},
+                                    Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx,
+                                          [lightOn] (Message& m) { SwitchPowerAction_ (m, *lightOn); }},
                                 },
                                 Options{.fMaxConnections = 3, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
@@ -95,19 +261,29 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
         DeviceDescription deviceInfo;
         deviceInfo.fPresentationURL  = URI{"http://www.sophists.com/"sv};
-        deviceInfo.fDeviceType       = "urn:sophists.com:device:deviceType:1.0"sv;
+        deviceInfo.fDeviceType       = "urn:schemas-upnp-org:device:BinaryLight:1"sv;
         deviceInfo.fManufactureName  = "Sophist Solutions, Inc."sv;
-        deviceInfo.fFriendlyName     = "Sophist Solutions fake device"sv;
+        deviceInfo.fFriendlyName     = "Stroika sample light"sv;
         deviceInfo.fManufacturingURL = URI{"http://www.sophists.com/"sv};
-        deviceInfo.fModelDescription = "long user-friendly title"sv;
-        deviceInfo.fModelName        = "model name"sv;
+        deviceInfo.fModelDescription = "a light, switched over the network - the Stroika SSDPServer sample"sv;
+        deviceInfo.fModelName        = "Stroika sample light"sv;
         deviceInfo.fModelNumber      = "model number"sv;
         deviceInfo.fModelURL         = URI{"http://www.sophists.com/"sv};
         deviceInfo.fSerialNumber     = "manufacturer's serial number"sv;
         deviceInfo.fUDN              = "uuid:" + d.fDeviceID.As<String> ();
+        // its one service: SwitchPower - its description and actions where deviceWS serves them (each URL relative to the device
+        // description's), and no eventing, so no URL to subscribe at
+        deviceInfo.fServices = Containers::Collection<DeviceDescription::Service>{DeviceDescription::Service{
+            .fServiceType = kSwitchPowerServiceType_,
+            .fServiceID   = "urn:upnp-org:serviceId:SwitchPower"sv,
+            .fSCPDURL     = URI{"/SwitchPower/description.xml"sv},
+            .fControlURL  = URI{"/SwitchPower/control"sv},
+        }};
 
-        WebServerForDeviceDescription_ deviceWS{portForOurWS, deviceInfo};
-        BasicServer b{d, deviceInfo, Server::LocationFromBindings (deviceWS.bindings ())}; // on each network, where deviceWS listens
+        atomic<bool>     lightOn{false}; // the light: off, until a control point switches it on
+        DeviceWebServer_ deviceWS{portForOurWS, deviceInfo, &lightOn};
+        BasicServer      b{d, deviceInfo, Server::LocationFromBindings (deviceWS.bindings ())}; // on each network, where deviceWS listens
+        cout << "A UPnP light, off - to switch on, e.g.: SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> () << " --switch on" << endl;
         WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
     }
     catch (const system_error& e) {

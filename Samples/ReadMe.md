@@ -55,11 +55,13 @@
   Simple example program using the Stroika SQL wrappers to access/update an SQL database.
   Only SQLite fully supported for now.
 
-* [SSDPClient](SSDPClient/ReadMe.md)
-  shows how to user the Stroika UPnP framework to search (SSDP) for UPnP devices.
+* [SSDPClient](SSDPClient/ReadMe.txt)
+  shows how to use the Stroika UPnP framework to find (SSDP) UPnP devices and their services - and to use one,
+  switching UPnP lights on or off.
 
-* [SSDPServer](SSDPServer/ReadMe.md)
-  shows how to user the Stroika UPnP framework to make a device/service advertised via SSDP (UPnP)
+* [SSDPServer](SSDPServer/ReadMe.txt)
+  shows how to use the Stroika UPnP framework to make a UPnP device - a light, advertised via SSDP, and switched through
+  its standard SwitchPower service (SOAP, served with the WebServer framework).
 
 * [SystemPerformanceClient](SystemPerformanceClient/ReadMe.md)
   is a simple demonstration of how to use the Stroika System Performance framework. This shows how to capture

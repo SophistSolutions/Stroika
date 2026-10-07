@@ -42,14 +42,32 @@ Generally will track stuff here between releases
          #1194 and following network changes: check on the rig (a container with no network, then one appearing), then close.
        - https://github.com/SophistSolutions/Stroika/issues/986 (IPv6 on the SSDP server, and Ping) - SSDP's part done by
          #1194 (verify); Ping's is not SSDP.
-       - https://github.com/SophistSolutions/Stroika/issues/975 (SSDPServer sample: use the WebServer framework) - looks
-         done (it uses WebServer::ConnectionManager); check its leftover IO/Network/Listener.h include, then close.
+       - https://github.com/SophistSolutions/Stroika/issues/975 (SSDPServer sample: use the WebServer framework) - done (it
+         uses WebServer::ConnectionManager, and its leftover IO/Network/Listener.h include is gone): close.
        - (WTF, not Stroika) **WTF ignores every ssdp:byebye**: it finds the device by its LOCATION's host, which a byebye
          does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - use SSDP::Client::CachingListener: its callbacks get
          a Listener's Advertisement once per change - fAlive false (removed) with the LOCATION last heard - so WTF fetches
          each description once, not with each NOTIFY as now.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
+       - **a search for an older version of a type finds nothing**: a device MUST answer an M-SEARCH for any version of its
+         device or service type it supports - a :2 device answers one for :1, with :1 in its ST and USN (UPnP Device
+         Architecture 1.1, sections 1.3.2 and 1.3.3) - but SearchResponder matches the ST exactly.
+       - **a moved-from SSDP::Client::Listener or Search crashes as it is destroyed**: their move constructors are defaulted,
+         and their destructors call fRep_->Stop () on the null fRep_ that leaves (found 2026-10-06). Test first.
+       - (optional) **CachingListener can re-add a device just withdrawn**: an answer to its search sent before the device's
+         ssdp:byebye can arrive after it (UDP reorders) - ignore answers for a USN briefly after its byebye.
+       - (this and the next: for 3.0d25, after the rest of this list - LGP 2026-10-07)
+         **UPnP services as objects** (estimate 4-5 h, with the samples moved onto them): UPnP::ServiceDescription (a
+         service's description, its SCPD) with Serialize; and SOAP control messages - an action's request, response and
+         error as types, each with Serialize, plus a request parser (the XML DOM where the build has a parser, else as text) -
+         so a device or control point writes no XML of its own. Their XML written as text, like DeviceDescription's
+         Serialize. Then the SSDPServer and SSDPClient samples drop their hand-written SCPD and SOAP.
+       - **ObjectVariantMapper to XML** (estimate 8-12 h, plus design calls): Variant::XML::Writer with namespaces,
+         attributes and repeated elements - and element order, which ObjectVariantMapper does not keep for an object (a
+         Mapping) though UPnP requires it (UPnP Device Architecture 1.1, section 2.5.4): an opt-in ordered representation, or
+         objects as arrays. Then the UPnP objects above could Serialize through it. Variant::XML::Reader is still not
+         implemented: another 6-10 h.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:

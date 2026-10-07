@@ -6,7 +6,10 @@
 #include <iostream>
 #include <mutex>
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
@@ -34,8 +37,34 @@ namespace {
 }
 
 namespace {
-    // Ignore if fails
-    void DoPrintDeviceDescription_ (const URI& deviceDescriptionURL)
+    // a light that can be switched on and off: the UPnP Forum's standard SwitchPower service (as the SSDPServer sample has)
+    const String kSwitchPowerServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
+
+    // switch the light controlled at controlURL on or off: its SwitchPower service's SetTarget action - a SOAP request, saying which
+    // action in its SOAPACTION header (UPnP Device Architecture 1.1, section 3.2)
+    void SwitchLight_ (const URI& controlURL, bool on)
+    {
+        try {
+            using namespace IO::Network::Transfer;
+            const string request =
+                "<?xml version=\"1.0\"?>\r\n<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:SetTarget xmlns:u=\"{}\">"
+                "<newTargetValue>{}</newTargetValue></u:SetTarget></s:Body></s:Envelope>\r\n"_f(kSwitchPowerServiceType_, on ? 1 : 0)
+                    .AsUTF8<string> ();
+            Connection::New ().POST (controlURL,
+                                     DataExchange::TypedBLOB{.fData = as_bytes (span{request}),
+                                                             .fType = DataExchange::InternetMediaType{"text/xml; charset=\"utf-8\""sv}},
+                                     Containers::Mapping<String, String>{{"SOAPACTION"sv, "\"{}#SetTarget\""_f(kSwitchPowerServiceType_)}});
+            cout << "\t\tSwitched it " << (on ? "on" : "off") << endl;
+        }
+        catch (...) {
+            cout << "\t\tCould not switch it " << (on ? "on" : "off") << ": " << Characters::ToString (current_exception ()).AsUTF8<string> () << endl;
+        }
+    }
+
+    // the device's description, fetched from its LOCATION, and its services - switching it on or off if it is a light and
+    // switchLightsTo says. Ignore if fails
+    void DoPrintDeviceDescription_ (const URI& deviceDescriptionURL, optional<bool> switchLightsTo)
     {
         try {
             using namespace IO::Network::Transfer;
@@ -43,7 +72,15 @@ namespace {
             Response        r = c.GET (deviceDescriptionURL);
             if (r.GetSucceeded ()) {
                 DeviceDescription deviceInfo = DeSerialize (r.GetData ());
-                cout << "\t\tDevice-Decsciption: " << Characters::ToString (deviceInfo) << endl;
+                cout << "\t\tDevice-Description: " << Characters::ToString (deviceInfo) << endl;
+                for (const DeviceDescription::Service& s : deviceInfo.fServices.value_or (Containers::Collection<DeviceDescription::Service>{})) {
+                    URI controlURL = deviceDescriptionURL.Combine (s.fControlURL); // relative to the description's URL
+                    cout << "\t\tService:  " << s.fServiceType.AsUTF8<string> () << ", controlled at "
+                         << Characters::ToString (controlURL).AsUTF8<string> () << endl;
+                    if (switchLightsTo and s.fServiceType == kSwitchPowerServiceType_) {
+                        SwitchLight_ (controlURL, *switchLightsTo);
+                    }
+                }
             }
         }
         catch (...) {
@@ -53,10 +90,10 @@ namespace {
 }
 
 namespace {
-    void DoListening_ (Listener* l)
+    void DoListening_ (Listener* l, optional<bool> switchLightsTo)
     {
         cout << "Listening..." << endl;
-        l->AddOnFoundCallback ([] (const SSDP::Advertisement& d) {
+        l->AddOnFoundCallback ([switchLightsTo] (const SSDP::Advertisement& d) {
             lock_guard<mutex> critSection{kStdOutMutex_};
             cout << "\tFound device (NOTIFY):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8<string> () << endl;
@@ -68,7 +105,9 @@ namespace {
             if (not d.fServer.empty ()) {
                 cout << "\t\tServer:   " << d.fServer.AsUTF8<string> () << endl;
             }
-            DoPrintDeviceDescription_ (d.fLocation);
+            if (d.fAlive != false) { // (a byebye says no LOCATION)
+                DoPrintDeviceDescription_ (d.fLocation, switchLightsTo);
+            }
             cout << endl;
         });
         l->Start ();
@@ -76,10 +115,10 @@ namespace {
 }
 
 namespace {
-    void DoSearching_ (Search* searcher, const String& searchFor)
+    void DoSearching_ (Search* searcher, const String& searchFor, optional<bool> switchLightsTo)
     {
         cout << "Searching for '" << searchFor.AsUTF8<string> () << "'..." << endl;
-        searcher->AddOnFoundCallback ([] (const SSDP::Advertisement& d) {
+        searcher->AddOnFoundCallback ([switchLightsTo] (const SSDP::Advertisement& d) {
             lock_guard<mutex> critSection{kStdOutMutex_};
             cout << "\tFound device (MATCHED SEARCH):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8<string> () << endl;
@@ -88,7 +127,7 @@ namespace {
             if (not d.fServer.empty ()) {
                 cout << "\t\tServer:   " << d.fServer.AsUTF8<string> () << endl;
             }
-            DoPrintDeviceDescription_ (d.fLocation);
+            DoPrintDeviceDescription_ (d.fLocation, switchLightsTo);
             cout << endl;
         });
         searcher->Start (searchFor);
@@ -104,6 +143,7 @@ int main (int argc, const char* argv[])
 #endif
     bool                  listen = false;
     optional<String>      searchFor;
+    optional<bool>        switchLightsTo;
     Time::DurationSeconds quitAfter = Time::kInfinity;
 
     const CommandLine::Option kListenO_{
@@ -111,30 +151,45 @@ int main (int argc, const char* argv[])
     };
     const CommandLine::Option kSearchO_{
         .fSingleCharName = 's', .fSupportsArgument = true, .fHelpArgName = "SEARCHFOR"sv, .fHelpOptionText = "Search for the argument UPNP name"sv};
+    const CommandLine::Option kSwitchO_{.fLongName         = "switch"sv,
+                                        .fSupportsArgument = true,
+                                        .fHelpArgName      = "on|off"sv,
+                                        .fHelpOptionText   = "Switch each UPnP light found (each SwitchPower service) on or off"sv};
     const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
 
     CommandLine cmdLine{argc, argv};
     listen    = cmdLine.Has (kListenO_);
     searchFor = cmdLine.GetArgument (kSearchO_);
+    if (auto o = cmdLine.GetArgument (kSwitchO_)) {
+        if (*o == "on"sv or *o == "off"sv) {
+            switchLightsTo = *o == "on"sv;
+        }
+        else {
+            cerr << "--switch takes on or off" << endl;
+            return EXIT_FAILURE;
+        }
+    }
     if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
         quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
 
     if (not listen and not searchFor.has_value ()) {
-        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR] [--quit-after N]" << endl;
+        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR] [--switch on|off] [--quit-after N]" << endl;
         cerr << "   e.g. SSDPClient -l" << endl;
         cerr << "   e.g. SSDPClient -s \"upnp:rootdevice\"" << endl;
+        cerr << "   e.g. SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> ()
+             << " --switch on      (switches on each UPnP light found)" << endl;
         return EXIT_FAILURE;
     }
 
     try {
         Listener l;
         if (listen) {
-            DoListening_ (&l);
+            DoListening_ (&l, switchLightsTo);
         }
         Search s;
         if (searchFor.has_value ()) {
-            DoSearching_ (&s, *searchFor);
+            DoSearching_ (&s, *searchFor, switchLightsTo);
         }
         if (listen or searchFor.has_value ()) {
             WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
