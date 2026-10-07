@@ -46,15 +46,37 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 ********************************************************************************
 */
 namespace {
-    // the LOCATION to answer asker with: location's, given this machine's address as asker reaches it - on asker's own network,
-    // found by its subnet among listeningOn (the interfaces the search can have come in on); else, asker further off, the
-    // routing table's. Not the routing table's first: a VPN's route covering a LAN makes that the VPN's address, which the LAN
-    // cannot reach. (Exactly, which interface the search came in on, only IP_PKTINFO could say -
-    // https://github.com/SophistSolutions/Stroika/issues/1202)
-    optional<URI> LocationFor_ (const LocationProvider& location, const SocketAddress& asker, const InterfacesByID& listeningOn)
+    // the LOCATION to answer asker with: location's, given this machine's address as asker reaches it - from where the search
+    // arrived (arrived: the address it was sent to, and the interface it came in on) and the asker's subnet:
+    //  o   the address it was sent to, if this machine's own (a unicast M-SEARCH)
+    //  o   else this machine's address on asker's subnet - on the interface it came in on, if there (two interfaces can share a
+    //      subnet); else on another of listeningOn (the interfaces it can have come in on): two networks may be bridged, so it
+    //      came in on the other, whose address asker may not reach
+    //  o   else, asker further off, an address of the interface it came in on
+    //  o   else, not known where it came in, the routing table's. Not the routing table's first: a VPN's route covering a LAN
+    //      makes that the VPN's address, which the LAN cannot reach.
+    optional<URI> LocationFor_ (const LocationProvider& location, const SocketAddress& asker,
+                                const optional<ConnectionlessSocket::PacketInfo>& arrived, const InterfacesByID& listeningOn)
     {
-        optional<InternetAddress> local =
-            asker.IsInternetAddress () ? SSDP::Server::Private_::LocalAddressOnAskersNetwork (asker.GetInternetAddress (), listeningOn) : nullopt;
+        optional<InternetAddress> local;
+        optional<Interface>       arrivedOn;
+        if (arrived) {
+            if (not arrived->fDestination.IsMulticastAddress ()) {
+                local = arrived->fDestination;
+            }
+            arrivedOn = listeningOn.First ([&] (const Interface& i) { return i.fIndex == arrived->fInterfaceIndex; });
+        }
+        if (asker.IsInternetAddress ()) {
+            if (not local and arrivedOn) {
+                local = SSDP::Server::Private_::LocalAddressOnAskersNetwork (asker.GetInternetAddress (), Iterable<Interface>{*arrivedOn});
+            }
+            if (not local) {
+                local = SSDP::Server::Private_::LocalAddressOnAskersNetwork (asker.GetInternetAddress (), listeningOn);
+            }
+            if (not local and arrivedOn) {
+                local = SSDP::Server::Private_::AdvertisableAddress (*arrivedOn, asker.GetInternetAddress ().GetAddressFamily ());
+            }
+        }
         if (not local) {
             local = GetLocalAddressToReach (asker);
             if (not local) {
@@ -104,10 +126,13 @@ namespace {
         return Time::DurationSeconds{mx->size () > 9 ? 5 : min (Characters::String2Int<int> (*mx), 5)};
     }
 
-    // whether an M-SEARCH was multicast - unless its HOST names a unicast address. (Which address it actually came to, only
-    // IP_PKTINFO could say - https://github.com/SophistSolutions/Stroika/issues/1202)
-    bool IsMulticast_ (const SSDP::Advertisement& search)
+    // whether an M-SEARCH was multicast: as where it arrived says (arrived); else, not known, unless its HOST names a unicast address
+    // - which some control points get wrong, naming the multicast group in a unicast M-SEARCH
+    bool IsMulticast_ (const SSDP::Advertisement& search, const optional<ConnectionlessSocket::PacketInfo>& arrived)
     {
+        if (arrived) {
+            return arrived->fDestination.IsMulticastAddress ();
+        }
         if (optional<String> host = Header_ (search, "HOST"sv)) {
             if (optional<UniformResourceIdentification::Authority> a = UniformResourceIdentification::Authority::Parse (*host)) {
                 if (optional<InternetAddress> ia = a->GetHost () ? a->GetHost ()->AsInternetAddress () : nullopt) {
@@ -159,7 +184,8 @@ namespace {
     // up to its MX, so devices, and a device's several answers, do not all come at once - and one with no MX is ignored (1.1,
     // section 1.3.3); a unicast one's, at once
     Sequence<Answer_> Answers_ (span<const byte> packet, const Iterable<Advertisement>& advertisements, const LocationProvider& location,
-                                ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo, const InterfacesByID& listeningOn)
+                                ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo,
+                                const optional<ConnectionlessSocket::PacketInfo>& arrived, const InterfacesByID& listeningOn)
     {
         String              headLine;
         SSDP::Advertisement da;
@@ -171,7 +197,7 @@ namespace {
         Sequence<Answer_> result;
         if (headLine.StartsWith ("M-SEARCH "sv)) {
             optional<Time::DurationSeconds> waitAtMost; // nullopt: answer at once
-            if (IsMulticast_ (da)) {
+            if (IsMulticast_ (da, arrived)) {
                 waitAtMost = MX_ (da);
                 if (not waitAtMost) {
                     return result;
@@ -183,7 +209,7 @@ namespace {
                     answering += *answer;
                 }
             }
-            optional<URI> url = answering.empty () ? nullopt : LocationFor_ (location, sendTo, listeningOn);
+            optional<URI> url = answering.empty () ? nullopt : LocationFor_ (location, sendTo, arrived, listeningOn);
             if (url) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("sending search responder advertisements..."_f);
@@ -221,12 +247,14 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
         // Architecture 1.1, section 1.3.3)
         if (InternetProtocol::IP::SupportIPV4 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            s.SetReceivePacketInfo (true); // where each search arrived (@see LocationFor_)
             s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
             socketsAndGroups += make_pair (s, UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
         }
         if (InternetProtocol::IP::SupportIPV6 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
+            s.SetReceivePacketInfo (true); // where each search arrived (@see LocationFor_)
             s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
             socketsAndGroups += make_pair (s, UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
@@ -269,11 +297,12 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                         nextDue = min (nextDue, a.fDueAt);
                     }
                     for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (nextDue)) {
-                        SocketAddress from;
-                        byte          buf[4 * 1024]; // not sure of max packet size
-                        size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
+                        SocketAddress                              from;
+                        optional<ConnectionlessSocket::PacketInfo> arrived;
+                        byte                                       buf[4 * 1024]; // not sure of max packet size
+                        size_t                                     nBytesRead = s.ReceiveFrom (buf, 0, &from, &arrived).size ();
                         Assert (nBytesRead <= std::size (buf));
-                        for (const Answer_& a : Answers_ (span{buf, nBytesRead}, advertisements, location, s, from, listeningOn)) {
+                        for (const Answer_& a : Answers_ (span{buf, nBytesRead}, advertisements, location, s, from, arrived, listeningOn)) {
                             if (waiting.size () < kMaxWaitingAnswers_) {
                                 waiting += a;
                             }

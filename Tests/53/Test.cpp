@@ -1712,6 +1712,105 @@ namespace {
     }
 
     /*
+     *  An M-SEARCH sent to this machine's own address - unicast - is answered at once, needing no MX (UPnP Device Architecture
+     *  1.1, section 1.3.2), with the address it was sent to in the LOCATION: as the packet itself says, even if its HOST header
+     *  names the multicast group, as some control points send (from which alone it was taken for multicast, and, with no MX,
+     *  ignored). Told by M-SEARCHes this test sends our own BasicServer itself. As in SSDP_Loopback_Search_, anything that keeps
+     *  the exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_UnicastSearch_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_UnicastSearch_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType = "urn:stroika-regression-test:device:SSDPUnicastSearch-{}:1"_f(deviceID);
+        Device       d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        DeviceDescription dd;
+        dd.fDeviceType          = deviceType;
+        dd.fFriendlyName        = "Stroika regression test device"sv;
+        dd.fUDN                 = "uuid:" + deviceID;
+        optional<Interface> via = AnSSDPInterface_ ();
+        if (not via) {
+            Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_UnicastSearch_ skipped - no network interface with an IPv4 address");
+            return;
+        }
+        const InternetAddress ours = *via->fBindings.fAddresses.First (
+            [] (const InternetAddress& a) { return a.GetAddressFamily () == InternetAddress::AddressFamily::V4; });
+        try {
+            SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                             SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            ConnectionlessSocket::Ptr asker = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            asker.SetMulticastLoopMode (true); // so our own server hears it
+            asker.SetMulticastInterface (*via);
+            auto search = [&] (const SocketAddress& to, const String& host, optional<unsigned int> mx) {
+                String request = "M-SEARCH * HTTP/1.1\r\nHOST: {}\r\nMAN: \"ssdp:discover\"\r\nST: {}\r\n{}\r\n"_f(
+                    host, deviceType, mx ? "MX: {}\r\n"_f(*mx) : String{});
+                string utf8 = request.AsUTF8<string> ();
+                asker.SendTo (as_bytes (span{utf8}), to);
+            };
+            // our device's first answer, by until - its LOCATION
+            auto answerBy = [&] (Time::TimePointSeconds until) -> optional<URI> {
+                while (not Execution::WaitForIOReady<ConnectionlessSocket::Ptr>{asker}.WaitQuietlyUntil (until).empty ()) {
+                    std::byte           buf[8 * 1024];
+                    SocketAddress       from;
+                    String              headLine;
+                    SSDP::Advertisement a;
+                    SSDP::DeSerialize (Memory::BLOB{asker.ReceiveFrom (span{buf}, 0, &from)}, &headLine, &a);
+                    if (headLine.StartsWith ("HTTP/1.1 200"sv) and a.fUSN.Contains (deviceID)) {
+                        return a.fLocation;
+                    }
+                }
+                return nullopt;
+            };
+            // until the server hears us (it joins the multicast group on its own thread) - a multicast search, answered
+            bool answered = false;
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not answered and Time::GetTickCount () < giveUpAt;) {
+                search (SSDP::V4::kSocketAddress, "239.255.255.250:1900"sv, 1);
+                answered = answerBy (Time::GetTickCount () + 1.5s).has_value ();
+            }
+            if (not answered) {
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_UnicastSearch_ skipped - our own device did not answer within 10 "
+                                                          "seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            Execution::Sleep (1.5s); // the rest of those answers
+            while (answerBy (Time::GetTickCount () + 0.1s)) {
+            }
+            // unicast, its HOST saying so: answered, with the address it was sent to
+            const SocketAddress toOurs{ours, SSDP::V4::kSocketAddress.GetPort ()};
+            search (toOurs, "{}:1900"_f(ours), nullopt);
+            optional<URI> answer = answerBy (Time::GetTickCount () + 1.5s);
+            if (not answer) {
+                // a datagram sent to one address and port goes to just one of the sockets bound there - so to another SSDP stack's,
+                // where one holds port 1900 too (Windows' SSDP Discovery service, say)
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "SSDP_Loopback_UnicastSearch_ skipped - a unicast M-SEARCH to {} did not reach our server "
+                    "(another SSDP stack here holding port 1900?)"_f(toOurs)
+                        .AsNarrowSDKString ()
+                        .c_str ());
+                return;
+            }
+            EXPECT_EQ (answer->GetAuthority ()->GetHost ()->AsInternetAddress (), ours);
+            Execution::Sleep (0.5s);
+            while (answerBy (Time::GetTickCount () + 0.1s)) {
+            }
+            // unicast, though its HOST names the multicast group: answered all the same
+            search (toOurs, "239.255.255.250:1900"sv, nullopt);
+            answer = answerBy (Time::GetTickCount () + 1.5s);
+            ASSERT_TRUE (answer.has_value ()) << "no answer to a unicast M-SEARCH whose HOST names the multicast group";
+            EXPECT_EQ (answer->GetAuthority ()->GetHost ()->AsInternetAddress (), ours);
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_UnicastSearch_ skipped - could not run an SSDP server here: {}"_f(current_exception ()).AsNarrowSDKString ().c_str ());
+        }
+    }
+
+    /*
      *  A device answers a search for an older version of its device or service type too, as that version - a :2 device answers a
      *  search for :1, with :1 in its ST and USN (UPnP Device Architecture 1.1, sections 1.3.2 and 1.3.3) - but not a search for a
      *  newer version than it has. Told by M-SEARCHes this test sends our own BasicServer itself, out of one interface. As in
