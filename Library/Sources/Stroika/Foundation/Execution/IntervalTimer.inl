@@ -33,11 +33,14 @@ namespace Stroika::Foundation::Execution {
         fRep_->AddRepeating (timer, intervalTimer, repeatInterval, hysteresis);
         return timer;
     }
-    inline void IntervalTimer::Manager::RemoveRepeating (TimerID timer) noexcept
+    inline bool IntervalTimer::Manager::Remove (TimerID timer) noexcept
     {
         RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Activator object.
-        Require (fRep_->GetAllRegisteredTasks ().Contains (timer));
-        fRep_->RemoveRepeating (timer);
+        return fRep_->Remove (timer);
+    }
+    inline void IntervalTimer::Manager::RemoveRepeating (TimerID timer) noexcept
+    {
+        Remove (timer);
     }
     inline auto IntervalTimer::Manager::GetAllRegisteredTasks () const -> RegisteredTaskCollection
     {
@@ -75,14 +78,14 @@ namespace Stroika::Foundation::Execution {
     inline IntervalTimer::Adder::~Adder ()
     {
         if (fManager_ != nullptr) { // null if moved from
-            fManager_->RemoveRepeating (fTimer_);
+            fManager_->Remove (fTimer_);
         }
     }
     inline IntervalTimer::Adder& IntervalTimer::Adder::operator= (Adder&& rhs) noexcept
     {
         if (this != &rhs) {
             if (fManager_ != nullptr) { // null if moved from
-                fManager_->RemoveRepeating (fTimer_);
+                fManager_->Remove (fTimer_);
             }
             fManager_     = rhs.fManager_;
             fFunction_    = move (rhs.fFunction_);

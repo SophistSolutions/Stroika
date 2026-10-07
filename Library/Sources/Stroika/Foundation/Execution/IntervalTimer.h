@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief Names a timer Manager::AddOneShot or AddRepeating added - for RemoveRepeating. No two the same in a process, so
+         *  \brief Names a timer Manager::AddOneShot or AddRepeating added - for Remove. No two the same in a process, so
          *         one from another Manager names none of this one's; nor does TimerID{}.
          *
          *  \note Why an ID, and not the callback, to name a timer by: @see CallbackRegistry (the same callback can be added twice,
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief Add a timer to be called once after duration when - named by the TimerID returned
+         *  \brief Add a timer to be called once after duration when - named by the TimerID returned, for Remove (until it is called)
          *
          *  \pre intervalTimer valid function ptr (not null)
          *  \pre when >= 0
@@ -138,8 +138,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief Add a timer to be called repeatedly after duration repeatInterval - named by the TimerID returned, for
-         *         RemoveRepeating
+         *  \brief Add a timer to be called repeatedly after duration repeatInterval - named by the TimerID returned, for Remove
          *
          *  \pre intervalTimer valid function ptr (not null)
          *  \pre repeatInterval >= 0
@@ -150,15 +149,17 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Can remove a repeating task, but cannot remove a oneShot, since it might not be there by the time you go to remove it.
+         *  \brief Removes the timer: once this returns, its callback is not running, and is not called again. Returns whether it was
+         *         there to remove - a repeating timer, or a one-shot not yet called (or being called now) - so false for a one-shot
+         *         already called, or a timer already removed.
          *
-         *  Once this returns, the timer's callback is not running, and is not called again: if it is running now, this waits for
-         *  that call to finish - unless called from that callback itself (on the timer's thread), when that call finishes after.
-         *  So do not call this holding a lock that callback takes.
-         *
-         *  \pre timer is registered (here)
+         *  If its callback is running now, this waits for that call to finish - unless called from that callback itself (on the
+         *  timer's thread), when that call finishes after. So do not call this holding a lock that callback takes.
          */
-        nonvirtual void RemoveRepeating (TimerID timer) noexcept;
+        nonvirtual bool Remove (TimerID timer) noexcept;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d25 - use Remove, which takes a one-shot too")]] nonvirtual void RemoveRepeating (TimerID timer) noexcept;
 
     public:
         /**
@@ -213,9 +214,10 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief As Manager::RemoveRepeating says: once it returns, the timer's callback is not running, and is not called again
+         *  \brief As Manager::Remove says: once it returns, the timer's callback is not running, and is not called again - and it
+         *         returns whether the timer was there to remove (a one-shot already called is not)
          */
-        virtual void RemoveRepeating (TimerID timer) noexcept = 0;
+        virtual bool Remove (TimerID timer) noexcept = 0;
 
     public:
         virtual RegisteredTaskCollection GetAllRegisteredTasks () const = 0;
@@ -236,7 +238,7 @@ namespace Stroika::Foundation::Execution {
                                    const optional<Time::Duration>& hysteresis) override;
 
     public:
-        virtual void RemoveRepeating (TimerID timer) noexcept override;
+        virtual bool Remove (TimerID timer) noexcept override;
 
     public:
         virtual RegisteredTaskCollection GetAllRegisteredTasks () const override;
@@ -254,7 +256,7 @@ namespace Stroika::Foundation::Execution {
      *  While the timer is registered, it will be called periodically from some arbitrary thread.
      * 
      *  Easiest way to add/remove idle manager. Construct one and its lifetime matches time when callback is potentially aftive.
-     *  Destroying the Adder removes the timer (@see Manager::RemoveRepeating): once the destructor returns, the callback is not
+     *  Destroying the Adder removes the timer (@see Manager::Remove): once the destructor returns, the callback is not
      *  running, and is not called again - so do not destroy one holding a lock its callback takes (the callback itself may
      *  destroy it). Be sure lifetime of these guys inside lifetime of main.
      */

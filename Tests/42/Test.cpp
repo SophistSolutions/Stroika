@@ -522,7 +522,7 @@ namespace {
                 [&] () {
                     {
                         lock_guard lk{oursMutex};
-                        manager.RemoveRepeating (*ours); // itself: only the other is left
+                        manager.Remove (*ours); // itself: only the other is left
                     }
                     oursRemoved.Set ();
                     // not interruptibly, as a callback at work: meanwhile the other thread removes the last timer, and so may stop
@@ -536,7 +536,7 @@ namespace {
         Thread::Ptr remover = Thread::New (
             [&] () {
                 if (oursRemoved.WaitQuietly (10s) == WaitableEvent::WaitStatus::eTriggered) {
-                    manager.RemoveRepeating (other);
+                    manager.Remove (other);
                 }
             },
             Thread::eAutoStart);
@@ -548,6 +548,46 @@ namespace {
             _Exit (EXIT_FAILURE);
         }
         remover.Join ();
+    }
+
+    /*
+     *  A one-shot can be removed: before it is called, so it never is; while it is called - Remove waiting for that call to end;
+     *  and after, removing nothing (Remove returning false).
+     */
+    GTEST_TEST (Foundation_Execution, IntervalTimer_RemoveOneShot_)
+    {
+        Debug::TraceContextBumper         ctx{"IntervalTimer_RemoveOneShot_"};
+        IntervalTimer::Manager::Activator intervalTimerMgrActivator;
+        IntervalTimer::Manager&           manager = IntervalTimer::Manager::sThe;
+        auto isThere = [&] (IntervalTimer::TimerID t) { return manager.GetAllRegisteredTasks ().Contains (t); };
+        // before it is called
+        atomic<unsigned int>   calls{0};
+        IntervalTimer::TimerID notYet = manager.AddOneShot ([&] () { ++calls; }, Time::Duration{200ms});
+        EXPECT_TRUE (manager.Remove (notYet));
+        // while it is called
+        atomic<bool>           running{false};
+        WaitableEvent          started;
+        IntervalTimer::TimerID now = manager.AddOneShot (
+            [&] () {
+                running = true;
+                started.Set ();
+                Execution::Sleep (300ms); // long enough to be removed while running
+                running = false;
+            },
+            Time::Duration{10ms});
+        EXPECT_TRUE (started.WaitQuietly (10s) == WaitableEvent::WaitStatus::eTriggered);
+        EXPECT_TRUE (manager.Remove (now));
+        EXPECT_FALSE (running.load ()) << "the one-shot was still running after it was removed";
+        // after it was called
+        WaitableEvent          called;
+        IntervalTimer::TimerID done = manager.AddOneShot ([&] () { called.Set (); }, Time::Duration{10ms});
+        EXPECT_TRUE (called.WaitQuietly (10s) == WaitableEvent::WaitStatus::eTriggered);
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; isThere (done) and Time::GetTickCount () < giveUpAt;) {
+            Execution::Sleep (10ms); // until its call has ended: the timer thread then drops it
+        }
+        EXPECT_FALSE (manager.Remove (done));
+        Execution::Sleep (500ms); // past the time of the one removed before it was called
+        EXPECT_EQ (calls.load (), 0u) << "the one-shot removed before it was called was called";
     }
 
     /*

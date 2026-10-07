@@ -69,12 +69,14 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         fData_.rwget ()->Add ({timer, intervalTimer, Time::GetTickCount () + repeatInterval, repeatInterval, hysteresis});
         DataChanged_ ();
     }
-    void RemoveRepeating (TimerID timer) noexcept
+    bool Remove (TimerID timer) noexcept
     {
-        Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: RemoveRepeating"};
+        Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: Remove"};
+        bool                      wasThere;
         {
             unique_lock runningLock{fRunningMutex_};
-            fData_.rwget ()->Remove (timer);
+            // not there: a one-shot already called (the timer thread removes it once its call ends), or removed already
+            wasThere = fData_.rwget ()->RemoveIf (timer);
             // if it is running now, wait for that call to finish: once removed, it is not running, and not called again. But not
             // on the timer thread - the callback removing itself - which would wait for itself, forever
             if (tRunnerOf_ != this) {
@@ -82,6 +84,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             }
         }
         DataChanged_ ();
+        return wasThere;
     }
     RegisteredTaskCollection GetAllRegisteredTasks () const
     {
@@ -89,8 +92,8 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         return fData_.load ();
     }
 
-    // the timer whose callback the timer thread is running now, if any - so RemoveRepeating can wait for it to finish. A
-    // std::condition_variable, not a Stroika ConditionVariable: RemoveRepeating is noexcept, so its wait must not be interruptible
+    // the timer whose callback the timer thread is running now, if any - so Remove can wait for it to finish. A
+    // std::condition_variable, not a Stroika ConditionVariable: Remove is noexcept, so its wait must not be interruptible
     mutex              fRunningMutex_; // taken before fData_'s
     condition_variable fRunningChanged_;
     optional<TimerID>  fRunning_;
@@ -147,7 +150,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                         lock_guard runningLock{fRunningMutex_};
                         fRunning_ = nullopt;
                     }
-                    fRunningChanged_.notify_all (); // for a RemoveRepeating waiting for it to finish
+                    fRunningChanged_.notify_all (); // for a Remove waiting for it to finish
                 });
                 IgnoreExceptionsExceptThreadAbortForCall (i.fCallback ());
                 // set its next time - from when it finished - unless it was removed while running: adding it then would bring it back
@@ -205,10 +208,10 @@ void IntervalTimer::Manager::DefaultRep::AddRepeating (TimerID timer, const Time
     fHiddenRep_->AddRepeating (timer, intervalTimer, repeatInterval, hysteresis);
 }
 
-void IntervalTimer::Manager::DefaultRep::RemoveRepeating (TimerID timer) noexcept
+bool IntervalTimer::Manager::DefaultRep::Remove (TimerID timer) noexcept
 {
     AssertNotNull (fHiddenRep_);
-    fHiddenRep_->RemoveRepeating (timer);
+    return fHiddenRep_->Remove (timer);
 }
 
 auto IntervalTimer::Manager::DefaultRep::GetAllRegisteredTasks () const -> RegisteredTaskCollection
