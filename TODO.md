@@ -25,10 +25,6 @@ Generally will track stuff here between releases
    - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
        - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202).
-       - https://github.com/SophistSolutions/Stroika/issues/715 ("-s / -l sometimes produce no results") - likely fixed by
-         #1194: check with the SSDPClient sample on Windows and Linux, then close. Firewalls are the other suspect: rewrite
-         Listener.h's "Firewall Note" (which says only that turning off firewalls, rebooting, and trying again often helps)
-         from what that check finds.
        - https://github.com/SophistSolutions/Stroika/issues/1094 (server started with no network yet) - likely fixed by
          #1194 and following network changes: check on the rig (a container with no network, then one appearing), then close.
        - https://github.com/SophistSolutions/Stroika/issues/986 (IPv6 on the SSDP server, and Ping) - SSDP's part done by

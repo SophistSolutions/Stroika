@@ -29,10 +29,17 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      *  designated callbacks with the values in those SSDP multicast 'NOTIFY' messages.
      *
      *  Firewall Note:
-     *      Firewalls can occasionally block SSDP multicast listening support. Perhaps
-     *      because they are blocking the multicast group add? I've never seen an explicit
-     *      error message, but often turning off firewalls, rebooting, and trying again
-     *      makes the listen problem go away.
+     *      Nothing heard, and no error, usually means a firewall - this machine's - or a network that passes no multicast
+     *      (Docker's default bridge network passes none from the LAN). SSDP needs inbound UDP: to port 1900 - the NOTIFYs a
+     *      Listener hears - and, for a Search, its answers: unicast to the search's own port, each from a device's own address,
+     *      so not what a stateful firewall's "replies to what this machine sent" rule lets in (the M-SEARCH went to the
+     *      multicast group's address).
+     *      On Windows a program is let through per program, and per network profile: the first run of one that receives asks
+     *      (Windows Security Alert). Refused - or on a network marked Public, when allowed for Private only - it hears nothing.
+     *      Each build's executable is a program of its own. Its rules, from PowerShell:
+     *          Get-NetFirewallApplicationFilter | Where-Object Program -like '*SSDPClient*' | Get-NetFirewallRule
+     *      (Before Stroika v3.0d25 a machine on several networks - a VPN, Hyper-V's virtual switches - often heard nothing from
+     *      the LAN for another reason: SSDP used only the network interface the OS picks for multicast.)
      *
      *  \note - this internally creates a thread to monitor network traffic, and to call the callback functions on.
      */
