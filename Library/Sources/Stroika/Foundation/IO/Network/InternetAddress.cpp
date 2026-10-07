@@ -218,7 +218,7 @@ bool InternetAddress::IsLocalhostAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
             // 127.0.0.x
-            array<uint8_t, 4> octets = As<array<uint8_t, 4>> ();
+            auto octets = As<array<uint8_t, 4>> ();
             return octets[0] == 0x7f and octets[1] == 0x0 and octets[2] == 0x0;
         } break;
         case AddressFamily::V6: {
@@ -267,7 +267,7 @@ bool InternetAddress::IsPrivateAddress () const
              *      172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
              *      192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
              */
-            array<uint8_t, 4> octets = As<array<uint8_t, 4>> ();
+            auto octets = As<array<uint8_t, 4>> ();
             if (octets[0] == 10) {
                 return true;
             }
@@ -304,7 +304,7 @@ bool InternetAddress::IsMulticastAddress () const
         case AddressFamily::V4: {
             // From http://en.wikipedia.org/wiki/Multicast_address :
             // The group includes the addresses from 224.0.0.0 to 239.255.255.255
-            array<uint8_t, 4> octets = As<array<uint8_t, 4>> ();
+            auto octets = As<array<uint8_t, 4>> ();
             return 224 <= octets[0] and octets[0] <= 239;
         } break;
         case AddressFamily::V6: {
