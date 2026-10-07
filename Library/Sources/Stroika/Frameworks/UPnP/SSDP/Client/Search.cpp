@@ -278,7 +278,9 @@ InterfacesByID Search::GetNetworkInterfaces () const
 
 Search::~Search ()
 {
-    IgnoreExceptionsForCall (fRep_->Stop ());
+    if (fRep_ != nullptr) { // (moved from, it has none)
+        IgnoreExceptionsForCall (fRep_->Stop ());
+    }
 }
 
 auto Search::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds) -> CallbackID

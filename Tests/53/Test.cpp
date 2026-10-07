@@ -1116,6 +1116,32 @@ namespace {
     }
 
     /*
+     *  A Listener or Search moved from can still be destroyed: before Stroika v3.0d25 its destructor stopped the rep it had given
+     *  up - a null one - and crashed.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Client_MovedFrom_)
+    {
+        Debug::TraceContextBumper ctx{"SSDP_Client_MovedFrom_"};
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        try {
+            {
+                SSDP::Client::Listener movedFrom{SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+                SSDP::Client::Listener movedTo{move (movedFrom)};
+            }
+            {
+                SSDP::Client::Search movedFrom{SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+                SSDP::Client::Search movedTo{move (movedFrom)};
+            }
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Client_MovedFrom_ skipped - could not make an SSDP listener and search here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+        }
+    }
+
+    /*
      *  Following network changes costs no thread per SSDP object while the network stays as it is: they share LinkMonitor's
      *  (on POSIX - on Windows an OS registration, so not even that), and each has a thread of its own only while a burst of
      *  changes settles.

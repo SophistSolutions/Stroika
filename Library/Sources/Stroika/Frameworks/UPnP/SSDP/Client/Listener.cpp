@@ -220,7 +220,9 @@ InterfacesByID Listener::GetNetworkInterfaces () const
 
 Listener::~Listener ()
 {
-    IgnoreExceptionsForCall (fRep_->Stop ());
+    if (fRep_ != nullptr) { // (moved from, it has none)
+        IgnoreExceptionsForCall (fRep_->Stop ());
+    }
 }
 
 auto Listener::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds) -> CallbackID
