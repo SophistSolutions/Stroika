@@ -1177,11 +1177,14 @@ namespace {
             return a;
         };
         Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
-        auto                                                               waitForChanges = [&] (size_t n) {
-            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; told.load ().size () < n and Time::GetTickCount () < giveUpAt;) {
+        // BWA: told read under its lock - cget () - not through a copy (load ()) while the callback may still append: ThreadSanitizer
+        // reports a copy's reads as racing copy-on-write's later write in place (Memory::SharedByValue's use_count () check - TODO.md,
+        // #1205). Restore load () - the reproducer - when that is fixed
+        auto waitForChanges = [&] (size_t n) {
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; told.cget ()->size () < n and Time::GetTickCount () < giveUpAt;) {
                 Execution::Sleep (50ms);
             }
-            return told.load ().size () >= n;
+            return told.cget ()->size () >= n;
         };
         try {
             CachingListener cache{[&] (const SSDP::Advertisement& a) {
@@ -1293,7 +1296,8 @@ namespace {
         Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
         auto                                                               usnsTold = [&] (bool alive) {
             Containers::Set<String> result;
-            for (const SSDP::Advertisement& a : told.load ()) {
+            auto lockedTold = told.cget (); // BWA: under its lock, not through a copy (load ()) - as in SSDP_CachingListener_
+            for (const SSDP::Advertisement& a : lockedTold.cref ()) {
                 if (a.fAlive == alive) {
                     result += a.fUSN;
                 }
