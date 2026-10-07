@@ -625,6 +625,66 @@ namespace {
     }
 
     /*
+     *  SSDP_Loopback_Search_, over IPv6: our own Search finds our own BasicServer (the group ff02::c, joined on each interface),
+     *  which answers with a LOCATION on one of this machine's IPv6 addresses - never a link-local one, which a URL cannot use (so
+     *  where an interface has only link-local IPv6, nothing is answered there). As there, anything that keeps the exchange from
+     *  happening - here also a network with no IPv6 but link-local - is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_SearchIPv6_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_SearchIPv6_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackIPv6-{}:1"_f(deviceID);
+        Device       d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        const URI         location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        DeviceDescription dd;
+        dd.fDeviceType   = deviceType;
+        dd.fFriendlyName = "Stroika regression test device"sv;
+        dd.fUDN          = "uuid:" + deviceID;
+        Execution::Synchronized<optional<SSDP::Advertisement>> found; // Synchronized: the search's callback runs on its own thread
+        Execution::WaitableEvent                               foundEvent;
+        try {
+            SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                             SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV6Only}};
+            SSDP::Client::Search      search{[&] (const SSDP::Advertisement& a) {
+                                            if (a.fTarget == deviceType) {
+                                                found.store (a);
+                                                foundEvent.Set ();
+                                            }
+                                             },
+                                             deviceType, nullopt, SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV6Only}};
+            (void)foundEvent.WaitQuietly (10s);
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_SearchIPv6_ skipped - could not run an IPv6 SSDP server and search here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        optional<SSDP::Advertisement> a = found.load ();
+        if (not a) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_SearchIPv6_ skipped - our own device was not found over IPv6 within 10 "
+                "seconds (no IPv6 here but link-local, or this environment blocks IPv6 multicast)");
+            return;
+        }
+        DbgTrace ("found: {}"_f, a);
+        EXPECT_EQ (a->fUSN, "uuid:{}::{}"_f(deviceID, deviceType));
+        optional<URI::Authority>  authority = a->fLocation.GetAuthority ();
+        optional<InternetAddress> host      = authority and authority->GetHost () ? authority->GetHost ()->AsInternetAddress () : nullopt;
+        ASSERT_TRUE (host.has_value ()) << Characters::ToString (a->fLocation).AsNarrowSDKString ();
+        EXPECT_EQ (host->GetAddressFamily (), InternetAddress::AddressFamily::V6) << Characters::ToString (*host).AsNarrowSDKString ();
+        EXPECT_FALSE (host->IsLinkLocalAddress ()) << Characters::ToString (*host).AsNarrowSDKString ();
+        EXPECT_TRUE (SystemInterfacesMgr{}.GetAll ().Any ([&] (const Interface& i) { return i.fBindings.fAddresses.Contains (*host); }))
+            << Characters::ToString (*host).AsNarrowSDKString () << " is not one of this machine's addresses";
+    }
+
+    /*
      *  Our own Listener hearing our own BasicServer's NOTIFY, both in this process: the server sends one out of each network
      *  interface its Options::fInterfaces accepts, with that network's own address as its LOCATION, and the Listener listens on
      *  each. As in SSDP_Loopback_Search_, anything that keeps the exchange from happening is a test issue; a wrong NOTIFY is a

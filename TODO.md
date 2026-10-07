@@ -24,10 +24,6 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - https://github.com/SophistSolutions/Stroika/issues/1094 (server started with no network yet) - likely fixed by
-         #1194 and following network changes: check on the rig (a container with no network, then one appearing), then close.
-       - https://github.com/SophistSolutions/Stroika/issues/986 (IPv6 on the SSDP server, and Ping) - SSDP's part done by
-         #1194 (verify); Ping's is not SSDP.
        - (WTF, not Stroika) **WTF ignores every ssdp:byebye**: it finds the device by its LOCATION's host, which a byebye
          does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - use SSDP::Client::CachingListener: its callbacks get
          a Listener's Advertisement once per change - fAlive false (removed) with the LOCATION last heard - so WTF fetches
