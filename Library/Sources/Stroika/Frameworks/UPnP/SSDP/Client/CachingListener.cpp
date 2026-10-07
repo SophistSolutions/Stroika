@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -55,6 +56,10 @@ public:
                                               .fFollowNetworkChanges = options.fListener.fFollowNetworkChanges});
         }
     }
+    ~Rep_ ()
+    {
+        IgnoreExceptionsForCall (Stop ()); // first: its expiry checks call Expire_, on this
+    }
     CallbackID AddOnChangeCallback (const function<void (const SSDP::Advertisement& d)>& callOnChanges)
     {
         return fCallbacks_.Add (callOnChanges);
@@ -80,8 +85,12 @@ public:
     void Start ()
     {
         [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
-        Require (fExpiring_ == nullptr); // not already started
-        fExpiring_ = make_unique<IntervalTimer::Adder> ([this] () { Expire_ (); }, kCheckExpiriesEvery_);
+        {
+            [[maybe_unused]] lock_guard noting{fNoting_};
+            Require (not fStarted_); // not already started
+            fStarted_ = true;
+            CheckExpiriesWhenDue_ (); // what it kept from before a Stop
+        }
         fListener_.Start ();
         if (fSearch_) {
             fSearch_->Start (*fOptions_.fSearchFor, fOptions_.fSearchRepeatInterval);
@@ -94,7 +103,18 @@ public:
             fSearch_->Stop ();
         }
         fListener_.Stop ();
-        fExpiring_.reset ();
+        // last, so after any Heard_: the expiry checks - removed not holding fNoting_, as removing one waits for its call under
+        // way, an Expire_ that may be waiting for fNoting_ (then doing nothing, as stopped)
+        Sequence<IntervalTimer::TimerID> checks;
+        {
+            [[maybe_unused]] lock_guard noting{fNoting_};
+            fStarted_ = false;
+            checks    = exchange (fChecks_, {});
+            fCheckAt_ = nullopt;
+        }
+        for (IntervalTimer::TimerID c : checks) {
+            IntervalTimer::Manager::sThe.Remove (c);
+        }
     }
 
 private:
@@ -112,7 +132,8 @@ private:
             a.fAlive                         = true; // as a search answer does not say
             Time::TimePointSeconds expiresAt = Time::GetTickCount () + a.fMaxAge.value_or (kDefaultMaxAge);
             fSoonestExpiry_                  = fSoonestExpiry_ ? min (*fSoonestExpiry_, expiresAt) : expiresAt;
-            bool added                       = false;
+            CheckExpiriesWhenDue_ ();
+            bool added = false;
             {
                 auto       cache     = fCache_.rwget ();
                 Locations_ locations = cache->LookupValue (usn);
@@ -144,37 +165,58 @@ private:
         }
         // else an ssdp:update (UPnP 1.1), which neither adds nor removes
     }
-    // on IntervalTimer's thread: removes what has expired
+    // on IntervalTimer's thread, as the soonest expiry is due (@see CheckExpiriesWhenDue_): removes what has expired
     void Expire_ ()
     {
         [[maybe_unused]] lock_guard noting{fNoting_};
-        Time::TimePointSeconds      now = Time::GetTickCount ();
-        if (not fSoonestExpiry_ or now < *fSoonestExpiry_) {
-            return; // so the cache is looked through only when something may have expired
+        if (not fStarted_) {
+            return; // stopping: Stop removes the checks
         }
+        // this check is done, and any other to come is no longer needed - CheckExpiriesWhenDue_ adds the next: removed, which here,
+        // on the timer thread, never waits
+        for (IntervalTimer::TimerID c : fChecks_) {
+            IntervalTimer::Manager::sThe.Remove (c);
+        }
+        fChecks_.RemoveAll ();
+        fCheckAt_                         = nullopt;
+        Time::TimePointSeconds        now = Time::GetTickCount ();
         Sequence<SSDP::Advertisement> expired;
-        Mapping<String, Locations_>   kept;
-        fSoonestExpiry_ = nullopt; // what was soonest may have been heard again since: recompute
-        for (const KeyValuePair<String, Locations_>& usn : fCache_.load ()) {
-            Locations_ keptHere;
-            for (const KeyValuePair<URI, Entry_>& i : usn.fValue) {
-                if (i.fValue.fExpiresAt <= now) {
-                    expired += Gone_ (i.fValue);
+        if (fSoonestExpiry_ and *fSoonestExpiry_ <= now) { // else nothing can have expired yet
+            Mapping<String, Locations_> kept;
+            fSoonestExpiry_ = nullopt; // what was soonest may have been heard again since: recompute
+            for (const KeyValuePair<String, Locations_>& usn : fCache_.load ()) {
+                Locations_ keptHere;
+                for (const KeyValuePair<URI, Entry_>& i : usn.fValue) {
+                    if (i.fValue.fExpiresAt <= now) {
+                        expired += Gone_ (i.fValue);
+                    }
+                    else {
+                        keptHere.Add (i.fKey, i.fValue);
+                        fSoonestExpiry_ = fSoonestExpiry_ ? min (*fSoonestExpiry_, i.fValue.fExpiresAt) : i.fValue.fExpiresAt;
+                    }
                 }
-                else {
-                    keptHere.Add (i.fKey, i.fValue);
-                    fSoonestExpiry_ = fSoonestExpiry_ ? min (*fSoonestExpiry_, i.fValue.fExpiresAt) : i.fValue.fExpiresAt;
+                if (not keptHere.empty ()) {
+                    kept.Add (usn.fKey, keptHere);
                 }
             }
-            if (not keptHere.empty ()) {
-                kept.Add (usn.fKey, keptHere);
+            if (not expired.empty ()) {
+                fCache_.store (kept);
             }
         }
-        if (not expired.empty ()) {
-            fCache_.store (kept);
-        }
+        CheckExpiriesWhenDue_ ();
         for (const SSDP::Advertisement& a : expired) {
             fCallbacks_.Call (a);
+        }
+    }
+    // holding fNoting_: that Expire_ is called as the soonest expiry is due - adding a one-shot timer, unless one is due by then.
+    // It never removes one: that waits for its call under way - an Expire_ that may be waiting for fNoting_ - so Expire_ removes
+    // those no longer needed (on the timer thread, where that never waits), and Stop the rest.
+    void CheckExpiriesWhenDue_ ()
+    {
+        if (fStarted_ and fSoonestExpiry_ and (not fCheckAt_ or *fSoonestExpiry_ < *fCheckAt_)) {
+            fCheckAt_ = *fSoonestExpiry_;
+            fChecks_ += IntervalTimer::Manager::sThe.AddOneShot ([this] () { Expire_ (); },
+                                                                 max (*fSoonestExpiry_ - Time::GetTickCount (), Time::DurationSeconds{0}));
         }
     }
     // the device a USN names - its "uuid:device-UUID", before any "::" (UPnP Device Architecture 1.1, section 1.2.2) - so an
@@ -193,8 +235,6 @@ private:
     }
 
 private:
-    static constexpr Time::DurationSeconds kCheckExpiriesEvery_{1.0};
-
     const Options fOptions_;
     mutex         fLifecycleMutex_; // Start and Stop
     // one change at a time - made and told - on whichever thread sees it: so the callbacks are told of the changes in order
@@ -202,10 +242,12 @@ private:
     CallbackRegistry<void (const SSDP::Advertisement&)> fCallbacks_;
     Synchronized<Mapping<String, Locations_>>           fCache_;         // by USN; changed only holding fNoting_
     optional<Time::TimePointSeconds>                    fSoonestExpiry_; // (fNoting_) no entry expires before it - nullopt: none to
-    // last, so stopped first: they call Heard_ and Expire_, which use the rest
-    Listener                         fListener_;
-    optional<Search>                 fSearch_;
-    unique_ptr<IntervalTimer::Adder> fExpiring_; // while started
+    Sequence<IntervalTimer::TimerID> fChecks_;         // (fNoting_) the one-shot timers still to call Expire_ - Stop removes them
+    optional<Time::TimePointSeconds> fCheckAt_;        // (fNoting_) when the soonest of them is due - nullopt: none
+    bool                             fStarted_{false}; // (fNoting_)
+    // last, so stopped first: they call Heard_, which uses the rest
+    Listener         fListener_;
+    optional<Search> fSearch_;
 };
 
 /*
@@ -242,7 +284,7 @@ CachingListener::CachingListener (const function<void (const SSDP::Advertisement
     Start ();
 }
 
-CachingListener::~CachingListener () = default; // Rep_'s members stop the expiring, searcher and listener
+CachingListener::~CachingListener () = default; // Rep_ stops as it goes
 
 auto CachingListener::AddOnChangeCallback (const function<void (const SSDP::Advertisement& d)>& callOnChanges) -> CallbackID
 {

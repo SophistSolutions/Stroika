@@ -58,7 +58,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      *        every other timer. Hand slow work - fetching the device description, say - to another thread.
      *
      *  \note Needs an IntervalTimer::Manager::Activator, as BasicServer does: while started, it looks for what has expired
-     *        each second, on IntervalTimer's thread.
+     *        as the soonest expiry is due - not polling - on IntervalTimer's thread.
      *
      *  \note A search answer and an ssdp:byebye come in on different threads - the Search's and the Listener's - so are not
      *        ordered: an answer read late (that thread behind, on a busy network) can add back what a byebye removed, until its
@@ -200,11 +200,11 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
     public:
         /**
-         *  Starts listening (and searching) - on the listener's thread (and the searcher's) - and looking, each second on
-         *  IntervalTimer's thread, for what has expired.
+         *  Starts listening (and searching) - on the listener's thread (and the searcher's) - and looking, on IntervalTimer's
+         *  thread as each expiry is due, for what has expired.
          *
          *  \pre not already started.
-         *  \pre an IntervalTimer::Manager::Activator exists
+         *  \pre an IntervalTimer::Manager::Activator exists - until it is stopped
          */
         nonvirtual void Start ();
 

@@ -1341,6 +1341,12 @@ namespace {
             EXPECT_TRUE (waitForChanges (8));
             EXPECT_GE ((Time::GetTickCount () - sentAt).count (), 1.0);
             EXPECT_EQ (cached ().size (), 0u);
+            // and it polls for nothing: each expiry is looked for when it is due - no timer repeats
+            EXPECT_FALSE (Execution::IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().Any (
+                [] (const Execution::IntervalTimer::RegisteredTask& t) { return t.fFrequency.has_value (); }));
+            // one kept as it goes - so a look for what has expired is due then
+            notify (alive (deviceUSN, deviceUSN, location2, 60s));
+            EXPECT_TRUE (waitForChanges (9));
             Execution::Sleep (500ms); // for anything after it
         }
         catch (...) {
@@ -1348,12 +1354,14 @@ namespace {
                 "SSDP_CachingListener_ skipped - could not run an SSDP listener here: {}"_f(current_exception ()).AsNarrowSDKString ().c_str ());
             return;
         }
+        // gone, it leaves no timer behind - though a look for what has expired was still to come
+        EXPECT_EQ (Execution::IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().size (), 0u);
         Containers::Sequence<SSDP::Advertisement> changes = told.load ();
         for (const SSDP::Advertisement& a : changes) {
             DbgTrace ("told: {}"_f, a);
         }
         // each change told once, in order - though each NOTIFY came once per interface; fAlive says which: added or removed
-        ASSERT_EQ (changes.size (), 8u);
+        ASSERT_EQ (changes.size (), 9u);
         auto is = [] (const SSDP::Advertisement& a, bool alive, const String& usn, const URI& location) {
             return a.fAlive == alive and a.fUSN == usn and a.fLocation == location;
         };
@@ -1367,6 +1375,7 @@ namespace {
                       Containers::Set<String>{at (rootUSN, location1), at (rootUSN, location2), at (serviceUSN, location1)}));
         EXPECT_TRUE (is (changes[6], true, deviceUSN, location1));
         EXPECT_TRUE (is (changes[7], false, deviceUSN, location1));
+        EXPECT_TRUE (is (changes[8], true, deviceUSN, location2));
     }
 
     /*
