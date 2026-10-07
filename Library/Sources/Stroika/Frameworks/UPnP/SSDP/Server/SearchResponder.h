@@ -6,12 +6,11 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <mutex>
-
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
 #include "Stroika/Frameworks/UPnP/Device.h"
@@ -102,13 +101,10 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
         nonvirtual IO::Network::InterfacesByID GetNetworkInterfaces () const;
 
     private:
-        nonvirtual void StartListening_ (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const Options& options);
-
-    private:
-        mutex fLifecycleMutex_; // (re)starting the listening - also done on the network-change thread
         Execution::Synchronized<IO::Network::InterfacesByID> fListeningOn_; // set by the listening thread (so declared before it, outliving it)
+        unique_ptr<Execution::WaitForIOReady_Support::EventFD> fJoinAgain_{Execution::WaitForIOReady_Support::mkEventFD ()}; // set when a network appears, waking the listening thread to join it there too (so declared before it)
         Execution::Thread::CleanupPtr                   fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
-        optional<SSDP::Private_::NetworkChangeFollower> fNetworkChanges_; // last, so destroyed first: no restart while the rest goes away
+        optional<SSDP::Private_::NetworkChangeFollower> fNetworkChanges_; // last, so destroyed first: none follows while the rest goes away
     };
 
 }

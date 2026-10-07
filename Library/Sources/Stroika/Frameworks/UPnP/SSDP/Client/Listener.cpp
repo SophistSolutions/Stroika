@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
@@ -53,7 +54,7 @@ public:
     {
         static constexpr Activity kConstructingSSDPListener_{"constructing SSDP Listener"sv};
         DeclareActivity           activity{&kConstructingSSDPListener_};
-        fSockets_ = MakeSockets_ ();
+        MakeSockets_ ();
         if (options.fFollowNetworkChanges) {
             fNetworkChanges_ = SSDP::Private_::FollowNetworkChanges ([this] () { Rejoin_ (); });
         }
@@ -82,32 +83,34 @@ public:
         return fListeningOn_.load ();
     }
     // bound, and joined on every interface fOptions_.fInterfaces accepts - so notifications arriving on any of them are heard
-    Collection<ConnectionlessSocket::Ptr> MakeSockets_ ()
+    void MakeSockets_ ()
     {
         Socket::BindFlags bindFlags = Socket::BindFlags{};
         bindFlags.fSO_REUSEADDR     = true;
-        Collection<ConnectionlessSocket::Ptr>                                  sockets;
-        Containers::Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>> toJoin;
         if (InternetProtocol::IP::SupportIPV4 (fOptions_.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, bindFlags);
-            toJoin += make_pair (s, UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
-            sockets.Add (s);
+            fSocketsAndGroups_ += make_pair (s, UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
+            fSockets_.Add (s);
         }
         if (InternetProtocol::IP::SupportIPV6 (fOptions_.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, bindFlags);
-            toJoin += make_pair (s, UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
-            sockets.Add (s);
+            fSocketsAndGroups_ += make_pair (s, UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
+            fSockets_.Add (s);
         }
-        fListeningOn_.store (SSDP::Private_::JoinOnEveryInterface (toJoin, fOptions_.fInterfaces));
-        return sockets;
+        Join_ ();
+    }
+    // join SSDP's groups on every interface fOptions_.fInterfaces accepts - those joined already stay as they are
+    void Join_ ()
+    {
+        fListeningOn_.store (SSDP::Private_::JoinOnEveryInterface (fSocketsAndGroups_, fOptions_.fInterfaces));
     }
     void StartThread_ ()
     {
         static const String kThreadName_ = "SSDP Listener"sv;
-        fNewSockets_.store (nullopt);
-        fThread_ = Thread::New ([this, sockets = fSockets_] () { DoRun_ (sockets); }, Thread::eAutoStart, kThreadName_);
+
+        fThread_ = Thread::New ([this] () { DoRun_ (); }, Thread::eAutoStart, kThreadName_);
     }
     void StopThread_ ()
     {
@@ -116,27 +119,30 @@ public:
             fThread_ = nullptr;
         }
     }
-    // a network appeared: listen there too - on new sockets, joined afresh. Without stopping the listening thread, which may be
-    // in a slow callOnFinds: it switches to them when it next waits for packets (what arrives meanwhile waits in them)
+    // a network appeared: listen there too - joined on the sockets already listening, so nothing waiting in them is lost or read
+    // twice. By the listening thread - woken from its wait for packets (each socket used by one thread at a time), though not
+    // from a slow callOnFinds - or here, if none is running
     void Rejoin_ ()
     {
         [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
-        fSockets_ = MakeSockets_ ();
         if (fThread_ != nullptr) {
-            fNewSockets_.store (fSockets_);
+            fJoinAgain_->Set ();
+        }
+        else {
+            Join_ ();
         }
     }
-    void DoRun_ (Collection<ConnectionlessSocket::Ptr> sockets)
+    void DoRun_ ()
     {
         // only stopped by thread abort
-        optional<WaitForIOReady<ConnectionlessSocket::Ptr>> readyChecker{in_place, sockets};
+        WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_, WaitForIOReady<ConnectionlessSocket::Ptr>::kDefaultTypeOfMonitor,
+                                                               fJoinAgain_->GetWaitInfo ()};
         while (true) {
-            if (auto newSockets = fNewSockets_.rwget (); newSockets.cref ().has_value ()) {
-                sockets = *newSockets.cref (); // the old ones close - leaving their groups - as the last reference to them goes
-                newSockets.store (nullopt);
-                readyChecker.emplace (sockets);
+            if (fJoinAgain_->IsSet ()) {
+                fJoinAgain_->Clear (); // first: a network appearing as this joins wakes the wait below at once
+                Join_ ();
             }
-            for (const ConnectionlessSocket::Ptr& s : readyChecker->WaitQuietly (kCheckForNewSocketsEvery_)) {
+            for (const ConnectionlessSocket::Ptr& s : readyChecker.WaitQuietly ()) {
                 try {
                     byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;
@@ -173,14 +179,13 @@ public:
     }
 
 private:
-    static constexpr Time::DurationSeconds kCheckForNewSocketsEvery_{1.0}; // how soon the listening thread takes up Rejoin_'s sockets
-
     const Options fOptions_;
     mutex         fLifecycleMutex_; // Start, Stop and Rejoin_ (called on its network-change thread)
     Execution::CallbackRegistry<void (const SSDP::Advertisement&)> fFoundCallbacks_;
-    Collection<ConnectionlessSocket::Ptr>                          fSockets_;
-    Synchronized<InterfacesByID>                                   fListeningOn_; // what fSockets_ are joined on
-    Synchronized<optional<Collection<ConnectionlessSocket::Ptr>>> fNewSockets_; // Rejoin_'s, for the listening thread to switch to (so declared before it)
+    Containers::Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>> fSocketsAndGroups_; // each socket, and the SSDP group it joins - all set as constructed
+    Collection<ConnectionlessSocket::Ptr> fSockets_;                                           // the same sockets
+    Synchronized<InterfacesByID>          fListeningOn_;                                       // what fSockets_ are joined on
+    unique_ptr<WaitForIOReady_Support::EventFD> fJoinAgain_{WaitForIOReady_Support::mkEventFD ()}; // set by Rejoin_, waking the listening thread (so declared before it)
     Thread::CleanupPtr                              fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
     optional<SSDP::Private_::NetworkChangeFollower> fNetworkChanges_; // last, so destroyed first: no Rejoin_ while the rest goes away
 };

@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -80,6 +81,17 @@ InterfacesByID UPnP::SSDP::Private_::JoinOnEveryInterface (const Traversal::Iter
             }
             catch (const Execution::Thread::AbortException&) {
                 Execution::ReThrow ();
+            }
+            catch (const system_error& e) {
+                // already a member there - as after a network appears, when this joins again on every interface - counts as joined.
+                // POSIX says so (EADDRINUSE); Windows only that an argument is invalid (WSAEINVAL, as of Windows 11 10.0.26200), which
+                // a join otherwise is not - the group being SSDP's, and the interface one with an address of its family
+                if (Execution::IsA (e, errc::address_in_use) or (qStroika_Platform_Windows and Execution::IsA (e, errc::invalid_argument))) {
+                    joined = true;
+                }
+                else {
+                    DbgTrace ("SSDP: could not join {} on {}: {}"_f, sg.second, i.fInterfaceID, current_exception ());
+                }
             }
             catch (...) {
                 DbgTrace ("SSDP: could not join {} on {}: {}"_f, sg.second, i.fInterfaceID, current_exception ());

@@ -1116,6 +1116,46 @@ namespace {
     }
 
     /*
+     *  Joining the SSDP group again, on interfaces a socket has joined it on already, counts as joined - so when a network
+     *  appears, the sockets already listening join it there too, keeping all else (before Stroika v3.0d25 a re-join failed - "already
+     *  a member" - so new sockets were made instead, and what waited in the old ones was lost).
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_JoinAgain_)
+    {
+        Debug::TraceContextBumper                                              ctx{"SSDP_JoinAgain_"};
+        Containers::Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>> toJoin; // a socket for each SSDP group this host can have
+        for (const SocketAddress& group : {SSDP::V4::kSocketAddress, SSDP::V6::kSocketAddress}) {
+            try {
+                bool                      v4 = group.GetAddressFamily () == SocketAddress::INET;
+                ConnectionlessSocket::Ptr s  = ConnectionlessSocket::New (group.GetAddressFamily (), Socket::DGRAM);
+                s.Bind (SocketAddress{v4 ? V4::kAddrAny : V6::kAddrAny, group.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+                toJoin += make_pair (s, group.GetInternetAddress ());
+            }
+            catch (...) {
+                DbgTrace ("SSDP_JoinAgain_: no socket for {} here: {}"_f, group, current_exception ());
+            }
+        }
+        if (toJoin.empty ()) {
+            Stroika::Frameworks::Test::WarnTestIssue ("SSDP_JoinAgain_ skipped - could not bind SSDP's sockets here");
+            return;
+        }
+        auto ids = [] (const InterfacesByID& interfaces) {
+            Containers::Set<String> result;
+            for (const Interface& i : interfaces) {
+                result += i.fInterfaceID;
+            }
+            return result;
+        };
+        Containers::Set<String> joined = ids (SSDP::Private_::JoinOnEveryInterface (toJoin, SSDP::DefaultInterfaceFilter));
+        if (joined.empty ()) {
+            Stroika::Frameworks::Test::WarnTestIssue ("SSDP_JoinAgain_ skipped - no network interface to join SSDP's group on");
+            return;
+        }
+        EXPECT_EQ (ids (SSDP::Private_::JoinOnEveryInterface (toJoin, SSDP::DefaultInterfaceFilter)), joined)
+            << "joined again, not counted as joined";
+    }
+
+    /*
      *  A Listener or Search moved from can still be destroyed: before Stroika v3.0d25 its destructor stopped the rep it had given
      *  up - a null one - and crashed.
      */

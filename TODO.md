@@ -24,16 +24,12 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **a network appearing drops what waits in the old sockets**: Listener switches to new sockets (a slow callOnFinds
-         lost 2 NOTIFYs on the rig), and SearchResponder restarts its thread on new ones. Fix: join the new interfaces on the
-         existing sockets ("already a member" counting as joined) - nothing to switch, so nothing lost or doubled.
        - **answer a search with the address of the interface it arrived on**, not the route lookup's - which a Tailscale
          subnet route covering the LAN turns into the Tailscale address (#1194's step-2 comment). UPnP-only: pick the
          interface by the asker's subnet (Interface::fBindings.fAddressRanges; an IPv6 link-local asker's scope id names
          it), else the route lookup. The exact way - IP_PKTINFO - is https://github.com/SophistSolutions/Stroika/issues/1202
          (UNLIKELY for v3.0).
-       - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202) and the socket switch
-         above.
+       - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202).
        - https://github.com/SophistSolutions/Stroika/issues/715 ("-s / -l sometimes produce no results") - likely fixed by
          #1194: check with the SSDPClient sample on Windows and Linux, then close. Firewalls are the other suspect: rewrite
          Listener.h's "Firewall Note" (which says only that turning off firewalls, rebooting, and trying again often helps)
@@ -56,6 +52,8 @@ Generally will track stuff here between releases
          set, then the changes) or a callback that needs the whole picture ("was that the last device of this type?"). And the
          order, attaching later: AddOnFoundCallback, then GetAdvertisements () - an advertisement may be seen twice; the
          other way round, a change can be missed. (Or AddOnFoundCallback could replay what is cached to the new callback.)
+         And make plain that its callbacks report changes to the cache - added, removed - not each advertisement heard: one
+         already known, heard again, calls nothing (its shape, Listener's - AddOnFoundCallback, an Advertisement - hides that).
        - (this and the next: for 3.0d25, after the rest of this list - LGP 2026-10-07)
          **UPnP services as objects** (estimate 4-5 h, with the samples moved onto them): UPnP::ServiceDescription (a
          service's description, its SCPD) with Serialize; and SOAP control messages - an action's request, response and

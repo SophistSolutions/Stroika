@@ -207,25 +207,8 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
     if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
     }
-    StartListening_ (advertisements, location, options); // here, so construction fails if it cannot bind
-    if (options.fFollowNetworkChanges) {
-        fNetworkChanges_ =
-            SSDP::Private_::FollowNetworkChanges ([this, advertisements = Sequence<Advertisement>{advertisements}, location, options] () {
-                // a network appeared: listen there too - on new sockets, joined afresh (the old listening thread uses the old
-                // ones, so it stops first)
-                [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
-                fListenThread_.AbortAndWaitForDone ();
-                StartListening_ (advertisements, location, options);
-            });
-    }
-}
-
-void SearchResponder::StartListening_ (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const Options& options)
-{
-    InterfaceFilter interfaceFilter = options.fInterfaces;
-
     // Construction of search responder will fail if we cannot bind - instead of failing quietly inside the loop
-    Collection<pair<ConnectionlessSocket::Ptr, SocketAddress>> sockets;
+    Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>> socketsAndGroups; // each socket, and the SSDP group it joins
     {
         static constexpr Activity kActivity_{"SSDP Binding in SearchResponder"sv};
         DeclareActivity           da{&kActivity_};
@@ -235,48 +218,51 @@ void SearchResponder::StartListening_ (const Iterable<Advertisement>& advertisem
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
-            sockets += make_pair (s, UPnP::SSDP::V4::kSocketAddress);
+            socketsAndGroups += make_pair (s, UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
         }
         if (InternetProtocol::IP::SupportIPV6 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
-            sockets += make_pair (s, UPnP::SSDP::V6::kSocketAddress);
+            socketsAndGroups += make_pair (s, UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
         }
     }
 
     // Use a thread to wait on a set of sockets we are listening for requests on
     static const String kThreadName_{"SSDP Search Responder"sv};
     fListenThread_ = Thread::New (
-        [this, advertisements, location, interfaceFilter, sockets] () {
+        [this, advertisements = Sequence<Advertisement>{advertisements}, location, interfaceFilter = options.fInterfaces, socketsAndGroups] () {
             Debug::TraceContextBumper ctx{"SSDP SearchResponder thread loop"};
-            // join the group on every interface (running, not loopback) with an address of its family - so searches arriving
-            // on any of them are heard; until at least one join works (e.g. started before there was a network), keep trying
-            for (Time::DurationSeconds wait = 1s;; wait = min<Time::DurationSeconds> (wait * 2, 60s)) {
-                Containers::Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>> toJoin;
-                for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
-                    toJoin += make_pair (s.first, s.second.GetInternetAddress ());
-                }
-                InterfacesByID listeningOn = SSDP::Private_::JoinOnEveryInterface (toJoin, interfaceFilter);
-                fListeningOn_.store (listeningOn);
-                if (not listeningOn.empty ()) {
-                    break;
-                }
-                // SEE https://github.com/SophistSolutions/Stroika/issues/1094 (STK-962) - BasicServer also restarts this when a network appears
-                DbgTrace ("SSDP SearchResponder: could join on no interface, so try again in {}"_f, wait);
-                Sleep (wait);
-            }
-
+            auto inUseSockets = socketsAndGroups.Map<Iterable<ConnectionlessSocket::Ptr>> ([] (auto i) { return i.first; });
+            WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{inUseSockets, WaitForIOReady<ConnectionlessSocket::Ptr>::kDefaultTypeOfMonitor,
+                                                                   fJoinAgain_->GetWaitInfo ()};
+            // the group is joined on every interface (running, not loopback) with an address of its family - so searches arriving
+            // on any of them are heard: at first, again when a network appears (on these sockets, so the searches waiting in them,
+            // and the answers waiting to go, are kept), and - until at least one join works (e.g. started before there was a
+            // network) - every so often
+            optional<Time::TimePointSeconds> joinAt = Time::GetTickCount ();
+            Time::DurationSeconds            retryJoinAfter{1s};
             // only stopped by thread abort - which drops the answers still waiting
-            auto              inUseSockets = sockets.Map<Iterable<ConnectionlessSocket::Ptr>> ([] (auto i) { return i.first; });
             Sequence<Answer_> waiting; // not yet due: this thread goes on answering other searches meanwhile, as 1.3.3 requires
             while (true) {
                 try {
-                    Time::TimePointSeconds nextDue{Time::kInfinity};
+                    if (fJoinAgain_->IsSet () or (joinAt and *joinAt <= Time::GetTickCount ())) {
+                        fJoinAgain_->Clear (); // first: a network appearing as this joins wakes the wait below at once
+                        InterfacesByID listeningOn = SSDP::Private_::JoinOnEveryInterface (socketsAndGroups, interfaceFilter);
+                        fListeningOn_.store (listeningOn);
+                        joinAt = nullopt;
+                        if (listeningOn.empty ()) {
+                            // SEE https://github.com/SophistSolutions/Stroika/issues/1094 (STK-962)
+                            DbgTrace ("SSDP SearchResponder: could join on no interface, so try again in {}"_f, retryJoinAfter);
+                            joinAt         = Time::GetTickCount () + retryJoinAfter;
+                            retryJoinAfter = min<Time::DurationSeconds> (retryJoinAfter * 2, 60s);
+                        }
+                    }
+                    Time::TimePointSeconds nextDue = joinAt.value_or (Time::TimePointSeconds{Time::kInfinity});
                     for (const Answer_& a : waiting) {
                         nextDue = min (nextDue, a.fDueAt);
                     }
-                    for (ConnectionlessSocket::Ptr s : WaitForIOReady{inUseSockets}.WaitQuietlyUntil (nextDue)) {
+                    for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (nextDue)) {
                         SocketAddress from;
                         byte          buf[4 * 1024]; // not sure of max packet size
                         size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
@@ -310,6 +296,11 @@ void SearchResponder::StartListening_ (const Iterable<Advertisement>& advertisem
             }
         },
         Thread::eAutoStart, kThreadName_);
+    if (options.fFollowNetworkChanges) {
+        // a network appeared: the listening thread joins it there too - woken to, on the sockets it has (each used by one thread
+        // at a time)
+        fNetworkChanges_ = SSDP::Private_::FollowNetworkChanges ([this] () { fJoinAgain_->Set (); });
+    }
 }
 
 InterfacesByID SearchResponder::GetNetworkInterfaces () const
