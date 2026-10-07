@@ -5,8 +5,11 @@ FROM $BASED_ON_IMAGE
 # Get latest packages system, so can do installs
 RUN apt-get update
 
-# Cuz often connect to it via ssh
-RUN apt-get install -y openssh-server
+# Cuz often connect to it via ssh.
+# Installing it generates sshd host keys: delete them IN THE SAME RUN (a later RUN would leave them in this layer), so
+# the image - which is published - carries no private host key, and no two containers share one. Each container makes
+# its own at first start - see stroika-dev-entrypoint.sh.
+RUN apt-get install -y openssh-server && rm -f /etc/ssh/ssh_host_*
 
 # handy dev tools to debug, etc...
 RUN apt-get install -y clang-format curl vim apt-file nodejs iproute2 lldb

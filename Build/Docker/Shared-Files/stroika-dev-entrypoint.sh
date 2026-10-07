@@ -29,4 +29,8 @@ sudo chmod 755 "$HOME_DIR" # NOT a+w - see above
 # -p so a restart does not log 'mkdir: cannot create directory /run/sshd: File exists' on every boot
 sudo mkdir -p /run/sshd
 
+# The image ships no sshd host keys (see the Dockerfile): -A makes whichever are missing, so at the first start only.
+# They last as long as the container - recreating it makes new ones, and ssh clients then see a changed host key.
+sudo ssh-keygen -A
+
 exec sudo /usr/sbin/sshd -D "$@"
