@@ -137,7 +137,7 @@ auto TextToBinary::Reader::New (const InputStream::Ptr<Character>& srcStream, op
 auto TextToBinary::Reader::New (const Traversal::Iterable<Character>& srcText) -> InputStream::Ptr<byte>
 {
     // @todo - Could make this more efficient (by combining into one object) - but for now KISS
-    auto result = New (IterableToInputStream::New<Character> (srcText));
+    auto result = New (IterableToInputStream::New<Character> (srcText), SeekableFlag::eSeekable);
     Ensure (result.IsSeekable ());
     return result;
 }

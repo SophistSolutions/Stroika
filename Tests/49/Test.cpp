@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 #include "Stroika/Foundation/Streams/ToSeekableInputStream.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Streams/iostream/OutputStreamFromStdOStream.h"
@@ -188,6 +189,21 @@ namespace {
             BinaryToText::Reader::Ptr tr = BinaryToText::Reader::New (s);
             EXPECT_EQ (tr.ReadAll (), "Testing 1, 2, 3");
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Streams, BinaryReaderFromText_)
+    {
+        Debug::TraceContextBumper ctx{"BinaryReaderFromText_"};
+        // text as its UTF-8 bytes, in a stream that can seek, as TextToBinary::Reader::New (Iterable<Character>) promises - before
+        // Stroika v3.0d25 it could not, so every Debug build aborted there (as in XML::DOM::Document::New (String))
+        InputStream::Ptr<byte> in = TextToBinary::Reader::New (Characters::String{"hello world"});
+        EXPECT_TRUE (in.IsSeekable ());
+        const Memory::BLOB kHelloWorld_{as_bytes (span{"hello world"sv})};
+        EXPECT_EQ (in.ReadAll (), kHelloWorld_);
+        in.Seek (0);
+        EXPECT_EQ (in.ReadAll (), kHelloWorld_);
     }
 }
 

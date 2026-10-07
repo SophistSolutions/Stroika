@@ -1843,6 +1843,17 @@ namespace {
         });
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_FromString_)
+    {
+        Debug::TraceContextBumper ctx{"DOM_FromString_"};
+        // a document read from text, not bytes - before Stroika v3.0d25, this aborted every Debug build (in
+        // TextToBinary::Reader::New (Iterable<Character>), whose stream could not seek as it promised)
+        DOM::Document::Ptr d = DOM::Document::New (String{"<light><on>1</on></light>"});
+        EXPECT_EQ (d.GetRootElement ().GetValue (DOM::XPath::Expression{"on"}), String{"1"});
+    }
+}
 #else
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, Parsing_)
