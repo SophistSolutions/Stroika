@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/Execution/LazyInitialized.h"
+#include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
@@ -44,6 +45,12 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         String                  fTarget; // usually ST header (or NT for notify)
         Mapping<String, String> fRawHeaders;
         optional<Foundation::Time::Duration> fMaxAge; // CACHE-CONTROL max-age: how long the advertisement is good for (Serialize writes kDefaultMaxAge if missing)
+
+        /**
+         *  The network it arrived on - its interface's Interface::fInterfaceID - as a Client::Listener or Client::Search heard it
+         *  (nullopt: not known). Not part of the message: Serialize ignores it, and DeSerialize leaves it nullopt.
+         */
+        optional<Foundation::IO::Network::Interface::SystemIDType> fReceivedOn;
 
         bool operator== (const Advertisement&) const = default;
 

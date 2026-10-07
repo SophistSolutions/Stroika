@@ -38,9 +38,11 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Client;
  */
 class CachingListener::Rep_ {
 private:
+    // where it is in force: each network it was heard on (nullopt: one not known), until its max-age runs out there
+    using HeardOn_ = Mapping<optional<Interface::SystemIDType>, Time::TimePointSeconds>;
     struct Entry_ {
-        SSDP::Advertisement    fAdvertisement; // the last heard - fAlive true
-        Time::TimePointSeconds fExpiresAt;
+        SSDP::Advertisement fAdvertisement; // the last heard - fAlive true
+        HeardOn_            fHeardOn;       // never empty
     };
     using Locations_ = Mapping<URI, Entry_>; // one USN's advertisements, by LOCATION
 
@@ -119,7 +121,7 @@ public:
 
 private:
     // on the listener's thread, or the searcher's: an ssdp:alive, or a search answer, adds its advertisement - or keeps it
-    // longer; an ssdp:byebye removes its device's every advertisement, at every LOCATION
+    // longer, on that network; an ssdp:byebye removes its device's every advertisement from that network
     void Heard_ (const SSDP::Advertisement& heard, bool searchAnswer)
     {
         const String& usn = heard.fUSN;
@@ -135,9 +137,16 @@ private:
             CheckExpiriesWhenDue_ ();
             bool added = false;
             {
-                auto       cache     = fCache_.rwget ();
-                Locations_ locations = cache->LookupValue (usn);
-                added                = locations.Add (a.fLocation, Entry_{a, expiresAt});
+                auto             cache     = fCache_.rwget ();
+                Locations_       locations = cache->LookupValue (usn);
+                optional<Entry_> e         = locations.Lookup (a.fLocation);
+                added                      = not e.has_value ();
+                if (added) {
+                    e.emplace ();
+                }
+                e->fAdvertisement = a;
+                e->fHeardOn.Add (a.fReceivedOn, expiresAt);
+                locations.Add (a.fLocation, *e);
                 cache->Add (usn, locations);
             }
             if (added) {
@@ -146,18 +155,39 @@ private:
         }
         else if (heard.fAlive == false) {
             // the whole device is gone: a device cannot withdraw one of its advertisements alone (UPnP Device Architecture 1.1,
-            // sections 1.2.2 and 2), so whichever its ssdp:byebye names, it withdraws them all
+            // sections 1.2.2 and 2), so whichever its ssdp:byebye names, it withdraws them all. But only from the network it came on:
+            // a device on several networks can leave one, and stay on the rest (section 1.2.3). So it is removed from there - and
+            // from where it was heard on a network not known, which may be that one - or, the byebye's network not known, from all
             const String                  device = DeviceOf_ (usn);
-            auto                          ofIt   = [&] (const KeyValuePair<String, Locations_>& i) { return DeviceOf_ (i.fKey) == device; };
             Sequence<SSDP::Advertisement> gone;
             {
                 auto cache = fCache_.rwget ();
-                for (const KeyValuePair<String, Locations_>& i : cache->Where (ofIt)) {
-                    for (const KeyValuePair<URI, Entry_>& j : i.fValue) {
-                        gone += Gone_ (j.fValue);
+                for (const KeyValuePair<String, Locations_>& u :
+                     cache->Where ([&] (const KeyValuePair<String, Locations_>& i) { return DeviceOf_ (i.fKey) == device; })) {
+                    Locations_ keptHere;
+                    for (const KeyValuePair<URI, Entry_>& l : u.fValue) {
+                        Entry_ e = l.fValue;
+                        if (heard.fReceivedOn) {
+                            e.fHeardOn.RemoveIf (heard.fReceivedOn);
+                            e.fHeardOn.RemoveIf (nullopt);
+                        }
+                        else {
+                            e.fHeardOn.RemoveAll ();
+                        }
+                        if (e.fHeardOn.empty ()) {
+                            gone += Gone_ (e);
+                        }
+                        else {
+                            keptHere.Add (l.fKey, e);
+                        }
+                    }
+                    if (keptHere.empty ()) {
+                        cache->Remove (u.fKey);
+                    }
+                    else {
+                        cache->Add (u.fKey, keptHere);
                     }
                 }
-                cache->RemoveAll (ofIt);
             }
             for (const SSDP::Advertisement& a : gone) {
                 fCallbacks_.Call (a);
@@ -187,21 +217,24 @@ private:
             for (const KeyValuePair<String, Locations_>& usn : fCache_.load ()) {
                 Locations_ keptHere;
                 for (const KeyValuePair<URI, Entry_>& i : usn.fValue) {
-                    if (i.fValue.fExpiresAt <= now) {
-                        expired += Gone_ (i.fValue);
+                    Entry_ e = i.fValue;
+                    e.fHeardOn.RemoveAll (
+                        [&] (const KeyValuePair<optional<Interface::SystemIDType>, Time::TimePointSeconds>& h) { return h.fValue <= now; });
+                    if (e.fHeardOn.empty ()) {
+                        expired += Gone_ (e); // expired on every network
                     }
                     else {
-                        keptHere.Add (i.fKey, i.fValue);
-                        fSoonestExpiry_ = fSoonestExpiry_ ? min (*fSoonestExpiry_, i.fValue.fExpiresAt) : i.fValue.fExpiresAt;
+                        keptHere.Add (i.fKey, e);
+                        for (const KeyValuePair<optional<Interface::SystemIDType>, Time::TimePointSeconds>& h : e.fHeardOn) {
+                            fSoonestExpiry_ = fSoonestExpiry_ ? min (*fSoonestExpiry_, h.fValue) : h.fValue;
+                        }
                     }
                 }
                 if (not keptHere.empty ()) {
                     kept.Add (usn.fKey, keptHere);
                 }
             }
-            if (not expired.empty ()) {
-                fCache_.store (kept);
-            }
+            fCache_.store (kept); // (also what expired on one network, kept for another)
         }
         CheckExpiriesWhenDue_ ();
         for (const SSDP::Advertisement& a : expired) {

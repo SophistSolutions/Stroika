@@ -1387,6 +1387,145 @@ namespace {
      *  a busy network answers too, and the search's thread can fall far enough behind that an answer from our server is read
      *  after its byebye, adding back what that removed (@see CachingListener).
      */
+    /*
+     *  A device on several networks can leave one and stay on the others (UPnP Device Architecture 1.1, section 1.2.3): its
+     *  ssdp:byebye, sent only on the network it leaves, removes it from a CachingListener only there - so an advertisement heard
+     *  on two networks stays until it is withdrawn on both. Sent out of two of this machine's interfaces (its own multicasts
+     *  looped back, each arriving on the interface it went out of) - two separate networks, as a probe finds: a NOTIFY sent out of
+     *  one of two bridged virtual switches arrives on both. On a machine with fewer, a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_CachingListener_ByebyeOnOneNetwork_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_CachingListener_ByebyeOnOneNetwork_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by CachingListener
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        using SSDP::Client::CachingListener;
+        const String        deviceID = Common::GUID::GenerateNew ().As<String> ();
+        const String        rootUSN  = "uuid:{}::upnp:rootdevice"_f(deviceID);
+        SSDP::Advertisement alive;
+        alive.fAlive    = true;
+        alive.fUSN      = rootUSN;
+        alive.fLocation = URI::Parse ("http://127.0.0.1:49152/c.xml"sv); // only advertised
+        alive.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        alive.fTarget   = "upnp:rootdevice"sv;
+        alive.fMaxAge   = 60s;
+        SSDP::Advertisement byebye;
+        byebye.fAlive                    = false;
+        byebye.fUSN                      = rootUSN;
+        byebye.fTarget                   = "upnp:rootdevice"sv;
+        ConnectionlessSocket::Ptr sender = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+        sender.SetMulticastLoopMode (true); // so this process hears it
+        auto notifyOn = [&] (const Interface& i, const SSDP::Advertisement& a) {
+            sender.SetMulticastInterface (i);
+            sender.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a, SSDP::V4::kSocketAddress), SSDP::V4::kSocketAddress);
+        };
+        // two separate networks SSDP talks on, with IPv4: each interface hearing only what is sent out of it - not so two bridged
+        // virtual switches, say, where what goes out of one arrives on the other too (one network, to SSDP)
+        Containers::Sequence<Interface> separate;
+        try {
+            const String probeID  = Common::GUID::GenerateNew ().As<String> ();
+            auto         probeUSN = [&] (const Interface& i) { return "uuid:{}-{}::upnp:rootdevice"_f(probeID, i.fIndex.value_or (0)); };
+            Execution::Synchronized<Containers::Mapping<String, Containers::Set<String>>> heardOn; // each probe's USN: where it was heard
+            SSDP::Client::Listener                                                        probe{[&] (const SSDP::Advertisement& a) {
+                                             if (a.fUSN.Contains (probeID) and a.fReceivedOn) {
+                                                 auto                    h     = heardOn.rwget ();
+                                                 Containers::Set<String> where = h->LookupValue (a.fUSN);
+                                                 where += *a.fReceivedOn;
+                                                 h->Add (a.fUSN, where);
+                                             }
+                                                                                                },
+                                                                                                SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only}, SSDP::Client::Listener::eAutoStart};
+            const Containers::Sequence<Interface> withV4{SystemInterfacesMgr{}.GetAll ().Where ([] (const Interface& i) {
+                return SSDP::DefaultInterfaceFilter (i) and i.fBindings.fAddresses.Any ([] (const InternetAddress& ia) {
+                    return ia.GetAddressFamily () == InternetAddress::AddressFamily::V4;
+                });
+            })};
+            for (const Interface& i : withV4) {
+                SSDP::Advertisement a = alive;
+                a.fUSN                = probeUSN (i);
+                notifyOn (i, a);
+            }
+            Execution::Sleep (1s);
+            for (const Interface& i : withV4) {
+                if (heardOn.cget ()->LookupValue (probeUSN (i)) == Containers::Set<String>{i.fInterfaceID}) {
+                    separate += i;
+                }
+            }
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_CachingListener_ByebyeOnOneNetwork_ skipped - could not run an SSDP listener here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        if (separate.size () < 2) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_CachingListener_ByebyeOnOneNetwork_ skipped - it needs two separate networks SSDP talks on, with IPv4");
+            return;
+        }
+        const Interface                                                    on1 = separate[0];
+        const Interface                                                    on2 = separate[1];
+        Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
+        auto toldSize  = [&] () { return told.cget ()->size (); };               // (under its lock: @see SSDP_CachingListener_)
+        auto waitUntil = [] (const function<bool ()>& done) {
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not done () and Time::GetTickCount () < giveUpAt;) {
+                Execution::Sleep (50ms);
+            }
+            return done ();
+        };
+        try {
+            CachingListener cache{[&] (const SSDP::Advertisement& a) {
+                                      if (a.fUSN.Contains (deviceID)) {
+                                          told.rwget ()->Append (a);
+                                      }
+                                  },
+                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = nullopt},
+                                  CachingListener::eAutoStart};
+            auto            cached = [&] () {
+                return cache.GetAdvertisements ().Where ([&] (const SSDP::Advertisement& a) { return a.fUSN.Contains (deviceID); }).size ();
+            };
+            // heard on both networks
+            notifyOn (on1, alive);
+            notifyOn (on2, alive);
+            if (not waitUntil ([&] () { return toldSize () >= 1; })) {
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_CachingListener_ByebyeOnOneNetwork_ skipped - our own NOTIFY was not heard "
+                                                          "within 10 seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            Execution::Sleep (500ms); // for both
+            // withdrawn on one: still in force on the other
+            notifyOn (on1, byebye);
+            Execution::Sleep (1s);
+            EXPECT_EQ (cached (), 1u) << "withdrawn on " << on1.fInterfaceID.AsNarrowSDKString () << ", but not on "
+                                      << on2.fInterfaceID.AsNarrowSDKString ();
+            EXPECT_EQ (toldSize (), 1u);
+            // withdrawn on both: gone
+            notifyOn (on2, byebye);
+            EXPECT_TRUE (waitUntil ([&] () { return toldSize () >= 2; }));
+            EXPECT_EQ (cached (), 0u);
+            Execution::Sleep (500ms); // for anything after it
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_CachingListener_ByebyeOnOneNetwork_ skipped - could not run an SSDP listener here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        Containers::Sequence<SSDP::Advertisement> changes = told.load ();
+        for (const SSDP::Advertisement& a : changes) {
+            DbgTrace ("told: {}"_f, a);
+        }
+        // added once, removed once - each saying where it was (last) heard
+        ASSERT_EQ (changes.size (), 2u);
+        EXPECT_EQ (changes[0].fAlive, true);
+        EXPECT_EQ (changes[1].fAlive, false);
+        for (const SSDP::Advertisement& a : changes) {
+            EXPECT_TRUE (a.fReceivedOn == on1.fInterfaceID or a.fReceivedOn == on2.fInterfaceID) << Characters::ToString (a).AsNarrowSDKString ();
+        }
+    }
+
     GTEST_TEST (Frameworks_UPnP, SSDP_CachingListener_Search_)
     {
         Debug::TraceContextBumper                    ctx{"SSDP_CachingListener_Search_"};

@@ -51,6 +51,9 @@ String Advertisement::ToString () const
         sb << ", maxAge : "sv << *fMaxAge;
     }
     sb << ", rawHeaders : "sv << fRawHeaders;
+    if (fReceivedOn) {
+        sb << ", receivedOn : "sv << *fReceivedOn;
+    }
     sb << "}"sv;
     return sb;
 }

@@ -45,11 +45,13 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      *  says SHOULD be at least 1800 seconds.
      *
      *  An advertisement is a USN at a LOCATION: a device on several networks advertises each USN with each network's own
-     *  LOCATION (as BasicServer does), and each of those is added, and expires, on its own. But an ssdp:byebye removes its whole
+     *  LOCATION (as BasicServer does), and each of those is added, and expires, on its own. An ssdp:byebye removes its whole
      *  device - every USN with its "uuid:device-UUID" (not an embedded device's: that has a UUID of its own), at every LOCATION -
      *  whichever USN it names: a device cannot withdraw one of its advertisements alone (UPnP Device Architecture 1.1, sections
-     *  1.2.2 and 2). Every advertisement heard is kept, whatever Options::fSearchFor - filter in the callback, or what
-     *  GetAdvertisements () returns.
+     *  1.2.2 and 2). But only on the network it arrived on (Advertisement::fReceivedOn): a device on several networks can leave
+     *  one and stay on the others (section 1.2.3). So an advertisement heard on several networks is kept while it is in force on
+     *  any - heard there within its max-age, and not withdrawn there. Every advertisement heard is kept, whatever
+     *  Options::fSearchFor - filter in the callback, or what GetAdvertisements () returns.
      *
      *  \note THREADS: callbacks run on whichever thread sees the change - the listener's, the searcher's, or IntervalTimer's for
      *        an expiry - one at a time, in the order of the changes they report. A callback may call GetAdvertisements (),

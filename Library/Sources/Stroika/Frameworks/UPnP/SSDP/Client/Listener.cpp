@@ -89,12 +89,14 @@ public:
         bindFlags.fSO_REUSEADDR     = true;
         if (InternetProtocol::IP::SupportIPV4 (fOptions_.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            s.SetReceivePacketInfo (true); // for Advertisement::fReceivedOn
             s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, bindFlags);
             fSocketsAndGroups_ += make_pair (s, UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
             fSockets_.Add (s);
         }
         if (InternetProtocol::IP::SupportIPV6 (fOptions_.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
+            s.SetReceivePacketInfo (true); // for Advertisement::fReceivedOn
             s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, bindFlags);
             fSocketsAndGroups_ += make_pair (s, UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
             fSockets_.Add (s);
@@ -144,11 +146,12 @@ public:
             }
             for (const ConnectionlessSocket::Ptr& s : readyChecker.WaitQuietly ()) {
                 try {
-                    byte          buf[8 * 1024]; // not sure of max packet size
-                    SocketAddress from;
-                    size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
+                    byte                                       buf[8 * 1024]; // not sure of max packet size
+                    SocketAddress                              from;
+                    optional<ConnectionlessSocket::PacketInfo> arrived;
+                    size_t                                     nBytesRead = s.ReceiveFrom (buf, 0, &from, &arrived).size ();
                     Assert (nBytesRead <= std::size (buf));
-                    ParsePacketAndNotifyCallbacks_ (span{buf, nBytesRead});
+                    ParsePacketAndNotifyCallbacks_ (span{buf, nBytesRead}, SSDP::Private_::ReceivedOn (arrived, fListeningOn_.load ()));
                 }
                 catch (const Thread::AbortException&) {
                     ReThrow ();
@@ -164,11 +167,12 @@ public:
             }
         }
     }
-    void ParsePacketAndNotifyCallbacks_ (span<const byte> packet)
+    void ParsePacketAndNotifyCallbacks_ (span<const byte> packet, const optional<Interface::SystemIDType>& receivedOn)
     {
         String              headLine;
         SSDP::Advertisement d;
         SSDP::DeSerialize (Memory::BLOB{packet}, &headLine, &d);
+        d.fReceivedOn = receivedOn;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Read SSDP Packet"};
         DbgTrace ("headLine: {}"_f, headLine);

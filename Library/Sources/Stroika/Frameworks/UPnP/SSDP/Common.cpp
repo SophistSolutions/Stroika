@@ -106,6 +106,22 @@ InterfacesByID UPnP::SSDP::Private_::JoinOnEveryInterface (const Traversal::Iter
 
 /*
  ********************************************************************************
+ ************************* SSDP::Private_::ReceivedOn ***************************
+ ********************************************************************************
+ */
+optional<Interface::SystemIDType> UPnP::SSDP::Private_::ReceivedOn (const optional<ConnectionlessSocket::PacketInfo>& packetInfo,
+                                                                    const InterfacesByID&                             interfaces)
+{
+    if (packetInfo) {
+        if (optional<Interface> i = interfaces.First ([&] (const Interface& i) { return i.fIndex == packetInfo->fInterfaceIndex; })) {
+            return i->fInterfaceID;
+        }
+    }
+    return nullopt;
+}
+
+/*
+ ********************************************************************************
  ******************** SSDP::Private_::NetworkChangeFollower *********************
  ********************************************************************************
  */

@@ -56,6 +56,7 @@ public:
             fSockets_.Add (s);
         }
         for (ConnectionlessSocket::Ptr cs : fSockets_) {
+            cs.SetReceivePacketInfo (true); // for Advertisement::fReceivedOn
             cs.SetMulticastLoopMode (true); // possible should make this configurable
             cs.SetMulticastTTL (options.fMulticastTTL);
         }
@@ -191,11 +192,12 @@ public:
             }
             for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (wakeAt)) {
                 try {
-                    byte          buf[8 * 1024]; // not sure of max packet size
-                    SocketAddress from;
-                    size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
+                    byte                                       buf[8 * 1024]; // not sure of max packet size
+                    SocketAddress                              from;
+                    optional<ConnectionlessSocket::PacketInfo> arrived;
+                    size_t                                     nBytesRead = s.ReceiveFrom (buf, 0, &from, &arrived).size ();
                     Assert (nBytesRead <= std::size (buf));
-                    ReadPacketAndNotifyCallbacks_ (span{buf, nBytesRead});
+                    ReadPacketAndNotifyCallbacks_ (span{buf, nBytesRead}, SSDP::Private_::ReceivedOn (arrived, fSearchingOn_.load ()));
                 }
                 catch (const Thread::AbortException&) {
                     ReThrow ();
@@ -211,11 +213,12 @@ public:
             }
         }
     }
-    void ReadPacketAndNotifyCallbacks_ (span<const byte> packet)
+    void ReadPacketAndNotifyCallbacks_ (span<const byte> packet, const optional<Interface::SystemIDType>& receivedOn)
     {
         String              headLine;
         SSDP::Advertisement d;
         SSDP::DeSerialize (Memory::BLOB{packet}, &headLine, &d);
+        d.fReceivedOn = receivedOn;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Read Reply"};
         DbgTrace ("headLine: {}"_f, headLine);
