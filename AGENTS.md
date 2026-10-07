@@ -451,6 +451,8 @@ still compile". Say which one you did.
 - **`Memory::MakeSharedPtr`, not `make_shared`**: the same, except that it block-allocates a type annotated for it (a
   `Memory::UseBlockAllocationIfAppropriate<T>` base) - so use it even where the type is not annotated. The annotation suits
   a small rep allocated often, making that indirection nearly free; elsewhere it hardly matters either way.
+- **Orthogonal interfaces**: give a setter its getter (an Add its Remove, a Start its Stop) even where the use for one of
+  them is weak - LGP prefers the complete, symmetric API.
 - **Document every overload, with a trailing `///<`.** Doxygen and the VS Code C/C++ extension both
   attach a comment to the *immediately following* declaration only, so one block above a group of
   overloads documents the first and leaves the rest with nothing - and the common
