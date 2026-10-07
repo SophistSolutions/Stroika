@@ -4,14 +4,19 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
+#include "Stroika/Foundation/IO/Network/UniformResourceIdentification.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
@@ -61,8 +66,58 @@ namespace {
         return location (LocationContext{*local, asker});
     }
 
-    void ParsePacketAndRespond_ (span<const byte> packet, const Iterable<Advertisement>& advertisements, const LocationProvider& location,
-                                 ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo)
+    // an answer to a search, to send at fDueAt
+    struct Answer_ {
+        Time::TimePointSeconds    fDueAt;
+        ConnectionlessSocket::Ptr fSocket;
+        SocketAddress             fTo;
+        Memory::BLOB              fPacket;
+    };
+
+    // most answers waiting to be sent at once - so a flood of M-SEARCHes cannot make them pile up without bound
+    constexpr size_t kMaxWaitingAnswers_{1000};
+
+    // a header's value, by its name in any case
+    optional<String> Header_ (const SSDP::Advertisement& a, const String& name)
+    {
+        for (const KeyValuePair<String, String>& h : a.fRawHeaders) {
+            if (String::EqualsComparer{eCaseInsensitive}(h.fKey, name)) {
+                return h.fValue;
+            }
+        }
+        return nullopt;
+    }
+
+    // how long an M-SEARCH lets its answers wait, if it says: its MX - 5 seconds at most, as the UPnP Device Architecture
+    // (1.1, section 1.3.3) has a device assume for a larger one
+    optional<Time::DurationSeconds> MX_ (const SSDP::Advertisement& search)
+    {
+        optional<String> mx = Header_ (search, "MX"sv);
+        if (not mx or mx->empty () or not mx->All ([] (Character c) { return c.IsDigit (); })) {
+            return nullopt;
+        }
+        return Time::DurationSeconds{mx->size () > 9 ? 5 : min (Characters::String2Int<int> (*mx), 5)};
+    }
+
+    // whether an M-SEARCH was multicast - unless its HOST names a unicast address. (Which address it actually came to, only
+    // IP_PKTINFO could say - https://github.com/SophistSolutions/Stroika/issues/1202)
+    bool Multicast_ (const SSDP::Advertisement& search)
+    {
+        if (optional<String> host = Header_ (search, "HOST"sv)) {
+            if (optional<UniformResourceIdentification::Authority> a = UniformResourceIdentification::Authority::Parse (*host)) {
+                if (optional<InternetAddress> ia = a->GetHost () ? a->GetHost ()->AsInternetAddress () : nullopt) {
+                    return ia->IsMulticastAddress ();
+                }
+            }
+        }
+        return true;
+    }
+
+    // the answers to packet, if an M-SEARCH for something advertised. Each of a multicast M-SEARCH's is due after a random wait of
+    // up to its MX, so devices, and a device's several answers, do not all come at once - and one with no MX is ignored (1.1,
+    // section 1.3.3); a unicast one's, at once
+    Sequence<Answer_> Answers_ (span<const byte> packet, const Iterable<Advertisement>& advertisements, const LocationProvider& location,
+                                ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo)
     {
         String              headLine;
         SSDP::Advertisement da;
@@ -71,7 +126,15 @@ namespace {
         Debug::TraceContextBumper ctx{"Read SSDP Packet"};
         DbgTrace ("headLine: {}"_f, headLine);
 #endif
+        Sequence<Answer_> result;
         if (headLine.StartsWith ("M-SEARCH "sv)) {
+            optional<Time::DurationSeconds> waitAtMost; // nullopt: answer at once
+            if (Multicast_ (da)) {
+                waitAtMost = MX_ (da);
+                if (not waitAtMost) {
+                    return result;
+                }
+            }
             auto targetEqComparer = String::EqualsComparer{eCaseInsensitive};
             bool matches          = false;
             if (targetEqComparer (da.fTarget, kTarget_UPNPRootDevice)) {
@@ -107,8 +170,11 @@ namespace {
                     }
 
                     if (includeThisAdvertisement) {
-                        Memory::BLOB data = SSDP::Serialize ("HTTP/1.1 200 OK"sv, SearchOrNotify::SearchResponse, a);
-                        useSocket.SendTo (data, sendTo);
+                        Time::TimePointSeconds dueAt = Time::GetTickCount ();
+                        if (waitAtMost) {
+                            dueAt += SSDP::Private_::RandomDuration (*waitAtMost);
+                        }
+                        result += Answer_{dueAt, useSocket, sendTo, SSDP::Serialize ("HTTP/1.1 200 OK"sv, SearchOrNotify::SearchResponse, a)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace ("(location={},TARGET(ST/NT)={},USN={})"_f, a.fLocation, a.fTarget, a.fUSN);
 #endif
@@ -116,6 +182,7 @@ namespace {
                 }
             }
         }
+        return result;
     }
 }
 
@@ -184,17 +251,37 @@ void SearchResponder::StartListening_ (const Iterable<Advertisement>& advertisem
                 Sleep (wait);
             }
 
-            // only stopped by thread abort
-            auto inUseSockets = sockets.Map<Iterable<ConnectionlessSocket::Ptr>> ([] (auto i) { return i.first; });
+            // only stopped by thread abort - which drops the answers still waiting
+            auto              inUseSockets = sockets.Map<Iterable<ConnectionlessSocket::Ptr>> ([] (auto i) { return i.first; });
+            Sequence<Answer_> waiting; // not yet due: this thread goes on answering other searches meanwhile, as 1.3.3 requires
             while (true) {
                 try {
-                    for (ConnectionlessSocket::Ptr s : WaitForIOReady{inUseSockets}.WaitQuietly ()) {
+                    Time::TimePointSeconds nextDue{Time::kInfinity};
+                    for (const Answer_& a : waiting) {
+                        nextDue = min (nextDue, a.fDueAt);
+                    }
+                    for (ConnectionlessSocket::Ptr s : WaitForIOReady{inUseSockets}.WaitQuietlyUntil (nextDue)) {
                         SocketAddress from;
                         byte          buf[4 * 1024]; // not sure of max packet size
                         size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
                         Assert (nBytesRead <= std::size (buf));
-                        ParsePacketAndRespond_ (span{buf, nBytesRead}, advertisements, location, s, from);
+                        for (const Answer_& a : Answers_ (span{buf, nBytesRead}, advertisements, location, s, from)) {
+                            if (waiting.size () < kMaxWaitingAnswers_) {
+                                waiting += a;
+                            }
+                        }
                     }
+                    Time::TimePointSeconds now = Time::GetTickCount ();
+                    Sequence<Answer_>      notYet;
+                    for (const Answer_& a : waiting) {
+                        if (a.fDueAt <= now) {
+                            IgnoreExceptionsExceptThreadAbortForCall (a.fSocket.SendTo (a.fPacket, a.fTo));
+                        }
+                        else {
+                            notYet += a;
+                        }
+                    }
+                    waiting = notYet;
                 }
                 catch (const Thread::AbortException&) {
                     ReThrow ();

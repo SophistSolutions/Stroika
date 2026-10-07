@@ -35,6 +35,10 @@ namespace {
     // not more than three times. 100 ms (libupnp's default too) keeps short the pause this adds to starting and stopping a device
     constexpr unsigned int          kSetsSent_{2};
     constexpr Time::DurationSeconds kBetweenSets_{100ms};
+
+    // the first set waits a random time up to this - as does the first after a network appears - so devices starting together (after a
+    // power cut, say) do not all announce at once: 1.1, section 1.2.2, "e.g. between 0 and 100 milliseconds"
+    constexpr Time::DurationSeconds kBeforeFirstSetAtMost_{100ms};
 }
 
 /*
@@ -184,10 +188,17 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         }
         notifyingOn->store (InterfacesByID{});
     };
-    fIntervalTimerAdder_ = make_unique<Execution::IntervalTimer::Adder> (callback, Time::Duration{options.fFrequencyInfo.fRepeatInterval},
-                                                                         Execution::IntervalTimer::Adder::eRunImmediately);
+    Execution::Sleep (SSDP::Private_::RandomDuration (kBeforeFirstSetAtMost_));
+    // then 3/4 of fRepeatInterval after each, give or take 1/4 at random: a random time between half of it and all of it after the
+    // last (1.1, section 1.2.2: "a randomly-distributed interval") - so devices do not keep announcing together
+    fIntervalTimerAdder_ = make_unique<Execution::IntervalTimer::Adder> (callback, Time::Duration{options.fFrequencyInfo.fRepeatInterval * 0.75},
+                                                                         Execution::IntervalTimer::Adder::eRunImmediately,
+                                                                         Time::Duration{options.fFrequencyInfo.fRepeatInterval * 0.25});
     if (options.fFollowNetworkChanges) {
-        fNetworkChanges_ = SSDP::Private_::FollowNetworkChanges ([callback] () mutable { callback (); });
+        fNetworkChanges_ = SSDP::Private_::FollowNetworkChanges ([callback] () mutable {
+            Execution::Sleep (SSDP::Private_::RandomDuration (kBeforeFirstSetAtMost_));
+            callback ();
+        });
     }
 }
 

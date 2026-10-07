@@ -33,6 +33,11 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      *  Answers SSDP searches (M-SEARCH) that the given advertisements match, with where to find the device's description.
      *  Most applications want BasicServer instead, which does this and also announces the device (@see PeriodicNotifier).
      *
+     *  As the UPnP Device Architecture asks (1.1, section 1.3.3), each answer to a multicast M-SEARCH is sent after a random wait
+     *  of up to its MX seconds (5 at most) - so devices, and a device's several answers, do not all come at once - while it goes
+     *  on answering others; and a multicast M-SEARCH without an MX is ignored. A unicast one (its HOST not a multicast address)
+     *  is answered at once.
+     *
      *  Instantiating the class starts the (background) listening for searches automatically, and it continues
      *  until the SearchResponder object is destroyed. (so a smart pointer to one of these is typically kept around for the life of the application).
      *

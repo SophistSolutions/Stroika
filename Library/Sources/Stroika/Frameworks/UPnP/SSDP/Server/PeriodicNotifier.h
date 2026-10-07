@@ -59,6 +59,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          *  How often the NOTIFYs go out, and how long each says it is good for (its CACHE-CONTROL max-age) - a listener
          *  forgets a device whose announcement is not renewed by then. So fRepeatInterval must be less than fMaxAge: the UPnP
          *  Device Architecture recommends under half of it, and fMaxAge at least 1800 seconds.
+         *
+         *  fRepeatInterval is the longest wait between them: each comes a random time between half of it and all of it after the
+         *  last (the UPnP Device Architecture's "randomly-distributed interval"), so devices do not keep announcing together.
          */
         struct FrequencyInfo {
             Time::DurationSeconds fRepeatInterval{3 * 60.0s};
@@ -87,12 +90,14 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     public:
         /**
          *  Binds the sockets on construction, then sends the advertisements - out of every network interface
-         *  options.fInterfaces accepts, each with the LOCATION location gives for that interface - right away and every
-         *  options.fFrequencyInfo.fRepeatInterval after, until this object is destroyed. The interfaces are listed afresh each time, so networks that come and go
-         *  are picked up. The advertisements' own fLocation is not used.
+         *  options.fInterfaces accepts, each with the LOCATION location gives for that interface - after a random wait of up to
+         *  100 ms (as the UPnP Device Architecture asks, so devices starting together do not all announce at once; and again when
+         *  a network appears), then about every options.fFrequencyInfo.fRepeatInterval (@see FrequencyInfo), until this object is
+         *  destroyed. The interfaces are listed afresh each time, so networks that come and go are picked up. The advertisements'
+         *  own fLocation is not used.
          *
          *  Each set of NOTIFYs goes out twice, 100 ms apart, as UDP loses packets (the UPnP Device Architecture says more than once)
-         *  - the first set during construction, so making it 100 ms slower; and destruction too, for its ssdp:byebye.
+         *  - the first set during construction, so making it up to 200 ms slower; and destruction too, for its ssdp:byebye.
          * 
          *  Errors doing sends are just logged with DbgTrace()
          */

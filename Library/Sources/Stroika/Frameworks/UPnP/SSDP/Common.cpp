@@ -3,6 +3,8 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include <random>
+
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -194,4 +196,19 @@ optional<UPnP::SSDP::Private_::NetworkChangeFollower> UPnP::SSDP::Private_::Foll
         DbgTrace ("SSDP: cannot follow network changes here: {}"_f, current_exception ());
         return nullopt;
     }
+}
+
+/*
+ ********************************************************************************
+ ************************ SSDP::Private_::RandomDuration ************************
+ ********************************************************************************
+ */
+Time::DurationSeconds UPnP::SSDP::Private_::RandomDuration (Time::DurationSeconds atMost)
+{
+    Require (atMost >= 0s);
+    if (atMost == 0s) {
+        return 0s;
+    }
+    static thread_local mt19937 sGenerator_{random_device{}()};
+    return Time::DurationSeconds{uniform_real_distribution<double>{0, atMost.count ()}(sGenerator_)};
 }

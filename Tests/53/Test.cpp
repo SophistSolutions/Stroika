@@ -21,6 +21,7 @@
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
@@ -36,6 +37,7 @@
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/LocationProvider.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Server/PeriodicNotifier.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -1268,7 +1270,8 @@ namespace {
                                                           "seconds (this environment probably blocks multicast, or UDP 1900)");
                 return;
             }
-            Execution::Sleep (3s); // past the search's second M-SEARCH, 2 seconds in: no answer crosses the server's ssdp:byebye
+            Execution::Sleep (3s); // more answers (to its second M-SEARCH, 2 seconds in): those still waiting as the server stops are dropped
+                                   // - its responder stops before its ssdp:byebyes - so no answer crosses them
             server.reset ();       // it stops: an ssdp:byebye for each advertisement
             EXPECT_TRUE (waitUntil ([&] () { return usnsTold (false).ContainsAll (usns); }));
             Execution::Sleep (500ms); // for anything after it
@@ -1294,6 +1297,251 @@ namespace {
             EXPECT_EQ (alive, (Containers::Sequence<bool>{true, false}))
                 << key.first.AsNarrowSDKString () << " at " << Characters::ToString (key.second).AsNarrowSDKString ();
         }
+    }
+
+    // the first network interface SSDP talks on by default that has an IPv4 address - for a test sending out of just one
+    optional<Interface> AnSSDPInterface_ ()
+    {
+        return SystemInterfacesMgr{}.GetAll ().First ([] (const Interface& i) {
+            return SSDP::DefaultInterfaceFilter (i) and i.fBindings.fAddresses.Any ([] (const InternetAddress& a) {
+                return a.GetAddressFamily () == InternetAddress::AddressFamily::V4;
+            });
+        });
+    }
+
+    /*
+     *  A device answers a multicast M-SEARCH after a random wait of up to its MX seconds - each answer a wait of its own, so
+     *  devices, and a device's several answers, do not all come at once - and ignores one with no MX (UPnP Device Architecture
+     *  1.1, section 1.3.3). Told by M-SEARCHes this test sends our own BasicServer itself, out of one interface. As in
+     *  SSDP_Loopback_Search_, anything that keeps the exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_SearchAnswerWaits_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_SearchAnswerWaits_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType = "urn:stroika-regression-test:device:SSDPAnswerWaits-{}:1"_f(deviceID);
+        Device       d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        DeviceDescription dd;
+        dd.fDeviceType          = deviceType;
+        dd.fFriendlyName        = "Stroika regression test device"sv;
+        dd.fUDN                 = "uuid:" + deviceID;
+        optional<Interface> via = AnSSDPInterface_ ();
+        if (not via) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_SearchAnswerWaits_ skipped - no network interface with an IPv4 address");
+            return;
+        }
+        try {
+            SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                             SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            ConnectionlessSocket::Ptr asker = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            asker.SetMulticastLoopMode (true); // so our own server hears it
+            asker.SetMulticastInterface (*via);
+            auto search = [&] (const String& searchTarget, optional<unsigned int> mx) {
+                String request = "M-SEARCH * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nMAN: \"ssdp:discover\"\r\nST: {}\r\n{}\r\n"_f(
+                    searchTarget, mx ? "MX: {}\r\n"_f(*mx) : String{});
+                string utf8 = request.AsUTF8<string> ();
+                asker.SendTo (as_bytes (span{utf8}), SSDP::V4::kSocketAddress);
+            };
+            // when each answer from our device came, until until - or until enough have
+            auto answersUntil = [&] (Time::TimePointSeconds until, size_t enough = numeric_limits<size_t>::max ()) {
+                Containers::Sequence<Time::TimePointSeconds> result;
+                while (result.size () < enough and not Execution::WaitForIOReady<ConnectionlessSocket::Ptr>{asker}.WaitQuietlyUntil (until).empty ()) {
+                    std::byte           buf[8 * 1024];
+                    SocketAddress       from;
+                    String              headLine;
+                    SSDP::Advertisement a;
+                    SSDP::DeSerialize (Memory::BLOB{asker.ReceiveFrom (span{buf}, 0, &from)}, &headLine, &a);
+                    if (headLine.StartsWith ("HTTP/1.1 200"sv) and a.fUSN.Contains (deviceID)) {
+                        result += Time::GetTickCount ();
+                    }
+                }
+                return result;
+            };
+            // until the server hears us (it joins the multicast group on its own thread): search till it answers - then let the
+            // rest of those answers come
+            bool answered = false;
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not answered and Time::GetTickCount () < giveUpAt;) {
+                search (deviceType, 1);
+                answered = not answersUntil (Time::GetTickCount () + 1.5s, 1).empty ();
+            }
+            if (not answered) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "SSDP_Loopback_SearchAnswerWaits_ skipped - our own device did not answer within 10 "
+                    "seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            (void)answersUntil (Time::GetTickCount () + 1.5s);
+            // MX 1: each answer - one for each of its advertisements (3), searched for ssdp:all - after a random wait of up to a second
+            const Time::TimePointSeconds sentAt = Time::GetTickCount ();
+            for (int i = 0; i < 3; ++i) {
+                search (SSDP::kTarget_SSDPAll, 1);
+            }
+            Containers::Sequence<Time::TimePointSeconds> came = answersUntil (sentAt + 3s); // all of them, before asking anything else
+            EXPECT_GE (came.size (), 3u * 3u); // (more if the OS hands the server a search more than once)
+            if (came.empty ()) {
+                return;
+            }
+            DbgTrace ("{} answers, {} to {} seconds after"_f, came.size (), (came.MinValue () - sentAt).count (),
+                      (came.MaxValue () - sentAt).count ());
+            EXPECT_GE ((came.MaxValue () - came.MinValue ()).count (), 0.1) << "all at once";
+            EXPECT_LE ((came.MaxValue () - sentAt).count (), 2.5)
+                << "longer than the MX (1 second) after, even allowing for slow processing";
+            // no MX: ignored - asked once those answers are all in, so the server is known to hear us
+            search (deviceType, nullopt);
+            EXPECT_TRUE (answersUntil (Time::GetTickCount () + 1.5s).empty ()) << "answered a multicast M-SEARCH with no MX";
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_SearchAnswerWaits_ skipped - could not run an SSDP server here: {}"_f(current_exception ())
+                                                          .AsNarrowSDKString ()
+                                                          .c_str ());
+        }
+    }
+
+    /*
+     *  A PeriodicNotifier waits a random 0 to 100 ms before its first NOTIFYs, so devices starting together - after a power cut,
+     *  say - do not all announce at once (UPnP Device Architecture 1.1, section 1.2.2). Seen as how long each of several is heard
+     *  after its construction began: not all the same. As in SSDP_Loopback_Notify_, anything that keeps the exchange from
+     *  happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_NotifyInitialWait_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_NotifyInitialWait_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by PeriodicNotifier
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String runID      = Common::GUID::GenerateNew ().As<String> ();
+        optional<Interface> via = AnSSDPInterface_ ();
+        if (not via) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_NotifyInitialWait_ skipped - no network interface with an IPv4 address");
+            return;
+        }
+        const SSDP::InterfaceFilter onlyVia = [id = via->fInterfaceID] (const Interface& i) { return i.fInterfaceID == id; };
+        Execution::Synchronized<Containers::Mapping<String, Time::TimePointSeconds>> firstHeard; // by USN - Synchronized: the listener calls back on its own thread
+        Containers::Sequence<Time::DurationSeconds> waits;
+        try {
+            SSDP::Client::Listener listener{[&] (const SSDP::Advertisement& a) {
+                                                if (a.fUSN.Contains (runID) and a.fAlive == true) {
+                                                    auto heard = firstHeard.rwget ();
+                                                    if (not heard->ContainsKey (a.fUSN)) {
+                                                        heard->Add (a.fUSN, Time::GetTickCount ());
+                                                    }
+                                                }
+                                            },
+                                            SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only},
+                                            SSDP::Client::Listener::eAutoStart};
+            for (int i = 0; i < 8; ++i) {
+                SSDP::Advertisement a;
+                a.fTarget                                = SSDP::kTarget_UPNPRootDevice;
+                a.fUSN                                   = "uuid:{}-{}::upnp:rootdevice"_f(runID, i);
+                a.fServer                                = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+                const Time::TimePointSeconds   startedAt = Time::GetTickCount ();
+                SSDP::Server::PeriodicNotifier notifier{
+                    Containers::Sequence<SSDP::Advertisement>{a}, SSDP::Server::LocationFillingInHost (location),
+                    SSDP::Server::PeriodicNotifier::Options{.fIPVersion = IPVersionSupport::eIPV4Only, .fInterfaces = onlyVia}};
+                for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 5s;
+                     not firstHeard.cget ()->ContainsKey (a.fUSN) and Time::GetTickCount () < giveUpAt;) {
+                    Execution::Sleep (10ms);
+                }
+                optional<Time::TimePointSeconds> heardAt = firstHeard.cget ()->Lookup (a.fUSN);
+                if (not heardAt) {
+                    Stroika::Frameworks::Test::WarnTestIssue (
+                        "SSDP_Loopback_NotifyInitialWait_ skipped - our own NOTIFY was not heard within 5 "
+                        "seconds (this environment probably blocks multicast, or UDP 1900)");
+                    return;
+                }
+                waits += *heardAt - startedAt;
+            } // each notifier says ssdp:byebye as it goes
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_NotifyInitialWait_ skipped - could not run an SSDP listener and notifier here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        DbgTrace ("heard after: {}"_f, waits);
+        EXPECT_GE ((waits.MaxValue () - waits.MinValue ()).count (), 0.015) << "all heard as soon after construction: no random wait";
+        EXPECT_LE (waits.MaxValue ().count (), 1.0);
+    }
+
+    /*
+     *  A PeriodicNotifier's NOTIFYs repeat after a random pause - between half its fRepeatInterval and all of it - so devices
+     *  do not keep announcing together (UPnP Device Architecture 1.1, section 1.2.2: "a randomly-distributed interval"). Seen
+     *  over a few seconds, with a short fRepeatInterval: the pauses between its rounds of NOTIFYs are not all the same. As in
+     *  SSDP_Loopback_Notify_, anything that keeps the exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_NotifyRepeatSpread_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_NotifyRepeatSpread_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by PeriodicNotifier
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        constexpr Time::DurationSeconds kRepeatInterval_{0.5};
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String usn        = "uuid:{}::upnp:rootdevice"_f(Common::GUID::GenerateNew ().As<String> ());
+        optional<Interface> via = AnSSDPInterface_ ();
+        if (not via) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_NotifyRepeatSpread_ skipped - no network interface with an IPv4 address");
+            return;
+        }
+        const SSDP::InterfaceFilter onlyVia = [id = via->fInterfaceID] (const Interface& i) { return i.fInterfaceID == id; };
+        Execution::Synchronized<Containers::Sequence<Time::TimePointSeconds>> heard; // when each of its NOTIFYs came - Synchronized: the listener calls back on its own thread
+        try {
+            SSDP::Client::Listener listener{[&] (const SSDP::Advertisement& a) {
+                                                if (a.fUSN == usn and a.fAlive == true) {
+                                                    heard.rwget ()->Append (Time::GetTickCount ());
+                                                }
+                                            },
+                                            SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only},
+                                            SSDP::Client::Listener::eAutoStart};
+            SSDP::Advertisement    a;
+            a.fTarget = SSDP::kTarget_UPNPRootDevice;
+            a.fUSN    = usn;
+            a.fServer = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+            SSDP::Server::PeriodicNotifier notifier{Containers::Sequence<SSDP::Advertisement>{a}, SSDP::Server::LocationFillingInHost (location),
+                                                    SSDP::Server::PeriodicNotifier::Options{.fFrequencyInfo = {.fRepeatInterval = kRepeatInterval_},
+                                                                                            .fIPVersion  = IPVersionSupport::eIPV4Only,
+                                                                                            .fInterfaces = onlyVia}};
+            Execution::Sleep (5s);
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_NotifyRepeatSpread_ skipped - could not run an SSDP listener and notifier here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        // each round of NOTIFYs is two sets, 100 ms apart - here a NOTIFY each, out of one interface - so a longer gap is a pause.
+        // Leaving out the first: it follows the round sent as the notifier starts, which the timer does not time from
+        Containers::Sequence<Time::DurationSeconds> pauses;
+        optional<Time::TimePointSeconds>            last;
+        bool                                        first = true;
+        for (Time::TimePointSeconds t : heard.load ()) {
+            if (last and t - *last > 0.2s) {
+                if (not first) {
+                    pauses += t - *last;
+                }
+                first = false;
+            }
+            last = t;
+        }
+        if (pauses.size () < 5) {
+            Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_NotifyRepeatSpread_ skipped - too few of our own NOTIFYs heard (this "
+                                                      "environment probably blocks multicast, or UDP 1900)");
+            return;
+        }
+        DbgTrace ("pauses: {}"_f, pauses);
+        EXPECT_GE (pauses.MinValue ().count (), kRepeatInterval_.count () / 2 - 0.05) << Characters::ToString (pauses).AsNarrowSDKString ();
+        EXPECT_LE (pauses.MaxValue ().count (), kRepeatInterval_.count () + 0.15) << Characters::ToString (pauses).AsNarrowSDKString ();
+        EXPECT_GE ((pauses.MaxValue () - pauses.MinValue ()).count (), 0.03)
+            << "every pause the same: not random - " << Characters::ToString (pauses).AsNarrowSDKString ();
     }
 }
 #endif

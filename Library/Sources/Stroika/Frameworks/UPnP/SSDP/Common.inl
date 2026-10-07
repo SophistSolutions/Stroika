@@ -35,6 +35,9 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         };
         // a NetworkChangeFollower - or nullopt (and logged) if the OS cannot tell
         optional<NetworkChangeFollower> FollowNetworkChanges (const function<void ()>& onNetworkAppeared);
+
+        // a random time from 0 to atMost - the waits the UPnP Device Architecture asks for, so devices do not all speak at once
+        Foundation::Time::DurationSeconds RandomDuration (Foundation::Time::DurationSeconds atMost);
     }
 
 }

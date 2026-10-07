@@ -24,14 +24,8 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **no random 0-100 ms wait before the initial set of NOTIFYs** - nor when a new address or interface appears: the UPnP
-         Device Architecture's guard against network storms, when many devices start together (1.1, section 1.2.2).
-       - **SearchResponder answers a multicast M-SEARCH at once**; the spec says after a random 0..MX seconds, so devices
-         do not all answer together.
        - **BasicServer advertises no services** - no NOTIFY or search answer per service type (BasicServer.h's
          "@todo Add serviceList support"); DeviceDescription already has fServices.
-       - (optional) **re-announce at a random interval** under max-age/2, as the spec recommends -
-         FrequencyInfo::fRepeatInterval is a fixed 180s.
        - **a network appearing drops what waits in the old sockets**: Listener switches to new sockets (a slow callOnFinds
          lost 2 NOTIFYs on the rig), and SearchResponder restarts its thread on new ones. Fix: join the new interfaces on the
          existing sockets ("already a member" counting as joined) - nothing to switch, so nothing lost or doubled.
