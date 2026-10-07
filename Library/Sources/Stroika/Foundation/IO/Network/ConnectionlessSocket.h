@@ -25,6 +25,32 @@ namespace Stroika::Foundation::IO::Network {
         class _IRep;
 
         /**
+         *  \brief Where a datagram arrived (from ReceiveFrom, once SetReceivePacketInfo (true)): the interface it came in on, and
+         *         the address it was sent to - one of that interface's, a multicast group, or a broadcast address.
+         *
+         *  What the OS reports with IP_PKTINFO (IPv4) / IPV6_PKTINFO (IPv6).
+         */
+        struct PacketInfo {
+            /**
+             *  The interface it arrived on: its Interface::fIndex - which names it only while it exists, so look it up soon, not
+             *  later (@see Interface::fIndex).
+             */
+            unsigned int fInterfaceIndex{};
+
+            /**
+             *  The address it was sent to - its IP header's destination.
+             */
+            InternetAddress fDestination;
+
+            bool operator== (const PacketInfo&) const = default;
+
+            /**
+             *  @see Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
+        };
+
+        /**
          *  \par Example Usage
          *      \code
          *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
@@ -136,22 +162,37 @@ namespace Stroika::Foundation::IO::Network {
 
         public:
             /**
+             *  \brief Whether ReceiveFrom says where each datagram arrived (@see SetReceivePacketInfo)
+             */
+            nonvirtual bool GetReceivePacketInfo () const;
+
+        public:
+            /**
+             *  \brief Have ReceiveFrom say where each datagram arrived (@see PacketInfo) - each arriving from now on - or stop. Off
+             *         by default.
+             */
+            nonvirtual void SetReceivePacketInfo (bool on) const;
+
+        public:
+            /**
              *  Read the next message (typically a full packet) from the socket.
              *
              *  @see https://linux.die.net/man/2/recvfrom
              *
              *  if fromAddress != nullptr (legal to pass nullptr) - then it it is filled in with the source address the packet came from.
-             * 
+             *
              *  returns a subspan (initial segment) of into, of length number of bytes read in packet.
-             * 
+             *
              *  @todo DOCUMENT WHAT HAPPENS IF PACKET DOESNT FIT IN BUF!????
              *
-             *  @todo Say which interface (and address) the packet arrived on (IP_PKTINFO) - and let SendTo pick the one it goes
-             *        out of - https://github.com/SophistSolutions/Stroika/issues/1202
+             *  @todo Let SendTo pick the interface (and source address) a datagram goes out of -
+             *        https://github.com/SophistSolutions/Stroika/issues/1202
              *
              *  \note ***Cancelation Point***
              */
             nonvirtual span<byte> ReceiveFrom (span<byte> into, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout = Time::kInfinity) const;
+            nonvirtual span<byte> ReceiveFrom (span<byte> into, int flag, SocketAddress* fromAddress, optional<PacketInfo>* packetInfo,
+                                               Time::DurationSeconds timeout = Time::kInfinity) const; ///< \brief ... and, if packetInfo != nullptr, where it arrived: nullopt unless SetReceivePacketInfo (true) came before it did
 
         protected:
             /**
@@ -189,8 +230,11 @@ namespace Stroika::Foundation::IO::Network {
         public:
             virtual ~_IRep () = default;
 
-            virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) = 0;
-            virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) = 0;
+            virtual void   SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr)    = 0;
+            virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress,
+                                        optional<PacketInfo>* packetInfo, Time::DurationSeconds timeout) = 0;
+            virtual bool   GetReceivePacketInfo () const                                                 = 0;
+            virtual void   SetReceivePacketInfo (bool on)                                                = 0;
             // the interface: by address or by index (as the Ptr's overloads take it)
             virtual void JoinMulticastGroup (const InternetAddress& iaddr, const variant<InternetAddress, unsigned int>& onInterface)  = 0;
             virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const variant<InternetAddress, unsigned int>& onInterface) = 0;

@@ -77,10 +77,25 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().SendTo (data.data (), data.data () + data.size (), sockAddr);
     }
-    inline span<byte> ConnectionlessSocket::Ptr::ReceiveFrom (span<byte> into, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) const
+    inline bool ConnectionlessSocket::Ptr::GetReceivePacketInfo () const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        size_t r = _ref ().ReceiveFrom (into.data (), into.data () + into.size (), flag, fromAddress, timeout);
+        return _cref ().GetReceivePacketInfo ();
+    }
+    inline void ConnectionlessSocket::Ptr::SetReceivePacketInfo (bool on) const
+    {
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        _ref ().SetReceivePacketInfo (on);
+    }
+    inline span<byte> ConnectionlessSocket::Ptr::ReceiveFrom (span<byte> into, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) const
+    {
+        return ReceiveFrom (into, flag, fromAddress, nullptr, timeout);
+    }
+    inline span<byte> ConnectionlessSocket::Ptr::ReceiveFrom (span<byte> into, int flag, SocketAddress* fromAddress,
+                                                              optional<PacketInfo>* packetInfo, Time::DurationSeconds timeout) const
+    {
+        Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        size_t r = _ref ().ReceiveFrom (into.data (), into.data () + into.size (), flag, fromAddress, packetInfo, timeout);
         return into.subspan (0, r);
     }
     inline shared_ptr<ConnectionlessSocket::_IRep> ConnectionlessSocket::Ptr::_GetSharedRep () const

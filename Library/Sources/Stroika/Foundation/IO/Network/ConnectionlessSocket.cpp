@@ -1,17 +1,27 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#if defined(__APPLE__)
+// before any system header: so macOS has RFC 3542's IPV6_RECVPKTINFO (else its IPV6_PKTINFO is the older RFC 2292's option)
+#define __APPLE_USE_RFC_3542 1
+#endif
+
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_Platform_POSIX
 #include <net/if.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #elif qStroika_Platform_Windows
 #include <WinSock2.h>
 
 #include <Iphlpapi.h>
+#include <mswsock.h>
 #include <netioapi.h>
+#include <ws2tcpip.h>
 #endif
 
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
@@ -36,6 +46,8 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
+
+using ConnectionlessSocket::PacketInfo;
 
 using Debug::AssertExternallySynchronizedChecker;
 
@@ -126,7 +138,45 @@ namespace {
             AssertNotImplemented ();
 #endif
         }
-        virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) override
+        virtual bool GetReceivePacketInfo () const override
+        {
+            AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            switch (GetAddressFamily ()) {
+                case SocketAddress::INET: {
+                    return getsockopt<int> (IPPROTO_IP, IP_PKTINFO) != 0;
+                }
+                case SocketAddress::INET6: {
+#if qStroika_Platform_Windows
+                    return getsockopt<int> (IPPROTO_IPV6, IPV6_PKTINFO) != 0;
+#else
+                    return getsockopt<int> (IPPROTO_IPV6, IPV6_RECVPKTINFO) != 0;
+#endif
+                }
+                default:
+                    RequireNotReached (); // only legal for IP sockets
+                    return false;
+            }
+        }
+        virtual void SetReceivePacketInfo (bool on) override
+        {
+            AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
+            switch (GetAddressFamily ()) {
+                case SocketAddress::INET: {
+                    setsockopt<int> (IPPROTO_IP, IP_PKTINFO, on); // (macOS: the same as its IP_RECVPKTINFO)
+                } break;
+                case SocketAddress::INET6: {
+#if qStroika_Platform_Windows
+                    setsockopt<int> (IPPROTO_IPV6, IPV6_PKTINFO, on);
+#else
+                    setsockopt<int> (IPPROTO_IPV6, IPV6_RECVPKTINFO, on); // RFC 3542
+#endif
+                } break;
+                default:
+                    RequireNotReached (); // only legal for IP sockets
+            }
+        }
+        virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, optional<PacketInfo>* packetInfo,
+                                    Time::DurationSeconds timeout) override
         {
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
 
@@ -160,6 +210,9 @@ namespace {
                 }
             }
 
+            if (packetInfo != nullptr) {
+                return ReceiveMsg_ (intoStart, intoEnd, flag, fromAddress, packetInfo);
+            }
             struct sockaddr_storage sa;
             socklen_t               salen = sizeof (sa);
 #if qStroika_Platform_POSIX
@@ -184,6 +237,81 @@ namespace {
             AssertNotImplemented ();
 #endif
         }
+        // as recvfrom, but with recvmsg (Windows: WSARecvMsg) - which also reads the IP_PKTINFO / IPV6_PKTINFO the OS sends with
+        // the datagram, once SetReceivePacketInfo (true) - into *packetInfo (else nullopt)
+        size_t ReceiveMsg_ (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, optional<PacketInfo>* packetInfo)
+        {
+            RequireNotNull (packetInfo);
+            sockaddr_storage sa{};
+            *packetInfo = nullopt;
+#if qStroika_Platform_POSIX
+            iovec                  iov{intoStart, static_cast<size_t> (intoEnd - intoStart)};
+            alignas (cmsghdr) byte control[CMSG_SPACE (sizeof (in6_pktinfo)) + CMSG_SPACE (sizeof (in_pktinfo))];
+            msghdr                 m{};
+            m.msg_name       = &sa;
+            m.msg_namelen    = sizeof (sa);
+            m.msg_iov        = &iov;
+            m.msg_iovlen     = 1;
+            m.msg_control    = control;
+            m.msg_controllen = sizeof (control);
+            size_t result    = static_cast<size_t> (Handle_ErrNoResultInterruption ([&] () -> int { return ::recvmsg (fSD_, &m, flag); }));
+            for (cmsghdr* c = CMSG_FIRSTHDR (&m); c != nullptr; c = CMSG_NXTHDR (&m, c)) {
+                if (c->cmsg_level == IPPROTO_IP and c->cmsg_type == IP_PKTINFO) {
+                    in_pktinfo i;
+                    ::memcpy (&i, CMSG_DATA (c), sizeof (i));
+                    *packetInfo = PacketInfo{static_cast<unsigned int> (i.ipi_ifindex), InternetAddress { i.ipi_addr }};
+                }
+                else if (c->cmsg_level == IPPROTO_IPV6 and c->cmsg_type == IPV6_PKTINFO) {
+                    in6_pktinfo i;
+                    ::memcpy (&i, CMSG_DATA (c), sizeof (i));
+                    *packetInfo = PacketInfo{static_cast<unsigned int> (i.ipi6_ifindex), InternetAddress { i.ipi6_addr }};
+                }
+            }
+#elif qStroika_Platform_Windows
+            Require (intoEnd - intoStart < numeric_limits<ULONG>::max ());
+            if (fWSARecvMsg_ == nullptr) {
+                // not exported: fetched for the socket
+                GUID  id    = WSAID_WSARECVMSG;
+                DWORD bytes = 0;
+                ThrowWSASystemErrorIfSOCKET_ERROR (::WSAIoctl (fSD_, SIO_GET_EXTENSION_FUNCTION_POINTER, &id, sizeof (id), &fWSARecvMsg_,
+                                                               sizeof (fWSARecvMsg_), &bytes, nullptr, nullptr));
+            }
+            WSABUF                    buf{static_cast<ULONG> (intoEnd - intoStart), reinterpret_cast<CHAR*> (intoStart)};
+            alignas (WSACMSGHDR) char control[WSA_CMSG_SPACE (sizeof (IN6_PKTINFO)) + WSA_CMSG_SPACE (sizeof (IN_PKTINFO))];
+            WSAMSG                    m{};
+            m.name          = reinterpret_cast<sockaddr*> (&sa);
+            m.namelen       = sizeof (sa);
+            m.lpBuffers     = &buf;
+            m.dwBufferCount = 1;
+            m.Control       = WSABUF{sizeof (control), control};
+            m.dwFlags       = static_cast<ULONG> (flag);
+            DWORD nBytes    = 0;
+            ThrowWSASystemErrorIfSOCKET_ERROR (fWSARecvMsg_ (fSD_, &m, &nBytes, nullptr, nullptr));
+            size_t result = nBytes;
+            for (WSACMSGHDR* c = WSA_CMSG_FIRSTHDR (&m); c != nullptr; c = WSA_CMSG_NXTHDR (&m, c)) {
+                if (c->cmsg_level == IPPROTO_IP and c->cmsg_type == IP_PKTINFO) {
+                    IN_PKTINFO i;
+                    ::memcpy (&i, WSA_CMSG_DATA (c), sizeof (i));
+                    *packetInfo = PacketInfo{static_cast<unsigned int> (i.ipi_ifindex), InternetAddress { i.ipi_addr }};
+                }
+                else if (c->cmsg_level == IPPROTO_IPV6 and c->cmsg_type == IPV6_PKTINFO) {
+                    IN6_PKTINFO i;
+                    ::memcpy (&i, WSA_CMSG_DATA (c), sizeof (i));
+                    *packetInfo = PacketInfo{static_cast<unsigned int> (i.ipi6_ifindex), InternetAddress { i.ipi6_addr }};
+                }
+            }
+#else
+            AssertNotImplemented ();
+            size_t result = 0;
+#endif
+            if (fromAddress != nullptr) {
+                *fromAddress = sa;
+            }
+            return result;
+        }
+#if qStroika_Platform_Windows
+        LPFN_WSARECVMSG fWSARecvMsg_{nullptr}; // (fThisAssertExternallySynchronized) fetched as first needed
+#endif
         virtual void JoinMulticastGroup (const InternetAddress& iaddr, const variant<InternetAddress, unsigned int>& onInterface) override
         {
             Debug::TraceContextBumper ctx{
@@ -333,6 +461,21 @@ namespace {
             }
         }
     };
+}
+
+/*
+ ********************************************************************************
+ *********************** ConnectionlessSocket::PacketInfo ***********************
+ ********************************************************************************
+ */
+String ConnectionlessSocket::PacketInfo::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "interfaceIndex : "sv << fInterfaceIndex;
+    sb << ", destination : "sv << fDestination;
+    sb << "}"sv;
+    return sb;
 }
 
 /*

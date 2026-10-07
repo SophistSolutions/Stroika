@@ -925,6 +925,56 @@ GTEST_TEST (Foundation_IO_Network, Test3_MulticastInterface_)
     }
 }
 
+GTEST_TEST (Foundation_IO_Network, Test3_PacketInfo_)
+{
+    // ReceiveFrom says where a datagram arrived - the interface, and the address it was sent to - once SetReceivePacketInfo
+    // (true); not asked for, it says nothing. Over loopback, so the interface is loopback's.
+    Debug::TraceContextBumper trcCtx{"Test3_PacketInfo_"};
+    for (const InternetAddress& localhost : {V4::kLocalhost, V6::kLocalhost}) {
+        SocketAddress::FamilyType family =
+            localhost.GetAddressFamily () == InternetAddress::AddressFamily::V4 ? SocketAddress::INET : SocketAddress::INET6;
+        ConnectionlessSocket::Ptr receiver = ConnectionlessSocket::New (family, Socket::DGRAM);
+        try {
+            receiver.Bind (SocketAddress{localhost, 0});
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "Test3_PacketInfo_: no {} here: {}"_f(localhost, current_exception ()).AsNarrowSDKString ().c_str ());
+            continue;
+        }
+        const SocketAddress                        to     = *receiver.GetLocalAddress ();
+        ConnectionlessSocket::Ptr                  sender = ConnectionlessSocket::New (family, Socket::DGRAM);
+        const std::byte                            kHi[]{std::byte{'h'}, std::byte{'i'}};
+        std::byte                                  buf[16];
+        optional<ConnectionlessSocket::PacketInfo> info = ConnectionlessSocket::PacketInfo{}; // so nullopt says something was done
+        // not asked for
+        EXPECT_FALSE (receiver.GetReceivePacketInfo ());
+        sender.SendTo (kHi, to);
+        EXPECT_EQ (receiver.ReceiveFrom (buf, 0, nullptr, &info, 5s).size (), size (kHi));
+        EXPECT_FALSE (info.has_value ()) << Characters::ToString (localhost).AsNarrowSDKString ();
+        // asked for
+        receiver.SetReceivePacketInfo (true);
+        EXPECT_TRUE (receiver.GetReceivePacketInfo ());
+        sender.SendTo (kHi, to);
+        SocketAddress from;
+        EXPECT_EQ (receiver.ReceiveFrom (buf, 0, &from, &info, 5s).size (), size (kHi));
+        EXPECT_EQ (from.GetInternetAddress (), localhost);
+        ASSERT_TRUE (info.has_value ()) << Characters::ToString (localhost).AsNarrowSDKString ();
+        EXPECT_EQ (info->fDestination, localhost);
+        optional<Interface> loopback =
+            SystemInterfacesMgr{}.GetAll ().First ([&] (const Interface& i) { return i.fBindings.fAddresses.Contains (localhost); });
+        if (loopback and loopback->fIndex) {
+            EXPECT_EQ (info->fInterfaceIndex, *loopback->fIndex) << Characters::ToString (*info).AsNarrowSDKString ();
+        }
+        else {
+            EXPECT_NE (info->fInterfaceIndex, Interface::kAnyIndex) << Characters::ToString (*info).AsNarrowSDKString ();
+        }
+        // and stopped
+        receiver.SetReceivePacketInfo (false);
+        EXPECT_FALSE (receiver.GetReceivePacketInfo ());
+    }
+}
+
 GTEST_TEST (Foundation_IO_Network, Test4_DNS_)
 {
     Debug::TraceContextBumper ctx{"Test4_DNS_::DoTests_"};
