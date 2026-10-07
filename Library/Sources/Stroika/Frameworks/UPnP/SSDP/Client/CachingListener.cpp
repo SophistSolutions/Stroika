@@ -99,7 +99,7 @@ public:
 
 private:
     // on the listener's thread, or the searcher's: an ssdp:alive, or a search answer, adds its advertisement - or keeps it
-    // longer; an ssdp:byebye removes its USN, at every LOCATION
+    // longer; an ssdp:byebye removes its device's every advertisement, at every LOCATION
     void Heard_ (const SSDP::Advertisement& heard, bool searchAnswer)
     {
         const String& usn = heard.fUSN;
@@ -124,11 +124,22 @@ private:
             }
         }
         else if (heard.fAlive == false) {
-            if (optional<Locations_> gone = fCache_.load ().Lookup (usn)) {
-                fCache_.rwget ()->Remove (usn);
-                for (const KeyValuePair<URI, Entry_>& i : *gone) {
-                    fCallbacks_.Call (Gone_ (i.fValue));
+            // the whole device is gone: a device cannot withdraw one of its advertisements alone (UPnP Device Architecture 1.1,
+            // sections 1.2.2 and 2), so whichever its ssdp:byebye names, it withdraws them all
+            const String                  device = DeviceOf_ (usn);
+            auto                          ofIt   = [&] (const KeyValuePair<String, Locations_>& i) { return DeviceOf_ (i.fKey) == device; };
+            Sequence<SSDP::Advertisement> gone;
+            {
+                auto cache = fCache_.rwget ();
+                for (const KeyValuePair<String, Locations_>& i : cache->Where (ofIt)) {
+                    for (const KeyValuePair<URI, Entry_>& j : i.fValue) {
+                        gone += Gone_ (j.fValue);
+                    }
                 }
+                cache->RemoveAll (ofIt);
+            }
+            for (const SSDP::Advertisement& a : gone) {
+                fCallbacks_.Call (a);
             }
         }
         // else an ssdp:update (UPnP 1.1), which neither adds nor removes
@@ -165,6 +176,13 @@ private:
         for (const SSDP::Advertisement& a : expired) {
             fCallbacks_.Call (a);
         }
+    }
+    // the device a USN names - its "uuid:device-UUID", before any "::" (UPnP Device Architecture 1.1, section 1.2.2) - so an
+    // embedded device, with a UUID of its own, is a device of its own
+    static String DeviceOf_ (const String& usn)
+    {
+        optional<size_t> i = usn.Find ("::"sv);
+        return i ? usn.SubString (0, *i) : usn;
     }
     // what the callbacks are told of an advertisement removed: the last heard, fAlive false
     static SSDP::Advertisement Gone_ (const Entry_& e)

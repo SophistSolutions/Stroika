@@ -1238,10 +1238,10 @@ namespace {
     }
 
     /*
-     *  A CachingListener keeps each advertisement - a USN at a LOCATION - from its ssdp:alive until an ssdp:byebye withdraws it,
-     *  or its max-age runs out; and tells its callbacks of each change, once. Told by NOTIFYs this test sends itself, out of
-     *  each interface - so each arrives more than once, as a device's do. As in SSDP_Loopback_Notify_, anything that keeps the
-     *  exchange from happening is a test issue.
+     *  A CachingListener keeps each advertisement - a USN at a LOCATION - from its ssdp:alive until its max-age runs out, or an
+     *  ssdp:byebye withdraws its device (one, for any of the device's advertisements, withdraws them all); and tells its
+     *  callbacks of each change, once. Told by NOTIFYs this test sends itself, out of each interface - so each arrives more than
+     *  once, as a device's do. As in SSDP_Loopback_Notify_, anything that keeps the exchange from happening is a test issue.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_CachingListener_)
     {
@@ -1249,12 +1249,14 @@ namespace {
         Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by CachingListener
         using IO::Network::InternetProtocol::IP::IPVersionSupport;
         using SSDP::Client::CachingListener;
-        const String deviceID  = Common::GUID::GenerateNew ().As<String> ();
-        const String rootUSN   = "uuid:{}::upnp:rootdevice"_f(deviceID);
-        const String deviceUSN = "uuid:{}"_f(deviceID);
-        const URI    location1 = URI::Parse ("http://127.0.0.1:49152/a.xml"sv); // only advertised
-        const URI    location2 = URI::Parse ("http://127.0.0.1:49153/b.xml"sv);
-        auto         alive     = [] (const String& target, const String& usn, const URI& location, Time::Duration maxAge) {
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String rootUSN    = "uuid:{}::upnp:rootdevice"_f(deviceID);
+        const String deviceUSN  = "uuid:{}"_f(deviceID);
+        const String service    = "urn:schemas-upnp-org:service:SwitchPower:1"sv;
+        const String serviceUSN = "uuid:{}::{}"_f(deviceID, service);
+        const URI    location1  = URI::Parse ("http://127.0.0.1:49152/a.xml"sv); // only advertised
+        const URI    location2  = URI::Parse ("http://127.0.0.1:49153/b.xml"sv);
+        auto         alive      = [] (const String& target, const String& usn, const URI& location, Time::Duration maxAge) {
             SSDP::Advertisement a;
             a.fAlive    = true;
             a.fUSN      = usn;
@@ -1326,14 +1328,17 @@ namespace {
             Execution::Sleep (500ms);
             EXPECT_EQ (cached ().size (), 2u);
             EXPECT_TRUE (cached ().All ([] (const SSDP::Advertisement& a) { return a.fAlive == true; }));
-            // withdrawn: at every LOCATION
+            // another of the device's advertisements: one of its services
+            notify (alive (service, serviceUSN, location1, 60s));
+            EXPECT_TRUE (waitForChanges (3));
+            // withdrawn: a byebye for one of the device's advertisements withdraws them all, at every LOCATION
             notify (byebye ("upnp:rootdevice"sv, rootUSN));
-            EXPECT_TRUE (waitForChanges (4));
+            EXPECT_TRUE (waitForChanges (6));
             EXPECT_EQ (cached ().size (), 0u);
             // expired: removed when its max-age runs out, with no ssdp:byebye
             const Time::TimePointSeconds sentAt = Time::GetTickCount ();
             notify (alive (deviceUSN, deviceUSN, location1, 1s));
-            EXPECT_TRUE (waitForChanges (6));
+            EXPECT_TRUE (waitForChanges (8));
             EXPECT_GE ((Time::GetTickCount () - sentAt).count (), 1.0);
             EXPECT_EQ (cached ().size (), 0u);
             Execution::Sleep (500ms); // for anything after it
@@ -1348,17 +1353,20 @@ namespace {
             DbgTrace ("told: {}"_f, a);
         }
         // each change told once, in order - though each NOTIFY came once per interface; fAlive says which: added or removed
-        ASSERT_EQ (changes.size (), 6u);
+        ASSERT_EQ (changes.size (), 8u);
         auto is = [] (const SSDP::Advertisement& a, bool alive, const String& usn, const URI& location) {
             return a.fAlive == alive and a.fUSN == usn and a.fLocation == location;
         };
         EXPECT_TRUE (is (changes[0], true, rootUSN, location1));
         EXPECT_TRUE (is (changes[1], true, rootUSN, location2));
-        // the byebye removes the USN at both LOCATIONs, in either order - each told as last heard (a byebye has no LOCATION)
-        EXPECT_TRUE ((is (changes[2], false, rootUSN, location1) and is (changes[3], false, rootUSN, location2)) or
-                     (is (changes[2], false, rootUSN, location2) and is (changes[3], false, rootUSN, location1)));
-        EXPECT_TRUE (is (changes[4], true, deviceUSN, location1));
-        EXPECT_TRUE (is (changes[5], false, deviceUSN, location1));
+        EXPECT_TRUE (is (changes[2], true, serviceUSN, location1));
+        // the byebye removes the device's every advertisement, in any order - each told as last heard (a byebye has no LOCATION)
+        auto at      = [] (const String& usn, const URI& location) { return "{} at {}"_f(usn, location.As<String> ()); };
+        auto removed = [&] (const SSDP::Advertisement& a) { return a.fAlive == false ? at (a.fUSN, a.fLocation) : String{}; };
+        EXPECT_TRUE ((Containers::Set<String>{removed (changes[3]), removed (changes[4]), removed (changes[5])} ==
+                      Containers::Set<String>{at (rootUSN, location1), at (rootUSN, location2), at (serviceUSN, location1)}));
+        EXPECT_TRUE (is (changes[6], true, deviceUSN, location1));
+        EXPECT_TRUE (is (changes[7], false, deviceUSN, location1));
     }
 
     /*
