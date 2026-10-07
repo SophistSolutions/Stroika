@@ -56,7 +56,8 @@ String DeviceDescription::Service::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "Service-ID: "sv << fServiceID;
+    sb << "Service-Type: "sv << fServiceType;
+    sb << ", Service-ID: "sv << fServiceID;
     sb << ", SCPD-URL: "sv << fSCPDURL;
     sb << ", Control-URL: "sv << fControlURL;
     sb << ", Event-Sub-URL: "sv << fEventSubURL;
@@ -274,6 +275,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
             {Name{"serviceId"sv}, &DeviceDescription::Service::fServiceID},
             {Name{"SCPDURL"sv}, &DeviceDescription::Service::fSCPDURL},
             {Name{"controlURL"sv}, &DeviceDescription::Service::fControlURL},
+            {Name{"eventSubURL"sv}, &DeviceDescription::Service::fEventSubURL},
         });
         registry.AddCommonType<Collection<DeviceDescription::Icon>> (Name{"icon"});
         registry.AddCommonType<optional<Collection<DeviceDescription::Icon>>> ();

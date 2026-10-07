@@ -203,6 +203,12 @@ namespace {
         dd.fModelURL         = URI{"http://www.sophists.com/"sv};
         dd.fSerialNumber     = "manufacturer's serial number"sv;
         dd.fUDN              = "uuid:315caae0-1335-57bf-a178-24c9ee756627"sv;
+        dd.fServices =
+            Containers::Collection<DeviceDescription::Service>{DeviceDescription::Service{.fServiceType = "urn:schemas-upnp-org:service:SwitchPower:1"sv,
+                                                                                          .fServiceID = "urn:upnp-org:serviceId:SwitchPower"sv,
+                                                                                          .fSCPDURL = URI{"/SwitchPower/description.xml"sv},
+                                                                                          .fControlURL  = URI{"/SwitchPower/control"sv},
+                                                                                          .fEventSubURL = URI{"/SwitchPower/events"sv}}};
 
         Memory::BLOB xml = UPnP::Serialize (dd);
         DbgTrace ("xml: {}"_f, String::FromUTF8 (xml.As<string> ()));
@@ -219,6 +225,17 @@ namespace {
         EXPECT_EQ (back.fModelURL, dd.fModelURL);
         EXPECT_EQ (back.fSerialNumber, dd.fSerialNumber);
         EXPECT_EQ (back.fUDN, dd.fUDN);
+        // and its service, with each of its URLs
+        optional<DeviceDescription::Service> service = back.fServices ? back.fServices->First () : nullopt;
+        EXPECT_TRUE (service.has_value () and back.fServices->size () == 1);
+        if (service) {
+            const DeviceDescription::Service was = *dd.fServices->First ();
+            EXPECT_EQ (service->fServiceType, was.fServiceType);
+            EXPECT_EQ (service->fServiceID, was.fServiceID);
+            EXPECT_EQ (service->fSCPDURL, was.fSCPDURL);
+            EXPECT_EQ (service->fControlURL, was.fControlURL);
+            EXPECT_EQ (service->fEventSubURL, was.fEventSubURL);
+        }
 #else
         Stroika::Frameworks::Test::WarnTestIssue (
             "DeviceDescription_RoundTrip_ only checks Serialize: this configuration has no XML parser");
@@ -461,23 +478,25 @@ namespace {
 
     /*
      *  A real SSDP exchange: our own BasicServer answering our own Search, both in this process (the server's responder
-     *  turns multicast loopback on).
+     *  turns multicast loopback on) - found by its device type, and by its service type: a device is advertised by each
+     *  service type it has, too (UPnP Device Architecture 1.1, section 1.1.2).
      *
      *  Whether that can happen at all depends on the environment, not on Stroika: binding UDP 1900 may be refused, or the
      *  port shared with another SSDP service; multicast may be filtered (a firewall, a container network, macOS's Local
      *  Network privacy). So anything that keeps the exchange from happening is reported as a test issue, never a failure.
      *  What IS a failure: an answer that comes back wrong.
      *
-     *  The device type is unique to this run, so no other device on the network answers - and only our device's
+     *  Its device and service types are unique to this run, so no other device on the network answers - and only our device's
      *  announcements (a few seconds of them, multicast with SSDP::kDefaultMulticastTTL) reach the network.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_Search_)
     {
         Debug::TraceContextBumper                    ctx{"SSDP_Loopback_Search_"};
         Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
-        const String                                 deviceID   = Common::GUID::GenerateNew ().As<String> ();
-        const String                                 deviceType = "urn:stroika-regression-test:device:SSDPLoopback-{}:1"_f(deviceID);
-        constexpr uint16_t                           kPort_     = 49152; // only advertised - nothing listens on it
+        const String                                 deviceID    = Common::GUID::GenerateNew ().As<String> ();
+        const String                                 deviceType  = "urn:stroika-regression-test:device:SSDPLoopback-{}:1"_f(deviceID);
+        const String                                 serviceType = "urn:stroika-regression-test:service:SSDPLoopback-{}:1"_f(deviceID);
+        constexpr uint16_t                           kPort_      = 49152; // only advertised - nothing listens on it
 
         Device d;
         d.fDeviceID = deviceID;
@@ -487,10 +506,14 @@ namespace {
         dd.fDeviceType   = deviceType;
         dd.fFriendlyName = "Stroika regression test device"sv;
         dd.fUDN          = "uuid:" + deviceID;
+        dd.fServices     = Containers::Collection<DeviceDescription::Service>{
+            DeviceDescription::Service{.fServiceType = serviceType, .fServiceID = "urn:stroika-regression-test:serviceId:SSDPLoopback"sv}};
 
         // Synchronized: the search's callback, and the server's location provider, run on their own threads, not this one
         Execution::Synchronized<optional<SSDP::Advertisement>> found;
         Execution::WaitableEvent                               foundEvent;
+        Execution::Synchronized<optional<SSDP::Advertisement>> foundByService; // by a search for its service type
+        Execution::WaitableEvent                               foundByServiceEvent;
         // BasicServer's default provider, recording what each search response asks it
         Execution::Synchronized<Containers::Sequence<SSDP::Server::LocationContext>> askedFor;
         SSDP::Server::LocationProvider fillInHost          = SSDP::Server::LocationFillingInHost (location);
@@ -510,10 +533,18 @@ namespace {
                                             }
                                         },
                                         deviceType, nullopt, SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            SSDP::Client::Search serviceSearch{[&] (const SSDP::Advertisement& a) {
+                                                   if (a.fTarget == serviceType) {
+                                                       foundByService.store (a);
+                                                       foundByServiceEvent.Set ();
+                                                   }
+                                               },
+                                               serviceType, nullopt, SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
             if (foundEvent.WaitQuietly (10s) == Execution::WaitableEvent::WaitStatus::eTriggered) {
                 // it searched somewhere - and only where the default filter lets it
                 EXPECT_FALSE (search.GetNetworkInterfaces ().empty ());
                 EXPECT_TRUE (search.GetNetworkInterfaces ().All ([] (const Interface& i) { return SSDP::DefaultInterfaceFilter (i); }));
+                (void)foundByServiceEvent.WaitQuietly (10s); // the exchange works here, so its service type must find it too
             }
         }
         catch (...) {
@@ -531,6 +562,12 @@ namespace {
         }
         DbgTrace ("found: {}"_f, a);
         EXPECT_EQ (a->fUSN, "uuid:{}::{}"_f(deviceID, deviceType));
+        optional<SSDP::Advertisement> byService = foundByService.load ();
+        EXPECT_TRUE (byService.has_value ()) << "found by its device type, but not by its service type";
+        if (byService) {
+            EXPECT_EQ (byService->fUSN, "uuid:{}::{}"_f(deviceID, serviceType));
+            EXPECT_EQ (byService->fLocation.GetPath (), "/device.xml"sv);
+        }
         EXPECT_EQ (a->fLocation.GetScheme (), URI::SchemeType{"http"sv});
         EXPECT_EQ (a->fLocation.GetPath (), "/device.xml"sv);
         optional<URI::Authority> authority = a->fLocation.GetAuthority ();
@@ -674,7 +711,9 @@ namespace {
     /*
      *  A BasicServer that stops says so: an ssdp:byebye for each of its advertisements, out of each interface it announced on -
      *  so control points drop the device at once, rather than when its max-age (30 minutes) runs out - and no ssdp:alive after
-     *  it. As in SSDP_Loopback_Notify_, anything that keeps the exchange from happening is a test issue.
+     *  it. Its advertisements include one for each of its service types: once, however many of its services are of it (UPnP
+     *  Device Architecture 1.1, section 1.1.2). As in SSDP_Loopback_Notify_, anything that keeps the exchange from happening
+     *  is a test issue.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_Byebye_)
     {
@@ -682,8 +721,10 @@ namespace {
         Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
         using IO::Network::InternetProtocol::IP::IPVersionSupport;
         const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
-        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
-        const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackByebye-{}:1"_f(deviceID);
+        const String deviceID     = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType   = "urn:stroika-regression-test:device:SSDPLoopbackByebye-{}:1"_f(deviceID);
+        const String serviceType1 = "urn:stroika-regression-test:service:SSDPLoopbackByebye1-{}:1"_f(deviceID);
+        const String serviceType2 = "urn:stroika-regression-test:service:SSDPLoopbackByebye2-{}:1"_f(deviceID);
         Device       d;
         d.fDeviceID = deviceID;
         d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
@@ -691,6 +732,11 @@ namespace {
         dd.fDeviceType   = deviceType;
         dd.fFriendlyName = "Stroika regression test device"sv;
         dd.fUDN          = "uuid:" + deviceID;
+        dd.fServices     = Containers::Collection<DeviceDescription::Service>{
+            // two services of one type, one of another
+            DeviceDescription::Service{.fServiceType = serviceType1, .fServiceID = "urn:stroika-regression-test:serviceId:A"sv},
+            DeviceDescription::Service{.fServiceType = serviceType1, .fServiceID = "urn:stroika-regression-test:serviceId:B"sv},
+            DeviceDescription::Service{.fServiceType = serviceType2, .fServiceID = "urn:stroika-regression-test:serviceId:C"sv}};
         Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> heard; // Synchronized: the listener calls back on its own thread
         Execution::WaitableEvent                                           aliveHeard;
         Execution::WaitableEvent                                           byebyeHeard;
@@ -724,22 +770,29 @@ namespace {
                     .c_str ());
             return;
         }
-        bool                    byebyeYet = false;
-        Containers::Set<String> byebyeUSNs;
+        bool                      byebyeYet = false;
+        Containers::Set<String>   aliveUSNs;
+        map<String, unsigned int> byebyes; // by USN
         for (const SSDP::Advertisement& a : heard.load ()) {
             DbgTrace ("heard: {}"_f, a);
             if (a.fAlive == false) {
                 byebyeYet = true;
-                byebyeUSNs += a.fUSN;
+                ++byebyes[a.fUSN];
                 EXPECT_EQ (a.fLocation, URI{}); // a byebye says only what is going away
             }
             else {
+                aliveUSNs += a.fUSN;
                 EXPECT_FALSE (byebyeYet) << "an ssdp:alive after the ssdp:byebye: " << a.fUSN.AsNarrowSDKString ();
             }
         }
-        // one for each of its advertisements: the root device, the device itself, and its device type
-        for (const String& usn : {"uuid:{}::upnp:rootdevice"_f(deviceID), "uuid:{}"_f(deviceID), "uuid:{}::{}"_f(deviceID, deviceType)}) {
-            EXPECT_TRUE (byebyeUSNs.Contains (usn)) << "no ssdp:byebye for " << usn.AsNarrowSDKString ();
+        // one for each of its advertisements: the root device, the device itself, its device type, and each of its service types -
+        // each in as many ssdp:byebye as the root device, so a service type once however many of its services are of it
+        const String rootDevice = "uuid:{}::upnp:rootdevice"_f(deviceID);
+        for (const String& usn : {rootDevice, "uuid:{}"_f(deviceID), "uuid:{}::{}"_f(deviceID, deviceType),
+                                  "uuid:{}::{}"_f(deviceID, serviceType1), "uuid:{}::{}"_f(deviceID, serviceType2)}) {
+            EXPECT_TRUE (aliveUSNs.Contains (usn)) << "no ssdp:alive for " << usn.AsNarrowSDKString ();
+            EXPECT_TRUE (byebyes.contains (usn)) << "no ssdp:byebye for " << usn.AsNarrowSDKString ();
+            EXPECT_EQ (byebyes[usn], byebyes[rootDevice]) << "not as many ssdp:byebye for " << usn.AsNarrowSDKString () << " as for the root device";
         }
     }
 

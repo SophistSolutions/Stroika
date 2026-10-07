@@ -24,8 +24,6 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **BasicServer advertises no services** - no NOTIFY or search answer per service type (BasicServer.h's
-         "@todo Add serviceList support"); DeviceDescription already has fServices.
        - **a network appearing drops what waits in the old sockets**: Listener switches to new sockets (a slow callOnFinds
          lost 2 NOTIFYs on the rig), and SearchResponder restarts its thread on new ones. Fix: join the new interfaces on the
          existing sockets ("already a member" counting as joined) - nothing to switch, so nothing lost or doubled.

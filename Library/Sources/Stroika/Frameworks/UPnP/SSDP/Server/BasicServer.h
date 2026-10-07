@@ -18,9 +18,6 @@
  *  \file
  *
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
- *
- * TODO:
- *      @todo   Add serviceList support
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Server {
@@ -88,6 +85,10 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          *  Advertise the device on every network interface, each with the LOCATION location gives for it: where its device
          *  description is to be found, from that network (@see LocationProvider). For a Stroika web server, that is usually
          *  LocationFromBindings (theWebServer.bindings ()). d.fLocation is not used.
+         *
+         *  It is advertised - so a search for any of these finds it - as a root device (upnp:rootdevice), by its UDN ("uuid:" and
+         *  d.fDeviceID), by its device type (dd.fDeviceType), and by each of its service types (dd.fServices' - once, however many
+         *  of its services are of it): the advertisements the UPnP Device Architecture (1.1, section 1.1.2) lists for a root device.
          */
         BasicServer (const Device& d, const DeviceDescription& dd, const LocationProvider& location, const Options& options = kDefaultOptions);
         BasicServer (const BasicServer&)                  = delete;

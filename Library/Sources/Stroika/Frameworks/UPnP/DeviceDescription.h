@@ -20,7 +20,6 @@
 /*
  * TODO:
  *      @todo   Add image support
- *      @todo   Add serviceList support
  */
 
 namespace Stroika::Frameworks::UPnP {
@@ -83,13 +82,16 @@ namespace Stroika::Frameworks::UPnP {
         optional<Collection<Icon>> fIcons;
 
         /**
+         *  One of the device's services: what it is, and where its description, its actions and its events are - each URL
+         *  relative to the device description's own (UPnP Device Architecture 1.1, section 2.3; an older device's may be
+         *  absolute), so a control point resolves it with that URL's Combine ().
          */
         struct Service {
             String fServiceType; // e.g. urn:schemas-upnp-org:service:serviceType:v
             String fServiceID;   // e.g. urn:upnp-org:serviceId:serviceID
             URI    fSCPDURL;     // URL to service description
-            URI    fControlURL;  // URL to service description
-            URI    fEventSubURL; // URL to service description
+            URI    fControlURL;  // URL for control: its actions, as SOAP requests
+            URI    fEventSubURL; // URL for eventing (subscribing to its state's changes); empty if it has no evented state
 
             /**
              *  @see Characters::ToString ();

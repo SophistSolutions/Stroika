@@ -64,6 +64,17 @@ public:
                 dan.fTarget = dd.fDeviceType;
                 fAdvertisements.Append (dan);
             }
+            // and each of its service types - once, however many of its services are of it (UPnP Device Architecture 1.1, section 1.1.2)
+            if (dd.fServices) {
+                for (const DeviceDescription::Service& s : *dd.fServices) {
+                    if (not s.fServiceType.empty () and
+                        not fAdvertisements.Any ([&] (const Advertisement& a) { return a.fTarget == s.fServiceType; })) {
+                        dan.fUSN    = Format ("uuid:{}::{}"_f, d.fDeviceID, s.fServiceType);
+                        dan.fTarget = s.fServiceType;
+                        fAdvertisements.Append (dan);
+                    }
+                }
+            }
         }
 
         // the notifier and responder each follow network changes themselves (Options::fFollowNetworkChanges)
