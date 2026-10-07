@@ -96,10 +96,10 @@ Generally will track stuff here between releases
      Also: **copy-on-write's "not shared, so write in place" check is a data race** (by the C++ memory model; harmless on x86
      and ARM in practice, so it waited for 3.0d26 - LGP 2026-10-07): Memory::SharedByValue::AssureNOrFewerReferences tests
      shared_ptr::use_count () - a relaxed load - so its write is not ordered after another thread's read through a copy it has
-     since dropped. ThreadSanitizer reports it (3.0d25x's Ubuntu 26.04 regression run: Tests/53 SSDP_CachingListener_, its main
+     since dropped. ThreadSanitizer reports it (3.0d25x's Ubuntu 26.04 regression run: Tests/53 - now 54 - SSDP_CachingListener_, its main
      thread polling told.load ().size () as the listener's thread appends). The fix needs an acquire there: a fence (free on
      x86, but ThreadSanitizer does not model fences), or an acquire RMW on the count (two atomics per write: measure with
-     Tests/52). Until then, Tests/53's SSDP_CachingListener_ and SSDP_CachingListener_Search_ read told under its lock (a BWA,
+     Tests/52). Until then, Tests/54's SSDP_CachingListener_ and SSDP_CachingListener_Search_ read told under its lock (a BWA,
      so 3.0d25's ThreadSanitizer runs are quiet): restore their told.load () - the reproducer - with the fix.
    - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
      been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus

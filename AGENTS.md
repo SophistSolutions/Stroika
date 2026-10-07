@@ -59,6 +59,11 @@ make CONFIGURATION=Debug -C Tests/07 all -j8
 (substitute the test number). `TEST_FAILURES_CAUSE_FAILED_MAKE=0` lets `run-tests` continue past
 failures like `make -k`.
 
+Tests are numbered in their areas' order (`Tests/Tests-Description.txt`). A new test may take the next free number, out of
+order, for a small diff - then a follow-up commit, before the release, renumbers them back into order
+(`Tests/Scripts/RenumberRegressionTests`; then delete `IntermediateFiles/*/Tests/<NN>` for each number moved, as objects are
+kept by number and a move keeps the sources' timestamps).
+
 Note that a header edit alone will NOT rebuild a test object (see the header-dependency note below),
 so to recompile one test against a changed header, delete its object first:
 `rm IntermediateFiles/Debug/Tests/07/Test.obj`. This is the cheap way to compile-check a header change
@@ -420,7 +425,7 @@ still compile". Say which one you did.
   Currently `HTMLViewCompiler`, which `SharedBuildRules-Default.mk` invokes to compile `.swsp` files.
   The dividing line versus `Build/Tools/Src/`: **can it use Stroika?** If yes it belongs here; if it
   has to run before Stroika can be built, it belongs under `Build/`.
-- `Tests/Scripts/` — helpers specific to the regression-test harness (test naming/listing).
+- `Tests/Scripts/` — helpers specific to the regression-test harness (test naming, listing and renumbering).
 - `Workspaces/` — IDE workspace/solution files (VSCode, Visual Studio.Net).
 
 ### Design conventions (see `Documentation/Design-Overview.md` and `Patterns.md` for full detail)
