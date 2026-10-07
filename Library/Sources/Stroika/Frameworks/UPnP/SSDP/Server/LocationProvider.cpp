@@ -107,6 +107,29 @@ LocationProvider Server::LocationFillingInHost (const URI& location)
  ******************** Server::Private_::AdvertisableAddress *********************
  ********************************************************************************
  */
+optional<InternetAddress> Server::Private_::LocalAddressOnAskersNetwork (const InternetAddress& asker, const Traversal::Iterable<Interface>& interfaces)
+{
+    if (asker.GetAddressFamily () == InternetAddress::AddressFamily::V6 and asker.IsLinkLocalAddress ()) {
+        return nullopt; // in every interface's subnet: which interface, only its scope id says - which the routing table has
+    }
+    if (interfaces.Any ([&] (const Interface& i) { return i.fBindings.fAddresses.Contains (asker); })) {
+        return asker; // this machine, asking itself
+    }
+    for (const Interface& i : interfaces) {
+        for (const CIDR& subnet : i.fBindings.fAddressRanges) {
+            auto inSubnet = [&] (const InternetAddress& a) {
+                return a.GetAddressFamily () == subnet.GetBaseInternetAddress ().GetAddressFamily () and subnet.GetRange ().Contains (a);
+            };
+            if (inSubnet (asker)) {
+                if (optional<InternetAddress> local = i.fBindings.fAddresses.First (inSubnet)) {
+                    return local;
+                }
+            }
+        }
+    }
+    return nullopt;
+}
+
 optional<InternetAddress> Server::Private_::AdvertisableAddress (const Interface& i, InternetAddress::AddressFamily f)
 {
     optional<InternetAddress> linkLocal;

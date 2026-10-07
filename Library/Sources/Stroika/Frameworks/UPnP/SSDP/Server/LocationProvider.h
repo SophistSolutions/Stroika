@@ -35,7 +35,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     struct LocationContext {
         /**
          *  This machine's address on the network the advertisement goes to: for a NOTIFY, an address of the interface it goes
-         *  out of; for a search response, the address the asker reaches this machine at (@see IO::Network::GetLocalAddressToReach).
+         *  out of; for a search response, the address the asker reaches this machine at - this machine's address on the asker's
+         *  own network, found by the asker's subnet, or (the asker further off) the one the routing table picks to reach it
+         *  (@see IO::Network::GetLocalAddressToReach).
          *  Of the family (IPv4 or IPv6) of the SSDP channel the advertisement is on - and a link-local IPv6 address only if the
          *  interface has no other.
          */

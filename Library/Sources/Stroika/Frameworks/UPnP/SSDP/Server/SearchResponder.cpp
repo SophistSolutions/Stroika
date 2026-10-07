@@ -46,21 +46,26 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 ********************************************************************************
 */
 namespace {
-    // the LOCATION to answer asker with: location's, given this machine's address as asker reaches it
-    optional<URI> LocationFor_ (const LocationProvider& location, const SocketAddress& asker)
+    // the LOCATION to answer asker with: location's, given this machine's address as asker reaches it - on asker's own network,
+    // found by its subnet among listeningOn (the interfaces the search can have come in on); else, asker further off, the
+    // routing table's. Not the routing table's first: a VPN's route covering a LAN makes that the VPN's address, which the LAN
+    // cannot reach. (Exactly, which interface the search came in on, only IP_PKTINFO could say -
+    // https://github.com/SophistSolutions/Stroika/issues/1202)
+    optional<URI> LocationFor_ (const LocationProvider& location, const SocketAddress& asker, const InterfacesByID& listeningOn)
     {
-        // @todo the address of the interface the search arrived on, not the route lookup's - where the routing table sends the
-        //       LAN elsewhere (a VPN's route covering it), the asker cannot reach that one. Exactly, that needs IP_PKTINFO -
-        //       https://github.com/SophistSolutions/Stroika/issues/1202 - or by the asker's subnet, UPnP-only (TODO.md)
-        optional<InternetAddress> local = GetLocalAddressToReach (asker);
+        optional<InternetAddress> local =
+            asker.IsInternetAddress () ? SSDP::Server::Private_::LocalAddressOnAskersNetwork (asker.GetInternetAddress (), listeningOn) : nullopt;
         if (not local) {
-            return nullopt; // no route back
-        }
-        if (local->GetAddressFamily () == InternetAddress::AddressFamily::V6 and local->IsLinkLocalAddress ()) {
-            // asked from a link-local address: offer the interface's other IPv6 address, if it has one
-            if (optional<Interface> i =
-                    SystemInterfacesMgr{}.GetAll ().First ([&] (const Interface& ii) { return ii.fBindings.fAddresses.Contains (*local); })) {
-                local = SSDP::Server::Private_::AdvertisableAddress (*i, InternetAddress::AddressFamily::V6);
+            local = GetLocalAddressToReach (asker);
+            if (not local) {
+                return nullopt; // no route back
+            }
+            if (local->GetAddressFamily () == InternetAddress::AddressFamily::V6 and local->IsLinkLocalAddress ()) {
+                // asked from a link-local address: offer the interface's other IPv6 address, if it has one
+                if (optional<Interface> i = SystemInterfacesMgr{}.GetAll ().First (
+                        [&] (const Interface& ii) { return ii.fBindings.fAddresses.Contains (*local); })) {
+                    local = SSDP::Server::Private_::AdvertisableAddress (*i, InternetAddress::AddressFamily::V6);
+                }
             }
         }
         return location (LocationContext{*local, asker});
@@ -154,7 +159,7 @@ namespace {
     // up to its MX, so devices, and a device's several answers, do not all come at once - and one with no MX is ignored (1.1,
     // section 1.3.3); a unicast one's, at once
     Sequence<Answer_> Answers_ (span<const byte> packet, const Iterable<Advertisement>& advertisements, const LocationProvider& location,
-                                ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo)
+                                ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo, const InterfacesByID& listeningOn)
     {
         String              headLine;
         SSDP::Advertisement da;
@@ -178,7 +183,7 @@ namespace {
                     answering += *answer;
                 }
             }
-            optional<URI> url = answering.empty () ? nullopt : LocationFor_ (location, sendTo);
+            optional<URI> url = answering.empty () ? nullopt : LocationFor_ (location, sendTo, listeningOn);
             if (url) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("sending search responder advertisements..."_f);
@@ -242,13 +247,14 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
             // network) - every so often
             optional<Time::TimePointSeconds> joinAt = Time::GetTickCount ();
             Time::DurationSeconds            retryJoinAfter{1s};
+            InterfacesByID                   listeningOn; // as joined last (fListeningOn_, for this thread)
             // only stopped by thread abort - which drops the answers still waiting
             Sequence<Answer_> waiting; // not yet due: this thread goes on answering other searches meanwhile, as 1.3.3 requires
             while (true) {
                 try {
                     if (fJoinAgain_->IsSet () or (joinAt and *joinAt <= Time::GetTickCount ())) {
                         fJoinAgain_->Clear (); // first: a network appearing as this joins wakes the wait below at once
-                        InterfacesByID listeningOn = SSDP::Private_::JoinOnEveryInterface (socketsAndGroups, interfaceFilter);
+                        listeningOn = SSDP::Private_::JoinOnEveryInterface (socketsAndGroups, interfaceFilter);
                         fListeningOn_.store (listeningOn);
                         joinAt = nullopt;
                         if (listeningOn.empty ()) {
@@ -267,7 +273,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                         byte          buf[4 * 1024]; // not sure of max packet size
                         size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
                         Assert (nBytesRead <= std::size (buf));
-                        for (const Answer_& a : Answers_ (span{buf, nBytesRead}, advertisements, location, s, from)) {
+                        for (const Answer_& a : Answers_ (span{buf, nBytesRead}, advertisements, location, s, from, listeningOn)) {
                             if (waiting.size () < kMaxWaitingAnswers_) {
                                 waiting += a;
                             }

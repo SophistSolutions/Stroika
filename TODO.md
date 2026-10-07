@@ -24,11 +24,6 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **answer a search with the address of the interface it arrived on**, not the route lookup's - which a Tailscale
-         subnet route covering the LAN turns into the Tailscale address (#1194's step-2 comment). UPnP-only: pick the
-         interface by the asker's subnet (Interface::fBindings.fAddressRanges; an IPv6 link-local asker's scope id names
-         it), else the route lookup. The exact way - IP_PKTINFO - is https://github.com/SophistSolutions/Stroika/issues/1202
-         (UNLIKELY for v3.0).
        - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202).
        - https://github.com/SophistSolutions/Stroika/issues/715 ("-s / -l sometimes produce no results") - likely fixed by
          #1194: check with the SSDPClient sample on Windows and Linux, then close. Firewalls are the other suspect: rewrite

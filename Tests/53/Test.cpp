@@ -477,6 +477,35 @@ namespace {
     }
 
     /*
+     *  A search is answered with this machine's address on the asker's own network - found by the asker's subnet - not the one
+     *  the routing table picks: a VPN's route covering the LAN (a Tailscale subnet route, say) makes that the VPN's address, which
+     *  the asker cannot reach (#1194). An asker further off, or link-local (on every interface's subnet), is left to the routing
+     *  table - nullopt here.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_LocalAddressOnAskersNetwork_)
+    {
+        Debug::TraceContextBumper ctx{"SSDP_LocalAddressOnAskersNetwork_"};
+        Interface                 lan;
+        lan.fInterfaceID             = "lan"sv;
+        lan.fBindings.fAddresses     = {InternetAddress{"192.168.1.2"sv}, InternetAddress{"2001:db8::2"sv}, InternetAddress{"fe80::2"sv}};
+        lan.fBindings.fAddressRanges = {CIDR{"192.168.1.0/24"sv}, CIDR{"2001:db8::/64"sv}, CIDR{"fe80::/64"sv}};
+        Interface vpn;
+        vpn.fInterfaceID             = "vpn"sv;
+        vpn.fBindings.fAddresses     = {InternetAddress{"100.101.102.103"sv}, InternetAddress{"fe80::3"sv}};
+        vpn.fBindings.fAddressRanges = {CIDR{"100.64.0.0/10"sv}, CIDR{"fe80::/64"sv}};
+        const Containers::Sequence<Interface> interfaces{vpn, lan};
+        auto                                  onAskersNetwork = [&] (const char* asker) {
+            return SSDP::Server::Private_::LocalAddressOnAskersNetwork (InternetAddress{asker}, interfaces);
+        };
+        EXPECT_EQ (onAskersNetwork ("192.168.1.5"), InternetAddress{"192.168.1.2"sv}); // on the LAN: the LAN address, whatever the routes say
+        EXPECT_EQ (onAskersNetwork ("100.64.1.1"), InternetAddress{"100.101.102.103"sv});
+        EXPECT_EQ (onAskersNetwork ("2001:db8::9"), InternetAddress{"2001:db8::2"sv});
+        EXPECT_EQ (onAskersNetwork ("192.168.1.2"), InternetAddress{"192.168.1.2"sv}); // this machine, asking itself
+        EXPECT_FALSE (onAskersNetwork ("10.0.0.5").has_value ());                      // further off
+        EXPECT_FALSE (onAskersNetwork ("fe80::9").has_value ());                       // link-local: on both interfaces' subnet
+    }
+
+    /*
      *  A real SSDP exchange: our own BasicServer answering our own Search, both in this process (the server's responder
      *  turns multicast loopback on) - found by its device type, and by its service type: a device is advertised by each
      *  service type it has, too (UPnP Device Architecture 1.1, section 1.1.2).
