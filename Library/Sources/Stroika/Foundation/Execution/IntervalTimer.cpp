@@ -61,13 +61,13 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     {
         Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: AddOneShot"};
         fData_.rwget ()->Add (RegisteredTask{timer, intervalTimer, Time::GetTickCount () + when});
-        DataChanged_ (); // (holding no lock - @see RemoveRepeating)
+        DataChanged_ ();
     }
     void AddRepeating (TimerID timer, const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
         Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: AddRepeating"};
         fData_.rwget ()->Add ({timer, intervalTimer, Time::GetTickCount () + repeatInterval, repeatInterval, hysteresis});
-        DataChanged_ (); // (holding no lock - @see RemoveRepeating)
+        DataChanged_ ();
     }
     void RemoveRepeating (TimerID timer) noexcept
     {
@@ -81,7 +81,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                 fRunningChanged_.wait (runningLock, [&] () { return fRunning_ != timer; });
             }
         }
-        DataChanged_ (); // holding no lock: this may stop the timer thread, and wait for it - which needs them to finish
+        DataChanged_ ();
     }
     RegisteredTaskCollection GetAllRegisteredTasks () const
     {
@@ -168,26 +168,21 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             }
         }
     }
+    // The timer thread starts with the first timer, and stays - idle while there are none - until this goes. Stopping it as the
+    // last timer went (before v3.0d25) waited for it holding fThread_'s lock: a deadlock, with a callback adding or removing a
+    // timer just then, which needs that lock too.
     void DataChanged_ ()
     {
-        auto rwThreadLk = fThread_.rwget ();
-        if (fData_.cget ()->empty ()) {
-            // stop the timer thread - unless this is it (a callback removing the last timer): it cannot wait for itself to finish, so
-            // it is left idle, until a timer is added or the manager goes
-            if (tRunnerOf_ != this) {
-                rwThreadLk.store (nullptr); // destroy thread
-            }
-        }
-        else {
-            auto lk = fThread_.rwget ();
-            if (lk.cref () == nullptr) {
+        auto lk = fThread_.rwget ();
+        if (lk.cref () == nullptr) {
+            if (not fData_.cget ()->empty ()) {
                 using namespace Execution;
                 lk.store (MakeSharedPtr<Thread::CleanupPtr> (Thread::CleanupPtr::eAbortBeforeWaiting,
                                                              Thread::New ([this] () { RunnerLoop_ (); }, Thread::eAutoStart, "Default-Interval-Timer"sv)));
             }
-            else {
-                fDataChanged_.Set (); // if there was and still is a thread, it maybe sleeping too long, so wake it up
-            }
+        }
+        else {
+            fDataChanged_.Set (); // it may be sleeping too long - or with no timer to wait for - so wake it up
         }
     }
 };

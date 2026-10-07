@@ -97,8 +97,8 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
-     *  Calls the timers added to it, when due. Its backend is an IRep - DefaultRep (one thread, while it has timers) unless another
-     *  is given; Manager::sThe (made by a Manager::Activator) is the one an Adder adds to, unless given another.
+     *  Calls the timers added to it, when due. Its backend is an IRep - DefaultRep (one thread, from its first timer on) unless
+     *  another is given; Manager::sThe (made by a Manager::Activator) is the one an Adder adds to, unless given another.
      *
      *  \note Timers can only be added after the start of main (), and must be removed before the end of main.
      *

@@ -5,9 +5,12 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <atomic>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <mutex>
 #include <optional>
+#include <thread>
 
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
@@ -27,6 +30,7 @@
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/DateTime.h"
@@ -442,19 +446,18 @@ namespace {
     {
         Debug::TraceContextBumper         ctx{"IntervalTimer_RemovedWhileRunning_"};
         IntervalTimer::Manager::Activator intervalTimerMgrActivator;
-        IntervalTimer::Adder keepRunning{[] () {}, Time::Duration{1h}}; // so ours is not the last timer (removing that also stops the timer thread)
-        atomic<unsigned int>           calls{0};
-        atomic<bool>                   running{false};
-        WaitableEvent                  started;
-        optional<IntervalTimer::Adder> adder{in_place,
-                                             [&] () {
+        atomic<unsigned int>              calls{0};
+        atomic<bool>                      running{false};
+        WaitableEvent                     started;
+        optional<IntervalTimer::Adder>    adder{in_place,
+                                                [&] () {
                                                  running = true;
                                                  ++calls;
                                                  started.Set ();
                                                  Execution::Sleep (500ms); // long enough to be removed while running
                                                  running = false;
-                                             },
-                                             Time::Duration{50ms}};
+                                                },
+                                                Time::Duration{50ms}};
         started.Wait (10s);
         adder.reset (); // while its callback runs
         EXPECT_FALSE (running.load ()) << "the callback was still running after its timer was removed";
@@ -465,8 +468,8 @@ namespace {
 
     /*
      *  A callback that removes its own timer - destroys its Adder - does not wait for itself to finish (which would be
-     *  forever), and is not called again. Also when it is the last timer, whose removal stops the timer thread: the very
-     *  thread removing it.
+     *  forever), and is not called again. Also when it is the last timer - whose removal, before v3.0d25, stopped the timer
+     *  thread: the very thread removing it.
      */
     GTEST_TEST (Foundation_Execution, IntervalTimer_CallbackRemovesItself_)
     {
@@ -496,6 +499,55 @@ namespace {
             Execution::Sleep (500ms); // ten of its intervals
             EXPECT_EQ (calls.load (), 1u) << (last ? "the last timer" : "not the last timer");
         }
+    }
+
+    /*
+     *  A callback removes its own timer, then adds one, as another thread removes the last other timer. That thread, finding no
+     *  timers left, stopped the timer thread - waiting for it, holding the lock adding a timer takes - so the callback, on that
+     *  thread, waited for the lock, and the lock's holder for the callback: a deadlock (before v3.0d25).
+     */
+    GTEST_TEST (Foundation_Execution, IntervalTimer_CallbackAddsAsLastOtherGoes_)
+    {
+        Debug::TraceContextBumper         ctx{"IntervalTimer_CallbackAddsAsLastOtherGoes_"};
+        IntervalTimer::Manager::Activator intervalTimerMgrActivator;
+        IntervalTimer::Manager&           manager = IntervalTimer::Manager::sThe;
+        IntervalTimer::TimerID            other   = manager.AddRepeating ([] () {}, Time::Duration{1h});
+        WaitableEvent                     oursRemoved;
+        WaitableEvent                     added;
+        mutex                             oursMutex; // this thread sets ours; the callback, on the timer's thread, reads it
+        optional<IntervalTimer::TimerID>  ours;
+        {
+            lock_guard lk{oursMutex};
+            ours = manager.AddOneShot (
+                [&] () {
+                    {
+                        lock_guard lk{oursMutex};
+                        manager.RemoveRepeating (*ours); // itself: only the other is left
+                    }
+                    oursRemoved.Set ();
+                    // not interruptibly, as a callback at work: meanwhile the other thread removes the last timer, and so may stop
+                    // this one
+                    this_thread::sleep_for (500ms);
+                    manager.AddOneShot ([] () {}, Time::Duration{1h});
+                    added.Set ();
+                },
+                Time::Duration{100ms});
+        }
+        Thread::Ptr remover = Thread::New (
+            [&] () {
+                if (oursRemoved.WaitQuietly (10s) == WaitableEvent::WaitStatus::eTriggered) {
+                    manager.RemoveRepeating (other);
+                }
+            },
+            Thread::eAutoStart);
+        if (added.WaitQuietly (10s) != WaitableEvent::WaitStatus::eTriggered) {
+            // deadlocked: neither thread can finish, nor then can the Activator's destructor - so end the run here, not hang
+            ADD_FAILURE () << "deadlock: a callback adding a timer as another thread removed the last other one";
+            fflush (stdout);
+            fflush (stderr);
+            _Exit (EXIT_FAILURE);
+        }
+        remover.Join ();
     }
 
     /*
