@@ -22,6 +22,7 @@
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
@@ -29,6 +30,7 @@
 #include "Stroika/Frameworks/UPnP/Device.h"
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
+#include "Stroika/Frameworks/UPnP/SSDP/Client/CachingListener.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/Listener.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/Search.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
@@ -1083,6 +1085,215 @@ namespace {
         }
         EXPECT_EQ (newThreads (), 0u) << "and leave none behind";
 #endif
+    }
+
+    /*
+     *  A CachingListener keeps each advertisement - a USN at a LOCATION - from its ssdp:alive until an ssdp:byebye withdraws it,
+     *  or its max-age runs out; and tells its callbacks of each change, once. Told by NOTIFYs this test sends itself, out of
+     *  each interface - so each arrives more than once, as a device's do. As in SSDP_Loopback_Notify_, anything that keeps the
+     *  exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_CachingListener_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_CachingListener_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by CachingListener
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        using SSDP::Client::CachingListener;
+        const String deviceID  = Common::GUID::GenerateNew ().As<String> ();
+        const String rootUSN   = "uuid:{}::upnp:rootdevice"_f(deviceID);
+        const String deviceUSN = "uuid:{}"_f(deviceID);
+        const URI    location1 = URI::Parse ("http://127.0.0.1:49152/a.xml"sv); // only advertised
+        const URI    location2 = URI::Parse ("http://127.0.0.1:49153/b.xml"sv);
+        auto         alive     = [] (const String& target, const String& usn, const URI& location, Time::Duration maxAge) {
+            SSDP::Advertisement a;
+            a.fAlive    = true;
+            a.fUSN      = usn;
+            a.fLocation = location;
+            a.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+            a.fTarget   = target;
+            a.fMaxAge   = maxAge;
+            return a;
+        };
+        auto byebye = [] (const String& target, const String& usn) {
+            SSDP::Advertisement a;
+            a.fAlive  = false;
+            a.fUSN    = usn;
+            a.fTarget = target;
+            return a;
+        };
+        Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
+        auto                                                               waitForChanges = [&] (size_t n) {
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; told.load ().size () < n and Time::GetTickCount () < giveUpAt;) {
+                Execution::Sleep (50ms);
+            }
+            return told.load ().size () >= n;
+        };
+        try {
+            CachingListener cache{[&] (const SSDP::Advertisement& a) {
+                                      if (a.fUSN.Contains (deviceID)) {
+                                          told.rwget ()->Append (a);
+                                      }
+                                  },
+                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = nullopt},
+                                  CachingListener::eAutoStart};
+            auto            cached = [&] () {
+                return Containers::Sequence<SSDP::Advertisement>{
+                    cache.GetAdvertisements ().Where ([&] (const SSDP::Advertisement& a) { return a.fUSN.Contains (deviceID); })};
+            };
+            // out of each interface it listens on, as a device's NOTIFYs come
+            ConnectionlessSocket::Ptr sender = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            sender.SetMulticastLoopMode (true); // so this process hears it
+            auto notify = [&] (const SSDP::Advertisement& a) {
+                Memory::BLOB packet = SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a, SSDP::V4::kSocketAddress);
+                for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
+                    if (SSDP::DefaultInterfaceFilter (i) and i.fBindings.fAddresses.Any ([] (const InternetAddress& ia) {
+                            return ia.GetAddressFamily () == InternetAddress::AddressFamily::V4;
+                        })) {
+                        try {
+                            sender.SetMulticastInterface (i);
+                            sender.SendTo (packet, SSDP::V4::kSocketAddress);
+                        }
+                        catch (...) {
+                            DbgTrace ("could not send on {}: {}"_f, i.fInterfaceID, current_exception ());
+                        }
+                    }
+                }
+            };
+            notify (alive ("upnp:rootdevice"sv, rootUSN, location1, 60s));
+            if (not waitForChanges (1)) {
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_CachingListener_ skipped - our own NOTIFY was not heard within 10 seconds "
+                                                          "(this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            // the same USN at another LOCATION: an advertisement of its own
+            notify (alive ("upnp:rootdevice"sv, rootUSN, location2, 60s));
+            EXPECT_TRUE (waitForChanges (2));
+            // heard again: kept longer - not added again
+            notify (alive ("upnp:rootdevice"sv, rootUSN, location1, 60s));
+            Execution::Sleep (500ms);
+            EXPECT_EQ (cached ().size (), 2u);
+            EXPECT_TRUE (cached ().All ([] (const SSDP::Advertisement& a) { return a.fAlive == true; }));
+            // withdrawn: at every LOCATION
+            notify (byebye ("upnp:rootdevice"sv, rootUSN));
+            EXPECT_TRUE (waitForChanges (4));
+            EXPECT_EQ (cached ().size (), 0u);
+            // expired: removed when its max-age runs out, with no ssdp:byebye
+            const Time::TimePointSeconds sentAt = Time::GetTickCount ();
+            notify (alive (deviceUSN, deviceUSN, location1, 1s));
+            EXPECT_TRUE (waitForChanges (6));
+            EXPECT_GE ((Time::GetTickCount () - sentAt).count (), 1.0);
+            EXPECT_EQ (cached ().size (), 0u);
+            Execution::Sleep (500ms); // for anything after it
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_CachingListener_ skipped - could not run an SSDP listener here: {}"_f(current_exception ()).AsNarrowSDKString ().c_str ());
+            return;
+        }
+        Containers::Sequence<SSDP::Advertisement> changes = told.load ();
+        for (const SSDP::Advertisement& a : changes) {
+            DbgTrace ("told: {}"_f, a);
+        }
+        // each change told once, in order - though each NOTIFY came once per interface; fAlive says which: added or removed
+        ASSERT_EQ (changes.size (), 6u);
+        auto is = [] (const SSDP::Advertisement& a, bool alive, const String& usn, const URI& location) {
+            return a.fAlive == alive and a.fUSN == usn and a.fLocation == location;
+        };
+        EXPECT_TRUE (is (changes[0], true, rootUSN, location1));
+        EXPECT_TRUE (is (changes[1], true, rootUSN, location2));
+        // the byebye removes the USN at both LOCATIONs, in either order - each told as last heard (a byebye has no LOCATION)
+        EXPECT_TRUE ((is (changes[2], false, rootUSN, location1) and is (changes[3], false, rootUSN, location2)) or
+                     (is (changes[2], false, rootUSN, location2) and is (changes[3], false, rootUSN, location1)));
+        EXPECT_TRUE (is (changes[4], true, deviceUSN, location1));
+        EXPECT_TRUE (is (changes[5], false, deviceUSN, location1));
+    }
+
+    /*
+     *  A CachingListener's search finds what is there already - our own BasicServer, which announced itself before the
+     *  CachingListener existed - and the server's ssdp:byebyes, as it stops, remove all that was found. As in
+     *  SSDP_Loopback_Search_, anything that keeps the exchange from happening is a test issue.
+     *
+     *  It searches for the server's device type, unique to this run, so only our server answers: with ssdp:all, every device on
+     *  a busy network answers too, and the search's thread can fall far enough behind that an answer from our server is read
+     *  after its byebye, adding back what that removed (@see CachingListener).
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_CachingListener_Search_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_CachingListener_Search_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer and CachingListener
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        using SSDP::Client::CachingListener;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType = "urn:stroika-regression-test:device:SSDPCachingListener-{}:1"_f(deviceID);
+        Device       d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        DeviceDescription dd;
+        dd.fDeviceType   = deviceType;
+        dd.fFriendlyName = "Stroika regression test device"sv;
+        dd.fUDN          = "uuid:" + deviceID;
+        // a search for its device type finds that one of its advertisements (at each LOCATION)
+        const Containers::Set<String>                                      usns{"uuid:{}::{}"_f(deviceID, deviceType)};
+        Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
+        auto                                                               usnsTold = [&] (bool alive) {
+            Containers::Set<String> result;
+            for (const SSDP::Advertisement& a : told.load ()) {
+                if (a.fAlive == alive) {
+                    result += a.fUSN;
+                }
+            }
+            return result;
+        };
+        auto waitUntil = [] (const function<bool ()>& done) {
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not done () and Time::GetTickCount () < giveUpAt;) {
+                Execution::Sleep (50ms);
+            }
+            return done ();
+        };
+        try {
+            optional<SSDP::Server::BasicServer> server;
+            server.emplace (d, dd, SSDP::Server::LocationFillingInHost (location),
+                            SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only});
+            Execution::Sleep (1s); // the NOTIFYs it starts with are done: what the CachingListener has, its search found
+            CachingListener cache{[&] (const SSDP::Advertisement& a) {
+                                      if (a.fUSN.Contains (deviceID)) {
+                                          told.rwget ()->Append (a);
+                                      }
+                                  },
+                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = deviceType},
+                                  CachingListener::eAutoStart};
+            if (not waitUntil ([&] () { return usnsTold (true).ContainsAll (usns); })) {
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_CachingListener_Search_ skipped - our own device was not found within 10 "
+                                                          "seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            Execution::Sleep (3s); // past the search's second M-SEARCH, 2 seconds in: no answer crosses the server's ssdp:byebye
+            server.reset ();       // it stops: an ssdp:byebye for each advertisement
+            EXPECT_TRUE (waitUntil ([&] () { return usnsTold (false).ContainsAll (usns); }));
+            Execution::Sleep (500ms); // for anything after it
+            EXPECT_FALSE (cache.GetAdvertisements ().Any ([&] (const SSDP::Advertisement& a) { return a.fUSN.Contains (deviceID); }));
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_CachingListener_Search_ skipped - could not run an SSDP server and CachingListener here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        // each advertisement found - at each LOCATION - added once, then removed once
+        Containers::Sequence<SSDP::Advertisement> changes = told.load ();
+        for (const SSDP::Advertisement& a : changes) {
+            DbgTrace ("told: {}"_f, a);
+        }
+        std::map<pair<String, URI>, Containers::Sequence<bool>> alives;
+        for (const SSDP::Advertisement& a : changes) {
+            alives[make_pair (a.fUSN, a.fLocation)].Append (a.fAlive == true);
+        }
+        for (const auto& [key, alive] : alives) {
+            EXPECT_EQ (alive, (Containers::Sequence<bool>{true, false}))
+                << key.first.AsNarrowSDKString () << " at " << Characters::ToString (key.second).AsNarrowSDKString ();
+        }
     }
 }
 #endif

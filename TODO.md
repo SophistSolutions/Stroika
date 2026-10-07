@@ -40,12 +40,6 @@ Generally will track stuff here between releases
          interface by the asker's subnet (Interface::fBindings.fAddressRanges; an IPv6 link-local asker's scope id names
          it), else the route lookup. The exact way - IP_PKTINFO - is https://github.com/SophistSolutions/Stroika/issues/1202
          (UNLIKELY for v3.0).
-       - **implement CachingListener** (an empty stub since the first UPnP draft, 2013): a device cache fed by both Listener
-         and Search, keyed by USN, refreshed by each alive or search answer, expired at max-age (Advertisement::fMaxAge),
-         dropped on ssdp:byebye, with added/removed callbacks (an Execution::CallbackRegistry each). Then WTF can use it,
-         which also fixes its ignoring byebye (below). Its contents after a wait are also the synchronous search Search.h
-         had an @todo for ("sends a certain number of times, and then returns all the answers") - decide there whether that
-         needs an API of its own.
        - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202) and the socket switch
          above.
        - https://github.com/SophistSolutions/Stroika/issues/715 ("-s / -l sometimes produce no results") - likely fixed by
@@ -59,7 +53,9 @@ Generally will track stuff here between releases
        - https://github.com/SophistSolutions/Stroika/issues/975 (SSDPServer sample: use the WebServer framework) - looks
          done (it uses WebServer::ConnectionManager); check its leftover IO/Network/Listener.h include, then close.
        - (WTF, not Stroika) **WTF ignores every ssdp:byebye**: it finds the device by its LOCATION's host, which a byebye
-         does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - match by USN instead.
+         does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - use SSDP::Client::CachingListener: its callbacks get
+         a Listener's Advertisement once per change - fAlive false (removed) with the LOCATION last heard - so WTF fetches
+         each description once, not with each NOTIFY as now.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck

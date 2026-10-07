@@ -3,4 +3,7 @@
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Client {
+
+    inline const CachingListener::Options CachingListener::kDefaultOptions{};
+
 }
