@@ -101,7 +101,7 @@ namespace {
 
     // whether an M-SEARCH was multicast - unless its HOST names a unicast address. (Which address it actually came to, only
     // IP_PKTINFO could say - https://github.com/SophistSolutions/Stroika/issues/1202)
-    bool Multicast_ (const SSDP::Advertisement& search)
+    bool IsMulticast_ (const SSDP::Advertisement& search)
     {
         if (optional<String> host = Header_ (search, "HOST"sv)) {
             if (optional<UniformResourceIdentification::Authority> a = UniformResourceIdentification::Authority::Parse (*host)) {
@@ -111,6 +111,43 @@ namespace {
             }
         }
         return true;
+    }
+
+    // a device or service type - urn:domain:device|service:type:version - as the type, and its version
+    optional<pair<String, unsigned int>> TypeAndVersion_ (const String& target)
+    {
+        optional<size_t> lastColon = target.RFind (':');
+        if (not target.StartsWith ("urn:"sv, eCaseInsensitive) or not lastColon) {
+            return nullopt;
+        }
+        String version = target.SubString (*lastColon + 1);
+        if (version.empty () or version.size () > 9 or not version.All ([] (Character c) { return c.IsDigit (); })) {
+            return nullopt;
+        }
+        return make_pair (target.SubString (0, *lastColon), Characters::String2Int<unsigned int> (version));
+    }
+
+    // advertisement a, as it answers a search for searchTarget - or nullopt if it does not. Every advertisement answers ssdp:all;
+    // and one for a device or service type answers a search for an older version of it too, as that version, in its ST and its USN
+    // - each version being compatible with those before it (UPnP Device Architecture 1.1, sections 1.3.2 and 1.3.3)
+    optional<Advertisement> AnswerTo_ (const String& searchTarget, const Advertisement& a)
+    {
+        String::EqualsComparer equals{eCaseInsensitive};
+        if (equals (searchTarget, kTarget_SSDPAll) or equals (searchTarget, a.fTarget)) {
+            return a;
+        }
+        optional<pair<String, unsigned int>> searchedFor = TypeAndVersion_ (searchTarget);
+        optional<pair<String, unsigned int>> advertised  = TypeAndVersion_ (a.fTarget);
+        if (searchedFor and advertised and equals (searchedFor->first, advertised->first) and 1 <= searchedFor->second and
+            searchedFor->second < advertised->second) {
+            Advertisement answer = a;
+            answer.fTarget       = searchTarget;
+            if (a.fUSN.EndsWith ("::"sv + a.fTarget, eCaseInsensitive)) {
+                answer.fUSN = a.fUSN.SubString (0, a.fUSN.size () - a.fTarget.size ()) + searchTarget;
+            }
+            return answer;
+        }
+        return nullopt;
     }
 
     // the answers to packet, if an M-SEARCH for something advertised. Each of a multicast M-SEARCH's is due after a random wait of
@@ -129,56 +166,35 @@ namespace {
         Sequence<Answer_> result;
         if (headLine.StartsWith ("M-SEARCH "sv)) {
             optional<Time::DurationSeconds> waitAtMost; // nullopt: answer at once
-            if (Multicast_ (da)) {
+            if (IsMulticast_ (da)) {
                 waitAtMost = MX_ (da);
                 if (not waitAtMost) {
                     return result;
                 }
             }
-            auto targetEqComparer = String::EqualsComparer{eCaseInsensitive};
-            bool matches          = false;
-            if (targetEqComparer (da.fTarget, kTarget_UPNPRootDevice)) {
-                matches = true;
-            }
-            else if (targetEqComparer (da.fTarget, kTarget_SSDPAll)) {
-                matches = true;
-            }
-            else {
-                for (const auto& a : advertisements) {
-                    if (targetEqComparer (a.fTarget, da.fTarget)) {
-                        matches = true;
-                        break;
-                    }
+            Sequence<Advertisement> answering; // each advertisement that answers it, as it does
+            for (const Advertisement& a : advertisements) {
+                if (optional<Advertisement> answer = AnswerTo_ (da.fTarget, a)) {
+                    answering += *answer;
                 }
             }
-            optional<URI> url = matches ? LocationFor_ (location, sendTo) : nullopt;
+            optional<URI> url = answering.empty () ? nullopt : LocationFor_ (location, sendTo);
             if (url) {
-// if any match, I think we are supposed to send all
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"sending search responder advertisements...");
+                DbgTrace ("sending search responder advertisements..."_f);
 #endif
-                for (auto a : advertisements) {
+                for (Advertisement a : answering) {
                     a.fAlive    = nullopt; // in responder we don't set alive flag
                     a.fLocation = *url;
 
-                    bool includeThisAdvertisement = false;
-                    if (targetEqComparer (da.fTarget, kTarget_SSDPAll)) {
-                        includeThisAdvertisement = true;
+                    Time::TimePointSeconds dueAt = Time::GetTickCount ();
+                    if (waitAtMost) {
+                        dueAt += SSDP::Private_::RandomDuration (*waitAtMost);
                     }
-                    else {
-                        includeThisAdvertisement = targetEqComparer (a.fTarget, da.fTarget);
-                    }
-
-                    if (includeThisAdvertisement) {
-                        Time::TimePointSeconds dueAt = Time::GetTickCount ();
-                        if (waitAtMost) {
-                            dueAt += SSDP::Private_::RandomDuration (*waitAtMost);
-                        }
-                        result += Answer_{dueAt, useSocket, sendTo, SSDP::Serialize ("HTTP/1.1 200 OK"sv, SearchOrNotify::SearchResponse, a)};
+                    result += Answer_{dueAt, useSocket, sendTo, SSDP::Serialize ("HTTP/1.1 200 OK"sv, SearchOrNotify::SearchResponse, a)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace ("(location={},TARGET(ST/NT)={},USN={})"_f, a.fLocation, a.fTarget, a.fUSN);
+                    DbgTrace ("(location={},TARGET(ST/NT)={},USN={})"_f, a.fLocation, a.fTarget, a.fUSN);
 #endif
-                    }
                 }
             }
         }

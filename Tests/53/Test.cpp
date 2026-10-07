@@ -1457,6 +1457,101 @@ namespace {
     }
 
     /*
+     *  A device answers a search for an older version of its device or service type too, as that version - a :2 device answers a
+     *  search for :1, with :1 in its ST and USN (UPnP Device Architecture 1.1, sections 1.3.2 and 1.3.3) - but not a search for a
+     *  newer version than it has. Told by M-SEARCHes this test sends our own BasicServer itself, out of one interface. As in
+     *  SSDP_Loopback_Search_, anything that keeps the exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_SearchOlderVersion_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_SearchOlderVersion_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String deviceID = Common::GUID::GenerateNew ().As<String> ();
+        // its device and service types, at the given version: the device's is at 2, its service's at 3
+        auto deviceType = [&] (int version) -> String {
+            return "urn:stroika-regression-test:device:SSDPVersions-{}:{}"_f(deviceID, version);
+        };
+        auto serviceType = [&] (int version) -> String {
+            return "urn:stroika-regression-test:service:SSDPVersions-{}:{}"_f(deviceID, version);
+        };
+        Device d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        DeviceDescription dd;
+        dd.fDeviceType   = deviceType (2);
+        dd.fFriendlyName = "Stroika regression test device"sv;
+        dd.fUDN          = "uuid:" + deviceID;
+        dd.fServices     = Containers::Collection<DeviceDescription::Service>{
+            DeviceDescription::Service{.fServiceType = serviceType (3), .fServiceID = "urn:stroika-regression-test:serviceId:SSDPVersions"sv}};
+        optional<Interface> via = AnSSDPInterface_ ();
+        if (not via) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_SearchOlderVersion_ skipped - no network interface with an IPv4 address");
+            return;
+        }
+        try {
+            SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                             SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            ConnectionlessSocket::Ptr asker = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            asker.SetMulticastLoopMode (true); // so our own server hears it
+            asker.SetMulticastInterface (*via);
+            auto search = [&] (const String& searchTarget) {
+                string request =
+                    "M-SEARCH * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nMAN: \"ssdp:discover\"\r\nST: {}\r\nMX: 1\r\n\r\n"_f(searchTarget).AsUTF8<string> ();
+                asker.SendTo (as_bytes (span{request}), SSDP::V4::kSocketAddress);
+            };
+            // the answers from our device until until - or until enough have come
+            auto answersUntil = [&] (Time::TimePointSeconds until, size_t enough = numeric_limits<size_t>::max ()) {
+                Containers::Sequence<SSDP::Advertisement> result;
+                while (result.size () < enough and not Execution::WaitForIOReady<ConnectionlessSocket::Ptr>{asker}.WaitQuietlyUntil (until).empty ()) {
+                    std::byte           buf[8 * 1024];
+                    SocketAddress       from;
+                    String              headLine;
+                    SSDP::Advertisement a;
+                    SSDP::DeSerialize (Memory::BLOB{asker.ReceiveFrom (span{buf}, 0, &from)}, &headLine, &a);
+                    if (headLine.StartsWith ("HTTP/1.1 200"sv) and a.fUSN.Contains (deviceID)) {
+                        result += a;
+                    }
+                }
+                return result;
+            };
+            // until the server hears us (it joins the multicast group on its own thread): search for its own device type till it answers
+            bool answered = false;
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not answered and Time::GetTickCount () < giveUpAt;) {
+                search (deviceType (2));
+                answered = not answersUntil (Time::GetTickCount () + 1.5s, 1).empty ();
+            }
+            if (not answered) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "SSDP_Loopback_SearchOlderVersion_ skipped - our own device did not answer within "
+                    "10 seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            // an older version of each type, and a newer one of the device's than it has - MX 1, so all answered within a second
+            for (const String& t : {deviceType (1), serviceType (2), deviceType (3)}) {
+                search (t);
+            }
+            Containers::Sequence<SSDP::Advertisement> came = answersUntil (Time::GetTickCount () + 2.5s); // (allowing for slow processing)
+            for (const SSDP::Advertisement& a : came) {
+                DbgTrace ("answer: {}"_f, a);
+                EXPECT_EQ (a.fUSN, "uuid:{}::{}"_f(deviceID, a.fTarget)) << "its USN names the type at the version its ST does";
+            }
+            auto answeredAs = [&] (const String& t) { return came.Any ([&] (const SSDP::Advertisement& a) { return a.fTarget == t; }); };
+            EXPECT_TRUE (answeredAs (deviceType (1))) << "no answer to a search for an older version of its device type";
+            EXPECT_TRUE (answeredAs (serviceType (2))) << "no answer to a search for an older version of its service type";
+            EXPECT_FALSE (answeredAs (deviceType (3))) << "answered a search for a newer version of its device type than it has";
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_SearchOlderVersion_ skipped - could not run an SSDP server here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+        }
+    }
+
+    /*
      *  A PeriodicNotifier waits a random 0 to 100 ms before its first NOTIFYs, so devices starting together - after a power cut,
      *  say - do not all announce at once (UPnP Device Architecture 1.1, section 1.2.2). Seen as how long each of several is heard
      *  after its construction began: not all the same. As in SSDP_Loopback_Notify_, anything that keeps the exchange from

@@ -33,6 +33,10 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      *  Answers SSDP searches (M-SEARCH) that the given advertisements match, with where to find the device's description.
      *  Most applications want BasicServer instead, which does this and also announces the device (@see PeriodicNotifier).
      *
+     *  An advertisement for a device or service type (urn:domain:device:type:version, or service) answers a search for an older
+     *  version of that type too, as that version - in its ST and its USN - as the UPnP Device Architecture requires, each version
+     *  being compatible with those before it (1.1, sections 1.3.2 and 1.3.3). So advertise only the newest version.
+     *
      *  As the UPnP Device Architecture asks (1.1, section 1.3.3), each answer to a multicast M-SEARCH is sent after a random wait
      *  of up to its MX seconds (5 at most) - so devices, and a device's several answers, do not all come at once - while it goes
      *  on answering others; and a multicast M-SEARCH without an MX is ignored. A unicast one (its HOST not a multicast address)

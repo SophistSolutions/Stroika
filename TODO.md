@@ -50,9 +50,6 @@ Generally will track stuff here between releases
          each description once, not with each NOTIFY as now.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
-       - **a search for an older version of a type finds nothing**: a device MUST answer an M-SEARCH for any version of its
-         device or service type it supports - a :2 device answers one for :1, with :1 in its ST and USN (UPnP Device
-         Architecture 1.1, sections 1.3.2 and 1.3.3) - but SearchResponder matches the ST exactly.
        - **a moved-from SSDP::Client::Listener or Search crashes as it is destroyed**: their move constructors are defaulted,
          and their destructors call fRep_->Stop () on the null fRep_ that leaves (found 2026-10-06). Test first.
        - (optional) **CachingListener can re-add a device just withdrawn**: an answer to its search sent before the device's
