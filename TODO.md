@@ -24,7 +24,6 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
      planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - https://github.com/SophistSolutions/Stroika/issues/1194 - close, noting IP_PKTINFO (#1202).
        - https://github.com/SophistSolutions/Stroika/issues/1094 (server started with no network yet) - likely fixed by
          #1194 and following network changes: check on the rig (a container with no network, then one appearing), then close.
        - https://github.com/SophistSolutions/Stroika/issues/986 (IPv6 on the SSDP server, and Ping) - SSDP's part done by
@@ -37,14 +36,6 @@ Generally will track stuff here between releases
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
        - (optional) **CachingListener can re-add a device just withdrawn**: an answer to its search sent before the device's
          ssdp:byebye can arrive after it (UDP reorders) - ignore answers for a USN briefly after its byebye.
-       - **CachingListener.h: say why it has both callbacks and GetAdvertisements ()** (the rationale was not clear - LGP
-         2026-10-07): callbacks alone, for an app keeping its own model (each description fetched once, as added); the
-         snapshot alone, for a one-shot "search, then ask what it found"; both, for a part that attaches later (the current
-         set, then the changes) or a callback that needs the whole picture ("was that the last device of this type?"). And the
-         order, attaching later: AddOnFoundCallback, then GetAdvertisements () - an advertisement may be seen twice; the
-         other way round, a change can be missed. (Or AddOnFoundCallback could replay what is cached to the new callback.)
-         And make plain that its callbacks report changes to the cache - added, removed - not each advertisement heard: one
-         already known, heard again, calls nothing (its shape, Listener's - AddOnFoundCallback, an Advertisement - hides that).
        - (this and the next: for 3.0d25, after the rest of this list - LGP 2026-10-07)
          **UPnP services as objects** (estimate 4-5 h, with the samples moved onto them): UPnP::ServiceDescription (a
          service's description, its SCPD) with Serialize; and SOAP control messages - an action's request, response and

@@ -27,11 +27,18 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      *  \brief A Listener that remembers: the SSDP advertisements in force around it - each kept from its ssdp:alive (or answer to
      *         its search) until its max-age runs out, or an ssdp:byebye withdraws it.
      *
-     *  Its API is Listener's, and its callbacks are told what a Listener's are - an Advertisement, fAlive true (ssdp:alive) or
-     *  false (ssdp:byebye) - but once for each change, not for each packet: fAlive true when an advertisement is heard for the
-     *  first time (or the first since it was removed); false when it is removed - by an ssdp:byebye, or its max-age running out
-     *  (so also for a device that went without saying so) - with the advertisement last heard, LOCATION and all (a byebye has
-     *  none). Heard again, an advertisement is only kept longer.
+     *  Its callbacks are told of each change to what it holds - not of each advertisement heard, as a Listener's are - with the
+     *  Advertisement changed: fAlive true when it is added - heard for the first time, or the first since it was removed; false
+     *  when it is removed - by an ssdp:byebye, or its max-age running out (so also for a device that went without saying so) -
+     *  as last heard, LOCATION and all (a byebye has none). One it holds, heard again, calls nothing: it is only kept longer.
+     *
+     *  So it says what is around in two ways - callbacks, and GetAdvertisements () - for different uses:
+     *      o   callbacks alone, to keep a model of one's own: fetching each device's description once, say, as it is added.
+     *      o   GetAdvertisements () alone, to ask what is there when wanted: after a search (the second example), or to show a
+     *          list now and then.
+     *      o   both, for a part attaching once it is running - what is there now, then each change (the third example) - or for
+     *          a callback that needs the whole picture, not just the change ("was that the last device of its type?"): from
+     *          within a callback, GetAdvertisements () has the change it is told of made.
      *
      *  It listens (a Listener) and - given Options::fSearchFor - searches (a Search), so what is already there is found at once,
      *  not just at its next NOTIFY: a device need re-announce only within half its max-age, which the UPnP Device Architecture
@@ -44,7 +51,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      *
      *  \note THREADS: callbacks run on whichever thread sees the change - the listener's, the searcher's, or IntervalTimer's for
      *        an expiry - one at a time, in the order of the changes they report. A callback may call GetAdvertisements (),
-     *        AddOnFoundCallback () and RemoveOnFoundCallback (). An exception from one is logged and ignored. Keep them quick:
+     *        AddOnChangeCallback () and RemoveOnChangeCallback (). An exception from one is logged and ignored. Keep them quick:
      *        while one runs, what is heard waits, and so do Stop () and destruction - and IntervalTimer's thread is shared with
      *        every other timer. Hand slow work - fetching the device description, say - to another thread.
      *
@@ -72,6 +79,25 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      *              ...
      *          }
      *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          // attaching once it is running: what is there now, then each change. In this order: the other way round, a change
+     *          // between the two is missed. And holding the lock the callback takes, so it applies each change after what
+     *          // GetAdvertisements () returned - else that older list could add back what a removal just removed. A change may
+     *          // repeat that list - one added that it has, or removed that it lacks - so Apply_ must make a repeat change nothing:
+     *          // by USN and LOCATION, add or replace, or remove if there.
+     *          lock_guard l{fMutex_};
+     *          fCallbackID = cache.AddOnChangeCallback ([this] (const SSDP::Advertisement& a) {
+     *              lock_guard l{fMutex_};
+     *              Apply_ (a);
+     *          });
+     *          for (const SSDP::Advertisement& a : cache.GetAdvertisements ()) {
+     *              Apply_ (a);
+     *          }
+     *          ...
+     *          cache.RemoveOnChangeCallback (fCallbackID); // later - not holding fMutex_: this waits for a running callback
+     *      \endcode
      */
     class CachingListener {
     public:
@@ -82,7 +108,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
         /**
          *  \par Example Usage
          *      \code
-         *          CachingListener cache{callOnFinds, CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = nullopt}, CachingListener::eAutoStart};
+         *          CachingListener cache{callOnChanges, CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = nullopt}, CachingListener::eAutoStart};
          *      \endcode
          */
         struct Options {
@@ -109,17 +135,17 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
     public:
         /**
-         *  Listen - and search, given options.fSearchFor - calling callOnFinds, and any callback added with AddOnFoundCallback,
+         *  Listen - and search, given options.fSearchFor - calling callOnChanges, and any callback added with AddOnChangeCallback,
          *  with each change. Listening starts with Start (), or right away given eAutoStart.
          *
-         *  \note THREADS: callOnFinds is called on another thread, not the caller's (@see CachingListener).
+         *  \note THREADS: callOnChanges is called on another thread, not the caller's (@see CachingListener).
          */
         CachingListener (const Options& options = kDefaultOptions);
         CachingListener (const Options& options, AutoStart); ///< \brief ... and Start () - for GetAdvertisements (), with no callback
-        CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options = kDefaultOptions); ///< \brief callOnFinds: called on another thread
-        CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options,
-                         AutoStart); ///< \brief ... and Start (); callOnFinds: called on another thread
-        CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, AutoStart); ///< \brief ... and Start (); callOnFinds: called on another thread
+        CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnChanges, const Options& options = kDefaultOptions); ///< \brief callOnChanges: called on another thread
+        CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnChanges, const Options& options,
+                         AutoStart); ///< \brief ... and Start (); callOnChanges: called on another thread
+        CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnChanges, AutoStart); ///< \brief ... and Start (); callOnChanges: called on another thread
         CachingListener (CachingListener&&)      = default;
         CachingListener (const CachingListener&) = delete;
 
@@ -136,18 +162,19 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
     public:
         /**
-         *  \brief Names a callback AddOnFoundCallback added, for RemoveOnFoundCallback - Listener's.
+         *  \brief Names a callback AddOnChangeCallback added, for RemoveOnChangeCallback - Listener's.
          */
         using CallbackID = Listener::CallbackID;
 
     public:
         /**
-         *  \brief Call callOnFinds too, with each change from now on - GetAdvertisements () has those added before. From any
-         *         thread, also once started - and from within a callback; it never waits for a running one.
+         *  \brief Call callOnChanges too, with each change from now on - what it holds already, GetAdvertisements () returns (both,
+         *         missing nothing: @see CachingListener's third example). From any thread, also once started - and from within a
+         *         callback; it never waits for a running one.
          *
-         *  \note THREADS: callOnFinds is called on another thread, not the caller's (@see CachingListener) - so it must be thread-safe.
+         *  \note THREADS: callOnChanges is called on another thread, not the caller's (@see CachingListener) - so it must be thread-safe.
          */
-        nonvirtual CallbackID AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
+        nonvirtual CallbackID AddOnChangeCallback (const function<void (const SSDP::Advertisement& d)>& callOnChanges);
 
     public:
         /**
@@ -155,7 +182,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *         the call already under way finishes. So it waits for that callback, running on another thread: do not call it
          *         holding a lock that callback takes. Removing one not added (or already removed) does nothing.
          */
-        nonvirtual void RemoveOnFoundCallback (CallbackID callOnFinds);
+        nonvirtual void RemoveOnChangeCallback (CallbackID callOnChanges);
 
     public:
         /**

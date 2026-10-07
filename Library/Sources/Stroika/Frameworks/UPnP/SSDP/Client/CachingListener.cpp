@@ -55,13 +55,13 @@ public:
                                               .fFollowNetworkChanges = options.fListener.fFollowNetworkChanges});
         }
     }
-    CallbackID AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
+    CallbackID AddOnChangeCallback (const function<void (const SSDP::Advertisement& d)>& callOnChanges)
     {
-        return fCallbacks_.Add (callOnFinds);
+        return fCallbacks_.Add (callOnChanges);
     }
-    void RemoveOnFoundCallback (CallbackID callOnFinds)
+    void RemoveOnChangeCallback (CallbackID callOnChanges)
     {
-        fCallbacks_.Remove (callOnFinds);
+        fCallbacks_.Remove (callOnChanges);
     }
     InterfacesByID GetNetworkInterfaces () const
     {
@@ -206,34 +206,34 @@ CachingListener::CachingListener (const Options& options, AutoStart)
     Start ();
 }
 
-CachingListener::CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options)
+CachingListener::CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnChanges, const Options& options)
     : CachingListener{options}
 {
-    AddOnFoundCallback (callOnFinds);
+    AddOnChangeCallback (callOnChanges);
 }
 
-CachingListener::CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const Options& options, AutoStart)
-    : CachingListener{callOnFinds, options}
+CachingListener::CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnChanges, const Options& options, AutoStart)
+    : CachingListener{callOnChanges, options}
 {
     Start ();
 }
 
-CachingListener::CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, AutoStart)
-    : CachingListener{callOnFinds}
+CachingListener::CachingListener (const function<void (const SSDP::Advertisement& d)>& callOnChanges, AutoStart)
+    : CachingListener{callOnChanges}
 {
     Start ();
 }
 
 CachingListener::~CachingListener () = default; // Rep_'s members stop the expiring, searcher and listener
 
-auto CachingListener::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds) -> CallbackID
+auto CachingListener::AddOnChangeCallback (const function<void (const SSDP::Advertisement& d)>& callOnChanges) -> CallbackID
 {
-    return fRep_->AddOnFoundCallback (callOnFinds);
+    return fRep_->AddOnChangeCallback (callOnChanges);
 }
 
-void CachingListener::RemoveOnFoundCallback (CallbackID callOnFinds)
+void CachingListener::RemoveOnChangeCallback (CallbackID callOnChanges)
 {
-    fRep_->RemoveOnFoundCallback (callOnFinds);
+    fRep_->RemoveOnChangeCallback (callOnChanges);
 }
 
 IO::Network::InterfacesByID CachingListener::GetNetworkInterfaces () const
