@@ -3,14 +3,14 @@
 #
 # To add a new test at #7, for example
 #   cd Tests
-#   ../Build/Scripts/RenumberRegressionTests 7 53 1
+#   Scripts/RenumberRegressionTests 7 53 1
 #   cp -r 08 07
 #   edit Tests-Description.txt (and make same change)
 #
 # To remove test#4
 #   cd Tests
 #   rm -rf 04
-#   ../Build/Scripts/RenumberRegressionTests 4 53 -1
+#   Scripts/RenumberRegressionTests 4 53 -1
 #   edit Tests-Description.txt (and make same change)
 
 ### @todo also automate changes to Tests-Description.txt!!!!
