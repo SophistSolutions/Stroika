@@ -24,13 +24,6 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **the SSDP samples, to an A-** (multiple services, embedded devices, icons and security not needed - LGP 2026-10-07):
-           - SSDPClient (estimate 2 h): use SSDP::Client::CachingListener - a line per device added or removed, not per
-             NOTIFY and search answer; fetch each description once, off the SSDP thread (it does blocking HTTP inside the
-             callback, under a lock); switch each light once; show its GetStatus (reading the answer: UPnP services as objects).
-           - SSDPServer (estimate 1-2 h): a --port option; real description fields (not "model number"); refuse a control
-             request that is not text/xml (415: UPnP Device Architecture 1.1, section 3.2.1); a small on/off page as its
-             presentationURL.
        - **GENA eventing** (estimate a day, in the framework - Stroika has none): SUBSCRIBE, its renewal and UNSUBSCRIBE, and a
          NOTIFY with SEQ to each subscriber (UPnP Device Architecture 1.1, section 4) - so SSDPServer can tell subscribers each
          change of the light's Status, as SwitchPower:1 says it does.
