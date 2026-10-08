@@ -88,6 +88,18 @@ namespace {
                 // and read in HTTP's other date forms - such as this, the most common in cookies (from Netscape's original spec)
                 EXPECT_EQ (Cookie::Parse ("lang=en-US; Expires=Wed, 09-Jun-2021 10:18:14 GMT"sv).fExpires, c.fExpires);
             }
+            {
+                // AddAttribute of one string, as a Set-Cookie header writes an attribute: name=value, or a name alone
+                Cookie c{"lang", "en-US"};
+                c.AddAttribute ("Path=/docs"sv);
+                EXPECT_TRUE (c.fPath == "/docs");
+                c.AddAttribute ("Priority=High"sv);
+                EXPECT_EQ (c.GetAttributes ().LookupValue ("Priority"sv), "High"sv);
+                c.AddAttribute ("Secure"sv);
+                EXPECT_TRUE (c.fSecure);
+                c.AddAttribute ("Partitioned"sv);
+                EXPECT_TRUE (c.GetAttributes ().ContainsKey ("Partitioned"sv));
+            }
         }
     }
     namespace CacheControl_Test02_ {

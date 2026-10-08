@@ -63,10 +63,10 @@ Mapping<String, String> Cookie::GetAttributes () const
 void Cookie::AddAttribute (const String& aEqualsBAttributePair)
 {
     if (auto i = aEqualsBAttributePair.Find ('=')) {
-        AddAttribute (aEqualsBAttributePair.SubString (0, *i), aEqualsBAttributePair.SubString (0, *i + 1));
+        AddAttribute (aEqualsBAttributePair.SubString (0, *i), aEqualsBAttributePair.SubString (*i + 1));
     }
     else {
-        AddAttribute (aEqualsBAttributePair);
+        AddAttribute (aEqualsBAttributePair, String{}); // a name alone, such as Secure
     }
 }
 

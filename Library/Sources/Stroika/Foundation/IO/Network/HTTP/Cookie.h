@@ -87,9 +87,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual Mapping<String, String> GetAttributes () const;
 
         /**
+         *  \brief Add an attribute, as a Set-Cookie header writes one: one of the above (Path, Secure...) sets its field; any other goes in fOtherAttributes
+         *
+         *  The one-string form takes name=value, or a name alone (a valueless attribute, such as Secure).
          */
         nonvirtual void AddAttribute (const String& aEqualsBAttributePair);
-        nonvirtual void AddAttribute (const String& key, const String& value);
+        nonvirtual void AddAttribute (const String& key, const String& value); ///< \brief Add an attribute, as a Set-Cookie header writes one: one of the above (Path, Secure...) sets its field; any other goes in fOtherAttributes
 
         /**
          *  \brief render as a Set-Cookie header's value: name=value, then its attributes (as HTTP::Headers writes Set-Cookie)

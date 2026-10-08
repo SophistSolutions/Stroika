@@ -22,15 +22,6 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **Waiting for LGP's OK** (2026-10-08):
-       - three GitHub comments drafted 2026-10-06: #1205 - Execution::CallbackRegistry now gives callback registries the
-         unregister guarantee discussed there, and SSDP's Listener and Search use it; #1205 - Execution::ConditionVariable
-         has no wait that is not a cancellation point, so both noexcept removal waits (IntervalTimer::Manager::RemoveRepeating,
-         CallbackRegistry::Remove) use std::condition_variable; #1207 - CallbackRegistry::Remove is a second case where
-         Synchronized cannot wait on its own lock.
-       - **Cookie::AddAttribute (const String& aEqualsBAttributePair) is broken**: Cookie.cpp:66 passes SubString (0, *i + 1)
-         ("Path=") as the value, and :69 (no '=') calls itself - infinite recursion. Nothing calls it (Stroika, tests,
-         downstream). Fix: value = SubString (*i + 1), a valueless attribute -> AddAttribute (key, String{}); plus a test.
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
        - (optional) **CachingListener can re-add a device just withdrawn**: an answer to its search sent before the device's
