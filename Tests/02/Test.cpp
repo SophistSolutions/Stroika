@@ -1724,6 +1724,16 @@ namespace {
             EXPECT_EQ (Characters::ToString (atomic<int>{3}), "3");
         }
         {
+            // each alternative must reach its own ToString, even one declared after variant's (the integers)
+            EXPECT_EQ (Characters::ToString (variant<String, unsigned int>{33u}), "33");
+            EXPECT_EQ (Characters::ToString (variant<String, int>{-3}), "-3");
+            EXPECT_EQ (Characters::ToString (variant<String, unsigned int>{String{"abc"}}), "abc");
+        }
+        {
+            EXPECT_EQ (Characters::ToString (make_tuple (1, 2, 3)), "{1, 2, 3}");
+            EXPECT_EQ (Characters::ToString (make_tuple (1, 2, 3, 4)), "{1, 2, 3, 4}");
+        }
+        {
             auto                    sp = make_shared<int> (3);
             [[maybe_unused]] String a  = "{}"_f(sp);
             DbgTrace ("a={}"_f, a);

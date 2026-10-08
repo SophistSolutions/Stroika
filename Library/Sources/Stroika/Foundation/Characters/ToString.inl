@@ -216,73 +216,21 @@ namespace Stroika::Foundation::Characters {
             return sb;
         }
         template <typename T1, typename T2, typename T3, typename T4>
-        String ToString (const tuple<T1, T2, T3>& t)
+        String ToString (const tuple<T1, T2, T3, T4>& t)
         {
             StringBuilder sb;
             sb << "{"sv;
-            sb << Characters::ToString (get<0> (t)) << ", "sv << Characters::ToString (get<1> (t))
-               << ", "sv + Characters::ToString (get<2> (t)) << ", "sv << Characters::ToString (get<3> (t));
+            sb << Characters::ToString (get<0> (t)) << ", "sv << Characters::ToString (get<1> (t)) << ", "sv
+               << Characters::ToString (get<2> (t)) << ", "sv << Characters::ToString (get<3> (t));
             sb << "}"sv;
             return sb;
         }
         template <typename... TYPES>
         String ToString (const variant<TYPES...>& v)
         {
-            // @todo WRITE THIS BETTER?
-            //      Want to just write - return ToString (get<v.index ()> (v));
-            //      But not sure how???
-            if constexpr (sizeof...(TYPES) > 0) {
-                if (v.index () == 0) {
-                    return ToString (get<0> (v));
-                }
-            }
-            if constexpr (sizeof...(TYPES) > 1) {
-                if (v.index () == 1) {
-                    return ToString (get<1> (v));
-                }
-            }
-            if constexpr (sizeof...(TYPES) > 2) {
-                if (v.index () == 2) {
-                    return ToString (get<2> (v));
-                }
-            }
-            if constexpr (sizeof...(TYPES) > 3) {
-                if (v.index () == 3) {
-                    return ToString (get<3> (v));
-                }
-            }
-            if constexpr (sizeof...(TYPES) > 4) {
-                if (v.index () == 4) {
-                    return ToString (get<4> (v));
-                }
-            }
-            if constexpr (sizeof...(TYPES) > 5) {
-                if (v.index () == 5) {
-                    return ToString (get<5> (v));
-                }
-            }
-            if constexpr (sizeof...(TYPES) > 6) {
-                if (v.index () == 6) {
-                    return ToString (get<6> (v));
-                }
-            }
-            if constexpr (sizeof...(TYPES) > 7) {
-                if (v.index () == 7) {
-                    return ToString (get<7> (v));
-                }
-            }
-            if constexpr (sizeof...(TYPES) > 8) {
-                if (v.index () == 8) {
-                    return ToString (get<8> (v));
-                }
-            }
-            if constexpr (sizeof...(TYPES) > 9) {
-                if (v.index () == 9) {
-                    return ToString (get<9> (v));
-                }
-            }
-            AssertNotReached ();
-            return String{};
+            // Characters::ToString, qualified: an unqualified ToString here would see only the overloads declared above this
+            // one - so an alternative whose overload comes later (the integers) would convert to bool, and print "true"
+            return visit ([] (const auto& a) { return Characters::ToString (a); }, v);
         }
         template <typename T>
         String ToString (const T& t)

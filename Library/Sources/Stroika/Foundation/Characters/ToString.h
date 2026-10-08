@@ -38,7 +38,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  * 
  *  TODO:
- *      @todo   ToString(tuple) should use variadic templates and support multiple (past 3) args
+ *      @todo   ToString(tuple) should use variadic templates and support multiple (past 4) args
  */
 
 #if qStroika_HasComponent_fmtlib && (FMT_VERSION >= 110000)
