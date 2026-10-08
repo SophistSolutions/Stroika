@@ -1752,7 +1752,9 @@ namespace {
             EXPECT_TRUE (addr.StartsWith ("0x"));
             EXPECT_EQ (Characters::ToString (p), addr);
             EXPECT_EQ (Characters::ToString (&i), addr);
+#if not qStroika_HasComponent_fmtlib // fmtlib refuses a non-void pointer outright (a static_assert), before it looks for any formatter
             EXPECT_EQ ("{}"_f(p), addr);
+#endif
             EXPECT_EQ (Characters::ToString (static_cast<const char*> ("abc")), "abc");
         }
         {

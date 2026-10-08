@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
              or is_enum_v<remove_cvref_t<T>> or Common::IOptional<remove_cvref_t<T>> or Common::IVariant<remove_cvref_t<T>> or
              same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>> or IToStringAsAddress_<T> or
-             Common::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception> or Common::ISharedPtr<T>);
+             Common::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception> or Common::ISharedPtr<T>)
 #endif /*qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy*/
 
         // and only if Characters::ToString() would work. Asked last, so formatting a std type (an int) never asks it: asked before
