@@ -25,8 +25,13 @@
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedMasterSocket.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Cache.h"
 #if qStroika_HasComponent_libcurl
 #include "Stroika/Foundation/IO/Network/Transfer/Connection_libcurl.h"
@@ -942,6 +947,80 @@ namespace {
         EXPECT_FALSE ((error_code{CURLE_TOO_MANY_REDIRECTS, LibCurl::error_category ()} == errc::timed_out));
         EXPECT_FALSE ((error_code{CURLE_TOO_MANY_REDIRECTS, LibCurl::error_category ()} == errc::io_error));
         EXPECT_FALSE ((error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()} == errc::timed_out));
+#endif
+    }
+}
+
+namespace {
+    /*
+     *  A request whose method is neither GET, POST nor PUT - UPnP's NOTIFY, say - sends its body too, and the connection's next
+     *  request is sent with its own method. Before Stroika v3.0d25 libcurl's sent no body (so a GENA NOTIFY arrived empty), and
+     *  sent the next GET by the name of the method before it; WinHTTP's did both right. Against a server on loopback, which
+     *  answers each request with its method, a newline, and its body.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, OtherMethodsSendTheirBody_)
+    {
+        Debug::TraceContextBumper           ctx{"OtherMethodsSendTheirBody_"};
+        ConnectionOrientedMasterSocket::Ptr listener = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
+        listener.Bind (SocketAddress{V4::kLocalhost, 0});
+        listener.Listen (5);
+        const URI site{"http://127.0.0.1:{}"_f(listener.GetLocalAddress ()->GetPort ())};
+        // each connection, one request. Accept only once one is waiting: a thread blocked in Accept cannot be aborted on Windows
+        Thread::CleanupPtr server{Thread::CleanupPtr::eAbortBeforeWaiting,
+                                  Thread::New (
+                                      [listener] () {
+                                          while (true) {
+                                              Thread::CheckForInterruption ();
+                                              if (WaitForIOReady<ConnectionOrientedMasterSocket::Ptr>{listener}.WaitQuietly (100ms).empty ()) {
+                                                  continue;
+                                              }
+                                              ConnectionOrientedStreamSocket::Ptr s = listener.Accept ();
+                                              string                              request;
+                                              byte                                buf[4096];
+                                              auto                                readMore = [&] () {
+                                                  span<byte> got = s.Read (span{buf});
+                                                  request.append (reinterpret_cast<const char*> (got.data ()), got.size ());
+                                                  return not got.empty ();
+                                              };
+                                              while (request.find ("\r\n\r\n") == string::npos and readMore ()) {
+                                              }
+                                              const size_t headersEnd = request.find ("\r\n\r\n");
+                                              if (headersEnd == string::npos) {
+                                                  continue;
+                                              }
+                                              size_t length = 0;
+                                              for (const string& h : {"\r\nContent-Length:"s, "\r\ncontent-length:"s}) {
+                                                  if (size_t at = request.find (h); at != string::npos and at < headersEnd) {
+                                                      length = static_cast<size_t> (std::stoul (request.substr (at + h.size ())));
+                                                  }
+                                              }
+                                              while (request.size () < headersEnd + 4 + length and readMore ()) {
+                                              }
+                                              const string answer =
+                                                  request.substr (0, request.find (' ')) + "\n" + request.substr (headersEnd + 4, length);
+                                              const string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
+                                                                      std::to_string (answer.size ()) + "\r\nConnection: close\r\n\r\n" + answer;
+                                              s.Write (as_bytes (span{response}));
+                                              s.Close ();
+                                          }
+                                      },
+                                      Thread::eAutoStart)};
+        auto               check = [&] (Connection::Ptr c) {
+            using namespace Memory::Literals;
+            c.SetSchemeAndAuthority (site);
+            Request notify;
+            notify.fMethod               = "NOTIFY"sv;
+            notify.fAuthorityRelativeURL = URI{"/events"sv};
+            notify.fOverrideHeaders      = Containers::Mapping<String, String>{{"Content-Type"sv, "text/xml"sv}};
+            notify.fData                 = "<e:propertyset/>"_blob;
+            EXPECT_EQ (c.Send (notify).GetData ().As<string> (), "NOTIFY\n<e:propertyset/>");
+            EXPECT_EQ (c.GET (URI{"/after"sv}).GetData ().As<string> (), "GET\n"); // the same connection's next request: a GET
+        };
+#if qStroika_HasComponent_libcurl
+        check (LibCurl::Connection::New (kDefaultTestOptions_));
+#endif
+#if qStroika_HasComponent_WinHTTP
+        check (WinHTTP::Connection::New (kDefaultTestOptions_));
 #endif
     }
 }

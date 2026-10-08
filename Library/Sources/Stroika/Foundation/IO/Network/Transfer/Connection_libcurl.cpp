@@ -280,9 +280,14 @@ namespace {
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_INFILESIZE, fUploadData_.size ()));
             }
             else {
+                // any other method - DELETE, or UPnP's NOTIFY, say - is sent as POST is, by its own name: with its body, if it has one
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 0));
-                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 0));
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, fUploadData_.empty () ? 0 : 1));
+                if (not fUploadData_.empty ()) {
+                    ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTFIELDSIZE, fUploadData_.size ()));
+                }
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, useRequest.fMethod.AsUTF8 ().c_str ()));
+                fDidCustomMethod_ = true; // so the next GET, POST or PUT is sent by its own name, not this one
             }
 
             if (fOptions_.fAuthentication and
