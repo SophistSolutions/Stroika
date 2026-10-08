@@ -268,7 +268,7 @@ namespace {
                 }
             }
 #elif qStroika_Platform_Windows
-            Require (intoEnd - intoStart < numeric_limits<ULONG>::max ());
+            Require (cmp_less (intoEnd - intoStart, numeric_limits<ULONG>::max ()));
             if (fWSARecvMsg_ == nullptr) {
                 // not exported: fetched for the socket
                 GUID  id    = WSAID_WSARECVMSG;
