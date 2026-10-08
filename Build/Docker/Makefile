@@ -141,13 +141,18 @@ sophistsolutionsinc/stroika-dev-2604:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2604 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests .
 
 
+# Each Stroika-Dev container's sshd host keys, kept on the host so they survive recreating the container - see
+# stroika-dev-entrypoint.sh. Not under /Sandbox: every container mounts that, and could read the others' private keys.
+STROIKA_DEV_HOST_KEYS_DIR?=${HOME}/.local/state/stroika-dev-containers
+
 stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2604 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2604 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10622:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
+	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504 Stroika-Dev-2604; do mkdir -p ${STROIKA_DEV_HOST_KEYS_DIR}/$$i && chmod 700 ${STROIKA_DEV_HOST_KEYS_DIR}/$$i; done
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev-2204:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev-2404:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev-2504:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
+	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2604 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2604 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10622:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev-2604:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
 endif
 
 start-stroika-dev-containers:

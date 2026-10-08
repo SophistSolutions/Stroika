@@ -29,8 +29,20 @@ sudo chmod 755 "$HOME_DIR" # NOT a+w - see above
 # -p so a restart does not log 'mkdir: cannot create directory /run/sshd: File exists' on every boot
 sudo mkdir -p /run/sshd
 
-# The image ships no sshd host keys (see the Dockerfile): -A makes whichever are missing, so at the first start only.
-# They last as long as the container - recreating it makes new ones, and ssh clients then see a changed host key.
-sudo ssh-keygen -A
+# The image ships no sshd host keys (see the Dockerfile), so each container makes its own at its first start.
+# If the host mounts a directory at PERSISTENT_HOST_KEYS (make stroika-dev-containers does), they are kept there, so
+# the container keeps its identity when it is recreated - as an image rebuild does - and ssh clients' known_hosts stay
+# valid. Otherwise they live in /etc/ssh, and last only as long as the container.
+PERSISTENT_HOST_KEYS=/etc/ssh/persistent-host-keys
+HOST_KEY_ARGS=()
+if [ -d "$PERSISTENT_HOST_KEYS" ]; then
+	for t in rsa ecdsa ed25519; do
+		k="$PERSISTENT_HOST_KEYS/ssh_host_${t}_key"
+		[ -e "$k" ] || sudo ssh-keygen -q -t "$t" -N "" -C "root@$(hostname)" -f "$k"
+		HOST_KEY_ARGS+=(-h "$k")
+	done
+else
+	sudo ssh-keygen -A
+fi
 
-exec sudo /usr/sbin/sshd -D "$@"
+exec sudo /usr/sbin/sshd -D "${HOST_KEY_ARGS[@]}" "$@"

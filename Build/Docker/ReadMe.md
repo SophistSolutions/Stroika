@@ -150,6 +150,10 @@ docker frequently reports this as corruption and 500 errors and no other indicat
 - `make stroika-dev-containers`
 - `make start-stroika-dev-containers`
 
+Each container's sshd host keys are made at its first start and kept on the host, in
+`~/.local/state/stroika-dev-containers/<container>/` - so recreating a container (as an image rebuild does) keeps
+its identity, and ssh clients' `known_hosts` stay valid. Delete that folder to give a container new keys.
+
 ## Troubleshooting
 
 ### Windows
