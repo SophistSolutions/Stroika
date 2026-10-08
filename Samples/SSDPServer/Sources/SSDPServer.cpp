@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
@@ -43,7 +44,8 @@ using Server::BasicServer;
  *  A light, switched on and off over the network: the UPnP Forum's standard BinaryLight device, whose one service - SwitchPower -
  *  does the switching (https://upnp.org/specs/ha/UPnP-ha-BinaryLight-v1-Device.pdf, UPnP-ha-SwitchPower-v1-Service.pdf).
  *  BasicServer advertises it (SSDP), so control points find it; a web server then serves what they ask for: its description,
- *  its service's description, and its service's actions (SOAP: UPnP Device Architecture 1.1, section 3).
+ *  its service's description, and its service's actions (SOAP: UPnP Device Architecture 1.1, section 3) - and, for a person, a
+ *  page (its presentationURL) saying whether it is on, with buttons to switch it.
  *
  *  Not shown: eventing (GENA - telling subscribers each change of the light's Status: section 4), so a control point asks
  *  instead, with GetStatus. For a web service of your own design, rather than a standard UPnP one, see Samples/WebService.
@@ -149,11 +151,24 @@ namespace {
         return nullopt;
     }
 
+    // switch the light - from a control point, or the light's page
+    void SetLight_ (atomic<bool>& lightOn, bool on)
+    {
+        lightOn = on;
+        cout << "The light is now " << (on ? "on" : "off") << endl;
+    }
+
     // a SwitchPower action, POSTed to its control URL as SOAP - which one, its SOAPACTION header says: the service type, # and the
     // action's name, in quotes (UPnP Device Architecture 1.1, section 3.2.1) - answered with its out arguments, or a fault
     void SwitchPowerAction_ (Message& m, atomic<bool>& lightOn)
     {
-        Response& response        = m.rwResponse ();
+        Response& response = m.rwResponse ();
+        // its body must be text/xml (with any charset), or it is refused: 415 (UPnP Device Architecture 1.1, section 3.2.1)
+        if (optional<InternetMediaType> ct = m.request ().headers ().contentType ();
+            not ct or not DataExchange::InternetMediaTypeRegistry::sThe->IsA (kUPnPXML_, *ct)) {
+            response.status = HTTP::StatusCodes::kUnsupportedMediaType;
+            return;
+        }
         response.contentType      = kUPnPXML_;
         const String soapAction   = m.request ().headers ().LookupOne ("SOAPACTION"sv).value_or (String{}).Trim ([] (Character c) {
             return c == '"' or c.IsWhitespace ();
@@ -183,13 +198,29 @@ namespace {
                 fault (402, "Invalid Args"sv);
                 return;
             }
-            lightOn = *on;
-            cout << "The light is now " << (*on ? "on" : "off") << endl;
+            SetLight_ (lightOn, *on);
             answer (String{});
         }
         else {
             fault (401, "Invalid Action"sv);
         }
+    }
+
+    // the light's page - its presentationURL - for a person: whether it is on, and buttons that POST switch=on or switch=off back
+    // to it (an HTML form's own encoding: application/x-www-form-urlencoded)
+    void LightPage_ (Message& m, atomic<bool>& lightOn)
+    {
+        if (m.request ().httpMethod () == HTTP::Methods::kPost) {
+            const String form = String::FromUTF8 (m.rwRequest ().GetBody ().As<string> ());
+            if (form == "switch=on"sv or form == "switch=off"sv) {
+                SetLight_ (lightOn, form == "switch=on"sv);
+            }
+        }
+        Response& response   = m.rwResponse ();
+        response.contentType = DataExchange::InternetMediaTypes::kHTML;
+        response.write ("<!DOCTYPE html>\r\n<html><head><title>Stroika sample light</title></head><body><h1>Stroika sample light</h1>"
+                        "<p>The light is <b>{}</b>.</p><form method=\"post\"><button name=\"switch\" value=\"on\">On</button> "
+                        "<button name=\"switch\" value=\"off\">Off</button></form></body></html>\r\n"_f(String{lightOn ? "on"sv : "off"sv}));
     }
 
     struct DeviceWebServer_ : WebServer::ConnectionManager {
@@ -198,8 +229,8 @@ namespace {
             h.server = "stroika-ssdp-server-demo"sv;
             return h;
         }()};
-        // the device description dd - at /, the LOCATION SSDP advertises - and its service's description and actions, at the URLs dd
-        // gives them; the light, lightOn, must outlive this
+        // the device description dd - at /, the LOCATION SSDP advertises - its service's description and actions, and its page, at
+        // the URLs dd gives them; the light, lightOn, must outlive this
         DeviceWebServer_ (uint16_t webServerPortNumber, const DeviceDescription& dd, atomic<bool>* lightOn)
             : ConnectionManager{SocketAddresses (InternetAddresses_Any (), webServerPortNumber),
                                 Sequence<Route>{
@@ -217,6 +248,8 @@ namespace {
                                           }},
                                     Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx,
                                           [lightOn] (Message& m) { SwitchPowerAction_ (m, *lightOn); }},
+                                    Route{"light"_RegEx, [lightOn] (Message& m) { LightPage_ (m, *lightOn); }},
+                                    Route{HTTP::MethodsRegEx::kPost, "light"_RegEx, [lightOn] (Message& m) { LightPage_ (m, *lightOn); }},
                                 },
                                 Options{.fMaxConnections = 3, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
@@ -237,16 +270,26 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     Time::DurationSeconds quitAfter    = Time::kInfinity;
     uint16_t              portForOurWS = 8080;
 
-    const CommandLine::Option           kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
-    const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kQuitAfterO_};
-
-    if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
-        quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
-    }
+    const CommandLine::Option kPortO_{.fLongName         = "port"sv,
+                                      .fSupportsArgument = true,
+                                      .fHelpArgName      = "PORT"sv,
+                                      .fHelpOptionText = "The port its web server - its description, control and page - listens on (default 8080)"sv};
+    const CommandLine::Option           kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
+    const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
 
     if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
         cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
         return EXIT_SUCCESS;
+    }
+    if (auto o = cmdLine.GetArgument (kPortO_)) {
+        portForOurWS = String2Int<uint16_t> (*o); // 0 if not a number
+        if (portForOurWS == 0) {
+            cerr << "--port takes a port number, 1 to 65535" << endl;
+            return EXIT_FAILURE;
+        }
+    }
+    if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
+        quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
 
     IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by UPnP::BasicServer
@@ -260,17 +303,17 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         d.fDeviceID = Common::GetSystemConfiguration_MachineID (kThisProduct_).value_or (Common::GUID::GenerateNew ());
 
         DeviceDescription deviceInfo;
-        deviceInfo.fPresentationURL  = URI{"http://www.sophists.com/"sv};
+        deviceInfo.fPresentationURL  = URI{"/light"sv}; // its page, where deviceWS serves it (relative to the description's URL)
         deviceInfo.fDeviceType       = "urn:schemas-upnp-org:device:BinaryLight:1"sv;
         deviceInfo.fManufactureName  = "Sophist Solutions, Inc."sv;
         deviceInfo.fFriendlyName     = "Stroika sample light"sv;
-        deviceInfo.fManufacturingURL = URI{"http://www.sophists.com/"sv};
+        deviceInfo.fManufacturingURL = URI{"https://www.sophists.com/"sv};
         deviceInfo.fModelDescription = "a light, switched over the network - the Stroika SSDPServer sample"sv;
         deviceInfo.fModelName        = "Stroika sample light"sv;
-        deviceInfo.fModelNumber      = "model number"sv;
-        deviceInfo.fModelURL         = URI{"http://www.sophists.com/"sv};
-        deviceInfo.fSerialNumber     = "manufacturer's serial number"sv;
-        deviceInfo.fUDN              = "uuid:" + d.fDeviceID.As<String> ();
+        deviceInfo.fModelNumber      = "1"sv;
+        deviceInfo.fModelURL         = URI{"https://github.com/SophistSolutions/Stroika/tree/v3-Release/Samples/SSDPServer"sv};
+        // no fSerialNumber: optional, and a sample has none to give
+        deviceInfo.fUDN = "uuid:" + d.fDeviceID.As<String> ();
         // its one service: SwitchPower - its description and actions where deviceWS serves them (each URL relative to the device
         // description's), and no eventing, so no URL to subscribe at
         deviceInfo.fServices = Containers::Collection<DeviceDescription::Service>{DeviceDescription::Service{
@@ -284,6 +327,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         DeviceWebServer_ deviceWS{portForOurWS, deviceInfo, &lightOn};
         BasicServer      b{d, deviceInfo, Server::LocationFromBindings (deviceWS.bindings ())}; // on each network, where deviceWS listens
         cout << "A UPnP light, off - to switch on, e.g.: SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> () << " --switch on" << endl;
+        cout << "or with its page: http://localhost:" << portForOurWS << "/light" << endl;
         WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
     }
     catch (const system_error& e) {

@@ -40,7 +40,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  The server did not receive a complete request message within the time that it was prepared to wait.
          */
         constexpr Status kRequestTimeout = 408;
-        constexpr Status kConflict       = 408;
+        constexpr Status kConflict       = 409;
+        /**
+         *  The request's body is a media type (Content-Type) the server does not take for it.
+         */
+        constexpr Status kUnsupportedMediaType = 415;
 
         /**
          *  \brief The 429 status code indicates that the user has sent too many requests in a given amount of time ("rate limiting").
