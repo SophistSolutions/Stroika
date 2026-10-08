@@ -24,20 +24,20 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **GENA eventing** (estimate a day, in the framework - Stroika has none): SUBSCRIBE, its renewal and UNSUBSCRIBE, and a
+       - **GENA eventing** (in the framework - Stroika has none): SUBSCRIBE, its renewal and UNSUBSCRIBE, and a
          NOTIFY with SEQ to each subscriber (UPnP Device Architecture 1.1, section 4) - so SSDPServer can tell subscribers each
          change of the light's Status, as SwitchPower:1 says it does.
        - (this and the next: for 3.0d25, after the rest of this list - LGP 2026-10-07)
-         **UPnP services as objects** (estimate 4-5 h, with the samples moved onto them): UPnP::ServiceDescription (a
+         **UPnP services as objects** (with the samples moved onto them): UPnP::ServiceDescription (a
          service's description, its SCPD) with Serialize; and SOAP control messages - an action's request, response and
          error as types, each with Serialize, plus a request parser (the XML DOM where the build has a parser, else as text) -
          so a device or control point writes no XML of its own. Their XML written as text, like DeviceDescription's
          Serialize. Then the SSDPServer and SSDPClient samples drop their hand-written SCPD and SOAP.
-       - **ObjectVariantMapper to XML** (estimate 8-12 h, plus design calls): Variant::XML::Writer with namespaces,
+       - **ObjectVariantMapper to XML**: Variant::XML::Writer with namespaces,
          attributes and repeated elements - and element order, which ObjectVariantMapper does not keep for an object (a
          Mapping) though UPnP requires it (UPnP Device Architecture 1.1, section 2.5.4): an opt-in ordered representation, or
          objects as arrays. Then the UPnP objects above could Serialize through it. Variant::XML::Reader is still not
-         implemented: another 6-10 h.
+         implemented.
        - (WTF, not Stroika) **WTF ignores every ssdp:byebye**: it finds the device by its LOCATION's host, which a byebye
          does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - use SSDP::Client::CachingListener: its callbacks get
          a Listener's Advertisement once per change - fAlive false (removed) with the LOCATION last heard - so WTF fetches
