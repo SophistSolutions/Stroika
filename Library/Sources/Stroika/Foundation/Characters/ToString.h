@@ -93,6 +93,7 @@ namespace Stroika::Foundation::Characters {
      *      o   std::filesystem::path
      *      o   exception_ptr
      *      o   POD types (int, bool, double, etc)
+     *      o   raw pointers - the address, as std::format prints a void* (0x...); but a character pointer is a C string
      *      o   anything with .begin (), .end () - so any container/iterable
      *      o   anything class(or struct) with a ToString () method
      *
@@ -391,6 +392,13 @@ namespace Stroika::Foundation::Characters::Private_ {
 #endif
 
     /**
+     *  \brief a raw pointer, which Characters::ToString prints as its address - not one std::format has (void*, a C string)
+     */
+    template <typename T>
+    concept IToStringAsAddress_ =
+        is_pointer_v<T> and not is_function_v<remove_pointer_t<T>> and not Common::IAnyOf<remove_cv_t<remove_pointer_t<T>>, void, char, wchar_t>;
+
+    /**
      *  \brief roughly !formattable<T> and IToString<T> ; but cannot do this cuz then formattable<T> would change meaning. So really mean 'formattable so far'
      * 
      *  \see https://en.cppreference.com/w/cpp/utility/format/formatter
@@ -432,7 +440,7 @@ namespace Stroika::Foundation::Characters::Private_ {
              or Common::IAnyOf<remove_cvref_t<T>, std::filesystem::path>
 #endif
              or is_enum_v<remove_cvref_t<T>> or Common::IOptional<remove_cvref_t<T>> or Common::IVariant<remove_cvref_t<T>> or
-             same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>> or
+             same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>> or IToStringAsAddress_<T> or
              Common::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception> or Common::ISharedPtr<T>);
 #endif /*qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy*/
         ;

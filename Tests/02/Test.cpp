@@ -1697,6 +1697,16 @@ namespace {
 }
 
 namespace {
+    // the overload set itself - IToString asks the dispatcher, which accepts any type
+    template <typename T>
+    concept HasDefaultToString_ = requires (T t) { Characters::ToStringDefaults::ToString (t); };
+    struct ConvertsToBool_ {
+        operator bool () const
+        {
+            return true;
+        }
+    };
+
     GTEST_TEST (Foundation_Characters, ToString_)
     {
         Debug::TraceContextBumper ctx{"ToString_"};
@@ -1728,6 +1738,24 @@ namespace {
             EXPECT_EQ (Characters::ToString (variant<String, unsigned int>{33u}), "33");
             EXPECT_EQ (Characters::ToString (variant<String, int>{-3}), "-3");
             EXPECT_EQ (Characters::ToString (variant<String, unsigned int>{String{"abc"}}), "abc");
+        }
+        {
+            // only a bool prints as true/false: nothing converts to bool to get there
+            EXPECT_EQ (Characters::ToString (true), "true");
+            EXPECT_EQ (Characters::ToString (false), "false");
+            static_assert (HasDefaultToString_<bool>);
+            static_assert (not HasDefaultToString_<ConvertsToBool_>);
+        }
+        {
+            // a raw pointer prints its address, as "{}"_f prints a void* - but a character pointer is a C string
+            int        i    = 3;
+            const int* p    = &i;
+            String     addr = "{}"_f(static_cast<const void*> (p));
+            EXPECT_TRUE (addr.StartsWith ("0x"));
+            EXPECT_EQ (Characters::ToString (p), addr);
+            EXPECT_EQ (Characters::ToString (&i), addr);
+            EXPECT_EQ ("{}"_f(p), addr);
+            EXPECT_EQ (Characters::ToString (static_cast<const char*> ("abc")), "abc");
         }
         {
             EXPECT_EQ (Characters::ToString (make_tuple (1, 2, 3)), "{1, 2, 3}");

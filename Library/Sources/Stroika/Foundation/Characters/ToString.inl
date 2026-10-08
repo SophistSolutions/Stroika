@@ -135,7 +135,6 @@ namespace Stroika::Foundation::Characters {
         String ToString (const type_info& t);
         String ToString (const type_index& t);
         String ToString (const thread::id& t);
-        String ToString (bool t);
 
         template <Private_::has_ToStringMethod_v T>
         inline String ToString (const T& t)
@@ -336,6 +335,15 @@ namespace Stroika::Foundation::Characters {
             }
             return String{Common::StdCompat::format (L"{}", static_cast<const void*> (pt.get ()))};
         }
+        // A raw pointer prints its address, as "{}"_f prints a void* (0x...) - never what it points to, which may dangle. Not a
+        // character pointer (a C string: the is_convertible_v<T, String> overload), nor an array (taken by reference, an array
+        // does not decay, so T is not a pointer)
+        template <typename T>
+        inline String ToString (const T& t)
+            requires (is_pointer_v<T> and not is_function_v<remove_pointer_t<T>> and not is_convertible_v<T, String>)
+        {
+            return String{Common::StdCompat::format (L"{}", static_cast<const void*> (t))};
+        }
         template <typename T>
         inline String ToString (const optional<T>& o)
         {
@@ -370,6 +378,16 @@ namespace Stroika::Foundation::Characters {
                 return num2Strll_ (t, flags);
             }
         }
+        // A template, so nothing converts to bool to get here: an int, a pointer or a class with an operator bool must
+        // find its own overload, or not compile - never print as true/false
+        template <same_as<bool> T>
+        inline String ToString (T t)
+        {
+            // static: copying a String only counts a reference; making one from "true"sv allocates a rep, each call
+            static const String kTrue_{"true"sv};
+            static const String kFalse_{"false"sv};
+            return t ? kTrue_ : kFalse_;
+        }
         template <signed_integral T>
         inline String ToString (T t)
         {
@@ -377,6 +395,7 @@ namespace Stroika::Foundation::Characters {
         }
         template <unsigned_integral T>
         inline String ToString (T t)
+            requires (not same_as<T, bool>) // bool is an unsigned_integral
         {
             // no overwhelmingly good reason todo it this way, but this matches what we had in Stroika 2.1, and its reasonable...
             if constexpr (sizeof (T) == 1) {
