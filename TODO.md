@@ -24,8 +24,6 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - (optional) **CachingListener can re-add a device just withdrawn**: an answer to its search sent before the device's
-         ssdp:byebye can arrive after it (UDP reorders) - ignore answers for a USN briefly after its byebye.
        - **the SSDP samples, to an A-** (multiple services, embedded devices, icons and security not needed - LGP 2026-10-07):
            - SSDPClient (estimate 2 h): use SSDP::Client::CachingListener - a line per device added or removed, not per
              NOTIFY and search answer; fetch each description once, off the SSDP thread (it does blocking HTTP inside the

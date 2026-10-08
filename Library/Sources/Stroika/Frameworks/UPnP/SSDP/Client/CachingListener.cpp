@@ -130,6 +130,9 @@ private:
         }
         [[maybe_unused]] lock_guard noting{fNoting_};
         if (searchAnswer or heard.fAlive == true) {
+            if (searchAnswer and MaybeSentBeforeByebye_ (heard)) {
+                return;
+            }
             SSDP::Advertisement a            = heard;
             a.fAlive                         = true; // as a search answer does not say
             Time::TimePointSeconds expiresAt = Time::GetTickCount () + a.fMaxAge.value_or (kDefaultMaxAge);
@@ -158,7 +161,8 @@ private:
             // sections 1.2.2 and 2), so whichever its ssdp:byebye names, it withdraws them all. But only from the network it came on:
             // a device on several networks can leave one, and stay on the rest (section 1.2.3). So it is removed from there - and
             // from where it was heard on a network not known, which may be that one - or, the byebye's network not known, from all
-            const String                  device = DeviceOf_ (usn);
+            const String device = DeviceOf_ (usn);
+            fByebyes_.Add (device, Time::GetTickCount () + kAnswerMaybeStaleFor_); // @see MaybeSentBeforeByebye_
             Sequence<SSDP::Advertisement> gone;
             {
                 auto cache = fCache_.rwget ();
@@ -252,6 +256,28 @@ private:
                                                                  max (*fSoonestExpiry_ - Time::GetTickCount (), Time::DurationSeconds{0}));
         }
     }
+    // How long after a device's ssdp:byebye a search answer from it may have been sent before it. The scenario: we search; the
+    // device waits at random, up to the M-SEARCH's MX (Search's is 4 seconds), to answer - and before or after it does, shuts
+    // down and multicasts its byebye. Its answer comes in on the Search's socket and thread, the byebye on the Listener's, in no
+    // set order: UDP keeps none, and the Search's thread can fall behind reading on a busy network (seen by Tests/54 searching
+    // ssdp:all). So the answer can come after the byebye, and would add back a device that is gone - for its max-age, often
+    // 1800 seconds. Generous, as being wrong costs little: a device back within it, found only by a search answer, is added
+    // at its next ssdp:alive or search - and one coming back sends an ssdp:alive first. UPnP 1.1's BOOTID.UPNP.ORG would tell
+    // the two apart exactly, where both carry it: @see https://github.com/SophistSolutions/Stroika/issues/1211
+    static constexpr Time::DurationSeconds kAnswerMaybeStaleFor_{10.0};
+    // holding fNoting_: is this search answer one its device may have sent before an ssdp:byebye since (@see
+    // kAnswerMaybeStaleFor_)? Then it may only keep what is still held - the same USN, at that LOCATION, heard on that
+    // network - longer: a device on several networks that left one is still kept on the rest; nothing is added back
+    bool MaybeSentBeforeByebye_ (const SSDP::Advertisement& answer)
+    {
+        Time::TimePointSeconds now = Time::GetTickCount ();
+        fByebyes_.RemoveAll ([&] (const KeyValuePair<String, Time::TimePointSeconds>& b) { return b.fValue <= now; });
+        if (not fByebyes_.ContainsKey (DeviceOf_ (answer.fUSN))) {
+            return false;
+        }
+        optional<Entry_> held = fCache_.cget ()->LookupValue (answer.fUSN).Lookup (answer.fLocation);
+        return not held or not held->fHeardOn.ContainsKey (answer.fReceivedOn);
+    }
     // the device a USN names - its "uuid:device-UUID", before any "::" (UPnP Device Architecture 1.1, section 1.2.2) - so an
     // embedded device, with a UUID of its own, is a device of its own
     static String DeviceOf_ (const String& usn)
@@ -275,9 +301,10 @@ private:
     CallbackRegistry<void (const SSDP::Advertisement&)> fCallbacks_;
     Synchronized<Mapping<String, Locations_>>           fCache_;         // by USN; changed only holding fNoting_
     optional<Time::TimePointSeconds>                    fSoonestExpiry_; // (fNoting_) no entry expires before it - nullopt: none to
-    Sequence<IntervalTimer::TimerID> fChecks_;         // (fNoting_) the one-shot timers still to call Expire_ - Stop removes them
-    optional<Time::TimePointSeconds> fCheckAt_;        // (fNoting_) when the soonest of them is due - nullopt: none
-    bool                             fStarted_{false}; // (fNoting_)
+    Sequence<IntervalTimer::TimerID>        fChecks_;  // (fNoting_) the one-shot timers still to call Expire_ - Stop removes them
+    optional<Time::TimePointSeconds>        fCheckAt_; // (fNoting_) when the soonest of them is due - nullopt: none
+    Mapping<String, Time::TimePointSeconds> fByebyes_; // (fNoting_) by device: until when a search answer from it may predate its byebye
+    bool                                    fStarted_{false}; // (fNoting_)
     // last, so stopped first: they call Heard_, which uses the rest
     Listener         fListener_;
     optional<Search> fSearch_;

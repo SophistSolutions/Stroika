@@ -1445,7 +1445,8 @@ namespace {
      *
      *  It searches for the server's device type, unique to this run, so only our server answers: with ssdp:all, every device on
      *  a busy network answers too, and the search's thread can fall far enough behind that an answer from our server is read
-     *  after its byebye, adding back what that removed (@see CachingListener).
+     *  after its byebye - more than the 10 seconds CachingListener ignores such answers for, adding back what that removed
+     *  (@see CachingListener, and SSDP_CachingListener_StaleSearchAnswer_).
      */
     /*
      *  A device on several networks can leave one and stay on the others (UPnP Device Architecture 1.1, section 1.2.3): its
@@ -1664,6 +1665,107 @@ namespace {
         for (const auto& [key, alive] : alives) {
             EXPECT_EQ (alive, (Containers::Sequence<bool>{true, false}))
                 << key.first.AsNarrowSDKString () << " at " << Characters::ToString (key.second).AsNarrowSDKString ();
+        }
+    }
+
+    /*
+     *  A search answer can arrive after the ssdp:byebye its device sent later - a device waits up to the M-SEARCH's MX to
+     *  answer, and the answer comes on the search's socket and thread, the byebye on the listener's - and must not add the
+     *  device back (for its max-age). A fake device - a socket on SSDP's port and group - catches the CachingListener's
+     *  M-SEARCH, says ssdp:alive then ssdp:byebye, then answers that M-SEARCH. As in SSDP_Loopback_Notify_, anything that keeps
+     *  the exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_CachingListener_StaleSearchAnswer_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_CachingListener_StaleSearchAnswer_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by CachingListener
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        using SSDP::Client::CachingListener;
+        const String        deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String        deviceType = "urn:stroika-regression-test:device:SSDPStaleAnswer-{}:1"_f(deviceID);
+        const String        usn        = "uuid:{}::{}"_f(deviceID, deviceType);
+        SSDP::Advertisement alive;
+        alive.fAlive    = true;
+        alive.fUSN      = usn;
+        alive.fLocation = URI::Parse ("http://127.0.0.1:49152/d.xml"sv); // only advertised
+        alive.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        alive.fTarget   = deviceType;
+        alive.fMaxAge   = 60s;
+        SSDP::Advertisement byebye;
+        byebye.fAlive  = false;
+        byebye.fUSN    = usn;
+        byebye.fTarget = deviceType;
+        Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
+        auto toldSize  = [&] () { return told.cget ()->size (); };               // (under its lock: @see SSDP_CachingListener_)
+        auto waitUntil = [] (const function<bool ()>& done) {
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not done () and Time::GetTickCount () < giveUpAt;) {
+                Execution::Sleep (50ms);
+            }
+            return done ();
+        };
+        try {
+            ConnectionlessSocket::Ptr device = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            device.Bind (SocketAddress{V4::kAddrAny, SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+            device.SetMulticastLoopMode (true); // so this process hears its NOTIFYs
+            if (SSDP::Private_::JoinOnEveryInterface (Containers::Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>>{make_pair (
+                                                          device, SSDP::V4::kSocketAddress.GetInternetAddress ())},
+                                                      SSDP::DefaultInterfaceFilter)
+                    .empty ()) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "SSDP_CachingListener_StaleSearchAnswer_ skipped - no network interface to join SSDP's group on");
+                return;
+            }
+            CachingListener cache{[&] (const SSDP::Advertisement& a) {
+                                      if (a.fUSN.Contains (deviceID)) {
+                                          told.rwget ()->Append (a);
+                                      }
+                                  },
+                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = deviceType},
+                                  CachingListener::eAutoStart};
+            auto            cached = [&] () {
+                return cache.GetAdvertisements ().Where ([&] (const SSDP::Advertisement& a) { return a.fUSN.Contains (deviceID); }).size ();
+            };
+            // catch its M-SEARCH - not answered yet
+            optional<SocketAddress> searcher;
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s;
+                 not searcher and not Execution::WaitForIOReady<ConnectionlessSocket::Ptr>{device}.WaitQuietlyUntil (giveUpAt).empty ();) {
+                std::byte           buf[8 * 1024];
+                SocketAddress       from;
+                String              headLine;
+                SSDP::Advertisement a;
+                SSDP::DeSerialize (Memory::BLOB{device.ReceiveFrom (span{buf}, 0, &from)}, &headLine, &a);
+                if (headLine.StartsWith ("M-SEARCH"sv) and a.fTarget == deviceType) {
+                    searcher = from;
+                }
+            }
+            if (not searcher) {
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_CachingListener_StaleSearchAnswer_ skipped - its M-SEARCH was not heard "
+                                                          "within 10 seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            auto notify = [&] (const SSDP::Advertisement& a) {
+                device.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a, SSDP::V4::kSocketAddress), SSDP::V4::kSocketAddress);
+            };
+            notify (alive);
+            if (not waitUntil ([&] () { return toldSize () >= 1; })) {
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_CachingListener_StaleSearchAnswer_ skipped - our own NOTIFY was not heard "
+                                                          "within 10 seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            notify (byebye);
+            EXPECT_TRUE (waitUntil ([&] () { return toldSize () >= 2; })) << "the ssdp:byebye did not remove it";
+            // and now the answer to its M-SEARCH, sent before the byebye
+            device.SendTo (SSDP::Serialize ("HTTP/1.1 200 OK"sv, SSDP::SearchOrNotify::SearchResponse, alive), *searcher);
+            Execution::Sleep (1.5s);
+            EXPECT_EQ (toldSize (), 2u) << "added back by a search answer that came after its ssdp:byebye";
+            EXPECT_EQ (cached (), 0u);
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_CachingListener_StaleSearchAnswer_ skipped - could not run an SSDP listener here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
         }
     }
 

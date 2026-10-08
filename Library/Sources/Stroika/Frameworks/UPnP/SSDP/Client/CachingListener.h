@@ -62,9 +62,12 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      *  \note Needs an IntervalTimer::Manager::Activator, as BasicServer does: while started, it looks for what has expired
      *        as the soonest expiry is due - not polling - on IntervalTimer's thread.
      *
-     *  \note A search answer and an ssdp:byebye come in on different threads - the Search's and the Listener's - so are not
-     *        ordered: an answer read late (that thread behind, on a busy network) can add back what a byebye removed, until its
-     *        max-age runs out.
+     *  \note A search answer can come in after the ssdp:byebye its device sent later: a device waits up to the M-SEARCH's MX
+     *        to answer, and the answer and the byebye come in on different sockets and threads - the Search's and the
+     *        Listener's - in no set order (UDP keeps none, and the Search's thread can fall behind on a busy network). So for a
+     *        while after a device's byebye, a search answer from it may keep what is still held of it longer, but adds nothing
+     *        back - which it otherwise would, until its max-age runs out. An ssdp:alive always adds: a device coming back says so.
+     *        @see https://github.com/SophistSolutions/Stroika/issues/1211 (telling them apart exactly, by BOOTID.UPNP.ORG)
      *
      *  \par Example Usage
      *      \code
