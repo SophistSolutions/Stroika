@@ -42,6 +42,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr Status kRequestTimeout = 408;
         constexpr Status kConflict       = 409;
         /**
+         *  A condition the request's headers set is not met.
+         */
+        constexpr Status kPreconditionFailed = 412;
+        /**
          *  The request's body is a media type (Content-Type) the server does not take for it.
          */
         constexpr Status kUnsupportedMediaType = 415;

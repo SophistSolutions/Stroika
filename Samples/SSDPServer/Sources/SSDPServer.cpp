@@ -20,6 +20,7 @@
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Frameworks/UPnP/GENA/Publisher.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
@@ -36,6 +37,7 @@ using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
 using namespace Stroika::Frameworks::WebServer;
 
+using Containers::Mapping;
 using Containers::Sequence;
 using DataExchange::InternetMediaType;
 using Server::BasicServer;
@@ -45,10 +47,10 @@ using Server::BasicServer;
  *  does the switching (https://upnp.org/specs/ha/UPnP-ha-BinaryLight-v1-Device.pdf, UPnP-ha-SwitchPower-v1-Service.pdf).
  *  BasicServer advertises it (SSDP), so control points find it; a web server then serves what they ask for: its description,
  *  its service's description, and its service's actions (SOAP: UPnP Device Architecture 1.1, section 3) - and, for a person, a
- *  page (its presentationURL) saying whether it is on, with buttons to switch it.
+ *  page (its presentationURL) saying whether it is on, with buttons to switch it. And its eventing (GENA: section 4): a control
+ *  point that subscribes is told each change of the light's Status.
  *
- *  Not shown: eventing (GENA - telling subscribers each change of the light's Status: section 4), so a control point asks
- *  instead, with GetStatus. For a web service of your own design, rather than a standard UPnP one, see Samples/WebService.
+ *  For a web service of your own design, rather than a standard UPnP one, see Samples/WebService.
  */
 namespace {
     const String kSwitchPowerServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
@@ -151,16 +153,24 @@ namespace {
         return nullopt;
     }
 
-    // switch the light - from a control point, or the light's page
-    void SetLight_ (atomic<bool>& lightOn, bool on)
-    {
-        lightOn = on;
-        cout << "The light is now " << (on ? "on" : "off") << endl;
-    }
+    // the light: on or off - its SwitchPower service's Status (and its Target: a simple light, it is as it was last told) - and
+    // the eventing of that Status, which SwitchPower's description says is evented
+    struct Light_ {
+        atomic<bool>    fOn{false}; // off, until switched on
+        GENA::Publisher fEvents{[this] () { return Mapping<String, String>{{"Status"sv, fOn ? "1"sv : "0"sv}}; }};
+
+        // switched - by a control point, or on the light's page: each subscriber told
+        void Set (bool on)
+        {
+            fOn = on;
+            cout << "The light is now " << (on ? "on" : "off") << endl;
+            fEvents.Notify ({{"Status"sv, on ? "1"sv : "0"sv}});
+        }
+    };
 
     // a SwitchPower action, POSTed to its control URL as SOAP - which one, its SOAPACTION header says: the service type, # and the
     // action's name, in quotes (UPnP Device Architecture 1.1, section 3.2.1) - answered with its out arguments, or a fault
-    void SwitchPowerAction_ (Message& m, atomic<bool>& lightOn)
+    void SwitchPowerAction_ (Message& m, Light_& light)
     {
         Response& response = m.rwResponse ();
         // its body must be text/xml (with any charset), or it is refused: 415 (UPnP Device Architecture 1.1, section 3.2.1)
@@ -184,12 +194,11 @@ namespace {
                                            "xmlns=\"urn:schemas-upnp-org:control-1-0\"><errorCode>{}</errorCode><errorDescription>{}"
                                            "</errorDescription></UPnPError></detail></s:Fault>"_f(errorCode, errorDescription)));
         };
-        // the light is as it was last told: its Status is always its Target, as the standard allows a simple one to be
         if (action == "GetStatus"sv) {
-            answer ("<ResultStatus>{}</ResultStatus>"_f(lightOn ? 1 : 0));
+            answer ("<ResultStatus>{}</ResultStatus>"_f(light.fOn ? 1 : 0));
         }
         else if (action == "GetTarget"sv) {
-            answer ("<RetTargetValue>{}</RetTargetValue>"_f(lightOn ? 1 : 0));
+            answer ("<RetTargetValue>{}</RetTargetValue>"_f(light.fOn ? 1 : 0));
         }
         else if (action == "SetTarget"sv) {
             optional<String> newTargetValue = Argument_ (m.rwRequest ().GetBody (), "newTargetValue"sv);
@@ -198,7 +207,7 @@ namespace {
                 fault (402, "Invalid Args"sv);
                 return;
             }
-            SetLight_ (lightOn, *on);
+            light.Set (*on);
             answer (String{});
         }
         else {
@@ -208,19 +217,19 @@ namespace {
 
     // the light's page - its presentationURL - for a person: whether it is on, and buttons that POST switch=on or switch=off back
     // to it (an HTML form's own encoding: application/x-www-form-urlencoded)
-    void LightPage_ (Message& m, atomic<bool>& lightOn)
+    void LightPage_ (Message& m, Light_& light)
     {
         if (m.request ().httpMethod () == HTTP::Methods::kPost) {
             const String form = String::FromUTF8 (m.rwRequest ().GetBody ().As<string> ());
             if (form == "switch=on"sv or form == "switch=off"sv) {
-                SetLight_ (lightOn, form == "switch=on"sv);
+                light.Set (form == "switch=on"sv);
             }
         }
         Response& response   = m.rwResponse ();
         response.contentType = DataExchange::InternetMediaTypes::kHTML;
         response.write ("<!DOCTYPE html>\r\n<html><head><title>Stroika sample light</title></head><body><h1>Stroika sample light</h1>"
                         "<p>The light is <b>{}</b>.</p><form method=\"post\"><button name=\"switch\" value=\"on\">On</button> "
-                        "<button name=\"switch\" value=\"off\">Off</button></form></body></html>\r\n"_f(String{lightOn ? "on"sv : "off"sv}));
+                        "<button name=\"switch\" value=\"off\">Off</button></form></body></html>\r\n"_f(String{light.fOn ? "on"sv : "off"sv}));
     }
 
     struct DeviceWebServer_ : WebServer::ConnectionManager {
@@ -229,29 +238,31 @@ namespace {
             h.server = "stroika-ssdp-server-demo"sv;
             return h;
         }()};
-        // the device description dd - at /, the LOCATION SSDP advertises - its service's description and actions, and its page, at
-        // the URLs dd gives them; the light, lightOn, must outlive this
-        DeviceWebServer_ (uint16_t webServerPortNumber, const DeviceDescription& dd, atomic<bool>* lightOn)
-            : ConnectionManager{SocketAddresses (InternetAddresses_Any (), webServerPortNumber),
-                                Sequence<Route>{
-                                    Route{""_RegEx,
-                                          [dd] (Message& m) {
-                                              Response& response   = m.rwResponse ();
-                                              response.contentType = kUPnPXML_;
-                                              response.write (Stroika::Frameworks::UPnP::Serialize (dd));
-                                          }},
-                                    Route{"SwitchPower/description.xml"_RegEx,
-                                          [] (Message& m) {
-                                              Response& response   = m.rwResponse ();
-                                              response.contentType = kUPnPXML_;
-                                              response.write (kSwitchPowerDescription_);
-                                          }},
-                                    Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx,
-                                          [lightOn] (Message& m) { SwitchPowerAction_ (m, *lightOn); }},
-                                    Route{"light"_RegEx, [lightOn] (Message& m) { LightPage_ (m, *lightOn); }},
-                                    Route{HTTP::MethodsRegEx::kPost, "light"_RegEx, [lightOn] (Message& m) { LightPage_ (m, *lightOn); }},
-                                },
-                                Options{.fMaxConnections = 3, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
+        // the device description dd - at /, the LOCATION SSDP advertises - its service's description, actions and eventing, and its
+        // page, at the URLs dd gives them; light must outlive this
+        DeviceWebServer_ (uint16_t webServerPortNumber, const DeviceDescription& dd, Light_* light)
+            : ConnectionManager{
+                  SocketAddresses (InternetAddresses_Any (), webServerPortNumber),
+                  Sequence<Route>{
+                      Route{""_RegEx,
+                            [dd] (Message& m) {
+                                Response& response   = m.rwResponse ();
+                                response.contentType = kUPnPXML_;
+                                response.write (Stroika::Frameworks::UPnP::Serialize (dd));
+                            }},
+                      Route{"SwitchPower/description.xml"_RegEx,
+                            [] (Message& m) {
+                                Response& response   = m.rwResponse ();
+                                response.contentType = kUPnPXML_;
+                                response.write (kSwitchPowerDescription_);
+                            }},
+                      Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx, [light] (Message& m) { SwitchPowerAction_ (m, *light); }},
+                      Route{"SUBSCRIBE|UNSUBSCRIBE"_RegEx, "SwitchPower/event"_RegEx,
+                            [light] (Message& m) { light->fEvents.HandleRequest (m); }},
+                      Route{"light"_RegEx, [light] (Message& m) { LightPage_ (m, *light); }},
+                      Route{HTTP::MethodsRegEx::kPost, "light"_RegEx, [light] (Message& m) { LightPage_ (m, *light); }},
+                  },
+                  Options{.fMaxConnections = 3, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
         }
     };
@@ -314,17 +325,18 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         deviceInfo.fModelURL         = URI{"https://github.com/SophistSolutions/Stroika/tree/v3-Release/Samples/SSDPServer"sv};
         // no fSerialNumber: optional, and a sample has none to give
         deviceInfo.fUDN = "uuid:" + d.fDeviceID.As<String> ();
-        // its one service: SwitchPower - its description and actions where deviceWS serves them (each URL relative to the device
-        // description's), and no eventing, so no URL to subscribe at
+        // its one service: SwitchPower - its description, actions and eventing where deviceWS serves them (each URL relative to the
+        // device description's)
         deviceInfo.fServices = Containers::Collection<DeviceDescription::Service>{DeviceDescription::Service{
             .fServiceType = kSwitchPowerServiceType_,
             .fServiceID   = "urn:upnp-org:serviceId:SwitchPower"sv,
             .fSCPDURL     = URI{"/SwitchPower/description.xml"sv},
             .fControlURL  = URI{"/SwitchPower/control"sv},
+            .fEventSubURL = URI{"/SwitchPower/event"sv},
         }};
 
-        atomic<bool>     lightOn{false}; // the light: off, until a control point switches it on
-        DeviceWebServer_ deviceWS{portForOurWS, deviceInfo, &lightOn};
+        Light_           light;
+        DeviceWebServer_ deviceWS{portForOurWS, deviceInfo, &light};
         BasicServer      b{d, deviceInfo, Server::LocationFromBindings (deviceWS.bindings ())}; // on each network, where deviceWS listens
         cout << "A UPnP light, off - to switch on, e.g.: SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> () << " --switch on" << endl;
         cout << "or with its page: http://localhost:" << portForOurWS << "/light" << endl;

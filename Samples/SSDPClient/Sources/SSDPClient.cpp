@@ -9,18 +9,27 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Status.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
+#include "Stroika/Foundation/Memory/SharedPtr.h"
 
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
+#include "Stroika/Frameworks/UPnP/GENA/Subscriber.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/CachingListener.h"
+#include "Stroika/Frameworks/WebServer/ConnectionManager.h"
+#include "Stroika/Frameworks/WebServer/Router.h"
 
 using namespace std;
 
@@ -37,8 +46,9 @@ using Containers::Set;
 /*
  *  A UPnP control point: finds the devices around it - listening for their announcements, and searching - and says when
  *  each is found and when it goes, then fetches each one's description, once, listing its services. Told --switch on|off,
- *  it switches each light it finds (each SwitchPower service), once, and asks it its status. The SSDPServer sample is such
- *  a light.
+ *  it switches each light it finds (each SwitchPower service), once, and asks it its status. Told --watch, it subscribes to
+ *  each service's events (GENA: UPnP Device Architecture 1.1, section 4), and prints each one - a light's each change of
+ *  Status, say. The SSDPServer sample is such a light.
  */
 namespace {
     mutex kStdOutMutex_; // what is found is told on the CachingListener's threads, and described on the fetcher's
@@ -81,10 +91,60 @@ namespace {
         return nullopt;
     }
 
-    // the device found at location: its description, and its services - switching each light on or off as switchLightsTo says,
-    // unless switched already (its UDN in switched), and asking it its status. On the fetcher's thread: fetching takes time,
-    // and the CachingListener's threads are for what is heard - the next device found waits while a callback runs
-    void Describe_ (const URI& location, optional<bool> switchLightsTo, Set<String>* switched)
+    // where --watch is told the services' events: this port, each service at a path of its own
+    constexpr IO::Network::PortType kWatchPort_ = 8091;
+
+    // what the fetcher does for each device it describes
+    struct Fetching_ {
+        optional<bool> fSwitchLightsTo; // --switch
+        Set<String>    fSwitched;       // (only on the fetcher's thread) UDNs: each light switched once - not again, should it come back
+        bool           fWatch{false};   // --watch
+        unsigned int   fWatched{0};     // (only on the fetcher's thread) how many: so each its own callback path
+        Mapping<String, Set<String>> fWatchedPaths; // (only on the fetcher's thread) each device's services watched: UDN -> callback paths
+        // the services watched, by their callback path - by which their NOTIFYs are routed to them, on the web server's threads
+        Execution::Synchronized<Mapping<String, shared_ptr<GENA::Subscriber>>> fWatching;
+    };
+
+    // subscribe to the events of the service at eventSubURL, and print each: with its device's UDN, and service's ID
+    void Watch_ (const URI& eventSubURL, const String& udn, const String& serviceID, Fetching_* fetching)
+    {
+        const String path = "/gena/{}"_f(++fetching->fWatched);
+        try {
+            shared_ptr<GENA::Subscriber> subscriber =
+                Memory::MakeSharedPtr<GENA::Subscriber> (eventSubURL, GENA::Subscriber::MakeCallbackURL (eventSubURL, kWatchPort_, path),
+                                                         [udn, serviceID] (const GENA::Subscriber::Event& e) {
+                                                             Print_ ("{} {} event {}: {}"_f(udn, serviceID, e.fSEQ, e.fVariables));
+                                                         });
+            fetching->fWatching.rwget ()->Add (path, subscriber); // routed to before subscribing: its first event can come first
+            subscriber->Start ();
+            fetching->fWatchedPaths.Add (udn, fetching->fWatchedPaths.LookupValue (udn) + path);
+            Print_ ("\t\twatching it"sv);
+        }
+        catch (...) {
+            fetching->fWatching.rwget ()->RemoveIf (path);
+            Print_ ("\t\tcould not watch it: {}"_f(current_exception ()));
+        }
+    }
+
+    // stop watching the services of the device udn - gone, so watched anew should it come back, not twice
+    void Unwatch_ (const String& udn, Fetching_* fetching)
+    {
+        for (const String& path : fetching->fWatchedPaths.LookupValue (udn)) {
+            shared_ptr<GENA::Subscriber> subscriber;
+            {
+                auto watching = fetching->fWatching.rwget ();
+                subscriber    = watching->LookupValue (path);
+                watching->RemoveIf (path);
+            }
+            // subscriber goes here, out of the lock - unsubscribing, over the network - or when a NOTIFY it is taking is done
+        }
+        fetching->fWatchedPaths.RemoveIf (udn);
+    }
+
+    // the device found at location: its description, and its services - switching each light on or off, and asking it its
+    // status, and watching each service, as fetching says. On the fetcher's thread: fetching takes time, and the
+    // CachingListener's threads are for what is heard - the next device found waits while a callback runs
+    void Describe_ (const URI& location, Fetching_* fetching)
     {
         try {
             using namespace IO::Network::Transfer;
@@ -94,13 +154,16 @@ namespace {
                 Print_ ("\t\tservice: {}"_f(s.fServiceType));
                 if (s.fServiceType == kSwitchPowerServiceType_) {
                     URI controlURL = location.Combine (s.fControlURL); // relative to the description's URL
-                    if (switchLightsTo and not switched->Contains (dd.fUDN)) {
-                        switched->Add (dd.fUDN); // once - not again, should it go and come back
-                        SwitchPowerAction_ (controlURL, "SetTarget"sv, "<newTargetValue>{}</newTargetValue>"_f(*switchLightsTo ? 1 : 0));
-                        Print_ ("\t\tswitched it {}"_f(String{*switchLightsTo ? "on"sv : "off"sv}));
+                    if (fetching->fSwitchLightsTo and not fetching->fSwitched.Contains (dd.fUDN)) {
+                        fetching->fSwitched.Add (dd.fUDN);
+                        SwitchPowerAction_ (controlURL, "SetTarget"sv, "<newTargetValue>{}</newTargetValue>"_f(*fetching->fSwitchLightsTo ? 1 : 0));
+                        Print_ ("\t\tswitched it {}"_f(String{*fetching->fSwitchLightsTo ? "on"sv : "off"sv}));
                     }
                     optional<String> status = OutArgument_ (SwitchPowerAction_ (controlURL, "GetStatus"sv, String{}), "ResultStatus"sv);
                     Print_ ("\t\tit is {}"_f(String{status == "1"sv ? "on"sv : status == "0"sv ? "off"sv : "neither on nor off?"sv}));
+                }
+                if (fetching->fWatch and not s.fEventSubURL.GetPath ().empty ()) { // empty: it has no events
+                    Watch_ (location.Combine (s.fEventSubURL), dd.fUDN, s.fServiceID, fetching);
                 }
             }
         }
@@ -127,6 +190,7 @@ int main (int argc, const char* argv[])
     bool                  listen = false;
     optional<String>      searchFor;
     optional<bool>        switchLightsTo;
+    bool                  watch     = false;
     Time::DurationSeconds quitAfter = Time::kInfinity;
 
     const CommandLine::Option kListenO_{.fSingleCharName = 'l', .fHelpOptionText = "Listen: find devices as they announce themselves"sv};
@@ -138,11 +202,13 @@ int main (int argc, const char* argv[])
                                         .fSupportsArgument = true,
                                         .fHelpArgName      = "on|off"sv,
                                         .fHelpOptionText   = "Switch each UPnP light found (each SwitchPower service) on or off"sv};
+    const CommandLine::Option kWatchO_{.fLongName = "watch"sv, .fHelpOptionText = "Watch each service found: subscribe to its events, and print each"sv};
     const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
 
     CommandLine cmdLine{argc, argv};
     listen    = cmdLine.Has (kListenO_);
     searchFor = cmdLine.GetArgument (kSearchO_);
+    watch     = cmdLine.Has (kWatchO_);
     if (auto o = cmdLine.GetArgument (kSwitchO_)) {
         if (*o == "on"sv or *o == "off"sv) {
             switchLightsTo = *o == "on"sv;
@@ -157,11 +223,12 @@ int main (int argc, const char* argv[])
     }
 
     if (not listen and not searchFor.has_value ()) {
-        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR] [--switch on|off] [--quit-after N]" << endl;
+        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR] [--switch on|off] [--watch] [--quit-after N]" << endl;
         cerr << "   e.g. SSDPClient -l" << endl;
         cerr << "   e.g. SSDPClient -s \"upnp:rootdevice\"" << endl;
         cerr << "   e.g. SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> ()
              << " --switch on      (switches on each UPnP light found)" << endl;
+        cerr << "   e.g. SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> () << " --watch      (prints each UPnP light's each change)" << endl;
         return EXIT_FAILURE;
     }
 
@@ -174,9 +241,28 @@ int main (int argc, const char* argv[])
         // embedded device has its root's - so a device or a LOCATION described already is not described again
         Set<String> described;
         Set<URI>    describedAt;
-        // what was switched: only on the fetcher's one thread
-        Set<String> switched; // UDNs
-        ThreadPool  fetcher{ThreadPool::Options{.fThreadCount = 1}};
+        // what the fetcher does with each device
+        Fetching_ fetching;
+        fetching.fSwitchLightsTo = switchLightsTo;
+        fetching.fWatch          = watch;
+        // --watch: where the services' events are told - each NOTIFY routed to its subscriber by its path. Before the fetcher, so
+        // destroyed after it; after fetching, so destroyed before it - its subscribers unsubscribe after the last NOTIFY is taken
+        optional<Stroika::Frameworks::WebServer::ConnectionManager> notifies;
+        if (watch) {
+            using namespace Stroika::Frameworks::WebServer;
+            notifies.emplace (
+                IO::Network::SocketAddresses (IO::Network::InternetAddresses_Any (), kWatchPort_),
+                Containers::Sequence<Route>{Route{"NOTIFY"_RegEx, "gena/.+"_RegEx, [&fetching] (Message& m) {
+                                                      if (shared_ptr<GENA::Subscriber> s =
+                                                              fetching.fWatching.cget ()->LookupValue (m.request ().url ().GetPath ())) {
+                                                          s->HandleNotify (m);
+                                                      }
+                                                      else {
+                                                          m.rwResponse ().status = IO::Network::HTTP::StatusCodes::kPreconditionFailed; // no such subscription
+                                                      }
+                                                  }}});
+        }
+        ThreadPool fetcher{ThreadPool::Options{.fThreadCount = 1}};
         // what it searches for, or - just listening - everything: of what it hears, the advertisements of that
         const bool everything = not searchFor or *searchFor == kTarget_SSDPAll;
         auto       onChange   = [&] (const SSDP::Advertisement& a) {
@@ -192,8 +278,7 @@ int main (int argc, const char* argv[])
                 usns.Add (a.fUSN);
                 devices.Add (device, usns);
                 if (not described.Contains (device) and not describedAt.Contains (a.fLocation)) {
-                    fetcher.AddTask (
-                        [location = a.fLocation, switchLightsTo, &switched] () { Describe_ (location, switchLightsTo, &switched); });
+                    fetcher.AddTask ([location = a.fLocation, &fetching] () { Describe_ (location, &fetching); });
                 }
                 described.Add (device);
                 describedAt.Add (a.fLocation);
@@ -204,6 +289,9 @@ int main (int argc, const char* argv[])
                     described.Remove (device); // so described again if it comes back
                     describedAt.RemoveIf (a.fLocation);
                     Print_ ("gone: {}"_f(device));
+                    if (watch) {
+                        fetcher.AddTask ([device, &fetching] () { Unwatch_ (device, &fetching); });
+                    }
                 }
                 else {
                     devices.Add (device, usns);

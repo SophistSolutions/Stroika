@@ -24,9 +24,6 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **GENA eventing** (in the framework - Stroika has none): SUBSCRIBE, its renewal and UNSUBSCRIBE, and a
-         NOTIFY with SEQ to each subscriber (UPnP Device Architecture 1.1, section 4) - so SSDPServer can tell subscribers each
-         change of the light's Status, as SwitchPower:1 says it does.
        - (this and the next: for 3.0d25, after the rest of this list - LGP 2026-10-07)
          **UPnP services as objects** (with the samples moved onto them): UPnP::ServiceDescription (a
          service's description, its SCPD) with Serialize; and SOAP control messages - an action's request, response and

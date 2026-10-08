@@ -8,6 +8,7 @@ vpath %cpp $(SrcDir)
 
 
 SubDirs	:=	\
+	GENA	\
 	SSDP	\
 
 

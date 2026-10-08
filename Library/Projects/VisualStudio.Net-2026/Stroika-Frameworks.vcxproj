@@ -314,6 +314,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\TestHarness.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Publisher.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Subscriber.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.cpp" />
@@ -329,6 +331,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\TestHarness.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Publisher.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Subscriber.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.h" />

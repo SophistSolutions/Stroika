@@ -25,11 +25,14 @@
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 #include "Stroika/Frameworks/UPnP/Device.h"
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
+#include "Stroika/Frameworks/UPnP/GENA/Publisher.h"
+#include "Stroika/Frameworks/UPnP/GENA/Subscriber.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/CachingListener.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/Listener.h"
@@ -38,6 +41,8 @@
 #include "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/LocationProvider.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/PeriodicNotifier.h"
+#include "Stroika/Frameworks/WebServer/ConnectionManager.h"
+#include "Stroika/Frameworks/WebServer/Router.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -2206,6 +2211,181 @@ namespace {
         EXPECT_LE (pauses.MaxValue ().count (), kRepeatInterval_.count () + 0.15) << Characters::ToString (pauses).AsNarrowSDKString ();
         EXPECT_GE ((pauses.MaxValue () - pauses.MinValue ()).count (), 0.03)
             << "every pause the same: not random - " << Characters::ToString (pauses).AsNarrowSDKString ();
+    }
+}
+
+namespace {
+    // GENA's tests: a device's web server and a subscriber's, each on loopback - so no firewall in the way
+    constexpr PortType kGENADevicePort_     = 8087;
+    constexpr PortType kGENASubscriberPort_ = 8088;
+
+    // a GENA request - SUBSCRIBE or UNSUBSCRIBE - to the test device's event URL, /event
+    IO::Network::Transfer::Response GENARequest_ (const String& method, const Containers::Mapping<String, String>& headers)
+    {
+        using namespace IO::Network::Transfer;
+        Connection::Ptr c = Connection::New ();
+        c.SetSchemeAndAuthority (URI{URI::SchemeType{"http"sv}, URI::Authority{URI::Host{V4::kLocalhost}, kGENADevicePort_}});
+        Request r;
+        r.fMethod               = method;
+        r.fAuthorityRelativeURL = URI::ParseRelative ("/event"sv);
+        r.fOverrideHeaders      = headers;
+        return c.Send (r);
+    }
+    // a response header, by name - whatever its case
+    String GENAHeader_ (const IO::Network::Transfer::Response& r, const String& name)
+    {
+        for (const Common::KeyValuePair<String, String>& h : r.GetHeaders ()) {
+            if (String::EqualsComparer{eCaseInsensitive}(h.fKey, name)) {
+                return h.fValue.Trim ();
+            }
+        }
+        return String{};
+    }
+
+    /*
+     *  GENA (UPnP Device Architecture 1.1, section 4): a control point SUBSCRIBEs at a service's event URL, and is sent a NOTIFY
+     *  with each change of its evented variables - the first (SEQ 0) with all of them, as it is - till it UNSUBSCRIBEs, or its
+     *  TIMEOUT runs out unrenewed. And the errors: 400 for a SID with an NT, 412 for an unknown SID, an NT not upnp:event, or no
+     *  CALLBACK.
+     */
+    GTEST_TEST (Frameworks_UPnP, GENA_Publisher_)
+    {
+        Debug::TraceContextBumper ctx{"GENA_Publisher_"};
+        using namespace Stroika::Frameworks::WebServer;
+        const String    kCallback = "<http://127.0.0.1:{}/callback>"_f(kGENASubscriberPort_);
+        atomic<int>     status{0};
+        GENA::Publisher events{[&] () { return Containers::Mapping<String, String>{{"Status"sv, "{}"_f(status.load ())}}; }};
+        struct Event_ {
+            String fSID;
+            String fSEQ;
+            String fBody;
+        };
+        Execution::Synchronized<Containers::Sequence<Event_>> heard;
+        auto                                                  heardSize = [&] () { return heard.cget ()->size (); };
+        auto                                                  waitUntil = [] (const function<bool ()>& done) {
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not done () and Time::GetTickCount () < giveUpAt;) {
+                Execution::Sleep (50ms);
+            }
+            return done ();
+        };
+        try {
+            ConnectionManager device{SocketAddress{V4::kLocalhost, kGENADevicePort_},
+                                     Containers::Sequence<Route>{Route{"SUBSCRIBE|UNSUBSCRIBE"_RegEx, "event"_RegEx,
+                                                                       [&] (Message& m) { events.HandleRequest (m); }}}};
+            ConnectionManager subscriber{
+                SocketAddress{V4::kLocalhost, kGENASubscriberPort_},
+                Containers::Sequence<Route>{Route{"NOTIFY"_RegEx, "callback"_RegEx, [&] (Message& m) {
+                                                      heard.rwget ()->Append (
+                                                          Event_{.fSID  = m.request ().headers ().LookupOne ("SID"sv).value_or (String{}),
+                                                                 .fSEQ  = m.request ().headers ().LookupOne ("SEQ"sv).value_or (String{}),
+                                                                 .fBody = String::FromUTF8 (m.rwRequest ().GetBody ().As<string> ())});
+                                                  }}}};
+            // subscribed: its SID, the TIMEOUT asked, and its first event - SEQ 0, the state as it is
+            IO::Network::Transfer::Response r =
+                GENARequest_ ("SUBSCRIBE"sv, {{"CALLBACK"sv, kCallback}, {"NT"sv, "upnp:event"sv}, {"TIMEOUT"sv, "Second-300"sv}});
+            ASSERT_TRUE (r.GetSucceeded ()) << r.GetStatus ();
+            const String sid = GENAHeader_ (r, "SID"sv);
+            EXPECT_TRUE (sid.StartsWith ("uuid:"sv)) << sid.AsNarrowSDKString ();
+            EXPECT_EQ (GENAHeader_ (r, "TIMEOUT"sv), "Second-300"sv);
+            ASSERT_TRUE (waitUntil ([&] () { return heardSize () >= 1; })) << "no first event";
+            EXPECT_EQ (heard.cget ()->GetAt (0).fSID, sid);
+            EXPECT_EQ (heard.cget ()->GetAt (0).fSEQ, "0"sv);
+            EXPECT_TRUE (heard.cget ()->GetAt (0).fBody.Contains ("<Status>0</Status>"sv)) << heard.cget ()->GetAt (0).fBody.AsNarrowSDKString ();
+            // a change: SEQ 1
+            status = 1;
+            events.Notify ({{"Status"sv, "1"sv}});
+            ASSERT_TRUE (waitUntil ([&] () { return heardSize () >= 2; })) << "no event for the change";
+            EXPECT_EQ (heard.cget ()->GetAt (1).fSEQ, "1"sv);
+            EXPECT_TRUE (heard.cget ()->GetAt (1).fBody.Contains ("<Status>1</Status>"sv)) << heard.cget ()->GetAt (1).fBody.AsNarrowSDKString ();
+            // renewed: the same SID, the new TIMEOUT
+            r = GENARequest_ ("SUBSCRIBE"sv, {{"SID"sv, sid}, {"TIMEOUT"sv, "Second-600"sv}});
+            EXPECT_TRUE (r.GetSucceeded ()) << r.GetStatus ();
+            EXPECT_EQ (GENAHeader_ (r, "SID"sv), sid);
+            EXPECT_EQ (GENAHeader_ (r, "TIMEOUT"sv), "Second-600"sv);
+            // refused
+            EXPECT_EQ (GENARequest_ ("SUBSCRIBE"sv, {{"SID"sv, sid}, {"NT"sv, "upnp:event"sv}}).GetStatus (), HTTP::StatusCodes::kBadRequest);
+            EXPECT_EQ (GENARequest_ ("SUBSCRIBE"sv, {{"SID"sv, "uuid:no-such-subscription"sv}}).GetStatus (), HTTP::StatusCodes::kPreconditionFailed);
+            EXPECT_EQ (GENARequest_ ("SUBSCRIBE"sv, {{"CALLBACK"sv, kCallback}, {"NT"sv, "upnp:other"sv}}).GetStatus (),
+                       HTTP::StatusCodes::kPreconditionFailed);
+            EXPECT_EQ (GENARequest_ ("SUBSCRIBE"sv, {{"NT"sv, "upnp:event"sv}}).GetStatus (), HTTP::StatusCodes::kPreconditionFailed);
+            // unsubscribed: no more events
+            EXPECT_TRUE (GENARequest_ ("UNSUBSCRIBE"sv, {{"SID"sv, sid}}).GetSucceeded ());
+            EXPECT_EQ (GENARequest_ ("UNSUBSCRIBE"sv, {{"SID"sv, sid}}).GetStatus (), HTTP::StatusCodes::kPreconditionFailed);
+            events.Notify ({{"Status"sv, "0"sv}});
+            Execution::Sleep (1s);
+            EXPECT_EQ (heardSize (), 2u) << "an event after UNSUBSCRIBE";
+            // a TIMEOUT run out, unrenewed: no more events either
+            r = GENARequest_ ("SUBSCRIBE"sv, {{"CALLBACK"sv, kCallback}, {"NT"sv, "upnp:event"sv}, {"TIMEOUT"sv, "Second-1"sv}});
+            EXPECT_EQ (GENAHeader_ (r, "TIMEOUT"sv), "Second-1"sv);
+            EXPECT_TRUE (waitUntil ([&] () { return heardSize () >= 3; })) << "no first event";
+            Execution::Sleep (1.5s);
+            events.Notify ({{"Status"sv, "1"sv}});
+            Execution::Sleep (1s);
+            EXPECT_EQ (heardSize (), 3u) << "an event after its TIMEOUT";
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "GENA_Publisher_ skipped - could not run its web servers here: {}"_f(current_exception ()).AsNarrowSDKString ().c_str ());
+        }
+    }
+
+    /*
+     *  GENA's other side: a Subscriber, its callback URL at this machine's address facing the service (here, loopback), is told
+     *  each event in SEQ order - the first with every variable - renews in time (a 2 second TIMEOUT here, so renewed each second:
+     *  still told after 3), and is told nothing more once stopped, which unsubscribes.
+     */
+    GTEST_TEST (Frameworks_UPnP, GENA_Subscriber_)
+    {
+        Debug::TraceContextBumper                    ctx{"GENA_Subscriber_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by Subscriber, to renew
+        using namespace Stroika::Frameworks::WebServer;
+        atomic<int>     status{0};
+        GENA::Publisher events{[&] () { return Containers::Mapping<String, String>{{"Status"sv, "{}"_f(status.load ())}}; }};
+        Execution::Synchronized<Containers::Sequence<GENA::Subscriber::Event>> told;
+        auto                                                                   toldSize  = [&] () { return told.cget ()->size (); };
+        auto                                                                   waitUntil = [] (const function<bool ()>& done) {
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not done () and Time::GetTickCount () < giveUpAt;) {
+                Execution::Sleep (50ms);
+            }
+            return done ();
+        };
+        try {
+            ConnectionManager device{SocketAddress{V4::kLocalhost, kGENADevicePort_},
+                                     Containers::Sequence<Route>{Route{"SUBSCRIBE|UNSUBSCRIBE"_RegEx, "event"_RegEx,
+                                                                       [&] (Message& m) { events.HandleRequest (m); }}}};
+            const URI         eventURL{URI::SchemeType{"http"sv}, URI::Authority{URI::Host{V4::kLocalhost}, kGENADevicePort_}, "/event"sv};
+            const URI         callbackURL = GENA::Subscriber::MakeCallbackURL (eventURL, kGENASubscriberPort_, "/callback"sv);
+            EXPECT_EQ (callbackURL.GetAuthority ()->GetHost ()->AsInternetAddress (), V4::kLocalhost) << "not the address facing it";
+            GENA::Subscriber  subscriber{eventURL, callbackURL, [&] (const GENA::Subscriber::Event& e) { told.rwget ()->Append (e); },
+                                         GENA::Subscriber::Options{.fTimeout = 2s}};
+            ConnectionManager control{
+                SocketAddress{V4::kLocalhost, kGENASubscriberPort_},
+                Containers::Sequence<Route>{Route{"NOTIFY"_RegEx, "callback"_RegEx, [&] (Message& m) { subscriber.HandleNotify (m); }}}};
+            subscriber.Start ();
+            EXPECT_TRUE (subscriber.GetSID () and subscriber.GetSID ()->StartsWith ("uuid:"sv));
+            ASSERT_TRUE (waitUntil ([&] () { return toldSize () >= 1; })) << "no first event";
+            EXPECT_EQ (told.cget ()->GetAt (0).fSEQ, 0u);
+            EXPECT_EQ (told.cget ()->GetAt (0).fVariables.LookupValue ("Status"sv), "0"sv);
+            status = 1;
+            events.Notify ({{"Status"sv, "1"sv}});
+            ASSERT_TRUE (waitUntil ([&] () { return toldSize () >= 2; })) << "no event for the change";
+            EXPECT_EQ (told.cget ()->GetAt (1).fSEQ, 1u);
+            EXPECT_EQ (told.cget ()->GetAt (1).fVariables.LookupValue ("Status"sv), "1"sv);
+            // past its TIMEOUT: renewed, so still told
+            Execution::Sleep (3s);
+            events.Notify ({{"Status"sv, "0"sv}});
+            EXPECT_TRUE (waitUntil ([&] () { return toldSize () >= 3; })) << "not told after its TIMEOUT: not renewed";
+            // stopped: unsubscribed, so told nothing more
+            subscriber.Stop ();
+            EXPECT_EQ (subscriber.GetSID (), nullopt);
+            events.Notify ({{"Status"sv, "1"sv}});
+            Execution::Sleep (1s);
+            EXPECT_EQ (toldSize (), 3u) << "told after Stop";
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "GENA_Subscriber_ skipped - could not run its web servers here: {}"_f(current_exception ()).AsNarrowSDKString ().c_str ());
+        }
     }
 }
 #endif
