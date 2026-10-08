@@ -423,6 +423,15 @@ namespace Stroika::Foundation::Characters {
 
     }
 
+    namespace Private_ {
+        // IToString's test - here, after the last ToStringDefaults overload: a qualified name in a template is looked up where
+        // the template is defined, so any earlier would miss the overloads declared after it
+        template <typename T>
+        struct HasToStringDefault_ {
+            static constexpr bool value = requires (T t) { ToStringDefaults::ToString (t); };
+        };
+    }
+
     /*
      ********************************************************************************
      *************************** Characters::ToString *******************************

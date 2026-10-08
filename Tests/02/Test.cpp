@@ -1697,9 +1697,7 @@ namespace {
 }
 
 namespace {
-    // the overload set itself - IToString asks the dispatcher, which accepts any type
-    template <typename T>
-    concept HasDefaultToString_ = requires (T t) { Characters::ToStringDefaults::ToString (t); };
+    struct NotPrintable_ {};
     struct ConvertsToBool_ {
         operator bool () const
         {
@@ -1743,8 +1741,8 @@ namespace {
             // only a bool prints as true/false: nothing converts to bool to get there
             EXPECT_EQ (Characters::ToString (true), "true");
             EXPECT_EQ (Characters::ToString (false), "false");
-            static_assert (HasDefaultToString_<bool>);
-            static_assert (not HasDefaultToString_<ConvertsToBool_>);
+            static_assert (Characters::IToString<bool>);
+            static_assert (not Characters::IToString<ConvertsToBool_>);
         }
         {
             // a raw pointer prints its address, as "{}"_f prints a void* - but a character pointer is a C string
@@ -1756,6 +1754,14 @@ namespace {
             EXPECT_EQ (Characters::ToString (&i), addr);
             EXPECT_EQ ("{}"_f(p), addr);
             EXPECT_EQ (Characters::ToString (static_cast<const char*> ("abc")), "abc");
+        }
+        {
+            // IToString is true just for what Characters::ToString can print - so a shared_ptr to anything else prints its address
+            static_assert (Characters::IToString<int> and Characters::IToString<String> and Characters::IToString<vector<int>> and
+                           Characters::IToString<const int*>);
+            static_assert (not Characters::IToString<NotPrintable_>);
+            static_assert (not Common::StdCompat::formattable<NotPrintable_, wchar_t>);
+            EXPECT_TRUE (Characters::ToString (make_shared<NotPrintable_> ()).StartsWith ("0x"));
         }
         {
             EXPECT_EQ (Characters::ToString (make_tuple (1, 2, 3)), "{1, 2, 3}");

@@ -117,13 +117,19 @@ namespace Stroika::Foundation::Characters {
     template <typename T, typename... ARGS>
     String ToString (T&& t, ARGS... args);
 
+    namespace Private_ {
+        template <typename T>
+        struct HasToStringDefault_; // defined in ToString.inl, after every ToStringDefaults overload
+    }
+
     /**
      *  \brief Check if legal to call Characters::ToString(T)...
+     *
+     *  True just where a ToStringDefaults overload takes a T. Not requires { ToString (t) }: the dispatcher above takes any type
+     *  (it is its body that fails), so that was true of everything. And not tested here, where none of the overloads is declared yet.
      */
     template <typename T>
-    concept IToString = requires (T t) {
-        { ToString (t) } -> convertible_to<Characters::String>;
-    };
+    concept IToString = Private_::HasToStringDefault_<T>::value;
 
     /**
      *  \brief same as ToString()/1 - but without the potentially confusing multi-arg overloads (confused some template expansions).
@@ -407,13 +413,11 @@ namespace Stroika::Foundation::Characters::Private_ {
     template <typename T>
     concept IUseToStringFormatterForFormatter_ =
 
-        // If Characters::ToString() would work
-        IToString<T>
-
 #if !qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy
-        // But NOT anything std c++ defined to already support (else we get ambiguity error)
-        and not IStdFormatterPredefinedFor_<T>
+        // NOT anything std c++ defined to already support (else we get ambiguity error)
+        not IStdFormatterPredefinedFor_<T>
 #else
+        true // just the types known to need Stroika's formatter
         and (requires (T t) {
                 { t.ToString () } -> convertible_to<Characters::String>;
             } or Common::IKeyValuePair<remove_cvref_t<T>> or Common::ICountedValue<remove_cvref_t<T>>
@@ -443,7 +447,11 @@ namespace Stroika::Foundation::Characters::Private_ {
              same_as<T, std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>> or IToStringAsAddress_<T> or
              Common::IAnyOf<remove_cvref_t<T>, exception_ptr, type_index> or derived_from<T, exception> or Common::ISharedPtr<T>);
 #endif /*qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy*/
-        ;
+
+        // and only if Characters::ToString() would work. Asked last, so formatting a std type (an int) never asks it: asked before
+        // ToString.inl declares the overloads, IToString answers false - and the compiler keeps that answer. Qualified: in
+        // Private_, a concept of that name there would win, unqualified, whenever its header came first
+        and Characters::IToString<T>;
 
 }
 
@@ -463,9 +471,19 @@ template <Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFor
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<T, char> : Stroika::Foundation::Characters::ToStringFormatterASCII<T> {};
 
 /*
- *  If any of these static_asserts trigger, it means you are using a newer compiler I don't have 
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+
+#include "ToString.inl"
+
+/*
+ *  If any of these static_asserts trigger, it means you are using a newer compiler I don't have
  *  proper IUseToStringFormatterForFormatter_ or IStdFormatterPredefinedFor_ settings for. Adjust those settings above so these tests pass.
  *      (or if qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy - clang++ - then see IUseToStringFormatterForFormatter_ directly)
+ *
+ *  After ToString.inl: these ask IToString, which before it would answer false - for the rest of the compile.
  */
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::exception_ptr, wchar_t>);
 static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::filesystem::path, wchar_t>);
@@ -482,13 +500,5 @@ static_assert (Stroika::Foundation::Common::StdCompat::formattable<std::tuple<in
 // true, but don't #include just for this
 //static_assert (Stroika::Foundation::Common::StdCompat::formattable<Time::TimePointInSeconds, wchar_t>);
 //static_assert (Stroika::Foundation::Common<Stroika::Foundation::IO::Network::URI, wchar_t>);
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
-#include "ToString.inl"
 
 #endif /*_Stroika_Foundation_Characters_ToString_h_*/

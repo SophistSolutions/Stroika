@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Characters {
     template <typename OPTIONS>
     template <typename APPEND_ARG_T>
     inline auto StringBuilder<OPTIONS>::operator<< (APPEND_ARG_T&& a) -> StringBuilder&
-        requires (Characters::Private_::IToString<APPEND_ARG_T> or
+        requires (Characters::Private_::IUnoverloadedToString_<APPEND_ARG_T> or
                   requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
     {
         if constexpr (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
