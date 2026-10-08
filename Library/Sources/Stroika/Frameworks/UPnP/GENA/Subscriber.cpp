@@ -20,6 +20,8 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Status.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 
+#include "Stroika/Frameworks/UPnP/Private_/XMLText.h"
+
 #include "Subscriber.h"
 
 using namespace Stroika::Foundation;
@@ -57,49 +59,6 @@ namespace {
         return nullopt;
     }
 
-    // XML text's character and entity references, as the five predefined entities and numbers
-    String XMLText_ (const String& s)
-    {
-        if (not s.Contains ('&')) {
-            return s;
-        }
-        StringBuilder sb;
-        for (size_t i = 0; i < s.size ();) {
-            optional<size_t> semi = s[i] == '&' ? s.Find (';', i) : nullopt;
-            if (not semi) {
-                sb << s[i++];
-                continue;
-            }
-            const String entity = s.SubString (i + 1, *semi);
-            if (entity == "lt"sv) {
-                sb << "<"sv;
-            }
-            else if (entity == "gt"sv) {
-                sb << ">"sv;
-            }
-            else if (entity == "amp"sv) {
-                sb << "&"sv;
-            }
-            else if (entity == "quot"sv) {
-                sb << "\""sv;
-            }
-            else if (entity == "apos"sv) {
-                sb << "'"sv;
-            }
-            else if (entity.StartsWith ("#x"sv) or entity.StartsWith ("#X"sv)) {
-                sb << Character{static_cast<char32_t> (HexString2Int (entity.SubString (2)))};
-            }
-            else if (entity.StartsWith ("#"sv)) {
-                sb << Character{static_cast<char32_t> (String2Int<uint32_t> (entity.SubString (1)))};
-            }
-            else {
-                sb << s.SubString (i, *semi + 1); // not one we know: as it is
-            }
-            i = *semi + 1;
-        }
-        return sb;
-    }
-
     // a NOTIFY's body's variables: each e:property's one element, by name (UPnP Device Architecture 1.1, section 4.3.2) - their
     // values plain text, as UPnP's types are. Found as text, so the same in every build - with an XML parser or without
     Mapping<String, String> PropertySet_ (const string& body)
@@ -107,7 +66,7 @@ namespace {
         Mapping<String, String> result;
         static const regex      kProperty_{R"(<(?:[\w.-]+:)?property>\s*<([\w.-]+)(?:\s[^>]*)?>([^<]*)</\1>\s*</(?:[\w.-]+:)?property>)"};
         for (sregex_iterator i{body.begin (), body.end (), kProperty_}, end; i != end; ++i) {
-            result.Add (String::FromUTF8 ((*i)[1].str ()), XMLText_ (String::FromUTF8 ((*i)[2].str ())));
+            result.Add (String::FromUTF8 ((*i)[1].str ()), UPnP::Private_::XMLText (String::FromUTF8 ((*i)[2].str ())));
         }
         return result;
     }

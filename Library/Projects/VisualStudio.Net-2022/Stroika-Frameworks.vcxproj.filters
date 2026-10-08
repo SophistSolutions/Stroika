@@ -61,11 +61,17 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.inl">
       <Filter>UPnP</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Makefile">
+      <Filter>UPnP\GENA</Filter>
+    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Makefile">
       <Filter>UPnP</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\ReadMe.md">
       <Filter>UPnP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SOAP\Makefile">
+      <Filter>UPnP\SOAP</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.inl">
       <Filter>WebServer</Filter>
@@ -342,6 +348,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Subscriber.h">
       <Filter>UPnP\GENA</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\ServiceDescription.h">
+      <Filter>UPnP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SOAP\Action.h">
+      <Filter>UPnP\SOAP</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.h">
       <Filter>WebServer</Filter>
     </ClInclude>
@@ -555,6 +567,9 @@
     <Filter Include="UPnP\GENA">
       <UniqueIdentifier>{9f2ba975-2b64-5217-a4f9-a578e3503ad6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UPnP\SOAP">
+      <UniqueIdentifier>{b8459d5d-c0b6-54ce-aeee-7375c7398c0a}</UniqueIdentifier>
+    </Filter>
     <Filter Include="UPnP\SSDP">
       <UniqueIdentifier>{b31f22cf-df51-46a3-bccc-de8c97f181c5}</UniqueIdentifier>
     </Filter>
@@ -658,6 +673,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Subscriber.cpp">
       <Filter>UPnP\GENA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\ServiceDescription.cpp">
+      <Filter>UPnP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SOAP\Action.cpp">
+      <Filter>UPnP\SOAP</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.cpp">
       <Filter>WebServer</Filter>

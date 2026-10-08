@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h" // for qStroika_Foundation_DataExchange_XML_SupportParsing
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -33,6 +34,7 @@
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 #include "Stroika/Frameworks/UPnP/GENA/Publisher.h"
 #include "Stroika/Frameworks/UPnP/GENA/Subscriber.h"
+#include "Stroika/Frameworks/UPnP/SOAP/Action.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/CachingListener.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/Listener.h"
@@ -41,6 +43,7 @@
 #include "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/LocationProvider.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/PeriodicNotifier.h"
+#include "Stroika/Frameworks/UPnP/ServiceDescription.h"
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
 
@@ -245,6 +248,162 @@ namespace {
         Stroika::Frameworks::Test::WarnTestIssue (
             "DeviceDescription_RoundTrip_ only checks Serialize: this configuration has no XML parser");
 #endif
+    }
+
+    GTEST_TEST (Frameworks_UPnP, ServiceDescription_RoundTrip_)
+    {
+        Debug::TraceContextBumper ctx{"ServiceDescription_RoundTrip_"};
+        using SD = ServiceDescription;
+        // each part of an SCPD: in and out arguments (one a retval), an action with none, a state variable not evented, one with
+        // allowed values (one XML must quote), and one with an allowed range
+        const SD sd{
+            .fActions = {SD::Action{.fName = "SetTarget"sv, .fArguments = {{.fName = "newTargetValue"sv, .fRelatedStateVariable = "Target"sv}}},
+                         SD::Action{.fName = "GetStatus"sv,
+                                    .fArguments = {{.fName = "ResultStatus"sv, .fDirection = SD::Argument::Direction::eOut, .fRetval = true, .fRelatedStateVariable = "Status"sv}}},
+                         SD::Action{.fName = "Reset"sv}},
+            .fStateVariables = {SD::StateVariable{.fName = "Target"sv, .fDataType = "boolean"sv, .fDefaultValue = "0"sv, .fSendEvents = false},
+                                SD::StateVariable{.fName = "Status"sv, .fDataType = "boolean"sv, .fDefaultValue = "0"sv},
+                                SD::StateVariable{.fName = "Mode"sv, .fDataType = "string"sv, .fAllowedValues = {"Auto"sv, "R&D <x>"sv}},
+                                SD::StateVariable{.fName     = "Level"sv,
+                                                  .fDataType = "ui1"sv,
+                                                  .fAllowedValueRange = SD::AllowedValueRange{.fMinimum = "0"sv, .fMaximum = "100"sv, .fStep = "5"sv}}}};
+        Memory::BLOB xml = Serialize (sd);
+        DbgTrace ("xml: {}"_f, String::FromUTF8 (xml.As<string> ()));
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
+        SD back;
+        DeSerialize (xml, &back);
+        EXPECT_EQ (back, sd) << back.ToString ().AsNarrowSDKString ();
+#else
+        Stroika::Frameworks::Test::WarnTestIssue (
+            "ServiceDescription_RoundTrip_ only checks Serialize: this configuration has no XML parser");
+#endif
+    }
+
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
+    GTEST_TEST (Frameworks_UPnP, ServiceDescription_Others_)
+    {
+        Debug::TraceContextBumper ctx{"ServiceDescription_Others_"};
+        using SD = ServiceDescription;
+        // as another stack writes one: an argument's elements in another order, a vendor's elements and attributes, and no
+        // sendEvents (so yes)
+        constexpr string_view kSCPD_ = R"(<?xml version="1.0" encoding="utf-8"?>
+<scpd xmlns="urn:schemas-upnp-org:service-1-0" xmlns:v="urn:vendor-example">
+  <specVersion><major>1</major><minor>1</minor></specVersion>
+  <actionList>
+    <action>
+      <name>GetVolume</name>
+      <argumentList>
+        <argument><name>Channel</name><direction>in</direction><relatedStateVariable>A_ARG_TYPE_Channel</relatedStateVariable></argument>
+        <argument><name>CurrentVolume</name><relatedStateVariable>Volume</relatedStateVariable><retval /><direction>out</direction></argument>
+      </argumentList>
+      <v:note>a vendor's</v:note>
+    </action>
+  </actionList>
+  <serviceStateTable>
+    <stateVariable sendEvents="no" multicast="no"><name>A_ARG_TYPE_Channel</name><dataType>string</dataType><allowedValueList><allowedValue>Master</allowedValue><allowedValue>LF</allowedValue></allowedValueList></stateVariable>
+    <stateVariable><name>Volume</name><dataType>ui2</dataType><allowedValueRange><minimum>0</minimum><maximum>100</maximum></allowedValueRange></stateVariable>
+  </serviceStateTable>
+</scpd>
+)";
+        SD                    sd;
+        DeSerialize (Memory::BLOB{as_bytes (span{kSCPD_})}, &sd);
+        const SD expected{
+            .fActions        = {SD::Action{
+                .fName = "GetVolume"sv,
+                .fArguments = {{.fName = "Channel"sv, .fRelatedStateVariable = "A_ARG_TYPE_Channel"sv},
+                               {.fName = "CurrentVolume"sv, .fDirection = SD::Argument::Direction::eOut, .fRetval = true, .fRelatedStateVariable = "Volume"sv}}}},
+            .fStateVariables = {
+                SD::StateVariable{.fName = "A_ARG_TYPE_Channel"sv, .fDataType = "string"sv, .fSendEvents = false, .fAllowedValues = {"Master"sv, "LF"sv}},
+                SD::StateVariable{.fName = "Volume"sv, .fDataType = "ui2"sv, .fAllowedValueRange = SD::AllowedValueRange{.fMinimum = "0"sv, .fMaximum = "100"sv}}}};
+        EXPECT_EQ (sd, expected) << sd.ToString ().AsNarrowSDKString ();
+    }
+#endif
+
+    GTEST_TEST (Frameworks_UPnP, SOAP_RoundTrip_)
+    {
+        Debug::TraceContextBumper ctx{"SOAP_RoundTrip_"};
+        const String              kServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
+        const String              kAwkward_{u"R&D <\"caf\u00e9\"> 'x'"sv}; // what XML must quote, and not ASCII
+        const SOAP::ActionRequest request{.fServiceType = kServiceType_,
+                                          .fAction      = "SetTarget"sv,
+                                          .fArguments   = {{"newTargetValue"sv, "1"sv}, {"Note"sv, kAwkward_}, {"Empty"sv, String{}}}};
+        EXPECT_EQ (request.GetSOAPAction (), "\"urn:schemas-upnp-org:service:SwitchPower:1#SetTarget\""sv);
+        {
+            SOAP::ActionRequest back;
+            SOAP::DeSerialize (SOAP::Serialize (request), &back);
+            EXPECT_EQ (back, request) << back.ToString ().AsNarrowSDKString ();
+            EXPECT_EQ (back.LookupArgument ("Note"sv), kAwkward_);
+            EXPECT_FALSE (back.LookupArgument ("Missing"sv).has_value ());
+        }
+        for (const SOAP::ActionResponse& response :
+             {SOAP::ActionResponse{.fServiceType = kServiceType_, .fAction = "GetStatus"sv, .fArguments = {{"ResultStatus"sv, "1"sv}, {"Note"sv, kAwkward_}}},
+              SOAP::ActionResponse{.fServiceType = kServiceType_, .fAction = "SetTarget"sv}}) { // and with no out arguments
+            SOAP::ActionResponse back;
+            SOAP::DeSerialize (SOAP::Serialize (response), &back);
+            EXPECT_EQ (back, response) << back.ToString ().AsNarrowSDKString ();
+        }
+        {
+            const SOAP::ActionError error{.fErrorCode = SOAP::ActionError::kInvalidArgs, .fErrorDescription = kAwkward_};
+            SOAP::ActionError       back;
+            SOAP::DeSerialize (SOAP::Serialize (error), &back);
+            EXPECT_EQ (back, error) << back.ToString ().AsNarrowSDKString ();
+        }
+    }
+
+    GTEST_TEST (Frameworks_UPnP, SOAP_Others_)
+    {
+        Debug::TraceContextBumper ctx{"SOAP_Others_"};
+        // as other stacks write them: other prefixes, line breaks and spaces, an encoding, an argument with attributes, an empty one
+        // as <x/>, and a fault's UPnPError with a prefix
+        constexpr string_view kRequest_ = R"(<?xml version="1.0" encoding="utf-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <SOAP-ENV:Body>
+    <m:SetVolume xmlns:m="urn:schemas-upnp-org:service:RenderingControl:1">
+      <InstanceID>0</InstanceID>
+      <Channel xmlns:dt="urn:schemas-microsoft-com:datatypes" dt:dt="string">Master</Channel>
+      <DesiredVolume>42</DesiredVolume>
+      <Comment/>
+    </m:SetVolume>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+)";
+        constexpr string_view kFault_   = R"(<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+ <soap:Body>
+  <soap:Fault>
+   <faultcode>soap:Client</faultcode>
+   <faultstring>UPnPError</faultstring>
+   <detail>
+    <u:UPnPError xmlns:u="urn:schemas-upnp-org:control-1-0">
+     <u:errorCode> 718 </u:errorCode>
+     <u:errorDescription>ConflictInMappingEntry</u:errorDescription>
+    </u:UPnPError>
+   </detail>
+  </soap:Fault>
+ </soap:Body>
+</soap:Envelope>
+)";
+        const Memory::BLOB    request{as_bytes (span{kRequest_})};
+        const Memory::BLOB    fault{as_bytes (span{kFault_})};
+        SOAP::ActionRequest   r;
+        SOAP::DeSerialize (request, &r);
+        EXPECT_EQ (r.fServiceType, "urn:schemas-upnp-org:service:RenderingControl:1"sv);
+        EXPECT_EQ (r.fAction, "SetVolume"sv);
+        EXPECT_EQ (r.fArguments, (SOAP::Arguments{{"InstanceID"sv, "0"sv}, {"Channel"sv, "Master"sv}, {"DesiredVolume"sv, "42"sv}, {"Comment"sv, String{}}}))
+            << r.ToString ().AsNarrowSDKString ();
+        SOAP::ActionError e;
+        SOAP::DeSerialize (fault, &e);
+        EXPECT_EQ (e.fErrorCode, 718u);
+        EXPECT_EQ (e.fErrorDescription, "ConflictInMappingEntry"sv);
+        // and each read as what it is not
+        SOAP::ActionResponse notAResponse;
+        EXPECT_THROW (SOAP::DeSerialize (fault, &notAResponse), DataExchange::BadFormatException);
+        EXPECT_THROW (SOAP::DeSerialize (request, &notAResponse), DataExchange::BadFormatException);
+        SOAP::ActionRequest notARequest;
+        EXPECT_THROW (SOAP::DeSerialize (fault, &notARequest), DataExchange::BadFormatException);
+        SOAP::ActionError notAnError;
+        EXPECT_THROW (SOAP::DeSerialize (request, &notAnError), DataExchange::BadFormatException);
+        EXPECT_ANY_THROW (SOAP::DeSerialize (Memory::BLOB{as_bytes (span{"not XML"sv})}, &notARequest));
     }
 
     GTEST_TEST (Frameworks_UPnP, SSDP_SearchResponse_And_MSearch_Parse_)

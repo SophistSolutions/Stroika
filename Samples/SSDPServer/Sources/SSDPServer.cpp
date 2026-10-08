@@ -13,7 +13,6 @@
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "Stroika/Foundation/DataExchange/XML/DOM.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
@@ -21,8 +20,10 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Frameworks/UPnP/GENA/Publisher.h"
+#include "Stroika/Frameworks/UPnP/SOAP/Action.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
+#include "Stroika/Frameworks/UPnP/ServiceDescription.h"
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 
 using namespace std;
@@ -55,90 +56,19 @@ using Server::BasicServer;
 namespace {
     const String kSwitchPowerServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
 
-    // what UPnP's XML - its descriptions, and SOAP - is sent as (UPnP Device Architecture 1.1, sections 2.11 and 3.2.2)
+    // what UPnP's descriptions are sent as (UPnP Device Architecture 1.1, section 2.11) - and what a control request must be
     const InternetMediaType kUPnPXML_{"text/xml"sv};
 
     // SwitchPower's description (its SCPD): its actions, and the state they act on - as its standard gives it
-    constexpr string_view kSwitchPowerDescription_ = R"(<?xml version="1.0"?>
-<scpd xmlns="urn:schemas-upnp-org:service-1-0">
-    <specVersion>
-        <major>1</major>
-        <minor>0</minor>
-    </specVersion>
-    <actionList>
-        <action>
-            <name>SetTarget</name>
-            <argumentList>
-                <argument>
-                    <name>newTargetValue</name>
-                    <relatedStateVariable>Target</relatedStateVariable>
-                    <direction>in</direction>
-                </argument>
-            </argumentList>
-        </action>
-        <action>
-            <name>GetTarget</name>
-            <argumentList>
-                <argument>
-                    <name>RetTargetValue</name>
-                    <relatedStateVariable>Target</relatedStateVariable>
-                    <direction>out</direction>
-                </argument>
-            </argumentList>
-        </action>
-        <action>
-            <name>GetStatus</name>
-            <argumentList>
-                <argument>
-                    <name>ResultStatus</name>
-                    <relatedStateVariable>Status</relatedStateVariable>
-                    <direction>out</direction>
-                </argument>
-            </argumentList>
-        </action>
-    </actionList>
-    <serviceStateTable>
-        <stateVariable sendEvents="no">
-            <name>Target</name>
-            <dataType>boolean</dataType>
-            <defaultValue>0</defaultValue>
-        </stateVariable>
-        <stateVariable sendEvents="yes">
-            <name>Status</name>
-            <dataType>boolean</dataType>
-            <defaultValue>0</defaultValue>
-        </stateVariable>
-    </serviceStateTable>
-</scpd>
-)";
-
-    // a SOAP envelope: each control request, and each answer, is one - round its body (UPnP Device Architecture 1.1, section 3.2)
-    String SOAPEnvelope_ (const String& body)
-    {
-        return "<?xml version=\"1.0\"?>\r\n<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" "
-               "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>{}</s:Body></s:Envelope>\r\n"_f(body);
-    }
-
-    // the value of the argument called name, in a SOAP request: an unqualified element in the action's (UPnP Device Architecture
-    // 1.1, section 3.2.1). The only XML this device reads - all the rest it writes, as text - so an XML parser (Xerces or libxml2)
-    // is optional: where the build has one, it parses the request; where not, it finds the argument as text, which is enough for
-    // the usual <name>value</name>, though not for an argument with attributes (which UPnP allows)
-    optional<String> Argument_ (const Memory::BLOB& soapRequest, const String& name)
-    {
-#if qStroika_Foundation_DataExchange_XML_SupportDOM
-        using namespace DataExchange::XML::DOM;
-        return Document::New (soapRequest.As<Streams::InputStream::Ptr<std::byte>> ()).GetRootElement ().GetValue (XPath::Expression{"//{}"_f(name)});
-#else
-        const String text     = String::FromUTF8 (soapRequest.As<string> ());
-        const String startTag = "<{}>"_f(name);
-        if (optional<size_t> start = text.Find (startTag)) {
-            if (optional<size_t> end = text.Find ("</{}>"_f(name), *start)) {
-                return text.SubString (*start + startTag.size (), *end);
-            }
-        }
-        return nullopt;
-#endif
-    }
+    using SD = ServiceDescription;
+    const SD kSwitchPowerDescription_{
+        .fActions = {SD::Action{.fName = "SetTarget"sv, .fArguments = {{.fName = "newTargetValue"sv, .fRelatedStateVariable = "Target"sv}}},
+                     SD::Action{.fName = "GetTarget"sv,
+                                .fArguments = {{.fName = "RetTargetValue"sv, .fDirection = SD::Argument::Direction::eOut, .fRelatedStateVariable = "Target"sv}}},
+                     SD::Action{.fName = "GetStatus"sv,
+                                .fArguments = {{.fName = "ResultStatus"sv, .fDirection = SD::Argument::Direction::eOut, .fRelatedStateVariable = "Status"sv}}}},
+        .fStateVariables = {SD::StateVariable{.fName = "Target"sv, .fDataType = "boolean"sv, .fDefaultValue = "0"sv, .fSendEvents = false},
+                            SD::StateVariable{.fName = "Status"sv, .fDataType = "boolean"sv, .fDefaultValue = "0"sv}}};
 
     // a UPnP boolean: 0, false or no; 1, true or yes (UPnP Device Architecture 1.1, section 2.5)
     optional<bool> ParseBoolean_ (const String& s)
@@ -168,8 +98,8 @@ namespace {
         }
     };
 
-    // a SwitchPower action, POSTed to its control URL as SOAP - which one, its SOAPACTION header says: the service type, # and the
-    // action's name, in quotes (UPnP Device Architecture 1.1, section 3.2.1) - answered with its out arguments, or a fault
+    // a SwitchPower action, POSTed to its control URL as SOAP - which one, the request says (as does its SOAPACTION header) -
+    // answered with its out arguments, or with an error (UPnP Device Architecture 1.1, section 3.2)
     void SwitchPowerAction_ (Message& m, Light_& light)
     {
         Response& response = m.rwResponse ();
@@ -179,39 +109,45 @@ namespace {
             response.status = HTTP::StatusCodes::kUnsupportedMediaType;
             return;
         }
-        response.contentType      = kUPnPXML_;
-        const String soapAction   = m.request ().headers ().LookupOne ("SOAPACTION"sv).value_or (String{}).Trim ([] (Character c) {
-            return c == '"' or c.IsWhitespace ();
-        });
-        const String actionPrefix = kSwitchPowerServiceType_ + "#"sv;
-        const String action       = soapAction.StartsWith (actionPrefix) ? soapAction.SubString (actionPrefix.size ()) : String{};
-        auto         answer       = [&] (const String& outArguments) {
-            response.write (SOAPEnvelope_ ("<u:{0}Response xmlns:u=\"{1}\">{2}</u:{0}Response>"_f(action, kSwitchPowerServiceType_, outArguments)));
+        response.contentType = SOAP::kContentType;
+        auto fail            = [&] (unsigned int errorCode, const String& errorDescription) {
+            response.status = HTTP::StatusCodes::kInternalError; // how SOAP says it failed - the error saying how
+            response.write (SOAP::Serialize (SOAP::ActionError{.fErrorCode = errorCode, .fErrorDescription = errorDescription}));
         };
-        auto fault = [&] (unsigned int errorCode, const String& errorDescription) {
-            response.status = HTTP::StatusCodes::kInternalError; // how SOAP says it failed - with a UPnPError saying how
-            response.write (SOAPEnvelope_ ("<s:Fault><faultcode>s:Client</faultcode><faultstring>UPnPError</faultstring><detail><UPnPError "
-                                           "xmlns=\"urn:schemas-upnp-org:control-1-0\"><errorCode>{}</errorCode><errorDescription>{}"
-                                           "</errorDescription></UPnPError></detail></s:Fault>"_f(errorCode, errorDescription)));
+        SOAP::ActionRequest request;
+        try {
+            SOAP::DeSerialize (m.rwRequest ().GetBody (), &request);
+        }
+        catch (...) {
+            fail (SOAP::ActionError::kInvalidAction, "Invalid Action"sv); // not a SOAP request: not one of its actions
+            return;
+        }
+        auto answer = [&] (const SOAP::Arguments& outArguments) {
+            response.write (SOAP::Serialize (
+                SOAP::ActionResponse{.fServiceType = kSwitchPowerServiceType_, .fAction = request.fAction, .fArguments = outArguments}));
         };
-        if (action == "GetStatus"sv) {
-            answer ("<ResultStatus>{}</ResultStatus>"_f(light.fOn ? 1 : 0));
+        const String status = light.fOn ? "1"sv : "0"sv;
+        if (request.fServiceType != kSwitchPowerServiceType_) {
+            fail (SOAP::ActionError::kInvalidAction, "Invalid Action"sv); // another service's
         }
-        else if (action == "GetTarget"sv) {
-            answer ("<RetTargetValue>{}</RetTargetValue>"_f(light.fOn ? 1 : 0));
+        else if (request.fAction == "GetStatus"sv) {
+            answer ({{"ResultStatus"sv, status}});
         }
-        else if (action == "SetTarget"sv) {
-            optional<String> newTargetValue = Argument_ (m.rwRequest ().GetBody (), "newTargetValue"sv);
+        else if (request.fAction == "GetTarget"sv) {
+            answer ({{"RetTargetValue"sv, status}});
+        }
+        else if (request.fAction == "SetTarget"sv) {
+            optional<String> newTargetValue = request.LookupArgument ("newTargetValue"sv);
             optional<bool>   on             = newTargetValue ? ParseBoolean_ (*newTargetValue) : nullopt;
             if (not on) {
-                fault (402, "Invalid Args"sv);
+                fail (SOAP::ActionError::kInvalidArgs, "Invalid Args"sv);
                 return;
             }
             light.Set (*on);
-            answer (String{});
+            answer ({});
         }
         else {
-            fault (401, "Invalid Action"sv);
+            fail (SOAP::ActionError::kInvalidAction, "Invalid Action"sv);
         }
     }
 
@@ -254,7 +190,7 @@ namespace {
                             [] (Message& m) {
                                 Response& response   = m.rwResponse ();
                                 response.contentType = kUPnPXML_;
-                                response.write (kSwitchPowerDescription_);
+                                response.write (Stroika::Frameworks::UPnP::Serialize (kSwitchPowerDescription_));
                             }},
                       Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx, [light] (Message& m) { SwitchPowerAction_ (m, *light); }},
                       Route{"SUBSCRIBE|UNSUBSCRIBE"_RegEx, "SwitchPower/event"_RegEx,

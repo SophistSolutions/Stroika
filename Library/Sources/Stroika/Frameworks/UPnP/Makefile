@@ -9,6 +9,7 @@ vpath %cpp $(SrcDir)
 
 SubDirs	:=	\
 	GENA	\
+	SOAP	\
 	SSDP	\
 
 
@@ -16,6 +17,7 @@ SubDirs	:=	\
 Objs	=	\
 	$(ObjDir)Device${OBJ_SUFFIX}\
 	$(ObjDir)DeviceDescription${OBJ_SUFFIX}\
+	$(ObjDir)ServiceDescription${OBJ_SUFFIX}\
 
 include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 

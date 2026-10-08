@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Status.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
@@ -27,6 +28,7 @@
 
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 #include "Stroika/Frameworks/UPnP/GENA/Subscriber.h"
+#include "Stroika/Frameworks/UPnP/SOAP/Action.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/CachingListener.h"
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
@@ -62,33 +64,28 @@ namespace {
     // a light that can be switched on and off: the UPnP Forum's standard SwitchPower service (as the SSDPServer sample has)
     const String kSwitchPowerServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
 
-    // an action of the SwitchPower service controlled at controlURL: a SOAP request, saying which action in its SOAPACTION header
-    // (UPnP Device Architecture 1.1, section 3.2) - and its answer, the action's out arguments, as SOAP
-    String SwitchPowerAction_ (const URI& controlURL, const String& action, const String& inArguments)
+    // an action of the SwitchPower service controlled at controlURL: a SOAP request, POSTed there - and its answer, the action's
+    // out arguments (UPnP Device Architecture 1.1, section 3.2). Throws if it was not done: the error the service says
+    SOAP::ActionResponse SwitchPowerAction_ (const URI& controlURL, const String& action, const SOAP::Arguments& inArguments = {})
     {
         using namespace IO::Network::Transfer;
-        const string request = "<?xml version=\"1.0\"?>\r\n<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" "
-                               "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:{0} xmlns:u=\"{1}\">{2}</u:{0}>"
-                               "</s:Body></s:Envelope>\r\n"_f(action, kSwitchPowerServiceType_, inArguments)
-                                   .AsUTF8<string> ();
-        Response r = Connection::New ().POST (controlURL,
-                                              DataExchange::TypedBLOB{.fData = as_bytes (span{request}),
-                                                                      .fType = DataExchange::InternetMediaType{"text/xml; charset=\"utf-8\""sv}},
-                                              Mapping<String, String>{{"SOAPACTION"sv, "\"{}#{}\""_f(kSwitchPowerServiceType_, action)}});
-        return String::FromUTF8 (r.GetData ().As<string> ());
-    }
-
-    // an out argument, in an action's answer: an element in its <u:actionResponse> (UPnP Device Architecture 1.1, section 3.2.2).
-    // Found as text, which is enough for the usual <name>value</name>
-    optional<String> OutArgument_ (const String& answer, const String& name)
-    {
-        const String startTag = "<{}>"_f(name);
-        if (optional<size_t> start = answer.Find (startTag)) {
-            if (optional<size_t> end = answer.Find ("</{}>"_f(name), *start)) {
-                return answer.SubString (*start + startTag.size (), *end);
-            }
+        const SOAP::ActionRequest request{.fServiceType = kSwitchPowerServiceType_, .fAction = action, .fArguments = inArguments};
+        Request                   r;
+        r.fMethod               = IO::Network::HTTP::Methods::kPost;
+        r.fAuthorityRelativeURL = controlURL.GetAuthorityRelativeResource<URI> ();
+        r.fOverrideHeaders      = Mapping<String, String>{{"SOAPACTION"sv, request.GetSOAPAction ()}};
+        r.SetTypedBLOB (DataExchange::TypedBLOB{.fData = SOAP::Serialize (request), .fType = SOAP::kContentType});
+        Connection::Ptr c = Connection::New ();
+        c.SetSchemeAndAuthority (controlURL.GetSchemeAndAuthority ());
+        Response answer = c.Send (r); // not SendAndThrowOnFailure: an error's answer - status 500 - says what the error was
+        if (answer.GetSucceeded ()) {
+            SOAP::ActionResponse response;
+            SOAP::DeSerialize (answer.GetData (), &response);
+            return response;
         }
-        return nullopt;
+        SOAP::ActionError error;
+        SOAP::DeSerialize (answer.GetData (), &error);
+        Execution::Throw (Execution::Exception<runtime_error>{"{} failed: {} ({})"_f(action, error.fErrorDescription, error.fErrorCode)});
     }
 
     // where --watch is told the services' events: this port, each service at a path of its own
@@ -156,10 +153,10 @@ namespace {
                     URI controlURL = location.Combine (s.fControlURL); // relative to the description's URL
                     if (fetching->fSwitchLightsTo and not fetching->fSwitched.Contains (dd.fUDN)) {
                         fetching->fSwitched.Add (dd.fUDN);
-                        SwitchPowerAction_ (controlURL, "SetTarget"sv, "<newTargetValue>{}</newTargetValue>"_f(*fetching->fSwitchLightsTo ? 1 : 0));
+                        SwitchPowerAction_ (controlURL, "SetTarget"sv, {{"newTargetValue"sv, *fetching->fSwitchLightsTo ? "1"sv : "0"sv}});
                         Print_ ("\t\tswitched it {}"_f(String{*fetching->fSwitchLightsTo ? "on"sv : "off"sv}));
                     }
-                    optional<String> status = OutArgument_ (SwitchPowerAction_ (controlURL, "GetStatus"sv, String{}), "ResultStatus"sv);
+                    optional<String> status = SwitchPowerAction_ (controlURL, "GetStatus"sv).LookupArgument ("ResultStatus"sv);
                     Print_ ("\t\tit is {}"_f(String{status == "1"sv ? "on"sv : status == "0"sv ? "off"sv : "neither on nor off?"sv}));
                 }
                 if (fetching->fWatch and not s.fEventSubURL.GetPath ().empty ()) { // empty: it has no events

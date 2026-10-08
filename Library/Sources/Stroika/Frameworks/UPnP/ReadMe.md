@@ -4,17 +4,16 @@ This Folder contains the [Frameworks](../)::UPnP Framework source code.
 
 ## Overview
 
-The Stroika UPnP framework is meant to eventually provide basic UPnP functionality
-including
+The Stroika UPnP framework provides the parts of the UPnP Device Architecture (1.1) a device and a control point need:
 
-- SSDP (service discovery)
-- Events
-- Control
-
-  For starters however, and probably for Stroika v2, we will ONLY support SSDP.
+- Discovery (section 1): SSDP - advertising a device, and finding devices
+- Description (section 2): a device's description, and each of its services' (its SCPD)
+- Control (section 3): SOAP - an action's request, and its response or error
+- Eventing (section 4): GENA - a service telling its subscribers each change of its state
 
 ## References
 
+- https://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
 - http://www.upnp-hacks.org/upnp.html
 - http://quimby.gnus.org/internet-drafts/draft-cai-ssdp-v1-03.txt
 - https://wiki.gnome.org/action/show/Projects/GUPnP?action=show&redirect=GUPnP
@@ -23,14 +22,18 @@ including
 
 - [SSDPClient](../../../../../Samples/SSDPClient/)
 
-  This sample demonstrates lisening for announcemnts, and searching for devices.
+  A control point: finds devices (listening, and searching), reads their descriptions, switches each light it finds, and
+  watches each service's events.
 
 - [SSDPServer](../../../../../Samples/SSDPServer/)
 
-  This sample demonstrates lisening for searches and responding, and periodic (and up/down) announcements
+  A device - a light: advertises itself, serves its descriptions, does its actions, and tells subscribers each change.
 
 ## Modules
 
 - [Device.h](Device.h)
 - [DeviceDescription.h](DeviceDescription.h)
+- [GENA/](GENA/)
+- [ServiceDescription.h](ServiceDescription.h)
+- [SOAP/](SOAP/)
 - [SSDP/](SSDP/)
