@@ -22,16 +22,51 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **SSDP - every remaining item, as one list** (2026-10-05; dependencies, priorities and estimates to follow). The
-     planned https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - (WTF, not Stroika) **WTF ignores every ssdp:byebye**: it finds the device by its LOCATION's host, which a byebye
-         does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - use SSDP::Client::CachingListener: its callbacks get
-         a Listener's Advertisement once per change - fAlive false (removed) with the LOCATION last heard - so WTF fetches
-         each description once, not with each NOTIFY as now.
-       - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
-         IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
+   - **CI red: clang++-15 (ubuntu-22.04, libstdc++, Release) cannot compile Tests/54** -
+     https://github.com/SophistSolutions/Stroika/actions/runs/37716913762/job/113115453820 (at be0b625842; only that job
+     failed). Tests/54's `Synchronized<Sequence<Time::TimePointSeconds>> heard` makes clang-15 check Synchronized's
+     `operator<=>` constraint, three_way_comparable<Sequence<...>>, which compiles Sequence's `operator<=>` - and
+     Iterable::SequentialThreeWayComparer keeps each element's result in an `optional<strong_ordering>`, where a
+     TimePointSeconds (a double) compares as partial_ordering: Iterable.inl:1553-1554, "no viable overloaded '='". So `<=>`
+     on a Sequence of any partially ordered T cannot compile; clang-15 only asks first. Fix the comparer (the element
+     comparer's own ordering type, and its return), test-first: `<=>` of two Sequence<double>.
+   - **Waiting for LGP's OK** (2026-10-08):
+       - three GitHub comments drafted 2026-10-06: #1205 - Execution::CallbackRegistry now gives callback registries the
+         unregister guarantee discussed there, and SSDP's Listener and Search use it; #1205 - Execution::ConditionVariable
+         has no wait that is not a cancellation point, so both noexcept removal waits (IntervalTimer::Manager::RemoveRepeating,
+         CallbackRegistry::Remove) use std::condition_variable; #1207 - CallbackRegistry::Remove is a second case where
+         Synchronized cannot wait on its own lock.
+       - **Cookie::AddAttribute (const String& aEqualsBAttributePair) is broken**: Cookie.cpp:66 passes SubString (0, *i + 1)
+         ("Path=") as the value, and :69 (no '=') calls itself - infinite recursion. Nothing calls it (Stroika, tests,
+         downstream). Fix: value = SubString (*i + 1), a valueless attribute -> AddAttribute (key, String{}); plus a test.
+   - **ToString and concepts - follow-ups to 2026-10-08's fixes** (ToString of variant, tuple, bool, raw pointers; an
+     accurate IToString). In order:
+       - **compile the clang 18 and older branch**: qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy gives them their
+         own list in IUseToStringFormatterForFormatter_, which those commits changed (raw pointers; IToString asked last,
+         and qualified) - and no clang 18 or older has compiled it yet (stroika-dev-2404 or -2204).
+       - **write down the rules for concepts** (Documentation/Design-Overview.md, or AGENTS.md), each learned on 2026-10-08:
+         a negative static_assert beside each concept - one that cannot say no is useless, and IToString could not (it asked
+         an unconstrained forwarding template); depend only on the type's own definition, or a set closed before the concept
+         can be asked - asked earlier, the answer is false and the compiler keeps it (only g++ reports it); one name per
+         concept, qualified inside nested namespaces - StringBuilder.h's Characters::Private_::IToString replaced
+         Characters::IToString, unqualified, in whichever translation unit included it first; a type's ToString or
+         formatter in its own header - or IToString differs between translation units, an ODR break; and a constraint
+         that passes on a member whose `auto` return type needs its body compiled turns the question into a hard error
+         (Sequence's `operator<=>`, above).
+   - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
+     https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
        - (optional) **CachingListener can re-add a device just withdrawn**: an answer to its search sent before the device's
          ssdp:byebye can arrive after it (UDP reorders) - ignore answers for a USN briefly after its byebye.
+       - **the SSDP samples, to an A-** (multiple services, embedded devices, icons and security not needed - LGP 2026-10-07):
+           - SSDPClient (estimate 2 h): use SSDP::Client::CachingListener - a line per device added or removed, not per
+             NOTIFY and search answer; fetch each description once, off the SSDP thread (it does blocking HTTP inside the
+             callback, under a lock); switch each light once; show its GetStatus (reading the answer: UPnP services as objects).
+           - SSDPServer (estimate 1-2 h): a --port option; real description fields (not "model number"); refuse a control
+             request that is not text/xml (415: UPnP Device Architecture 1.1, section 3.2.1); a small on/off page as its
+             presentationURL.
+       - **GENA eventing** (estimate a day, in the framework - Stroika has none): SUBSCRIBE, its renewal and UNSUBSCRIBE, and a
+         NOTIFY with SEQ to each subscriber (UPnP Device Architecture 1.1, section 4) - so SSDPServer can tell subscribers each
+         change of the light's Status, as SwitchPower:1 says it does.
        - (this and the next: for 3.0d25, after the rest of this list - LGP 2026-10-07)
          **UPnP services as objects** (estimate 4-5 h, with the samples moved onto them): UPnP::ServiceDescription (a
          service's description, its SCPD) with Serialize; and SOAP control messages - an action's request, response and
@@ -43,16 +78,12 @@ Generally will track stuff here between releases
          Mapping) though UPnP requires it (UPnP Device Architecture 1.1, section 2.5.4): an opt-in ordered representation, or
          objects as arrays. Then the UPnP objects above could Serialize through it. Variant::XML::Reader is still not
          implemented: another 6-10 h.
-       - **the SSDP samples, to an A-** (multiple services, embedded devices, icons and security not needed - LGP 2026-10-07):
-           - SSDPClient (estimate 2 h): use SSDP::Client::CachingListener - a line per device added or removed, not per
-             NOTIFY and search answer; fetch each description once, off the SSDP thread (it does blocking HTTP inside the
-             callback, under a lock); switch each light once; show its GetStatus (reading the answer: UPnP services as objects).
-           - SSDPServer (estimate 1-2 h): a --port option; real description fields (not "model number"); refuse a control
-             request that is not text/xml (415: UPnP Device Architecture 1.1, section 3.2.1); a small on/off page as its
-             presentationURL.
-       - **GENA eventing** (estimate a day, in the framework - Stroika has none): SUBSCRIBE, its renewal and UNSUBSCRIBE, and a
-         NOTIFY with SEQ to each subscriber (UPnP Device Architecture 1.1, section 4) - so SSDPServer can tell subscribers each
-         change of the light's Status, as SwitchPower:1 says it does.
+       - (WTF, not Stroika) **WTF ignores every ssdp:byebye**: it finds the device by its LOCATION's host, which a byebye
+         does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - use SSDP::Client::CachingListener: its callbacks get
+         a Listener's Advertisement once per change - fAlive false (removed) with the LOCATION last heard - so WTF fetches
+         each description once, not with each NOTIFY as now.
+       - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
+         IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
@@ -97,6 +128,16 @@ Generally will track stuff here between releases
      x86, but ThreadSanitizer does not model fences), or an acquire RMW on the count (two atomics per write: measure with
      Tests/52). Until then, Tests/54's SSDP_CachingListener_ and SSDP_CachingListener_Search_ read told under its lock (a BWA,
      so 3.0d25's ThreadSanitizer runs are quiet): restore their told.load () - the reproducer - with the fix.
+   - **Concepts - the rest of 2026-10-08's follow-ups** (the rules: v3.0d25's "write down the rules for concepts"):
+       - **audit Stroika's concepts** (108 in Library) against those rules - including IStdFormatterPredefinedFor_, a hand-kept
+         list of what std formats: libstdc++ also formats __int128, unsigned __int128 and _Float128, which it omits (the g++
+         build of the IToString fix, 2026-10-08).
+       - **StringBuilder's `sb << x` constraint cannot say no**: Characters::Private_::IUnoverloadedToString_ asks
+         UnoverloadedToString, which takes any type - make it ask IToString, with the same care (never before ToString.inl's
+         overloads are declared).
+       - **constrain Characters::ToString itself**, so requires { Characters::ToString (x) } answers truly - then the
+         non-template inline functions in ToString.inl that call it (ToString (byte), ToString (chrono::duration<double>))
+         call ToStringDefaults::ToString instead.
    - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
      been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
      the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.
