@@ -31,17 +31,6 @@ Generally will track stuff here between releases
        - **Cookie::AddAttribute (const String& aEqualsBAttributePair) is broken**: Cookie.cpp:66 passes SubString (0, *i + 1)
          ("Path=") as the value, and :69 (no '=') calls itself - infinite recursion. Nothing calls it (Stroika, tests,
          downstream). Fix: value = SubString (*i + 1), a valueless attribute -> AddAttribute (key, String{}); plus a test.
-   - **ToString and concepts - follow-ups to 2026-10-08's fixes** (ToString of variant, tuple, bool, raw pointers; an
-     accurate IToString):
-       - **write down the rules for concepts** (Documentation/Design-Overview.md, or AGENTS.md), each learned on 2026-10-08:
-         a negative static_assert beside each concept - one that cannot say no is useless, and IToString could not (it asked
-         an unconstrained forwarding template); depend only on the type's own definition, or a set closed before the concept
-         can be asked - asked earlier, the answer is false and the compiler keeps it (only g++ reports it); one name per
-         concept, qualified inside nested namespaces - StringBuilder.h's Characters::Private_::IToString replaced
-         Characters::IToString, unqualified, in whichever translation unit included it first; a type's ToString or
-         formatter in its own header - or IToString differs between translation units, an ODR break; and a constraint
-         that passes on a member whose `auto` return type needs its body compiled turns the question into a hard error
-         (Sequence's `operator<=>` on a partially ordered T, which clang-15 compiled just to check Synchronized's).
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
        - (optional) **CachingListener can re-add a device just withdrawn**: an answer to its search sent before the device's
@@ -117,7 +106,7 @@ Generally will track stuff here between releases
      x86, but ThreadSanitizer does not model fences), or an acquire RMW on the count (two atomics per write: measure with
      Tests/52). Until then, Tests/54's SSDP_CachingListener_ and SSDP_CachingListener_Search_ read told under its lock (a BWA,
      so 3.0d25's ThreadSanitizer runs are quiet): restore their told.load () - the reproducer - with the fix.
-   - **Concepts - the rest of 2026-10-08's follow-ups** (the rules: v3.0d25's "write down the rules for concepts"):
+   - **Concepts - the rest of 2026-10-08's follow-ups** (the rules: Design-Overview.md, "Rules for writing concepts"):
        - **audit Stroika's concepts** (108 in Library) against those rules - including IStdFormatterPredefinedFor_, a hand-kept
          list of what std formats: libstdc++ also formats __int128, unsigned __int128 and _Float128, which it omits (the g++
          build of the IToString fix, 2026-10-08).

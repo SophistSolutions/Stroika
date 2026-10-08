@@ -561,6 +561,43 @@ Stroika templates make substantial use of concepts to help provide documentation
 Since concepts are largely 'interfaces' and syntactically, cannot be confused with abstract class 'interfaces', Stroika uses the naming convention
 of starting each concept with the prefix 'I'.
 
+#### Rules for writing concepts
+
+Each of these was learned from a bug (v3.0d25). A concept that breaks one usually still compiles - it just answers wrongly, or answers
+differently in different places.
+
+1. **A concept must be able to say no.** In short: test it with a type it should reject - a negative `static_assert` beside it.
+   A requires-expression that calls an unconstrained template with a declared return type (a `T&&, ARGS...` forwarder returning
+   String) is satisfied by every type, since only that template's body fails - with an `auto` return type, the call is a hard
+   error instead (rule 5). Characters::IToString asked whether `Characters::ToString (t)` compiled, so until v3.0d25 it was true
+   of everything - and the code that branched on it (shared_ptr's 'print the address' fallback) could never run.
+
+2. **Depend only on what is fixed by the time the concept can be asked.** In short: never on something declared after it - asked
+   too early, it answers "no", and keeps answering "no" for the rest of the file. Fixed means the type's own definition (its
+   members, bases and traits), or a set declared before the concept - not an overload set, or specializations, declared later.
+   The standard makes a changed answer ill-formed, no diagnostic required: g++ reports it ("satisfaction value of atomic
+   constraint changed"); MSVC and clang (18 to 21, tested 2026-10-08) keep the first answer silently. If the set has to come
+   later - IToString's ToStringDefaults overloads - test it in a helper defined after the last of them
+   (Characters::Private_::HasToStringDefault_), put any static_asserts on it after that, and keep a g++ build of everything.
+
+3. **One name per concept, and qualify it inside nested namespaces.** In short: do not reuse a concept's name in a nested
+   namespace. Unqualified name lookup stops at the innermost scope that declares the name. StringBuilder.h once declared its own
+   Characters::Private_::IToString; inside Private_, an unqualified IToString then meant that one in each translation unit that
+   included StringBuilder.h first.
+
+4. **The same answer in every translation unit.** In short: whatever a concept checks about a type must be visible wherever the
+   type is. Declare it with the type itself - its ToString member, its std::formatter specialization - in its own header, never
+   in an optional one. Otherwise inline code that branches on the concept (`if constexpr (IToString<T>)`) compiles differently
+   in different translation units: an ODR violation the linker resolves silently. Likewise, do not ask about an incomplete type
+   (a static_assert inside the class's own body); put such checks after the class.
+
+5. **A constraint that passes can still compile a body.** In short: if a concept checks a call to a function returning `auto`,
+   that function's body must compile for every type the concept lets through. Checking the call instantiates the body to learn
+   its type, so if the body does not compile, the question is a hard error, not "no". Make the body work for everything the
+   constraint admits, or tighten the constraint. Sequence's `operator<=>` requires
+   three_way_comparable<T>, which a double satisfies, but its body assumed strong_ordering until v3.0d25 - and clang-15,
+   checking Synchronized<Sequence<TimePointSeconds>>'s own `operator<=>` constraint, compiled it.
+
 ### Quietly
 
 Most Stroika functions raise an exception when they fail. For example, Wait () methods etc, Parse() methods, etc.
