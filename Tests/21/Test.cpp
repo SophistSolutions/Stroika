@@ -936,6 +936,17 @@ namespace {
                 EXPECT_TRUE (false);
             }
         }
+        {
+            // a partially ordered T - a double, or a TimePointSeconds - orders its Sequence as a partial_ordering
+            Sequence<double> a = {1.0, 2.0};
+            Sequence<double> b = {1.0, 3.0};
+            EXPECT_TRUE ((a <=> b) == partial_ordering::less);
+            EXPECT_TRUE ((a <=> a) == partial_ordering::equivalent);
+            EXPECT_TRUE ((Sequence<double>{1.0} <=> a) == partial_ordering::less); // a prefix
+            Sequence<double> nan = {numeric_limits<double>::quiet_NaN ()};
+            EXPECT_TRUE ((nan <=> nan) == partial_ordering::unordered);
+            static_assert (three_way_comparable<Sequence<double>>);
+        }
     }
 }
 

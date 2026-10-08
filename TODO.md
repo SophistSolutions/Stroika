@@ -22,14 +22,6 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **CI red: clang++-15 (ubuntu-22.04, libstdc++, Release) cannot compile Tests/54** -
-     https://github.com/SophistSolutions/Stroika/actions/runs/37716913762/job/113115453820 (at be0b625842; only that job
-     failed). Tests/54's `Synchronized<Sequence<Time::TimePointSeconds>> heard` makes clang-15 check Synchronized's
-     `operator<=>` constraint, three_way_comparable<Sequence<...>>, which compiles Sequence's `operator<=>` - and
-     Iterable::SequentialThreeWayComparer keeps each element's result in an `optional<strong_ordering>`, where a
-     TimePointSeconds (a double) compares as partial_ordering: Iterable.inl:1553-1554, "no viable overloaded '='". So `<=>`
-     on a Sequence of any partially ordered T cannot compile; clang-15 only asks first. Fix the comparer (the element
-     comparer's own ordering type, and its return), test-first: `<=>` of two Sequence<double>.
    - **Waiting for LGP's OK** (2026-10-08):
        - three GitHub comments drafted 2026-10-06: #1205 - Execution::CallbackRegistry now gives callback registries the
          unregister guarantee discussed there, and SSDP's Listener and Search use it; #1205 - Execution::ConditionVariable
@@ -40,10 +32,7 @@ Generally will track stuff here between releases
          ("Path=") as the value, and :69 (no '=') calls itself - infinite recursion. Nothing calls it (Stroika, tests,
          downstream). Fix: value = SubString (*i + 1), a valueless attribute -> AddAttribute (key, String{}); plus a test.
    - **ToString and concepts - follow-ups to 2026-10-08's fixes** (ToString of variant, tuple, bool, raw pointers; an
-     accurate IToString). In order:
-       - **compile the clang 18 and older branch**: qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy gives them their
-         own list in IUseToStringFormatterForFormatter_, which those commits changed (raw pointers; IToString asked last,
-         and qualified) - and no clang 18 or older has compiled it yet (stroika-dev-2404 or -2204).
+     accurate IToString):
        - **write down the rules for concepts** (Documentation/Design-Overview.md, or AGENTS.md), each learned on 2026-10-08:
          a negative static_assert beside each concept - one that cannot say no is useless, and IToString could not (it asked
          an unconstrained forwarding template); depend only on the type's own definition, or a set closed before the concept
@@ -52,7 +41,7 @@ Generally will track stuff here between releases
          Characters::IToString, unqualified, in whichever translation unit included it first; a type's ToString or
          formatter in its own header - or IToString differs between translation units, an ODR break; and a constraint
          that passes on a member whose `auto` return type needs its body compiled turns the question into a hard error
-         (Sequence's `operator<=>`, above).
+         (Sequence's `operator<=>` on a partially ordered T, which clang-15 compiled just to check Synchronized's).
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
        - (optional) **CachingListener can re-add a device just withdrawn**: an answer to its search sent before the device's
