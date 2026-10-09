@@ -359,7 +359,7 @@ namespace Stroika::Foundation::DataExchange {
          *  \note   About As<BLOB> ()
          *          If type=eBLOB, return that. If type = null, return empty blob.
          *          Else, converts any type to String, and use base64 conversion.
-         *          Similarly - for As<String> on types that are eBLOB - they are decoded as Base64.
+         *          Similarly - for As<String> on types that are eBLOB - they are encoded as Base64, on one line (no line breaks).
          *
          *  \note   About As<Date> (), About As<DateTime> ()
          *          Null maps to empty Date.DateTime; 

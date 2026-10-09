@@ -915,6 +915,24 @@ namespace {
         Outer_ o{.fNested = Outer_::Nested_{.fCount = 3, .fAverage = 1.5f}};
         EXPECT_EQ (mapper.ToObject<Outer_> (mapper.FromObject (o)), o);
     }
+
+    /*
+     *  A BLOB, mapped: base64 on one line (RFC 4648, section 3.1) - before Stroika v3.0d25 it had a CRLF every 76 characters
+     */
+    GTEST_TEST (Foundation_DataExchangeFormat_ObjectVariantMapper, BLOBAsBase64OnOneLine_)
+    {
+        Debug::TraceContextBumper ctx{"BLOBAsBase64OnOneLine_"};
+        ObjectVariantMapper       mapper;
+        mapper.AddCommonType<Memory::BLOB> ();
+        vector<byte> bytes;
+        for (int i = 0; i < 100; ++i) {
+            bytes.push_back (static_cast<byte> (i));
+        }
+        const Memory::BLOB blob{bytes};
+        const String       text = mapper.FromObject (blob).As<String> ();
+        EXPECT_FALSE (text.Contains ("\r"sv) or text.Contains ("\n"sv)) << text.AsNarrowSDKString ();
+        EXPECT_EQ (mapper.ToObject<Memory::BLOB> (mapper.FromObject (blob)), blob);
+    }
 }
 
 namespace {

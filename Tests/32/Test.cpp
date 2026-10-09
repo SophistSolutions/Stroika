@@ -805,6 +805,25 @@ namespace {
         CheckRoundtrip_encode_decode_unchanged (VariantValue{true});
         CheckRoundtrip_encode_decode_unchanged (VariantValue{Memory::BLOB::FromHex ("aa1234abcd01010102030405")});
     }
+
+    /*
+     *  A BLOB as text - so in JSON - is base64 on one line, as RFC 4648 (section 3.1) has it unless a format says otherwise. Before
+     *  Stroika v3.0d25 it had a CRLF every 76 characters, which strict readers refuse.
+     */
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_BLOBAsBase64OnOneLine_)
+    {
+        Debug::TraceContextBumper ctx{"JSON_ONLY_BLOBAsBase64OnOneLine_"};
+        vector<byte>              bytes;
+        for (int i = 0; i < 100; ++i) {
+            bytes.push_back (static_cast<byte> (i));
+        }
+        const Memory::BLOB blob{bytes};
+        const String       text = VariantValue{blob}.As<String> ();
+        EXPECT_FALSE (text.Contains ("\r"sv) or text.Contains ("\n"sv)) << text.AsNarrowSDKString ();
+        const String json = DataExchange::Variant::JSON::Writer{}.WriteAsString (VariantValue{blob});
+        EXPECT_FALSE (json.Contains ("\\r"sv) or json.Contains ("\\n"sv)) << json.AsNarrowSDKString (); // JSON's escapes for them
+        EXPECT_EQ (DataExchange::Variant::JSON::Reader{}.Read (json).As<Memory::BLOB> (), blob);
+    }
 }
 
 namespace {

@@ -710,7 +710,9 @@ String VariantValue::AsString_ () const
         case Type::eBLOB: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
             AssertNotNull (v);
-            return String{Cryptography::Encoding::Algorithm::Base64::Encode (v->fVal)};
+            // base64 on one line, as RFC 4648 (section 3.1) has it unless a format says otherwise - JSON, for one, does not
+            using namespace Cryptography::Encoding::Algorithm;
+            return String{Base64::Encode (v->fVal, Base64::Options{.fLineBreak = Base64::LineBreak::eNone_LB})};
         }
         case Type::eInteger: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<IntegerType_>*> (fVal_.get ());
