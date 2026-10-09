@@ -153,6 +153,16 @@ namespace {
         {
             EXPECT_TRUE (Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{originalUnEncodedBytes})) == base64EncodedString);
             EXPECT_TRUE (Encoding::Algorithm ::Base64::Decode (base64EncodedString) == originalUnEncodedBytes);
+            {
+                // eNone_LB: the same, on one line - and read back
+                using namespace Encoding::Algorithm;
+                string oneLine = base64EncodedString;
+                erase_if (oneLine, [] (char c) { return c == '\r' or c == '\n'; });
+                EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{originalUnEncodedBytes}),
+                                           Base64::Options{.fLineBreak = Base64::LineBreak::eNone_LB}),
+                           oneLine);
+                EXPECT_TRUE (Base64::Decode (oneLine) == originalUnEncodedBytes);
+            }
             VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
             VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
         }

@@ -271,6 +271,8 @@ namespace {
                                 *codechar++ = '\r';
                                 *codechar++ = '\n';
                                 break;
+                            case LineBreak::eNone_LB:
+                                break;
                         }
                         state->stepcount = 0;
                     }

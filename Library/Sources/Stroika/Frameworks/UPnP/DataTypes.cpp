@@ -75,9 +75,8 @@ String DataTypes::ToText (const T& v)
         return v.Format (String{Time::TimeOfDay::kISO8601Format});
     }
     else if constexpr (same_as<T, Memory::BLOB>) {
-        string base64 = Cryptography::Encoding::Algorithm::Base64::Encode (v); // with a line break every 76 characters: removed
-        erase_if (base64, [] (char c) { return c == '\r' or c == '\n'; });
-        return String{base64};
+        using namespace Cryptography::Encoding::Algorithm;
+        return String{Base64::Encode (v, Base64::Options{.fLineBreak = Base64::LineBreak::eNone_LB})};
     }
     else if constexpr (same_as<T, BinHex>) {
         return v.fBytes.AsHex ();

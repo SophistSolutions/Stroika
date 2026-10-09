@@ -40,9 +40,14 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm::Base64 {
     Memory::BLOB Decode (const Characters::String& s);
     void         Decode (const string& s, const Streams::OutputStream::Ptr<byte>& out);
 
+    /**
+     *  What Encode puts after each 76 characters: a line break (as MIME's base64 has), or - eNone_LB - nothing, so the whole on
+     *  one line (as base64 in an HTTP header, JSON, or an XML value usually is)
+     */
     enum class LineBreak : uint8_t {
         eLF_LB,
         eCRLF_LB,
+        eNone_LB,
         eAuto_LB = eCRLF_LB
     };
     struct Options {
