@@ -1464,8 +1464,13 @@ namespace {
     {
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             for (string_view notXML : {"not XML"sv, "<a><b></a>"sv}) {
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+                EXPECT_THROW (domFactory (Memory::BLOB{as_bytes (span<const char>{notXML})}.As<Streams::InputStream::Ptr<byte>> (), nullptr), BadFormatException)
+                    << notXML;
+#else
                 EXPECT_THROW (domFactory (Memory::BLOB{as_bytes (span{notXML})}.As<Streams::InputStream::Ptr<byte>> (), nullptr), BadFormatException)
                     << notXML;
+#endif
             }
         });
     }

@@ -515,6 +515,10 @@ still compile". Say which one you did.
   workaround is version-gated (`Build/Scripts/VersionCompare`) so the next bump drops it, with the exact error text in
   its comment. Before removing one, test the OLDEST supported toolchain its history names - for clang both stdlibs, and
   the fmtlib path (no `<format>`) - and build the Samples too, not just the libraries; MSVC has two supported versions.
+  One for a compiler or standard library bug goes behind a `qCompilerAndStdLib_*_Buggy` define (`Common/Private/CompilerAndStdLib_.h`:
+  version-gated, the error text above it; reuse one for the same bug), with the natural code in its `#else` - even when
+  the workaround compiles everywhere - so dropping the old toolchain leaves clean code. No comment at the use: the
+  define says why.
 - **Warnings**: removing a suppression that provably suppresses nothing is welcome. `-Wno-switch`, `-Wno-sign-compare` and
   `-Wno-unused-function` stay on purpose (2026-10-05); never silence sign-compare with a cast - `std::cmp_less` fixes it.
 - **Kept on purpose, though nothing calls them**: toolbox scripts such as `Build/Scripts/BuildGCC`, `BuildClang` and

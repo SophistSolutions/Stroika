@@ -253,6 +253,10 @@ foo.cpp:
 /*
 Test.cpp:1109:93: error: no viable constructor or deduction guide for deduction of template arguments of 'span'
             ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{b}));
+
+and (libc++ 15's span (Container&) -> span<Container::value_type> guide - so span<char> from a string_view not const):
+Test.cpp:1467:66: error: no matching constructor for initialization of 'span<typename InlineBuffer<char, 4076>::value_type>' (aka 'span<char>')
+                EXPECT_THROW (domFactory (Memory::BLOB{as_bytes (span{notXML})}.As<Streams::InputStream::Ptr<byte>> (), nullptr), BadFormatException)
 */
 
 #ifndef qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
