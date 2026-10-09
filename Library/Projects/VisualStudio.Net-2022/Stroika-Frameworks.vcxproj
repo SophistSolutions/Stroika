@@ -292,6 +292,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Test\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Test\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\DataTypes.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Makefile" />

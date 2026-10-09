@@ -58,17 +58,21 @@ namespace Stroika::Frameworks::UPnP::SOAP {
     using Foundation::IO::Network::URI;
 
     /**
-     *  rief One of an action's arguments: its name, and its value as text, as UPnP writes it (DataTypes::ToText) - made from a
+     *  \brief One of an action's arguments: its name, and its value as text, as UPnP writes it (DataTypes::ToText) - made from a
      *         value of any of UPnP's data types, as its C++ type: {"ResultStatus"sv, true}
      */
     struct Argument : Foundation::Common::KeyValuePair<String, String> {
         /**
-         *  A value of any of UPnP's data types - written as UPnP writes it; or, given text, that text: a string's value, say
+         *  A value of any of UPnP's data types - written as UPnP writes it: as dataType, if given (a BLOB as bin.hex, say), else as
+         *  its C++ type's default; or, given text, that text: a string's value, say
+         *
+         *  \pre dataType, if given, is a data type whose C++ type is value's (DataTypes::IsTypeOf)
          */
         template <DataTypes::IValue T>
         Argument (const String& name, const T& value);
-        Argument (const String& name, const String& text); ///< rief A value of any of UPnP's data types - written as UPnP writes it; or, given text, that text
-        Argument (const Foundation::Common::KeyValuePair<String, String>& nameAndText); ///< rief As SOAP has it: its name, and its text
+        Argument (const String& name, const DataTypes::Value& value, DataTypes::DataType dataType); ///< \brief A value of any of UPnP's data types - written as UPnP writes it
+        Argument (const String& name, const String& text); ///< \brief A value of any of UPnP's data types - written as UPnP writes it; or, given text, that text
+        Argument (const Foundation::Common::KeyValuePair<String, String>& nameAndText); ///< \brief As SOAP has it: its name, and its text
     };
 
     /**
@@ -101,11 +105,15 @@ namespace Stroika::Frameworks::UPnP::SOAP {
         nonvirtual String GetSOAPAction () const;
 
         /**
-         *  The value of the argument called name, read as a T (DataTypes::FromText) - its text, by default; nullopt if no argument
-         *  has that name, or its text is not a T's
+         *  The value of the argument called name, read as a T (DataTypes::FromText) - as dataType, if given (bin.hex, say), else as
+         *  T's default data type; its text, by default - nullopt if no argument has that name, or its text is not a T's
+         *
+         *  \pre dataType, if given, is a data type whose C++ type is T (DataTypes::IsTypeOf)
          */
         template <DataTypes::IValue T = String>
         nonvirtual optional<T> LookupArgument (const String& name) const;
+        template <DataTypes::IValue T>
+        nonvirtual optional<T> LookupArgument (const String& name, DataTypes::DataType dataType) const; ///< \brief The value of the argument called name, read as a T
 
         bool operator== (const ActionRequest&) const = default;
 
@@ -133,11 +141,15 @@ namespace Stroika::Frameworks::UPnP::SOAP {
         Arguments fArguments;
 
         /**
-         *  The value of the argument called name, read as a T (DataTypes::FromText) - its text, by default; nullopt if no argument
-         *  has that name, or its text is not a T's
+         *  The value of the argument called name, read as a T (DataTypes::FromText) - as dataType, if given (bin.hex, say), else as
+         *  T's default data type; its text, by default - nullopt if no argument has that name, or its text is not a T's
+         *
+         *  \pre dataType, if given, is a data type whose C++ type is T (DataTypes::IsTypeOf)
          */
         template <DataTypes::IValue T = String>
         nonvirtual optional<T> LookupArgument (const String& name) const;
+        template <DataTypes::IValue T>
+        nonvirtual optional<T> LookupArgument (const String& name, DataTypes::DataType dataType) const; ///< \brief The value of the argument called name, read as a T
 
         bool operator== (const ActionResponse&) const = default;
 

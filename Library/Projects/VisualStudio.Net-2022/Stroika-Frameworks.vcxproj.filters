@@ -884,6 +884,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\Makefile">
       <Filter>System-Performance\Support</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\DataTypes.inl">
+      <Filter>UPnP</Filter>
+    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SOAP\Action.inl">
       <Filter>UPnP\SOAP</Filter>
     </None>

@@ -352,7 +352,6 @@ namespace {
         roundTrip (Time::Date{chrono::year{2026}, chrono::October, chrono::day{8}}, "2026-10-08"sv);
         roundTrip (Time::TimeOfDay{14, 30, 5}, "14:30:05"sv);
         roundTrip (Memory::BLOB{0x01, 0xfe, 0x7f}, "Af5/"sv);
-        roundTrip (BinHex{Memory::BLOB{0x01, 0xfe, 0x7f}}, "01fe7f"sv);
         roundTrip (URI{"http://192.168.1.2:8080/device.xml"sv}, "http://192.168.1.2:8080/device.xml"sv);
         roundTrip (Common::GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"sv}, "61e4d49d-8c26-3480-f5c8-564e155c67a6"sv);
         {
@@ -380,6 +379,33 @@ namespace {
         EXPECT_EQ (FromText<String> (" a "sv), " a "sv); // a string as it is
         EXPECT_FALSE (FromText<Characters::Character> ("ab"sv).has_value ());
         EXPECT_FALSE (FromText<Common::GUID> ("not a uuid"sv).has_value ());
+
+        // a value of another data type than its C++ type's default: the data type given
+        const Memory::BLOB bytes{0x01, 0xfe, 0x7f};
+        EXPECT_EQ (ToText (bytes, DataType::eBinHex), "01fe7f"sv);
+        EXPECT_EQ (FromText<Memory::BLOB> ("01fe7f"sv, DataType::eBinHex), bytes);
+        EXPECT_EQ (ToText (1.0 / 3, DataType::eFixed14_4), "0.3333"sv); // no more than 4 digits after the point
+        EXPECT_EQ (ToText (2.5, DataType::eFixed14_4), "2.5"sv);
+        EXPECT_EQ (ToText (100.0, DataType::eFixed14_4), "100"sv);
+        {
+            const Time::DateTime dt{Time::Date{chrono::year{2026}, chrono::October, chrono::day{8}}, Time::TimeOfDay{14, 30, 5}, Time::Timezone::kUTC};
+            EXPECT_EQ (ToText (dt, DataType::eDateTime), "2026-10-08T14:30:05"sv); // no time zone
+        }
+        EXPECT_EQ (FromText<Time::TimeOfDay> ("14:30:05+01:00"sv, DataType::eTimeTZ), (Time::TimeOfDay{14, 30, 5})); // its zone dropped
+
+        // a value of a data type learned as it runs: a Value of its C++ type
+        EXPECT_EQ (FromText ("255"sv, DataType::eUI1), (Value{in_place_type<uint8_t>, uint8_t{255}}));
+        EXPECT_FALSE (FromText ("256"sv, DataType::eUI1).has_value ());
+        EXPECT_EQ (FromText ("yes"sv, DataType::eBoolean), Value{true});
+        EXPECT_EQ (ToText (Value{in_place_type<uint16_t>, uint16_t{7}}), "7"sv);
+
+        // each data type named as a service's description names it, and back
+        EXPECT_EQ (Characters::ToString (DataType::eFixed14_4), "fixed.14.4"sv);
+        for (const auto& [t, name] : Common::DefaultNames<DataType>::k) {
+            EXPECT_EQ (Common::DefaultNames<DataType>::k.PeekValue (name), t);
+        }
+        EXPECT_EQ (Common::DefaultNames<DataType>::k.PeekValue (L"dateTime.tz"), DataType::eDateTimeTZ);
+        EXPECT_FALSE (Common::DefaultNames<DataType>::k.PeekValue (L"ui16").has_value ());
     }
 
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
