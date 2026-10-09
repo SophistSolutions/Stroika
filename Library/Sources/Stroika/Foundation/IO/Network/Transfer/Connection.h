@@ -417,7 +417,8 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
         public:
             /**
              * Return the parameter to the HTTP Authorization header. So for example, if you provided a username/password, this
-             * might return (from https://tools.ietf.org/html/rfc2617#section-2) Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+             * returns HTTP Basic authentication (https://www.rfc-editor.org/rfc/rfc7617#section-2): for Aladdin / open sesame,
+             * Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
              *
              * This is not generally very useful, except if you've constructed the authorization with an explicit auth token, or when using 
              * eProactivelySendAuthentication.

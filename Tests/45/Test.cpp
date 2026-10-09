@@ -1025,6 +1025,27 @@ namespace {
     }
 }
 
+namespace {
+    /*
+     *  A username and password sent proactively go as HTTP Basic authentication (RFC 7617): "Basic ", then the base64 of
+     *  username:password, on one line - the Authorization header's value, which each Connection sends as is. Before Stroika
+     *  v3.0d25 it was the base64 alone, with a CRLF every 76 characters, so long credentials broke the header too.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, BasicAuthentication_)
+    {
+        Debug::TraceContextBumper ctx{"BasicAuthentication_"};
+        using Authentication        = Connection::Options::Authentication;
+        constexpr auto kProactively = Authentication::Options::eProactivelySendAuthentication;
+        EXPECT_EQ ((Authentication{"Aladdin"sv, "open sesame"sv, kProactively}.GetAuthToken ()), "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="sv); // RFC 7617's example
+        // an API token as the password, say: base64 longer than 76 characters
+        const String password = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghij"sv;
+        const String token    = Authentication{"someone"sv, password, kProactively}.GetAuthToken ();
+        EXPECT_FALSE (token.Contains ("\r"sv) or token.Contains ("\n"sv)) << token.AsNarrowSDKString ();
+        ASSERT_TRUE (token.StartsWith ("Basic "sv)) << token.AsNarrowSDKString ();
+        EXPECT_EQ (Cryptography::Encoding::Algorithm::Base64::Decode (token.SubString (6)).As<string> (), "someone:" + password.AsUTF8<string> ());
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])

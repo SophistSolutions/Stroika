@@ -40,11 +40,12 @@ String Connection::Options::Authentication::GetAuthToken () const
         return *fExplicitAuthToken_;
     }
     else if (fUsernamePassword_) {
-        // See https://tools.ietf.org/html/rfc2617#section-2
-        // This spec says nothing of the character encoding of the username / password (at least not that section) - so assume utf8
+        // HTTP Basic authentication - https://www.rfc-editor.org/rfc/rfc7617#section-2: its scheme, then the base64 of
+        // username:password in UTF-8 (RFC 7617's charset="UTF-8").
         u8string tmp{fUsernamePassword_->first.AsUTF8 () + u8":" + fUsernamePassword_->second.AsUTF8 ()};
-        using namespace Stroika::Foundation::Cryptography;
-        return String{Encoding::Algorithm::Base64::Encode (BLOB::FromRaw (tmp.c_str (), tmp.length ()))};
+        using namespace Stroika::Foundation::Cryptography::Encoding::Algorithm;
+        return "Basic "sv +
+               String{Base64::Encode (BLOB::FromRaw (tmp.c_str (), tmp.length ()), Base64::Options{.fLineBreak = Base64::LineBreak::eNone_LB})};
     }
     AssertNotReached ();
     return String{};
