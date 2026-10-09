@@ -245,7 +245,7 @@ struct Router::Rep_ final : Interceptor::_IRep {
                         // intersect requested headers with those configured to permit
                         Iterable<String> requestAccessHeaders = accessControlRequestHeaders->Tokenize ({','});
                         auto             r                    = fAllowedHeaders_->Intersection (requestAccessHeaders);
-                        if (r.empty ()) {
+                        if (not r.empty ()) {
                             responseHeaders.Set (HTTP::HeaderName::kAccessControlAllowHeaders, String::Join (r));
                         }
                     }

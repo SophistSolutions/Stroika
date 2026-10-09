@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
+#include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/DataExchange/JSON/Patch.h"
@@ -334,6 +335,10 @@ namespace {
         r.fOverrideHeaders      = headers;
         return c.Send (r);
     }
+    const Route kFRED_{"FRED"_RegEx, [] (Request&, Response& response) {
+                           response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                           response.write ("FRED");
+                       }};
 
     /*
      *  A handler given the handled flag - and the request and response, and the URL's matches - leaves it to the handler: one that
@@ -358,6 +363,32 @@ namespace {
         try {
             EXPECT_EQ (Ask_ (IO::Network::HTTP::Methods::kGet, "/decline"sv, {}).GetDataTextInputStream ().ReadAll (), "the next route"sv);
             EXPECT_EQ (Ask_ (IO::Network::HTTP::Methods::kGet, "/take/abc"sv, {}).GetDataTextInputStream ().ReadAll (), "abc"sv);
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
+    }
+
+    /*
+     *  A CORS preflight asking for headers, with CORSOptions::fAllowedHeaders a list: Access-Control-Allow-Headers gives those of
+     *  them allowed - and is not sent if none is. Before Stroika v3.0d25 that test was inverted: none sent when some were allowed.
+     */
+    GTEST_TEST (Frameworks_WebServer, CORS_AllowedHeaders_)
+    {
+        TraceContextBumper ctx{"CORS_AllowedHeaders_"};
+        using namespace IO::Network::HTTP;
+        ConnectionManager server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_},
+                                 ConnectionManager::Options{.fCORS = CORSOptions{.fAllowedHeaders = Set<String>{"X-Custom"sv}}}};
+        try {
+            auto preflight = [] (const String& requestHeaders) {
+                return Ask_ (Methods::kOptions, "/FRED"sv,
+                             {{String{HeaderName::kOrigin}, "http://example.com"sv},
+                              {"Access-Control-Request-Method"sv, String{Methods::kGet}},
+                              {String{HeaderName::kAccessControlRequestHeaders}, requestHeaders}})
+                    .GetHeaders ();
+            };
+            EXPECT_EQ (preflight ("X-Custom"sv).Lookup (String{HeaderName::kAccessControlAllowHeaders}), "X-Custom"sv);
+            EXPECT_EQ (preflight ("X-Other"sv).Lookup (String{HeaderName::kAccessControlAllowHeaders}), nullopt);
         }
         catch (const RequiredComponentMissingException&) {
             DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
