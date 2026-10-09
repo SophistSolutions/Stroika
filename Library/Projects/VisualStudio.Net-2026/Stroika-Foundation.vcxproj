@@ -138,6 +138,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Deflate.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\GZip.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Encoding\Hex.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\JWT.cpp" />
@@ -536,6 +537,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Encoding\Hex.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeNotSupportedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.h" />

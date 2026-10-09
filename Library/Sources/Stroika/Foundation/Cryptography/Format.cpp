@@ -6,6 +6,7 @@
 #include <cstdio>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/DataExchange/Encoding/Hex.h"
 
 #include "Format.h"
 
@@ -13,16 +14,7 @@ using namespace Stroika::Foundation;
 
 string Cryptography::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t* end)
 {
-    string result;
-    size_t N = end - start;
-    result.reserve (2 * N + 1); // think need to leave space for NUL-terminator?
-    for (const uint8_t* i = start; i != end; ++i) {
-        char b[10];
-        b[0] = '\0';
-        ::snprintf (b, size (b), "%02x", *i);
-        result += b;
-    }
-    return result;
+    return DataExchange::Encoding::Hex::Encode (as_bytes (span{start, end}));
 }
 
 string Cryptography::Private_::mkFmt_ (unsigned int n)

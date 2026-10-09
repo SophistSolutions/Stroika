@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
+#include "Stroika/Foundation/DataExchange/Encoding/Hex.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
@@ -144,43 +145,12 @@ span<const byte> BLOB::AdoptAndDeleteRep_::GetBounds () const
  */
 BLOB BLOB::FromHex (span<const char> s)
 {
-    auto HexChar2Num_ = [] (char c) -> byte {
-        if ('0' <= c and c <= '9') [[likely]] {
-            return static_cast<byte> (c - '0');
-        }
-        if ('A' <= c and c <= 'F') [[likely]] {
-            return static_cast<byte> ((c - 'A') + 10);
-        }
-        if ('a' <= c and c <= 'f') [[likely]] {
-            return static_cast<byte> ((c - 'a') + 10);
-        }
-        static const Execution::Exception<runtime_error> kException_{"Invalid HEX character in BLOB::Hex"sv};
-        Execution::Throw (kException_);
-    };
-    StackBuffer<byte> buf;
-    const char*       e = s.data () + s.size ();
-    for (const char* i = s.data (); i < e; ++i) {
-        if (isspace (*i)) [[unlikely]] {
-            continue;
-        }
-        byte b = HexChar2Num_ (*i);
-        ++i;
-        if (i == e) [[unlikely]] {
-            static const Execution::Exception<runtime_error> kException_{"Invalid partial HEX character in BLOB::Hex"sv};
-            Execution::Throw (kException_);
-        }
-        b = byte (uint8_t (b << 4) + uint8_t (HexChar2Num_ (*i)));
-        buf.push_back (b);
-    }
-    return BLOB{buf.begin (), buf.end ()};
+    return DataExchange::Encoding::Hex::Decode (s);
 }
 
 BLOB BLOB::FromHex (const Characters::String& s)
 {
-    if (optional<span<const Characters::ASCII>> ps = s.PeekData<Characters::ASCII> ()) [[likely]] {
-        return BLOB::FromHex (*ps);
-    }
-    return BLOB::FromHex (span<const char>{s.AsASCII ()}); // will throw in this case cuz if not ascii... oops...
+    return DataExchange::Encoding::Hex::Decode (s);
 }
 
 BLOB BLOB::FromBase64 (span<const char> s)
@@ -313,21 +283,9 @@ Streams::InputStream::Ptr<byte> BLOB::As () const
 template <>
 Characters::String Stroika::Foundation::Memory::BLOB::AsHex (size_t maxBytesToShow) const
 {
-    // @todo Could be more efficient
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    StringBuilder                                    sb;
-    size_t                                           cnt{};
-    for (byte b : *this) {
-        if (cnt++ > maxBytesToShow) {
-#if qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy
-            return sb.str ();
-#else
-            break;
-#endif
-        }
-        sb << "{:02x}"_f(static_cast<unsigned int> (b));
-    }
-    return sb;
+    span<const byte>                                 bytes = As<span<const byte>> ();
+    return String{DataExchange::Encoding::Hex::Encode (bytes.subspan (0, min (bytes.size (), maxBytesToShow)))};
 }
 
 template <>

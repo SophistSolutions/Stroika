@@ -118,8 +118,8 @@ namespace Stroika::Foundation::Memory {
          *  bytes.
          *
          *  Spaces allowed, but treat as array of (possibly space delimited) hex bytes to BLOB.
-         * 
-         *  Upper/LowerCase OK, but invalid characters generate throw.
+         *
+         *  Upper/LowerCase OK, but invalid characters generate throw (DataExchange::Encoding::Hex::Decode).
          *
          *  \par Example Usage
          *      \code
@@ -251,13 +251,14 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  Return a string of hex bytes - two characters per byte, lower case HEX characters.
+         *  Return a string of hex bytes - two characters per byte, lower case HEX characters (DataExchange::Encoding::Hex::Encode) -
+         *  of the first maxBytesToShow bytes.
          *
          *  \par Example Usage
          *      \code
-         *          Assert  (BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6");
+         *          Assert  (BLOB::FromHex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6");
          *      \endcode
-         * 
+         *
          *  \see also FromHex ()
          */
         template <typename STRING_TYPE = Characters::String>
