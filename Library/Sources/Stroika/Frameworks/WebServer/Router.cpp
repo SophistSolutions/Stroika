@@ -97,7 +97,7 @@ struct Router::Rep_ final : Interceptor::_IRep {
     Rep_ (const Sequence<Route>& routes, const CORSOptions& filledInCORSOptions)
         : fAllowedOrigins_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedOrigins)}
         , fAllowedHeaders_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedHeaders)}
-        , fAccessControlAllowCredentialsValue_{*filledInCORSOptions.fAllowCredentials ? "true"sv : "false"sv}
+        , fAllowCredentials_{*filledInCORSOptions.fAllowCredentials}
         , fAccessControlMaxAgeValue_{"{}"_f(*filledInCORSOptions.fAccessControlMaxAge)}
         , fRoutes_{routes}
     {
@@ -163,6 +163,11 @@ struct Router::Rep_ final : Interceptor::_IRep {
                 // see https://fetch.spec.whatwg.org/#cors-protocol-and-http-caches to see why we need to add Vary response
                 // if response depends on origin (so not '*')
                 response.rwHeaders ().vary = Memory::NullCoalesce (response.headers ().vary ()) + String{HTTP::HeaderName::kOrigin};
+                // credentials only beside an origin allowed by name - on a preflight and an ordinary response alike: a browser
+                // refuses them beside * (https://fetch.spec.whatwg.org/#cors-protocol-and-credentials), and true is their only value
+                if (fAllowCredentials_) {
+                    response.rwHeaders ().Set (HTTP::HeaderName::kAccessControlAllowCredentials, "true"sv);
+                }
             }
         }
     }
@@ -239,7 +244,6 @@ struct Router::Rep_ final : Interceptor::_IRep {
         if (o) {
             {
                 auto& responseHeaders = response.rwHeaders ();
-                responseHeaders.Set (HTTP::HeaderName::kAccessControlAllowCredentials, fAccessControlAllowCredentialsValue_);
                 if (auto accessControlRequestHeaders = request.headers ().LookupOne (HTTP::HeaderName::kAccessControlRequestHeaders)) {
                     if (fAllowedHeaders_) {
                         // intersect requested headers with those configured to permit
@@ -271,7 +275,7 @@ struct Router::Rep_ final : Interceptor::_IRep {
 
     const optional<Set<String>> fAllowedOrigins_; // missing <==> '*'
     const optional<Set<String>> fAllowedHeaders_; // missing <==> '*'
-    const String                fAccessControlAllowCredentialsValue_;
+    const bool                  fAllowCredentials_;
     const String                fAccessControlMaxAgeValue_;
     const Sequence<Route>       fRoutes_; // no need for synchronization cuz constant - just set on construction
 };

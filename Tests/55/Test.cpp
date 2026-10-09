@@ -394,6 +394,44 @@ namespace {
             DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
         }
     }
+
+    /*
+     *  CORS with credentials (Fetch, "CORS protocol and credentials"): an origin allowed by name is answered with itself and
+     *  Access-Control-Allow-Credentials: true - on an ordinary response as on a preflight; any origin allowed (*) gets *, and never
+     *  Allow-Credentials, which browsers refuse beside *; with credentials not allowed, Allow-Credentials is never sent (its only
+     *  value is true). Before Stroika v3.0d25 an ordinary response never sent it, a preflight sent true beside *, and false.
+     */
+    GTEST_TEST (Frameworks_WebServer, CORS_Credentials_)
+    {
+        TraceContextBumper ctx{"CORS_Credentials_"};
+        using namespace IO::Network::HTTP;
+        const String kOrigin_{"http://example.com"sv};
+        auto         ask = [&] (const CORSOptions& cors, const String& method) {
+            ConnectionManager       server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_},
+                                           ConnectionManager::Options{.fCORS = cors}};
+            Mapping<String, String> headers{{String{HeaderName::kOrigin}, kOrigin_}};
+            if (method == Methods::kOptions) {
+                headers.Add ("Access-Control-Request-Method"sv, String{Methods::kGet});
+            }
+            Mapping<String, String> r = Ask_ (method, "/FRED"sv, headers).GetHeaders ();
+            return make_pair (r.Lookup (String{HeaderName::kAccessControlAllowOrigin}), r.Lookup (String{HeaderName::kAccessControlAllowCredentials}));
+        };
+        try {
+            const CORSOptions kByName_{.fAllowCredentials = true, .fAllowedOrigins = Set<String>{kOrigin_}};
+            const CORSOptions kAny_{.fAllowCredentials = true, .fAllowedOrigins = Set<String>{CORSOptions::kAccessControlWildcard}};
+            const CORSOptions kByNameNoCredentials_{.fAllowCredentials = false, .fAllowedOrigins = Set<String>{kOrigin_}};
+            for (const String& method : {String{Methods::kGet}, String{Methods::kOptions}}) {
+                EXPECT_EQ (ask (kByName_, method), make_pair (optional<String>{kOrigin_}, optional<String>{"true"sv})) << method.AsNarrowSDKString ();
+                EXPECT_EQ (ask (kAny_, method), make_pair (optional<String>{String{CORSOptions::kAccessControlWildcard}}, optional<String>{}))
+                    << method.AsNarrowSDKString ();
+                EXPECT_EQ (ask (kByNameNoCredentials_, method), make_pair (optional<String>{kOrigin_}, optional<String>{}))
+                    << method.AsNarrowSDKString ();
+            }
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
+    }
 }
 #endif
 

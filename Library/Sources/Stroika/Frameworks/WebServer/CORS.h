@@ -27,6 +27,9 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *   true or false if credentials allowed on CORS request
          *      \see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
+         *
+         *  \note Allowed only for an origin fAllowedOrigins names - not with it * (any origin), beside which a browser refuses
+         *        credentials (https://fetch.spec.whatwg.org/#cors-protocol-and-credentials).
          */
         optional<bool> fAllowCredentials;
 
