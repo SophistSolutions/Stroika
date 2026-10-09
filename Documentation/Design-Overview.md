@@ -145,6 +145,7 @@ data-exchange code, what places it is what it is:
 | Where | What belongs there | E.g. |
 |---|---|---|
 | Foundation::DataExchange | **Data formats**: a value to bytes and back - with no notion of a call, a peer or a transport | JSON, XML (DOM, SAX), INI, archives, compression |
+| Foundation::Cryptography | **Keeping data secret and intact** - secret in a broad sense: encryption, strong to VERY WEAK (opaque to a parser, and to most readers); digests | AES, RC4, Base64, Hex; MD5, CRC32; PKI, SSL |
 | Foundation::IO::Network | **Networking**: moving bytes, and their generic metadata, and the network itself - with no notion of a method call | sockets, URI, HTTP's headers and status codes, Transfer (an HTTP client); addresses, interfaces, DNS |
 | Frameworks::WebServer | **Serving HTTP**: a server, and routing each request to its handler | ConnectionManager, Router |
 | Frameworks::WebService | **RPC protocols**: a method call's request, response and error, a client making one, and a server dispatching one to code | JSON-RPC, SOAP, OpenAPI |
@@ -154,6 +155,10 @@ WebServer, and a protocol is kept in one place. Each builds on a data format - J
 and a protocol built on another keeps only its own rules: UPnP's control (Frameworks::UPnP::SOAP) is SOAP's RPC with UPnP's
 conventions on top, and takes the rest from WebService::SOAP. XML-RPC, if supported, would be a pair: its value encoding a
 Variant format (as Variant::JSON), and its calls in WebService (as JSON-RPC).
+
+And Base64 and Hex, though data formats use them, are Cryptography: very weak encryption - like rot13, they make bytes opaque,
+to a parser and to most readers, with a cipher's API. Escaping that leaves text readable (XML's QuoteForXML, JSON's string
+escapes) belongs to its format, in DataExchange.
 
 ---
 

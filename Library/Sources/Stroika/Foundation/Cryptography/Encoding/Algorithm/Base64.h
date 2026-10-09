@@ -32,6 +32,12 @@
  *
  */
 
+/**
+ *  Base64 (RFC 4648, section 4): bytes as text, each character standing for 6 bits, and back.
+ *
+ *  VERY WEAK encryption (Cryptography's ReadMe.md): the bytes made opaque - to a parser, and to most readers - and kept intact
+ *  through a channel that would mangle them (mail, JSON, XML, an HTTP header); but secret from no one who recognizes it.
+ */
 namespace Stroika::Foundation::Cryptography::Encoding::Algorithm::Base64 {
 
     Memory::BLOB Decode (span<const char> s);

@@ -6,7 +6,7 @@
 #include <cstdio>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
-#include "Stroika/Foundation/DataExchange/Encoding/Hex.h"
+#include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Hex.h"
 
 #include "Format.h"
 
@@ -14,7 +14,7 @@ using namespace Stroika::Foundation;
 
 string Cryptography::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t* end)
 {
-    return DataExchange::Encoding::Hex::Encode (as_bytes (span{start, end}));
+    return Encoding::Algorithm::Hex::Encode (as_bytes (span{start, end}));
 }
 
 string Cryptography::Private_::mkFmt_ (unsigned int n)

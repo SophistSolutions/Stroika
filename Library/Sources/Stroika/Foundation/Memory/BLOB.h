@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  Spaces allowed, but treat as array of (possibly space delimited) hex bytes to BLOB.
          *
-         *  Upper/LowerCase OK, but invalid characters generate throw (DataExchange::Encoding::Hex::Decode).
+         *  Upper/LowerCase OK, but invalid characters generate throw (Cryptography::Encoding::Algorithm::Hex::Decode).
          *
          *  \par Example Usage
          *      \code
@@ -251,7 +251,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  Return a string of hex bytes - two characters per byte, lower case HEX characters (DataExchange::Encoding::Hex::Encode) -
+         *  Return a string of hex bytes - two characters per byte, lower case HEX characters (Cryptography::Encoding::Algorithm::Hex::Encode) -
          *  of the first maxBytesToShow bytes.
          *
          *  \par Example Usage

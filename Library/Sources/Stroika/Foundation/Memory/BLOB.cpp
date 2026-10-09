@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
-#include "Stroika/Foundation/DataExchange/Encoding/Hex.h"
+#include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Hex.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
@@ -145,12 +145,12 @@ span<const byte> BLOB::AdoptAndDeleteRep_::GetBounds () const
  */
 BLOB BLOB::FromHex (span<const char> s)
 {
-    return DataExchange::Encoding::Hex::Decode (s);
+    return Cryptography::Encoding::Algorithm::Hex::Decode (s);
 }
 
 BLOB BLOB::FromHex (const Characters::String& s)
 {
-    return DataExchange::Encoding::Hex::Decode (s);
+    return Cryptography::Encoding::Algorithm::Hex::Decode (s);
 }
 
 BLOB BLOB::FromBase64 (span<const char> s)
@@ -285,7 +285,7 @@ Characters::String Stroika::Foundation::Memory::BLOB::AsHex (size_t maxBytesToSh
 {
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     span<const byte>                                 bytes = As<span<const byte>> ();
-    return String{DataExchange::Encoding::Hex::Encode (bytes.subspan (0, min (bytes.size (), maxBytesToShow)))};
+    return String{Cryptography::Encoding::Algorithm::Hex::Encode (bytes.subspan (0, min (bytes.size (), maxBytesToShow)))};
 }
 
 template <>

@@ -7,8 +7,6 @@
 #include <iostream>
 
 #include "Stroika/Foundation/DataExchange/Atom.h"
-#include "Stroika/Foundation/DataExchange/BadFormatException.h"
-#include "Stroika/Foundation/DataExchange/Encoding/Hex.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/DataExchange/JSON/JWT.h"
@@ -342,39 +340,6 @@ namespace {
             EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR_Typo1));
             EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR_Typo2));
         }
-    }
-}
-
-namespace {
-    /*
-     *  Hex (base16): RFC 4648's test vectors (section 10) - written in lower case, read in either - spaces between bytes, what is
-     *  not hex refused, every byte there and back; and BLOB's AsHex and FromHex, which forward to it.
-     */
-    GTEST_TEST (Foundation_DataExchange_Other, Hex_)
-    {
-        Debug::TraceContextBumper ctx{"{}::Hex_"};
-        using namespace Encoding;
-        auto bytesOf = [] (string_view s) { return Memory::BLOB{as_bytes (span<const char>{s})}; };
-        for (auto [text, hex] : initializer_list<pair<string_view, string_view>>{
-                 {""sv, ""sv}, {"f"sv, "66"sv}, {"fo"sv, "666f"sv}, {"foo"sv, "666f6f"sv}, {"foobar"sv, "666f6f626172"sv}}) {
-            EXPECT_EQ (Hex::Encode (bytesOf (text)), hex);
-            EXPECT_EQ (Hex::Decode (hex), bytesOf (text));
-        }
-        EXPECT_EQ (Hex::Decode ("666F6F626172"sv), bytesOf ("foobar"sv)); // as the RFC writes it
-        EXPECT_EQ (Hex::Decode ("66 6f 6f"sv), bytesOf ("foo"sv));
-        EXPECT_EQ (Hex::Decode (String{"666f6f"sv}), bytesOf ("foo"sv));
-        EXPECT_THROW (Hex::Decode ("666"sv), BadFormatException); // a byte's second digit missing
-        EXPECT_THROW (Hex::Decode ("6g"sv), BadFormatException);
-        vector<std::byte> all;
-        for (unsigned int i = 0; i < 256; ++i) {
-            all.push_back (static_cast<std::byte> (i));
-        }
-        EXPECT_EQ (Hex::Decode (Hex::Encode (Memory::BLOB{all})), Memory::BLOB{all});
-        // BLOB's, forwarding to it
-        const Memory::BLOB foobar = bytesOf ("foobar"sv);
-        EXPECT_EQ (foobar.AsHex (), "666f6f626172"sv);
-        EXPECT_EQ (foobar.AsHex (2), "666f"sv); // just the first 2 bytes
-        EXPECT_EQ (Memory::BLOB::FromHex ("666F6F626172"), foobar);
     }
 }
 #endif

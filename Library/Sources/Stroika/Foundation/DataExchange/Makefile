@@ -21,7 +21,6 @@ Objs	:=	\
 SubDirs	:=	\
 	Archive \
 	Compression \
-	Encoding \
 	JSON \
 	Variant \
 	StructuredStreamEvents \

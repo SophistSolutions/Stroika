@@ -12,14 +12,16 @@
 #include "Hex.h"
 
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Cryptography::Encoding::Algorithm;
+
+using DataExchange::BadFormatException;
 
 /*
  ********************************************************************************
- ************************** DataExchange::Encoding::Hex *************************
+ ******************* Cryptography::Encoding::Algorithm::Hex *********************
  ********************************************************************************
  */
-string Encoding::Hex::Encode (span<const byte> from)
+string Hex::Encode (span<const byte> from)
 {
     constexpr char kDigits_[] = "0123456789abcdef";
     string         result;
@@ -31,12 +33,12 @@ string Encoding::Hex::Encode (span<const byte> from)
     return result;
 }
 
-string Encoding::Hex::Encode (const Memory::BLOB& from)
+string Hex::Encode (const Memory::BLOB& from)
 {
     return Encode (from.As<span<const byte>> ());
 }
 
-Memory::BLOB Encoding::Hex::Decode (span<const char> s)
+Memory::BLOB Hex::Decode (span<const char> s)
 {
     auto digit = [] (char c) -> byte {
         if ('0' <= c and c <= '9') [[likely]] {
@@ -68,23 +70,23 @@ Memory::BLOB Encoding::Hex::Decode (span<const char> s)
     return Memory::BLOB{buf.begin (), buf.end ()};
 }
 
-Memory::BLOB Encoding::Hex::Decode (const char* s)
+Memory::BLOB Hex::Decode (const char* s)
 {
     RequireNotNull (s);
     return Decode (string_view{s});
 }
 
-Memory::BLOB Encoding::Hex::Decode (string_view s)
+Memory::BLOB Hex::Decode (string_view s)
 {
     return Decode (span<const char>{s});
 }
 
-Memory::BLOB Encoding::Hex::Decode (const string& s)
+Memory::BLOB Hex::Decode (const string& s)
 {
     return Decode (span<const char>{s});
 }
 
-Memory::BLOB Encoding::Hex::Decode (const Characters::String& s)
+Memory::BLOB Hex::Decode (const Characters::String& s)
 {
     if (optional<span<const Characters::ASCII>> ps = s.PeekData<Characters::ASCII> ()) [[likely]] {
         return Decode (*ps);

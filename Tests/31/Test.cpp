@@ -26,6 +26,7 @@
 #include "Stroika/Foundation/Cryptography/Digest/Hash.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
+#include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Hex.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/RC4.h"
 #include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
 #include "Stroika/Foundation/Cryptography/Format.h"
@@ -33,6 +34,7 @@
 #include "Stroika/Foundation/Cryptography/PKI/PEMFile.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/LibraryContext.h"
 #include "Stroika/Foundation/Cryptography/SSL/SocketStream.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
@@ -212,6 +214,39 @@ GTEST_TEST (Foundation_Cryptography, Base64Test)
         const char kSrc[]        = "()'asdf***Adasdf a";
         const char kEncodedVal[] = "KCknYXNkZioqKkFkYXNkZiBh";
         DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte>{(const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)});
+    }
+}
+
+namespace {
+    /*
+     *  Hex (base16): RFC 4648's test vectors (section 10) - written in lower case, read in either - spaces between bytes, what is
+     *  not hex refused, every byte there and back; and BLOB's AsHex and FromHex, which forward to it.
+     */
+    GTEST_TEST (Foundation_Cryptography, Hex_)
+    {
+        Debug::TraceContextBumper ctx{"Hex_"};
+        using namespace Encoding::Algorithm;
+        auto bytesOf = [] (string_view s) { return BLOB{as_bytes (span<const char>{s})}; };
+        for (auto [text, hex] : initializer_list<pair<string_view, string_view>>{
+                 {""sv, ""sv}, {"f"sv, "66"sv}, {"fo"sv, "666f"sv}, {"foo"sv, "666f6f"sv}, {"foobar"sv, "666f6f626172"sv}}) {
+            EXPECT_EQ (Hex::Encode (bytesOf (text)), hex);
+            EXPECT_EQ (Hex::Decode (hex), bytesOf (text));
+        }
+        EXPECT_EQ (Hex::Decode ("666F6F626172"sv), bytesOf ("foobar"sv)); // as the RFC writes it
+        EXPECT_EQ (Hex::Decode ("66 6f 6f"sv), bytesOf ("foo"sv));
+        EXPECT_EQ (Hex::Decode (String{"666f6f"sv}), bytesOf ("foo"sv));
+        EXPECT_THROW (Hex::Decode ("666"sv), DataExchange::BadFormatException); // a byte's second digit missing
+        EXPECT_THROW (Hex::Decode ("6g"sv), DataExchange::BadFormatException);
+        vector<byte> all;
+        for (unsigned int i = 0; i < 256; ++i) {
+            all.push_back (static_cast<byte> (i));
+        }
+        EXPECT_EQ (Hex::Decode (Hex::Encode (BLOB{all})), BLOB{all});
+        // BLOB's, forwarding to it
+        const BLOB foobar = bytesOf ("foobar"sv);
+        EXPECT_EQ (foobar.AsHex (), "666f6f626172"sv);
+        EXPECT_EQ (foobar.AsHex (2), "666f"sv); // just the first 2 bytes
+        EXPECT_EQ (BLOB::FromHex ("666F6F626172"), foobar);
     }
 }
 

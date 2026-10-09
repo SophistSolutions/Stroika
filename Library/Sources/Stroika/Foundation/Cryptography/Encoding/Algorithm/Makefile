@@ -12,6 +12,7 @@ vpath %cpp $(SrcDir)
 Objs	:=	\
 	$(ObjDir)AES${OBJ_SUFFIX}\
 	$(ObjDir)Base64${OBJ_SUFFIX}\
+	$(ObjDir)Hex${OBJ_SUFFIX}\
 	$(ObjDir)RC4${OBJ_SUFFIX}\
 
 

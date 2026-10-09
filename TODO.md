@@ -22,10 +22,6 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **HIGH: WebServer::Router bugs** (2026-10-09; to fix now, no issues): RequestHandler's (Request&, Response&, matchedArgs,
-     handled) overload calls the handler wrongly (and so cannot compile if used); a CORS preflight never gets
-     Access-Control-Allow-Headers when CORSOptions::fAllowedHeaders is a list (Router.cpp's `if (r.empty ())` is inverted);
-     CORS with credentials cannot work (Allow-Origin `*` with Allow-Credentials `true`; none on ordinary responses).
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
        - (for 3.0d25, after the rest of this list - LGP 2026-10-07)

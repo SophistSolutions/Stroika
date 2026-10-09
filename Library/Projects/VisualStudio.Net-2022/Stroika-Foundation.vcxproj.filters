@@ -169,9 +169,6 @@
     <Filter Include="Sources\DataExchange\Compression">
       <UniqueIdentifier>{12087261-c2a0-4b4c-97df-e1d2c3a0011a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\DataExchange\Encoding">
-      <UniqueIdentifier>{a6669bfa-c6e1-4ef6-a47f-1d73ee61dfdc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\DataExchange\Compression\Zip">
       <UniqueIdentifier>{b0c453db-b682-4ccd-9511-38306d89ce9a}</UniqueIdentifier>
     </Filter>
@@ -846,6 +843,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.cpp">
       <Filter>Sources\Common\Platform\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Hex.cpp">
+      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
@@ -950,9 +950,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Private_minizip_.cpp">
       <Filter>Sources\DataExchange\Archive\Zip</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Encoding\Hex.cpp">
-      <Filter>Sources\DataExchange\Encoding</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2421,6 +2418,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_HashTable.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Hex.h">
+      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Writer.h">
       <Filter>Sources\DataExchange\Archive</Filter>
     </ClInclude>
@@ -2429,9 +2429,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Private_minizip_.h">
       <Filter>Sources\DataExchange\Archive\Zip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Encoding\Hex.h">
-      <Filter>Sources\DataExchange\Encoding</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
