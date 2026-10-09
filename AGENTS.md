@@ -347,6 +347,7 @@ old staged versions of the commit's files.
 
 ## Issues
 
+- **A bug or small improvement gets fixed, not ticketed** (LGP, 2026-10-09): a ticket is for work planned for a later release.
 - **Priority is a field, never a label** - create no labels (applying existing ones is fine). There are TWO priority
   fields, the "Stroika Issues" project's (#1) and the organization's issue field; setting one does not set the other, so
   set both (`gh api graphql`, from a POSIX shell - PowerShell mangles the quoting).

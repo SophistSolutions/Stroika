@@ -22,6 +22,10 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
+   - **HIGH: WebServer::Router bugs** (2026-10-09; to fix now, no issues): RequestHandler's (Request&, Response&, matchedArgs,
+     handled) overload calls the handler wrongly (and so cannot compile if used); a CORS preflight never gets
+     Access-Control-Allow-Headers when CORSOptions::fAllowedHeaders is a list (Router.cpp's `if (r.empty ())` is inverted);
+     CORS with credentials cannot work (Allow-Origin `*` with Allow-Credentials `true`; none on ordinary responses).
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
        - (for 3.0d25, after the rest of this list - LGP 2026-10-07)
@@ -90,6 +94,9 @@ Generally will track stuff here between releases
        - **constrain Characters::ToString itself**, so requires { Characters::ToString (x) } answers truly - then the
          non-template inline functions in ToString.inl that call it (ToString (byte), ToString (chrono::duration<double>))
          call ToStringDefaults::ToString instead.
+   - **WebServer::Router design** - https://github.com/SophistSolutions/Stroika/issues/1214 - from comparing it with other
+     C++ HTTP servers: a route's methods listable (so 405's Allow and OPTIONS include custom methods and HEAD); named, typed
+     path parameters, any number; mounting routes under a prefix; CORS as an Interceptor of its own.
    - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
      been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
      the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.
