@@ -56,7 +56,7 @@ using Server::BasicServer;
 namespace {
     const String kSwitchPowerServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
 
-    // what UPnP's descriptions are sent as (UPnP Device Architecture 1.1, section 2.11) - and what a control request must be
+    // what UPnP's descriptions are sent as (UPnP Device Architecture 1.1, section 2.11)
     const InternetMediaType kUPnPXML_{"text/xml"sv};
 
     // SwitchPower's description (its SCPD): its actions, and the state they act on - as its standard gives it
@@ -98,57 +98,26 @@ namespace {
         }
     };
 
-    // a SwitchPower action, POSTed to its control URL as SOAP - which one, the request says (as does its SOAPACTION header) -
-    // answered with its out arguments, or with an error (UPnP Device Architecture 1.1, section 3.2)
-    void SwitchPowerAction_ (Message& m, Light_& light)
+    // a SwitchPower action (UPnP Device Architecture 1.1, section 3.2): its out arguments - or, thrown, why it was not done
+    SOAP::Arguments SwitchPowerAction_ (const SOAP::ActionRequest& request, Light_& light)
     {
-        Response& response = m.rwResponse ();
-        // its body must be text/xml (with any charset), or it is refused: 415 (UPnP Device Architecture 1.1, section 3.2.1)
-        if (optional<InternetMediaType> ct = m.request ().headers ().contentType ();
-            not ct or not DataExchange::InternetMediaTypeRegistry::sThe->IsA (kUPnPXML_, *ct)) {
-            response.status = HTTP::StatusCodes::kUnsupportedMediaType;
-            return;
-        }
-        response.contentType = SOAP::kContentType;
-        auto fail            = [&] (unsigned int errorCode, const String& errorDescription) {
-            response.status = HTTP::StatusCodes::kInternalError; // how SOAP says it failed - the error saying how
-            response.write (SOAP::Serialize (SOAP::ActionError{.fErrorCode = errorCode, .fErrorDescription = errorDescription}));
-        };
-        SOAP::ActionRequest request;
-        try {
-            SOAP::DeSerialize (m.rwRequest ().GetBody (), &request);
-        }
-        catch (...) {
-            fail (SOAP::ActionError::kInvalidAction, "Invalid Action"sv); // not a SOAP request: not one of its actions
-            return;
-        }
-        auto answer = [&] (const SOAP::Arguments& outArguments) {
-            response.write (SOAP::Serialize (
-                SOAP::ActionResponse{.fServiceType = kSwitchPowerServiceType_, .fAction = request.fAction, .fArguments = outArguments}));
-        };
         const String status = light.fOn ? "1"sv : "0"sv;
-        if (request.fServiceType != kSwitchPowerServiceType_) {
-            fail (SOAP::ActionError::kInvalidAction, "Invalid Action"sv); // another service's
+        if (request.fAction == "GetStatus"sv) {
+            return {{"ResultStatus"sv, status}};
         }
-        else if (request.fAction == "GetStatus"sv) {
-            answer ({{"ResultStatus"sv, status}});
+        if (request.fAction == "GetTarget"sv) {
+            return {{"RetTargetValue"sv, status}};
         }
-        else if (request.fAction == "GetTarget"sv) {
-            answer ({{"RetTargetValue"sv, status}});
-        }
-        else if (request.fAction == "SetTarget"sv) {
+        if (request.fAction == "SetTarget"sv) {
             optional<String> newTargetValue = request.LookupArgument ("newTargetValue"sv);
             optional<bool>   on             = newTargetValue ? ParseBoolean_ (*newTargetValue) : nullopt;
             if (not on) {
-                fail (SOAP::ActionError::kInvalidArgs, "Invalid Args"sv);
-                return;
+                Throw (SOAP::ActionException{SOAP::ActionError::kInvalidArgs});
             }
             light.Set (*on);
-            answer ({});
+            return {};
         }
-        else {
-            fail (SOAP::ActionError::kInvalidAction, "Invalid Action"sv);
-        }
+        Throw (SOAP::ActionException{SOAP::ActionError::kInvalidAction});
     }
 
     // the light's page - its presentationURL - for a person: whether it is on, and buttons that POST switch=on or switch=off back
@@ -177,28 +146,32 @@ namespace {
         // the device description dd - at /, the LOCATION SSDP advertises - its service's description, actions and eventing, and its
         // page, at the URLs dd gives them; light must outlive this
         DeviceWebServer_ (uint16_t webServerPortNumber, const DeviceDescription& dd, Light_* light)
-            : ConnectionManager{
-                  SocketAddresses (InternetAddresses_Any (), webServerPortNumber),
-                  Sequence<Route>{
-                      Route{""_RegEx,
-                            [dd] (Message& m) {
-                                Response& response   = m.rwResponse ();
-                                response.contentType = kUPnPXML_;
-                                response.write (Stroika::Frameworks::UPnP::Serialize (dd));
-                            }},
-                      Route{"SwitchPower/description.xml"_RegEx,
-                            [] (Message& m) {
-                                Response& response   = m.rwResponse ();
-                                response.contentType = kUPnPXML_;
-                                response.write (Stroika::Frameworks::UPnP::Serialize (kSwitchPowerDescription_));
-                            }},
-                      Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx, [light] (Message& m) { SwitchPowerAction_ (m, *light); }},
-                      Route{"SUBSCRIBE|UNSUBSCRIBE"_RegEx, "SwitchPower/event"_RegEx,
-                            [light] (Message& m) { light->fEvents.HandleRequest (m); }},
-                      Route{"light"_RegEx, [light] (Message& m) { LightPage_ (m, *light); }},
-                      Route{HTTP::MethodsRegEx::kPost, "light"_RegEx, [light] (Message& m) { LightPage_ (m, *light); }},
-                  },
-                  Options{.fMaxConnections = 3, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
+            : ConnectionManager{SocketAddresses (InternetAddresses_Any (), webServerPortNumber),
+                                Sequence<Route>{
+                                    Route{""_RegEx,
+                                          [dd] (Message& m) {
+                                              Response& response   = m.rwResponse ();
+                                              response.contentType = kUPnPXML_;
+                                              response.write (Stroika::Frameworks::UPnP::Serialize (dd));
+                                          }},
+                                    Route{"SwitchPower/description.xml"_RegEx,
+                                          [] (Message& m) {
+                                              Response& response   = m.rwResponse ();
+                                              response.contentType = kUPnPXML_;
+                                              response.write (Stroika::Frameworks::UPnP::Serialize (kSwitchPowerDescription_));
+                                          }},
+                                    Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx,
+                                          [light] (Message& m) {
+                                              SOAP::HandleAction (m, kSwitchPowerServiceType_, [light] (const SOAP::ActionRequest& r) {
+                                                  return SwitchPowerAction_ (r, *light);
+                                              });
+                                          }},
+                                    Route{"SUBSCRIBE|UNSUBSCRIBE"_RegEx, "SwitchPower/event"_RegEx,
+                                          [light] (Message& m) { light->fEvents.HandleRequest (m); }},
+                                    Route{"light"_RegEx, [light] (Message& m) { LightPage_ (m, *light); }},
+                                    Route{HTTP::MethodsRegEx::kPost, "light"_RegEx, [light] (Message& m) { LightPage_ (m, *light); }},
+                                },
+                                Options{.fMaxConnections = 3, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
         }
     };

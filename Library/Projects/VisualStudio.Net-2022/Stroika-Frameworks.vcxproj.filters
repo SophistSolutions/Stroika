@@ -1042,6 +1042,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.cpp">
       <Filter>WebService\Server</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\SOAP.cpp">
+      <Filter>WebService</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.h">
@@ -1049,6 +1052,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.h">
       <Filter>WebService\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\SOAP.h">
+      <Filter>WebService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

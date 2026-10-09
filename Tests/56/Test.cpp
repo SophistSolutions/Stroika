@@ -9,12 +9,15 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/DataExchange/JSON/Patch.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -22,6 +25,10 @@
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Status.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
+#include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
@@ -29,6 +36,7 @@
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 #include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
+#include "Stroika/Frameworks/WebService/SOAP.h"
 #include "Stroika/Frameworks/WebService/Server/ObjectRequestHandler.h"
 #include "Stroika/Frameworks/WebService/Server/VariantValue.h"
 
@@ -224,6 +232,101 @@ namespace {
     }
 }
 
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+namespace {
+    /*
+     *  SOAP's messages: a call, its answer, and a fault (with and without detail) - each read back as written, with values XML
+     *  must quote, one not ASCII, and an empty one - and each read as what it is not, refused.
+     */
+    GTEST_TEST (Frameworks_WebService, SOAP_RoundTrip_)
+    {
+        Debug::TraceContextBumper ctx{"SOAP_RoundTrip_"};
+        const String              kAwkward_{u"R&D <\"caf\u00e9\"> 'x'"sv};
+        const SOAP::Request       request{
+            .fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Symbol"sv, kAwkward_}, {"Empty"sv, String{}}}};
+        {
+            SOAP::Request back;
+            SOAP::DeSerialize (SOAP::Serialize (request), &back);
+            EXPECT_EQ (back, request) << back.ToString ().AsNarrowSDKString ();
+        }
+        for (const SOAP::Response& response :
+             {SOAP::Response{.fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Price"sv, kAwkward_}}},
+              SOAP::Response{.fNamespace = "urn:example:stock"sv, .fMethod = "Buy"sv}}) {
+            SOAP::Response back;
+            SOAP::DeSerialize (SOAP::Serialize (response), &back);
+            EXPECT_EQ (back, response) << back.ToString ().AsNarrowSDKString ();
+        }
+        for (const SOAP::Fault& fault :
+             {SOAP::Fault{.fFaultCode = SOAP::Fault::kClient, .fFaultString = kAwkward_},
+              SOAP::Fault{.fFaultCode = "Server.Busy"sv, .fFaultString = "try later"sv, .fDetail = "<x:Why xmlns:x=\"urn:example:why\">because</x:Why>"sv}}) {
+            SOAP::Fault back;
+            SOAP::DeSerialize (SOAP::Serialize (fault), &back);
+            EXPECT_EQ (back, fault) << back.ToString ().AsNarrowSDKString ();
+        }
+        SOAP::Response notAResponse;
+        EXPECT_THROW (SOAP::DeSerialize (SOAP::Serialize (SOAP::Fault{}), &notAResponse), DataExchange::BadFormatException);
+        EXPECT_THROW (SOAP::DeSerialize (SOAP::Serialize (request), &notAResponse), DataExchange::BadFormatException);
+        SOAP::Request notARequest;
+        EXPECT_THROW (SOAP::DeSerialize (SOAP::Serialize (SOAP::Fault{}), &notARequest), DataExchange::BadFormatException);
+        EXPECT_THROW (SOAP::DeSerialize (BLOB{as_bytes (span{"not XML"sv})}, &notARequest), DataExchange::BadFormatException);
+    }
+
+    /*
+     *  SOAP end to end, over loopback: a client's Invoke, and a server's HandleRequest answering it - with its handler's Response,
+     *  or the Fault it throws; and a Client fault for a body that is not a SOAP call.
+     */
+    GTEST_TEST (Frameworks_WebService, SOAP_InvokeAndHandleRequest_)
+    {
+        Debug::TraceContextBumper       ctx{"SOAP_InvokeAndHandleRequest_"};
+        constexpr IO::Network::PortType kPort_ = 8084; // on loopback only
+        const IO::Network::URI          url{"http://127.0.0.1:{}/stock"_f(kPort_)};
+        const SOAP::Fault kBusy_{.fFaultCode = "Server.Busy"sv, .fFaultString = "try later"sv, .fDetail = "<x:Why xmlns:x=\"urn:example:why\">because</x:Why>"sv};
+        optional<ConnectionManager> server;
+        try {
+            server.emplace (IO::Network::SocketAddress{IO::Network::V4::kLocalhost, kPort_},
+                            Sequence<Route>{Route{IO::Network::HTTP::MethodsRegEx::kPost, "stock"_RegEx, [&] (Message& m) {
+                                                      SOAP::HandleRequest (m, [&] (const SOAP::Request& r) {
+                                                          if (r.fMethod == "GetPrice"sv) {
+                                                              return SOAP::Response{.fNamespace = r.fNamespace,
+                                                                                    .fMethod    = r.fMethod,
+                                                                                    .fArguments = {{"Price"sv, "34.5"sv}}};
+                                                          }
+                                                          Execution::Throw (SOAP::FaultException{kBusy_});
+                                                      });
+                                                  }}});
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SOAP_InvokeAndHandleRequest_ skipped - could not run its web server here: {}"_f(current_exception ()).AsNarrowSDKString ().c_str ());
+            return;
+        }
+        // answered
+        EXPECT_EQ (SOAP::Invoke (url, "\"urn:example:stock#GetPrice\""sv,
+                                 SOAP::Request{.fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Symbol"sv, "IBM"sv}}}),
+                   (SOAP::Response{.fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Price"sv, "34.5"sv}}}));
+        // faulted
+        try {
+            SOAP::Invoke (url, "\"urn:example:stock#Buy\""sv, SOAP::Request{.fNamespace = "urn:example:stock"sv, .fMethod = "Buy"sv});
+            ADD_FAILURE () << "Buy was not refused";
+        }
+        catch (const SOAP::FaultException& e) {
+            EXPECT_EQ (e.GetFault (), kBusy_) << e.GetFault ().ToString ().AsNarrowSDKString ();
+        }
+        // not a SOAP call
+        IO::Network::Transfer::Connection::Ptr c = IO::Network::Transfer::Connection::New ();
+        c.SetSchemeAndAuthority (url.GetSchemeAndAuthority ());
+        IO::Network::Transfer::Request hello;
+        hello.fMethod               = IO::Network::HTTP::Methods::kPost;
+        hello.fAuthorityRelativeURL = IO::Network::URI{"/stock"sv};
+        hello.SetTypedBLOB (TypedBLOB{.fData = BLOB{as_bytes (span{"<hello/>"sv})}, .fType = SOAP::kContentType});
+        IO::Network::Transfer::Response answer = c.Send (hello);
+        EXPECT_EQ (answer.GetStatus (), IO::Network::HTTP::StatusCodes::kInternalError);
+        SOAP::Fault fault;
+        SOAP::DeSerialize (answer.GetData (), &fault);
+        EXPECT_EQ (fault.fFaultCode, SOAP::Fault::kClient);
+    }
+}
+#endif
 #endif
 
 int main (int argc, const char* argv[])

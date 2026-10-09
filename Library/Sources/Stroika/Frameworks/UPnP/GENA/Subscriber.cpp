@@ -6,11 +6,15 @@
 #include <atomic>
 #include <cmath>
 #include <mutex>
-#include <regex>
 #include <utility>
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+#include "Stroika/Foundation/DataExchange/XML/DOM.h"
+#endif
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
@@ -19,8 +23,6 @@
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Status.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
-
-#include "Stroika/Frameworks/UPnP/Private_/XMLText.h"
 
 #include "Subscriber.h"
 
@@ -60,14 +62,21 @@ namespace {
     }
 
     // a NOTIFY's body's variables: each e:property's one element, by name (UPnP Device Architecture 1.1, section 4.3.2) - their
-    // values plain text, as UPnP's types are. Found as text, so the same in every build - with an XML parser or without
-    Mapping<String, String> PropertySet_ (const string& body)
+    // values plain text, as UPnP's types are. Read with the XML DOM: without one, Start throws, so none is read
+    Mapping<String, String> PropertySet_ ([[maybe_unused]] const Memory::BLOB& body)
     {
         Mapping<String, String> result;
-        static const regex      kProperty_{R"(<(?:[\w.-]+:)?property>\s*<([\w.-]+)(?:\s[^>]*)?>([^<]*)</\1>\s*</(?:[\w.-]+:)?property>)"};
-        for (sregex_iterator i{body.begin (), body.end (), kProperty_}, end; i != end; ++i) {
-            result.Add (String::FromUTF8 ((*i)[1].str ()), UPnP::Private_::XMLText (String::FromUTF8 ((*i)[2].str ())));
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+        using namespace DataExchange::XML::DOM;
+        Document::Ptr doc = Document::New (body.As<Streams::InputStream::Ptr<std::byte>> ()); // kept: its elements do not keep it
+        if (Element::Ptr propertySet = doc.GetRootElement (); propertySet != nullptr) {
+            for (const Element::Ptr& property : propertySet.GetChildElements ()) {
+                for (const Element::Ptr& variable : property.GetChildElements ()) {
+                    result.Add (variable.GetName ().fName, variable.GetValue ());
+                }
+            }
         }
+#endif
         return result;
     }
 }
@@ -94,6 +103,9 @@ public:
 public:
     void Start ()
     {
+#if not qStroika_Foundation_DataExchange_XML_SupportDOM
+        Throw (Exception<runtime_error>{"GENA events cannot be read: this build has no XML parser"sv});
+#endif
         lock_guard l{fLifecycleMutex_};
         if (fActive_) {
             return;
@@ -256,8 +268,14 @@ void Subscriber::HandleNotify (WebServer::Message& m)
         response.status = HTTP::StatusCodes::kPreconditionFailed;
         return;
     }
-    Event e{.fSEQ       = String2Int<uint32_t> (request.headers ().LookupOne ("SEQ"sv).value_or (String{})),
-            .fVariables = PropertySet_ (m.rwRequest ().GetBody ().As<string> ())};
+    Event e{.fSEQ = String2Int<uint32_t> (request.headers ().LookupOne ("SEQ"sv).value_or (String{}))};
+    try {
+        e.fVariables = PropertySet_ (m.rwRequest ().GetBody ());
+    }
+    catch (const DataExchange::BadFormatException&) {
+        response.status = HTTP::StatusCodes::kBadRequest; // not a property set
+        return;
+    }
     fRep_->fOnEvent_ (e);
 }
 

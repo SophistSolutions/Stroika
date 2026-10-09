@@ -101,6 +101,9 @@ namespace Stroika::Frameworks::UPnP::GENA {
     public:
         /**
          *  \brief Subscribe - throwing if the service does not take it - and keep it renewed. Started already: does nothing.
+         *
+         *  Its events are read with the XML DOM: in a build without an XML parser (qStroika_Foundation_DataExchange_XML_SupportDOM),
+         *  it throws.
          */
         nonvirtual void Start ();
 

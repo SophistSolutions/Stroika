@@ -417,6 +417,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectRequestHandler.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\SOAP.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.h" />
@@ -425,6 +426,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectRequestHandler.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\SOAP.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Frameworks-Debugger-Template.natvis" />

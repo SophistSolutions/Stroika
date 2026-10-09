@@ -11,25 +11,26 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
-/*
- * TODO:
- *      INSANELY SUPER PRELIMINARY/INCOMPLETE
+/**
+ *  \file
+ *
+ *  \note DEPRECATED since Stroika v3.0d25: SOAP is in Frameworks::WebService::SOAP (an RPC protocol: see Design-Overview.md,
+ *        "Where code goes: Foundation and Frameworks").
  */
 
 namespace Stroika::Foundation::IO::Network::SOAP {
 
     using Characters::String;
-    /*
-     *      SUPER PRIMITIVE PRELIMINARY DRAFT support for SOAP...
-     *
-     *  SOAPFault
+
+    /**
+     *  \note DEPRECATED since Stroika v3.0d25: use Frameworks::WebService::SOAP::Fault
      */
     struct Fault {
         String faultcode;
         String faultstring;
-        //BLOB    detail;     // NYI
     };
-    optional<Fault> Deserialize_Fault (const Streams::InputStream::Ptr<byte>& from);
+    [[deprecated ("Since Stroika v3.0d25 use Frameworks::WebService::SOAP::DeSerialize (BLOB, Fault*)")]] optional<Fault>
+    Deserialize_Fault (const Streams::InputStream::Ptr<byte>& from);
 
 }
 

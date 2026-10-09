@@ -6,11 +6,16 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include <functional>
+#include <stdexcept>
+
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Common/KeyValuePair.h"
-#include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+
+#include "Stroika/Frameworks/WebServer/Message.h"
+#include "Stroika/Frameworks/WebService/SOAP.h"
 
 /**
  *  \file
@@ -20,65 +25,40 @@
 
 /**
  *  UPnP's control (UPnP Device Architecture 1.1, section 3): a control point asks a service to do one of its actions - an
- *  ActionRequest, POSTed to the service's controlURL as SOAP - and the service answers with the action's out arguments, an
- *  ActionResponse, or says why it could not, an ActionError. Each written (Serialize) and read (DeSerialize) here, so neither
- *  side writes or reads XML of its own.
+ *  ActionRequest, POSTed to the service's controlURL (Invoke) - and the service answers (HandleAction) with the action's out
+ *  arguments, an ActionResponse, or says why it could not, an ActionError.
+ *
+ *  It is SOAP 1.1's RPC (WebService::SOAP) with UPnP's conventions on top: a method's namespace is its service's type, the
+ *  SOAPACTION header is that type, # and the action, and an error is a UPnPError in a fault's detail.
  *
  *  \par Example Usage
  *      \code
- *          // a control point: switch a light on
- *          SOAP::ActionRequest request{.fServiceType = "urn:schemas-upnp-org:service:SwitchPower:1"sv,
- *                                      .fAction      = "SetTarget"sv,
- *                                      .fArguments   = {{"newTargetValue"sv, "1"sv}}};
- *          Transfer::Request r;
- *          r.fMethod               = HTTP::Methods::kPost;
- *          r.fAuthorityRelativeURL = controlURL.GetAuthorityRelativeResource<URI> ();
- *          r.fOverrideHeaders      = {{"SOAPACTION"sv, request.GetSOAPAction ()}};
- *          r.SetTypedBLOB ({.fData = Serialize (request), .fType = SOAP::kContentType});
- *          Transfer::Connection::Ptr c = Transfer::Connection::New ();
- *          c.SetSchemeAndAuthority (controlURL.GetSchemeAndAuthority ());
- *          Transfer::Response answer = c.Send (r); // not SendAndThrowOnFailure: a 500's body says why
- *          if (answer.GetSucceeded ()) {
- *              SOAP::ActionResponse response;
- *              DeSerialize (answer.GetData (), &response);
- *          }
- *          else {
- *              SOAP::ActionError error;
- *              DeSerialize (answer.GetData (), &error);
- *          }
+ *          // a control point: switch a light on, then ask it its status
+ *          const URI controlURL = location.Combine (service.fControlURL);
+ *          SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, "1"sv}}});
+ *          optional<String> status = SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "GetStatus"sv}).LookupArgument ("ResultStatus"sv);
  *
- *          // the light: its controlURL's handler
- *          SOAP::ActionRequest request;
- *          DeSerialize (m.rwRequest ().GetBody (), &request);
- *          m.rwResponse ().contentType = SOAP::kContentType;
- *          if (request.fAction == "GetStatus"sv) {
- *              m.rwResponse ().write (Serialize (SOAP::ActionResponse{.fServiceType = request.fServiceType,
- *                                                                     .fAction      = request.fAction,
- *                                                                     .fArguments   = {{"ResultStatus"sv, on ? "1"sv : "0"sv}}}));
- *          }
- *          else {
- *              m.rwResponse ().status = HTTP::StatusCodes::kInternalError; // how SOAP says it failed
- *              m.rwResponse ().write (Serialize (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidAction, .fErrorDescription = "Invalid Action"sv}));
- *          }
+ *          // the light: its controlURL's route
+ *          Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx, [&] (Message& m) {
+ *              SOAP::HandleAction (m, kSwitchPower, [&] (const SOAP::ActionRequest& request) -> SOAP::Arguments {
+ *                  if (request.fAction == "GetStatus"sv) {
+ *                      return {{"ResultStatus"sv, on ? "1"sv : "0"sv}};
+ *                  }
+ *                  Execution::Throw (SOAP::ActionException{SOAP::ActionError::kInvalidAction});
+ *              });
+ *          }}
  *      \endcode
  */
 namespace Stroika::Frameworks::UPnP::SOAP {
 
     using Foundation::Characters::String;
-    using Foundation::Common::KeyValuePair;
-    using Foundation::Containers::Sequence;
-    using Foundation::DataExchange::InternetMediaType;
+    using Foundation::IO::Network::URI;
 
     /**
      *  An action's arguments, each its name and value - in order: the order its service's description lists them in, which is
      *  the order they are sent in (UPnP Device Architecture 1.1, section 3.2.1). Values as text, as UPnP's types are written.
      */
-    using Arguments = Sequence<KeyValuePair<String, String>>;
-
-    /**
-     *  What a control request, and its answer, are sent as: text/xml, UTF-8 (UPnP Device Architecture 1.1, section 3.2.1)
-     */
-    inline const InternetMediaType kContentType{"text/xml; charset=\"utf-8\""sv};
+    using WebService::SOAP::Arguments;
 
     /**
      *  \brief A control point's request that a service do one of its actions.
@@ -148,7 +128,7 @@ namespace Stroika::Frameworks::UPnP::SOAP {
 
     /**
      *  \brief A service's answer to an ActionRequest, it having not done the action: why not (UPnP Device Architecture 1.1,
-     *         section 3.2.2). Sent as a SOAP fault, in an HTTP response whose status is 500 (Internal Server Error).
+     *         section 3.2.2) - a UPnPError, in a SOAP fault's detail.
      */
     struct ActionError {
         /**
@@ -172,12 +152,43 @@ namespace Stroika::Frameworks::UPnP::SOAP {
         unsigned int fErrorCode{kActionFailed};
         String       fErrorDescription;
 
+        /**
+         *  \brief As SOAP sends it: a Client fault, UPnPError, its detail a UPnPError element
+         */
+        nonvirtual WebService::SOAP::Fault AsFault () const;
+
+        /**
+         *  \brief The UPnPError a SOAP fault's detail holds; nullopt if it holds none
+         */
+        static optional<ActionError> FromFault (const WebService::SOAP::Fault& fault);
+
         bool operator== (const ActionError&) const = default;
 
         /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+    };
+
+    /**
+     *  \brief An ActionError, thrown: Invoke throws the one a service answers with, and a HandleAction doAction throws one to
+     *         answer with it.
+     */
+    class ActionException : public Foundation::Execution::Exception<runtime_error> {
+    public:
+        /**
+         *  The error; or, given just one of ActionError's codes, the errorDescription UPnP gives it
+         */
+        ActionException (const ActionError& error);
+        ActionException (unsigned int errorCode); ///< \brief The error; or, given just one of ActionError's codes, the errorDescription UPnP gives it
+
+    public:
+        /**
+         */
+        nonvirtual ActionError GetError () const;
+
+    private:
+        ActionError fError_;
     };
 
     /**
@@ -189,14 +200,24 @@ namespace Stroika::Frameworks::UPnP::SOAP {
 
     /**
      *  \brief The SOAP message read: what Serialize writes, and any other's. Throws DataExchange::BadFormatException if it is not one
-     *         - an ActionResponse read from a fault, say.
-     *
-     *  With the XML parser the build has, if any (qStroika_Foundation_DataExchange_XML_SupportDOM); else read as text, which is
-     *  enough for the usual SOAP message, though not for one with comments or CDATA.
+     *         - an ActionResponse read from a fault, say; and throws in a build with no XML parser.
      */
     void DeSerialize (const Foundation::Memory::BLOB& b, ActionRequest* request);
     void DeSerialize (const Foundation::Memory::BLOB& b, ActionResponse* response); ///< \brief The SOAP message read
     void DeSerialize (const Foundation::Memory::BLOB& b, ActionError* error);       ///< \brief The SOAP message read
+
+    /**
+     *  \brief Ask the service at controlURL to do request's action - and return its answer. Throws ActionException if the service
+     *         answers with a UPnPError; otherwise as WebService::SOAP::Invoke.
+     */
+    ActionResponse Invoke (const URI& controlURL, const ActionRequest& request);
+
+    /**
+     *  \brief Answer a control request, at the controlURL's route of the service of type serviceType: doAction's out arguments,
+     *         or the ActionError it throws (as ActionException) - and 401 (Invalid Action) for another service type's request.
+     *         Otherwise as WebService::SOAP::HandleRequest: 415 if not text/xml, and a Client fault if not a SOAP call.
+     */
+    void HandleAction (WebServer::Message& m, const String& serviceType, const function<Arguments (const ActionRequest&)>& doAction);
 
 }
 

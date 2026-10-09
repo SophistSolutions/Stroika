@@ -23,3 +23,4 @@ This framework depends on the [Web Server Framework](../WebServer)
 - [JSON-RPC.h](JSON-RPC.h)
 - [OpenAPI/](OpenAPI/)
 - [Server/](Server/) - stubs
+- [SOAP.h](SOAP.h) - SOAP 1.1 RPC: its messages, a client call (Invoke), and a server's answer (HandleRequest)

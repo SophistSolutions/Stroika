@@ -11,7 +11,6 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
@@ -19,7 +18,6 @@
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
-#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Status.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
@@ -64,28 +62,11 @@ namespace {
     // a light that can be switched on and off: the UPnP Forum's standard SwitchPower service (as the SSDPServer sample has)
     const String kSwitchPowerServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
 
-    // an action of the SwitchPower service controlled at controlURL: a SOAP request, POSTed there - and its answer, the action's
-    // out arguments (UPnP Device Architecture 1.1, section 3.2). Throws if it was not done: the error the service says
+    // an action of the SwitchPower service controlled at controlURL (UPnP Device Architecture 1.1, section 3.2): its out
+    // arguments - or, thrown, the error the service says, if it was not done
     SOAP::ActionResponse SwitchPowerAction_ (const URI& controlURL, const String& action, const SOAP::Arguments& inArguments = {})
     {
-        using namespace IO::Network::Transfer;
-        const SOAP::ActionRequest request{.fServiceType = kSwitchPowerServiceType_, .fAction = action, .fArguments = inArguments};
-        Request                   r;
-        r.fMethod               = IO::Network::HTTP::Methods::kPost;
-        r.fAuthorityRelativeURL = controlURL.GetAuthorityRelativeResource<URI> ();
-        r.fOverrideHeaders      = Mapping<String, String>{{"SOAPACTION"sv, request.GetSOAPAction ()}};
-        r.SetTypedBLOB (DataExchange::TypedBLOB{.fData = SOAP::Serialize (request), .fType = SOAP::kContentType});
-        Connection::Ptr c = Connection::New ();
-        c.SetSchemeAndAuthority (controlURL.GetSchemeAndAuthority ());
-        Response answer = c.Send (r); // not SendAndThrowOnFailure: an error's answer - status 500 - says what the error was
-        if (answer.GetSucceeded ()) {
-            SOAP::ActionResponse response;
-            SOAP::DeSerialize (answer.GetData (), &response);
-            return response;
-        }
-        SOAP::ActionError error;
-        SOAP::DeSerialize (answer.GetData (), &error);
-        Execution::Throw (Execution::Exception<runtime_error>{"{} failed: {} ({})"_f(action, error.fErrorDescription, error.fErrorCode)});
+        return SOAP::Invoke (controlURL, {.fServiceType = kSwitchPowerServiceType_, .fAction = action, .fArguments = inArguments});
     }
 
     // where --watch is told the services' events: this port, each service at a path of its own

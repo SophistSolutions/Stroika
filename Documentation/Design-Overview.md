@@ -133,6 +133,30 @@ All Stroika's regression tests are regularly run with valgrind and sanitizers.
 
 ---
 
+## Where code goes: Foundation and Frameworks
+
+The Foundation holds building blocks that depend on nothing outside the Foundation (but the standard library, and optional
+third-party components); the Frameworks are domain-specific, and may depend on the Foundation and on each other. The Foundation
+never depends on a Framework.
+
+Dependencies alone do not place code, though: much that could live in the Foundation does not belong there. For network and
+data-exchange code, what places it is what it is:
+
+| Where | What belongs there | E.g. |
+|---|---|---|
+| Foundation::DataExchange | **Data formats**: a value to bytes and back - with no notion of a call, a peer or a transport | JSON, XML (DOM, SAX), INI, archives, compression |
+| Foundation::IO::Network | **Networking**: moving bytes, and their generic metadata, and the network itself - with no notion of a method call | sockets, URI, HTTP's headers and status codes, Transfer (an HTTP client); addresses, interfaces, DNS |
+| Frameworks::WebServer | **Serving HTTP**: a server, and routing each request to its handler | ConnectionManager, Router |
+| Frameworks::WebService | **RPC protocols**: a method call's request, response and error, a client making one, and a server dispatching one to code | JSON-RPC, SOAP, OpenAPI |
+
+So an RPC protocol whose messages alone could live in the Foundation still goes in WebService: its server half needs the
+WebServer, and a protocol is kept in one place. Each builds on a data format - JSON-RPC on Variant::JSON, SOAP on XML's DOM -
+and a protocol built on another keeps only its own rules: UPnP's control (Frameworks::UPnP::SOAP) is SOAP's RPC with UPnP's
+conventions on top, and takes the rest from WebService::SOAP. XML-RPC, if supported, would be a pair: its value encoding a
+Variant format (as Variant::JSON), and its calls in WebService (as JSON-RPC).
+
+---
+
 ## Coding Conventions
 
 ### Formatting

@@ -8,7 +8,8 @@ The Stroika UPnP framework provides the parts of the UPnP Device Architecture (1
 
 - Discovery (section 1): SSDP - advertising a device, and finding devices
 - Description (section 2): a device's description, and each of its services' (its SCPD)
-- Control (section 3): SOAP - an action's request, and its response or error
+- Control (section 3): an action's request, and its response or error - SOAP's RPC ([WebService::SOAP](../WebService/SOAP.h))
+  with UPnP's conventions on top
 - Eventing (section 4): GENA - a service telling its subscribers each change of its state
 
 ## References
