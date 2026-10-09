@@ -320,6 +320,50 @@ namespace {
         }
     }
 }
+
+namespace {
+    // a server on loopback with routes, and a request to it with headers - its response
+    constexpr IO::Network::PortType kRouterTestPort_ = 8082;
+    IO::Network::Transfer::Response Ask_ (const String& method, const String& path, const Mapping<String, String>& headers)
+    {
+        auto c = IO::Network::Transfer::Connection::New ();
+        c.SetSchemeAndAuthority (URI{"http", URI::Authority{URI::Host{"localhost"}, kRouterTestPort_}});
+        IO::Network::Transfer::Request r;
+        r.fMethod               = method;
+        r.fAuthorityRelativeURL = URI{path};
+        r.fOverrideHeaders      = headers;
+        return c.Send (r);
+    }
+
+    /*
+     *  A handler given the handled flag - and the request and response, and the URL's matches - leaves it to the handler: one that
+     *  declines (handled = false) has the next route matching the request handle it. Before Stroika v3.0d25 that overload did
+     *  not compile.
+     */
+    GTEST_TEST (Frameworks_WebServer, Router_HandledFlag_)
+    {
+        TraceContextBumper ctx{"Router_HandledFlag_"};
+        auto               writeText = [] (Response& response, const String& text) {
+            response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+            response.write (text);
+        };
+        ConnectionManager server{
+            SocketAddresses (InternetAddresses_Any (), kRouterTestPort_),
+            Sequence<Route>{Route{"decline"_RegEx, [] (Request&, Response&, const Sequence<String>&, bool& handled) { handled = false; }},
+                            Route{"decline"_RegEx, [&] (Request&, Response& response) { writeText (response, "the next route"sv); }},
+                            Route{"take/(.+)"_RegEx, [&] (Request&, Response& response, const Sequence<String>& matches, bool& handled) {
+                                      writeText (response, matches[0]);
+                                      handled = true;
+                                  }}}};
+        try {
+            EXPECT_EQ (Ask_ (IO::Network::HTTP::Methods::kGet, "/decline"sv, {}).GetDataTextInputStream ().ReadAll (), "the next route"sv);
+            EXPECT_EQ (Ask_ (IO::Network::HTTP::Methods::kGet, "/take/abc"sv, {}).GetDataTextInputStream ().ReadAll (), "abc"sv);
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

@@ -34,8 +34,7 @@ namespace Stroika::Frameworks::WebServer {
                 handled = true;
             }
             else if constexpr (invocable<HANDLER_FUNCTION, Request&, Response&, const Sequence<String>&, bool&>) {
-                messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs);
-                handled = true;
+                messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs, handled);
             }
             else if constexpr (invocable<HANDLER_FUNCTION, Message&, const String&>) {
                 Require (matchedArgs.size () == 1);
@@ -95,9 +94,8 @@ namespace Stroika::Frameworks::WebServer {
     }
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (invocable<Request&, Response&, const Sequence<String>&, bool&>) HANDLER_FUNCTION>
     inline RequestHandler::RequestHandler (HANDLER_FUNCTION&& messageHandler)
-        : RequestHandler{[=] (Message& m, [[maybe_unused]] const Sequence<String>& matchedArgs, bool& handled) {
-            messageHandler (m);
-            handled = true;
+        : RequestHandler{[=] (Message& m, const Sequence<String>& matchedArgs, bool& handled) {
+            messageHandler (m.rwRequest (), m.rwResponse (), matchedArgs, handled);
         }}
     {
     }
