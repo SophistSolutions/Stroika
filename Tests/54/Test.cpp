@@ -507,23 +507,37 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"SOAP_InvokeAndHandleAction_"};
         using namespace Stroika::Frameworks::WebServer;
-        const String                kServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
-        const URI                   controlURL{"http://127.0.0.1:{}/control"_f(kSOAPDevicePort_)};
+        const String kServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
+        const URI    controlURL{"http://127.0.0.1:{}/control"_f(kSOAPDevicePort_)};
+        const URI    checkedControlURL{"http://127.0.0.1:{}/checked"_f(kSOAPDevicePort_)};
+        // the checked route's service: one action, SetTarget, its in argument a boolean
+        using SD = ServiceDescription;
+        const SD kDescription_{
+            .fActions = {SD::Action{.fName = "SetTarget"sv, .fArguments = {{.fName = "newTargetValue"sv, .fRelatedStateVariable = "Target"sv}}}},
+            .fStateVariables = {SD::StateVariable{.fName = "Target"sv, .fDataType = "boolean"sv, .fSendEvents = false}}};
+        atomic<unsigned int>        checkedDone{0}; // the checked route's doAction's calls
         optional<ConnectionManager> device;
         try {
-            device.emplace (
-                SocketAddress{V4::kLocalhost, kSOAPDevicePort_},
-                Containers::Sequence<Route>{Route{IO::Network::HTTP::MethodsRegEx::kPost, "control"_RegEx, [&] (Message& m) {
-                                                      SOAP::HandleAction (m, kServiceType_, [] (const SOAP::ActionRequest& r) -> SOAP::Arguments {
-                                                          if (r.fAction == "Echo"sv) {
-                                                              return r.fArguments;
-                                                          }
-                                                          if (r.fAction == "Refuse"sv) {
-                                                              Execution::Throw (SOAP::ActionException{SOAP::ActionError::kActionFailed});
-                                                          }
-                                                          Execution::Throw (SOAP::ActionException{SOAP::ActionError::kInvalidAction});
-                                                      });
-                                                  }}});
+            device.emplace (SocketAddress{V4::kLocalhost, kSOAPDevicePort_},
+                            Containers::Sequence<Route>{
+                                Route{IO::Network::HTTP::MethodsRegEx::kPost, "control"_RegEx,
+                                      [&] (Message& m) {
+                                          SOAP::HandleAction (m, kServiceType_, [] (const SOAP::ActionRequest& r) -> SOAP::Arguments {
+                                              if (r.fAction == "Echo"sv) {
+                                                  return r.fArguments;
+                                              }
+                                              if (r.fAction == "Refuse"sv) {
+                                                  Execution::Throw (SOAP::ActionException{SOAP::ActionError::kActionFailed});
+                                              }
+                                              Execution::Throw (SOAP::ActionException{SOAP::ActionError::kInvalidAction});
+                                          });
+                                      }},
+                                Route{IO::Network::HTTP::MethodsRegEx::kPost, "checked"_RegEx, [&] (Message& m) {
+                                          SOAP::HandleAction (m, kServiceType_, kDescription_, [&] (const SOAP::ActionRequest&) -> SOAP::Arguments {
+                                              ++checkedDone;
+                                              return {};
+                                          });
+                                      }}});
         }
         catch (...) {
             Stroika::Frameworks::Test::WarnTestIssue (
@@ -535,21 +549,31 @@ namespace {
         EXPECT_EQ (SOAP::Invoke (controlURL, {.fServiceType = kServiceType_, .fAction = "Echo"sv, .fArguments = arguments}),
                    (SOAP::ActionResponse{.fServiceType = kServiceType_, .fAction = "Echo"sv, .fArguments = arguments}));
         // not done: why not
-        auto errorOf = [&] (const SOAP::ActionRequest& request) -> optional<SOAP::ActionError> {
+        auto errorAt = [&] (const URI& url, const SOAP::ActionRequest& request) -> optional<SOAP::ActionError> {
             try {
-                SOAP::Invoke (controlURL, request);
+                SOAP::Invoke (url, request);
             }
             catch (const SOAP::ActionException& e) {
                 return e.GetError ();
             }
             return nullopt;
         };
+        auto errorOf = [&] (const SOAP::ActionRequest& request) { return errorAt (controlURL, request); };
         EXPECT_EQ (errorOf ({.fServiceType = kServiceType_, .fAction = "Refuse"sv}),
                    (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kActionFailed, .fErrorDescription = "Action Failed"sv}));
         EXPECT_EQ (errorOf ({.fServiceType = kServiceType_, .fAction = "Explode"sv}),
                    (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidAction, .fErrorDescription = "Invalid Action"sv}));
         EXPECT_EQ (errorOf ({.fServiceType = "urn:schemas-upnp-org:service:Other:1"sv, .fAction = "Echo"sv}),
                    (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidAction, .fErrorDescription = "Invalid Action"sv}));
+        // checked against its service's description first: one it rules out is answered with why, and never done
+        EXPECT_EQ (errorAt (checkedControlURL, {.fServiceType = kServiceType_, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, "maybe"sv}}}),
+                   (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidArgs, .fErrorDescription = "Invalid Args"sv}));
+        EXPECT_EQ (errorAt (checkedControlURL, {.fServiceType = kServiceType_, .fAction = "GetStatus"sv}),
+                   (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidAction, .fErrorDescription = "Invalid Action"sv}));
+        EXPECT_EQ (checkedDone.load (), 0u);
+        EXPECT_FALSE ((errorAt (checkedControlURL, {.fServiceType = kServiceType_, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, true}}})
+                           .has_value ()));
+        EXPECT_EQ (checkedDone.load (), 1u);
         // not text/xml: refused
         IO::Network::Transfer::Connection::Ptr c = IO::Network::Transfer::Connection::New ();
         c.SetSchemeAndAuthority (controlURL.GetSchemeAndAuthority ());
@@ -584,6 +608,71 @@ namespace {
         EXPECT_FALSE (back.LookupArgument<int8_t> ("Missing"sv).has_value ());
     }
 #endif
+
+    /*
+     *  A request checked against its service's description, as a device does before doing its action (UPnP Device Architecture
+     *  1.1, section 3.2.2): 401 for an action it does not have; 402 for in arguments that are not the action's - too few or too
+     *  many, misnamed, out of order, or a value not of its data type; 601 for a value its state variable does not allow. Its
+     *  actions are RenderingControl:1's SetVolume and SwitchPower:1's SetTarget and GetTarget.
+     */
+    GTEST_TEST (Frameworks_UPnP, SOAP_CheckRequest_)
+    {
+        Debug::TraceContextBumper ctx{"SOAP_CheckRequest_"};
+        using SD            = ServiceDescription;
+        constexpr auto kOut = SD::Argument::Direction::eOut;
+        const SD       description{
+            .fActions = {SD::Action{.fName      = "SetVolume"sv,
+                                    .fArguments = {{.fName = "InstanceID"sv, .fRelatedStateVariable = "A_ARG_TYPE_InstanceID"sv},
+                                                   {.fName = "Channel"sv, .fRelatedStateVariable = "A_ARG_TYPE_Channel"sv},
+                                                   {.fName = "DesiredVolume"sv, .fRelatedStateVariable = "Volume"sv}}},
+                         SD::Action{.fName = "SetTarget"sv, .fArguments = {{.fName = "newTargetValue"sv, .fRelatedStateVariable = "Target"sv}}},
+                         SD::Action{.fName = "GetTarget"sv,
+                                    .fArguments = {{.fName = "RetTargetValue"sv, .fDirection = kOut, .fRelatedStateVariable = "Target"sv}}}},
+            .fStateVariables = {
+                SD::StateVariable{.fName = "A_ARG_TYPE_InstanceID"sv, .fDataType = "ui4"sv, .fSendEvents = false},
+                SD::StateVariable{.fName = "A_ARG_TYPE_Channel"sv, .fDataType = "string"sv, .fSendEvents = false, .fAllowedValues = {"Master"sv, "LF"sv, "RF"sv}},
+                SD::StateVariable{.fName              = "Volume"sv,
+                                  .fDataType          = "ui2"sv,
+                                  .fSendEvents        = false,
+                                  .fAllowedValueRange = SD::AllowedValueRange{.fMinimum = "0"sv, .fMaximum = "100"sv, .fStep = "1"sv}},
+                SD::StateVariable{.fName = "Target"sv, .fDataType = "boolean"sv, .fSendEvents = false}}};
+        // the error code CheckRequest throws for an action and its in arguments; 0 if it throws none
+        auto errorOf = [&] (const String& action, const SOAP::Arguments& arguments) -> unsigned int {
+            try {
+                SOAP::CheckRequest ({.fServiceType = "urn:schemas-upnp-org:service:RenderingControl:1"sv, .fAction = action, .fArguments = arguments},
+                                    description);
+            }
+            catch (const SOAP::ActionException& e) {
+                return e.GetError ().fErrorCode;
+            }
+            return 0;
+        };
+        // the action's: passed
+        EXPECT_EQ (errorOf ("SetVolume"sv, {{"InstanceID"sv, "0"sv}, {"Channel"sv, "Master"sv}, {"DesiredVolume"sv, "42"sv}}), 0u);
+        EXPECT_EQ (errorOf ("SetVolume"sv, {{"InstanceID"sv, "0"sv}, {"Channel"sv, "RF"sv}, {"DesiredVolume"sv, "100"sv}}), 0u);
+        EXPECT_EQ (errorOf ("SetTarget"sv, {{"newTargetValue"sv, "1"sv}}), 0u);
+        EXPECT_EQ (errorOf ("GetTarget"sv, {}), 0u);
+        // no such action
+        EXPECT_EQ (errorOf ("SetMute"sv, {}), SOAP::ActionError::kInvalidAction);
+        // not the action's arguments
+        EXPECT_EQ (errorOf ("SetVolume"sv, {{"InstanceID"sv, "0"sv}, {"Channel"sv, "Master"sv}}), SOAP::ActionError::kInvalidArgs); // too few
+        EXPECT_EQ (errorOf ("SetTarget"sv, {{"newTargetValue"sv, "1"sv}, {"Extra"sv, "1"sv}}), SOAP::ActionError::kInvalidArgs); // too many
+        EXPECT_EQ (errorOf ("GetTarget"sv, {{"RetTargetValue"sv, "1"sv}}), SOAP::ActionError::kInvalidArgs); // an out argument, sent
+        EXPECT_EQ (errorOf ("SetTarget"sv, {{"NewTargetValue"sv, "1"sv}}), SOAP::ActionError::kInvalidArgs); // misnamed
+        EXPECT_EQ (errorOf ("SetVolume"sv, {{"Channel"sv, "Master"sv}, {"InstanceID"sv, "0"sv}, {"DesiredVolume"sv, "42"sv}}),
+                   SOAP::ActionError::kInvalidArgs); // out of order
+        // a value not of its data type
+        EXPECT_EQ (errorOf ("SetTarget"sv, {{"newTargetValue"sv, "maybe"sv}}), SOAP::ActionError::kInvalidArgs);
+        EXPECT_EQ (errorOf ("SetVolume"sv, {{"InstanceID"sv, "-1"sv}, {"Channel"sv, "Master"sv}, {"DesiredVolume"sv, "42"sv}}),
+                   SOAP::ActionError::kInvalidArgs);
+        EXPECT_EQ (errorOf ("SetVolume"sv, {{"InstanceID"sv, "0"sv}, {"Channel"sv, "Master"sv}, {"DesiredVolume"sv, "70000"sv}}),
+                   SOAP::ActionError::kInvalidArgs); // not a ui2 at all
+        // a value its state variable does not allow
+        EXPECT_EQ (errorOf ("SetVolume"sv, {{"InstanceID"sv, "0"sv}, {"Channel"sv, "Bass"sv}, {"DesiredVolume"sv, "42"sv}}),
+                   SOAP::ActionError::kArgumentValueOutOfRange); // not in its allowedValueList
+        EXPECT_EQ (errorOf ("SetVolume"sv, {{"InstanceID"sv, "0"sv}, {"Channel"sv, "Master"sv}, {"DesiredVolume"sv, "101"sv}}),
+                   SOAP::ActionError::kArgumentValueOutOfRange); // past its allowedValueRange
+    }
 
     GTEST_TEST (Frameworks_UPnP, SSDP_SearchResponse_And_MSearch_Parse_)
     {

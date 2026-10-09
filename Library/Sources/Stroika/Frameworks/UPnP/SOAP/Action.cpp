@@ -287,3 +287,75 @@ void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const
         }
     });
 }
+
+void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description,
+                         const function<Arguments (const ActionRequest&)>& doAction)
+{
+    HandleAction (m, serviceType, [&] (const ActionRequest& request) {
+        CheckRequest (request, description);
+        return doAction (request);
+    });
+}
+
+/*
+ ********************************************************************************
+ **************************** UPnP::SOAP::CheckRequest **************************
+ ********************************************************************************
+ */
+namespace {
+    // whether value is in range: each end read as value's data type, and compared as its C++ type - true if either end is not one
+    bool InRange_ (const DataTypes::Value& value, const ServiceDescription::AllowedValueRange& range, DataTypes::DataType t)
+    {
+        optional<DataTypes::Value> lo = DataTypes::FromText (range.fMinimum, t);
+        optional<DataTypes::Value> hi = DataTypes::FromText (range.fMaximum, t);
+        if (not lo or not hi) {
+            return true;
+        }
+        return visit (
+            [&]<typename T> (const T& v) {
+                if constexpr (is_arithmetic_v<T> and not same_as<T, bool>) {
+                    return get<T> (*lo) <= v and v <= get<T> (*hi);
+                }
+                else {
+                    return true; // a range is a number's (UPnP Device Architecture 1.1, section 2.5)
+                }
+            },
+            value);
+    }
+}
+
+void SOAP::CheckRequest (const ActionRequest& request, const ServiceDescription& description)
+{
+    using SD                    = ServiceDescription;
+    optional<SD::Action> action = description.fActions.First ([&] (const SD::Action& a) { return a.fName == request.fAction; });
+    if (not action) {
+        Execution::Throw (ActionException{ActionError::kInvalidAction});
+    }
+    // its in arguments, in its order - each named as described, with a value of its state variable's type, and one it allows
+    auto in = action->fArguments.Where ([] (const SD::Argument& a) { return a.fDirection == SD::Argument::Direction::eIn; });
+    if (in.size () != request.fArguments.size ()) {
+        Execution::Throw (ActionException{ActionError::kInvalidArgs});
+    }
+    auto given = request.fArguments.begin ();
+    for (const SD::Argument& described : in) {
+        const Argument a = *given;
+        ++given;
+        if (a.fKey != described.fName) {
+            Execution::Throw (ActionException{ActionError::kInvalidArgs}); // misnamed, or out of order
+        }
+        optional<SD::StateVariable> v =
+            description.fStateVariables.First ([&] (const SD::StateVariable& sv) { return sv.fName == described.fRelatedStateVariable; });
+        optional<DataTypes::DataType> t = v ? Common::DefaultNames<DataTypes::DataType>{}.PeekValue (v->fDataType.As<wstring> ().c_str ()) : nullopt;
+        if (not t) {
+            continue; // a type not UPnP's - a vendor's - or none described: not checked
+        }
+        optional<DataTypes::Value> value = DataTypes::FromText (a.fValue, *t);
+        if (not value) {
+            Execution::Throw (ActionException{ActionError::kInvalidArgs});
+        }
+        if ((not v->fAllowedValues.empty () and not v->fAllowedValues.Contains (a.fValue)) or
+            (v->fAllowedValueRange and not InRange_ (*value, *v->fAllowedValueRange, *t))) {
+            Execution::Throw (ActionException{ActionError::kArgumentValueOutOfRange});
+        }
+    }
+}

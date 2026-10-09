@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Stroika/Frameworks/UPnP/DataTypes.h"
+#include "Stroika/Frameworks/UPnP/ServiceDescription.h"
 #include "Stroika/Frameworks/WebServer/Message.h"
 #include "Stroika/Frameworks/WebService/SOAP.h"
 
@@ -41,13 +42,14 @@
  *          SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, true}}});
  *          optional<bool> on = SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "GetStatus"sv}).LookupArgument<bool> ("ResultStatus"sv);
  *
- *          // the light: its controlURL's route
+ *          // the light: its controlURL's route - each request checked against its service's description (a ServiceDescription)
  *          Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx, [&] (Message& m) {
- *              SOAP::HandleAction (m, kSwitchPower, [&] (const SOAP::ActionRequest& request) -> SOAP::Arguments {
- *                  if (request.fAction == "GetStatus"sv) {
- *                      return {{"ResultStatus"sv, on}};
+ *              SOAP::HandleAction (m, kSwitchPower, kSwitchPowerDescription, [&] (const SOAP::ActionRequest& request) -> SOAP::Arguments {
+ *                  if (request.fAction == "SetTarget"sv) {
+ *                      on = *request.LookupArgument<bool> ("newTargetValue"sv); // checked: there, and a boolean
+ *                      return {};
  *                  }
- *                  Execution::Throw (SOAP::ActionException{SOAP::ActionError::kInvalidAction});
+ *                  return {{"ResultStatus"sv, on}}; // GetStatus - the only other action it describes
  *              });
  *          }}
  *      \endcode
@@ -246,11 +248,30 @@ namespace Stroika::Frameworks::UPnP::SOAP {
     ActionResponse Invoke (const URI& controlURL, const ActionRequest& request);
 
     /**
+     *  \brief Throws the ActionException a service answers request with if its description - its actions, their arguments, and
+     *         the state variables whose types they have - rules it out (UPnP Device Architecture 1.1, section 3.2.2):
+     *
+     *      o   401 (Invalid Action): it has no action of that name
+     *      o   402 (Invalid Args): the in arguments are not the action's, in its order - too few or too many, misnamed, out of
+     *          order - or a value is not of its argument's data type (its related state variable's)
+     *      o   601 (Argument Value Out of Range): a value is not one its state variable allows - in its allowedValueList, or its
+     *          allowedValueRange
+     *
+     *  A data type the description names that is not UPnP's (DataTypes::DataType) - a vendor's - is not checked.
+     */
+    void CheckRequest (const ActionRequest& request, const ServiceDescription& description);
+
+    /**
      *  \brief Answer a control request, at the controlURL's route of the service of type serviceType: doAction's out arguments,
      *         or the ActionError it throws (as ActionException) - and 401 (Invalid Action) for another service type's request.
      *         Otherwise as WebService::SOAP::HandleRequest: 415 if not text/xml, and a Client fault if not a SOAP call.
+     *
+     *  Given the service's description, a request it rules out (CheckRequest) is answered with that error, and doAction never
+     *  sees it - so doAction may count on each in argument being there, and of its type.
      */
     void HandleAction (WebServer::Message& m, const String& serviceType, const function<Arguments (const ActionRequest&)>& doAction);
+    void HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description,
+                       const function<Arguments (const ActionRequest&)>& doAction); ///< \brief Answer a control request - having checked it against the service's description
 
 }
 

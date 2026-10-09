@@ -86,7 +86,8 @@ namespace {
         }
     };
 
-    // a SwitchPower action (UPnP Device Architecture 1.1, section 3.2): its out arguments - or, thrown, why it was not done
+    // a SwitchPower action (UPnP Device Architecture 1.1, section 3.2) - one of its description's, with its arguments, checked
+    // against it already (SOAP::CheckRequest): its out arguments - or, thrown, why it was not done
     SOAP::Arguments SwitchPowerAction_ (const SOAP::ActionRequest& request, Light_& light)
     {
         const bool on = light.fOn;
@@ -96,15 +97,9 @@ namespace {
         if (request.fAction == "GetTarget"sv) {
             return {{"RetTargetValue"sv, on}};
         }
-        if (request.fAction == "SetTarget"sv) {
-            optional<bool> newTarget = request.LookupArgument<bool> ("newTargetValue"sv); // a boolean - UPnP's 1 or 0, say
-            if (not newTarget) {
-                Throw (SOAP::ActionException{SOAP::ActionError::kInvalidArgs});
-            }
-            light.Set (*newTarget);
-            return {};
-        }
-        Throw (SOAP::ActionException{SOAP::ActionError::kInvalidAction});
+        Assert (request.fAction == "SetTarget"sv);
+        light.Set (*request.LookupArgument<bool> ("newTargetValue"sv)); // checked: there, and a boolean - UPnP's 1 or 0, say
+        return {};
     }
 
     // the light's page - its presentationURL - for a person: whether it is on, and buttons that POST switch=on or switch=off back
@@ -149,9 +144,9 @@ namespace {
                                           }},
                                     Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx,
                                           [light] (Message& m) {
-                                              SOAP::HandleAction (m, kSwitchPowerServiceType_, [light] (const SOAP::ActionRequest& r) {
-                                                  return SwitchPowerAction_ (r, *light);
-                                              });
+                                              SOAP::HandleAction (
+                                                  m, kSwitchPowerServiceType_, kSwitchPowerDescription_,
+                                                  [light] (const SOAP::ActionRequest& r) { return SwitchPowerAction_ (r, *light); });
                                           }},
                                     Route{"SUBSCRIBE|UNSUBSCRIBE"_RegEx, "SwitchPower/event"_RegEx,
                                           [light] (Message& m) { light->fEvents.HandleRequest (m); }},
