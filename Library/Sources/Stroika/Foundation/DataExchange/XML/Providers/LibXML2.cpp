@@ -664,8 +664,8 @@ namespace {
 namespace {
     struct MyLibXML2StructuredErrGrabber_ final {
         xmlParserCtxtPtr fCtx;
-        // its own type, not a base: ThrowIf throws *it, which throws its static type - a base would slice it
-        shared_ptr<DataExchange::BadFormatException> fCapturedException;
+        // the first error, as thrown - so rethrown whole: a throw of *pointer-to-base would slice it
+        exception_ptr fCapturedException;
 
         MyLibXML2StructuredErrGrabber_ (xmlParserCtxtPtr ctx)
             : fCtx{ctx}
@@ -681,7 +681,7 @@ namespace {
         void ThrowIf ()
         {
             if (fCapturedException != nullptr) {
-                Execution::Throw (*fCapturedException);
+                Execution::ReThrow (fCapturedException);
             }
         }
 
@@ -702,9 +702,15 @@ namespace {
                     case XML_ERR_ERROR:
                     case XML_ERR_FATAL:
                         DbgTrace ("libxml2 (xmlStructuredErrorFunc_): Capturing Error {}"_f, String::FromUTF8 (error->message));
-                        useThis->fCapturedException = MakeSharedPtr<DataExchange::BadFormatException> (
-                            "Failure Parsing XML: {}, line {}"_f(String::FromUTF8 (error->message), error->line),
-                            static_cast<unsigned int> (error->line), nullopt, nullopt);
+                        // thrown and caught at once - never through libxml2's C - so Throw stamps it with the current Activities
+                        try {
+                            Execution::Throw (DataExchange::BadFormatException{
+                                "Failure Parsing XML: {}, line {}"_f(String::FromUTF8 (error->message), error->line),
+                                static_cast<unsigned int> (error->line), nullopt, nullopt});
+                        }
+                        catch (...) {
+                            useThis->fCapturedException = current_exception ();
+                        }
                         break;
                 }
             }
