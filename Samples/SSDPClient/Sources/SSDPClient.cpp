@@ -22,7 +22,7 @@
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
-#include "Stroika/Foundation/Memory/SharedPtr.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 #include "Stroika/Frameworks/UPnP/GENA/Subscriber.h"

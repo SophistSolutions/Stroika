@@ -360,10 +360,10 @@ namespace {
             EXPECT_EQ (FromText<Time::DateTime> (ToText (dt)), dt) << ToText (dt).AsNarrowSDKString ();
         }
         // read as UPnP says to
-        for (const String& t : {"1"sv, "true"sv, "TRUE"sv, "yes"sv, " 1 "sv}) {
+        for (String t : {"1"sv, "true"sv, "TRUE"sv, "yes"sv, " 1 "sv}) {
             EXPECT_EQ (FromText<bool> (t), true) << t.AsNarrowSDKString ();
         }
-        for (const String& t : {"0"sv, "false"sv, "No"sv}) {
+        for (String t : {"0"sv, "false"sv, "No"sv}) {
             EXPECT_EQ (FromText<bool> (t), false) << t.AsNarrowSDKString ();
         }
         EXPECT_FALSE (FromText<bool> ("2"sv).has_value ());
