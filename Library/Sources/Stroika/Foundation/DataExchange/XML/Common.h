@@ -17,19 +17,19 @@ namespace Stroika::Foundation::DataExchange::XML {
 /**
  */
 #ifndef qStroika_Foundation_DataExchange_XML_SupportDOM
-#define qStroika_Foundation_DataExchange_XML_SupportDOM qStroika_HasComponent_xerces or qStroika_HasComponent_libxml2
+#define qStroika_Foundation_DataExchange_XML_SupportDOM (qStroika_HasComponent_xerces or qStroika_HasComponent_libxml2)
 #endif
 
 /**
  */
 #ifndef qStroika_Foundation_DataExchange_XML_SupportSchema
-#define qStroika_Foundation_DataExchange_XML_SupportSchema qStroika_HasComponent_xerces or qStroika_HasComponent_libxml2
+#define qStroika_Foundation_DataExchange_XML_SupportSchema (qStroika_HasComponent_xerces or qStroika_HasComponent_libxml2)
 #endif
 
 /**
  */
 #ifndef qStroika_Foundation_DataExchange_XML_SupportParsing
-#define qStroika_Foundation_DataExchange_XML_SupportParsing qStroika_HasComponent_xerces or qStroika_HasComponent_libxml2
+#define qStroika_Foundation_DataExchange_XML_SupportParsing (qStroika_HasComponent_xerces or qStroika_HasComponent_libxml2)
 #endif
 
 /**

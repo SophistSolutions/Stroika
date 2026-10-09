@@ -663,8 +663,9 @@ namespace {
 
 namespace {
     struct MyLibXML2StructuredErrGrabber_ final {
-        xmlParserCtxtPtr                                fCtx;
-        shared_ptr<Execution::Exception<runtime_error>> fCapturedException;
+        xmlParserCtxtPtr fCtx;
+        // its own type, not a base: ThrowIf throws *it, which throws its static type - a base would slice it
+        shared_ptr<DataExchange::BadFormatException> fCapturedException;
 
         MyLibXML2StructuredErrGrabber_ (xmlParserCtxtPtr ctx)
             : fCtx{ctx}
@@ -726,7 +727,13 @@ namespace {
             else {
                 xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (nullptr, nullptr, nullptr, 0, "in-stream.xml" /*filename*/);
                 Execution::ThrowIfNull (ctxt);
-                [[maybe_unused]] auto&&              cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
+                // failing, the document it began is not kept: freed too (xmlFreeParserCtxt does not free its myDoc)
+                [[maybe_unused]] auto&&              cleanup = Execution::Finally ([&] () noexcept {
+                    if (fLibRep_ == nullptr and ctxt->myDoc != nullptr) {
+                        xmlFreeDoc (ctxt->myDoc);
+                    }
+                    xmlFreeParserCtxt (ctxt);
+                });
                 MyLibXML2StructuredErrGrabber_       errCatcher{ctxt};
                 Stroika_ATTRIBUTE_INDETERMINATE byte buf[1024];
                 while (auto n = in.ReadBlocking (span{buf}).size ()) {

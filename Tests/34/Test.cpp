@@ -49,6 +49,11 @@ namespace Resources_ {
 
 using std::byte;
 
+// each Support macro is one expression, so negating it negates it all (before Stroika v3.0d25, `not` negated only its first term)
+static_assert ((not qStroika_Foundation_DataExchange_XML_SupportDOM) == (not(qStroika_HasComponent_xerces or qStroika_HasComponent_libxml2)));
+static_assert ((not qStroika_Foundation_DataExchange_XML_SupportSchema) == (not(qStroika_HasComponent_xerces or qStroika_HasComponent_libxml2)));
+static_assert ((not qStroika_Foundation_DataExchange_XML_SupportParsing) == (not(qStroika_HasComponent_xerces or qStroika_HasComponent_libxml2)));
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
@@ -1448,6 +1453,20 @@ namespace {
             DOM::Document::Ptr d      = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), schema);
             String             tmp    = d.Write ();
             DbgTrace (L"tmp={}"_f, Characters::ToString (tmp));
+        });
+    }
+
+    /*
+     *  Text that is not XML, or XML not well formed, read into a DOM: a BadFormatException, from each provider. Before Stroika
+     *  v3.0d25 libxml2's was thrown sliced, as the Execution::Exception<runtime_error> it derives from.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_NotWellFormed_)
+    {
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            for (string_view notXML : {"not XML"sv, "<a><b></a>"sv}) {
+                EXPECT_THROW (domFactory (Memory::BLOB{as_bytes (span{notXML})}.As<Streams::InputStream::Ptr<byte>> (), nullptr), BadFormatException)
+                    << notXML;
+            }
         });
     }
 }
