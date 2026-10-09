@@ -11,6 +11,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/KeyValuePair.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
@@ -42,15 +43,16 @@
  *          SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, true}}});
  *          optional<bool> on = SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "GetStatus"sv}).LookupArgument<bool> ("ResultStatus"sv);
  *
- *          // the light: its controlURL's route - each request checked against its service's description (a ServiceDescription)
+ *          // the light: its actions, each by name - and its controlURL's route, where each request is checked against its service's
+ *          // description (a ServiceDescription), then done by its action's handler
+ *          const SOAP::ActionHandlers actions{
+ *              {"SetTarget"sv, [&] (const SOAP::ActionRequest& request) -> SOAP::Arguments {
+ *                  on = *request.LookupArgument<bool> ("newTargetValue"sv); // checked: there, and a boolean
+ *                  return {};
+ *              }},
+ *              {"GetStatus"sv, [&] (const SOAP::ActionRequest&) -> SOAP::Arguments { return {{"ResultStatus"sv, on}}; }}};
  *          Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx, [&] (Message& m) {
- *              SOAP::HandleAction (m, kSwitchPower, kSwitchPowerDescription, [&] (const SOAP::ActionRequest& request) -> SOAP::Arguments {
- *                  if (request.fAction == "SetTarget"sv) {
- *                      on = *request.LookupArgument<bool> ("newTargetValue"sv); // checked: there, and a boolean
- *                      return {};
- *                  }
- *                  return {{"ResultStatus"sv, on}}; // GetStatus - the only other action it describes
- *              });
+ *              SOAP::HandleAction (m, kSwitchPower, kSwitchPowerDescription, actions);
  *          }}
  *      \endcode
  */
@@ -262,16 +264,35 @@ namespace Stroika::Frameworks::UPnP::SOAP {
     void CheckRequest (const ActionRequest& request, const ServiceDescription& description);
 
     /**
+     *  \brief What a service does for a request for one of its actions: the action's out arguments - or, thrown (ActionException),
+     *         why it was not done
+     */
+    using ActionHandler = function<Arguments (const ActionRequest&)>;
+
+    /**
+     *  \brief A service's actions' handlers, each by its action's name - as its description names it
+     */
+    using ActionHandlers = Foundation::Containers::Mapping<String, ActionHandler>;
+
+    /**
      *  \brief Answer a control request, at the controlURL's route of the service of type serviceType: doAction's out arguments,
      *         or the ActionError it throws (as ActionException) - and 401 (Invalid Action) for another service type's request.
      *         Otherwise as WebService::SOAP::HandleRequest: 415 if not text/xml, and a Client fault if not a SOAP call.
      *
      *  Given the service's description, a request it rules out (CheckRequest) is answered with that error, and doAction never
      *  sees it - so doAction may count on each in argument being there, and of its type.
+     *
+     *  Given its actions' handlers too, a request is done by its action's - and one for an action described, but with no handler,
+     *  is answered with 602 (Optional Action Not Implemented). So a service that does only its required actions hands over
+     *  just theirs.
+     *
+     *  \pre each of actions is an action description has
      */
-    void HandleAction (WebServer::Message& m, const String& serviceType, const function<Arguments (const ActionRequest&)>& doAction);
+    void HandleAction (WebServer::Message& m, const String& serviceType, const ActionHandler& doAction);
     void HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description,
-                       const function<Arguments (const ActionRequest&)>& doAction); ///< \brief Answer a control request - having checked it against the service's description
+                       const ActionHandler& doAction); ///< \brief Answer a control request - having checked it against the service's description
+    void HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description,
+                       const ActionHandlers& actions); ///< \brief Answer a control request - checked against the service's description, and done by its action's handler
 
 }
 

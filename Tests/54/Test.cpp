@@ -501,7 +501,7 @@ namespace {
     /*
      *  UPnP's control end to end, over loopback: a control point's Invoke, and a device's HandleAction answering it - with the
      *  action's out arguments, or the ActionError its doAction throws, or Invalid Action for another service type's request; and
-     *  415 for a request that is not text/xml.
+     *  415 for a request that is not text/xml. And HandleAction given the service's description - and its actions' handlers.
      */
     GTEST_TEST (Frameworks_UPnP, SOAP_InvokeAndHandleAction_)
     {
@@ -510,12 +510,28 @@ namespace {
         const String kServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
         const URI    controlURL{"http://127.0.0.1:{}/control"_f(kSOAPDevicePort_)};
         const URI    checkedControlURL{"http://127.0.0.1:{}/checked"_f(kSOAPDevicePort_)};
-        // the checked route's service: one action, SetTarget, its in argument a boolean
-        using SD = ServiceDescription;
-        const SD kDescription_{
-            .fActions = {SD::Action{.fName = "SetTarget"sv, .fArguments = {{.fName = "newTargetValue"sv, .fRelatedStateVariable = "Target"sv}}}},
-            .fStateVariables = {SD::StateVariable{.fName = "Target"sv, .fDataType = "boolean"sv, .fSendEvents = false}}};
-        atomic<unsigned int>        checkedDone{0}; // the checked route's doAction's calls
+        const URI    tableControlURL{"http://127.0.0.1:{}/table"_f(kSOAPDevicePort_)};
+        // the checked and table routes' service: SwitchPower's actions - SetTarget, its in argument a boolean, GetStatus and GetTarget
+        using SD            = ServiceDescription;
+        constexpr auto kOut = SD::Argument::Direction::eOut;
+        const SD       kDescription_{
+            .fActions = {SD::Action{.fName = "SetTarget"sv, .fArguments = {{.fName = "newTargetValue"sv, .fRelatedStateVariable = "Target"sv}}},
+                         SD::Action{.fName      = "GetStatus"sv,
+                                    .fArguments = {{.fName = "ResultStatus"sv, .fDirection = kOut, .fRelatedStateVariable = "Status"sv}}},
+                         SD::Action{.fName = "GetTarget"sv,
+                                    .fArguments = {{.fName = "RetTargetValue"sv, .fDirection = kOut, .fRelatedStateVariable = "Target"sv}}}},
+            .fStateVariables = {SD::StateVariable{.fName = "Target"sv, .fDataType = "boolean"sv, .fSendEvents = false},
+                                SD::StateVariable{.fName = "Status"sv, .fDataType = "boolean"sv}}};
+        atomic<unsigned int> checkedDone{0}; // the checked route's doAction's calls
+        atomic<bool>         tableOn{false}; // the table route's light
+        // the table route's handlers: SetTarget's and GetStatus's - none for GetTarget, though described
+        const SOAP::ActionHandlers tableActions{
+            {"SetTarget"sv,
+             [&] (const SOAP::ActionRequest& r) -> SOAP::Arguments {
+                 tableOn = *r.LookupArgument<bool> ("newTargetValue"sv);
+                 return {};
+             }},
+            {"GetStatus"sv, [&] (const SOAP::ActionRequest&) -> SOAP::Arguments { return {{"ResultStatus"sv, tableOn.load ()}}; }}};
         optional<ConnectionManager> device;
         try {
             device.emplace (SocketAddress{V4::kLocalhost, kSOAPDevicePort_},
@@ -532,12 +548,15 @@ namespace {
                                               Execution::Throw (SOAP::ActionException{SOAP::ActionError::kInvalidAction});
                                           });
                                       }},
-                                Route{IO::Network::HTTP::MethodsRegEx::kPost, "checked"_RegEx, [&] (Message& m) {
+                                Route{IO::Network::HTTP::MethodsRegEx::kPost, "checked"_RegEx,
+                                      [&] (Message& m) {
                                           SOAP::HandleAction (m, kServiceType_, kDescription_, [&] (const SOAP::ActionRequest&) -> SOAP::Arguments {
                                               ++checkedDone;
                                               return {};
                                           });
-                                      }}});
+                                      }},
+                                Route{IO::Network::HTTP::MethodsRegEx::kPost, "table"_RegEx,
+                                      [&] (Message& m) { SOAP::HandleAction (m, kServiceType_, kDescription_, tableActions); }}});
         }
         catch (...) {
             Stroika::Frameworks::Test::WarnTestIssue (
@@ -568,12 +587,22 @@ namespace {
         // checked against its service's description first: one it rules out is answered with why, and never done
         EXPECT_EQ (errorAt (checkedControlURL, {.fServiceType = kServiceType_, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, "maybe"sv}}}),
                    (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidArgs, .fErrorDescription = "Invalid Args"sv}));
-        EXPECT_EQ (errorAt (checkedControlURL, {.fServiceType = kServiceType_, .fAction = "GetStatus"sv}),
+        EXPECT_EQ (errorAt (checkedControlURL, {.fServiceType = kServiceType_, .fAction = "Explode"sv}),
                    (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidAction, .fErrorDescription = "Invalid Action"sv}));
         EXPECT_EQ (checkedDone.load (), 0u);
         EXPECT_FALSE ((errorAt (checkedControlURL, {.fServiceType = kServiceType_, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, true}}})
                            .has_value ()));
         EXPECT_EQ (checkedDone.load (), 1u);
+        // checked, then done by its action's handler: 401 for an action not described, 602 for one described but with no handler
+        EXPECT_EQ (errorAt (tableControlURL, {.fServiceType = kServiceType_, .fAction = "GetTarget"sv}),
+                   (SOAP::ActionError{.fErrorCode        = SOAP::ActionError::kOptionalActionNotImplemented,
+                                      .fErrorDescription = "Optional Action Not Implemented"sv}));
+        EXPECT_EQ (errorAt (tableControlURL, {.fServiceType = kServiceType_, .fAction = "Explode"sv}),
+                   (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidAction, .fErrorDescription = "Invalid Action"sv}));
+        EXPECT_EQ (errorAt (tableControlURL, {.fServiceType = kServiceType_, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, "maybe"sv}}}),
+                   (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidArgs, .fErrorDescription = "Invalid Args"sv}));
+        SOAP::Invoke (tableControlURL, {.fServiceType = kServiceType_, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, true}}});
+        EXPECT_EQ (SOAP::Invoke (tableControlURL, {.fServiceType = kServiceType_, .fAction = "GetStatus"sv}).LookupArgument<bool> ("ResultStatus"sv), true);
         // not text/xml: refused
         IO::Network::Transfer::Connection::Ptr c = IO::Network::Transfer::Connection::New ();
         c.SetSchemeAndAuthority (controlURL.GetSchemeAndAuthority ());

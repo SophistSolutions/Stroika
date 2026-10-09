@@ -270,7 +270,7 @@ ActionResponse SOAP::Invoke (const URI& controlURL, const ActionRequest& request
  **************************** UPnP::SOAP::HandleAction **************************
  ********************************************************************************
  */
-void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const function<Arguments (const ActionRequest&)>& doAction)
+void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ActionHandler& doAction)
 {
     GenericSOAP_::HandleRequest (m, [&] (const GenericSOAP_::Request& r) {
         try {
@@ -288,12 +288,24 @@ void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const
     });
 }
 
-void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description,
-                         const function<Arguments (const ActionRequest&)>& doAction)
+void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description, const ActionHandler& doAction)
 {
     HandleAction (m, serviceType, [&] (const ActionRequest& request) {
         CheckRequest (request, description);
         return doAction (request);
+    });
+}
+
+void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description, const ActionHandlers& actions)
+{
+    Require (actions.Keys ().All (
+        [&] (const String& a) { return description.fActions.Any ([&] (const ServiceDescription::Action& d) { return d.fName == a; }); }));
+    // CheckRequest has answered an action not described (401), so this one is: done by its handler, or not done here
+    HandleAction (m, serviceType, description, [&] (const ActionRequest& request) -> Arguments {
+        if (optional<ActionHandler> h = actions.Lookup (request.fAction)) {
+            return (*h) (request);
+        }
+        Execution::Throw (ActionException{ActionError::kOptionalActionNotImplemented});
     });
 }
 
