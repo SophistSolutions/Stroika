@@ -134,11 +134,11 @@ namespace {
                     URI controlURL = location.Combine (s.fControlURL); // relative to the description's URL
                     if (fetching->fSwitchLightsTo and not fetching->fSwitched.Contains (dd.fUDN)) {
                         fetching->fSwitched.Add (dd.fUDN);
-                        SwitchPowerAction_ (controlURL, "SetTarget"sv, {{"newTargetValue"sv, *fetching->fSwitchLightsTo ? "1"sv : "0"sv}});
+                        SwitchPowerAction_ (controlURL, "SetTarget"sv, {{"newTargetValue"sv, *fetching->fSwitchLightsTo}});
                         Print_ ("\t\tswitched it {}"_f(String{*fetching->fSwitchLightsTo ? "on"sv : "off"sv}));
                     }
-                    optional<String> status = SwitchPowerAction_ (controlURL, "GetStatus"sv).LookupArgument ("ResultStatus"sv);
-                    Print_ ("\t\tit is {}"_f(String{status == "1"sv ? "on"sv : status == "0"sv ? "off"sv : "neither on nor off?"sv}));
+                    optional<bool> on = SwitchPowerAction_ (controlURL, "GetStatus"sv).LookupArgument<bool> ("ResultStatus"sv);
+                    Print_ ("\t\tit is {}"_f(String{on ? (*on ? "on"sv : "off"sv) : "neither on nor off?"sv}));
                 }
                 if (fetching->fWatch and not s.fEventSubURL.GetPath ().empty ()) { // empty: it has no events
                     Watch_ (location.Combine (s.fEventSubURL), dd.fUDN, s.fServiceID, fetching);

@@ -884,6 +884,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\Makefile">
       <Filter>System-Performance\Support</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SOAP\Action.inl">
+      <Filter>UPnP\SOAP</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.cpp">
@@ -904,6 +907,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Network.cpp">
       <Filter>System-Performance\Instruments</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\DataTypes.cpp">
+      <Filter>UPnP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.h">
@@ -923,6 +929,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Network.h">
       <Filter>System-Performance\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\DataTypes.h">
+      <Filter>UPnP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

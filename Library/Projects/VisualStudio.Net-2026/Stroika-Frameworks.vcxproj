@@ -297,6 +297,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SOAP\Action.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SOAP\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.inl" />
@@ -314,6 +315,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\ArchtypeClasses.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\TestHarness.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\DataTypes.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Publisher.cpp" />
@@ -333,6 +335,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\ArchtypeClasses.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\TestHarness.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\DataTypes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\GENA\Publisher.h" />

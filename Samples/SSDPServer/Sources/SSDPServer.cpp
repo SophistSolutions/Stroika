@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Frameworks/UPnP/DataTypes.h"
 #include "Stroika/Frameworks/UPnP/GENA/Publisher.h"
 #include "Stroika/Frameworks/UPnP/SOAP/Action.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
@@ -70,51 +71,37 @@ namespace {
         .fStateVariables = {SD::StateVariable{.fName = "Target"sv, .fDataType = "boolean"sv, .fDefaultValue = "0"sv, .fSendEvents = false},
                             SD::StateVariable{.fName = "Status"sv, .fDataType = "boolean"sv, .fDefaultValue = "0"sv}}};
 
-    // a UPnP boolean: 0, false or no; 1, true or yes (UPnP Device Architecture 1.1, section 2.5)
-    optional<bool> ParseBoolean_ (const String& s)
-    {
-        String v = s.Trim ().ToLowerCase ();
-        if (v == "1"sv or v == "true"sv or v == "yes"sv) {
-            return true;
-        }
-        if (v == "0"sv or v == "false"sv or v == "no"sv) {
-            return false;
-        }
-        return nullopt;
-    }
-
     // the light: on or off - its SwitchPower service's Status (and its Target: a simple light, it is as it was last told) - and
     // the eventing of that Status, which SwitchPower's description says is evented
     struct Light_ {
         atomic<bool>    fOn{false}; // off, until switched on
-        GENA::Publisher fEvents{[this] () { return Mapping<String, String>{{"Status"sv, fOn ? "1"sv : "0"sv}}; }};
+        GENA::Publisher fEvents{[this] () { return Mapping<String, String>{{"Status"sv, DataTypes::ToText (fOn.load ())}}; }};
 
         // switched - by a control point, or on the light's page: each subscriber told
         void Set (bool on)
         {
             fOn = on;
             cout << "The light is now " << (on ? "on" : "off") << endl;
-            fEvents.Notify ({{"Status"sv, on ? "1"sv : "0"sv}});
+            fEvents.Notify ({{"Status"sv, DataTypes::ToText (on)}});
         }
     };
 
     // a SwitchPower action (UPnP Device Architecture 1.1, section 3.2): its out arguments - or, thrown, why it was not done
     SOAP::Arguments SwitchPowerAction_ (const SOAP::ActionRequest& request, Light_& light)
     {
-        const String status = light.fOn ? "1"sv : "0"sv;
+        const bool on = light.fOn;
         if (request.fAction == "GetStatus"sv) {
-            return {{"ResultStatus"sv, status}};
+            return {{"ResultStatus"sv, on}};
         }
         if (request.fAction == "GetTarget"sv) {
-            return {{"RetTargetValue"sv, status}};
+            return {{"RetTargetValue"sv, on}};
         }
         if (request.fAction == "SetTarget"sv) {
-            optional<String> newTargetValue = request.LookupArgument ("newTargetValue"sv);
-            optional<bool>   on             = newTargetValue ? ParseBoolean_ (*newTargetValue) : nullopt;
-            if (not on) {
+            optional<bool> newTarget = request.LookupArgument<bool> ("newTargetValue"sv); // a boolean - UPnP's 1 or 0, say
+            if (not newTarget) {
                 Throw (SOAP::ActionException{SOAP::ActionError::kInvalidArgs});
             }
-            light.Set (*on);
+            light.Set (*newTarget);
             return {};
         }
         Throw (SOAP::ActionException{SOAP::ActionError::kInvalidAction});

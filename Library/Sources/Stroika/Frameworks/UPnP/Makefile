@@ -15,6 +15,7 @@ SubDirs	:=	\
 
 
 Objs	=	\
+	$(ObjDir)DataTypes${OBJ_SUFFIX}\
 	$(ObjDir)Device${OBJ_SUFFIX}\
 	$(ObjDir)DeviceDescription${OBJ_SUFFIX}\
 	$(ObjDir)ServiceDescription${OBJ_SUFFIX}\

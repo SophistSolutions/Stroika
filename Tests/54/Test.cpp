@@ -34,6 +34,7 @@
 #include "Stroika/Foundation/Time/DateTime.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
+#include "Stroika/Frameworks/UPnP/DataTypes.h"
 #include "Stroika/Frameworks/UPnP/Device.h"
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 #include "Stroika/Frameworks/UPnP/GENA/Publisher.h"
@@ -323,6 +324,64 @@ namespace {
     }
 #endif
 
+    /*
+     *  UPnP's data types: each written as UPnP writes it, and read back; read as UPnP says to - a boolean in each of its spellings,
+     *  an integer with a + and leading zeros, spaces round any but a string or char - and refused when not one: out of range, or
+     *  not a number at all.
+     */
+    GTEST_TEST (Frameworks_UPnP, DataTypes_)
+    {
+        Debug::TraceContextBumper ctx{"DataTypes_"};
+        using namespace UPnP::DataTypes;
+        auto roundTrip = []<typename T> (const T& v, const String& text) {
+            EXPECT_EQ (ToText (v), text);
+            EXPECT_EQ (FromText<T> (text), v) << text.AsNarrowSDKString ();
+        };
+        roundTrip (true, "1"sv);
+        roundTrip (false, "0"sv);
+        roundTrip (uint8_t{255}, "255"sv);
+        roundTrip (uint32_t{4294967295u}, "4294967295"sv);
+        roundTrip (int8_t{-128}, "-128"sv);
+        roundTrip (int32_t{-5}, "-5"sv);
+        roundTrip (int64_t{9007199254740993}, "9007199254740993"sv);
+        roundTrip (0.1, "0.1"sv);
+        roundTrip (1e300, "1E+300"sv);
+        roundTrip (2.5f, "2.5"sv);
+        roundTrip (Characters::Character{'x'}, "x"sv);
+        roundTrip (String{"a < b"sv}, "a < b"sv); // as it is: quoting it is XML's job
+        roundTrip (Time::Date{chrono::year{2026}, chrono::October, chrono::day{8}}, "2026-10-08"sv);
+        roundTrip (Time::TimeOfDay{14, 30, 5}, "14:30:05"sv);
+        roundTrip (Memory::BLOB{0x01, 0xfe, 0x7f}, "Af5/"sv);
+        roundTrip (BinHex{Memory::BLOB{0x01, 0xfe, 0x7f}}, "01fe7f"sv);
+        roundTrip (URI{"http://192.168.1.2:8080/device.xml"sv}, "http://192.168.1.2:8080/device.xml"sv);
+        roundTrip (Common::GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"sv}, "61e4d49d-8c26-3480-f5c8-564e155c67a6"sv);
+        {
+            // a dateTime, read back as written - with its time zone
+            const Time::DateTime dt{Time::Date{chrono::year{2026}, chrono::October, chrono::day{8}}, Time::TimeOfDay{14, 30, 5}, Time::Timezone::kUTC};
+            EXPECT_EQ (FromText<Time::DateTime> (ToText (dt)), dt) << ToText (dt).AsNarrowSDKString ();
+        }
+        // read as UPnP says to
+        for (const String& t : {"1"sv, "true"sv, "TRUE"sv, "yes"sv, " 1 "sv}) {
+            EXPECT_EQ (FromText<bool> (t), true) << t.AsNarrowSDKString ();
+        }
+        for (const String& t : {"0"sv, "false"sv, "No"sv}) {
+            EXPECT_EQ (FromText<bool> (t), false) << t.AsNarrowSDKString ();
+        }
+        EXPECT_FALSE (FromText<bool> ("2"sv).has_value ());
+        EXPECT_EQ (FromText<uint16_t> ("+007"sv), uint16_t{7});
+        EXPECT_FALSE (FromText<uint8_t> ("256"sv).has_value ()); // out of range
+        EXPECT_FALSE (FromText<uint8_t> ("-1"sv).has_value ());
+        EXPECT_FALSE (FromText<int32_t> ("12abc"sv).has_value ());
+        EXPECT_FALSE (FromText<int32_t> (""sv).has_value ());
+        EXPECT_EQ (FromText<double> ("-1.5E-3"sv), -1.5e-3);
+        EXPECT_FALSE (FromText<double> ("NaN"sv).has_value ()); // UPnP has neither
+        EXPECT_FALSE (FromText<double> ("INF"sv).has_value ());
+        EXPECT_FALSE (FromText<double> ("one"sv).has_value ());
+        EXPECT_EQ (FromText<String> (" a "sv), " a "sv); // a string as it is
+        EXPECT_FALSE (FromText<Characters::Character> ("ab"sv).has_value ());
+        EXPECT_FALSE (FromText<Common::GUID> ("not a uuid"sv).has_value ());
+    }
+
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
     GTEST_TEST (Frameworks_UPnP, SOAP_RoundTrip_)
     {
@@ -474,6 +533,29 @@ namespace {
         plain.SetTypedBLOB (DataExchange::TypedBLOB{.fData = Memory::BLOB{as_bytes (span{"hello"sv})},
                                                     .fType = DataExchange::InternetMediaType{"text/plain"sv}});
         EXPECT_EQ (c.Send (plain).GetStatus (), IO::Network::HTTP::StatusCodes::kUnsupportedMediaType);
+    }
+
+    /*
+     *  An action's arguments, each made from its C++ value - written as UPnP writes it - and read back as one; and none, read as
+     *  a type it is not, or not there.
+     */
+    GTEST_TEST (Frameworks_UPnP, SOAP_TypedArguments_)
+    {
+        Debug::TraceContextBumper ctx{"SOAP_TypedArguments_"};
+        const SOAP::ActionRequest request{
+            .fServiceType = "urn:schemas-upnp-org:service:Dimming:1"sv,
+            .fAction      = "SetLoadLevelTarget"sv,
+            .fArguments   = {{"On"sv, true}, {"newLoadlevelTarget"sv, uint8_t{42}}, {"Ratio"sv, 0.25}, {"Room"sv, "kitchen"sv}}};
+        EXPECT_EQ (request.fArguments[0].fValue, "1"sv);
+        EXPECT_EQ (request.fArguments[1].fValue, "42"sv);
+        SOAP::ActionRequest back;
+        SOAP::DeSerialize (SOAP::Serialize (request), &back);
+        EXPECT_EQ (back.LookupArgument<bool> ("On"sv), true);
+        EXPECT_EQ (back.LookupArgument<uint8_t> ("newLoadlevelTarget"sv), uint8_t{42});
+        EXPECT_EQ (back.LookupArgument<double> ("Ratio"sv), 0.25);
+        EXPECT_EQ (back.LookupArgument ("Room"sv), "kitchen"sv);
+        EXPECT_FALSE (back.LookupArgument<bool> ("newLoadlevelTarget"sv).has_value ()); // 42: not a boolean
+        EXPECT_FALSE (back.LookupArgument<int8_t> ("Missing"sv).has_value ());
     }
 #endif
 

@@ -32,6 +32,7 @@ The Stroika UPnP framework provides the parts of the UPnP Device Architecture (1
 
 ## Modules
 
+- [DataTypes.h](DataTypes.h) - UPnP's data types, as text and back
 - [Device.h](Device.h)
 - [DeviceDescription.h](DeviceDescription.h)
 - [GENA/](GENA/)

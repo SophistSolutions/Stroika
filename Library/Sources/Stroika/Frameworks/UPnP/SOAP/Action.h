@@ -10,10 +10,13 @@
 #include <stdexcept>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/KeyValuePair.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
+#include "Stroika/Frameworks/UPnP/DataTypes.h"
 #include "Stroika/Frameworks/WebServer/Message.h"
 #include "Stroika/Frameworks/WebService/SOAP.h"
 
@@ -35,14 +38,14 @@
  *      \code
  *          // a control point: switch a light on, then ask it its status
  *          const URI controlURL = location.Combine (service.fControlURL);
- *          SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, "1"sv}}});
- *          optional<String> status = SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "GetStatus"sv}).LookupArgument ("ResultStatus"sv);
+ *          SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, true}}});
+ *          optional<bool> on = SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "GetStatus"sv}).LookupArgument<bool> ("ResultStatus"sv);
  *
  *          // the light: its controlURL's route
  *          Route{HTTP::MethodsRegEx::kPost, "SwitchPower/control"_RegEx, [&] (Message& m) {
  *              SOAP::HandleAction (m, kSwitchPower, [&] (const SOAP::ActionRequest& request) -> SOAP::Arguments {
  *                  if (request.fAction == "GetStatus"sv) {
- *                      return {{"ResultStatus"sv, on ? "1"sv : "0"sv}};
+ *                      return {{"ResultStatus"sv, on}};
  *                  }
  *                  Execution::Throw (SOAP::ActionException{SOAP::ActionError::kInvalidAction});
  *              });
@@ -55,10 +58,24 @@ namespace Stroika::Frameworks::UPnP::SOAP {
     using Foundation::IO::Network::URI;
 
     /**
-     *  An action's arguments, each its name and value - in order: the order its service's description lists them in, which is
-     *  the order they are sent in (UPnP Device Architecture 1.1, section 3.2.1). Values as text, as UPnP's types are written.
+     *  rief One of an action's arguments: its name, and its value as text, as UPnP writes it (DataTypes::ToText) - made from a
+     *         value of any of UPnP's data types, as its C++ type: {"ResultStatus"sv, true}
      */
-    using WebService::SOAP::Arguments;
+    struct Argument : Foundation::Common::KeyValuePair<String, String> {
+        /**
+         *  A value of any of UPnP's data types - written as UPnP writes it; or, given text, that text: a string's value, say
+         */
+        template <DataTypes::IValue T>
+        Argument (const String& name, const T& value);
+        Argument (const String& name, const String& text); ///< rief A value of any of UPnP's data types - written as UPnP writes it; or, given text, that text
+        Argument (const Foundation::Common::KeyValuePair<String, String>& nameAndText); ///< rief As SOAP has it: its name, and its text
+    };
+
+    /**
+     *  An action's arguments - in order: the order its service's description lists them in, which is the order they are sent in
+     *  (UPnP Device Architecture 1.1, section 3.2.1).
+     */
+    using Arguments = Foundation::Containers::Sequence<Argument>;
 
     /**
      *  \brief A control point's request that a service do one of its actions.
@@ -84,9 +101,11 @@ namespace Stroika::Frameworks::UPnP::SOAP {
         nonvirtual String GetSOAPAction () const;
 
         /**
-         *  The value of the argument called name; nullopt if none is
+         *  The value of the argument called name, read as a T (DataTypes::FromText) - its text, by default; nullopt if no argument
+         *  has that name, or its text is not a T's
          */
-        nonvirtual optional<String> LookupArgument (const String& name) const;
+        template <DataTypes::IValue T = String>
+        nonvirtual optional<T> LookupArgument (const String& name) const;
 
         bool operator== (const ActionRequest&) const = default;
 
@@ -114,9 +133,11 @@ namespace Stroika::Frameworks::UPnP::SOAP {
         Arguments fArguments;
 
         /**
-         *  The value of the argument called name; nullopt if none is
+         *  The value of the argument called name, read as a T (DataTypes::FromText) - its text, by default; nullopt if no argument
+         *  has that name, or its text is not a T's
          */
-        nonvirtual optional<String> LookupArgument (const String& name) const;
+        template <DataTypes::IValue T = String>
+        nonvirtual optional<T> LookupArgument (const String& name) const;
 
         bool operator== (const ActionResponse&) const = default;
 
@@ -220,5 +241,12 @@ namespace Stroika::Frameworks::UPnP::SOAP {
     void HandleAction (WebServer::Message& m, const String& serviceType, const function<Arguments (const ActionRequest&)>& doAction);
 
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "Action.inl"
 
 #endif /*_Stroika_Frameworks_UPnP_SOAP_Action_h_*/

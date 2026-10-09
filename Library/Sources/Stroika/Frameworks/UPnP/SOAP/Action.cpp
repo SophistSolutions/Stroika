@@ -28,14 +28,22 @@ using namespace Stroika::Frameworks::UPnP::SOAP;
 namespace GenericSOAP_ = Stroika::Frameworks::WebService::SOAP;
 
 namespace {
-    optional<String> Lookup_ (const Arguments& arguments, const String& name)
+    // UPnP's arguments as SOAP has them - each its name and text - and back
+    GenericSOAP_::Arguments ToGeneric_ (const Arguments& arguments)
     {
-        for (const Common::KeyValuePair<String, String>& a : arguments) {
-            if (a.fKey == name) {
-                return a.fValue;
-            }
+        GenericSOAP_::Arguments result;
+        for (const Argument& a : arguments) {
+            result.Append (a);
         }
-        return nullopt;
+        return result;
+    }
+    Arguments FromGeneric_ (const GenericSOAP_::Arguments& arguments)
+    {
+        Arguments result;
+        for (const Common::KeyValuePair<String, String>& a : arguments) {
+            result.Append (Argument{a});
+        }
+        return result;
     }
 
     // a UPnPError's own namespace (UPnP Device Architecture 1.1, section 3.2.2)
@@ -79,11 +87,6 @@ String ActionRequest::GetSOAPAction () const
     return "\"{}#{}\""_f(fServiceType, fAction);
 }
 
-optional<String> ActionRequest::LookupArgument (const String& name) const
-{
-    return Lookup_ (fArguments, name);
-}
-
 String ActionRequest::ToString () const
 {
     StringBuilder sb;
@@ -100,11 +103,6 @@ String ActionRequest::ToString () const
  ************************* UPnP::SOAP::ActionResponse ***************************
  ********************************************************************************
  */
-optional<String> ActionResponse::LookupArgument (const String& name) const
-{
-    return Lookup_ (fArguments, name);
-}
-
 String ActionResponse::ToString () const
 {
     StringBuilder sb;
@@ -199,13 +197,13 @@ ActionError ActionException::GetError () const
 Memory::BLOB SOAP::Serialize (const ActionRequest& request)
 {
     return GenericSOAP_::Serialize (
-        GenericSOAP_::Request{.fNamespace = request.fServiceType, .fMethod = request.fAction, .fArguments = request.fArguments});
+        GenericSOAP_::Request{.fNamespace = request.fServiceType, .fMethod = request.fAction, .fArguments = ToGeneric_ (request.fArguments)});
 }
 
 Memory::BLOB SOAP::Serialize (const ActionResponse& response)
 {
     return GenericSOAP_::Serialize (
-        GenericSOAP_::Response{.fNamespace = response.fServiceType, .fMethod = response.fAction, .fArguments = response.fArguments});
+        GenericSOAP_::Response{.fNamespace = response.fServiceType, .fMethod = response.fAction, .fArguments = ToGeneric_ (response.fArguments)});
 }
 
 Memory::BLOB SOAP::Serialize (const ActionError& error)
@@ -223,7 +221,7 @@ void SOAP::DeSerialize (const Memory::BLOB& b, ActionRequest* request)
     RequireNotNull (request);
     GenericSOAP_::Request r;
     GenericSOAP_::DeSerialize (b, &r);
-    *request = ActionRequest{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = r.fArguments};
+    *request = ActionRequest{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)};
 }
 
 void SOAP::DeSerialize (const Memory::BLOB& b, ActionResponse* response)
@@ -231,7 +229,7 @@ void SOAP::DeSerialize (const Memory::BLOB& b, ActionResponse* response)
     RequireNotNull (response);
     GenericSOAP_::Response r;
     GenericSOAP_::DeSerialize (b, &r);
-    *response = ActionResponse{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = r.fArguments};
+    *response = ActionResponse{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)};
 }
 
 void SOAP::DeSerialize (const Memory::BLOB& b, ActionError* error)
@@ -256,8 +254,8 @@ ActionResponse SOAP::Invoke (const URI& controlURL, const ActionRequest& request
     try {
         GenericSOAP_::Response r = GenericSOAP_::Invoke (
             controlURL, request.GetSOAPAction (),
-            GenericSOAP_::Request{.fNamespace = request.fServiceType, .fMethod = request.fAction, .fArguments = request.fArguments});
-        return ActionResponse{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = r.fArguments};
+            GenericSOAP_::Request{.fNamespace = request.fServiceType, .fMethod = request.fAction, .fArguments = ToGeneric_ (request.fArguments)});
+        return ActionResponse{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)};
     }
     catch (const GenericSOAP_::FaultException& e) {
         if (optional<ActionError> error = ActionError::FromFault (e.GetFault ())) {
@@ -279,10 +277,10 @@ void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const
             if (r.fNamespace != serviceType) {
                 Execution::Throw (ActionException{ActionError::kInvalidAction}); // another service's
             }
-            return GenericSOAP_::Response{
-                .fNamespace = r.fNamespace,
-                .fMethod    = r.fMethod,
-                .fArguments = doAction (ActionRequest{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = r.fArguments})};
+            return GenericSOAP_::Response{.fNamespace = r.fNamespace,
+                                          .fMethod    = r.fMethod,
+                                          .fArguments = ToGeneric_ (doAction (ActionRequest{
+                                              .fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)}))};
         }
         catch (const ActionException& e) {
             Execution::Throw (GenericSOAP_::FaultException{e.GetError ().AsFault ()});
