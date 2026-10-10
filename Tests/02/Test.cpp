@@ -2299,6 +2299,9 @@ namespace {
         string  a1 = format ("{}", 1);
         wstring a2 = format (L"{}", 1);
         EXPECT_EQ (a1, "1");
+        // narrow, a String and a type formatted with ToString: each field ends at its own '}', not at the next one
+        EXPECT_EQ (format ("{}-{}!", String{"a"}, String{"b"}), "a-b!");
+        EXPECT_EQ (format ("[{}] {}", foo{}, 3), "[foo as a string] 3");
 
         EXPECT_EQ ("a{}a"_f(3), "a3a");
         EXPECT_EQ ("-{}"_f('x'), "-x"); // a char into the wide result - once failed to compile, formatting with fmtlib

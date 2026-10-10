@@ -178,16 +178,8 @@ namespace Stroika::Foundation::Characters {
         {
             // Not clear how to forward...
             auto it = ctx.begin ();
-            while (it != ctx.end ()) {
+            while (it != ctx.end () and *it != '}') {
                 ++it;
-#if 0
-                if (it == ctx.end ()) {
-                    throw Common::StdCompat::format_error{"Invalid format args (missing }) for ToStringFormatterASCII."};
-                }
-#endif
-                if (*it == '}') {
-                    return it;
-                }
             }
             return it;
         }
