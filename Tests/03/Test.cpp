@@ -405,7 +405,7 @@ namespace {
 // each defined exactly when that sanitizer's runtime is linked in - an independent check of Debug::kBuiltWith*Sanitizer
 extern "C" void __attribute__ ((weak)) __asan_init ();
 extern "C" void __attribute__ ((weak)) __tsan_init ();
-extern "C" void __attribute__ ((weak)) __ubsan_handle_builtin_unreachable ();
+extern "C" void __attribute__ ((weak)) __ubsan_handle_builtin_unreachable (void*); // as g++'s builtin: @see Debug/Sanitizer.h
 #endif
 namespace {
     GTEST_TEST (Foundation_Common, SanitizerDetection_)

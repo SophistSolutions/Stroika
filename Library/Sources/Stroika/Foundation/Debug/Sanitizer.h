@@ -17,8 +17,9 @@
 #endif
 
 #if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 14
-// @see Debug::kBuiltWithUndefinedBehaviorSanitizer
-extern "C" void __attribute__ ((weak)) __ubsan_handle_builtin_unreachable ();
+// @see Debug::kBuiltWithUndefinedBehaviorSanitizer. Its parameter is the one g++'s own builtin of that name has: with none, an LTO
+// link of undefined behavior sanitizer code warns -Wlto-type-mismatch ("type mismatch in parameter 1").
+extern "C" void __attribute__ ((weak)) __ubsan_handle_builtin_unreachable (void*);
 #endif
 
 /**
