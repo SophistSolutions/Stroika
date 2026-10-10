@@ -66,7 +66,13 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *        (UTF-8); the Character overload writes none, the caller owning the encoding, and perhaps writing this into a
      *        document of its own.
      *
-     *  \note Attributes, namespaces and a given element order are not expressible yet - what a schema of someone else's needs.
+     *  That is the shape with nothing declared. Where it is not the shape wanted - an attribute rather than an element, a
+     *  namespace, a name of its own, an order of its own (XML cares about the order of an element's children, and a
+     *  VariantValue object has none) - say so in an XML::Binding, which SerializationConfiguration carries, and which the
+     *  Reader needs as much as the Writer. @see XML::Binding
+     *
+     *  \note A namespace is written as a default namespace (xmlns="..."), inherited by the elements inside it. A prefixed
+     *        namespace - and so an attribute in a namespace - is not expressible yet, nor is mixed content.
      *        @see https://github.com/SophistSolutions/Stroika/issues/954
      *
      * The argument VariantValue must be composed of any combination of these types:

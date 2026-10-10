@@ -10,6 +10,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/DataExchange/XML/Binding.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
 
 /*
@@ -54,9 +55,21 @@ namespace Stroika::Foundation::DataExchange::XML {
         nonvirtual optional<String> GetArrayElementName () const;
         nonvirtual void             SetArrayElementName (const optional<String>& n);
 
+    public:
+        /**
+         *  \brief How the value differs from the default shape - an attribute rather than an element, a namespace, a name or an
+         *         order of its own; missing (the default) for the default shape throughout
+         *
+         *  The Reader and the Writer both need it - what the one wrote, the other must know to read - so it is configured here,
+         *  with them, rather than given to either alone.
+         */
+        nonvirtual optional<Binding> GetBinding () const;
+        nonvirtual void              SetBinding (const optional<Binding>& b);
+
     private:
-        String fDocumentElementName_; // internally empty string for missing
-        String fArrayElementName_;    // internally empty string for missing
+        String            fDocumentElementName_; // internally empty string for missing
+        String            fArrayElementName_;    // internally empty string for missing
+        optional<Binding> fBinding_;
     };
 
 }

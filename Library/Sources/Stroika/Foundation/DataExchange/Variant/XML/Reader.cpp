@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/IConsumer.h"
+#include "Stroika/Foundation/DataExchange/XML/Binding.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -44,14 +45,17 @@ namespace {
     struct Builder_ : StructuredStreamEvents::IConsumer {
         using Name = StructuredStreamEvents::Name;
 
-        Builder_ (const String& arrayItemElementName)
+        Builder_ (const String& arrayItemElementName, const Binding* binding)
             : fArrayItemElementName{arrayItemElementName}
+            , fRootBinding{binding}
         {
         }
-        String fArrayItemElementName; // children of this name are the element's array; empty: any one name repeated is
+        String         fArrayItemElementName; // children of this name are the element's array; empty: any one name repeated is
+        const Binding* fRootBinding;          // how the document differs from the default shape; nullptr: it does not
 
         struct Frame_ {
-            String                        fName;
+            String                        fName; // the member key this element is - its own name, unless a Binding renamed it
+            const Binding*                fBinding{nullptr};
             StringBuilder<>               fText;
             Mapping<String, VariantValue> fChildren;
             Set<String>                   fRepeated;   // a name seen more than once, so fChildren holds its array
@@ -63,9 +67,23 @@ namespace {
 
         virtual void StartElement (const Name& name, const Mapping<Name, String>& attributes) override
         {
-            fStack.push_back (Frame_{.fName = name.fLocalName});
+            // what the element is a member of says what member it is: a Binding may have given it a name of its own
+            const Binding* parentBinding = fStack.empty () ? fRootBinding : fStack.back ().fBinding;
+            String         key           = name.fLocalName;
+            const Binding* binding       = nullptr;
+            if (fStack.empty () and fRootBinding != nullptr) {
+                binding = fRootBinding; // the root element IS the document's value
+            }
+            else if (parentBinding != nullptr) {
+                key     = parentBinding->KeyForName (name.fLocalName);
+                binding = parentBinding->MemberBinding (key);
+                if (binding != nullptr and binding->fItems != nullptr) {
+                    binding = binding->fItems.get (); // each element is an item of that member's array
+                }
+            }
+            fStack.push_back (Frame_{.fName = key, .fBinding = binding});
             for (const auto& i : attributes) {
-                AddChild_ (fStack.back (), i.fKey.fLocalName, VariantValue{i.fValue});
+                AddChild_ (fStack.back (), binding == nullptr ? i.fKey.fLocalName : binding->KeyForName (i.fKey.fLocalName), VariantValue{i.fValue});
             }
         }
         virtual void TextInsideElement (const String& text) override
@@ -94,6 +112,19 @@ namespace {
                 f.fArrayItems.Append (v);
                 return;
             }
+            // a Binding saying this member is an array makes it one, however few elements the document has
+            if (f.fBinding != nullptr) {
+                if (const Binding* mb = f.fBinding->MemberBinding (name); mb != nullptr and mb->fItems != nullptr) {
+                    Sequence<VariantValue> items;
+                    if (optional<VariantValue> already = f.fChildren.Lookup (name)) {
+                        items = already->As<Sequence<VariantValue>> ();
+                    }
+                    items.Append (v);
+                    f.fChildren.Add (name, VariantValue{items});
+                    f.fRepeated.Add (name);
+                    return;
+                }
+            }
             if (optional<VariantValue> already = f.fChildren.Lookup (name)) {
                 // a name seen again: the member is the array of them, in document order
                 Sequence<VariantValue> items = f.fRepeated.Contains (name) ? already->As<Sequence<VariantValue>> () : Sequence<VariantValue>{*already};
@@ -113,6 +144,11 @@ namespace {
             if (not f.fArrayItems.empty ()) {
                 AddChild_ (f, fArrayItemElementName, VariantValue{f.fArrayItems}); // ... beside other members: just a member
                 f.fArrayItems.clear ();
+            }
+            // a Binding may say this element's text is one of its members, beside its attributes
+            if (optional<String> textKey = f.fBinding == nullptr ? nullopt : f.fBinding->TextMemberKey ()) {
+                f.fChildren.Add (*textKey, VariantValue{f.fText.str ()});
+                return VariantValue{f.fChildren};
             }
             if (f.fChildren.empty ()) {
                 return VariantValue{f.fText.str ()}; // text, kept as it came: XML whitespace is significant
@@ -143,7 +179,8 @@ public:
     virtual VariantValue Read ([[maybe_unused]] const Streams::InputStream::Ptr<byte>& in) const override
     {
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-        Builder_ builder{fSerializationConfiguration_.GetArrayElementName ().value_or (String{})};
+        optional<Binding> binding = fSerializationConfiguration_.GetBinding ();
+        Builder_          builder{fSerializationConfiguration_.GetArrayElementName ().value_or (String{}), binding ? &*binding : nullptr};
         SAXParse (in, &builder, nullptr);
         if (builder.fRootName.empty ()) {
             static const auto kException_ = BadFormatException{"no root element"sv};

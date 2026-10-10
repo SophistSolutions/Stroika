@@ -5,6 +5,8 @@
 
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/XML/Binding.h"
 #include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
@@ -38,46 +40,119 @@ namespace {
                 fOut.Write ("    "sv);
             }
         }
-        void WriteElement (const String& name, const VariantValue& v, int indentLevel)
+        // an object's members written as child elements, in the Binding's order - then any it does not name, as the value
+        // gives them
+        Sequence<Common::KeyValuePair<String, VariantValue>> ElementMembers_ (const Mapping<String, VariantValue>& members, const Binding* binding)
+        {
+            Sequence<Common::KeyValuePair<String, VariantValue>> result;
+            Containers::Set<String>                              named;
+            if (binding != nullptr) {
+                for (const BindingMember& i : binding->fMembers) {
+                    named.Add (i.fKey);
+                    if (binding->KindFor (i.fKey) == Binding::Kind::eElement) {
+                        if (optional<VariantValue> v = members.Lookup (i.fKey)) {
+                            result.Append (Common::KeyValuePair<String, VariantValue>{i.fKey, *v});
+                        }
+                    }
+                }
+            }
+            for (const auto& i : members) {
+                if (not named.Contains (i.fKey)) {
+                    result.Append (i);
+                }
+            }
+            return result;
+        }
+        // a default namespace (xmlns=) where this element names one, and it is not the one it sits in already; a name with none
+        // inherits the namespace it is in - saying nothing is not the same as saying 'no namespace'. A prefixed namespace is
+        // not expressible yet. Returns the namespace this element's children are in
+        optional<URI> WriteNamespaceIfNew_ (const NameWithNamespace& name, const optional<URI>& inheritedNamespace)
+        {
+            if (not name.fNamespace or name.fNamespace == inheritedNamespace) {
+                return inheritedNamespace;
+            }
+            fOut.Write (" xmlns=\""sv +
+                        String{QuoteForXMLAttribute (name.fNamespace->As<String> (IO::Network::URI::StringPCTEncodedFlag::eDecoded))} + "\""sv);
+            return name.fNamespace;
+        }
+        void WriteElement (const NameWithNamespace& name, const VariantValue& v, const Binding* binding,
+                           const optional<URI>& inheritedNamespace, int indentLevel)
         {
             if (v.GetType () == VariantValue::eArray) {
-                Sequence<VariantValue> items = v.As<Sequence<VariantValue>> ();
+                Sequence<VariantValue> items       = v.As<Sequence<VariantValue>> ();
+                const Binding*         itemBinding = binding == nullptr ? nullptr : binding->fItems.get ();
                 if (fArrayItemElementName.empty ()) {
                     // the member's own name, once per item - how a schema of someone else's usually has it (UPnP's <service>);
-                    // then an array of one reads back as a scalar, which only a binding (or the object it is read into) can tell
+                    // then an array of one reads back as a scalar, unless a Binding says that member is an array
                     for (const VariantValue& i : items) {
-                        WriteElement (name, i, indentLevel);
+                        WriteElement (name, i, itemBinding, inheritedNamespace, indentLevel);
                     }
                     return;
                 }
                 Indent_ (indentLevel);
-                fOut.Write ("<"sv + name + ">"sv);
+                fOut.Write ("<"sv + name.fName);
+                optional<URI> childNamespace = WriteNamespaceIfNew_ (name, inheritedNamespace);
+                fOut.Write (">"sv);
                 if (not items.empty ()) {
                     fOut.Write ("\n"sv);
                     for (const VariantValue& i : items) {
-                        WriteElement (fArrayItemElementName, i, indentLevel + 1);
+                        WriteElement (NameWithNamespace{fArrayItemElementName}, i, itemBinding, childNamespace, indentLevel + 1);
                     }
                     Indent_ (indentLevel);
                 }
-                fOut.Write ("</"sv + name + ">\n"sv);
+                fOut.Write ("</"sv + name.fName + ">\n"sv);
                 return;
             }
             Indent_ (indentLevel);
-            fOut.Write ("<"sv + name + ">"sv);
-            WriteContent (v, indentLevel);
-            fOut.Write ("</"sv + name + ">\n"sv);
+            fOut.Write ("<"sv + name.fName);
+            optional<URI>                 childNamespace = WriteNamespaceIfNew_ (name, inheritedNamespace);
+            Mapping<String, VariantValue> members;
+            optional<VariantValue>        textMember; // a member the Binding says is this element's text, not a child element
+            if (v.GetType () == VariantValue::eMap) {
+                members = v.As<Mapping<String, VariantValue>> ();
+                if (binding != nullptr) {
+                    for (const BindingMember& i : binding->fMembers) {
+                        optional<VariantValue> mv = members.Lookup (i.fKey);
+                        if (not mv) {
+                            continue;
+                        }
+                        switch (binding->KindFor (i.fKey)) {
+                            case Binding::Kind::eAttribute:
+                                // its local name: an attribute in a namespace would need a prefix, not expressible yet
+                                fOut.Write (" "sv + binding->NameFor (i.fKey).fName + "=\""sv + String{QuoteForXMLAttribute (mv->As<String> ())} + "\""sv);
+                                break;
+                            case Binding::Kind::eText:
+                                textMember = mv;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            fOut.Write (">"sv);
+            if (textMember) {
+                fOut.Write (String{QuoteForXML (textMember->As<String> ())});
+            }
+            else {
+                WriteContent (v, members, binding, childNamespace, indentLevel);
+            }
+            fOut.Write ("</"sv + name.fName + ">\n"sv);
         }
-        void WriteContent (const VariantValue& v, int indentLevel)
+        void WriteContent (const VariantValue& v, const Mapping<String, VariantValue>& members, const Binding* binding,
+                           const optional<URI>& inheritedNamespace, int indentLevel)
         {
             switch (v.GetType ()) {
                 case VariantValue::eNull:
                     break; // an empty element: XML has no null
                 case VariantValue::eMap: {
-                    Mapping<String, VariantValue> members = v.As<Mapping<String, VariantValue>> ();
-                    if (not members.empty ()) {
+                    Sequence<Common::KeyValuePair<String, VariantValue>> elements = ElementMembers_ (members, binding);
+                    if (not elements.empty ()) {
                         fOut.Write ("\n"sv);
-                        for (const auto& i : members) {
-                            WriteElement (i.fKey, i.fValue, indentLevel + 1);
+                        for (const auto& i : elements) {
+                            const Binding*    memberBinding = binding == nullptr ? nullptr : binding->MemberBinding (i.fKey);
+                            NameWithNamespace memberName    = binding == nullptr ? NameWithNamespace{i.fKey} : binding->NameFor (i.fKey);
+                            WriteElement (memberName, i.fValue, memberBinding, inheritedNamespace, indentLevel + 1);
                         }
                         Indent_ (indentLevel);
                     }
@@ -104,6 +179,7 @@ public:
         : fSerializationConfiguration_{config}
         , fDocumentElementName_{config.GetDocumentElementName ().value_or (String{})}
         , fArrayItemElementName_{config.GetArrayElementName ().value_or (String{})}
+        , fBinding_{config.GetBinding ()}
     {
     }
     virtual _SharedPtrIRep Clone () const override
@@ -128,17 +204,23 @@ public:
     }
     nonvirtual void Write_ (const VariantValue& v, const Streams::OutputStream::Ptr<Character>& out) const
     {
-        Writer_ w{out, fArrayItemElementName_};
+        Writer_        w{out, fArrayItemElementName_};
+        const Binding* binding = fBinding_ ? &*fBinding_ : nullptr;
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::eMap);
             Mapping<String, VariantValue> members = v.As<Mapping<String, VariantValue>> ();
             Require (members.size () == 1); // a document has exactly one root element - else name one (SetDocumentElementName)
             for (const auto& i : members) {
-                w.WriteElement (i.fKey, i.fValue, 0);
+                // the root element is a member of the value, so its name and Binding come from the Binding's member of that key
+                const Binding*    rootBinding = binding == nullptr ? nullptr : binding->MemberBinding (i.fKey);
+                NameWithNamespace rootName    = binding == nullptr ? NameWithNamespace{i.fKey} : binding->NameFor (i.fKey);
+                w.WriteElement (rootName, i.fValue, rootBinding, nullopt, 0);
             }
         }
         else {
-            w.WriteElement (fDocumentElementName_, v, 0);
+            // the document element names the root, so the Binding IS the root element's
+            NameWithNamespace rootName = (binding != nullptr and binding->fName) ? *binding->fName : NameWithNamespace{fDocumentElementName_};
+            w.WriteElement (rootName, v, binding, nullopt, 0);
         }
     }
     nonvirtual SerializationConfiguration GetConfiguration () const
@@ -150,12 +232,14 @@ public:
         fSerializationConfiguration_ = config;
         fDocumentElementName_        = config.GetDocumentElementName ().value_or (String{});
         fArrayItemElementName_       = config.GetArrayElementName ().value_or (String{});
+        fBinding_                    = config.GetBinding ();
     }
 
 private:
     SerializationConfiguration fSerializationConfiguration_;
     String                     fDocumentElementName_;
     String                     fArrayItemElementName_;
+    optional<Binding>          fBinding_;
 };
 
 Variant::XML::Writer::Writer (const SerializationConfiguration& config)

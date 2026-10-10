@@ -27,5 +27,13 @@ namespace Stroika::Foundation::DataExchange::XML {
         Require (not n.has_value () or not(*n).empty ()); // should validate legit xml elt name
         fArrayElementName_ = n.has_value () ? *n : String{};
     }
+    inline optional<Binding> SerializationConfiguration::GetBinding () const
+    {
+        return fBinding_;
+    }
+    inline void SerializationConfiguration::SetBinding (const optional<Binding>& b)
+    {
+        fBinding_ = b;
+    }
 
 }

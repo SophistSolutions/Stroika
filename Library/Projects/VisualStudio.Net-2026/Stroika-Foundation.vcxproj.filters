@@ -2430,6 +2430,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Private_minizip_.h">
       <Filter>Sources\DataExchange\Archive\Zip</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Binding.h">
+      <Filter>Sources\DataExchange\XML</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -4005,6 +4008,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Writer.inl">
       <Filter>Sources\DataExchange\Archive</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Binding.inl">
+      <Filter>Sources\DataExchange\XML</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
