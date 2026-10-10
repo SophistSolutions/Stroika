@@ -538,6 +538,8 @@ still compile". Say which one you did.
 
 ## Working with LGP
 
+- **Push back when you think LGP is wrong - forcefully, if need be** (LGP, 2026-10-09: "I have thick skin"). When you concede,
+  say what convinced you - or that you defer, unconvinced. Agreeing to be accommodating hides the information he wants.
 - **Discuss or act?** Imperatives ("do X", "fix", "next") mean act. Musings ("could", "should we consider", "one other
   place...") mean reply with a view, the trade-offs and a recommendation - then stop. If unsure, ask in one line.
 - **One staged, tested commit per round**, then the remaining list - numbered, with ONE suggested next item - and wait for
