@@ -1991,6 +1991,11 @@ namespace qStroika_Foundation_Characters_FMT_PREFIX_ {
         template <typename ParseContext>
         constexpr typename ParseContext::iterator parse (ParseContext& ctx)
         {
+#if qCompilerAndStdLib_formatter_parse_closingBraceAsFill_Buggy
+            if (ctx.begin () == ctx.end () or *ctx.begin () == '}') {
+                return ctx.begin ();
+            }
+#endif
             return fDelegate2_.parse (ctx);
         }
 

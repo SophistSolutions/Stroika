@@ -1797,6 +1797,24 @@ static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::t
 #endif
 
 /**
+ *  libc++ before 19 takes the '}' that ends an empty format-spec for a fill character when the text after the replacement
+ *  field starts with an alignment ('<', '>' or '^'). So a type whose formatter forwards parse () to a standard formatter -
+ *  Stroika's String, and every type formatted with Characters::ToString - throws at run time for "<a>{}</a>"_f(String{"x"}):
+ *
+ *      format_error: The fill option contains an invalid value
+ *
+ *  libc++'s own types are spared: it calls their formatters' parse () only after a ':'. Fixed in libc++ 19.1.0
+ *  (https://github.com/llvm/llvm-project/pull/81305, "Don't treat a closing '}' as part of format-spec").
+ */
+#ifndef qCompilerAndStdLib_formatter_parse_closingBraceAsFill_Buggy
+#if defined(_LIBCPP_VERSION) and not qStroika_HasComponent_fmtlib
+#define qCompilerAndStdLib_formatter_parse_closingBraceAsFill_Buggy (_LIBCPP_VERSION < 190000)
+#else
+#define qCompilerAndStdLib_formatter_parse_closingBraceAsFill_Buggy 0
+#endif
+#endif
+
+/**
  mmandLine.cpp:121:20: error: unable to find string literal operator ‘operator""_f’ with ‘const char [17]’, ‘long unsigned int’ arguments
   121 |             return "(-{} {}|--{}={})"_f(*fSingleCharName, argName, *fLongName, argName);
       |                    ^~~~~~~~~~~~~~~~~~~~
