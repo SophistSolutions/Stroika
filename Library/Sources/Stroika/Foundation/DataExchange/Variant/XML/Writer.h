@@ -34,9 +34,40 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
     using DataExchange::XML::SerializationConfiguration;
 
     /**
-     *  @todo
-     * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
-     *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
+     *  \brief Write a VariantValue as XML - an object's member is an element, an array is repeated elements
+     *
+     *  | VariantValue                  | XML |
+     *  |-------------------------------|-----|
+     *  | an object's member K          | the element `<K>` |
+     *  | an array under member K       | an element per item: `<Array>` each, or - with SetArrayElementName (nullopt) - `<K>` repeated |
+     *  | anything else                 | its element's text, as VariantValue::As<String> writes it (a date ISO 8601, a BLOB base64) |
+     *  | null                          | an empty element |
+     *
+     *  \par Example Usage
+     *      \code
+     *          SerializationConfiguration config;
+     *          config.SetDocumentElementName ("device"sv);
+     *          config.SetArrayElementName (nullopt);           // <service> repeated, rather than <Array>
+     *          Variant::XML::Writer{config}.Write (v, out);
+     *      \endcode
+     *      \code
+     *          <device>
+     *              <specVersion>
+     *                  <major>1</major>
+     *              </specVersion>
+     *              <serviceList>
+     *                  <service>a</service>
+     *                  <service>b</service>
+     *              </serviceList>
+     *          </device>
+     *      \endcode
+     *
+     *  \note The byte overload of Write writes a document, so it begins with an XML declaration naming the encoding it writes
+     *        (UTF-8); the Character overload writes none, the caller owning the encoding, and perhaps writing this into a
+     *        document of its own.
+     *
+     *  \note Attributes, namespaces and a given element order are not expressible yet - what a schema of someone else's needs.
+     *        @see https://github.com/SophistSolutions/Stroika/issues/954
      *
      * The argument VariantValue must be composed of any combination of these types:
      *          o   VariantValue::eBoolean

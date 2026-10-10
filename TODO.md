@@ -24,12 +24,11 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - (for 3.0d25, after the rest of this list - LGP 2026-10-07)
-         **ObjectVariantMapper to XML**: Variant::XML::Writer with namespaces,
-         attributes and repeated elements - and element order, which ObjectVariantMapper does not keep for an object (a
-         Mapping) though UPnP requires it (UPnP Device Architecture 1.1, section 2.5.4): an opt-in ordered representation, or
-         objects as arrays. Then UPnP's descriptions and SOAP messages, written as text now, could Serialize through it.
-         Variant::XML::Reader is still not implemented.
+       - **NOW: a competent Variant::XML Reader/Writer** - https://github.com/SophistSolutions/Stroika/issues/954 (LGP
+         2026-10-10; it is 2022's "XML misc todo", whose "first draft" step is what exists). Attributes, namespaces, element
+         order, repeated elements, and the hooks to make non-standard XML work - with tests, which it has none of (Tests/32's
+         XML_ONLY_ asserts nothing). Then UPnP's descriptions and SOAP messages, written as text now, could Serialize through
+         it, and #955 (a web service answering JSON or XML) is unblocked.
        - (WTF, not Stroika) **WTF ignores every ssdp:byebye**: it finds the device by its LOCATION's host, which a byebye
          does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - use SSDP::Client::CachingListener: its callbacks get
          a Listener's Advertisement once per change - fAlive false (removed) with the LOCATION last heard - so WTF fetches

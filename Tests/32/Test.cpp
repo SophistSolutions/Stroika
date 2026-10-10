@@ -1055,24 +1055,135 @@ namespace {
      */
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_)
     {
+        using DataExchange::XML::SerializationConfiguration;
+        // what the writer makes of a value, as a String (so no XML declaration - @see Variant::XML::Writer)
+        auto written = [] (const VariantValue& v, const SerializationConfiguration& config) {
+            return DataExchange::Variant::XML::Writer{config}.WriteAsString (v);
+        };
         {
-            DataExchange::Variant::XML::Writer w;
-            VariantValue                       v   = VariantValue{44905.3};
-            Streams::MemoryStream::Ptr<byte>   out = Streams::MemoryStream::New<byte> ();
-            w.Write (v, out);
-            string x = out.As<string> ();
+            // the document element names the root, and a scalar is its text
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("MaxFiles"sv);
+            EXPECT_EQ (written (VariantValue{405}, config), "<MaxFiles>405</MaxFiles>\n"sv);
+            EXPECT_EQ (written (VariantValue{true}, config), "<MaxFiles>true</MaxFiles>\n"sv);
+            EXPECT_EQ (written (VariantValue{}, config), "<MaxFiles></MaxFiles>\n"sv);                     // null: an empty element
+            EXPECT_EQ (written (VariantValue{"<&>"sv}, config), "<MaxFiles>&lt;&amp;&gt;</MaxFiles>\n"sv); // quoted
         }
         {
-            DataExchange::Variant::XML::Writer w;
-            map<wstring, VariantValue>         mv;
-            mv[L"MaxFiles"]                      = VariantValue{405};
-            VariantValue                     v   = VariantValue{mv};
+            // no document element: the value is an object of one member, which is the root
+            SerializationConfiguration config;
+            config.SetDocumentElementName (nullopt);
+            EXPECT_EQ (written (VariantValue{Mapping<String, VariantValue>{{"a"sv, VariantValue{1}}}}, config), "<a>1</a>\n"sv);
+        }
+        {
+            // an array: each item in the array element name, so an array of one still reads as an array
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("list"sv);
+            VariantValue v{Sequence<VariantValue>{VariantValue{"a"sv}, VariantValue{"b"sv}}};
+            EXPECT_EQ (written (v, config), "<list>\n    <Array>a</Array>\n    <Array>b</Array>\n</list>\n"sv);
+            config.SetArrayElementName ("item"sv);
+            EXPECT_EQ (written (v, config), "<list>\n    <item>a</item>\n    <item>b</item>\n</list>\n"sv);
+            // or, with none, the member's own name repeated - how a schema of someone else's usually has it
+            config.SetArrayElementName (nullopt);
+            config.SetDocumentElementName ("serviceList"sv);
+            EXPECT_EQ (written (VariantValue{Mapping<String, VariantValue>{{"service"sv, v}}}, config),
+                       "<serviceList>\n    <service>a</service>\n    <service>b</service>\n</serviceList>\n"sv);
+        }
+        {
+            // nested objects, indented; members in the order a Mapping gives them (sorted - XML element order is not expressible yet)
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("device"sv);
+            VariantValue v{Mapping<String, VariantValue>{
+                {"specVersion"sv, VariantValue{Mapping<String, VariantValue>{{"major"sv, VariantValue{1}}, {"minor"sv, VariantValue{0}}}}},
+                {"UDN"sv, VariantValue{"uuid:abc"sv}}}};
+            EXPECT_EQ (written (v, config), "<device>\n"
+                                            "    <UDN>uuid:abc</UDN>\n"
+                                            "    <specVersion>\n"
+                                            "        <major>1</major>\n"
+                                            "        <minor>0</minor>\n"
+                                            "    </specVersion>\n"
+                                            "</device>\n"sv);
+        }
+        {
+            // the byte overload writes a document, so it declares its encoding
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("a"sv);
             Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
-            w.Write (v, out);
-            string x = out.As<string> ();
+            DataExchange::Variant::XML::Writer{config}.Write (VariantValue{1}, out);
+            EXPECT_EQ (out.As<string> (), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<a>1</a>\n");
         }
     }
 }
+
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
+namespace {
+    /*
+     *  Variant::XML::Reader - the Writer's inverse: what it wrote reads back, allowing that XML says nothing of types, so every
+     *  leaf reads as a String (VariantValue::As, and so ObjectVariantMapper::ToObject, coerce).
+     */
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_RoundTrip_)
+    {
+        using DataExchange::XML::SerializationConfiguration;
+        using VVMap    = Mapping<String, VariantValue>; // a comma in a template argument would end an EXPECT_EQ's first argument
+        auto roundTrip = [] (const VariantValue& v, const SerializationConfiguration& config) {
+            return DataExchange::Variant::XML::Reader{config}.Read (DataExchange::Variant::XML::Writer{config}.WriteAsString (v));
+        };
+        {
+            // an object, and its leaves - each back as a String
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("device"sv);
+            VariantValue v{Mapping<String, VariantValue>{{"UDN"sv, VariantValue{"uuid:abc"sv}}, {"port"sv, VariantValue{80}}}};
+            VariantValue back = roundTrip (v, config);
+            EXPECT_EQ (back.As<VVMap> ().Lookup ("UDN"sv)->As<String> (), "uuid:abc"sv);
+            EXPECT_EQ (back.As<VVMap> ().Lookup ("port"sv)->As<int> (), 80); // XML has no types: "80"
+            EXPECT_EQ (back.As<VVMap> ().Lookup ("port"sv)->GetType (), VariantValue::eString);
+        }
+        {
+            // an array, each item in the array element - so an array of ONE still reads as an array
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("list"sv);
+            for (const Sequence<VariantValue>& items :
+                 {Sequence<VariantValue>{VariantValue{"a"sv}, VariantValue{"b"sv}}, Sequence<VariantValue>{VariantValue{"a"sv}}}) {
+                VariantValue back = roundTrip (VariantValue{items}, config);
+                EXPECT_EQ (back.GetType (), VariantValue::eArray);
+                EXPECT_EQ (back.As<Sequence<VariantValue>> ().size (), items.size ());
+                EXPECT_EQ (back.As<Sequence<VariantValue>> ()[0].As<String> (), "a"sv);
+            }
+        }
+        {
+            // with no array element name, a repeated element name is the array - how someone else's schema has it; but then an
+            // array of one is indistinguishable from a scalar, and reads back as one
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("serviceList"sv);
+            config.SetArrayElementName (nullopt);
+            VariantValue two{
+                Mapping<String, VariantValue>{{"service"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}, VariantValue{"b"sv}}}}}};
+            EXPECT_EQ (roundTrip (two, config), two);
+            VariantValue one{Mapping<String, VariantValue>{{"service"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}}}}}};
+            EXPECT_EQ (roundTrip (one, config).As<VVMap> ().Lookup ("service"sv)->As<String> (), "a"sv);
+        }
+        {
+            // reading someone else's XML: an attribute reads as a member too, so nothing is silently dropped
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("stateVariable"sv);
+            config.SetArrayElementName (nullopt);
+            VariantValue v = DataExchange::Variant::XML::Reader{config}.Read (
+                String{"<stateVariable sendEvents=\"yes\"><name>Status</name><dataType>boolean</dataType></stateVariable>"sv});
+            VVMap m = v.As<VVMap> ();
+            EXPECT_EQ (m.Lookup ("sendEvents"sv)->As<String> (), "yes"sv);
+            EXPECT_EQ (m.Lookup ("name"sv)->As<String> (), "Status"sv);
+            EXPECT_EQ (m.Lookup ("dataType"sv)->As<String> (), "boolean"sv);
+        }
+        {
+            // with no document element named, the root element is the value's one member - as the Writer takes it
+            SerializationConfiguration config;
+            config.SetDocumentElementName (nullopt);
+            EXPECT_EQ (DataExchange::Variant::XML::Reader{config}.Read (String{"<a><b>1</b></a>"sv}),
+                       (VariantValue{VVMap{{"a"sv, VariantValue{VVMap{{"b"sv, VariantValue{"1"sv}}}}}}}));
+        }
+    }
+}
+#endif
 
 namespace {
     /// @TODO MOVE ELSEWHERE
