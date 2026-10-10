@@ -202,7 +202,20 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          *  Node::Ptr maybe nullptr (default constructed, assigned nullptr, or rendered null by a call to DeleteNode). Calling other methods (like GetName () etc)
          *  while nullptr is a requires failure.
-         * 
+         *
+         *  A Node::Ptr (so an Element::Ptr) is an internal pointer into a well-known document - logically, if not physically: it does
+         *  not own its node, nor keep its document alive. So whoever holds a node must hold its Document::Ptr longer; and must know that
+         *  whoever else can reach the document can reach the node, change it, or delete it (Delete () through any Ptr to it leaves every
+         *  other Ptr to it dangling). Watch for a temporary document:
+         *      \code
+         *          Element::Ptr root = Document::New (in).GetRootElement ();      // WRONG: the Document::Ptr is gone at the ;
+         *          for (auto e : Document::New (in).GetRootElement ().GetChildElements ()) {} // WRONG before C++23: gone before the body runs
+         *          Document::Ptr doc = Document::New (in);                        // RIGHT: doc outlives its nodes
+         *      \endcode
+         *  Where assertions are checked, a node whose document went first fails a Require AS IT GOES - which catches every such use,
+         *  a node being usable after its document only by outliving it, but says so late: a use in between reads freed memory first,
+         *  as before Stroika v3.0d25, just no longer silently (and a node leaked, never destroyed, is never checked at all).
+         *
          *  \note Older XMLDB InsertNode/AppendNode APIs - we had some APIs which more generally operated on Nodes adding them and probably allowed moving them.
          *        I couldn't think of any cases where I needed that, and it made it harder to port to other libraries, so I removed those APIs (til I see there utility again).
          *        And then - need to better document just what they do/are for (so can do portable).

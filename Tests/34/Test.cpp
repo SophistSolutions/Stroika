@@ -1474,6 +1474,30 @@ namespace {
             }
         });
     }
+
+#if qStroika_Foundation_Debug_AssertionsChecked
+    /*
+     *  A node is an internal pointer into its document (Node::Ptr): one outliving its Document::Ptr - taken from a temporary, say -
+     *  fails a Require as it goes, from each provider, where assertions are checked; held by a Document::Ptr outliving it, it is
+     *  fine. Before Stroika v3.0d25 using such a node read the freed document, saying nothing.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_NodeOutlivingItsDocument_)
+    {
+        GTEST_FLAG_SET (death_test_style, "threadsafe"); // the child re-runs the binary to here, rather than fork a threaded process
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            constexpr string_view kXML_       = "<a><b>text</b></a>"sv;
+            auto                  newDocument = [&] () {
+                return domFactory (Memory::BLOB{as_bytes (span{kXML_})}.As<Streams::InputStream::Ptr<byte>> (), nullptr);
+            };
+            // Test::Setup's assertion handler prints each failure to wcerr, so match the Require's own text: that it died of that,
+            // and not of something else
+            EXPECT_DEATH_IF_SUPPORTED ({ DOM::Element::Ptr root = newDocument ().GetRootElement (); }, "fOwningDoc_");
+            DOM::Document::Ptr doc  = newDocument (); // the document held as long as its nodes: fine
+            DOM::Element::Ptr  root = doc.GetRootElement ();
+            EXPECT_EQ (root.GetChild (NameWithNamespace{"b"sv}).GetValue (), "text"sv);
+        });
+    }
+#endif
 }
 
 namespace {

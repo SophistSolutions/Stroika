@@ -660,6 +660,9 @@ namespace {
 
     Node::Ptr    WrapXercesNodeInStroikaNode_ (DOMNode* n);
     Element::Ptr WrapXercesNodeInStroikaNode_ (DOMElement* n);
+#if qStroika_Foundation_Debug_AssertionsChecked
+    weak_ptr<Document::IRep> DocumentOf_ (DOMNode* n);
+#endif
 }
 
 namespace {
@@ -722,9 +725,21 @@ namespace {
     struct NodeRep_ : IXercesNodeRep, Memory::UseBlockAllocationIfAppropriate<NodeRep_> {
         NodeRep_ (DOMNode* n)
             : fNode_{n}
+#if qStroika_Foundation_Debug_AssertionsChecked
+            , fOwningDoc_{DocumentOf_ (n)}
+#endif
         {
             RequireNotNull (n);
         }
+#if qStroika_Foundation_Debug_AssertionsChecked
+        ~NodeRep_ ()
+        {
+            // a node is an internal pointer into its document (Node::Ptr): whoever holds it must hold the Document::Ptr longer -
+            // so any use of this node after its document went would have read freed memory. Here catches every such use, but only
+            // once it is too late: the same Require goes at any use worth the cost of checking too
+            Require (not fOwningDoc_.expired ());
+        }
+#endif
         virtual const Providers::IDOMProvider* GetProvider () const override
         {
             return &Providers::Xerces::kDefaultProvider;
@@ -846,8 +861,11 @@ namespace {
         {
             return fNode_;
         }
-        // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
+        // not ref counted: freed with its document, which whoever holds this must keep (Node::Ptr) - checked in the DTOR
         DOMNode* fNode_;
+#if qStroika_Foundation_Debug_AssertionsChecked
+        weak_ptr<Document::IRep> fOwningDoc_;
+#endif
     };
 }
 
@@ -1195,7 +1213,15 @@ namespace {
     Element::Ptr WrapXercesNodeInStroikaNode_ (DOMElement* n);
 }
 namespace {
-    struct DocRep_ : DataExchange::XML::DOM::Document::IRep {
+    // enable_shared_from_this is only to give each node a weak_ptr to its document (DocumentOf_, from the DocRep_* kept in the
+    // xerces document's user data - a weak_ptr can be had from a raw pointer no other way): its DTOR check, so nothing without
+    // assertions
+    struct DocRep_ : DataExchange::XML::DOM::Document::IRep
+#if qStroika_Foundation_Debug_AssertionsChecked
+        ,
+                     enable_shared_from_this<DocRep_>
+#endif
+    {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
@@ -1425,6 +1451,17 @@ namespace {
 }
 
 namespace {
+#if qStroika_Foundation_Debug_AssertionsChecked
+    // the document a node belongs to - empty if it has none, or none a shared_ptr owns yet (while one is being built)
+    weak_ptr<Document::IRep> DocumentOf_ (DOMNode* n)
+    {
+        RequireNotNull (n);
+        xercesc::DOMDocument* doc = n->getNodeType () == DOMNode::DOCUMENT_NODE ? dynamic_cast<xercesc::DOMDocument*> (n) : n->getOwnerDocument ();
+        auto wrapper = doc == nullptr ? nullptr : static_cast<DocRep_*> (doc->getUserData (kXerces2XMLDBDocumentKey_));
+        return wrapper == nullptr ? weak_ptr<Document::IRep>{} : wrapper->weak_from_this ();
+    }
+#endif
+
     Node::Ptr WrapXercesNodeInStroikaNode_ (DOMNode* n)
     {
         RequireNotNull (n);

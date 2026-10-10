@@ -293,6 +293,9 @@ namespace {
 namespace {
     struct DocRep_;
     DocRep_* GetWrapperDoc_ (xmlDoc* d);
+#if qStroika_Foundation_Debug_AssertionsChecked
+    weak_ptr<Document::IRep> DocumentOf_ (xmlNode* n);
+#endif
     DocRep_* GetWrapperDoc_ (xmlNode* n)
     {
         RequireNotNull (n);
@@ -317,9 +320,21 @@ namespace {
     public:
         NodeRep_ (xmlNode* n)
             : fNode_{n}
+#if qStroika_Foundation_Debug_AssertionsChecked
+            , fOwningDoc_{DocumentOf_ (n)}
+#endif
         {
             RequireNotNull (n);
         }
+#if qStroika_Foundation_Debug_AssertionsChecked
+        ~NodeRep_ ()
+        {
+            // a node is an internal pointer into its document (Node::Ptr): whoever holds it must hold the Document::Ptr longer -
+            // so any use of this node after its document went would have read freed memory. Here catches every such use, but only
+            // once it is too late: the same Require goes at any use worth the cost of checking too
+            Require (not fOwningDoc_.expired ());
+        }
+#endif
         virtual const Providers::IDOMProvider* GetProvider () const override
         {
             return &Providers::LibXML2::kDefaultProvider;
@@ -442,8 +457,11 @@ namespace {
             }
             return ns2Use;
         }
-        // must carefully think out mem management here - cuz not ref counted - around as long as owning doc...
+        // not ref counted: freed with its document, which whoever holds this must keep (Node::Ptr) - checked in the DTOR
         xmlNode* fNode_;
+#if qStroika_Foundation_Debug_AssertionsChecked
+        weak_ptr<Document::IRep> fOwningDoc_;
+#endif
     };
 }
 
@@ -719,7 +737,14 @@ namespace {
 }
 
 namespace {
-    struct DocRep_ final : ILibXML2DocRep {
+    // enable_shared_from_this is only to give each node a weak_ptr to its document (DocumentOf_, from the DocRep_* libxml2 keeps
+    // in _private - a weak_ptr can be had from a raw pointer no other way): its DTOR check, so nothing without assertions
+    struct DocRep_ final : ILibXML2DocRep
+#if qStroika_Foundation_Debug_AssertionsChecked
+        ,
+                           enable_shared_from_this<DocRep_>
+#endif
+    {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
@@ -923,6 +948,17 @@ namespace {
         Assert (wrapperDoc->fLibRep_ == d); // else grave disorder
         return wrapperDoc;
     }
+#if qStroika_Foundation_Debug_AssertionsChecked
+    // the document a node belongs to - empty if it has none, or none a shared_ptr owns yet (while one is being built)
+    weak_ptr<Document::IRep> DocumentOf_ (xmlNode* n)
+    {
+        RequireNotNull (n);
+        if (n->doc == nullptr or n->doc->_private == nullptr) {
+            return {};
+        }
+        return GetWrapperDoc_ (n->doc)->weak_from_this ();
+    }
+#endif
     xmlNs* GetSharedReUsableXMLNSParentNamespace_ (xmlDoc* d)
     {
         auto wrapperDoc = GetWrapperDoc_ (d);
