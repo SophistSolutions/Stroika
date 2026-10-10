@@ -1088,12 +1088,19 @@ namespace {
     /*
      *  SSDP_Loopback_Search_, over IPv6: our own Search finds our own BasicServer (the group ff02::c, joined on each interface),
      *  which answers with a LOCATION on one of this machine's IPv6 addresses - never a link-local one, which a URL cannot use (so
-     *  where an interface has only link-local IPv6, nothing is answered there). As there, anything that keeps the exchange from
-     *  happening - here also a network with no IPv6 but link-local - is a test issue.
+     *  where an interface has only link-local IPv6, nothing is answered there). With no network SSDP talks on that has another
+     *  IPv6 address, it is skipped; as there, anything else that keeps the exchange from happening is a test issue.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_SearchIPv6_)
     {
-        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_SearchIPv6_"};
+        Debug::TraceContextBumper ctx{"SSDP_Loopback_SearchIPv6_"};
+        if (not SystemInterfacesMgr{}.GetAll ().Any ([] (const Interface& i) {
+                return SSDP::DefaultInterfaceFilter (i) and i.fBindings.fAddresses.Any ([] (const InternetAddress& ia) {
+                    return ia.GetAddressFamily () == InternetAddress::AddressFamily::V6 and not ia.IsLinkLocalAddress ();
+                });
+            })) {
+            GTEST_SKIP () << "no network SSDP talks on has an IPv6 address but link-local";
+        }
         Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
         using IO::Network::InternetProtocol::IP::IPVersionSupport;
         const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
@@ -1131,7 +1138,7 @@ namespace {
         if (not a) {
             Stroika::Frameworks::Test::WarnTestIssue (
                 "SSDP_Loopback_SearchIPv6_ skipped - our own device was not found over IPv6 within 10 "
-                "seconds (no IPv6 here but link-local, or this environment blocks IPv6 multicast)");
+                "seconds (this environment probably blocks IPv6 multicast)");
             return;
         }
         DbgTrace ("found: {}"_f, a);
@@ -1878,9 +1885,7 @@ namespace {
         // gone, it leaves no timer behind - though a look for what has expired was still to come
         EXPECT_EQ (Execution::IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().size (), 0u);
         Containers::Sequence<SSDP::Advertisement> changes = told.load ();
-        for (const SSDP::Advertisement& a : changes) {
-            DbgTrace ("told: {}"_f, a);
-        }
+        DbgTrace ("told: {}"_f, changes);
         // each change told once, in order - though each NOTIFY came once per interface; fAlive says which: added or removed
         ASSERT_EQ (changes.size (), 9u);
         auto is = [] (const SSDP::Advertisement& a, bool alive, const String& usn, const URI& location) {
@@ -1914,7 +1919,7 @@ namespace {
      *  ssdp:byebye, sent only on the network it leaves, removes it from a CachingListener only there - so an advertisement heard
      *  on two networks stays until it is withdrawn on both. Sent out of two of this machine's interfaces (its own multicasts
      *  looped back, each arriving on the interface it went out of) - two separate networks, as a probe finds: a NOTIFY sent out of
-     *  one of two bridged virtual switches arrives on both. On a machine with fewer, a test issue.
+     *  one of two bridged virtual switches arrives on both. On a machine with fewer, it is skipped.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_CachingListener_ByebyeOnOneNetwork_)
     {
@@ -1982,9 +1987,7 @@ namespace {
             return;
         }
         if (separate.size () < 2) {
-            Stroika::Frameworks::Test::WarnTestIssue (
-                "SSDP_CachingListener_ByebyeOnOneNetwork_ skipped - it needs two separate networks SSDP talks on, with IPv4");
-            return;
+            GTEST_SKIP () << "it needs two separate networks SSDP talks on, with IPv4";
         }
         const Interface                                                    on1 = separate[0];
         const Interface                                                    on2 = separate[1];
@@ -2036,9 +2039,7 @@ namespace {
             return;
         }
         Containers::Sequence<SSDP::Advertisement> changes = told.load ();
-        for (const SSDP::Advertisement& a : changes) {
-            DbgTrace ("told: {}"_f, a);
-        }
+        DbgTrace ("told: {}"_f, changes);
         // added once, removed once - each saying where it was (last) heard
         ASSERT_EQ (changes.size (), 2u);
         EXPECT_EQ (changes[0].fAlive, true);
@@ -2116,9 +2117,7 @@ namespace {
         }
         // each advertisement found - at each LOCATION - added once, then removed once
         Containers::Sequence<SSDP::Advertisement> changes = told.load ();
-        for (const SSDP::Advertisement& a : changes) {
-            DbgTrace ("told: {}"_f, a);
-        }
+        DbgTrace ("told: {}"_f, changes);
         std::map<pair<String, URI>, Containers::Sequence<bool>> alives;
         for (const SSDP::Advertisement& a : changes) {
             alives[make_pair (a.fUSN, a.fLocation)].Append (a.fAlive == true);
