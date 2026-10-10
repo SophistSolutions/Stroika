@@ -953,61 +953,70 @@ namespace {
 
 namespace {
     /*
+     *  A server on loopback answering each request with its method, a newline, and its body - one request to a connection.
+     */
+    struct EchoMethodAndBodyServer_ {
+        ConnectionOrientedMasterSocket::Ptr fListener{[] () {
+            ConnectionOrientedMasterSocket::Ptr l = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
+            l.Bind (SocketAddress{V4::kLocalhost, 0});
+            l.Listen (5);
+            return l;
+        }()};
+        URI                                 fSite{"http://127.0.0.1:{}"_f(fListener.GetLocalAddress ()->GetPort ())};
+        // accept only once a request is waiting: a thread blocked in Accept cannot be aborted on Windows
+        Thread::CleanupPtr fServer{Thread::CleanupPtr::eAbortBeforeWaiting,
+                                   Thread::New (
+                                       [listener = fListener] () {
+                                           while (true) {
+                                               Thread::CheckForInterruption ();
+                                               if (WaitForIOReady<ConnectionOrientedMasterSocket::Ptr>{listener}.WaitQuietly (100ms).empty ()) {
+                                                   continue;
+                                               }
+                                               ConnectionOrientedStreamSocket::Ptr s = listener.Accept ();
+                                               string                              request;
+                                               byte                                buf[4096];
+                                               auto                                readMore = [&] () {
+                                                   span<byte> got = s.Read (span{buf});
+                                                   request.append (reinterpret_cast<const char*> (got.data ()), got.size ());
+                                                   return not got.empty ();
+                                               };
+                                               while (request.find ("\r\n\r\n") == string::npos and readMore ()) {
+                                               }
+                                               const size_t headersEnd = request.find ("\r\n\r\n");
+                                               if (headersEnd == string::npos) {
+                                                   continue;
+                                               }
+                                               size_t length = 0;
+                                               for (const string& h : {"\r\nContent-Length:"s, "\r\ncontent-length:"s}) {
+                                                   if (size_t at = request.find (h); at != string::npos and at < headersEnd) {
+                                                       length = static_cast<size_t> (std::stoul (request.substr (at + h.size ())));
+                                                   }
+                                               }
+                                               while (request.size () < headersEnd + 4 + length and readMore ()) {
+                                               }
+                                               const string answer =
+                                                   request.substr (0, request.find (' ')) + "\n" + request.substr (headersEnd + 4, length);
+                                               const string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
+                                                                       std::to_string (answer.size ()) + "\r\nConnection: close\r\n\r\n" + answer;
+                                               s.Write (as_bytes (span{response}));
+                                               s.Close ();
+                                           }
+                                       },
+                                       Thread::eAutoStart)};
+    };
+
+    /*
      *  A request whose method is neither GET, POST nor PUT - UPnP's NOTIFY, say - sends its body too, and the connection's next
      *  request is sent with its own method. Before Stroika v3.0d25 libcurl's sent no body (so a GENA NOTIFY arrived empty), and
-     *  sent the next GET by the name of the method before it; WinHTTP's did both right. Against a server on loopback, which
-     *  answers each request with its method, a newline, and its body.
+     *  sent the next GET by the name of the method before it; WinHTTP's did both right.
      */
     GTEST_TEST (Foundation_IO_Network_Transfer, OtherMethodsSendTheirBody_)
     {
-        Debug::TraceContextBumper           ctx{"OtherMethodsSendTheirBody_"};
-        ConnectionOrientedMasterSocket::Ptr listener = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
-        listener.Bind (SocketAddress{V4::kLocalhost, 0});
-        listener.Listen (5);
-        const URI site{"http://127.0.0.1:{}"_f(listener.GetLocalAddress ()->GetPort ())};
-        // each connection, one request. Accept only once one is waiting: a thread blocked in Accept cannot be aborted on Windows
-        Thread::CleanupPtr server{Thread::CleanupPtr::eAbortBeforeWaiting,
-                                  Thread::New (
-                                      [listener] () {
-                                          while (true) {
-                                              Thread::CheckForInterruption ();
-                                              if (WaitForIOReady<ConnectionOrientedMasterSocket::Ptr>{listener}.WaitQuietly (100ms).empty ()) {
-                                                  continue;
-                                              }
-                                              ConnectionOrientedStreamSocket::Ptr s = listener.Accept ();
-                                              string                              request;
-                                              byte                                buf[4096];
-                                              auto                                readMore = [&] () {
-                                                  span<byte> got = s.Read (span{buf});
-                                                  request.append (reinterpret_cast<const char*> (got.data ()), got.size ());
-                                                  return not got.empty ();
-                                              };
-                                              while (request.find ("\r\n\r\n") == string::npos and readMore ()) {
-                                              }
-                                              const size_t headersEnd = request.find ("\r\n\r\n");
-                                              if (headersEnd == string::npos) {
-                                                  continue;
-                                              }
-                                              size_t length = 0;
-                                              for (const string& h : {"\r\nContent-Length:"s, "\r\ncontent-length:"s}) {
-                                                  if (size_t at = request.find (h); at != string::npos and at < headersEnd) {
-                                                      length = static_cast<size_t> (std::stoul (request.substr (at + h.size ())));
-                                                  }
-                                              }
-                                              while (request.size () < headersEnd + 4 + length and readMore ()) {
-                                              }
-                                              const string answer =
-                                                  request.substr (0, request.find (' ')) + "\n" + request.substr (headersEnd + 4, length);
-                                              const string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
-                                                                      std::to_string (answer.size ()) + "\r\nConnection: close\r\n\r\n" + answer;
-                                              s.Write (as_bytes (span{response}));
-                                              s.Close ();
-                                          }
-                                      },
-                                      Thread::eAutoStart)};
-        auto               check = [&] (Connection::Ptr c) {
+        Debug::TraceContextBumper ctx{"OtherMethodsSendTheirBody_"};
+        EchoMethodAndBodyServer_  server;
+        auto                      check = [&] (Connection::Ptr c) {
             using namespace Memory::Literals;
-            c.SetSchemeAndAuthority (site);
+            c.SetSchemeAndAuthority (server.fSite);
             Request notify;
             notify.fMethod               = "NOTIFY"sv;
             notify.fAuthorityRelativeURL = URI{"/events"sv};
@@ -1015,6 +1024,38 @@ namespace {
             notify.fData                 = "<e:propertyset/>"_blob;
             EXPECT_EQ (c.Send (notify).GetData ().As<string> (), "NOTIFY\n<e:propertyset/>");
             EXPECT_EQ (c.GET (URI{"/after"sv}).GetData ().As<string> (), "GET\n"); // the same connection's next request: a GET
+        };
+#if qStroika_HasComponent_libcurl
+        check (LibCurl::Connection::New (kDefaultTestOptions_));
+#endif
+#if qStroika_HasComponent_WinHTTP
+        check (WinHTTP::Connection::New (kDefaultTestOptions_));
+#endif
+    }
+
+    /*
+     *  A request with no body is still sent by its own method: a PUT with none is a PUT. Before Stroika v3.0d25 libcurl's went out
+     *  as a GET - CURLOPT_UPLOAD 0 means 'not an upload', leaving the handle its default method; WinHTTP's was right.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, MethodsWithNoBody_)
+    {
+        Debug::TraceContextBumper ctx{"MethodsWithNoBody_"};
+        EchoMethodAndBodyServer_  server;
+        auto                      check = [&] (Connection::Ptr c) {
+            using namespace Memory::Literals;
+            c.SetSchemeAndAuthority (server.fSite);
+            auto sent = [&] (const String& method, const Memory::BLOB& body) {
+                Request r;
+                r.fMethod               = method;
+                r.fAuthorityRelativeURL = URI{"/x"sv};
+                r.fData                 = body;
+                return c.Send (r).GetData ().As<string> ();
+            };
+            EXPECT_EQ (sent (IO::Network::HTTP::Methods::kPut, {}), "PUT\n");
+            EXPECT_EQ (sent (IO::Network::HTTP::Methods::kPut, "hi"_blob), "PUT\nhi"); // with one, as before
+            EXPECT_EQ (sent (IO::Network::HTTP::Methods::kDelete, {}), "DELETE\n");
+            EXPECT_EQ (sent (IO::Network::HTTP::Methods::kPost, {}), "POST\n");
+            EXPECT_EQ (sent (IO::Network::HTTP::Methods::kGet, {}), "GET\n"); // the connection's next request: not still an upload
         };
 #if qStroika_HasComponent_libcurl
         check (LibCurl::Connection::New (kDefaultTestOptions_));

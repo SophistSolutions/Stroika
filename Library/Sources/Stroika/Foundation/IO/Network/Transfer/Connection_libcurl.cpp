@@ -276,7 +276,9 @@ namespace {
                     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
                     fDidCustomMethod_ = false;
                 }
-                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, fUploadData_.empty () ? 0 : 1));
+                // CURLOPT_UPLOAD 1 even with no body (then INFILESIZE 0 - nothing to read): 0 means 'not an upload', which leaves
+                // the handle its default method, so the PUT went out as a GET
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, 1));
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_INFILESIZE, fUploadData_.size ()));
             }
             else {
