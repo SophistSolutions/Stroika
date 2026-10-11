@@ -83,6 +83,12 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
          *          data. They do not necessarily gather it up into one big block.
          */
         virtual void TextInsideElement (const String& text);
+
+        /*
+         *  @todo a comment, and a processing instruction, are reported to nobody - so anything reading through this loses
+         *        them, and cannot be made to keep them without a callback each here, emitted by every provider.
+         *        @see Variant::XML::Reader
+         */
     };
 
 }

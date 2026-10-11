@@ -52,6 +52,8 @@ Namespaces are written as a default namespace (`xmlns=`), inherited by the eleme
 
 ## Not expressible
 
-Mixed content (text beside child elements - the Reader throws rather than drop the text), comments and processing
-instructions. SAX reports no comment, so those could not be read back in any case.
+Mixed content - text beside child elements - which the Reader throws on rather than drop the text silently.
 <https://github.com/SophistSolutions/Stroika/issues/954>
+
+Comments and processing instructions are dropped, so a document rewritten through a VariantValue loses them. Fixable here if
+ever wanted, but `StructuredStreamEvents::IConsumer` reports neither, so the SAX reader must report them first.

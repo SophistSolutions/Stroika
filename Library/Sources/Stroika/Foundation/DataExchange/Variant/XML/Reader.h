@@ -37,8 +37,12 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  \note Throws DataExchange::BadFormatException on mixed content (text beside child elements), which this shape cannot
      *        hold: reading on would silently drop the text.
      *
-     *  \note Comments and processing instructions are dropped: SAX (StructuredStreamEvents::IConsumer) does not report them,
-     *        so they cannot be read at all. @see https://github.com/SophistSolutions/Stroika/issues/954
+     *  \note Comments and processing instructions are dropped - StructuredStreamEvents::IConsumer reports neither, so this
+     *        Reader never sees them. So a document rewritten through a VariantValue loses the comments it had, which would
+     *        matter most for a hand-edited config file.
+     *
+     *        @todo keep comments and processing instructions, if ever wanted - easy enough here, but the SAX reader must
+     *              report them first (a callback each on StructuredStreamEvents::IConsumer, emitted by both providers)
      *
      *  \note Requires an XML parser (qStroika_Foundation_DataExchange_XML_SupportParsing); Read throws without one.
      */
