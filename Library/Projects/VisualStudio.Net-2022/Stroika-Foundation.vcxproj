@@ -1120,6 +1120,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\LazyInitialized.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Logger.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\NullLock.inl" />

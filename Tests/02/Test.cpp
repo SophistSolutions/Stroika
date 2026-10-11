@@ -28,6 +28,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -555,6 +556,42 @@ namespace {
         String                    t1  = kT1;
         EXPECT_EQ (t1.As<wstring> (), kT1);
         EXPECT_EQ (t1, kT1);
+        {
+            // a String made from a view of a buffer copies its characters - so it does not change when the buffer does
+            string       buf{"abc"};
+            u16string    buf16{u"abc"};
+            wstring      bufW{L"abc"};
+            const String s{string_view{buf}};
+            const String s16{u16string_view{buf16}};
+            const String sW{wstring_view{bufW}};
+            buf[0]   = 'x';
+            buf16[0] = u'x';
+            bufW[0]  = L'x';
+            EXPECT_EQ (s, "abc");
+            EXPECT_EQ (s16, "abc");
+            EXPECT_EQ (sW, "abc");
+        }
+        {
+            // but a string literal's characters - in the program's read-only image - are shared, not copied (where Stroika can
+            // tell: @see Execution::IsAddressReadOnlyAppLifetime); a writable buffer's never are, wherever it is
+            constexpr string_view kLiteral       = "abc literal"sv;
+            static const char     kStaticConst[] = "abc static const";
+            static char           sWritable[]    = "abc writable static";
+            char                  onStack[]      = "abc on the stack";
+            sWritable[0]                         = 'a'; // as it was, if this test runs again
+            const String l{kLiteral};
+            const String c{string_view{kStaticConst}};
+            const String w{string_view{sWritable}};
+            const String st{string_view{onStack}};
+            sWritable[0] = 'x';
+            onStack[0]   = 'x';
+            EXPECT_EQ (w, "abc writable static");
+            EXPECT_EQ (st, "abc on the stack");
+            if (Execution::IsAddressReadOnlyAppLifetime (as_bytes (span{kLiteral})) != nullopt) { // where Stroika can tell
+                EXPECT_EQ (l.GetPeekSpanData<ASCII> ().fAscii.data (), kLiteral.data ());
+                EXPECT_EQ (c.GetPeekSpanData<ASCII> ().fAscii.data (), kStaticConst);
+            }
+        }
     }
 }
 
@@ -1756,6 +1793,17 @@ namespace {
             EXPECT_EQ ("{}"_f(p), addr);
 #endif
             EXPECT_EQ (Characters::ToString (static_cast<const char*> ("abc")), "abc");
+        }
+        {
+            // a view of a buffer is copied - so the String (and _f, which formats with it) does not change when the buffer does
+            string       buf{"abc"};
+            u16string    buf16{u"abc"};
+            const String s   = Characters::ToString (string_view{buf});
+            const String s16 = Characters::ToString (u16string_view{buf16});
+            buf[0]           = 'x';
+            buf16[0]         = u'x';
+            EXPECT_EQ (s, "abc");
+            EXPECT_EQ (s16, "abc");
         }
         {
             // IToString is true just for what Characters::ToString can print - so a shared_ptr to anything else prints its address

@@ -182,6 +182,29 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Execution, IsAddressReadOnlyAppLifetime_)
+    {
+        Debug::TraceContextBumper ctx{"IsAddressReadOnlyAppLifetime_"};
+        static const char         kStaticConst[] = "static const";
+        static char               sWritable[]    = "writable static";
+        char                      onStack[]      = "on the stack";
+        const string              onHeap (100, 'x');
+        auto                      bytes   = [] (string_view s) { return as_bytes (span{s}); };
+        optional<bool>            literal = IsAddressReadOnlyAppLifetime (bytes ("a literal"sv));
+        if (literal == nullopt) {
+            GTEST_SKIP () << "this platform cannot tell (only Linux, MacOS and Windows can)";
+        }
+        // a literal, and a constant array, are in the program's read-only image; nothing writable or not lasting is
+        EXPECT_TRUE (*literal);
+        EXPECT_EQ (IsAddressReadOnlyAppLifetime (bytes (kStaticConst)), true);
+        EXPECT_EQ (IsAddressReadOnlyAppLifetime (bytes (sWritable)), false);
+        EXPECT_EQ (IsAddressReadOnlyAppLifetime (bytes (onStack)), false);
+        EXPECT_EQ (IsAddressReadOnlyAppLifetime (bytes (onHeap)), false);
+        EXPECT_EQ (IsAddressReadOnlyAppLifetime (span<const byte>{}), false);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Execution, Finally)
     {
         Debug::TraceContextBumper ctx{"Finally"};

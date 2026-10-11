@@ -33,7 +33,7 @@ Charset::Charset (const std::string& charsetName)
 {
 }
 Charset::Charset (const std::string_view& charsetName)
-    : fRep_{MakeSharedPtr<Rep_> (String{charsetName})} // conversion asserts valid ASCII
+    : fRep_{MakeSharedPtr<Rep_> (String{charsetName})} // conversion throws if not valid ascii (a literal's: asserts)
 {
 }
 Charset::Charset (const String& charsetName)

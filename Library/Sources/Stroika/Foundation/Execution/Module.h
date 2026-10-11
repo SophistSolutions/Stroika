@@ -6,7 +6,11 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <array>
+#include <cstdint>
 #include <filesystem>
+#include <optional>
+#include <span>
 
 #if qStroika_Platform_POSIX
 #include <unistd.h>
@@ -47,6 +51,20 @@ namespace Stroika::Foundation::Execution {
      *  NYI for WINDOWS.
      */
     filesystem::path GetEXEPath (pid_t processID);
+
+    /**
+     *  \brief Is all of s in memory that is read-only for as long as the program runs - so a pointer into it may be kept, rather
+     *         than its bytes copied?
+     *
+     *  That memory is the main executable's read-only image, where its string literals and other constant data are (and
+     *  Stroika's own, since Stroika is linked statically). Another module's read-only image does not count: it can be unloaded.
+     *
+     *  \returns true if so; false if not - s may yet be read-only (another module's, or a read-only mapping) but nothing promises
+     *           it lasts; nullopt if Stroika cannot tell on this platform (it can on Linux, MacOS and Windows). An empty s is false.
+     *
+     *  Cheap: a few comparisons, once the image has been examined (at first use).
+     */
+    optional<bool> IsAddressReadOnlyAppLifetime (span<const byte> s);
 
     /**
      *  The set of system locations to look for an executable (note order matters, which is why this is a Sequence)
@@ -106,5 +124,6 @@ namespace Stroika::Foundation::Execution {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "Module.inl"
 
 #endif /*_Stroika_Foundation_Execution_Module_h_*/

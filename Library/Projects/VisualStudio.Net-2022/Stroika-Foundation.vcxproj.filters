@@ -3390,6 +3390,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Makefile">
       <Filter>Sources\Execution</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.inl">
       <Filter>Sources\Execution</Filter>
     </None>

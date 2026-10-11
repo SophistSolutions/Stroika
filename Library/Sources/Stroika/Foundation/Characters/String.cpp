@@ -21,6 +21,7 @@
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -44,6 +45,15 @@ static_assert (regular<String>);
 #if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
 #include <filesystem>
 #endif
+
+namespace {
+    // shared rather than copied exactly where it lasts as long as any String sharing it might
+    template <typename CHAR_T>
+    inline bool InReadOnlyImage_ (const basic_string_view<CHAR_T>& s)
+    {
+        return Execution::IsAddressReadOnlyAppLifetime (as_bytes (span{s.data (), s.size ()})) == true;
+    }
+}
 
 namespace {
 
@@ -571,40 +581,46 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ************************************* String ***********************************
  ********************************************************************************
  */
+// Each: shares the characters viewed if they are in the program's read-only image (a literal's), else copies them
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<ASCII>& str)
 {
-    RequireExpression (Character::IsASCII (span{str.data (), str.size ()}));
-    return MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (span{str.data (), str.size ()});
+    if (InReadOnlyImage_ (str)) {
+        RequireExpression (Character::IsASCII (span{str.data (), str.size ()}));
+        return MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (span{str.data (), str.size ()});
+    }
+    return mk_ (span{str.data (), str.size ()}); // so checked ASCII at run time
 }
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char8_t>& str)
 {
-    if (Character::IsASCII (span{str.data (), str.size ()})) {
+    if (InReadOnlyImage_ (str) and Character::IsASCII (span{str.data (), str.size ()})) {
         return MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (Memory::SpanBytesCast<span<const ASCII>> (span{str.data (), str.size ()}));
     }
-    else {
-        return mk_ (span<const char8_t>{str.data (), str.size ()}); // copies data
-    }
+    return mk_ (span<const char8_t>{str.data (), str.size ()});
 }
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char16_t>& str)
 {
-    if (UTFConvert::AllFitsInTwoByteEncoding (span{str})) {
+    if (InReadOnlyImage_ (str) and UTFConvert::AllFitsInTwoByteEncoding (span{str})) {
         return MakeSharedPtr<StringConstant_::DirectIndexRep<char16_t>> (span{str.data (), str.size ()});
     }
-    else {
-        return mk_ (span<const char16_t>{str.data (), str.size ()}); // copies data
-    }
+    return mk_ (span<const char16_t>{str.data (), str.size ()});
 }
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char32_t>& str)
 {
-    return MakeSharedPtr<StringConstant_::DirectIndexRep<char32_t>> (span{str.data (), str.size ()});
+    if (InReadOnlyImage_ (str)) {
+        return MakeSharedPtr<StringConstant_::DirectIndexRep<char32_t>> (span{str.data (), str.size ()});
+    }
+    return mk_ (span<const char32_t>{str.data (), str.size ()});
 }
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<wchar_t>& str)
 {
-    return MakeSharedPtr<StringConstant_::DirectIndexRep<wchar_t>> (span{str.data (), str.size ()});
+    if (InReadOnlyImage_ (str)) {
+        return MakeSharedPtr<StringConstant_::DirectIndexRep<wchar_t>> (span{str.data (), str.size ()});
+    }
+    return mk_ (span<const wchar_t>{str.data (), str.size ()});
 }
 
 String String::FromStringConstant (span<const ASCII> s)

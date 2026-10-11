@@ -216,17 +216,15 @@ namespace Stroika::Foundation::Characters {
          *          carefully excludes conflicting CTOR overloads, and purpose is to allow constructing a String
          *          from anything with a 'special conversion' method to UNICODE string, such as filesystem::path.
          *
-         *  \note about lifetime of argument data (basic_string_view<CHAR_T> constructors)
-         *        All data is copied out / saved by the end of the constructor for all constructors EXCEPT
-         *        the basic_string_view<CHAR_T> constructors - where it is REQUIRED the data last 'forever'.
-         * 
-         *  \pre for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
-         *       c-string nul-terminated (which happens automatically with L"xxx"sv)
-         * 
+         *  \note Before Stroika v3.0d25, the basic_string_view<CHAR_T> constructors REQUIRED the characters viewed to last for the
+         *        life of the application: they shared them, never copied. Now they check whether they can safely share them - a
+         *        string literal's, in the program's read-only image (@see Execution::IsAddressReadOnlyAppLifetime) - and otherwise
+         *        copy. To skip that check, for a literal, use "..."_k (or FromStringConstant).
+         *
          *  \note 'char' (using ASCII = char) constructors:
          *        Because the character-set of strings of type 'char' is ambiguous, if you construct a String
-         *        with char (char* etc) - it runtime checked that the characters are ASCII (except for the basic_string_view
-         *        constructors where we check but with assertions).
+         *        with char (char* etc) - it runtime checked that the characters are ASCII (except a string literal's, shared by
+         *        the basic_string_view constructors, which is checked by assertion).
          * 
          *        This mimics the behavior in Stroika v2.1 with String::FromASCII ()
          * 

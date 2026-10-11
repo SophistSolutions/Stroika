@@ -5,10 +5,14 @@
 
 #include <cstdio>
 
+#if qStroika_Platform_Linux
+#include <link.h>
+#endif
 #if qStroika_Platform_MacOS
 #include <crt_externs.h>
 #include <libproc.h>
 #include <mach-o/dyld.h>
+#include <mach-o/loader.h>
 #endif
 #if qStroika_Platform_POSIX && qStroika_FeatureSupported_ProcFilesystem
 #include <unistd.h>
@@ -134,6 +138,93 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     AssertNotImplemented ();
     return filesystem::path{};
 #endif
+}
+
+/*
+ ********************************************************************************
+ ****************** Execution::IsAddressReadOnlyAppLifetime *********************
+ ********************************************************************************
+ */
+namespace {
+    void AddRange_ (Execution::Private_::ReadOnlyImage_& r, uintptr_t start, uintptr_t end)
+    {
+        if (start < end and r.fCount < r.kMaxRanges) {
+            r.fRanges[r.fCount++] = {start, end};
+        }
+    }
+}
+
+const Execution::Private_::ReadOnlyImage_& Execution::Private_::GetReadOnlyImage_ ()
+{
+    static const ReadOnlyImage_ sImage_ = [] () {
+        ReadOnlyImage_ result;
+#if qStroika_Platform_Linux
+        // the first object dl_iterate_phdr reports is the main program: its loadable segments without write permission
+        ::dl_iterate_phdr (
+            [] (::dl_phdr_info* info, [[maybe_unused]] size_t size, void* data) -> int {
+                ReadOnlyImage_& r = *static_cast<ReadOnlyImage_*> (data);
+                for (size_t i = 0; i < info->dlpi_phnum; ++i) {
+                    const ElfW (Phdr) & ph = info->dlpi_phdr[i];
+                    if (ph.p_type == PT_LOAD and (ph.p_flags & PF_W) == 0) {
+                        uintptr_t start = info->dlpi_addr + ph.p_vaddr;
+                        AddRange_ (r, start, start + ph.p_memsz);
+                    }
+                }
+                r.fKnown = true;
+                return 1; // stop after the first
+            },
+            &result);
+#elif qStroika_Platform_MacOS
+        // image 0 is the main executable: its segments readable but not writable from the start (__TEXT, with the literals)
+        const mach_header_64* header = reinterpret_cast<const mach_header_64*> (::_dyld_get_image_header (0));
+        if (header == nullptr or header->magic != MH_MAGIC_64) {
+            return result;
+        }
+        uintptr_t           slide = static_cast<uintptr_t> (::_dyld_get_image_vmaddr_slide (0));
+        const load_command* lc    = reinterpret_cast<const load_command*> (header + 1);
+        for (uint32_t i = 0; i < header->ncmds; ++i) {
+            if (lc->cmd == LC_SEGMENT_64) {
+                const segment_command_64* seg = reinterpret_cast<const segment_command_64*> (lc);
+                if ((seg->initprot & VM_PROT_READ) != 0 and (seg->initprot & VM_PROT_WRITE) == 0) {
+                    AddRange_ (result, seg->vmaddr + slide, seg->vmaddr + slide + seg->vmsize);
+                }
+            }
+            lc = reinterpret_cast<const load_command*> (reinterpret_cast<const byte*> (lc) + lc->cmdsize);
+        }
+        result.fKnown = true;
+#elif qStroika_Platform_Windows
+        // the main executable's image: its sections readable but not writable (.rdata, with the literals, and .text) - nor
+        // discardable, which promises nothing about lasting
+        const byte*             base = reinterpret_cast<const byte*> (::GetModuleHandleW (nullptr));
+        const IMAGE_DOS_HEADER* dos  = reinterpret_cast<const IMAGE_DOS_HEADER*> (base);
+        if (base == nullptr or dos->e_magic != IMAGE_DOS_SIGNATURE) {
+            return result;
+        }
+        const IMAGE_NT_HEADERS* nt = reinterpret_cast<const IMAGE_NT_HEADERS*> (base + dos->e_lfanew);
+        if (nt->Signature != IMAGE_NT_SIGNATURE) {
+            return result;
+        }
+        const IMAGE_SECTION_HEADER* sections = IMAGE_FIRST_SECTION (nt);
+        for (WORD i = 0; i < nt->FileHeader.NumberOfSections; ++i) {
+            DWORD c = sections[i].Characteristics;
+            if ((c & IMAGE_SCN_MEM_READ) != 0 and (c & (IMAGE_SCN_MEM_WRITE | IMAGE_SCN_MEM_DISCARDABLE)) == 0) {
+                uintptr_t start = reinterpret_cast<uintptr_t> (base) + sections[i].VirtualAddress;
+                AddRange_ (result, start, start + sections[i].Misc.VirtualSize);
+            }
+        }
+        result.fKnown = true;
+#endif
+        // first the range a literal is in - and so the others, as a rule - so checking one takes one comparison
+        uintptr_t literal = reinterpret_cast<uintptr_t> ("a literal");
+        for (size_t i = 1; i < result.fCount; ++i) {
+            if (result.fRanges[i].first <= literal and literal < result.fRanges[i].second) {
+                swap (result.fRanges[0], result.fRanges[i]);
+                break;
+            }
+        }
+        return result;
+    }();
+    return sImage_;
 }
 
 /*
