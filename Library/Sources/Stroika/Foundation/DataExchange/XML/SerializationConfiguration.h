@@ -66,10 +66,30 @@ namespace Stroika::Foundation::DataExchange::XML {
         nonvirtual optional<Binding> GetBinding () const;
         nonvirtual void              SetBinding (const optional<Binding>& b);
 
+    public:
+        /**
+         *  \brief A prefix to write each of these namespaces with - declared on the document element, and used for every
+         *         element and attribute in that namespace: SOAP's s:Envelope, s:encodingStyle
+         *
+         *  A namespace not named here is written as a default namespace (xmlns=) on the element that has it, which an
+         *  attribute cannot be - an attribute in a namespace must have a prefix, so give it one here.
+         *
+         *  \pre every namespace a Binding gives an attribute is named here (writing one with no prefix is a Require failure -
+         *       nothing the value holds can cause it; both the Binding and these prefixes are the caller's)
+         *
+         *  \par Example Usage
+         *      \code
+         *          config.SetNamespacePrefixes ({{URI{"http://schemas.xmlsoap.org/soap/envelope/"sv}, "s"sv}});
+         *      \endcode
+         */
+        nonvirtual Containers::Mapping<IO::Network::URI, String> GetNamespacePrefixes () const;
+        nonvirtual void SetNamespacePrefixes (const Containers::Mapping<IO::Network::URI, String>& prefixes);
+
     private:
-        String            fDocumentElementName_; // internally empty string for missing
-        String            fArrayElementName_;    // internally empty string for missing
-        optional<Binding> fBinding_;
+        String                                        fDocumentElementName_; // internally empty string for missing
+        String                                        fArrayElementName_;    // internally empty string for missing
+        optional<Binding>                             fBinding_;
+        Containers::Mapping<IO::Network::URI, String> fNamespacePrefixes_;
     };
 
 }

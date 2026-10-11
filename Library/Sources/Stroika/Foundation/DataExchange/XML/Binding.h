@@ -65,8 +65,8 @@ namespace Stroika::Foundation::DataExchange::XML {
      *                                 {"dataType"sv}}};
      *      \endcode
      *
-     *  \note A namespace is written as a default namespace (xmlns="...") on the element that has one. A prefixed namespace -
-     *        and so an attribute in a namespace, which cannot be written without a prefix - is not expressible yet.
+     *  \note A namespace is written as a default namespace (xmlns="...") on the element that has one - or with a prefix, where
+     *        SerializationConfiguration::SetNamespacePrefixes gives it one. An attribute in a namespace requires a prefix.
      *        @see https://github.com/SophistSolutions/Stroika/issues/954
      */
     struct Binding {

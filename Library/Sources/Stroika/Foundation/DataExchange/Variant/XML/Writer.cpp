@@ -31,8 +31,10 @@ namespace {
      *  date is ISO 8601 and a BLOB base64, as in JSON.
      */
     struct Writer_ {
-        OutputStream::Ptr<Character> fOut;
-        String                       fArrayItemElementName; // each item wrapped in this; empty: the member's own name repeated instead
+        OutputStream::Ptr<Character>                  fOut;
+        String                                        fArrayItemElementName;    // each item in this; empty: the member's own name repeated
+        Containers::Mapping<IO::Network::URI, String> fNamespacePrefixes;       // a namespace written with a prefix, not as a default one
+        bool                                          fAtDocumentElement{true}; // where those prefixes are declared
 
         void Indent_ (int indentLevel)
         {
@@ -63,6 +65,31 @@ namespace {
             }
             return result;
         }
+        // prefix:local, for a namespace given a prefix; else its local name
+        void WriteName_ (const NameWithNamespace& name)
+        {
+            if (name.fNamespace) {
+                if (optional<String> prefix = fNamespacePrefixes.Lookup (*name.fNamespace)) {
+                    fOut.Write (*prefix);
+                    fOut.Write (':');
+                }
+            }
+            fOut.Write (name.fName);
+        }
+        // on the document element: xmlns:p="..." for each prefix, so everything below it may use them
+        void DeclarePrefixesIfDocumentElement_ ()
+        {
+            if (fAtDocumentElement) {
+                fAtDocumentElement = false;
+                for (const auto& i : fNamespacePrefixes) {
+                    fOut.Write (" xmlns:"sv);
+                    fOut.Write (i.fValue);
+                    fOut.Write ("=\""sv);
+                    fOut.Write (String{QuoteForXMLAttribute (i.fKey.As<String> (IO::Network::URI::StringPCTEncodedFlag::eDecoded))});
+                    fOut.Write ('"');
+                }
+            }
+        }
         // a default namespace (xmlns=) where this element names one, and it is not the one it sits in already; a name with none
         // inherits the namespace it is in - saying nothing is not the same as saying 'no namespace'. A prefixed namespace is
         // not expressible yet. Returns the namespace this element's children are in
@@ -71,8 +98,12 @@ namespace {
             if (not name.fNamespace or name.fNamespace == inheritedNamespace) {
                 return inheritedNamespace;
             }
-            fOut.Write (" xmlns=\""sv +
-                        String{QuoteForXMLAttribute (name.fNamespace->As<String> (IO::Network::URI::StringPCTEncodedFlag::eDecoded))} + "\""sv);
+            if (fNamespacePrefixes.ContainsKey (*name.fNamespace)) {
+                return inheritedNamespace; // written prefix:local, so the default namespace is untouched
+            }
+            fOut.Write (" xmlns=\""sv);
+            fOut.Write (String{QuoteForXMLAttribute (name.fNamespace->As<String> (IO::Network::URI::StringPCTEncodedFlag::eDecoded))});
+            fOut.Write ('"');
             return name.fNamespace;
         }
         void WriteElement (const NameWithNamespace& name, const VariantValue& v, const Binding* binding,
@@ -90,7 +121,9 @@ namespace {
                     return;
                 }
                 Indent_ (indentLevel);
-                fOut.Write ("<"sv + name.fName);
+                fOut.Write ('<');
+                WriteName_ (name);
+                DeclarePrefixesIfDocumentElement_ ();
                 optional<URI> childNamespace = WriteNamespaceIfNew_ (name, inheritedNamespace);
                 fOut.Write (">"sv);
                 if (not items.empty ()) {
@@ -100,11 +133,15 @@ namespace {
                     }
                     Indent_ (indentLevel);
                 }
-                fOut.Write ("</"sv + name.fName + ">\n"sv);
+                fOut.Write ("</"sv);
+                WriteName_ (name);
+                fOut.Write (">\n"sv);
                 return;
             }
             Indent_ (indentLevel);
-            fOut.Write ("<"sv + name.fName);
+            fOut.Write ('<');
+            WriteName_ (name);
+            DeclarePrefixesIfDocumentElement_ ();
             optional<URI>                 childNamespace = WriteNamespaceIfNew_ (name, inheritedNamespace);
             Mapping<String, VariantValue> members;
             optional<VariantValue>        textMember; // a member the Binding says is this element's text, not a child element
@@ -117,10 +154,17 @@ namespace {
                             continue;
                         }
                         switch (binding->KindFor (i.fKey)) {
-                            case Binding::Kind::eAttribute:
-                                // its local name: an attribute in a namespace would need a prefix, not expressible yet
-                                fOut.Write (" "sv + binding->NameFor (i.fKey).fName + "=\""sv + String{QuoteForXMLAttribute (mv->As<String> ())} + "\""sv);
-                                break;
+                            case Binding::Kind::eAttribute: {
+                                NameWithNamespace attrName = binding->NameFor (i.fKey);
+                                // an attribute in a namespace is writable only with a prefix: the Binding and the prefixes are
+                                // both the caller's, so this is its contract, not anything the value could do
+                                Require (not attrName.fNamespace or fNamespacePrefixes.ContainsKey (*attrName.fNamespace));
+                                fOut.Write (' ');
+                                WriteName_ (attrName);
+                                fOut.Write ("=\""sv);
+                                fOut.Write (String{QuoteForXMLAttribute (mv->As<String> ())});
+                                fOut.Write ('"');
+                            } break;
                             case Binding::Kind::eText:
                                 textMember = mv;
                                 break;
@@ -137,7 +181,9 @@ namespace {
             else {
                 WriteContent (v, members, binding, childNamespace, indentLevel);
             }
-            fOut.Write ("</"sv + name.fName + ">\n"sv);
+            fOut.Write ("</"sv);
+            WriteName_ (name);
+            fOut.Write (">\n"sv);
         }
         void WriteContent (const VariantValue& v, const Mapping<String, VariantValue>& members, const Binding* binding,
                            const optional<URI>& inheritedNamespace, int indentLevel)
@@ -204,7 +250,7 @@ public:
     }
     nonvirtual void Write_ (const VariantValue& v, const Streams::OutputStream::Ptr<Character>& out) const
     {
-        Writer_        w{out, fArrayItemElementName_};
+        Writer_        w{out, fArrayItemElementName_, fSerializationConfiguration_.GetNamespacePrefixes ()};
         const Binding* binding = fBinding_ ? &*fBinding_ : nullptr;
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::eMap);

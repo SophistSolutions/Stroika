@@ -1174,6 +1174,26 @@ namespace {
                                             "</serviceList>\n"sv);
         }
         {
+            // a prefixed namespace: declared on the document element, and used by every element and attribute in it - which is
+            // the only way to write an attribute in a namespace at all. SOAP's envelope
+            const URI kSOAP_{"http://schemas.xmlsoap.org/soap/envelope/"sv};
+            config.SetDocumentElementName ("Envelope"sv);
+            config.SetNamespacePrefixes ({{kSOAP_, "s"sv}});
+            config.SetBinding (Binding{
+                .fName = NameWithNamespace{kSOAP_, "Envelope"sv},
+                .fMembers = {{"encodingStyle"sv, Binding{.fKind = Binding::Kind::eAttribute, .fName = NameWithNamespace{kSOAP_, "encodingStyle"sv}}},
+                             {"Body"sv, Binding{.fName = NameWithNamespace{kSOAP_, "Body"sv}}}}});
+            VariantValue v{VVMap{{"encodingStyle"sv, VariantValue{"http://schemas.xmlsoap.org/soap/encoding/"sv}},
+                                 {"Body"sv, VariantValue{VVMap{{"GetStatus"sv, VariantValue{""sv}}}}}}};
+            EXPECT_EQ (written (v, config), "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                                            "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n"
+                                            "    <s:Body>\n"
+                                            "        <GetStatus></GetStatus>\n"
+                                            "    </s:Body>\n"
+                                            "</s:Envelope>\n"sv);
+            config.SetNamespacePrefixes ({});
+        }
+        {
             // a member the Binding says nothing about is written after those it does, in the value's own order
             config.SetDocumentElementName ("a"sv);
             config.SetBinding (Binding{.fMembers = {{"z"sv}}});
@@ -1262,6 +1282,14 @@ namespace {
                 VariantValue v{VVMap{{"services"sv, VariantValue{services}}}};
                 EXPECT_EQ (roundTrip (v, config), v) << services.size (); // including the array of one
             }
+        }
+        {
+            // mixed content - text beside child elements - cannot be held, and reading on would drop the text silently
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("p"sv);
+            EXPECT_THROW (DataExchange::Variant::XML::Reader{config}.Read (String{"<p>Hello <b>world</b>!</p>"sv}), BadFormatException);
+            // but the whitespace a pretty-printed document has between elements is not mixed content
+            EXPECT_NO_THROW (DataExchange::Variant::XML::Reader{config}.Read (String{"<p>\n    <b>world</b>\n</p>"sv}));
         }
         {
             // with no document element named, the root element is the value's one member - as the Writer takes it

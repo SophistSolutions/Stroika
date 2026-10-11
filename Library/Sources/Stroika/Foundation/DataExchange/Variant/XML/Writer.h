@@ -71,8 +71,10 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  VariantValue object has none) - say so in an XML::Binding, which SerializationConfiguration carries, and which the
      *  Reader needs as much as the Writer. @see XML::Binding
      *
-     *  \note A namespace is written as a default namespace (xmlns="..."), inherited by the elements inside it. A prefixed
-     *        namespace - and so an attribute in a namespace - is not expressible yet, nor is mixed content.
+     *  \note A namespace is written as a default namespace (xmlns="..."), inherited by the elements inside it - or with a
+     *        prefix, where SerializationConfiguration::SetNamespacePrefixes gives it one, which an attribute in a namespace
+     *        requires. Mixed content, comments and processing instructions are still not expressible (and SAX reports no
+     *        comment, so none could be read back anyway).
      *        @see https://github.com/SophistSolutions/Stroika/issues/954
      *
      * The argument VariantValue must be composed of any combination of these types:

@@ -153,7 +153,12 @@ namespace {
             if (f.fChildren.empty ()) {
                 return VariantValue{f.fText.str ()}; // text, kept as it came: XML whitespace is significant
             }
-            WeakAssert (f.fText.str ().Trim ().empty ()); // mixed content, which this shape cannot hold - the text is dropped
+            if (not f.fText.str ().Trim ().empty ()) {
+                // mixed content: text beside child elements. This shape cannot hold it, and reading on would silently drop
+                // the text - so say so, rather than lose it (it comes from the document, not from any caller's mistake)
+                static const auto kException_ = BadFormatException{"mixed content (text beside child elements) cannot be read into a VariantValue"sv};
+                Execution::Throw (kException_);
+            }
             return VariantValue{f.fChildren};
         }
     };

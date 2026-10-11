@@ -35,5 +35,13 @@ namespace Stroika::Foundation::DataExchange::XML {
     {
         fBinding_ = b;
     }
+    inline Containers::Mapping<IO::Network::URI, String> SerializationConfiguration::GetNamespacePrefixes () const
+    {
+        return fNamespacePrefixes_;
+    }
+    inline void SerializationConfiguration::SetNamespacePrefixes (const Containers::Mapping<IO::Network::URI, String>& prefixes)
+    {
+        fNamespacePrefixes_ = prefixes;
+    }
 
 }
