@@ -21,6 +21,26 @@
 namespace Stroika::Foundation::Characters {
 
     /**
+     *  \brief what Stroika's formatting - FormatString (_f), Format, DbgTrace - formats: anything std::format can, and anything
+     *         else Characters::ToString can print, as its ToString
+     *
+     *  So a std::optional, an exception_ptr or an enum formats with "{}"_f, though std::format has no formatter for it (and
+     *  Stroika registers none: @see Private_::IUseToStringFormatterForFormatter_); a format-spec then applies to its ToString, as to
+     *  a String.
+     */
+    template <typename T>
+    concept IFormattable = Common::StdCompat::formattable<remove_cvref_t<T>, wchar_t> or IToString<remove_cvref_t<T>>;
+
+    namespace Private_ {
+        /**
+         *  f (the wformat_args of args): each argument itself where std::format can format it, else its Characters::ToString - kept
+         *  alive through the call. Declared again in Debug/Trace.h, which cannot include this header.
+         */
+        template <typename RESULT, typename F, typename... ARGS>
+        RESULT WithFormatArgs_ (F&& f, const ARGS&... args);
+    }
+
+    /**
      *  \brief Roughly equivalent to std::wformat_string, except that it can be constructed from 'char' string, and if 'char' require ASCII characters for format string
      * 
      *  \note - the lifetime of the string argument to FormatString is application-lifetime - because the string
@@ -28,9 +48,9 @@ namespace Stroika::Foundation::Characters {
      * 
      *        Sadly, I know of no way to check the lifetime of the argument, so this goes un-enforced.
      * 
-     *  \note   Types that can be formatted with FormatString (are formattable with it) are:
-     *              Anything that is std::formattable<T,wchar_t>        (see https://en.cppreference.com/w/cpp/utility/format/formatter)
-     *          in particular:
+     *  \note   Types that can be formatted with FormatString are those IFormattable: anything std::formattable<T,wchar_t>
+     *          (see https://en.cppreference.com/w/cpp/utility/format/formatter), and anything else Characters::ToString prints.
+     *          In particular:
      *              o   any class with .ToString() method
      *              o   std::type_index
      *              o   std::is_enum<>
@@ -87,9 +107,9 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        template <Common::StdCompat::formattable<wchar_t>... ARGS>
+        template <IFormattable... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
-        template <Common::StdCompat::formattable<wchar_t>... ARGS>
+        template <IFormattable... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
 
     private:
@@ -119,9 +139,9 @@ namespace Stroika::Foundation::Characters {
 
         constexpr wstring_view                                             get () const;
         constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
-        template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
+        template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
-        template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
+        template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
     };
 
@@ -191,9 +211,9 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief Like std::format, except returning stroika String, and taking _f (FormatString) string as argument (which can be ASCII, but still produce UNICODE output).
      */
-    template <typename CHAR_T, Common::StdCompat::formattable<wchar_t>... ARGS>
+    template <typename CHAR_T, IFormattable... ARGS>
     String Format (const FormatString<CHAR_T>& f, ARGS&&... args);
-    template <typename CHAR_T, Common::StdCompat::formattable<wchar_t>... ARGS>
+    template <typename CHAR_T, IFormattable... ARGS>
     String Format (const locale& l, const FormatString<CHAR_T>& f, ARGS&&... args);
 
 }

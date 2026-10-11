@@ -2302,6 +2302,24 @@ namespace {
         // narrow, a String and a type formatted with ToString: each field ends at its own '}', not at the next one
         EXPECT_EQ (format ("{}-{}!", String{"a"}, String{"b"}), "a-b!");
         EXPECT_EQ (format ("[{}] {}", foo{}, 3), "[foo as a string] 3");
+        {
+            // Stroika's own types - its containers, a class derived from one, BLOB - format as their ToString, with _f and std::format
+            // alike, in every standard (in C++23 the standard's range formatter would format them otherwise)
+            struct DerivedSequence : Sequence<int> {
+                using Sequence<int>::Sequence;
+            };
+            const Sequence<int> s{1, 2, 3};
+            const Memory::BLOB  b{0x01, 0xff};
+            EXPECT_EQ ("{}"_f(s), Characters::ToString (s));
+            EXPECT_EQ ("{}"_f(DerivedSequence{1, 2}), Characters::ToString (DerivedSequence{1, 2}));
+            EXPECT_EQ ("{}"_f(b), Characters::ToString (b));
+            EXPECT_EQ (String{format (L"{}", s)}, Characters::ToString (s));
+        }
+        // and a std type std::format cannot format, with _f: as its ToString, the format-spec applied to that
+        static_assert (Characters::IFormattable<optional<int>> and Characters::IFormattable<exception_ptr>);
+        EXPECT_EQ ("{}"_f(optional<int>{3}), "3");
+        EXPECT_EQ ("[{:>4}]"_f(optional<int>{3}), "[   3]");
+        EXPECT_EQ ("{}"_f(string{"abc"}), "abc"); // an 8-bit string as String takes one: ASCII
 
         EXPECT_EQ ("a{}a"_f(3), "a3a");
         EXPECT_EQ ("-{}"_f('x'), "-x"); // a char into the wide result - once failed to compile, formatting with fmtlib

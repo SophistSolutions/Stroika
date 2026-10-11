@@ -36,11 +36,13 @@ namespace Stroika::Foundation::Debug {
         [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] void EmitTraceMessage (const char* format, ...) noexcept;
         [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] void EmitTraceMessage (const wchar_t* format, ...) noexcept;
 
-        template <typename CHAR_T, Common::StdCompat::formattable<wchar_t>... Args>
+        // Args: Characters::IFormattable - not said here, as this header cannot include Characters/Format.h
+        template <typename CHAR_T, typename... Args>
         nonvirtual void EmitTraceMessage (Characters::FormatString<CHAR_T> fmt, Args&&... args) noexcept
         {
             try {
-                EmitTraceMessage_ (fmt.get (), Common::StdCompat::make_wformat_args (args...));
+                Characters::Private_::WithFormatArgs_<void> (
+                    [&] (Common::StdCompat::wformat_args a) { EmitTraceMessage_ (fmt.get (), move (a)); }, args...);
             }
             catch (...) {
             }
@@ -129,8 +131,11 @@ namespace Stroika::Foundation::Debug {
         requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>)
     {
         try {
-            wstring      r   = Common::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt.get ()},
-                                                           Common::StdCompat::make_wformat_args (args...));
+            wstring r = Characters::Private_::WithFormatArgs_<wstring> (
+                [&] (Common::StdCompat::wformat_args a) {
+                    return Common::StdCompat::vformat (qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fmt.get ()}, a);
+                },
+                args...);
             size_t       len = min<size_t> (r.size (), kMaxContextNameLen_);
             CHAR_ARRAY_T result;
             // Dont call Memory::Span here - but reproduce in loop to avoid deadly embrace

@@ -6,6 +6,38 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ********************* Characters::Private_::WithFormatArgs_ ********************
+     ********************************************************************************
+     */
+    namespace Private_ {
+        // t itself where std::format can format it, else its Characters::ToString. A char itself too: with fmtlib, StdCompat::formattable
+        // says no to one, though fmtlib formats it as the character - where ToString would print its number
+        template <typename T>
+        inline decltype (auto) AsFormatArg_ (const T& t)
+        {
+            if constexpr (Common::StdCompat::formattable<T, wchar_t> or same_as<T, char>) {
+                return (t);
+            }
+            else {
+                return Characters::ToString (t);
+            }
+        }
+        /*
+         *  make_wformat_args copies no argument - it keeps references, which f's vformat reads later. So the Strings AsFormatArg_
+         *  makes must outlive f: they are this lambda's parameters, alive until it returns, and named (newer libraries'
+         *  make_wformat_args takes no temporary). Not make_wformat_args (AsFormatArg_ (args)...) in the caller: those temporaries
+         *  die at the end of that statement, before vformat reads them. RESULT is explicit, not deduced, so that Debug/Trace.h -
+         *  which cannot include this header - can call this through its declaration.
+         */
+        template <typename RESULT, typename F, typename... ARGS>
+        inline RESULT WithFormatArgs_ (F&& f, const ARGS&... args)
+        {
+            return [&f] (const auto&... a) -> RESULT { return forward<F> (f) (Common::StdCompat::make_wformat_args (a...)); }(AsFormatArg_ (args)...);
+        }
+    }
+
+    /*
+     ********************************************************************************
      ***************************** FormatString<CHAR_T> *****************************
      ********************************************************************************
      */
@@ -25,16 +57,18 @@ namespace Stroika::Foundation::Characters {
         return qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fSV_.data (), fSV_.size ()};
     }
     template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    template <Common::StdCompat::formattable<wchar_t>... ARGS>
+    template <IFormattable... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (ARGS&&... args) const
     {
-        return Common::StdCompat::vformat (getx_ (), Common::StdCompat::make_wformat_args (args...));
+        return Private_::WithFormatArgs_<String> (
+            [this] (Common::StdCompat::wformat_args a) { return Common::StdCompat::vformat (getx_ (), a); }, args...);
     }
     template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    template <Common::StdCompat::formattable<wchar_t>... ARGS>
+    template <IFormattable... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (const locale& loc, ARGS&&... args) const
     {
-        return Common::StdCompat::vformat (loc, getx_ (), Common::StdCompat::make_wformat_args (args...));
+        return Private_::WithFormatArgs_<String> (
+            [&] (Common::StdCompat::wformat_args a) { return Common::StdCompat::vformat (loc, getx_ (), a); }, args...);
     }
 #if qCompilerAndStdLib_vector_constexpr_warning_Buggy
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-constexpr\"");
@@ -68,15 +102,15 @@ namespace Stroika::Foundation::Characters {
     {
         return fFmtStr_.getx_ ();
     }
-    template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
+    template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
     [[nodiscard]] inline String FormatString<char>::operator() (ARGS&&... args) const
     {
-        return Common::StdCompat::vformat (this->getx_ (), Common::StdCompat::make_wformat_args (args...));
+        return fFmtStr_ (forward<ARGS> (args)...);
     }
-    template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
+    template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
     [[nodiscard]] inline String FormatString<char>::operator() (const locale& loc, ARGS&&... args) const
     {
-        return Common::StdCompat::vformat (loc, this->getx_ (), Common::StdCompat::make_wformat_args (args...));
+        return fFmtStr_ (loc, forward<ARGS> (args)...);
     }
 
     /*
@@ -124,15 +158,15 @@ namespace Stroika::Foundation::Characters {
      ************************************ Format ************************************
      ********************************************************************************
      */
-    template <typename CHAR_T, Common::StdCompat::formattable<wchar_t>... ARGS>
+    template <typename CHAR_T, IFormattable... ARGS>
     inline String Format (const FormatString<CHAR_T>& f, ARGS&&... args)
     {
-        return VFormat (f, Common::StdCompat::make_wformat_args (args...));
+        return f (forward<ARGS> (args)...);
     }
-    template <typename CHAR_T, Common::StdCompat::formattable<wchar_t>... ARGS>
+    template <typename CHAR_T, IFormattable... ARGS>
     inline String Format (const locale& loc, const FormatString<CHAR_T>& f, ARGS&&... args)
     {
-        return VFormat (loc, f, Common::StdCompat::make_wformat_args (args...));
+        return f (loc, forward<ARGS> (args)...);
     }
 
 }

@@ -231,13 +231,13 @@ namespace Stroika::Foundation::DataExchange {
      ******************************** ObjectVariantMapper ***************************
      ********************************************************************************
      */
-    template <Common::StdCompat::formattable<wchar_t> T>
+    template <Characters::IFormattable T>
     inline const ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::kTraceFromObjectMapper =
         [] (const ObjectVariantMapper& mapper, const T* objOfType) -> VariantValue {
         DbgTrace ("FromObject<{}>(mapper, {}) called", typeid (T), objOfType);
         return {};
     };
-    template <Common::StdCompat::formattable<wchar_t> T>
+    template <Characters::IFormattable T>
     inline const ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::kTraceToObjectMapper =
         [] (const ObjectVariantMapper& mapper, const VariantValue& d, T* into) -> void {
         DbgTrace ("ToObject<{}>(mapper, {}, {}) called", typeid (T), d, into);

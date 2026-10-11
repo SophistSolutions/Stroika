@@ -25,6 +25,10 @@
 namespace Stroika::Foundation::Characters {
     template <typename CHAR_T>
     struct FormatString;
+    namespace Private_ {
+        template <typename RESULT, typename F, typename... ARGS>
+        RESULT WithFormatArgs_ (F&& f, const ARGS&... args); // @see Characters/Format.h
+    }
 }
 
 namespace Stroika::Foundation::Debug {

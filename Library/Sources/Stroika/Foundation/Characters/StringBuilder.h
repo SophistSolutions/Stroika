@@ -150,14 +150,14 @@ namespace Stroika::Foundation::Characters {
             ;
     #endif
 
-#if qCompilerAndStdLib_IUseToStringFormatterForFormatter_Buggy
     public:
-        // this hack has nothing todo with real IUseToStringFormatterForFormatter bug - but is needed as artifact of workaround
+        /**
+         *  \brief same as str (): so a StringBuilder formats as its text, with _f and std::format alike
+         */
         Characters::String ToString () const
         {
             return this->str ();
         }
-#endif
 
     public:
         /**

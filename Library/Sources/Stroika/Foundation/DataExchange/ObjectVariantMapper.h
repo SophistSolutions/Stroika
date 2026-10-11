@@ -13,6 +13,7 @@
 #include <typeindex>
 #include <variant>
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
@@ -324,13 +325,13 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        template <Common::StdCompat::formattable<wchar_t> T>
+        template <Characters::IFormattable T>
         static const FromObjectMapperType<T> kTraceFromObjectMapper;
 
     public:
         /**
          */
-        template <Common::StdCompat::formattable<wchar_t> T>
+        template <Characters::IFormattable T>
         static const ToObjectMapperType<T> kTraceToObjectMapper;
 
     public:
