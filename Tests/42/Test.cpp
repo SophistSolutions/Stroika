@@ -38,6 +38,8 @@
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
