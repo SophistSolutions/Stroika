@@ -2050,6 +2050,17 @@ namespace {
             EXPECT_TRUE (String{kTestWithSurrogates_}.AsUTF16 ().length () == 2);
         }
         {
+            // a view of a literal with a character outside the BMP - a surrogate pair in UTF-16, which char16_t is, and wchar_t is
+            // on Windows - is still one character
+            constexpr u16string_view kU16{u"a\U0001F600b"sv};
+            constexpr wstring_view   kWide{L"a\U0001F600b"sv};
+            for (const String& s : {String{kU16}, String{kWide}, String::FromStringConstant (kWide)}) {
+                EXPECT_EQ (s.size (), 3u);
+                EXPECT_TRUE (s[1] == Character{U'\U0001F600'});
+                EXPECT_EQ (s, String{U"a\U0001F600b"sv});
+            }
+        }
+        {
             // https://www.informit.com/articles/article.aspx?p=2274038&seqNum=10 SURROGATE SAMPLES
             {
                 constexpr auto ch = Character{char32_t (0x10000)};

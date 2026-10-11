@@ -96,7 +96,7 @@ namespace {
                     Require (Character::IsASCII (s));
                 }
                 // Any 8-bit sequence valid for Latin1
-                if constexpr (same_as<CHAR_T, char16_t>) {
+                if constexpr (same_as<CHAR_T, char16_t> or (same_as<CHAR_T, wchar_t> and sizeof (wchar_t) == 2)) {
                     Require (UTFConvert::AllFitsInTwoByteEncoding (s));
                 }
             }
@@ -108,7 +108,7 @@ namespace {
                 if constexpr (same_as<CHAR_T, char> or same_as<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));
                 }
-                if constexpr (same_as<CHAR_T, char16_t>) {
+                if constexpr (same_as<CHAR_T, char16_t> or (same_as<CHAR_T, wchar_t> and sizeof (wchar_t) == 2)) {
                     Require (UTFConvert::AllFitsInTwoByteEncoding (s));
                 }
                 _fData = s;
@@ -617,7 +617,8 @@ shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_v
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<wchar_t>& str)
 {
-    if (InReadOnlyImage_ (str)) {
+    // where wchar_t is UTF-16 (Windows), as for char16_t: no surrogate pairs in a direct index rep
+    if (InReadOnlyImage_ (str) and (sizeof (wchar_t) == 4 or UTFConvert::AllFitsInTwoByteEncoding (span{str}))) {
         return MakeSharedPtr<StringConstant_::DirectIndexRep<wchar_t>> (span{str.data (), str.size ()});
     }
     return mk_ (span<const wchar_t>{str.data (), str.size ()});
