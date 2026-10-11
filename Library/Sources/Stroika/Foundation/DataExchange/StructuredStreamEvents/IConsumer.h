@@ -41,6 +41,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
      *          @todo then when you configure the SAX parser, tell it (consmer interface returning a set of types of things it wants)
      *          to optimize so just the right types of elements sent.
      *
+     *  \note   A callback MAY throw (ObjectReader does, on data it cannot map): the exception comes out of whatever drove
+     *          the parse - XML::Provider::SAXParse, say - and the parse stops there. Providers go to some trouble for
+     *          that, since a parser written in C lies in between (@see XML::Providers::LibXML2's SAXReader_).
+     *
      *  @see ObjectReaderRegistry for examples of one way to use this
      */
     class IConsumer {

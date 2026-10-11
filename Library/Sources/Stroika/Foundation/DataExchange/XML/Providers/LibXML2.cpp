@@ -217,58 +217,88 @@ namespace {
         using Name = StructuredStreamEvents::Name;
         xmlSAXHandler                      flibXMLSaxHndler_{};
         StructuredStreamEvents::IConsumer& fCallback_;
+        xmlParserCtxtPtr                   fCtxt_{nullptr}; // SAXParse sets this, as soon as it has made the context
+        // the consumer's exception, as thrown - so rethrown whole: a throw of *pointer-to-base would slice it
+        exception_ptr fCapturedException_;
+
+        /**
+         *  Call an IConsumer from a libxml2 SAX callback. An IConsumer may throw - ObjectReader does, on data it cannot
+         *  map - and the exception must not escape into libxml2, whose frames lie between here and SAXParse. libxml2 is
+         *  C, so its functions are nounwind, and with -flto the unwind tables for them go away: the unwinder then finds
+         *  no handler at all and terminates. (Without LTO it unwinds, which is why this stood for so long.) So catch it
+         *  here, stop the parse, and let SAXParse rethrow it once libxml2's frames are gone.
+         */
+        template <typename CALL_CONSUMER>
+        static void Invoke_ (void* ctx, CALL_CONSUMER&& callConsumer) noexcept
+        {
+            SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
+            Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
+            if (thisReader->fCapturedException_ == nullptr) [[likely]] {
+                try {
+                    callConsumer (thisReader->fCallback_);
+                }
+                catch (...) {
+                    thisReader->fCapturedException_ = current_exception ();
+                    xmlStopParser (thisReader->fCtxt_);
+                }
+            }
+        }
+        void ThrowIfCapturedException ()
+        {
+            if (fCapturedException_ != nullptr) [[unlikely]] {
+                rethrow_exception (fCapturedException_);
+            }
+        }
+
         SAXReader_ (StructuredStreamEvents::IConsumer& callback)
             : fCallback_{callback}
         {
             flibXMLSaxHndler_.initialized   = XML_SAX2_MAGIC;
             flibXMLSaxHndler_.startDocument = [] (void* ctx) {
-                SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
-                Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
-                thisReader->fCallback_.StartDocument ();
+                Invoke_ (ctx, [] (StructuredStreamEvents::IConsumer& consumer) { consumer.StartDocument (); });
             };
             flibXMLSaxHndler_.endDocument = [] (void* ctx) {
-                SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
-                Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
-                thisReader->fCallback_.EndDocument ();
+                Invoke_ (ctx, [] (StructuredStreamEvents::IConsumer& consumer) { consumer.EndDocument (); });
             };
             flibXMLSaxHndler_.startElementNs = [] (void* ctx, const xmlChar* localname, [[maybe_unused]] const xmlChar* prefix, const xmlChar* URI,
                                                    [[maybe_unused]] int nb_namespaces, [[maybe_unused]] const xmlChar** namespaces,
                                                    int nb_attributes, [[maybe_unused]] int nb_defaulted, const xmlChar** attributes) {
-                SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
-                Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
-                Mapping<Name, String> attrs;
-                if (attributes != nullptr) {
-                    // Crazy way to decode attribute arguments - I would have never guessed --
-                    // https://stackoverflow.com/questions/2075894/how-to-get-the-name-and-value-of-attributes-from-xml-when-using-libxml2-sax-pars
-                    auto ai = attributes;
-                    for (int i = 0; i < nb_attributes; ++i) {
-                        // @todo fix must grab namespace, probably from namespaces, but will take some research to figure out how!!!
-                        attrs.Add (Name{"", libXMLString2String (ai[0]), Name::eAttribute},
-                                   libXMLString2String (ai[3], static_cast<int> (ai[4] - ai[3])));
-                        ai += 5;
+                Invoke_ (ctx, [&] (StructuredStreamEvents::IConsumer& consumer) {
+                    Mapping<Name, String> attrs;
+                    if (attributes != nullptr) {
+                        // Crazy way to decode attribute arguments - I would have never guessed --
+                        // https://stackoverflow.com/questions/2075894/how-to-get-the-name-and-value-of-attributes-from-xml-when-using-libxml2-sax-pars
+                        auto ai = attributes;
+                        for (int i = 0; i < nb_attributes; ++i) {
+                            // @todo fix must grab namespace, probably from namespaces, but will take some research to figure out how!!!
+                            attrs.Add (Name{"", libXMLString2String (ai[0]), Name::eAttribute},
+                                       libXMLString2String (ai[3], static_cast<int> (ai[4] - ai[3])));
+                            ai += 5;
+                        }
                     }
-                }
-                if (URI == nullptr) {
-                    thisReader->fCallback_.StartElement (Name{libXMLString2String (localname)}, attrs);
-                }
-                else {
-                    thisReader->fCallback_.StartElement (Name{libXMLString2String (URI), libXMLString2String (localname)}, attrs);
-                }
+                    if (URI == nullptr) {
+                        consumer.StartElement (Name{libXMLString2String (localname)}, attrs);
+                    }
+                    else {
+                        consumer.StartElement (Name{libXMLString2String (URI), libXMLString2String (localname)}, attrs);
+                    }
+                });
             };
             flibXMLSaxHndler_.endElementNs = [] (void* ctx, const xmlChar* localname, [[maybe_unused]] const xmlChar* prefix, const xmlChar* URI) {
-                SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
-                if (URI == nullptr) {
-                    thisReader->fCallback_.EndElement (Name{libXMLString2String (localname)});
-                }
-                else {
-                    thisReader->fCallback_.EndElement (Name{libXMLString2String (URI), libXMLString2String (localname)});
-                }
+                Invoke_ (ctx, [&] (StructuredStreamEvents::IConsumer& consumer) {
+                    if (URI == nullptr) {
+                        consumer.EndElement (Name{libXMLString2String (localname)});
+                    }
+                    else {
+                        consumer.EndElement (Name{libXMLString2String (URI), libXMLString2String (localname)});
+                    }
+                });
             };
-            ;
             flibXMLSaxHndler_.characters = [] (void* ctx, const xmlChar* ch, int len) {
-                SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
-                // unclear how this handles 'continuations' and partial characters - may need a more sophisticated approach
-                thisReader->fCallback_.TextInsideElement (String::FromUTF8 (span{reinterpret_cast<const char*> (ch), static_cast<size_t> (len)}));
+                Invoke_ (ctx, [&] (StructuredStreamEvents::IConsumer& consumer) {
+                    // unclear how this handles 'continuations' and partial characters - may need a more sophisticated approach
+                    consumer.TextInsideElement (String::FromUTF8 (span{reinterpret_cast<const char*> (ch), static_cast<size_t> (len)}));
+                });
             };
         }
         SAXReader_ (const SAXReader_&) = delete;
@@ -1044,6 +1074,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         SAXReader_       handler{*callback};
         xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
         Execution::ThrowIfNull (ctxt);
+        handler.fCtxt_                         = ctxt; // so a callback that throws can stop the parse (see SAXReader_::Invoke_)
         [[maybe_unused]] auto&&        cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
         MyLibXML2StructuredErrGrabber_ errCatcher{ctxt};
         byte                           buf[1024];
@@ -1052,11 +1083,15 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         }
         while (auto n = useInput.ReadBlocking (span{buf}).size ()) {
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
+                // a consumer that threw stopped the parse itself, so its exception is the error - not whatever libxml2 made of being stopped
+                handler.ThrowIfCapturedException ();
                 AssertNotNull (errCatcher.fCapturedException); // double check I understood API properly - and error handler getting called
             }
+            handler.ThrowIfCapturedException ();
             errCatcher.ThrowIf ();
         }
         xmlParseChunk (ctxt, nullptr, 0, 1);
+        handler.ThrowIfCapturedException ();
         errCatcher.ThrowIf ();
     }
 }
