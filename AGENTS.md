@@ -367,7 +367,9 @@ or API, and when deciding whether a commit needs an `UPGRADE NOTE:`.
 
 - https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow ("WTF")
 - https://github.com/SophistSolutions/IPAM-Root
-- https://github.com/SophistSolutions/HearHE
+- https://github.com/SophistSolutions/HearHE - **private**: clone it, like AskHealthFrame, with
+  `gh repo clone <repo> -- --depth 1 --branch v1-Dev` (a plain `git clone` fails). Never quote its
+  code in anything public.
 - https://github.com/Records-For-Living-Inc/AskHealthFrame - **private**, so it may not be
   accessible (it is with LGP's GitHub credentials), and part of its C++ is in a private
   `HealthRecordModel` submodule. Never quote its code in anything public - GitHub issues, commit
