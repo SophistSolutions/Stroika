@@ -29,7 +29,7 @@ and InputStreamPtr<> and OutputStream<> object.
   - [Reader.h](JSON/Reader.h)
   - [Writer.h](JSON/Writer.h)
 
-- XML
+- [XML](XML/ReadMe.md)
 
   - [Reader.h](XML/Reader.h)
   - [Writer.h](XML/Writer.h)
