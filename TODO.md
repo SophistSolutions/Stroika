@@ -24,15 +24,12 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **NOW: a competent Variant::XML Reader/Writer** - https://github.com/SophistSolutions/Stroika/issues/954 (LGP
-         2026-10-10; it is 2022's "XML misc todo", whose "first draft" step is what exists). Attributes, namespaces, element
-         order, repeated elements, and the hooks to make non-standard XML work - with tests, which it has none of (Tests/32's
-         XML_ONLY_ asserts nothing). Then UPnP's descriptions and SOAP messages, written as text now, could Serialize through
-         it, and #955 (a web service answering JSON or XML) is unblocked.
-       - (WTF, not Stroika) **WTF ignores every ssdp:byebye**: it finds the device by its LOCATION's host, which a byebye
-         does not carry (Debug: `WeakAssert (not locAddrs.empty ())`) - use SSDP::Client::CachingListener: its callbacks get
-         a Listener's Advertisement once per change - fAlive false (removed) with the LOCATION last heard - so WTF fetches
-         each description once, not with each NOTIFY as now.
+       - **NOW: UPnP's descriptions and SOAP messages through Variant::XML** - both are hand-rolled text today. The
+         Reader/Writer they were waiting on is done (#954's title, 2026-10-11): attributes, namespaces and prefixes, element
+         order, repeated elements, XML::Binding where a schema wants a shape other than the default, and Tests/32's
+         XML_ONLY_* - so #954 wants closing, or reducing to the Binding producers its 2026-10-10 comment adds (an XSD/WSDL,
+         and ObjectVariantMapper - #1217). UPnP is what tries the new code against someone else's schema rather than its
+         own tests. #955 (a web service answering JSON or XML) is unblocked by the same work, and not started.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
