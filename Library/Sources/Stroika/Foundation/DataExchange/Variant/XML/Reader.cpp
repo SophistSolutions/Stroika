@@ -112,6 +112,10 @@ namespace {
                 f.fArrayItems.Append (v);
                 return;
             }
+            AddMember_ (f, name, v);
+        }
+        void AddMember_ (Frame_& f, const String& name, const VariantValue& v)
+        {
             // a Binding saying this member is an array makes it one, however few elements the document has
             if (f.fBinding != nullptr) {
                 if (const Binding* mb = f.fBinding->MemberBinding (name); mb != nullptr and mb->fItems != nullptr) {
@@ -142,7 +146,8 @@ namespace {
                 return VariantValue{f.fArrayItems}; // all its children were array items, so the element IS the array
             }
             if (not f.fArrayItems.empty ()) {
-                AddChild_ (f, fArrayItemElementName, VariantValue{f.fArrayItems}); // ... beside other members: just a member
+                // ... beside other members: just a member. AddMember_, not AddChild_, which would take it for one more item
+                AddMember_ (f, fArrayItemElementName, VariantValue{f.fArrayItems});
                 f.fArrayItems.clear ();
             }
             // a Binding may say this element's text is one of its members, beside its attributes

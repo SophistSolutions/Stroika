@@ -1298,6 +1298,16 @@ namespace {
             EXPECT_EQ (DataExchange::Variant::XML::Reader{config}.Read (String{"<a><b>1</b></a>"sv}),
                        (VariantValue{VVMap{{"a"sv, VariantValue{VVMap{{"b"sv, VariantValue{"1"sv}}}}}}}));
         }
+        {
+            // array items BESIDE other members: the array is one member among them, and not lost
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("a"sv);
+            config.SetArrayElementName ("item"sv);
+            VVMap m = DataExchange::Variant::XML::Reader{config}.Read (String{"<a><item>1</item><item>2</item><other>x</other></a>"sv}).As<VVMap> ();
+            EXPECT_EQ (m.Lookup ("other"sv)->As<String> (), "x"sv);
+            ASSERT_TRUE (m.Lookup ("item"sv).has_value ());
+            EXPECT_EQ (m.Lookup ("item"sv)->As<Sequence<VariantValue>> ().size (), 2u);
+        }
     }
 }
 #endif
