@@ -1724,6 +1724,21 @@ namespace {
             Document::Ptr doc     = domFactory (BLOB{as_bytes (span{"<detail><first/></detail>"sv})}, nullptr);
             Element::Ptr  detail  = doc.GetRootElement ();
 
+            {
+                // the shape of it, plainly - the same example the header carries
+                Document::Ptr little   = domFactory (BLOB{as_bytes (span{"<a f=\"x\">b</a>"sv})}, nullptr);
+                Document::Ptr big      = domFactory (BLOB{as_bytes (span{"<bigDoc/>"sv})}, nullptr);
+                Element::Ptr  imported = big.GetRootElement ().ImportNode (little.GetRootElement ());
+                // the tree, not the text: what a serializer does about whitespace, attribute quoting and the XML
+                // declaration is its own business, and the two providers already differ on it
+                EXPECT_EQ (imported.GetName ().fName, "a"sv);
+                EXPECT_EQ (imported.GetAttribute ("f"sv), "x"sv);
+                EXPECT_EQ (imported.GetValue (), "b"sv);
+                EXPECT_EQ (big.GetRootElement ().GetChildElements ().size (), 1u);
+                // a CLONE, so the document cloned FROM still has all of its own
+                EXPECT_EQ (little.GetRootElement ().GetAttribute ("f"sv), "x"sv);
+                EXPECT_EQ (little.GetRootElement ().GetValue (), "b"sv);
+            }
             const String foreignBefore = foreign.Write ();
             detail.ImportNode (foreign.GetRootElement ());
             const String written = doc.Write ();

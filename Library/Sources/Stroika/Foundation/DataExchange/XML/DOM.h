@@ -488,9 +488,16 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  The two-argument overload places it after 'afterNode', or first where that is nullptr - the rule Insert
              *  uses. Either way the new node is in the tree before it is returned: there is no detached-node state.
              *
-             *  \note Both documents must be the SAME XML provider, as of Stroika v3.0d25 - carrying a node between
-             *        providers would mean writing and re-reading it, which this does not do behind your back. The two
-             *        of them are libxml2's and Xerces's ideas of a node, and nothing converts one to the other.
+             *  \par Example Usage
+             *      \code
+             *          Document::Ptr little = Document::New ("<a f=\"x\">b</a>"sv);
+             *          Document::Ptr big    = Document::New ("<bigDoc/>"sv);
+             *          big.GetRootElement ().ImportNode (little.GetRootElement ());
+             *          // big    is now   <bigDoc><a f="x">b</a></bigDoc>
+             *          // little is still  <a f="x">b</a>   - ImportNode copied it, and left it alone
+             *      \endcode
+             *
+             *  \pre Both documents must be the SAME XML provide
              *
              *  \pre *this != nullptr
              *  \pre cloneFrom != nullptr
