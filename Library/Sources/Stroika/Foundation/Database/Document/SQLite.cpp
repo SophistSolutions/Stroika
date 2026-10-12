@@ -146,12 +146,40 @@ namespace {
         {
             return this;
         }
+        /**
+         *  Rethrow whatever the callback threw, once sqlite3's frames are gone - call this after sqlite3_exec, before
+         *  making anything of the code it returned.
+         */
+        void ThrowIfCapturedException ()
+        {
+            if (fCapturedException_ != nullptr) [[unlikely]] {
+                rethrow_exception (fCapturedException_);
+            }
+        }
 
     private:
-        static int STATICFUNC_ (void* SQLiteCallbackData, int argc, char** argv, char** azColName)
+        // the callback's exception, as thrown - so rethrown whole: a throw of *pointer-to-base would slice it
+        exception_ptr fCapturedException_;
+
+        /*
+         *  The callback can throw - it is handed raw bytes from the database to make Strings of - and the exception must
+         *  not escape into sqlite3, whose frames lie between here and sqlite3_exec. sqlite3 is C, so its functions are
+         *  nounwind, and with -flto the unwind tables for them go away: the unwinder then finds no handler at all and
+         *  terminates. So catch it here, return non-zero (which is how sqlite3_exec is told to stop), and rethrow from
+         *  ThrowIfCapturedException.
+         */
+        static int STATICFUNC_ (void* SQLiteCallbackData, int argc, char** argv, char** azColName) noexcept
         {
             SQLiteCallback_* sqc = reinterpret_cast<SQLiteCallback_*> (SQLiteCallbackData);
-            return sqc->fCallback_ (argc, argv, azColName);
+            if (sqc->fCapturedException_ == nullptr) [[likely]] {
+                try {
+                    return sqc->fCallback_ (argc, argv, azColName);
+                }
+                catch (...) {
+                    sqc->fCapturedException_ = current_exception ();
+                }
+            }
+            return 1; // anything non-zero aborts the sqlite3_exec
         }
     };
 
@@ -846,9 +874,11 @@ namespace {
                         results.Add (String::FromUTF8 (argv[0]));
                         return SQLITE_OK;
                     }};
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "SELECT name FROM sqlite_master WHERE type='table';",
-                                                              callback.GetStaticFunction (), callback.GetData (), nullptr),
-                                              fDB_);
+                    // a callback that threw stopped the exec itself, so its exception is the error - not whatever sqlite3 made of being stopped
+                    int execResult = ::sqlite3_exec (fDB_, "SELECT name FROM sqlite_master WHERE type='table';",
+                                                     callback.GetStaticFunction (), callback.GetData (), nullptr);
+                    callback.ThrowIfCapturedException ();
+                    ThrowSQLiteErrorIfNotOK_ (execResult, fDB_);
                     return results;
                 },
                 nullopt, false);
@@ -909,7 +939,9 @@ namespace {
                 d = val;
                 return SQLITE_OK;
             }};
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma busy_timeout;", callback.GetStaticFunction (), callback.GetData (), nullptr), fDB_);
+            int execResult = ::sqlite3_exec (fDB_, "pragma busy_timeout;", callback.GetStaticFunction (), callback.GetData (), nullptr);
+            callback.ThrowIfCapturedException ();
+            ThrowSQLiteErrorIfNotOK_ (execResult, fDB_);
             Assert (d);
             return Duration{double (*d) / 1000.0};
         }
@@ -927,7 +959,9 @@ namespace {
                 d = argv[0];
                 return SQLITE_OK;
             }};
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback.GetStaticFunction (), callback.GetData (), nullptr), fDB_);
+            int execResult = ::sqlite3_exec (fDB_, "pragma journal_mode;", callback.GetStaticFunction (), callback.GetData (), nullptr);
+            callback.ThrowIfCapturedException ();
+            ThrowSQLiteErrorIfNotOK_ (execResult, fDB_);
             Assert (d);
             if (d == "delete"sv) {
                 return JournalModeType::eDelete;
