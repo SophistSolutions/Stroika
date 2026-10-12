@@ -112,7 +112,17 @@ namespace {
             if (v.GetType () == VariantValue::eArray) {
                 Sequence<VariantValue> items       = v.As<Sequence<VariantValue>> ();
                 const Binding*         itemBinding = binding == nullptr ? nullptr : binding->fItems.get ();
-                if (fArrayItemElementName.empty ()) {
+                // the item Binding names the item element where it has a name: one array of a document can then be wrapped
+                // differently from another, which a schema of someone else's wants (UPnP's <actionList><action>, beside its
+                // <allowedValueList><allowedValue>). Failing that, the configuration's one name for every array.
+                optional<NameWithNamespace> itemName;
+                if (itemBinding != nullptr and itemBinding->fName) {
+                    itemName = *itemBinding->fName;
+                }
+                else if (not fArrayItemElementName.empty ()) {
+                    itemName = NameWithNamespace{fArrayItemElementName};
+                }
+                if (not itemName) {
                     // the member's own name, once per item - how a schema of someone else's usually has it (UPnP's <service>);
                     // then an array of one reads back as a scalar, unless a Binding says that member is an array
                     for (const VariantValue& i : items) {
@@ -129,7 +139,7 @@ namespace {
                 if (not items.empty ()) {
                     fOut.Write ("\n"sv);
                     for (const VariantValue& i : items) {
-                        WriteElement (NameWithNamespace{fArrayItemElementName}, i, itemBinding, childNamespace, indentLevel + 1);
+                        WriteElement (*itemName, i, itemBinding, childNamespace, indentLevel + 1);
                     }
                     Indent_ (indentLevel);
                 }

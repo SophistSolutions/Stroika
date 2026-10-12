@@ -1200,6 +1200,43 @@ namespace {
             VariantValue v{VVMap{{"m"sv, VariantValue{1}}, {"z"sv, VariantValue{2}}}};
             EXPECT_EQ (written (v, config), "<a>\n    <z>2</z>\n    <m>1</m>\n</a>\n"sv);
         }
+        {
+            // an item Binding with a name of its own wraps that array, each item of that name - so one document can wrap two
+            // arrays differently, which the configuration's single array element name cannot say. UPnP's service description
+            config.SetDocumentElementName ("scpd"sv);
+            auto itemsNamed = [] (const String& itemName) { return make_shared<Binding> (Binding{.fName = NameWithNamespace{itemName}}); };
+            config.SetBinding (Binding{.fMembers = {{"actionList"sv, Binding{.fItems = itemsNamed ("action"sv)}},
+                                                    {"allowedValueList"sv, Binding{.fItems = itemsNamed ("allowedValue"sv)}}}});
+            VariantValue v{
+                VVMap{{"actionList"sv, VariantValue{Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"SetTarget"sv}}}},
+                                                                           VariantValue{VVMap{{"name"sv, VariantValue{"GetTarget"sv}}}}}}},
+                      {"allowedValueList"sv, VariantValue{Sequence<VariantValue>{VariantValue{"yes"sv}, VariantValue{"no"sv}}}}}};
+            EXPECT_EQ (written (v, config), "<scpd>\n"
+                                            "    <actionList>\n"
+                                            "        <action>\n"
+                                            "            <name>SetTarget</name>\n"
+                                            "        </action>\n"
+                                            "        <action>\n"
+                                            "            <name>GetTarget</name>\n"
+                                            "        </action>\n"
+                                            "    </actionList>\n"
+                                            "    <allowedValueList>\n"
+                                            "        <allowedValue>yes</allowedValue>\n"
+                                            "        <allowedValue>no</allowedValue>\n"
+                                            "    </allowedValueList>\n"
+                                            "</scpd>\n"sv);
+            // an empty array is still its wrapper, and a one-item array is still an array - which is what a Binding settles
+            VariantValue one{VVMap{{"actionList"sv, VariantValue{Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"X"sv}}}}}}},
+                                   {"allowedValueList"sv, VariantValue{Sequence<VariantValue>{}}}}};
+            EXPECT_EQ (written (one, config), "<scpd>\n"
+                                              "    <actionList>\n"
+                                              "        <action>\n"
+                                              "            <name>X</name>\n"
+                                              "        </action>\n"
+                                              "    </actionList>\n"
+                                              "    <allowedValueList></allowedValueList>\n"
+                                              "</scpd>\n"sv);
+        }
     }
 }
 
@@ -1307,6 +1344,28 @@ namespace {
             EXPECT_EQ (m.Lookup ("other"sv)->As<String> (), "x"sv);
             ASSERT_TRUE (m.Lookup ("item"sv).has_value ());
             EXPECT_EQ (m.Lookup ("item"sv)->As<Sequence<VariantValue>> ().size (), 2u);
+        }
+        {
+            // an array each item Binding names: its wrapper reads back as that member's array, two differently named wrappers in
+            // the one document - and still an array where the document holds only one. UPnP's service description
+            using DataExchange::XML::Binding;
+            using DataExchange::XML::NameWithNamespace;
+            SerializationConfiguration config;
+            config.SetDocumentElementName ("scpd"sv);
+            auto itemsNamed = [] (const String& itemName) { return make_shared<Binding> (Binding{.fName = NameWithNamespace{itemName}}); };
+            config.SetBinding (Binding{.fMembers = {{"actionList"sv, Binding{.fItems = itemsNamed ("action"sv)}},
+                                                    {"allowedValueList"sv, Binding{.fItems = itemsNamed ("allowedValue"sv)}}}});
+            for (const Sequence<VariantValue>& actions : {Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"SetTarget"sv}}}},
+                                                                                 VariantValue{VVMap{{"name"sv, VariantValue{"GetTarget"sv}}}}},
+                                                          Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"SetTarget"sv}}}}}}) {
+                VariantValue v{VVMap{{"actionList"sv, VariantValue{actions}},
+                                     {"allowedValueList"sv, VariantValue{Sequence<VariantValue>{VariantValue{"yes"sv}}}}}};
+                EXPECT_EQ (roundTrip (v, config), v) << actions.size (); // including the array of one
+            }
+            // someone else's document, read through the same Binding
+            VariantValue read =
+                DataExchange::Variant::XML::Reader{config}.Read (String{"<scpd><actionList><action><name>A</name></action></actionList></scpd>"sv});
+            EXPECT_EQ (read.As<VVMap> ().Lookup ("actionList"sv)->GetType (), VariantValue::eArray);
         }
     }
 }

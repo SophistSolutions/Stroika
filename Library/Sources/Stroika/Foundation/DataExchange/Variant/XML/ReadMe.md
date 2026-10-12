@@ -41,7 +41,9 @@ Binding b{.fMembers = {{"sendEvents"sv, Binding{.fKind = Binding::Kind::eAttribu
 ```
 
 A Binding is also what settles *"is a single element an array of one?"* - a member with `fItems` is an array however few
-elements the document happens to have.
+elements the document happens to have. Where that `fItems` has a name, it is the item element's, and the member's own element
+wraps them - so one document can wrap two arrays differently, as UPnP's `<actionList><action>` and
+`<allowedValueList><allowedValue>` do, which `SetArrayElementName` cannot say, being one name for every array.
 
 Nothing produces a Binding but hand-written code yet. An `ObjectVariantMapper` could, since it knows a type's field names and
 their declaration order (<https://github.com/SophistSolutions/Stroika/issues/1217>), and so could an XSD or WSDL, where the

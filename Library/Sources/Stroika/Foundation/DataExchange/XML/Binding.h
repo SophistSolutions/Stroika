@@ -95,6 +95,16 @@ namespace Stroika::Foundation::DataExchange::XML {
         /**
          *  A Binding for each item of this array - and, reading, what says this member IS an array, however few elements the
          *  document happens to have (@see Variant::XML::Writer on that ambiguity).
+         *
+         *  Where that Binding has an fName, it names the item element and the member's own element wraps them, so that one
+         *  document can wrap two arrays differently - which SerializationConfiguration::SetArrayElementName, being one name
+         *  for every array, cannot say:
+         *      \code
+         *          // UPnP's <actionList><action>..</action></actionList>, beside its <allowedValueList><allowedValue>..
+         *          Binding{.fMembers = {{"actionList"sv, Binding{.fItems = make_shared<Binding> (Binding{.fName = "action"sv})}}}};
+         *      \endcode
+         *  Failing that, the items are the configuration's array element name - or, where it has none, the member's own name
+         *  repeated, with no wrapper at all.
          */
         shared_ptr<Binding> fItems;
 

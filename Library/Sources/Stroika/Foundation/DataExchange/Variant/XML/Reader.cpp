@@ -59,8 +59,14 @@ namespace {
             StringBuilder<>               fText;
             Mapping<String, VariantValue> fChildren;
             Set<String>                   fRepeated;   // a name seen more than once, so fChildren holds its array
-            Sequence<VariantValue>        fArrayItems; // children named fArrayItemElementName
+            Sequence<VariantValue>        fArrayItems; // children named as this element's items are
+            optional<String>              fItemName;   // what this element's items are called, where its Binding named them
         };
+        // what an element's array items are called: its Binding's, else the one name the configuration gives every array
+        nonvirtual String ItemNameFor_ (const Frame_& f) const
+        {
+            return f.fItemName ? *f.fItemName : fArrayItemElementName;
+        }
         vector<Frame_> fStack;
         String         fRootName;
         VariantValue   fRootValue;
@@ -68,9 +74,10 @@ namespace {
         virtual void StartElement (const Name& name, const Mapping<Name, String>& attributes) override
         {
             // what the element is a member of says what member it is: a Binding may have given it a name of its own
-            const Binding* parentBinding = fStack.empty () ? fRootBinding : fStack.back ().fBinding;
-            String         key           = name.fLocalName;
-            const Binding* binding       = nullptr;
+            const Binding*   parentBinding = fStack.empty () ? fRootBinding : fStack.back ().fBinding;
+            String           key           = name.fLocalName;
+            const Binding*   binding       = nullptr;
+            optional<String> itemName;
             if (fStack.empty () and fRootBinding != nullptr) {
                 binding = fRootBinding; // the root element IS the document's value
             }
@@ -78,10 +85,13 @@ namespace {
                 key     = parentBinding->KeyForName (name.fLocalName);
                 binding = parentBinding->MemberBinding (key);
                 if (binding != nullptr and binding->fItems != nullptr) {
+                    if (binding->fItems->fName) {
+                        itemName = binding->fItems->fName->fName; // this element wraps its items, each of that name
+                    }
                     binding = binding->fItems.get (); // each element is an item of that member's array
                 }
             }
-            fStack.push_back (Frame_{.fName = key, .fBinding = binding});
+            fStack.push_back (Frame_{.fName = key, .fBinding = binding, .fItemName = itemName});
             for (const auto& i : attributes) {
                 AddChild_ (fStack.back (), binding == nullptr ? i.fKey.fLocalName : binding->KeyForName (i.fKey.fLocalName), VariantValue{i.fValue});
             }
@@ -108,7 +118,7 @@ namespace {
         }
         void AddChild_ (Frame_& f, const String& name, const VariantValue& v)
         {
-            if (not fArrayItemElementName.empty () and name == fArrayItemElementName) {
+            if (String itemName = ItemNameFor_ (f); not itemName.empty () and name == itemName) {
                 f.fArrayItems.Append (v);
                 return;
             }
@@ -119,6 +129,10 @@ namespace {
             // a Binding saying this member is an array makes it one, however few elements the document has
             if (f.fBinding != nullptr) {
                 if (const Binding* mb = f.fBinding->MemberBinding (name); mb != nullptr and mb->fItems != nullptr) {
+                    if (mb->fItems->fName) {
+                        f.fChildren.Add (name, v); // that member wraps its items, so the element just read IS its array
+                        return;
+                    }
                     Sequence<VariantValue> items;
                     if (optional<VariantValue> already = f.fChildren.Lookup (name)) {
                         items = already->As<Sequence<VariantValue>> ();
@@ -147,7 +161,7 @@ namespace {
             }
             if (not f.fArrayItems.empty ()) {
                 // ... beside other members: just a member. AddMember_, not AddChild_, which would take it for one more item
-                AddMember_ (f, fArrayItemElementName, VariantValue{f.fArrayItems});
+                AddMember_ (f, ItemNameFor_ (f), VariantValue{f.fArrayItems});
                 f.fArrayItems.clear ();
             }
             // a Binding may say this element's text is one of its members, beside its attributes

@@ -39,7 +39,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  | VariantValue                  | XML |
      *  |-------------------------------|-----|
      *  | an object's member K          | the element `<K>` |
-     *  | an array under member K       | an element per item: `<Array>` each, or - with SetArrayElementName (nullopt) - `<K>` repeated |
+     *  | an array under member K       | an element per item: `<Array>` each, or - with SetArrayElementName (nullopt) - `<K>` repeated, or the name an XML::Binding's fItems carries, wrapped in `<K>` |
      *  | anything else                 | its element's text, as VariantValue::As<String> writes it (a date ISO 8601, a BLOB base64) |
      *  | null                          | an empty element |
      *
