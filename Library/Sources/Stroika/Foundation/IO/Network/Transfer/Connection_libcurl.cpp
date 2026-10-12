@@ -227,6 +227,7 @@ namespace {
             fUploadDataCursor_ = 0;
             fResponseData_.clear ();
             fResponseHeaders_.clear ();
+            fCapturedCallbackException_ = nullptr;
 
             ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, fOptions_.fUserAgent.AsUTF8 ().c_str ()));
 
@@ -313,7 +314,10 @@ namespace {
             }
             fSavedHeaders_ = tmpH;
 
-            ThrowIfError (::curl_easy_perform (fCurlHandle_));
+            // a callback that threw aborted the transfer itself, so its exception is the error - not whatever libcurl made of being aborted
+            CURLcode performResult = ::curl_easy_perform (fCurlHandle_);
+            ThrowIfCapturedCallbackException_ ();
+            ThrowIfError (performResult);
 
             long resultCode = 0;
             ThrowIfError (::curl_easy_getinfo (fCurlHandle_, CURLINFO_RESPONSE_CODE, &resultCode));
@@ -408,9 +412,40 @@ namespace {
         }
 
     private:
+        /**
+         *  Call one of the handlers below from a libcurl callback. They can throw - ResponseHeaderWriteHandler_ does, on a
+         *  header that is not valid UTF-8 - and the exception must not escape into libcurl, whose frames lie between here
+         *  and curl_easy_perform. libcurl is C, so its functions are nounwind, and with -flto the unwind tables for them go
+         *  away: the unwinder then finds no handler at all and terminates. So catch it here, tell libcurl to give up on the
+         *  transfer, and rethrow once its frames are gone.
+         *
+         *  Returning fewer bytes than were handed to a write callback is how libcurl is told to abort one.
+         */
+        template <typename CALL_HANDLER>
+        static size_t Invoke_ (void* userP, size_t abortResult, CALL_HANDLER&& callHandler) noexcept
+        {
+            Rep_* rep = reinterpret_cast<Rep_*> (userP);
+            if (rep->fCapturedCallbackException_ == nullptr) [[likely]] {
+                try {
+                    return callHandler (*rep);
+                }
+                catch (...) {
+                    rep->fCapturedCallbackException_ = current_exception ();
+                }
+            }
+            return abortResult;
+        }
+        nonvirtual void ThrowIfCapturedCallbackException_ ()
+        {
+            if (fCapturedCallbackException_ != nullptr) [[unlikely]] {
+                rethrow_exception (fCapturedCallbackException_);
+            }
+        }
+
         static size_t s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
         {
-            return reinterpret_cast<Rep_*> (userP)->RequestPayloadReadHandler_ (reinterpret_cast<byte*> (buffer), size * nitems);
+            return Invoke_ (userP, CURL_READFUNC_ABORT,
+                            [&] (Rep_& rep) { return rep.RequestPayloadReadHandler_ (reinterpret_cast<byte*> (buffer), size * nitems); });
         }
 
         nonvirtual size_t RequestPayloadReadHandler_ (byte* buffer, size_t bufSize)
@@ -434,7 +469,8 @@ namespace {
 #if qStroika_FeatureSupported_Valgrind
             VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
 #endif
-            return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
+            return Invoke_ (userP, 0,
+                            [&] (Rep_& rep) { return rep.ResponseWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb); });
         }
 
         nonvirtual size_t ResponseWriteHandler_ (const byte* ptr, size_t nBytes)
@@ -449,7 +485,8 @@ namespace {
 #if qStroika_FeatureSupported_Valgrind
             VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
 #endif
-            return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
+            return Invoke_ (userP, 0,
+                            [&] (Rep_& rep) { return rep.ResponseHeaderWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb); });
         }
 
         nonvirtual size_t ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes)
@@ -476,6 +513,8 @@ namespace {
         vector<byte>            fResponseData_;
         Mapping<String, String> fResponseHeaders_;
         curl_slist*             fSavedHeaders_{nullptr};
+        // a callback's exception, as thrown - so rethrown whole: a throw of *pointer-to-base would slice it
+        exception_ptr fCapturedCallbackException_;
     };
 }
 
