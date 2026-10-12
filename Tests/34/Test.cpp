@@ -1676,6 +1676,41 @@ namespace {
 }
 
 namespace {
+    /*
+     *  Element::Ptr::SetAttribute (name, nullopt) deletes that attribute - "setting the attribute to nullopt is equivalent
+     *  to deleting the attribute" - rather than leaving an empty one behind, whichever provider is used.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_SetAttributeNulloptDeletes_)
+    {
+        using namespace XML::DOM;
+        const BLOB kDoc_{as_bytes (span{"<a x=\"1\" y=\"2\" xmlns:p=\"urn:example:p\" p:z=\"3\"/>"sv})};
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            Document::Ptr d    = domFactory (kDoc_, nullptr);
+            Element::Ptr  root = d.GetRootElement ();
+            ASSERT_EQ (root.GetAttribute ("x"sv), "1"sv);
+            root.SetAttribute ("x"sv, optional<String>{});
+            EXPECT_FALSE (root.HasAttribute ("x"sv)) << "deleted, not left empty";
+            EXPECT_FALSE (root.GetAttribute ("x"sv).has_value ());
+            EXPECT_EQ (root.GetAttribute ("y"sv), "2"sv) << "its neighbour is untouched";
+
+            // one that was never there: a no-op, and it must not CREATE one
+            root.SetAttribute ("neverThere"sv, optional<String>{});
+            EXPECT_FALSE (root.HasAttribute ("neverThere"sv));
+
+            // and one in a namespace
+            const XML::NameWithNamespace kZ_{IO::Network::URI{"urn:example:p"sv}, "z"sv};
+            ASSERT_EQ (root.GetAttribute (kZ_), "3"sv);
+            root.SetAttribute (kZ_, optional<String>{});
+            EXPECT_FALSE (root.HasAttribute (kZ_));
+
+            // nothing of what was deleted survives into the document written back out
+            const String written = d.Write ();
+            EXPECT_EQ (written.Find ("x="sv), nullopt) << written.AsNarrowSDKString ();
+            EXPECT_EQ (written.Find ("neverThere"sv), nullopt) << written.AsNarrowSDKString ();
+            EXPECT_NE (written.Find ("y="sv), nullopt) << written.AsNarrowSDKString ();
+        });
+    }
+
     GTEST_TEST (Foundation_DataExchange_XML, DOM_XPath)
     {
         const Memory::BLOB kPersonalXML_            = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);

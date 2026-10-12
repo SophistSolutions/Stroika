@@ -532,17 +532,36 @@ namespace {
                  *  So we must create it on the document, and free it when we free the document.
                  *
                  *      \see https://github.com/SophistSolutions/Stroika/issues/1133 (STK-1001)
+                 *
+                 *  A nullopt here is NOT the delete below: xmlns="" is how XML undeclares a default namespace, which is
+                 *  just what Element::Ptr::SetDefaultNamespace (nullopt) asks for.
                  */
                 ::xmlSetNsProp (fNode_, GetSharedReUsableXMLNSParentNamespace_ (fNode_), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
                                 v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
+            else if (v == nullopt) {
+                /*
+                 *  nullopt deletes the attribute. xmlSetProp with a nullptr value does not: it leaves an empty attribute
+                 *  behind, and creates one for a name that was never there. And genNS2Use_ would DECLARE a namespace to
+                 *  delete through, so search for one instead - where none is declared, no attribute is in it.
+                 */
+                if (attrName.fNamespace) {
+                    if (xmlNs* ns = ::xmlSearchNsByHref (fNode_->doc, fNode_,
+                                                         BAD_CAST attrName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ())) {
+                        ::xmlUnsetNsProp (fNode_, ns, BAD_CAST attrName.fName.AsUTF8 ().c_str ());
+                    }
+                }
+                else {
+                    ::xmlUnsetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str ());
+                }
+            }
             else if (attrName.fNamespace) {
                 // Lookup the argument ns and either add it to this node or use the existing one
                 ::xmlSetNsProp (fNode_, genNS2Use_ (fNode_, *attrName.fNamespace), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
-                                v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+                                BAD_CAST v->AsUTF8 ().c_str ());
             }
             else {
-                ::xmlSetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (), v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+                ::xmlSetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (), BAD_CAST v->AsUTF8 ().c_str ());
             }
         }
         virtual Element::Ptr InsertElement (const NameWithNamespace& eltName, const Element::Ptr& afterNode) override
