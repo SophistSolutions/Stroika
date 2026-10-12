@@ -3,16 +3,18 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <sstream>
-
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
-#include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
-#include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+#include "Stroika/Foundation/DataExchange/XML/DOM.h"
+#endif
 
 #include "DeviceDescription.h"
 
@@ -28,6 +30,11 @@ using Memory::MakeSharedPtr;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
+
+namespace {
+    // the namespace every element of a device description is in (UPnP Device Architecture 1.1, section 2.3)
+    const IO::Network::URI kDeviceNamespace_{"urn:schemas-upnp-org:device-1-0"sv};
+}
 
 /*
  ********************************************************************************
@@ -161,87 +168,61 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
  ********************************* UPnP::Serialize ******************************
  ********************************************************************************
  */
-Memory::BLOB UPnP::Serialize (const DeviceDescription& dd, [[maybe_unused]] const Options& options)
+Memory::BLOB UPnP::Serialize ([[maybe_unused]] const DeviceDescription& dd, [[maybe_unused]] const Options& options)
 {
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
     using namespace DataExchange::XML;
-
-    /*
-    // very very rough prelim draft
-    *Example based on
-    http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0.pdf
-    */
-    stringstream tmp;
-    tmp << "<?xml version=\"1.0\"?>" << endl;
-    tmp << "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">" << endl;
-    tmp << "    <specVersion>" << endl;
-    tmp << "            <major>1</major>" << endl;
-    tmp << "            <minor>0</minor>" << endl;
-    tmp << "    </specVersion>" << endl;
-    tmp << "    <device>" << endl;
-    tmp << "            <deviceType>" << QuoteForXML (dd.fDeviceType) << "</deviceType>" << endl;
-    tmp << "            <friendlyName>" << QuoteForXML (dd.fFriendlyName) << "</friendlyName>" << endl;
-    tmp << "            <manufacturer>" << QuoteForXML (dd.fManufactureName) << "</manufacturer>" << endl;
-    if (dd.fManufacturingURL) {
-        tmp << "                <manufacturerURL>" << QuoteForXML (dd.fManufacturingURL->As<String> ()) << "</manufacturerURL>" << endl;
-    }
-    if (dd.fModelDescription) {
-        tmp << "            <modelDescription>" << QuoteForXML (dd.fModelDescription) << "</modelDescription>" << endl;
-    }
-    tmp << "            <modelName>" << QuoteForXML (dd.fModelName) << "</modelName>" << endl;
-    if (dd.fModelNumber) {
-        tmp << "            <modelNumber>" << QuoteForXML (dd.fModelNumber) << "</modelNumber>" << endl;
-    }
-    if (dd.fModelURL) {
-        tmp << "                <modelURL>" << QuoteForXML (dd.fModelURL->As<String> ()) << "</modelURL>" << endl;
-    }
-    if (dd.fSerialNumber) {
-        tmp << "            <serialNumber>" << QuoteForXML (dd.fSerialNumber) << "</serialNumber>" << endl;
-    }
-    tmp << "            <UDN>" << QuoteForXML (dd.fUDN) << "</UDN>" << endl;
-    if (dd.fUPC) {
-        tmp << "                <UPC>" << QuoteForXML (*dd.fUPC) << "</UPC>" << endl;
-    }
+    namespace Element = DataExchange::XML::DOM::Element;
+    auto urlOf        = [] (const optional<URI>& u) -> optional<String> { return u == nullopt ? optional<String>{} : u->As<String> (); };
+    // each element, in the order UPnP Device Architecture 1.1, section 2.3, gives them. A name with no namespace of its own is
+    // in the document's, declared once on <root> and inherited - which is what UPnP's schema says of every one of these
+    DOM::Document::Ptr doc  = DOM::Document::New (options.GetXMLProvider (), NameWithNamespace{kDeviceNamespace_, "root"sv});
+    Element::Ptr       root = doc.GetRootElement ();
+    Element::Ptr       spec = root.Append ("specVersion"sv);
+    spec.Append ("major"sv, "1"sv);
+    spec.Append ("minor"sv, "0"sv);
+    Element::Ptr device = root.Append ("device"sv);
+    device.Append ("deviceType"sv, dd.fDeviceType);
+    device.Append ("friendlyName"sv, dd.fFriendlyName);
+    device.Append ("manufacturer"sv, dd.fManufactureName);
+    device.AppendIf ("manufacturerURL"sv, urlOf (dd.fManufacturingURL));
+    device.AppendIf ("modelDescription"sv, dd.fModelDescription);
+    device.Append ("modelName"sv, dd.fModelName);
+    device.AppendIf ("modelNumber"sv, dd.fModelNumber);
+    device.AppendIf ("modelURL"sv, urlOf (dd.fModelURL));
+    device.AppendIf ("serialNumber"sv, dd.fSerialNumber);
+    device.Append ("UDN"sv, dd.fUDN);
+    device.AppendIf ("UPC"sv, dd.fUPC);
     if (dd.fIcons) {
-        tmp << "                <iconList>" << endl;
+        Element::Ptr iconList = device.Append ("iconList"sv);
         for (const DeviceDescription::Icon& i : *dd.fIcons) {
-            tmp << "                    <icon>" << endl;
-            tmp << "                            <mimetype>" << QuoteForXML (i.fMimeType.As<String> ()) << "</mimetype>" << endl;
-            tmp << "                            <width>" << i.fHorizontalPixels << "</width>" << endl;
-            tmp << "                            <height>" << i.fVerticalPixels << "</height>" << endl;
-            tmp << "                            <depth>" << i.fColorDepth << "</depth>" << endl;
-            tmp << "                            <url>" << QuoteForXML (i.fURL.As<String> ()) << "</url>" << endl;
-            tmp << "                    </icon>" << endl;
+            Element::Ptr icon = iconList.Append ("icon"sv);
+            icon.Append ("mimetype"sv, i.fMimeType.As<String> ());
+            icon.Append ("width"sv, Characters::ToString (i.fHorizontalPixels));
+            icon.Append ("height"sv, Characters::ToString (i.fVerticalPixels));
+            icon.Append ("depth"sv, Characters::ToString (i.fColorDepth));
+            icon.Append ("url"sv, i.fURL.As<String> ());
         }
-        tmp << "                </iconList>" << endl;
     }
     if (dd.fServices) {
-        tmp << "                <serviceList>" << endl;
+        Element::Ptr serviceList = device.Append ("serviceList"sv);
         for (const DeviceDescription::Service& i : *dd.fServices) {
-            tmp << "                    <service>" << endl;
-            tmp << "                            <serviceType>" << QuoteForXML (i.fServiceType) << "</serviceType>" << endl;
-            tmp << "                            <serviceId>" << QuoteForXML (i.fServiceID) << "</serviceId>" << endl;
-            tmp << "                            <SCPDURL>" << QuoteForXML (i.fSCPDURL.As<String> ()) << "</SCPDURL>" << endl;
-            tmp << "                            <controlURL>" << QuoteForXML (i.fControlURL.As<String> ()) << "</controlURL>" << endl;
-            tmp << "                            <eventSubURL>" << QuoteForXML (i.fEventSubURL.As<String> ()) << "</eventSubURL>" << endl;
-            tmp << "                    </service>" << endl;
+            Element::Ptr service = serviceList.Append ("service"sv);
+            service.Append ("serviceType"sv, i.fServiceType);
+            service.Append ("serviceId"sv, i.fServiceID);
+            service.Append ("SCPDURL"sv, i.fSCPDURL.As<String> ());
+            service.Append ("controlURL"sv, i.fControlURL.As<String> ());
+            service.Append ("eventSubURL"sv, i.fEventSubURL.As<String> ());
         }
-        tmp << "                </serviceList>" << endl;
     }
-
-#if 0
-    tmp << "    <deviceList>" << endl;
-    // <!-- Description of embedded devices defined by a UPnP Forum working committee
-    // (if any) go here -->
-    // <!-- Description of embedded devices added by UPnP vendor (if any) go here -->
-    tmp << "    </deviceList>" << endl;
+    // a <deviceList> of embedded devices would go here, in this order - but DeviceDescription has no field to write one from
+    device.AppendIf ("presentationURL"sv, urlOf (dd.fPresentationURL));
+    Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+    doc.Write (out, DOM::SerializationOptions{.fPrettyPrint = true});
+    return out.As<Memory::BLOB> ();
+#else
+    Execution::Throw (Execution::Exception<runtime_error>{"A device description cannot be written: this build has no XML DOM"sv});
 #endif
-
-    if (dd.fPresentationURL.has_value ()) {
-        tmp << "                <presentationURL>" << QuoteForXML (dd.fPresentationURL->As<String> ()) << "</presentationURL>" << endl;
-    }
-    tmp << "    </device>" << endl;
-    tmp << "</root>" << endl;
-    return Streams::iostream::InputStreamFromStdIStream::New<byte> (tmp).ReadAll ();
 }
 
 /*
