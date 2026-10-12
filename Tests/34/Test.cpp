@@ -1761,6 +1761,27 @@ namespace {
         });
     }
 
+    /*
+     *  An attribute in a namespace needs a PREFIX: unprefixed, it is in no namespace at all, whatever default is in scope
+     *  (XML Namespaces, section 6.2). So SetAttribute must not quietly reuse a prefixless default declaration.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_NamespacedAttributeGetsAPrefix)
+    {
+        using namespace XML::DOM;
+        const IO::Network::URI kNS_{"urn:example:ns"sv};
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            // a document whose DEFAULT namespace is the one the attribute wants - the case that used to go wrong
+            Document::Ptr doc  = domFactory (BLOB{as_bytes (span{"<root xmlns=\"urn:example:ns\"/>"sv})}, nullptr);
+            Element::Ptr  root = doc.GetRootElement ();
+            root.SetAttribute (XML::NameWithNamespace{kNS_, "attr"sv}, optional<String>{"v"sv});
+            const String  written     = doc.Write ();
+            const string  writtenUTF8 = written.AsUTF8<string> ();
+            Document::Ptr reRead      = domFactory (BLOB{as_bytes (span{writtenUTF8})}, nullptr);
+            // read back, it is still in that namespace - which is only possible if it was written with a prefix
+            EXPECT_EQ (reRead.GetRootElement ().GetAttribute (XML::NameWithNamespace{kNS_, "attr"sv}), "v"sv) << written.AsNarrowSDKString ();
+        });
+    }
+
     GTEST_TEST (Foundation_DataExchange_XML, DOM_XPath)
     {
         const Memory::BLOB kPersonalXML_            = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);

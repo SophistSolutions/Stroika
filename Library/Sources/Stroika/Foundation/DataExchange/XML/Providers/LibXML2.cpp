@@ -470,6 +470,31 @@ namespace {
         {
             return fNode_;
         }
+        /*
+         *  For an ATTRIBUTE, which is in no namespace at all unless it carries a prefix - a default namespace declaration
+         *  applies to elements only (XML Namespaces, section 6.2). So never the prefixless declaration that
+         *  xmlSearchNsByHref hands back first: find a PREFIXED one for that href, or declare one.
+         */
+        static xmlNsPtr genPrefixedNS2Use_ (xmlNode* n, const URI& ns)
+        {
+            const string href = ns.As<String> (kUseURIEncodingFlag_).AsUTF8<string> ();
+            for (xmlNode* i = n; i != nullptr and i->type == XML_ELEMENT_NODE; i = i->parent) {
+                for (xmlNs* d = i->nsDef; d != nullptr; d = d->next) {
+                    if (d->prefix != nullptr and ::xmlStrEqual (d->href, BAD_CAST href.c_str ())) {
+                        return d;
+                    }
+                }
+            }
+            string   prefix2Try{"a"};
+            xmlNsPtr ns2Use = nullptr;
+            while (ns2Use == nullptr) {
+                ns2Use = ::xmlNewNs (n, BAD_CAST href.c_str (), BAD_CAST prefix2Try.c_str ());
+                if (ns2Use == nullptr) {
+                    ++prefix2Try[0]; // that prefix is taken here, by another namespace - as genNS2Use_ has it
+                }
+            }
+            return ns2Use;
+        }
         static xmlNsPtr genNS2Use_ (xmlNode* n, const URI& ns)
         {
             xmlNsPtr ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
@@ -556,8 +581,8 @@ namespace {
                 }
             }
             else if (attrName.fNamespace) {
-                // Lookup the argument ns and either add it to this node or use the existing one
-                ::xmlSetNsProp (fNode_, genNS2Use_ (fNode_, *attrName.fNamespace), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
+                // Lookup the argument ns and either add it to this node or use the existing one - a PREFIXED one, @see genPrefixedNS2Use_
+                ::xmlSetNsProp (fNode_, genPrefixedNS2Use_ (fNode_, *attrName.fNamespace), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
                                 BAD_CAST v->AsUTF8 ().c_str ());
             }
             else {

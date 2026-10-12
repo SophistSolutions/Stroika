@@ -933,8 +933,40 @@ namespace {
                      * 
                      *  MAYBE related to  https://github.com/SophistSolutions/Stroika/issues/1131 (STK-999) - diff symptoms but similar workaround
                      */
-                    element->setAttributeNS (attrName.fNamespace ? attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str () : nullptr,
-                                             attrName.fName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
+                    if (attrName.fNamespace == kXMLNS.fNamespace) {
+                        // a namespace DECLARATION - xmlns, or xmlns:foo - which is the one namespace no prefix may be bound to
+                        element->setAttributeNS (attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
+                                                 attrName.fName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
+                    }
+                    else if (attrName.fNamespace) {
+                        /*
+                         *  An attribute is in NO namespace unless it carries a prefix - a default namespace declaration
+                         *  applies to elements only (XML Namespaces, section 6.2). So find the prefix this element has for
+                         *  that namespace, or declare one: without it setAttributeNS writes the attribute unqualified, which
+                         *  says the opposite of what was asked for.
+                         */
+                        u16string    ns16 = attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ();
+                        const XMLCh* had  = element->lookupPrefix (ns16.c_str ());
+                        u16string    prefix;
+                        if (had != nullptr and *had != u'\0') {
+                            prefix = had;
+                        }
+                        else {
+                            for (char16_t p = u'a'; prefix.empty (); ++p) {
+                                u16string candidate{p};
+                                if (element->lookupNamespaceURI (candidate.c_str ()) == nullptr) {
+                                    prefix = candidate;
+                                }
+                            }
+                            static const u16string kXMLNSNamespace_{u"http://www.w3.org/2000/xmlns/"};
+                            element->setAttributeNS (kXMLNSNamespace_.c_str (), (u16string{u"xmlns:"} + prefix).c_str (), ns16.c_str ());
+                        }
+                        element->setAttributeNS (ns16.c_str (), (prefix + u":" + attrName.fName.As<u16string> ()).c_str (),
+                                                 v->As<u16string> ().c_str ());
+                    }
+                    else {
+                        element->setAttributeNS (nullptr, attrName.fName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
+                    }
                 }
                 else {
                     element->removeAttributeNS (
