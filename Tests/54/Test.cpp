@@ -2746,6 +2746,9 @@ namespace {
     GTEST_TEST (Frameworks_UPnP, GENA_Publisher_)
     {
         Debug::TraceContextBumper ctx{"GENA_Publisher_"};
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP) - it subscribes, and is notified, through one";
+#endif
         using namespace Stroika::Frameworks::WebServer;
         const String    kCallback = "<http://127.0.0.1:{}/callback>"_f(kGENASubscriberPort_);
         atomic<int>     status{0};

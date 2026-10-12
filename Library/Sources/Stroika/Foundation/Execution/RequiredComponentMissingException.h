@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Execution {
         static constexpr string_view kPDFViewer              = "PDFViewer"sv;
         static constexpr string_view kPDFOCXViewer           = "PDFOCXViewer"sv;
         static constexpr string_view kSAXFactory             = "SAXFactory"sv;
-        static constexpr string_view kIONetworkClientFactory = "IO-Network-Transer-Client-Factory"sv;
+        static constexpr string_view kIONetworkClientFactory = "IO-Network-Transfer-Client-Factory"sv;
         static constexpr string_view kOpenSSL                = "OpenSSL"sv;
 
     public:
