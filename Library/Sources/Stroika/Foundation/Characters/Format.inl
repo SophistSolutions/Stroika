@@ -104,6 +104,18 @@ namespace Stroika::Foundation::Characters {
     {
         Character::CheckASCII (span{s});
     }
+#if qCompilerAndStdLib_vector_constexpr_Buggy
+    inline
+#else
+    constexpr
+#endif
+        FormatString<char>& FormatString<char>::operator= (const FormatString& rhs)
+    {
+        // not defaulted: that would copy rhs's view - of rhs's copy, not this one's
+        fStringData_ = rhs.fStringData_;
+        fFmtStr_ = FormatString<wchar_t>{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}, FormatString<wchar_t>::OwnCopy_{}};
+        return *this;
+    }
     constexpr wstring_view FormatString<char>::get () const
     {
         return fFmtStr_.get ();

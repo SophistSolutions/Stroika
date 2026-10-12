@@ -683,6 +683,16 @@ namespace {
             EXPECT_EQ (Format ("{:{}}"_f, L"x", i).length (), i); // dynamic width
         }
         EXPECT_EQ ("{}.{}{}{}"_f(1, 0, L"a", L"1x"), "1.0a1x"); // 2 conseq %s%s POSIX bug fixed 2014-01-22
+        {
+            // a FormatString<char> keeps its own, widened, copy - and a copy of one, or one assigned another, a copy of its own
+            const FormatString<char> b{"b={}"sv};
+            FormatString<char>       a{"a={}"sv};
+            a = b;
+            EXPECT_NE (a.get ().data (), b.get ().data ());
+            EXPECT_EQ (a (1), "b=1");
+            const FormatString<char> c{b};
+            EXPECT_NE (c.get ().data (), b.get ().data ());
+        }
     }
 }
 

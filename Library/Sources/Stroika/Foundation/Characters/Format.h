@@ -150,6 +150,11 @@ namespace Stroika::Foundation::Characters {
 #endif
             FormatString (const basic_string_view<char>& s);
 
+#if !qCompilerAndStdLib_vector_constexpr_Buggy
+        constexpr
+#endif
+            FormatString& operator= (const FormatString& rhs);
+
         constexpr wstring_view                                             get () const;
         constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
         template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
