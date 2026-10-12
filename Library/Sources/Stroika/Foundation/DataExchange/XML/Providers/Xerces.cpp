@@ -996,6 +996,44 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
+        /*
+         *  A deep COPY into this document - importNode, never appendChild of the original, which Xerces refuses across
+         *  documents anyhow (WRONG_DOCUMENT_ERR).
+         */
+        DOMNode* CloneIntoThisDocument_ (const Node::Ptr& cloneFrom)
+        {
+            RequireNotNull (cloneFrom);
+            NodeRep_* fromRep = dynamic_cast<NodeRep_*> (cloneFrom.GetRep ().get ());
+            Require (fromRep != nullptr); // the caller's contract: both documents are the same provider
+            DOMNode* copy = fNode_->getOwnerDocument ()->importNode (fromRep->GetInternalTRep (), true /*deep*/);
+            ThrowIfNull (copy);
+            return copy;
+        }
+        virtual Element::Ptr AppendImportedNode (const Node::Ptr& cloneFrom) override
+        {
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                DOMNode* childx = fNode_->appendChild (CloneIntoThisDocument_ (cloneFrom));
+                ThrowIfNull (childx);
+                return WrapXercesNodeInStroikaNode_ (childx);
+            }
+            END_LIB_EXCEPTION_MAPPER_
+        }
+        virtual Element::Ptr InsertImportedNode (const Node::Ptr& cloneFrom, const Element::Ptr& afterNode) override
+        {
+            Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                DOMNode* copy         = CloneIntoThisDocument_ (cloneFrom);
+                DOMNode* refChildNode = afterNode == nullptr
+                                            ? fNode_->getFirstChild ()
+                                            : dynamic_cast<NodeRep_&> (*afterNode.GetRep ()).GetInternalTRep ()->getNextSibling ();
+                DOMNode* childx       = fNode_->insertBefore (copy, refChildNode); // nullptr refChild means at the end
+                ThrowIfNull (childx);
+                return WrapXercesNodeInStroikaNode_ (childx);
+            }
+            END_LIB_EXCEPTION_MAPPER_
+        }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
             AssertNotNull (fNode_);

@@ -600,6 +600,46 @@ namespace {
             ::xmlAddChild (fNode_, newNode);
             return WrapLibXML2NodeInStroikaNode_ (newNode);
         }
+        /*
+         *  A deep COPY into this document - xmlDocCopyNode, never xmlAddChild of the original, which would move it out of
+         *  the document it belongs to. xmlReconciliateNs then declares, on the copy, whatever namespaces it referred to
+         *  through its old document's declarations - without which a grafted subtree points at an xmlNs that is not there.
+         */
+        xmlNode* CloneIntoThisDocument_ (const Node::Ptr& cloneFrom)
+        {
+            RequireNotNull (cloneFrom);
+            const NodeRep_* fromRep = dynamic_cast<const NodeRep_*> (cloneFrom.GetRep ().get ());
+            Require (fromRep != nullptr); // the caller's contract: both documents are the same provider
+            xmlNode* copy = ::xmlDocCopyNode (fromRep->fNode_, fNode_->doc, 1 /*recursive, with attributes*/);
+            Execution::ThrowIfNull (copy);
+            return copy;
+        }
+        virtual Element::Ptr AppendImportedNode (const Node::Ptr& cloneFrom) override
+        {
+            xmlNode* copy = CloneIntoThisDocument_ (cloneFrom);
+            ::xmlAddChild (fNode_, copy);
+            ::xmlReconciliateNs (fNode_->doc, copy);
+            return WrapLibXML2NodeInStroikaNode_ (copy);
+        }
+        virtual Element::Ptr InsertImportedNode (const Node::Ptr& cloneFrom, const Element::Ptr& afterNode) override
+        {
+            Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
+            xmlNode*  copy         = CloneIntoThisDocument_ (cloneFrom);
+            NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : dynamic_cast<NodeRep_*> (afterNode.GetRep ().get ());
+            if (afterNodeRep == nullptr) {
+                if (fNode_->children == nullptr) {
+                    ::xmlAddChild (fNode_, copy); // nothing to go before, so first is last
+                }
+                else {
+                    ::xmlAddPrevSibling (fNode_->children, copy);
+                }
+            }
+            else {
+                ::xmlAddNextSibling (afterNodeRep->fNode_, copy);
+            }
+            ::xmlReconciliateNs (fNode_->doc, copy);
+            return WrapLibXML2NodeInStroikaNode_ (copy);
+        }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
             RequireNotNull (fNode_);

@@ -478,6 +478,29 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \brief Append a deep CLONE of 'cloneFrom' - an element of any document - to this element's children
+             *
+             *  Import, as the DOM has always called it, is a COPY: 'cloneFrom' and the document it belongs to are left
+             *  exactly as they were, and what lands here is a new subtree of this document, carrying cloneFrom's own
+             *  children, attributes and namespace declarations. It is how a document of someone else's - a SOAP fault's
+             *  detail, say - is carried into one being built, rather than escaped into text.
+             *
+             *  The two-argument overload places it after 'afterNode', or first where that is nullptr - the rule Insert
+             *  uses. Either way the new node is in the tree before it is returned: there is no detached-node state.
+             *
+             *  \note Both documents must be the SAME XML provider, as of Stroika v3.0d25 - carrying a node between
+             *        providers would mean writing and re-reading it, which this does not do behind your back. The two
+             *        of them are libxml2's and Xerces's ideas of a node, and nothing converts one to the other.
+             *
+             *  \pre *this != nullptr
+             *  \pre cloneFrom != nullptr
+             *  \pre cloneFrom is an element of this same provider
+             */
+            nonvirtual Ptr ImportNode (const Node::Ptr& cloneFrom);
+            nonvirtual Ptr ImportNode (const Node::Ptr& cloneFrom, const Node::Ptr& afterNode); ///< \brief ... placed after afterNode, or first if nullptr
+
+        public:
+            /**
              *  value overload just creates the node and calls SetValue() before returning it (so simple shorthand).
              * 
              *  value=VariantValue overload is just a short-hand for value.As<String>() - so will fail if value cannot be converted to a String
@@ -628,9 +651,16 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
              */
-            virtual Ptr                 InsertElement (const NameWithNamespace& eltName, const Ptr& afterNode) = 0;
-            virtual Ptr                 AppendElement (const NameWithNamespace& eltName)                       = 0;
-            virtual Iterable<Node::Ptr> GetChildren () const                                                   = 0;
+            virtual Ptr InsertElement (const NameWithNamespace& eltName, const Ptr& afterNode) = 0;
+            virtual Ptr AppendElement (const NameWithNamespace& eltName)                       = 0;
+            /**
+             *  A deep CLONE of cloneFrom - of any document of this provider - as a child of this element: at the end, or
+             *  after afterNode (first, where that is nullptr), as AppendElement and InsertElement have it.
+             *      \pre cloneFrom != nullptr, and is an element of this same provider
+             */
+            virtual Ptr                 AppendImportedNode (const Node::Ptr& cloneFrom)                       = 0;
+            virtual Ptr                 InsertImportedNode (const Node::Ptr& cloneFrom, const Ptr& afterNode) = 0;
+            virtual Iterable<Node::Ptr> GetChildren () const                                                  = 0;
             // Redundant API, but provided since commonly used and can be optimized
             virtual Ptr GetChildElementByID (const String& id) const;
             // LookupOne returns zero or one results (nullopt or XPath::Result)

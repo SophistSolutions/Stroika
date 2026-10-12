@@ -226,6 +226,14 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return GetRep ()->AppendElement (eltName);
     }
+    inline auto Element::Ptr::ImportNode (const Node::Ptr& cloneFrom) -> Ptr
+    {
+        return GetRep ()->AppendImportedNode (cloneFrom);
+    }
+    inline auto Element::Ptr::ImportNode (const Node::Ptr& cloneFrom, const Node::Ptr& afterNode) -> Ptr
+    {
+        return GetRep ()->InsertImportedNode (cloneFrom, afterNode);
+    }
     inline Element::Ptr Element::Ptr::Append (const NameWithNamespace& eltName, const String& v)
     {
         auto r = Append (eltName);

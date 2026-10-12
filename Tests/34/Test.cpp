@@ -1711,6 +1711,41 @@ namespace {
         });
     }
 
+    /*
+     *  Element::Ptr::ImportNode: a deep CLONE of an element of another document, placed in this one - with its children,
+     *  attributes and namespaces - leaving the document it came from exactly as it was.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_ImportNode)
+    {
+        using namespace XML::DOM;
+        const BLOB kForeign_{as_bytes (span{"<x:Why xmlns:x=\"urn:example:why\" code=\"7\">because<x:more>deeper</x:more></x:Why>"sv})};
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            Document::Ptr foreign = domFactory (kForeign_, nullptr); // kept: its elements do not keep it
+            Document::Ptr doc     = domFactory (BLOB{as_bytes (span{"<detail><first/></detail>"sv})}, nullptr);
+            Element::Ptr  detail  = doc.GetRootElement ();
+
+            const String foreignBefore = foreign.Write ();
+            detail.ImportNode (foreign.GetRootElement ());
+            const String written = doc.Write ();
+            // the clone came whole: its text, its attribute, its child, and the namespace they are in
+            EXPECT_NE (written.Find ("because"sv), nullopt) << written.AsNarrowSDKString ();
+            EXPECT_NE (written.Find ("deeper"sv), nullopt) << written.AsNarrowSDKString ();
+            EXPECT_NE (written.Find ("urn:example:why"sv), nullopt) << written.AsNarrowSDKString ();
+            EXPECT_NE (written.Find ("code=\"7\""sv), nullopt) << written.AsNarrowSDKString ();
+            // as ELEMENTS, not as text - nothing of it came through escaped, which is the whole point of importing
+            EXPECT_EQ (written.Find ("&lt;"sv), nullopt) << written.AsNarrowSDKString ();
+
+            // a CLONE: the document it came from is exactly as it was
+            EXPECT_EQ (foreign.Write (), foreignBefore);
+
+            // placement: that one went last, and nullptr puts one first - the rule Insert has
+            EXPECT_LT (written.Find ("<first"sv), written.Find ("Why"sv)) << written.AsNarrowSDKString ();
+            detail.ImportNode (foreign.GetRootElement (), nullptr);
+            const String written2 = doc.Write ();
+            EXPECT_LT (written2.Find ("Why"sv), written2.Find ("<first"sv)) << written2.AsNarrowSDKString ();
+        });
+    }
+
     GTEST_TEST (Foundation_DataExchange_XML, DOM_XPath)
     {
         const Memory::BLOB kPersonalXML_            = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
