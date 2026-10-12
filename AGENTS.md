@@ -340,6 +340,12 @@ Two things that quietly break that on Windows:
 - **`git reset` throws that away.** If a staged script gets unstaged for any reason, the `--chmod`
   has to be redone - `git add` alone will not bring it back.
 
+**The headline says what the commit is FOR, and says it first** - the purpose, not the details of what changed, which
+almost always matter less. Mark which kind it is in the headline, so nobody reads a bug fix looking for new API:
+`FIXED:` (something that should always have worked now does - no new functionality), `ADDED:` (an ability that was
+missing). A fix's headline names the symptom, not the mechanism: "Variant::XML::Reader FIXED: lost a whole array,
+reading an element that had array items beside other members".
+
 **Keep messages terse.** A cleanup is a title alone; a fix is a title plus 2-4 lines of what was wrong. Verification,
 measurements and why-not-X go in the chat reply, which LGP reads - he cuts them from the log. The exception is a breaking
 change: say what changed and who is affected, plus the `UPGRADE NOTE:`. A commit touching only TODO.md is just "todo".

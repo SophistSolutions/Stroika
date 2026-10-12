@@ -32,6 +32,12 @@ Generally will track stuff here between releases
          own tests. #955 (a web service answering JSON or XML) is unblocked by the same work, and not started.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
+   - **Variant::XML::Writer.h's TODO block is mostly wrong or dated** (2026-10-12) - "probably wrong, and certainly
+     incomplete, but it is now at the point of being testable" was written before any of this release's work, and Tests/32
+     asserts against it now. Of the rest: the XML declaration and pretty-printing are no longer wishes but unconditional
+     behaviour, so the todo is to make them OPTIONS - XML::DOM::SerializationOptions (fPrettyPrint, fIndent) is the model,
+     and the note about writing one for the writer alone, apart from SerializationConfiguration which reader and writer
+     share, still stands. The thread-safety one (cloning rep, lock for config data) is unexamined and is on Reader.h too.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
