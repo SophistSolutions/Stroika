@@ -695,6 +695,16 @@ namespace {
         sFailedRecentlyCache_.Add (4);
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Caching, Statistics_)
+    {
+        Statistics::Stats_Basic s;
+        s.IncrementHits ();
+        s.IncrementMisses ();
+        EXPECT_EQ (s.ToString (), "{ hits: 1, misses: 1, hit%: 0.5 }");
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

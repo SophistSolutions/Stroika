@@ -191,8 +191,12 @@ namespace {
         static char               sWritable[]    = "writable static";
         char                      onStack[]      = "on the stack";
         const string              onHeap (100, 'x');
-        auto                      bytes   = [] (string_view s) { return as_bytes (span{s}); };
-        optional<bool>            literal = IsAddressReadOnlyAppLifetime (bytes ("a literal"sv));
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+        auto bytes = [] (string_view s) { return as_bytes (span<const char>{s}); };
+#else
+        auto bytes = [] (string_view s) { return as_bytes (span{s}); };
+#endif
+        optional<bool> literal = IsAddressReadOnlyAppLifetime (bytes ("a literal"sv));
         if (literal == nullopt) {
             GTEST_SKIP () << "this platform cannot tell (only Linux, MacOS and Windows can)";
         }

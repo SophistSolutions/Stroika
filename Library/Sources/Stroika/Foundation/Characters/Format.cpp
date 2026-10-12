@@ -32,7 +32,11 @@ using namespace Stroika::Foundation::Memory;
 bool Characters::Private_::LastsAppLifetime_ (wstring_view s)
 {
     // an empty view has nothing to outlive (and IsAddressReadOnlyAppLifetime says false of one)
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+    return s.empty () or Execution::IsAddressReadOnlyAppLifetime (as_bytes (span<const wchar_t>{s})) != false;
+#else
     return s.empty () or Execution::IsAddressReadOnlyAppLifetime (as_bytes (span{s})) != false;
+#endif
 }
 #endif
 

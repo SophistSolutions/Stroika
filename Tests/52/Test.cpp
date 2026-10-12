@@ -90,18 +90,6 @@ namespace {
 }
 
 namespace {
-    string pctFaster2String_ (double pct)
-    {
-        if (pct < 0) {
-            return Format ("{.2f}% slower"_f, -pct).AsNarrowSDKString (eIgnoreErrors);
-        }
-        else {
-            return Format ("{.2f}% faster"_f, pct).AsNarrowSDKString (eIgnoreErrors);
-        }
-    }
-}
-
-namespace {
     // valgrind is far slower than the sanitizers, and memcheck gets its value from the first few runs anyway (every test runs at least once)
 #if qStroika_Foundation_Debug_AssertionsChecked
     double sTimeMultiplier_ = Debug::IsRunningUnderValgrind ()                                          ? .0001

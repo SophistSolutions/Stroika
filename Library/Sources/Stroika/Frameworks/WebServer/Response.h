@@ -383,6 +383,8 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void write (T&& s);
         template <typename CHAR_T, typename... ARGS>
         nonvirtual void write (const FormatString<CHAR_T>& f, ARGS&&... args);
+        template <Characters::IFormatLiteral FORMAT_LITERAL, typename... ARGS>
+        nonvirtual void write (const FORMAT_LITERAL& f, ARGS&&... args); ///< \brief f "..."_f: args checked at compile time
 
     public:
         // @todo deprecate lowercase write() - lowercase implies stdC++ like functionality and not true here

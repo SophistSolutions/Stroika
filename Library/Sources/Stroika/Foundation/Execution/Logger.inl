@@ -50,6 +50,12 @@ namespace Stroika::Foundation::Execution {
 #endif
         }
     }
+    template <Characters::IFormatLiteral FORMAT_LITERAL, typename... ARGS>
+    inline void Logger::Log (Priority logLevel, const FORMAT_LITERAL& fmt, ARGS&&... args)
+    {
+        FORMAT_LITERAL::template CheckArgs<ARGS...> ();
+        Log (logLevel, static_cast<const Characters::FormatString<wchar_t>&> (fmt), forward<ARGS> (args)...);
+    }
 
 }
 

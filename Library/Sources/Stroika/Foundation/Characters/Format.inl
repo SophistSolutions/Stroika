@@ -34,6 +34,44 @@ namespace Stroika::Foundation::Characters {
         {
             return [&f] (const auto&... a) -> RESULT { return forward<F> (f) (Common::StdCompat::make_wformat_args (a...)); }(AsFormatArg_ (args)...);
         }
+
+        // the type of what std::format is given for an argument of type T (@see AsFormatArg_)
+        template <typename T>
+        using FormatArg_t = remove_cvref_t<decltype (AsFormatArg_ (declval<const remove_cvref_t<T>&> ()))>;
+    }
+
+    /*
+     ********************************************************************************
+     ********************** Characters::Private_::FixedString_ **********************
+     ********************************************************************************
+     */
+    template <typename CHAR_T, size_t N>
+    consteval Private_::FixedString_<CHAR_T, N>::FixedString_ (const CHAR_T (&s)[N])
+    {
+        for (size_t i = 0; i < N; ++i) {
+            fChars[i] = s[i];
+        }
+    }
+    template <Private_::FixedString_ LITERAL>
+    consteval array<wchar_t, decltype (LITERAL)::kChars + 1> Private_::Widen_ ()
+    {
+        array<wchar_t, decltype (LITERAL)::kChars + 1> result{};
+        for (size_t i = 0; i < result.size (); ++i) {
+            result[i] = static_cast<wchar_t> (LITERAL.fChars[i]); // a narrow one is ASCII - @see IsASCII_
+        }
+        return result;
+    }
+    template <Private_::FixedString_ LITERAL>
+    consteval bool Private_::IsASCII_ ()
+    {
+        if constexpr (same_as<typename decltype (LITERAL)::CharType, char>) {
+            for (char c : LITERAL.fChars) {
+                if (static_cast<unsigned char> (c) >= 0x80) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /*
@@ -52,7 +90,7 @@ namespace Stroika::Foundation::Characters {
 #endif
     }
     template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    constexpr FormatString<CHAR_T>::FormatString (const basic_string_view<CHAR_T>& s, OwnCopy_)
+    constexpr FormatString<CHAR_T>::FormatString (const basic_string_view<CHAR_T>& s, Unchecked_)
         : fSV_{s}
     {
     }
@@ -90,7 +128,7 @@ namespace Stroika::Foundation::Characters {
 #endif
         FormatString<char>::FormatString (const FormatString& src)
         : fStringData_{src.fStringData_}
-        , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}, FormatString<wchar_t>::OwnCopy_{}}
+        , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}, FormatString<wchar_t>::Unchecked_{}}
     {
     }
 #if qCompilerAndStdLib_vector_constexpr_Buggy
@@ -100,7 +138,7 @@ namespace Stroika::Foundation::Characters {
 #endif
         FormatString<char>::FormatString (const basic_string_view<char>& s)
         : fStringData_{s.begin (), s.end ()}
-        , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}, FormatString<wchar_t>::OwnCopy_{}}
+        , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}, FormatString<wchar_t>::Unchecked_{}}
     {
         Character::CheckASCII (span{s});
     }
@@ -113,7 +151,7 @@ namespace Stroika::Foundation::Characters {
     {
         // not defaulted: that would copy rhs's view - of rhs's copy, not this one's
         fStringData_ = rhs.fStringData_;
-        fFmtStr_ = FormatString<wchar_t>{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}, FormatString<wchar_t>::OwnCopy_{}};
+        fFmtStr_ = FormatString<wchar_t>{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}, FormatString<wchar_t>::Unchecked_{}};
         return *this;
     }
     constexpr wstring_view FormatString<char>::get () const
@@ -137,22 +175,78 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ************************ FormatLiteral<LITERAL> ********************************
+     ********************************************************************************
+     */
+    template <Private_::FixedString_ LITERAL>
+    constexpr FormatLiteral<LITERAL>::FormatLiteral ()
+        : FormatString<wchar_t>{wstring_view{kWide_.data (), decltype (LITERAL)::kChars}, Unchecked_{}}
+    {
+    }
+    template <Private_::FixedString_ LITERAL>
+    template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
+    [[nodiscard]] inline String FormatLiteral<LITERAL>::operator() (ARGS&&... args) const
+    {
+        CheckArgs<ARGS...> ();
+        return FormatString<wchar_t>::operator() (forward<ARGS> (args)...);
+    }
+    template <Private_::FixedString_ LITERAL>
+    template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
+    [[nodiscard]] inline String FormatLiteral<LITERAL>::operator() (const locale& loc, ARGS&&... args) const
+    {
+        CheckArgs<ARGS...> ();
+        return FormatString<wchar_t>::operator() (loc, forward<ARGS> (args)...);
+    }
+    template <Private_::FixedString_ LITERAL>
+    template <typename... ARGS>
+    consteval void FormatLiteral<LITERAL>::CheckArgs ()
+    {
+        // as WithFormatArgs_ passes them on
+        using Checked = Common::StdCompat::wformat_string<Private_::FormatArg_t<ARGS>...>;
+#if qCompilerAndStdLib_format_dynamic_spec_Buggy
+        // a replacement field within a replacement field - a dynamic width or precision - is checked only at run time
+        bool inField = false;
+        for (size_t i = 0; i < decltype (LITERAL)::kChars; ++i) {
+            if (kWide_[i] == '{') {
+                if (inField) {
+                    return;
+                }
+                if (kWide_[i + 1] == '{') {
+                    ++i; // an escaped { (kWide_ ends with a NUL, so [i + 1] is there)
+                }
+                else {
+                    inField = true;
+                }
+            }
+            else if (kWide_[i] == '}') {
+                inField = false;
+            }
+        }
+#endif
+#if qCompilerAndStdLib_format_check_StaticArray_Buggy
+        const auto               wide = Private_::Widen_<LITERAL> ();
+        [[maybe_unused]] Checked checked{wstring_view{wide.data (), decltype (LITERAL)::kChars}};
+#else
+        [[maybe_unused]] Checked checked{wstring_view{kWide_.data (), decltype (LITERAL)::kChars}};
+#endif
+    }
+    template <Private_::FixedString_ LITERAL>
+    inline FormatLiteral<LITERAL>::operator FormatString<char> () const
+        requires (same_as<typename decltype (LITERAL)::CharType, char>)
+    {
+        return FormatString<char>{string_view{LITERAL.fChars, decltype (LITERAL)::kChars}};
+    }
+
+    /*
+     ********************************************************************************
      ************************* Characters::Literals *********************************
      ********************************************************************************
      */
     inline namespace Literals {
-#if qCompilerAndStdLib_vector_constexpr_Buggy
-        inline
-#else
-        constexpr
-#endif
-            FormatString<char> operator""_f (const char* str, size_t len)
+        template <Private_::FixedString_ LITERAL>
+        consteval FormatLiteral<LITERAL> operator""_f ()
         {
-            return FormatString<char>{string_view{str, len}};
-        }
-        constexpr FormatString<wchar_t> operator""_f (const wchar_t* str, size_t len)
-        {
-            return FormatString<wchar_t>{wstring_view{str, len}};
+            return FormatLiteral<LITERAL>{};
         }
     }
 #if qCompilerAndStdLib_vector_constexpr_warning_Buggy
@@ -187,6 +281,16 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename CHAR_T, IFormattable... ARGS>
     inline String Format (const locale& loc, const FormatString<CHAR_T>& f, ARGS&&... args)
+    {
+        return f (loc, forward<ARGS> (args)...);
+    }
+    template <Private_::FixedString_ LITERAL, Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
+    inline String Format (const FormatLiteral<LITERAL>& f, ARGS&&... args)
+    {
+        return f (forward<ARGS> (args)...);
+    }
+    template <Private_::FixedString_ LITERAL, Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
+    inline String Format (const locale& loc, const FormatLiteral<LITERAL>& f, ARGS&&... args)
     {
         return f (loc, forward<ARGS> (args)...);
     }

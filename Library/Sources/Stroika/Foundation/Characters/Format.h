@@ -6,6 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <array>
+
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Common.h"
@@ -46,6 +48,27 @@ namespace Stroika::Foundation::Characters {
          */
         bool LastsAppLifetime_ (wstring_view s);
 #endif
+
+        /**
+         *  A string literal as a template argument - so "..."_f can widen it, and check it against its arguments, at compile time.
+         */
+        template <typename CHAR_T, size_t N>
+        struct FixedString_ {
+            using CharType                 = CHAR_T;
+            static constexpr size_t kChars = N - 1; // without the terminating NUL
+
+            CHAR_T fChars[N]{}; // as the literal, with its terminating NUL
+
+            consteval FixedString_ (const CHAR_T (&s)[N]);
+        };
+
+        // LITERAL, widened (for FormatLiteral)
+        template <FixedString_ LITERAL>
+        consteval array<wchar_t, decltype (LITERAL)::kChars + 1> Widen_ ();
+
+        // is LITERAL ASCII (as a narrow "..."_f must be)
+        template <FixedString_ LITERAL>
+        consteval bool IsASCII_ ();
     }
 
     /**
@@ -119,15 +142,15 @@ namespace Stroika::Foundation::Characters {
         template <IFormattable... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
 
-    private:
-        // for FormatString<char>, whose view is of its own copy, which lasts as long as it does - so it is not checked
+    protected:
+        // not checked: for FormatString<char>, whose view is of its own copy, which lasts as long as it does, and FormatLiteral,
+        // whose view is of a static array
         friend struct FormatString<char>;
-        struct OwnCopy_ {};
-        constexpr FormatString (const basic_string_view<CHAR_T>& s, OwnCopy_);
+        struct Unchecked_ {};
+        constexpr FormatString (const basic_string_view<CHAR_T>& s, Unchecked_);
 
     private:
         wstring_view fSV_; // maybe SB wformat_string here??
-        /// @todo - same CTOR magic to validate format string??? Maybe not needed?  BUt dont in format_string<> template...
     };
     template <typename CHAR_T>
     FormatString (const CHAR_T*) -> FormatString<CHAR_T>;
@@ -164,8 +187,78 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
-     * \brief Create a format-string (see std::wformat_string or Stroika FormatString, or python 'f' strings
-     * 
+     *  \brief what "..."_f is: a format string whose literal is part of its type - so it is widened (if narrow) at compile time,
+     *         and checked against the arguments of each call at compile time, as std::format checks its format string
+     *
+     *  It is a FormatString<wchar_t>, so anything taking a FormatString takes one - but only what takes a FormatLiteral checks
+     *  the arguments: its operator (), Format, DbgTrace, TraceContextBumper, Logger::Log and WebServer::Response::write.
+     *
+     *  \note Before Stroika v3.0d25, "..."_f was a FormatString<char> (or <wchar_t>): its format string checked only at run time
+     *        (a mistake threw format_error), and a narrow one widened - into a newly allocated buffer - each time it ran.
+     *
+     *  \par Example Usage
+     *      \code
+     *          String a = "provider={}"_f (provider);
+     *          DbgTrace ("provider={}"_f, provider);
+     *          // String b = "{} {}"_f (provider);     // does not compile: two arguments wanted, one given
+     *      \endcode
+     */
+    template <Private_::FixedString_ LITERAL>
+    struct FormatLiteral : FormatString<wchar_t> {
+        static_assert (Common::IAnyOf<typename decltype (LITERAL)::CharType, char, wchar_t>);
+        static_assert (Private_::IsASCII_<LITERAL> (), "a narrow \"...\"_f must be ASCII");
+
+    public:
+        /**
+         */
+        constexpr FormatLiteral ();
+
+    public:
+        /**
+         *  As FormatString's operator (), but args are checked against the format string at compile time
+         */
+        template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
+        [[nodiscard]] String operator() (ARGS&&... args) const;
+        template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
+        [[nodiscard]] String operator() (const locale& loc, ARGS&&... args) const; ///< \brief As FormatString's, but checked at compile time
+
+    public:
+        /**
+         *  \brief Unless the format string suits arguments of types ARGS..., a compile-time error - this is an immediate function
+         */
+        template <typename... ARGS>
+        static consteval void CheckArgs ();
+
+    public:
+        /**
+         *  For code that names FormatString<char>, as a narrow "..."_f was before Stroika v3.0d25: this one copies the literal
+         */
+        operator FormatString<char> () const
+            requires (same_as<typename decltype (LITERAL)::CharType, char>);
+
+    public:
+        // what IFormatLiteral looks for - a mark, so Debug/Trace.h, which cannot include this header, can tell a FormatLiteral too
+        using FormatLiteralTag_ = void;
+
+    private:
+        // the literal, widened at compile time: static, so it lasts as long as the program
+        static constexpr array<wchar_t, decltype (LITERAL)::kChars + 1> kWide_ = Private_::Widen_<LITERAL> ();
+    };
+
+    /**
+     *  \brief a FormatLiteral - what "..."_f is
+     *
+     *  So a function taking a format string and its arguments can check them at compile time: give it an overload for an
+     *  IFormatLiteral FORMAT_LITERAL, which calls FORMAT_LITERAL::CheckArgs<ARGS...> () (or formats with it, whose operator () checks).
+     */
+    template <typename T>
+    concept IFormatLiteral = requires { typename remove_cvref_t<T>::FormatLiteralTag_; };
+
+    /**
+     * \brief Create a format-string (see std::wformat_string or Stroika FormatString, or python 'f' strings) - a FormatLiteral
+     *
+     *  The literal must be ASCII if narrow (a compile-time error otherwise).
+     *
      *  \par Example Usage
      *      \code
      *          String a = "provider={}"_f (provider);
@@ -173,11 +266,8 @@ namespace Stroika::Foundation::Characters {
      *      \endcode
      */
     inline namespace Literals {
-#if !qCompilerAndStdLib_vector_constexpr_Buggy
-        constexpr
-#endif
-            FormatString<char>          operator""_f (const char* str, size_t len);
-        constexpr FormatString<wchar_t> operator""_f (const wchar_t* str, size_t len);
+        template <Private_::FixedString_ LITERAL>
+        consteval FormatLiteral<LITERAL> operator""_f ();
     }
 
     /**
@@ -232,7 +322,11 @@ namespace Stroika::Foundation::Characters {
     template <typename CHAR_T, IFormattable... ARGS>
     String Format (const FormatString<CHAR_T>& f, ARGS&&... args);
     template <typename CHAR_T, IFormattable... ARGS>
-    String Format (const locale& l, const FormatString<CHAR_T>& f, ARGS&&... args);
+    String Format (const locale& l, const FormatString<CHAR_T>& f, ARGS&&... args); ///< \brief Like std::format, with a locale
+    template <Private_::FixedString_ LITERAL, Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
+    String Format (const FormatLiteral<LITERAL>& f, ARGS&&... args); ///< \brief Like std::format - args checked against f at compile time
+    template <Private_::FixedString_ LITERAL, Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (IFormattable)... ARGS>
+    String Format (const locale& l, const FormatLiteral<LITERAL>& f, ARGS&&... args); ///< \brief Like std::format, with a locale - checked at compile time
 
 }
 

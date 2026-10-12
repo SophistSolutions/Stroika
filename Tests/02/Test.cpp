@@ -693,6 +693,22 @@ namespace {
             const FormatString<char> c{b};
             EXPECT_NE (c.get ().data (), b.get ().data ());
         }
+        {
+            // "..."_f is a FormatLiteral, a constant: a narrow one is widened at compile time, not each time it runs (and its
+            // arguments are checked against it at compile time - a mismatch does not compile)
+            constexpr auto kNarrow = "n={}"_f;
+            constexpr auto kWide   = L"w={}"_f;
+            static_assert (kNarrow.get () == L"n={}"sv);
+            static_assert (kWide.get () == L"w={}"sv);
+            static_assert (IFormatLiteral<decltype (kNarrow)> and not IFormatLiteral<FormatString<wchar_t>>);
+            EXPECT_EQ (kNarrow (1), "n=1");
+            EXPECT_EQ (Format (kWide, 2), "w=2");
+            // and still a FormatString, for code taking one: a FormatString<wchar_t>, or - by conversion - a FormatString<char>
+            const FormatString<wchar_t>& w = kNarrow;
+            EXPECT_EQ (w (3), "n=3");
+            const FormatString<char> n = "c={}"_f;
+            EXPECT_EQ (n (4), "c=4");
+        }
     }
 }
 

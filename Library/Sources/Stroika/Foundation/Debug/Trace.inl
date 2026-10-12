@@ -47,6 +47,13 @@ namespace Stroika::Foundation::Debug {
             catch (...) {
             }
         }
+        // "..."_f: args checked at compile time
+        template <IFormatLiteral_ FORMAT_LITERAL, typename... Args>
+        nonvirtual void EmitTraceMessage (const FORMAT_LITERAL& fmt, Args&&... args) noexcept
+        {
+            FORMAT_LITERAL::template CheckArgs<Args...> ();
+            EmitTraceMessage (static_cast<const Characters::FormatString<wchar_t>&> (fmt), forward<Args> (args)...);
+        }
 
     private:
         nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage_ (size_t bufferLastNChars, wstring_view format,
@@ -119,6 +126,13 @@ namespace Stroika::Foundation::Debug {
         : TraceContextBumper{cvt2WChartArrayTrunc_ (contextName), ProcessFmtString_ (fmt, forward<ARGS> (args)...)}
 #endif
     {
+    }
+    template <typename CHAR_T, Private_::IFormatLiteral_ FORMAT_LITERAL, typename... ARGS>
+    inline TraceContextBumper::TraceContextBumper (const CHAR_T* contextName, const FORMAT_LITERAL& fmt, ARGS&&... args) noexcept
+        requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>)
+        : TraceContextBumper{contextName, static_cast<const Characters::FormatString<wchar_t>&> (fmt), forward<ARGS> (args)...}
+    {
+        FORMAT_LITERAL::template CheckArgs<ARGS...> ();
     }
 #if !qStroika_Foundation_Debug_DefaultTracingOn
     inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName, [[maybe_unused]] const wchar_t* extraFmt, ...) noexcept

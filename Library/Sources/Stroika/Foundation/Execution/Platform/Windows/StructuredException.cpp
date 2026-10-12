@@ -123,7 +123,7 @@ namespace {
                 }
                 if (pExp->ExceptionRecord != nullptr) {
                     TraceContextBumper ctx1{"ExceptionRecord"};
-                    DbgTrace ("ExceptionRecord->ExceptionAddress = 0x{:x}"_f, pExp->ExceptionRecord->ExceptionAddress);
+                    DbgTrace ("ExceptionRecord->ExceptionAddress = {}"_f, pExp->ExceptionRecord->ExceptionAddress);
                     DbgTrace ("ExceptionRecord->ExceptionCode = 0x{:x}"_f, pExp->ExceptionRecord->ExceptionCode);
                     DbgTrace ("ExceptionRecord->ExceptionFlags = 0x{:x}"_f, pExp->ExceptionRecord->ExceptionFlags);
                     DbgTrace ("ExceptionRecord->NumberParameters = {}"_f, pExp->ExceptionRecord->NumberParameters);

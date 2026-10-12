@@ -1681,6 +1681,25 @@ int main ()
 #endif
 
 /**
+ *  g++ with -fsanitize=undefined (or -fno-delete-null-pointer-checks) cannot check, at compile time, a format string held in a
+ *  static array rather than a string literal - as "..."_f's widened copy is (Characters::FormatLiteral): libstdc++'s
+ *  string_view::find tests the address it found ('if (__p)'), and g++ then takes nothing about a static object's address - a
+ *  template parameter object's neither - to be non-null:
+ *
+ *      error: '(((const wchar_t*)(& ...::FormatLiteral<...>::kWide_.std::array<wchar_t, 15>::_M_elems)) != 0)' is not a constant expression
+ *
+ *  Broken with g++ 13, 14, 15 and 16 (libstdc++'s <format>; fmtlib's check does not ask). g++ defines no macro for
+ *  -fsanitize=undefined, so this cannot depend on it. Workaround: check a copy - an automatic variable, which g++ knows is not null.
+ */
+#ifndef qCompilerAndStdLib_format_check_StaticArray_Buggy
+#if defined(__GNUC__) and not defined(__clang__)
+#define qCompilerAndStdLib_format_check_StaticArray_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 16)
+#else
+#define qCompilerAndStdLib_format_check_StaticArray_Buggy 0
+#endif
+#endif
+
+/**
  *  libc++ before 19 takes the '}' that ends an empty format-spec for a fill character when the text after the replacement
  *  field starts with an alignment ('<', '>' or '^'). So a type whose formatter forwards parse () to a standard formatter -
  *  Stroika's String, and every type formatted with Characters::ToString - throws at run time for "<a>{}</a>"_f(String{"x"}):

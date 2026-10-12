@@ -322,6 +322,8 @@ namespace Stroika::Foundation::Execution {
         [[deprecated ("Since Stroika v3.0d6 - use _f strings for Logging")]] void Log (Priority logLevel, const wchar_t* format, ...);
         template <typename CHAR_T, typename... ARGS>
         nonvirtual void Log (Priority logLevel, const Characters::FormatString<CHAR_T>& fmt, ARGS&&... args);
+        template <Characters::IFormatLiteral FORMAT_LITERAL, typename... ARGS>
+        nonvirtual void Log (Priority logLevel, const FORMAT_LITERAL& fmt, ARGS&&... args); ///< \brief fmt "..."_f: args checked at compile time
 
     private:
         nonvirtual void Log_ (Priority logLevel, const String& msg);

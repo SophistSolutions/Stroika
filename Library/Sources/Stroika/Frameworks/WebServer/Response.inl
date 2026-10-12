@@ -29,6 +29,12 @@ namespace Stroika::Frameworks::WebServer {
     {
         write (f (args...));
     }
+    template <Characters::IFormatLiteral FORMAT_LITERAL, typename... ARGS>
+    inline void Response::write (const FORMAT_LITERAL& f, ARGS&&... args)
+    {
+        FORMAT_LITERAL::template CheckArgs<ARGS...> ();
+        write (static_cast<const FormatString<wchar_t>&> (f), forward<ARGS> (args)...);
+    }
     inline void Response::writeln (const String& e)
     {
         Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{_fThisAssertExternallySynchronized};

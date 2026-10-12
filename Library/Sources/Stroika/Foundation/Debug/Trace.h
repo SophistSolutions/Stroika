@@ -93,6 +93,10 @@ namespace Stroika::Foundation::Debug {
         // They will eventually be flushed out on the next call to EmitTraceMessage ().
         using TraceLastBufferedWriteTokenType = int;
         class Emitter;
+
+        // Characters::IFormatLiteral ("..."_f), which this header cannot include
+        template <typename T>
+        concept IFormatLiteral_ = requires { typename remove_cvref_t<T>::FormatLiteralTag_; };
     }
 
     /**
@@ -181,6 +185,9 @@ namespace Stroika::Foundation::Debug {
         template <typename CHAR_T, typename FCHAR_T, typename... ARGS>
         TraceContextBumper (const CHAR_T* contextName, Characters::FormatString<FCHAR_T> fmt, ARGS&&... args) noexcept
             requires ((same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>) and (same_as<FCHAR_T, char> or same_as<FCHAR_T, wchar_t>));
+        template <typename CHAR_T, Private_::IFormatLiteral_ FORMAT_LITERAL, typename... ARGS>
+        TraceContextBumper (const CHAR_T* contextName, const FORMAT_LITERAL& fmt, ARGS&&... args) noexcept
+            requires (same_as<CHAR_T, char> or same_as<CHAR_T, wchar_t>); ///< \brief fmt "..."_f: args checked at compile time
         TraceContextBumper (const TraceContextBumper&) = delete;
 
     public:
