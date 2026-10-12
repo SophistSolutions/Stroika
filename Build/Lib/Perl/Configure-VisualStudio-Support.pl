@@ -163,6 +163,8 @@ sub RunBackTickWithVCVarsSetInEnvironment_
 	print $fh $cmd2Run . "\r\n";
 	close $fh;
 	# https://github.com/SophistSolutions/Stroika/issues/1073 /E:ON needed for this ticket
+	# cmd finds the .bat by its bare name, in the current directory - which NoDefaultCurrentDirectoryInExePath turns off
+	delete local $ENV{NoDefaultCurrentDirectoryInExePath};
 	local $result = `cmd /E:ON/C $tmpFileName`;
 	unlink ($tmpFileName);
 	return $result;
