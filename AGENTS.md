@@ -69,9 +69,10 @@ so to recompile one test against a changed header, delete its object first:
 `rm IntermediateFiles/Debug/Tests/07/Test.obj`. This is the cheap way to compile-check a header change
 without the ~12 minute `library-clobber` cycle.
 
-**Bug fixes are test-first**: write the regression test and watch it FAIL on the unchanged code, then fix - a test
-written after the fix only proves the fixed code does what it does. Choose assertions that observe what was actually
-broken (a defect that shows only walking backward needs a test that walks backward).
+**Bug fixes: test-first is good practice, not a rule**: write the regression test and watch it FAIL on the unchanged
+code, then fix - a test written after the fix only proves the fixed code does what it does. Skip it for good reason, and
+say so. Choose assertions that observe what was actually broken (a defect that shows only walking backward needs a test
+that walks backward).
 
 Reading results:
 - Build `Debug` when the only question is "does it compile"; Release only when timing matters (Tests/52).
@@ -489,6 +490,10 @@ still compile". Say which one you did.
 - **C++ source stays ASCII outside comments - use `\u` escapes in literals.** The MSVC builds pass no `/utf-8`, so a raw
   non-ASCII character is read as cp1252 and the test fails only on Windows. Check new lines with
   `git diff | grep -P '^\+.*[^\x00-\x7F]'`.
+- **A .cpp's using-declarations go near the top, in sections separated by blank lines: generic C++ (`using std::byte;`),
+  then Foundation, then Frameworks.** Outside namespace `Stroika` (any .cpp, any test) plain `byte` needs that
+  `using std::byte;`: Windows' `<windows.h>` declares a `::byte` too, so the name is otherwise ambiguous there (MSVC
+  C2872), though it compiles everywhere else. Inside namespace `Stroika` nothing is needed - Common.h declares it.
 - **String literals**: narrow where one initializes a `String` (`"..."sv` in library code) - but keep `L"..."_f`: a wide
   format literal is CHEAPER than a narrow one, which is widened at run time. Leave `\u`/`\x` escapes, and genuinely wide
   targets (`wchar_t` APIs, `EnumName` tables), alone. Opportunistic, not a sweep.
