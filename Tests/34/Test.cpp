@@ -1782,6 +1782,36 @@ namespace {
         });
     }
 
+    /*
+     *  kNoNamespace puts an element in NO namespace, where kInheritNamespace - what a name built without one has - takes
+     *  its parent's. Only the first can say what SOAP 1.1 wants of a Fault's children, inside an Envelope that IS in one.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_NoNamespaceVersusInherit)
+    {
+        using namespace XML::DOM;
+        const IO::Network::URI kNS_{"urn:example:ns"sv};
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            Document::Ptr doc  = domFactory (BLOB{as_bytes (span{"<root xmlns=\"urn:example:ns\"/>"sv})}, nullptr);
+            Element::Ptr  root = doc.GetRootElement ();
+            root.Append (XML::NameWithNamespace{XML::kInheritNamespace, "inherited"sv});
+            root.Append (XML::NameWithNamespace{XML::kNoNamespace, "bare"sv});
+            root.Append ("alsoInherited"sv); // a name built without a namespace means kInheritNamespace
+
+            // read back, each is where it was put - which says more than the text does, and holds whatever the
+            // serializer chose to write (xmlns="" or simply no declaration in scope)
+            const string                                writtenUTF8 = doc.Write ().AsUTF8<string> ();
+            Document::Ptr                               reRead      = domFactory (BLOB{as_bytes (span{writtenUTF8})}, nullptr);
+            Mapping<String, optional<IO::Network::URI>> found;
+            for (const Element::Ptr& e : reRead.GetRootElement ().GetChildElements ()) {
+                found.Add (e.GetName ().fName, e.GetName ().fNamespace);
+            }
+            EXPECT_EQ (found.Lookup ("inherited"sv), make_optional (optional<IO::Network::URI>{kNS_})) << writtenUTF8;
+            EXPECT_EQ (found.Lookup ("alsoInherited"sv), make_optional (optional<IO::Network::URI>{kNS_})) << writtenUTF8;
+            ASSERT_TRUE (found.Lookup ("bare"sv).has_value ()) << writtenUTF8;
+            EXPECT_FALSE (found.Lookup ("bare"sv)->has_value ()) << "in NO namespace: " << writtenUTF8;
+        });
+    }
+
     GTEST_TEST (Foundation_DataExchange_XML, DOM_XPath)
     {
         const Memory::BLOB kPersonalXML_            = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);

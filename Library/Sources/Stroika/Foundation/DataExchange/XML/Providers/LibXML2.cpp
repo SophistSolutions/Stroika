@@ -495,6 +495,31 @@ namespace {
             }
             return ns2Use;
         }
+        /*
+         *  The namespace a new element goes in: kNoNamespace none at all, kInheritNamespace (which is what a name built
+         *  without one has) its parent's, and otherwise the one it names.
+         */
+        static xmlNsPtr elementNS2Use_ (xmlNode* parent, const NameWithNamespace& eltName)
+        {
+            if (eltName.fNamespace == kNoNamespace) {
+                return nullptr;
+            }
+            return eltName.fNamespace ? genNS2Use_ (parent, *eltName.fNamespace) : parent->ns;
+        }
+        /*
+         *  An element in no namespace, under one that declared a default, must SAY so - xmlns="" - or it reads back in that
+         *  default. libxml2 writes what the node carries and reconciles nothing, so say it here.
+         */
+        static void undeclareDefaultNSIfInScope_ (xmlNode* newNode)
+        {
+            AssertNotNull (newNode);
+            if (newNode->ns == nullptr) {
+                xmlNs* inScope = ::xmlSearchNs (newNode->doc, newNode->parent, nullptr);
+                if (inScope != nullptr and inScope->href != nullptr and *inScope->href != '\0') {
+                    ::xmlSetNsProp (newNode, GetSharedReUsableXMLNSParentNamespace_ (newNode), BAD_CAST "xmlns", BAD_CAST "");
+                }
+            }
+        }
         static xmlNsPtr genNS2Use_ (xmlNode* n, const URI& ns)
         {
             xmlNsPtr ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
@@ -596,7 +621,7 @@ namespace {
 #endif
             Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
             // when adding a child, if no NS specified, copy parents
-            xmlNs*    useNS        = eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : fNode_->ns;
+            xmlNs*    useNS        = elementNS2Use_ (fNode_, eltName);
             xmlNode*  newNode      = ::xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : dynamic_cast<NodeRep_*> (afterNode.GetRep ().get ());
             if (afterNodeRep == nullptr) {
@@ -612,6 +637,7 @@ namespace {
             else {
                 xmlAddNextSibling (afterNodeRep->fNode_, newNode);
             }
+            undeclareDefaultNSIfInScope_ (newNode);
             return WrapLibXML2NodeInStroikaNode_ (newNode);
         }
         virtual Element::Ptr AppendElement (const NameWithNamespace& eltName) override
@@ -620,9 +646,10 @@ namespace {
             Require (ValidNewNodeName_ (eltName.fName));
 #endif
             // when adding a child, if no NS specified, copy parents
-            xmlNs*   useNS   = eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : fNode_->ns;
+            xmlNs*   useNS   = elementNS2Use_ (fNode_, eltName);
             xmlNode* newNode = xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             ::xmlAddChild (fNode_, newNode);
+            undeclareDefaultNSIfInScope_ (newNode);
             return WrapLibXML2NodeInStroikaNode_ (newNode);
         }
         /*

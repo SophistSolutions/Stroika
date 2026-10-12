@@ -986,11 +986,9 @@ namespace {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
                 // unclear if we should set namespace to existing node namespace or nullptr here?
-                DOMNode* child = doc->createElementNS ((eltName.fNamespace == nullopt)
-                                                           ? fNode_->getNamespaceURI ()
-                                                           : eltName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
-                                                       eltName.fName.As<u16string> ().c_str ());
-                DOMNode* refChildNode = nullptr;
+                u16string ns16;
+                DOMNode*  child = doc->createElementNS (ElementNS2Use_ (fNode_, eltName, &ns16), eltName.fName.As<u16string> ().c_str ());
+                DOMNode*  refChildNode = nullptr;
                 if (afterNode == nullptr) {
                     // this means PREPEND.
                     // If there is a first element, then insert before it. If no elements, then append is the same thing.
@@ -1005,6 +1003,22 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
+        /*
+         *  The namespace a new element goes in: kNoNamespace none at all, kInheritNamespace (which is what a name built
+         *  without one has) its parent's, and otherwise the one it names. 'buf' holds the string the result points into.
+         */
+        static const XMLCh* ElementNS2Use_ (DOMNode* parent, const NameWithNamespace& eltName, u16string* buf)
+        {
+            RequireNotNull (buf);
+            if (eltName.fNamespace == kNoNamespace) {
+                return nullptr;
+            }
+            if (not eltName.fNamespace) {
+                return parent->getNamespaceURI ();
+            }
+            *buf = eltName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ();
+            return buf->c_str ();
+        }
         virtual Element::Ptr AppendElement (const NameWithNamespace& eltName) override
         {
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -1014,14 +1028,8 @@ namespace {
             {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 DOMNode*              child{};
-                if (eltName.fNamespace) {
-                    u16string namespaceURI = eltName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ();
-                    child                  = doc->createElementNS (namespaceURI.c_str (), eltName.fName.As<u16string> ().c_str ());
-                }
-                else {
-                    const XMLCh* namespaceURI = fNode_->getNamespaceURI (); //? or should be null?
-                    child                     = doc->createElementNS (namespaceURI, eltName.fName.As<u16string> ().c_str ());
-                }
+                u16string             ns16;
+                child           = doc->createElementNS (ElementNS2Use_ (fNode_, eltName, &ns16), eltName.fName.As<u16string> ().c_str ());
                 DOMNode* childx = fNode_->appendChild (child);
                 ThrowIfNull (childx);
                 return WrapXercesNodeInStroikaNode_ (childx);
