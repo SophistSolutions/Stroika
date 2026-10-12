@@ -564,8 +564,10 @@ still compile". Say which one you did.
 - **Discuss or act?** Imperatives ("do X", "fix", "next") mean act. Musings ("could", "should we consider", "one other
   place...") mean reply with a view, the trade-offs and a recommendation - then stop. If unsure, ask in one line.
 - **One staged, tested commit per round**, then the remaining list - numbered, with ONE suggested next item - and wait for
-  his pick ("pushed; next" takes the suggestion). Never start the next item unasked. If what you find changes the plan he
-  approved, report it and offer the choice before going on.
+  his pick. **"next", or "what's next", asks for that list and a recommendation - it does NOT start the work** (LGP,
+  2026-10-12): he wants an item's details before jumping into it. Only an explicit instruction - "do X", "go ahead",
+  "lets do N" - starts one. Never start the next item unasked. If what you find changes the plan he approved, report it
+  and offer the choice before going on.
 - **End every reply self-contained**: what is done, staged and pending, the key numbers, and the open question with its
   options - his UI buries earlier messages, so never "see above". Start each new task with a one-line header naming it.
 - **Long runs**: `tee` to `.claude/<name>.log`, link the log in every status line, and give the expected finish as a clock
