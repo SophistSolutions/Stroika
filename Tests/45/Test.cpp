@@ -65,13 +65,16 @@ namespace {
     }();
 
     /*
-     *  These tests talk to real servers (google, httpbin, cnn), so a timeout or a connection dropped mid-transfer says
-     *  something about the server or the network, not about Stroika's HTTP client - such errors are warned about, not failed.
+     *  These tests talk to real servers (google, httpbin, cnn), so a timeout, a connection dropped mid-transfer, a name that
+     *  does not resolve or a network that cannot be reached says something about the server or the network, not about Stroika's
+     *  HTTP client - such errors are warned about, not failed.
      */
     bool IsTransientNetworkError_ (const system_error& e)
     {
         // io_error: a failure sending or receiving mid-transfer (as libcurl reports CURLE_SEND_ERROR / CURLE_RECV_ERROR)
-        for (errc c : {errc::timed_out, errc::connection_reset, errc::connection_aborted, errc::io_error}) {
+        // no_such_device: a name that does not resolve, as libcurl, WinHTTP and Stroika's DNS all report it - DNS down
+        for (errc c : {errc::timed_out, errc::connection_reset, errc::connection_aborted, errc::io_error, errc::no_such_device,
+                       errc::network_unreachable, errc::host_unreachable}) {
             if (Execution::IsA (e, c)) {
                 return true;
             }
