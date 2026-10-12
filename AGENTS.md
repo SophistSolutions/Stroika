@@ -240,14 +240,17 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
   `library-clobber` deletes everything except the third-party products, which are slow to rebuild
   and aren't part of Stroika anyway — so it is the cheap way to get a *trustworthy* rebuild.
   There IS a fast path when you know exactly which `.cpp` instantiates the template you edited, and
-  it needs BOTH halves — deleting the object alone is not enough, because `QUICK_BUILD=1` skips even
-  looking:
+  it needs all THREE parts — deleting the object alone is not enough, because `QUICK_BUILD=1` skips even
+  looking, and the library archive goes too:
   ```bash
-  find IntermediateFiles/$CONFIG -name 'TheOne.o' -delete
-  QUICK_BUILD=0 make CONFIGURATION=$CONFIG libraries      # without QUICK_BUILD=0: "libraries exist", builds nothing
+  find IntermediateFiles/$CONFIG -name 'TheOne.o' -delete   # TheOne.obj on Windows
+  rm -f Builds/$CONFIG/lib/libstroika-foundation.a          # Windows: stroika-foundation.lib; Frameworks: -frameworks
+  QUICK_BUILD=0 make CONFIGURATION=$CONFIG libraries        # without QUICK_BUILD=0: "libraries exist", builds nothing
   ```
-  Verify it did something — `grep -c Compiling` on the output. A rebuild that compiled 0 files after a
-  header edit means you are still testing the old code.
+  The archive's rule does not always see an object the same make just compiled (the `@todo` above it in Foundation's
+  and Frameworks' Makefiles, left for the move to CMake), so it can keep the OLD object - after ANY library rebuild, a
+  `.cpp` edit too, delete the archive, or check it is newer than the objects. Verify it did something — `grep -c
+  Compiling` on the output. A rebuild that compiled 0 files after a header edit means you are still testing the old code.
 - **`cached-list-objs` will lie to you, in both directions.** It is a generated list of the objects
   that go into the library archive, at
   `IntermediateFiles/$(CONFIGURATION)/Library/Foundation/cached-list-objs`:
