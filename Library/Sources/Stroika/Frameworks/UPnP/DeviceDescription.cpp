@@ -161,7 +161,7 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
  ********************************* UPnP::Serialize ******************************
  ********************************************************************************
  */
-Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
+Memory::BLOB UPnP::Serialize (const DeviceDescription& dd, [[maybe_unused]] const Options& options)
 {
     using namespace DataExchange::XML;
 
@@ -249,7 +249,7 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
  ******************************* UPnP::DeSerialize ******************************
  ********************************************************************************
  */
-DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
+DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b, [[maybe_unused]] const Options& options)
 {
     using namespace Stroika::Foundation::DataExchange;
     using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
@@ -308,7 +308,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
     {
         ObjectReader::IConsumerDelegateToContext ctx{
             kTypesRegistry_, MakeSharedPtr<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{"device"sv})};
-        XML::SAXParse (b, &ctx);
+        XML::SAXParse (options.GetXMLProvider (), b, &ctx);
     }
 #else
     WeakAssertNotImplemented (); // may want to allow to continue, as this may not be critical functionality, but you probably want XML parser when running this code...

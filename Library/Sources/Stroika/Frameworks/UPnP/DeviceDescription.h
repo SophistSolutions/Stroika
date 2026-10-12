@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Device.h"
+#include "Options.h"
 
 /*
  * TODO:
@@ -119,11 +120,11 @@ namespace Stroika::Frameworks::UPnP {
 
     /**
      */
-    Memory::BLOB Serialize (const DeviceDescription& dd);
+    Memory::BLOB Serialize (const DeviceDescription& dd, const Options& options = {});
 
     /**
      */
-    DeviceDescription DeSerialize (const Memory::BLOB& b);
+    DeviceDescription DeSerialize (const Memory::BLOB& b, const Options& options = {});
 
 }
 

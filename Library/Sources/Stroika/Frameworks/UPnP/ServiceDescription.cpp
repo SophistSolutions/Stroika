@@ -128,14 +128,14 @@ String SD::ToString () const
  ********************************* UPnP::Serialize ******************************
  ********************************************************************************
  */
-Memory::BLOB UPnP::Serialize ([[maybe_unused]] const ServiceDescription& sd)
+Memory::BLOB UPnP::Serialize ([[maybe_unused]] const ServiceDescription& sd, [[maybe_unused]] const Options& options)
 {
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
     using namespace DataExchange::XML;
     namespace Element = DataExchange::XML::DOM::Element;
     // each element, in the order UPnP Device Architecture 1.1, section 2.5, gives them. A name with no namespace of its own
     // is in the document's, declared once on <scpd> and inherited - which is what UPnP's schema says of every one of these
-    DOM::Document::Ptr doc  = DOM::Document::New (NameWithNamespace{kServiceNamespace_, "scpd"sv});
+    DOM::Document::Ptr doc  = DOM::Document::New (options.GetXMLProvider (), NameWithNamespace{kServiceNamespace_, "scpd"sv});
     Element::Ptr       scpd = doc.GetRootElement ();
     Element::Ptr       spec = scpd.Append ("specVersion"sv);
     spec.Append ("major"sv, "1"sv);
@@ -192,7 +192,7 @@ Memory::BLOB UPnP::Serialize ([[maybe_unused]] const ServiceDescription& sd)
  ******************************* UPnP::DeSerialize ******************************
  ********************************************************************************
  */
-void UPnP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, ServiceDescription* sd)
+void UPnP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, ServiceDescription* sd, [[maybe_unused]] const Options& options)
 {
     RequireNotNull (sd);
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
@@ -243,7 +243,7 @@ void UPnP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, ServiceDescripti
     {
         ObjectReader::IConsumerDelegateToContext ctx{
             kRegistry_, Memory::MakeSharedPtr<ObjectReader::ReadDownToReader> (kRegistry_.MakeContextReader (&result), Name{"scpd"sv})};
-        XML::SAXParse (b, &ctx);
+        XML::SAXParse (options.GetXMLProvider (), b, &ctx);
     }
     *sd = result;
 #else

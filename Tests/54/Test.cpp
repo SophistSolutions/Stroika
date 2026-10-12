@@ -32,6 +32,12 @@
 #include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/Time/DateTime.h"
+#if qStroika_HasComponent_libxml2
+#include "Stroika/Foundation/DataExchange/XML/Providers/LibXML2.h"
+#endif
+#if qStroika_HasComponent_xerces
+#include "Stroika/Foundation/DataExchange/XML/Providers/Xerces.h"
+#endif
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 #include "Stroika/Frameworks/UPnP/DataTypes.h"
@@ -321,6 +327,40 @@ namespace {
                 SD::StateVariable{.fName = "A_ARG_TYPE_Channel"sv, .fDataType = "string"sv, .fSendEvents = false, .fAllowedValues = {"Master"sv, "LF"sv}},
                 SD::StateVariable{.fName = "Volume"sv, .fDataType = "ui2"sv, .fAllowedValueRange = SD::AllowedValueRange{.fMinimum = "0"sv, .fMaximum = "100"sv}}}};
         EXPECT_EQ (sd, expected) << sd.ToString ().AsNarrowSDKString ();
+    }
+
+    /*
+     *  Options::fXMLProvider is honoured, writing and reading - so one library's UPnP need not use the provider another's does,
+     *  and nullopt means Stroika's default.
+     */
+    GTEST_TEST (Frameworks_UPnP, ServiceDescription_XMLProviderOption_)
+    {
+        Debug::TraceContextBumper ctx{"ServiceDescription_XMLProviderOption_"};
+        using SD = ServiceDescription;
+        const SD sd{.fActions = {SD::Action{.fName = "SetTarget"sv, .fArguments = {{.fName = "newTargetValue"sv, .fRelatedStateVariable = "Target"sv}}}},
+                    .fStateVariables = {SD::StateVariable{.fName = "Target"sv, .fDataType = "boolean"sv, .fAllowedValues = {"0"sv, "1"sv}}}};
+        Containers::Sequence<const DataExchange::XML::Providers::IXMLProvider*> providers{nullptr}; // nullptr: whichever is default
+#if qStroika_HasComponent_libxml2
+        providers += &DataExchange::XML::Providers::LibXML2::kDefaultProvider;
+#endif
+#if qStroika_HasComponent_xerces
+        providers += &DataExchange::XML::Providers::Xerces::kDefaultProvider;
+#endif
+        EXPECT_GE (providers.size (), 2u) << "this build configured no XML provider at all?";
+        for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
+            const UPnP::Options options{.fXMLProvider = p};
+            SD                  back;
+            DeSerialize (Serialize (sd, options), &back, options);
+            EXPECT_EQ (back, sd) << back.ToString ().AsNarrowSDKString ();
+        }
+        // and what one provider writes, another reads
+        for (const DataExchange::XML::Providers::IXMLProvider* writeWith : providers) {
+            for (const DataExchange::XML::Providers::IXMLProvider* readWith : providers) {
+                SD back;
+                DeSerialize (Serialize (sd, UPnP::Options{.fXMLProvider = writeWith}), &back, UPnP::Options{.fXMLProvider = readWith});
+                EXPECT_EQ (back, sd);
+            }
+        }
     }
 #endif
 
