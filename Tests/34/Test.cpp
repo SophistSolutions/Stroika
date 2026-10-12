@@ -1812,6 +1812,33 @@ namespace {
         });
     }
 
+    /*
+     *  Declaring a namespace prefix - an xmlns:PREFIX attribute - so that what is written afterwards uses the prefix the
+     *  caller chose, and a QName written in an element's TEXT (SOAP's <faultcode>s:Client</faultcode>) has one to name.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_DeclareNamespacePrefix)
+    {
+        using namespace XML::DOM;
+        const IO::Network::URI kNS_{"urn:example:ns"sv};
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            Document::Ptr doc  = domFactory (BLOB{as_bytes (span{"<root/>"sv})}, nullptr);
+            Element::Ptr  root = doc.GetRootElement ();
+            root.SetAttribute (XML::NameWithNamespace{XML::kXMLNS.fNamespace, "s"sv}, kNS_.As<String> ());
+            root.Append (XML::NameWithNamespace{kNS_, "thing"sv});
+
+            const String written = doc.Write ();
+            EXPECT_NE (written.Find ("xmlns:s="sv), nullopt) << "the prefix asked for: " << written.AsNarrowSDKString ();
+            // and it means what it says: read back, the child is in that namespace
+            const string               writtenUTF8 = written.AsUTF8<string> ();
+            Document::Ptr              reRead      = domFactory (BLOB{as_bytes (span{writtenUTF8})}, nullptr);
+            optional<IO::Network::URI> childNS;
+            for (const Element::Ptr& e : reRead.GetRootElement ().GetChildElements ()) {
+                childNS = e.GetName ().fNamespace;
+            }
+            EXPECT_EQ (childNS, kNS_) << writtenUTF8;
+        });
+    }
+
     GTEST_TEST (Foundation_DataExchange_XML, DOM_XPath)
     {
         const Memory::BLOB kPersonalXML_            = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);

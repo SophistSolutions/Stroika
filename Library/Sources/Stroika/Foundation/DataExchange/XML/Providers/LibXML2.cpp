@@ -576,7 +576,19 @@ namespace {
         {
             RequireNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT);
-            if (attrName == kXMLNS) {
+            // any attribute IN the xmlns namespace is a namespace declaration - xmlns itself, or xmlns:PREFIX - and the one
+            // namespace no prefix may be bound to, so never the prefixing below
+            if (attrName.fNamespace == kXMLNS.fNamespace and attrName.fName != kXMLNS.fName) {
+                /*
+                 *  xmlns:PREFIX - a prefix declaration, which to libxml2 is not an attribute at all but an xmlNs hung on
+                 *  the node, and so is made with xmlNewNs. Written as an attribute instead it comes out named for the
+                 *  prefix alone (s="..."), declaring nothing. Nothing undeclares a prefix, so a nullopt is no request.
+                 */
+                if (v) {
+                    ::xmlNewNs (fNode_, BAD_CAST v->AsUTF8<string> ().c_str (), BAD_CAST attrName.fName.AsUTF8<string> ().c_str ());
+                }
+            }
+            else if (attrName.fNamespace == kXMLNS.fNamespace) {
                 /*
                  *  Queer, but libxml2 appears to require this attribute have the given namespace (fine) - but not provide a usable xmlNs object.
                  *  So we must create it on the document, and free it when we free the document.

@@ -934,9 +934,17 @@ namespace {
                      *  MAYBE related to  https://github.com/SophistSolutions/Stroika/issues/1131 (STK-999) - diff symptoms but similar workaround
                      */
                     if (attrName.fNamespace == kXMLNS.fNamespace) {
-                        // a namespace DECLARATION - xmlns, or xmlns:foo - which is the one namespace no prefix may be bound to
+                        /*
+                         *  A namespace DECLARATION - the default one (kXMLNS, named xmlns) or a prefix's (named for the
+                         *  prefix). The one namespace no prefix may be bound to, so never the prefixing below - but
+                         *  setAttributeNS wants the QUALIFIED name, and a prefix is declared by the name xmlns:PREFIX.
+                         */
+                        u16string qName = attrName.fName.As<u16string> ();
+                        if (attrName.fName != kXMLNS.fName) {
+                            qName = u"xmlns:" + qName;
+                        }
                         element->setAttributeNS (attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
-                                                 attrName.fName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
+                                                 qName.c_str (), v->As<u16string> ().c_str ());
                     }
                     else if (attrName.fNamespace) {
                         /*
