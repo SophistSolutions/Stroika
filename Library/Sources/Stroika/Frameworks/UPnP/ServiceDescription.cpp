@@ -10,6 +10,10 @@
 #include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+#include "Stroika/Foundation/DataExchange/XML/DOM.h"
+#endif
 
 #include "ServiceDescription.h"
 
@@ -21,6 +25,11 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
 
 using SD = ServiceDescription;
+
+namespace {
+    // the namespace every element of an SCPD is in (UPnP Device Architecture 1.1, section 2.5)
+    const IO::Network::URI kServiceNamespace_{"urn:schemas-upnp-org:service-1-0"sv};
+}
 
 /*
  ********************************************************************************
@@ -119,67 +128,63 @@ String SD::ToString () const
  ********************************* UPnP::Serialize ******************************
  ********************************************************************************
  */
-Memory::BLOB UPnP::Serialize (const ServiceDescription& sd)
+Memory::BLOB UPnP::Serialize ([[maybe_unused]] const ServiceDescription& sd)
 {
-    using XML::QuoteForXMLW;
-    // each element, in the order UPnP Device Architecture 1.1, section 2.5, gives them
-    StringBuilder sb;
-    sb << "<?xml version=\"1.0\"?>\r\n"sv;
-    sb << "<scpd xmlns=\"urn:schemas-upnp-org:service-1-0\">\r\n"sv;
-    sb << "  <specVersion><major>1</major><minor>0</minor></specVersion>\r\n"sv;
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+    using namespace DataExchange::XML;
+    namespace Element = DataExchange::XML::DOM::Element;
+    // each element, in the order UPnP Device Architecture 1.1, section 2.5, gives them. A name with no namespace of its own
+    // is in the document's, declared once on <scpd> and inherited - which is what UPnP's schema says of every one of these
+    DOM::Document::Ptr doc  = DOM::Document::New (NameWithNamespace{kServiceNamespace_, "scpd"sv});
+    Element::Ptr       scpd = doc.GetRootElement ();
+    Element::Ptr       spec = scpd.Append ("specVersion"sv);
+    spec.Append ("major"sv, "1"sv);
+    spec.Append ("minor"sv, "0"sv);
     if (not sd.fActions.empty ()) {
-        sb << "  <actionList>\r\n"sv;
+        Element::Ptr actionList = scpd.Append ("actionList"sv);
         for (const SD::Action& a : sd.fActions) {
-            sb << "    <action>\r\n"sv;
-            sb << "      <name>"sv << QuoteForXMLW (a.fName) << "</name>\r\n"sv;
+            Element::Ptr action = actionList.Append ("action"sv);
+            action.Append ("name"sv, a.fName);
             if (not a.fArguments.empty ()) {
-                sb << "      <argumentList>\r\n"sv;
+                Element::Ptr argumentList = action.Append ("argumentList"sv);
                 for (const SD::Argument& arg : a.fArguments) {
-                    sb << "        <argument>\r\n"sv;
-                    sb << "          <name>"sv << QuoteForXMLW (arg.fName) << "</name>\r\n"sv;
-                    sb << "          <direction>"sv << (arg.fDirection == SD::Argument::Direction::eIn ? "in"sv : "out"sv) << "</direction>\r\n"sv;
+                    Element::Ptr argument = argumentList.Append ("argument"sv);
+                    argument.Append ("name"sv, arg.fName);
+                    argument.Append ("direction"sv, String{arg.fDirection == SD::Argument::Direction::eIn ? "in"sv : "out"sv});
                     if (arg.fRetval) {
-                        sb << "          <retval/>\r\n"sv;
+                        argument.Append ("retval"sv); // an empty element: UPnP says it by being there
                     }
-                    sb << "          <relatedStateVariable>"sv << QuoteForXMLW (arg.fRelatedStateVariable) << "</relatedStateVariable>\r\n"sv;
-                    sb << "        </argument>\r\n"sv;
+                    argument.Append ("relatedStateVariable"sv, arg.fRelatedStateVariable);
                 }
-                sb << "      </argumentList>\r\n"sv;
             }
-            sb << "    </action>\r\n"sv;
         }
-        sb << "  </actionList>\r\n"sv;
     }
-    sb << "  <serviceStateTable>\r\n"sv;
+    Element::Ptr serviceStateTable = scpd.Append ("serviceStateTable"sv);
     for (const SD::StateVariable& v : sd.fStateVariables) {
-        sb << "    <stateVariable sendEvents=\""sv << (v.fSendEvents ? "yes"sv : "no"sv) << "\">\r\n"sv;
-        sb << "      <name>"sv << QuoteForXMLW (v.fName) << "</name>\r\n"sv;
-        sb << "      <dataType>"sv << QuoteForXMLW (v.fDataType) << "</dataType>\r\n"sv;
-        if (v.fDefaultValue) {
-            sb << "      <defaultValue>"sv << QuoteForXMLW (*v.fDefaultValue) << "</defaultValue>\r\n"sv;
-        }
+        Element::Ptr stateVariable = serviceStateTable.Append ("stateVariable"sv);
+        stateVariable.SetAttribute ("sendEvents"sv, String{v.fSendEvents ? "yes"sv : "no"sv});
+        stateVariable.Append ("name"sv, v.fName);
+        stateVariable.Append ("dataType"sv, v.fDataType);
+        stateVariable.AppendIf ("defaultValue"sv, v.fDefaultValue);
         if (not v.fAllowedValues.empty ()) {
-            sb << "      <allowedValueList>\r\n"sv;
+            Element::Ptr allowedValueList = stateVariable.Append ("allowedValueList"sv);
             for (const String& av : v.fAllowedValues) {
-                sb << "        <allowedValue>"sv << QuoteForXMLW (av) << "</allowedValue>\r\n"sv;
+                allowedValueList.Append ("allowedValue"sv, av);
             }
-            sb << "      </allowedValueList>\r\n"sv;
         }
         if (const optional<SD::AllowedValueRange>& r = v.fAllowedValueRange) {
-            sb << "      <allowedValueRange>\r\n"sv;
-            sb << "        <minimum>"sv << QuoteForXMLW (r->fMinimum) << "</minimum>\r\n"sv;
-            sb << "        <maximum>"sv << QuoteForXMLW (r->fMaximum) << "</maximum>\r\n"sv;
-            if (r->fStep) {
-                sb << "        <step>"sv << QuoteForXMLW (*r->fStep) << "</step>\r\n"sv;
-            }
-            sb << "      </allowedValueRange>\r\n"sv;
+            Element::Ptr allowedValueRange = stateVariable.Append ("allowedValueRange"sv);
+            allowedValueRange.Append ("minimum"sv, r->fMinimum);
+            allowedValueRange.Append ("maximum"sv, r->fMaximum);
+            allowedValueRange.AppendIf ("step"sv, r->fStep);
         }
-        sb << "    </stateVariable>\r\n"sv;
     }
-    sb << "  </serviceStateTable>\r\n"sv;
-    sb << "</scpd>\r\n"sv;
-    const string utf8 = sb.str ().AsUTF8<string> ();
-    return Memory::BLOB{as_bytes (span{utf8})};
+    Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+    doc.Write (out, DOM::SerializationOptions{.fPrettyPrint = true});
+    return out.As<Memory::BLOB> ();
+#else
+    Execution::Throw (Execution::Exception<runtime_error>{"A service description cannot be written: this build has no XML DOM"sv});
+#endif
 }
 
 /*
