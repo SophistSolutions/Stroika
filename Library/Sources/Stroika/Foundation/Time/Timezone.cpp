@@ -139,7 +139,7 @@ String Timezone::AsHHMM (const Date& date, const TimeOfDay& tod, bool insertColo
 {
     int          minutes    = GetBiasInMinutesFromUTC (date, tod);
     bool         isNeg      = minutes < 0;
-    unsigned int nMinOffset = abs (fBiasInMinutesFromUTC_);
+    unsigned int nMinOffset = abs (minutes);
     return "{}{:02}{}{:02}"_f(isNeg ? L"-" : L"+", nMinOffset / 60, insertColon ? L":" : L"", nMinOffset % 60);
 }
 

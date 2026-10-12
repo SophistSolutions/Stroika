@@ -5,6 +5,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <chrono>
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <sstream>
 
@@ -13,6 +15,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Time/Date.h"
@@ -1035,6 +1038,41 @@ namespace {
             if (n.IsDaylightSavingsTime () == n2.IsDaylightSavingsTime ()) {
             }
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Time, LocalTimezoneOffsetText_)
+    {
+        TraceContextBumper ctx{"LocalTimezoneOffsetText_"};
+        // Timezone::kLocalTime's offset as text is the local offset - so run where local time is not UTC: India's, +05:30 (no daylight
+        // saving time), as a POSIX TZ string, which the Windows C runtime reads too; then put TZ back
+        auto setTZ = [] (const char* value) {
+#if qStroika_Platform_POSIX
+            if (value == nullptr) {
+                ::unsetenv ("TZ");
+            }
+            else {
+                ::setenv ("TZ", value, 1);
+            }
+            ::tzset ();
+#elif qStroika_Platform_Windows
+            ::_putenv_s ("TZ", value == nullptr ? "" : value); // "" removes it
+            ::_tzset ();
+#endif
+        };
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        const char* was = std::getenv ("TZ");
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        const optional<string>  savedTZ = was == nullptr ? nullopt : optional<string>{was};
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { setTZ (savedTZ ? savedTZ->c_str () : nullptr); });
+        setTZ ("IST-5:30");
+        const Date      d{2020y, January, 15d};
+        const TimeOfDay t{12, 0, 0};
+        EXPECT_EQ (Timezone::kLocalTime.GetBiasInMinutesFromUTC (d, t), 5 * 60 + 30);
+        EXPECT_EQ (Timezone::kLocalTime.AsHHMM (d, t, true), "+05:30");
+        EXPECT_EQ (Timezone::kLocalTime.AsHHMM (d, t, false), "+0530");
+        EXPECT_EQ ((DateTime{d, t, Timezone::kLocalTime}.Format (DateTime::kRFC1123Format)), "Wed, 15 Jan 2020 12:00:00 +0530");
     }
 }
 
