@@ -187,7 +187,9 @@ namespace {
 namespace {
     GTEST_TEST (Frameworks_WebService, TestWebServiceObjectRequestHandler1)
     {
-        EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
+        if constexpr (Compression::Deflate::kSupported) { // without zlib the server just sends the body uncompressed
+            EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
+        }
         const IO::Network::PortType  portNumber = 8083;
         MyObjectWebServiceWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists
         try {

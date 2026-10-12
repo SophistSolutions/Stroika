@@ -261,7 +261,9 @@ namespace {
         // @todo add tests with different flags about allowed compression - and add asserts about returned content-encoding headers.
         /// @todo - add tests with different Accept-Encoding headers
 
-        EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
+        if constexpr (Compression::Deflate::kSupported) { // without zlib the server just sends the body uncompressed
+            EXPECT_EQ (Compression::Deflate::Compress::New ().Transform (TestDeflateEnc1_::kDecoded), TestDeflateEnc1_::kEncoded);
+        }
         const IO::Network::PortType portNumber = 8082;
         MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
         try {
