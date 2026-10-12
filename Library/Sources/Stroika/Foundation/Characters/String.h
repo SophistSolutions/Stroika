@@ -222,11 +222,14 @@ namespace Stroika::Foundation::Characters {
          *        copy. To skip that check, for a literal, use "..."_k (or FromStringConstant).
          *
          *  \note 'char' (using ASCII = char) constructors:
-         *        Because the character-set of strings of type 'char' is ambiguous, if you construct a String
-         *        with char (char* etc) - it runtime checked that the characters are ASCII (except a string literal's, shared by
-         *        the basic_string_view constructors, which is checked by assertion).
-         * 
-         *        This mimics the behavior in Stroika v2.1 with String::FromASCII ()
+         *        Because the character-set of strings of type 'char' is ambiguous, their characters must be ASCII. That is
+         *        checked at run time, and throws (as String::FromASCII did in Stroika v2.1) - the characters could come from
+         *        anywhere: a user, a file, the network.
+         *
+         *        The only exceptions, checked by assertion instead (Debug builds), are constants built into the program - code,
+         *        not data - kept cheap: FromStringConstant, "..."_k, and a basic_string_view of a string literal (one in the
+         *        program's read-only image; any other view is copied, and checked). By design there are no others: code that
+         *        wants a constant cheaply has those three.
          * 
          *  \note the basic_string move Constructors MAY move or copy the underlying std string, but they still maintain
          *        the same requirements on their arguments as the copy basic_string constructors (eg. char must be ascii)
@@ -363,7 +366,7 @@ namespace Stroika::Foundation::Characters {
          *          String  tmp1    =   "FRED";
          *          String  tmp2    =   String{"FRED"};
          *          String  tmp3    =   String::FromStringConstant ("FRED");    // same as 2 above, but faster
-         *          String  tmp4    =   "FRED"sv;                               // equivalent to FromStringConstant
+         *          String  tmp4    =   "FRED"sv;                               // shares too, having checked it is a literal
          *          String  tmp5    =   "FRED"_k;                               // equivalent to FromStringConstant
          *      \endcode
          *
@@ -375,8 +378,9 @@ namespace Stroika::Foundation::Characters {
          *  \note In Stroika v2.1 this was called class String_Constant.
          *  \note In Stroika v2.1 this required NUL-char termination, but no longer
          * 
-         *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and interpret as Latin1)
-         *        For the case of char, we also do not check/require the nul-termination bit.
+         *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and interpret as Latin1),
+         *        checked by assertion only (Debug builds), as its argument is a constant built into the program (@see the 'char'
+         *        note on the constructors). For the case of char, we also do not check/require the nul-termination bit.
          */
         template <size_t SIZE, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static String FromStringConstant (const CHAR_T (&cString)[SIZE]);
@@ -1894,10 +1898,12 @@ namespace Stroika::Foundation::Characters {
          *          String s3 = "some-string"sv;           // in most cases this will also work fine, and is preferable (since sv is part of C++ standard)
          *      \endcode
          *
-         *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String_Constant which IS a String
-         *        so it will work in some overload contexts where sv would fail.
-         * 
-         *  \note operator""_k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Latin1)
+         *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String, so it will work in
+         *        some overload contexts where sv would fail - and it skips the check a basic_string_view constructor makes (that its
+         *        characters are a literal's), so is a little cheaper.
+         *
+         *  \note operator""_k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Latin1),
+         *        checked by assertion only (Debug builds), as for FromStringConstant
          */
         String operator""_k (const ASCII* s, size_t len);
         String operator""_k (const wchar_t* s, size_t len);

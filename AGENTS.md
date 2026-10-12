@@ -545,6 +545,11 @@ still compile". Say which one you did.
   has a wide, hard-to-debug blast radius - so no build caching, `jom`, or more `-MP`.
 - **Standing decisions from the workaround audit** (#1177's closing comment): clang-15 and g++-11 stay supported; Release
   assertions stay `[[assume]]`; valgrind is memcheck only, on Release builds.
+- **String's ASCII check on `char` is a run-time throw**, except for constants built into the program -
+  `FromStringConstant`, `_k`, a literal's `string_view` - where it is a Debug assertion. No more exceptions (LGP,
+  2026-10-11); String.h's constructor notes say why. Separately, the `const char*` constructor does not share a literal
+  either, though it could while still checking: that would be an optimization, and code that wants it writes `"..."sv`
+  or `_k`.
 
 ## Working with LGP
 
