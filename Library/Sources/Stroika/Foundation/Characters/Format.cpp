@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
@@ -21,6 +22,19 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
+
+#if qStroika_Foundation_Debug_AssertionsChecked
+/*
+ ********************************************************************************
+ ******************** Characters::Private_::LastsAppLifetime_ *******************
+ ********************************************************************************
+ */
+bool Characters::Private_::LastsAppLifetime_ (wstring_view s)
+{
+    // an empty view has nothing to outlive (and IsAddressReadOnlyAppLifetime says false of one)
+    return s.empty () or Execution::IsAddressReadOnlyAppLifetime (as_bytes (span{s})) != false;
+}
+#endif
 
 /*
  ********************************************************************************

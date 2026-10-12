@@ -45,6 +45,16 @@ namespace Stroika::Foundation::Characters {
     constexpr FormatString<CHAR_T>::FormatString (const basic_string_view<CHAR_T>& s)
         : fSV_{s}
     {
+#if qStroika_Foundation_Debug_AssertionsChecked
+        if (not is_constant_evaluated ()) {
+            Require (Private_::LastsAppLifetime_ (fSV_)); // @see the lifetime note on FormatString
+        }
+#endif
+    }
+    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    constexpr FormatString<CHAR_T>::FormatString (const basic_string_view<CHAR_T>& s, OwnCopy_)
+        : fSV_{s}
+    {
     }
     template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
     constexpr wstring_view FormatString<CHAR_T>::get () const
@@ -80,7 +90,7 @@ namespace Stroika::Foundation::Characters {
 #endif
         FormatString<char>::FormatString (const FormatString& src)
         : fStringData_{src.fStringData_}
-        , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}}
+        , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}, FormatString<wchar_t>::OwnCopy_{}}
     {
     }
 #if qCompilerAndStdLib_vector_constexpr_Buggy
@@ -90,7 +100,7 @@ namespace Stroika::Foundation::Characters {
 #endif
         FormatString<char>::FormatString (const basic_string_view<char>& s)
         : fStringData_{s.begin (), s.end ()}
-        , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}}
+        , fFmtStr_{basic_string_view<wchar_t>{fStringData_.data (), fStringData_.size ()}, FormatString<wchar_t>::OwnCopy_{}}
     {
         Character::CheckASCII (span{s});
     }

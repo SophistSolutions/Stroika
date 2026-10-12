@@ -371,7 +371,12 @@ namespace Stroika::Foundation::Characters {
          *      \endcode
          *
          *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime (intended use case is C string literals).
-         * 
+         *
+         *  \note 'application lifetime': the characters must stay unchanged, at that address, for as long as anything may still
+         *        use them - and as copies of a String share them (copy-on-write), and can be kept anywhere, in practice that means
+         *        until the program ends: a string literal. Break the rule and the behavior is undefined - it may well appear to
+         *        work, but nothing promises it.
+         *
          *  \pre argument string MAY contain embedded nul characters (but for char* overloads wrong size inferred).
          * 
          *  \note In Stroika v2.1 this was called class String_ExternalMemoryOwnership_ApplicationLifetime.

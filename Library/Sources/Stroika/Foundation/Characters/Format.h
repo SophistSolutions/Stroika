@@ -38,15 +38,22 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename RESULT, typename F, typename... ARGS>
         RESULT WithFormatArgs_ (F&& f, const ARGS&... args);
+
+#if qStroika_Foundation_Debug_AssertionsChecked
+        /**
+         *  Does s last as long as the program - true too where Stroika cannot tell (@see Execution::IsAddressReadOnlyAppLifetime).
+         *  Defined in Format.cpp, so this header need not include Execution/Module.h.
+         */
+        bool LastsAppLifetime_ (wstring_view s);
+#endif
     }
 
     /**
      *  \brief Roughly equivalent to std::wformat_string, except that it can be constructed from 'char' string, and if 'char' require ASCII characters for format string
      * 
-     *  \note - the lifetime of the string argument to FormatString is application-lifetime - because the string
-     *        is typically saved by reference. This is meant to be used with "foo={}"_f syntax - with constant c strings.
-     * 
-     *        Sadly, I know of no way to check the lifetime of the argument, so this goes un-enforced.
+     *  \note - the string argument to FormatString must have application lifetime (@see String::FromStringConstant), as it is
+     *        saved by reference. This is meant to be used with "foo={}"_f syntax - with constant c strings. (FormatString<char>
+     *        keeps its own, widened, copy - so only FormatString<wchar_t>'s argument must.) Debug builds check it.
      * 
      *  \note   Types that can be formatted with FormatString are those IFormattable: anything std::formattable<T,wchar_t>
      *          (see https://en.cppreference.com/w/cpp/utility/format/formatter), and anything else Characters::ToString prints.
@@ -111,6 +118,12 @@ namespace Stroika::Foundation::Characters {
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
         template <IFormattable... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
+
+    private:
+        // for FormatString<char>, whose view is of its own copy, which lasts as long as it does - so it is not checked
+        friend struct FormatString<char>;
+        struct OwnCopy_ {};
+        constexpr FormatString (const basic_string_view<CHAR_T>& s, OwnCopy_);
 
     private:
         wstring_view fSV_; // maybe SB wformat_string here??
