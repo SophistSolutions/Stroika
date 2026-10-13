@@ -112,48 +112,50 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
 #endif
         [[maybe_unused]] lock_guard critSec{*sendingNotifies}; // (through the sets' spacing too: only the other sender waits for it)
         InterfacesByID              sentOn;
+        // listed once for the round, not for each set: listing them can be slow, and would put that between the sets too
+        InterfacesByID interfaces;
+        try {
+            interfaces = SSDP::Private_::GetSSDPInterfaces (interfaceFilter);
+        }
+        catch (const Execution::Thread::AbortException&) {
+            Execution::ReThrow ();
+        }
+        catch (...) {
+            DbgTrace ("Ignoring inability to send SSDP notify packets: {} (try again later)"_f, current_exception ());
+        }
         for (unsigned int nthSet = 0; nthSet < kSetsSent_; ++nthSet) {
             if (nthSet != 0) {
                 Execution::Sleep (kBetweenSets_); // on the IntervalTimer's thread, which other timers share - so briefly
             }
-            try {
-                // out of each interface, with that interface's own LOCATION
-                for (const Interface& i : SSDP::Private_::GetSSDPInterfaces (interfaceFilter)) {
-                    for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
-                        try {
-                            InternetAddress::AddressFamily family = s.second.GetInternetAddress ().GetAddressFamily ();
-                            optional<InternetAddress>      local  = SSDP::Server::Private_::AdvertisableAddress (i, family);
-                            if (not local) {
-                                continue; // no address of this channel's family there
-                            }
-                            optional<URI> url = location (LocationContext{*local, nullopt});
-                            if (not url) {
-                                continue; // nothing to advertise there
-                            }
-                            goOutOf (s.first, i, *local);
-                            for (Advertisement a : advertisements) {
-                                a.fAlive    = true; // (and ssdp:byebye as this goes - ~PeriodicNotifier)
-                                a.fLocation = *url;
-                                a.fMaxAge   = maxAge;
-                                s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a, s.second), s.second);
-                            }
-                            sentOn.Add (i);
+            // out of each interface, with that interface's own LOCATION
+            for (const Interface& i : interfaces) {
+                for (const pair<ConnectionlessSocket::Ptr, SocketAddress>& s : sockets) {
+                    try {
+                        InternetAddress::AddressFamily family = s.second.GetInternetAddress ().GetAddressFamily ();
+                        optional<InternetAddress>      local  = SSDP::Server::Private_::AdvertisableAddress (i, family);
+                        if (not local) {
+                            continue; // no address of this channel's family there
                         }
-                        catch (const Execution::Thread::AbortException&) {
-                            Execution::ReThrow ();
+                        optional<URI> url = location (LocationContext{*local, nullopt});
+                        if (not url) {
+                            continue; // nothing to advertise there
                         }
-                        catch (...) {
-                            DbgTrace ("Ignoring inability to send SSDP notify packets on {}: {} (try again later)"_f, i.fInterfaceID,
-                                      current_exception ());
+                        goOutOf (s.first, i, *local);
+                        for (Advertisement a : advertisements) {
+                            a.fAlive    = true; // (and ssdp:byebye as this goes - ~PeriodicNotifier)
+                            a.fLocation = *url;
+                            a.fMaxAge   = maxAge;
+                            s.first.SendTo (SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a, s.second), s.second);
                         }
+                        sentOn.Add (i);
+                    }
+                    catch (const Execution::Thread::AbortException&) {
+                        Execution::ReThrow ();
+                    }
+                    catch (...) {
+                        DbgTrace ("Ignoring inability to send SSDP notify packets on {}: {} (try again later)"_f, i.fInterfaceID, current_exception ());
                     }
                 }
-            }
-            catch (const Execution::Thread::AbortException&) {
-                Execution::ReThrow ();
-            }
-            catch (...) {
-                DbgTrace ("Ignoring inability to send SSDP notify packets: {} (try again later)"_f, current_exception ());
             }
         }
         notifyingOn->store (sentOn);

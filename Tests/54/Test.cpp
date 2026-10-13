@@ -2427,15 +2427,21 @@ namespace {
                 string utf8 = request.AsUTF8<string> ();
                 asker.SendTo (as_bytes (span{utf8}), SSDP::V4::kSocketAddress);
             };
-            // when each answer from our device came, until until - or until enough have
-            auto answersUntil = [&] (Time::TimePointSeconds until, size_t enough = numeric_limits<size_t>::max ()) {
+            // when each answer from our device came, until until - or until enough have. Every device on the network answers
+            // ssdp:all: theirs are skipped unparsed, as parsing each is slow in some builds, and ours would wait behind them
+            const string deviceIDText = deviceID.AsASCII ();
+            auto         answersUntil = [&] (Time::TimePointSeconds until, size_t enough = numeric_limits<size_t>::max ()) {
                 Containers::Sequence<Time::TimePointSeconds> result;
                 while (result.size () < enough and not Execution::WaitForIOReady<ConnectionlessSocket::Ptr>{asker}.WaitQuietlyUntil (until).empty ()) {
                     std::byte           buf[8 * 1024];
                     SocketAddress       from;
+                    span<std::byte>     got = asker.ReceiveFrom (span{buf}, 0, &from);
                     String              headLine;
                     SSDP::Advertisement a;
-                    SSDP::DeSerialize (Memory::BLOB{asker.ReceiveFrom (span{buf}, 0, &from)}, &headLine, &a);
+                    if (string_view{reinterpret_cast<const char*> (got.data ()), got.size ()}.find (deviceIDText) == string_view::npos) {
+                        continue;
+                    }
+                    SSDP::DeSerialize (Memory::BLOB{got}, &headLine, &a);
                     if (headLine.StartsWith ("HTTP/1.1 200"sv) and a.fUSN.Contains (deviceID)) {
                         result += Time::GetTickCount ();
                     }
@@ -2810,9 +2816,14 @@ namespace {
                                                       "environment probably blocks multicast, or UDP 1900)");
             return;
         }
-        DbgTrace ("pauses: {}"_f, pauses);
+        // and each round starts by listing the network interfaces - slow in some builds - which each pause so includes
+        const Time::TimePointSeconds listingStarted = Time::GetTickCount ();
+        (void)SystemInterfacesMgr{}.GetAll ();
+        const Time::DurationSeconds listing = Time::GetTickCount () - listingStarted;
+        DbgTrace ("pauses: {} (listing the interfaces: {})"_f, pauses, listing);
         EXPECT_GE (pauses.MinValue ().count (), kRepeatInterval_.count () / 2 - 0.05) << Characters::ToString (pauses).AsNarrowSDKString ();
-        EXPECT_LE (pauses.MaxValue ().count (), kRepeatInterval_.count () + 0.15) << Characters::ToString (pauses).AsNarrowSDKString ();
+        EXPECT_LE (pauses.MaxValue ().count (), kRepeatInterval_.count () + listing.count () + 0.15)
+            << Characters::ToString (pauses).AsNarrowSDKString ();
         EXPECT_GE ((pauses.MaxValue () - pauses.MinValue ()).count (), 0.03)
             << "every pause the same: not random - " << Characters::ToString (pauses).AsNarrowSDKString ();
     }

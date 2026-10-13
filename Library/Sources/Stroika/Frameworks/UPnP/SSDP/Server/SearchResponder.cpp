@@ -49,6 +49,8 @@ namespace {
     // the LOCATION to answer asker with: location's, given this machine's address as asker reaches it - from where the search
     // arrived (arrived: the address it was sent to, and the interface it came in on) and the asker's subnet:
     //  o   the address it was sent to, if this machine's own (a unicast M-SEARCH)
+    //  o   else asker's own address, if asker is this machine (on any of listeningOn) - whichever interface it came in on: with
+    //      two interfaces on one subnet, a search sent out of one comes in on the other too
     //  o   else this machine's address on asker's subnet - on the interface it came in on, if there (two interfaces can share a
     //      subnet); else on another of listeningOn (the interfaces it can have come in on): two networks may be bridged, so it
     //      came in on the other, whose address asker may not reach
@@ -67,6 +69,10 @@ namespace {
             arrivedOn = listeningOn.First ([&] (const Interface& i) { return i.fIndex == arrived->fInterfaceIndex; });
         }
         if (asker.IsInternetAddress ()) {
+            if (not local and
+                listeningOn.Any ([&] (const Interface& i) { return i.fBindings.fAddresses.Contains (asker.GetInternetAddress ()); })) {
+                local = asker.GetInternetAddress ();
+            }
             if (not local and arrivedOn) {
                 local = SSDP::Server::Private_::LocalAddressOnAskersNetwork (asker.GetInternetAddress (), Iterable<Interface>{*arrivedOn});
             }
