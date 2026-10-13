@@ -289,7 +289,7 @@ DeviceDescription UPnP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, [[m
     {
         ObjectReader::IConsumerDelegateToContext ctx{
             kTypesRegistry_, MakeSharedPtr<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{"device"sv})};
-        XML::SAXParse (options.GetXMLProvider (), b, &ctx);
+        XML::SAXParse (options.GetXMLProvider (), b, &ctx, options.fValidateReadAgainst);
     }
 #else
     WeakAssertNotImplemented (); // may want to allow to continue, as this may not be critical functionality, but you probably want XML parser when running this code...

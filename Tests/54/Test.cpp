@@ -296,6 +296,109 @@ namespace {
 #endif
     }
 
+#if qStroika_Foundation_DataExchange_XML_SupportDOM and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
+    /*
+     *  What Serialize writes, held against the schemas UPnP publishes. Until this, the two descriptions were only ever
+     *  read back by Stroika's own reader - which proves they round-trip, not that anyone else would accept them.
+     *
+     *  Both halves matter. A device description holds against device-1-0.xsd exactly as published. An SCPD holds
+     *  against service-1-0.xsd only once its sendEvents/multicast enumerations are widened to the values the
+     *  specification gives them, which is the one correction ServiceDescriptionSchema makes and the reason a test for
+     *  sendEvents="no" is here: as published, the schema refuses it, and so refuses every real device.
+     */
+    GTEST_TEST (Frameworks_UPnP, DescriptionsValidateAgainstPublishedSchemas_)
+    {
+        Debug::TraceContextBumper ctx{"DescriptionsValidateAgainstPublishedSchemas_"};
+        // named with no provider, each gives Stroika's default one's schema - the form nearly every caller wants
+        EXPECT_TRUE (UPnP::DeviceDescriptionSchema () != nullptr);
+        EXPECT_TRUE (UPnP::ServiceDescriptionSchema () != nullptr);
+        Containers::Sequence<const DataExchange::XML::Providers::IXMLProvider*> providers{nullptr}; // nullptr: whichever is default
+#if qStroika_HasComponent_libxml2
+        providers += &DataExchange::XML::Providers::LibXML2::kDefaultProvider;
+#endif
+#if qStroika_HasComponent_xerces
+        providers += &DataExchange::XML::Providers::Xerces::kDefaultProvider;
+#endif
+        // every field a DeviceDescription has - the optional ones are where an element lands in the wrong place
+        DeviceDescription dd;
+        dd.fPresentationURL  = URI{"http://www.sophists.com/"sv};
+        dd.fDeviceType       = "urn:sophists.com:device:deviceType:1.0"sv;
+        dd.fManufactureName  = "Sophist Solutions, Inc."sv;
+        dd.fFriendlyName     = "Stroika regression test device"sv;
+        dd.fManufacturingURL = URI{"http://www.sophists.com/"sv};
+        dd.fModelDescription = "long user-friendly title"sv;
+        dd.fModelName        = "model name"sv;
+        dd.fModelNumber      = "model number"sv;
+        dd.fModelURL         = URI{"http://www.sophists.com/"sv};
+        dd.fSerialNumber     = "manufacturer's serial number"sv;
+        dd.fUDN              = "uuid:315caae0-1335-57bf-a178-24c9ee756627"sv;
+        dd.fUPC              = "123456789012"sv;
+        dd.fIcons            = Containers::Collection<DeviceDescription::Icon>{
+            DeviceDescription::Icon{.fMimeType = InternetMediaType{"image/png"sv}, .fURL = URI{"/icon.png"sv}}};
+        dd.fServices =
+            Containers::Collection<DeviceDescription::Service>{DeviceDescription::Service{.fServiceType = "urn:schemas-upnp-org:service:SwitchPower:1"sv,
+                                                                                          .fServiceID = "urn:upnp-org:serviceId:SwitchPower"sv,
+                                                                                          .fSCPDURL = URI{"/SwitchPower/description.xml"sv},
+                                                                                          .fControlURL  = URI{"/SwitchPower/control"sv},
+                                                                                          .fEventSubURL = URI{"/SwitchPower/events"sv}}};
+        // every part of an SCPD: in and out arguments (one a retval), an action with none, a state variable not
+        // evented, one with allowed values (one XML must quote), and one with an allowed range
+        using SD = ServiceDescription;
+        const SD sd{
+            .fActions = {SD::Action{.fName = "SetTarget"sv, .fArguments = {{.fName = "newTargetValue"sv, .fRelatedStateVariable = "Target"sv}}},
+                         SD::Action{.fName = "GetStatus"sv,
+                                    .fArguments = {{.fName = "ResultStatus"sv, .fDirection = SD::Argument::Direction::eOut, .fRetval = true, .fRelatedStateVariable = "Status"sv}}},
+                         SD::Action{.fName = "Reset"sv}},
+            .fStateVariables = {SD::StateVariable{.fName = "Target"sv, .fDataType = "boolean"sv, .fDefaultValue = "0"sv, .fSendEvents = false},
+                                SD::StateVariable{.fName = "Status"sv, .fDataType = "boolean"sv, .fDefaultValue = "0"sv},
+                                SD::StateVariable{.fName = "Mode"sv, .fDataType = "string"sv, .fAllowedValues = {"Auto"sv, "R&D <x>"sv}},
+                                SD::StateVariable{.fName     = "Level"sv,
+                                                  .fDataType = "ui1"sv,
+                                                  .fAllowedValueRange = SD::AllowedValueRange{.fMinimum = "0"sv, .fMaximum = "100"sv, .fStep = "5"sv}}}};
+        for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
+            const UPnP::Options kPlain_{.fXMLProvider = p};
+            const UPnP::Options kValidatingDevice_{.fXMLProvider         = p,
+                                                   .fValidateReadAgainst = UPnP::DeviceDescriptionSchema (kPlain_.GetXMLProvider ())};
+            const UPnP::Options kValidatingService_{.fXMLProvider         = p,
+                                                    .fValidateReadAgainst = UPnP::ServiceDescriptionSchema (kPlain_.GetXMLProvider ())};
+            {
+                const Memory::BLOB written = UPnP::Serialize (dd, kPlain_);
+                EXPECT_NO_THROW (UPnP::DeSerialize (written, kValidatingDevice_)) << written.As<string> ();
+                EXPECT_EQ (UPnP::DeSerialize (written, kValidatingDevice_).fUDN, dd.fUDN) << "and still reads as itself";
+            }
+            {
+                const Memory::BLOB written = Serialize (sd, kPlain_);
+                SD                 back;
+                EXPECT_NO_THROW (DeSerialize (written, &back, kValidatingService_)) << written.As<string> ();
+                EXPECT_EQ (back, sd) << back.ToString ().AsNarrowSDKString ();
+            }
+            {
+                // sendEvents="no" - what a real device sends, and what service-1-0.xsd AS PUBLISHED refuses
+                constexpr string_view kRealWorld_ =
+                    "<?xml version=\"1.0\"?>"
+                    "<scpd xmlns=\"urn:schemas-upnp-org:service-1-0\"><specVersion><major>1</major><minor>0</minor></specVersion>"
+                    "<actionList><action><name>GetTotalBytesSent</name><argumentList><argument><name>NewTotalBytesSent</name>"
+                    "<direction>out</direction><relatedStateVariable>TotalBytesSent</relatedStateVariable></argument>"
+                    "</argumentList></action></actionList>"
+                    "<serviceStateTable><stateVariable sendEvents=\"no\"><name>TotalBytesSent</name><dataType>ui4</dataType>"
+                    "</stateVariable></serviceStateTable></scpd>"sv;
+                SD back;
+                EXPECT_NO_THROW (DeSerialize (Memory::BLOB{as_bytes (span{kRealWorld_})}, &back, kValidatingService_));
+                EXPECT_EQ (back.fStateVariables.size (), 1u);
+                EXPECT_FALSE (back.fStateVariables[0].fSendEvents);
+            }
+            {
+                // and a description that is NOT one is refused - so the above is validation passing, not validation absent
+                constexpr string_view kNotADevice_ =
+                    "<?xml version=\"1.0\"?><root xmlns=\"urn:schemas-upnp-org:device-1-0\"><device><nonsense/></device></root>"sv;
+                EXPECT_ANY_THROW (UPnP::DeSerialize (Memory::BLOB{as_bytes (span{kNotADevice_})}, kValidatingDevice_));
+                // but read without a schema, as by default, it is tolerated - UPnP devices in the field are loose
+                EXPECT_NO_THROW (UPnP::DeSerialize (Memory::BLOB{as_bytes (span{kNotADevice_})}, kPlain_));
+            }
+        }
+    }
+#endif
+
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
     GTEST_TEST (Frameworks_UPnP, ServiceDescription_Others_)
     {

@@ -11,6 +11,7 @@ Generally will track stuff here between releases
 - config var name ObjDir_ToolsSafe funny name - probably lose the Safe!! part and DOCUMENT what it means!
 
 - Consider rewrite of remaining perl stuff - mostly configure - to use python?
+  (test speed of existing make defualt-configs and applyconfigs - that may justify the rewrite).
 
 - MakeBuildRoot / out-of-source builds: moved to
   https://github.com/SophistSolutions/Stroika/issues/1170 - too big for this list. The Windows
@@ -34,11 +35,14 @@ Generally will track stuff here between releases
          own tests. #955 (a web service answering JSON or XML) is unblocked by the same work, and not started.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
-   - **Validate the UPnP descriptions against their schemas too** (LGP 2026-10-13). SOAP's is done - its envelope schema
-     is embedded and Tests/56 checks what Serialize writes, which caught encodingStyle sitting where the schema forbids
-     it. The same for UPnP's published device-1-0 and service-1-0 schemas would check the two descriptions, which are now
-     DOM-built and have never been checked against anything but their own round trip. The SOAP one imported nothing, so
-     it needed no Resolver; do not assume UPnP's are as simple.
+   - **UPnP's descriptions validate against UPnP's own schemas** - DONE 2026-10-13. device-1-0.xsd and service-1-0.xsd
+     embedded under Frameworks/UPnP/Schemas/, reached by DeviceDescriptionSchema () / ServiceDescriptionSchema () and
+     given to Options::fValidateReadAgainst; Tests/54 checks what Serialize writes. LGP settled that they may be shipped
+     (2026-10-13); DeviceDescriptionSchema.cpp says why a copy is carried. The work found that
+     **service-1-0.xsd as published is wrong**: it restricts
+     stateVariable's sendEvents and multicast to {"1","0"} where UDA 1.0 says sendEvents="yes"/"no", so as published it
+     refuses every real device. ServiceDescriptionSchema widens those two enumerations and nothing else; device-1-0.xsd
+     needs no correction.
    - **An element cannot be created with a namespace PREFIX of one's choosing** (2026-10-13; after the XSD work above,
      which may well settle whether it matters). Creating one in a namespace always declares that namespace as the DEFAULT
      (xmlns=), and nothing says "in this namespace, written s:Envelope". a8e0307e90's SOAP envelope shows the three

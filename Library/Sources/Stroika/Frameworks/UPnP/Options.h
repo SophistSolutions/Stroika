@@ -7,6 +7,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 
 /**
  *  \file
@@ -41,17 +42,49 @@ namespace Stroika::Frameworks::UPnP {
          */
         const Foundation::DataExchange::XML::Providers::IXMLProvider* fXMLProvider{nullptr};
 
+        /**
+         *  \brief Check a description being READ against this schema, throwing where it does not hold - nullptr, the
+         *         default, checking nothing
+         *
+         *      \code
+         *          // told a description is malformed, rather than silently getting half of one
+         *          const UPnP::Options kStrict_{.fValidateReadAgainst = UPnP::DeviceDescriptionSchema (*XML::Providers::kDefaultProvider ())};
+         *          DeviceDescription dd = UPnP::DeSerialize (fetched, kStrict_);
+         *      \endcode
+         *
+         *  Pass the schema that goes with the call - DeviceDescriptionSchema to DeSerialize a device description,
+         *  ServiceDescriptionSchema to DeSerialize an SCPD. They are different documents in different namespaces, and
+         *  nothing here can tell which you meant.
+         *
+         *  Nothing by default, because validating refuses descriptions that work today. UPnP devices in the field are
+         *  famously loose - a vendor's own elements in no namespace, elements out of the order the schema fixes,
+         *  required ones missing - and a control point that refused them would see fewer devices than one that did not,
+         *  which is not a library's decision to make. Reading is deliberately lenient to match (@see
+         *  ServiceDescription_Others_), and this is how a caller that would rather be told says so.
+         *
+         *  \note Naming the schema here, rather than this being a flag that reaches for one, is also what lets a program
+         *        that never validates not carry either schema: nothing inside UPnP mentions them, so their ~11K each is
+         *        linked only by a caller that asks (@see DeviceDescriptionSchema, ServiceDescriptionSchema).
+         *
+         *  \note What Stroika WRITES does validate - @see Tests/54's DescriptionsValidateAgainstPublishedSchemas_.
+         */
+        Foundation::DataExchange::XML::Schema::Ptr fValidateReadAgainst{nullptr};
+
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
         /**
          *  \brief fXMLProvider, or Stroika's default where that is nullptr - the one Serialize and DeSerialize actually use
          */
-        nonvirtual const Foundation::DataExchange::XML::Providers::IXMLProvider& GetXMLProvider () const
-        {
-            return fXMLProvider == nullptr ? *Foundation::DataExchange::XML::Providers::kDefaultProvider () : *fXMLProvider;
-        }
+        nonvirtual const Foundation::DataExchange::XML::Providers::IXMLProvider& GetXMLProvider () const;
 #endif
     };
 
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "Options.inl"
 
 #endif /*_Stroika_Frameworks_UPnP_Options_h_*/

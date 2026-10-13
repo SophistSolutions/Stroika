@@ -243,7 +243,7 @@ void UPnP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, ServiceDescripti
     {
         ObjectReader::IConsumerDelegateToContext ctx{
             kRegistry_, Memory::MakeSharedPtr<ObjectReader::ReadDownToReader> (kRegistry_.MakeContextReader (&result), Name{"scpd"sv})};
-        XML::SAXParse (options.GetXMLProvider (), b, &ctx);
+        XML::SAXParse (options.GetXMLProvider (), b, &ctx, options.fValidateReadAgainst);
     }
     *sd = result;
 #else
