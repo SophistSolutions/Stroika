@@ -1839,6 +1839,52 @@ namespace {
         });
     }
 
+    /*
+     *  ReplaceRootElement says how the root's namespace is DECLARED: as the default, or with a prefix of the caller's
+     *  choosing - the one place a prefix can be asked for, and what decides how everything under it is written.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_RootElementNamespacePrefix)
+    {
+        using namespace XML::DOM;
+        const IO::Network::URI kNS_{"urn:example:ns"sv};
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            auto build = [&] (const optional<String>& prefix) {
+                Document::Ptr doc = domFactory (BLOB{as_bytes (span{"<ignored/>"sv})}, nullptr);
+                doc.ReplaceRootElement (XML::NameWithNamespace{kNS_, "Envelope"sv}, prefix);
+                Element::Ptr root = doc.GetRootElement ();
+                root.Append ("Body"sv);                                            // bare: in its parent's namespace
+                root.Append (XML::NameWithNamespace{XML::kNoNamespace, "bare"sv}); // and one in NO namespace
+                return doc.Write ();
+            };
+            { // with a prefix: elements read s:Envelope, s:Body - and a child of no namespace needs no xmlns="",
+                // there being no default declaration for it to escape
+                const String written = build ("s"sv);
+                EXPECT_NE (written.Find ("<s:Envelope"sv), nullopt) << written.AsNarrowSDKString ();
+                EXPECT_NE (written.Find ("<s:Body"sv), nullopt) << written.AsNarrowSDKString ();
+                EXPECT_NE (written.Find ("xmlns:s="sv), nullopt) << written.AsNarrowSDKString ();
+                EXPECT_EQ (written.Find ("xmlns=\"\""sv), nullopt)
+                    << "no default declared, so nothing to undeclare: " << written.AsNarrowSDKString ();
+            }
+            { // without: the default namespace, and then the no-namespace child must say xmlns="" to escape it
+                const String written = build (nullopt);
+                EXPECT_EQ (written.Find ("<s:"sv), nullopt) << written.AsNarrowSDKString ();
+                EXPECT_NE (written.Find ("xmlns=\"urn:example:ns\""sv), nullopt) << written.AsNarrowSDKString ();
+                EXPECT_NE (written.Find ("xmlns=\"\""sv), nullopt) << written.AsNarrowSDKString ();
+            }
+            // either way the namespaces MEAN the same, which is what a reader sees
+            for (const optional<String>& prefix : {optional<String>{"s"sv}, optional<String>{}}) {
+                const string  writtenUTF8 = build (prefix).AsUTF8<string> ();
+                Document::Ptr reRead      = domFactory (BLOB{as_bytes (span{writtenUTF8})}, nullptr);
+                Element::Ptr  root        = reRead.GetRootElement ();
+                EXPECT_EQ (root.GetName ().fNamespace, kNS_) << writtenUTF8;
+                for (const Element::Ptr& e : root.GetChildElements ()) {
+                    const bool isBare = e.GetName ().fName.EndsWith ("bare"sv);
+                    EXPECT_EQ (e.GetName ().fNamespace, isBare ? optional<IO::Network::URI>{} : optional<IO::Network::URI>{kNS_}) << writtenUTF8;
+                }
+            }
+        });
+    }
+
     GTEST_TEST (Foundation_DataExchange_XML, DOM_XPath)
     {
         const Memory::BLOB kPersonalXML_            = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);

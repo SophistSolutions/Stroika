@@ -752,12 +752,28 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             *  If there exists a root element, this is the same as GetRootElement ().Replace (arg), except for the childrenInheritNS part)
-             * 
-             *  \note this creates an xmlns=NS attribute on the root element if a namespace is given in newEltName, so that the namespace
-             *        is inherited by subelements.
+             *  \brief Make this the document's root element - and say HOW its namespace is declared on it, which is the one
+             *         thing only the root can be told
+             *
+             *  nullopt, the default, declares it as the DEFAULT namespace: xmlns="NS". A prefix declares xmlns:PREFIX="NS"
+             *  and writes the element with it, which is how a document whose elements should read s:Envelope, s:Body is
+             *  started - a prefix cannot be asked for anywhere else, an element made later taking whatever its parent has
+             *  or whatever a provider invents.
+             *
+             *      \code
+             *          Document::Ptr doc = Document::New (p);
+             *          doc.ReplaceRootElement (NameWithNamespace{kSOAPNamespace_, "Envelope"sv}, "s"sv); // <s:Envelope xmlns:s="...">
+             *          doc.GetRootElement ().Append ("Body"sv);                                          //   <s:Body>, by inheritance
+             *      \endcode
+             *
+             *  \note Either way a child made with a bare name is in the same namespace as its parent - what this chooses is
+             *        how that namespace is DECLARED, and so how those children are written. Which also decides whether a
+             *        child of no namespace (kNoNamespace) must carry xmlns="" to say so: it must, where a default namespace
+             *        is in scope, and need not where the declaration is prefixed.
+             *
+             *  If there exists a root element, this is the same as GetRootElement ().Replace (arg), except for the namespace part.
              */
-            nonvirtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS = true) const;
+            nonvirtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, const optional<String>& namespacePrefix = nullopt) const;
 
         public:
             /**
@@ -830,10 +846,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual const Providers::IDOMProvider* GetProvider () const            = 0;
             virtual bool                           GetStandalone () const          = 0;
             virtual void                           SetStandalone (bool standalone) = 0;
-            virtual Element::Ptr                   ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS)   = 0;
-            virtual void                Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
-            virtual Iterable<Node::Ptr> GetChildren () const                                                                          = 0;
-            virtual void                Validate (const Schema::Ptr& schema) const                                                    = 0;
+            virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, const optional<String>& namespacePrefix) = 0;
+            virtual void         Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const     = 0;
+            virtual Iterable<Node::Ptr> GetChildren () const                                                                       = 0;
+            virtual void                Validate (const Schema::Ptr& schema) const                                                 = 0;
         };
 
     }

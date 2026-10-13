@@ -402,10 +402,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         }
         return Element::Ptr{nullptr};
     }
-    inline Element::Ptr Document::Ptr::ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS) const
+    inline Element::Ptr Document::Ptr::ReplaceRootElement (const NameWithNamespace& newEltName, const optional<String>& namespacePrefix) const
     {
         // Note this cannot be implemented using the existing Replace () mechanism for elements because the document could be created without a root.
-        return GetRep ()->ReplaceRootElement (newEltName, childrenInheritNS);
+        return GetRep ()->ReplaceRootElement (newEltName, namespacePrefix);
     }
     inline Element::Ptr Document::Ptr::LookupOneElement (const XPath::Expression& e) const
     {

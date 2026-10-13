@@ -982,7 +982,7 @@ namespace {
         {
             fLibRep_->standalone = standalone;
         }
-        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS) override
+        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, const optional<String>& namespacePrefix) override
         {
             // This API is very confusing. I could find no examples online, or clear documentation on how to handle
             // create a prefixed namespace and default namespace.
@@ -990,18 +990,16 @@ namespace {
             //      --LGP 2024-02-29
             xmlNsPtr ns{nullptr};
             if (newEltName.fNamespace) {
-                if (childrenInheritNS) {
-                    ns = xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
-                }
-                else {
-                    // need some random prefix in this case...
-                    ns = xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), BAD_CAST "x");
-                }
+                const string href = newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8<string> ();
+                // a prefix declares xmlns:PREFIX and the element is written with it; none declares the default namespace
+                ns = namespacePrefix == nullopt
+                         ? xmlNewNs (nullptr, BAD_CAST href.c_str (), nullptr)
+                         : xmlNewNs (nullptr, BAD_CAST href.c_str (), BAD_CAST namespacePrefix->AsUTF8<string> ().c_str ());
             }
             xmlNodePtr n = xmlNewDocNode (fLibRep_, ns, BAD_CAST newEltName.fName.AsUTF8 ().c_str (), nullptr);
             Assert (n->nsDef == nullptr);
-            if (childrenInheritNS and newEltName.fNamespace) {
-                n->nsDef = ns; // UGH
+            if (newEltName.fNamespace) {
+                n->nsDef = ns; // UGH - the declaration must hang on the element, prefixed or not, or nothing declares it
             }
             xmlDocSetRootElement (fLibRep_, n);
             auto r = WrapLibXML2NodeInStroikaNode_ (n);

@@ -994,9 +994,10 @@ namespace {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
                 // unclear if we should set namespace to existing node namespace or nullptr here?
-                u16string ns16;
-                DOMNode*  child = doc->createElementNS (ElementNS2Use_ (fNode_, eltName, &ns16), eltName.fName.As<u16string> ().c_str ());
-                DOMNode*  refChildNode = nullptr;
+                u16string    ns16, qName;
+                const XMLCh* useNS        = ElementNS2Use_ (fNode_, eltName, &ns16, &qName);
+                DOMNode*     child        = doc->createElementNS (useNS, qName.c_str ());
+                DOMNode*     refChildNode = nullptr;
                 if (afterNode == nullptr) {
                     // this means PREPEND.
                     // If there is a first element, then insert before it. If no elements, then append is the same thing.
@@ -1015,16 +1016,30 @@ namespace {
          *  The namespace a new element goes in: kNoNamespace none at all, kInheritNamespace (which is what a name built
          *  without one has) its parent's, and otherwise the one it names. 'buf' holds the string the result points into.
          */
-        static const XMLCh* ElementNS2Use_ (DOMNode* parent, const NameWithNamespace& eltName, u16string* buf)
+        static const XMLCh* ElementNS2Use_ (DOMNode* parent, const NameWithNamespace& eltName, u16string* buf, u16string* qName)
         {
             RequireNotNull (buf);
+            RequireNotNull (qName);
+            *qName = eltName.fName.As<u16string> ();
             if (eltName.fNamespace == kNoNamespace) {
                 return nullptr;
             }
             if (not eltName.fNamespace) {
+                /*
+                 *  Inheriting the parent's namespace - so inherit how it is WRITTEN too: unprefixed, Xerces declares the
+                 *  namespace afresh on the child (xmlns=) instead of using the prefix its parent already declared, which
+                 *  is legal but says with a declaration what a prefix already said.
+                 */
+                if (const XMLCh* parentPrefix = parent->getPrefix (); parentPrefix != nullptr and *parentPrefix != u'\0') {
+                    *qName = u16string{parentPrefix} + u":" + *qName;
+                }
                 return parent->getNamespaceURI ();
             }
             *buf = eltName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ();
+            // a prefix already declared for that namespace is the one to write it with, for the same reason
+            if (const XMLCh* had = parent->lookupPrefix (buf->c_str ()); had != nullptr and *had != u'\0') {
+                *qName = u16string{had} + u":" + *qName;
+            }
             return buf->c_str ();
         }
         virtual Element::Ptr AppendElement (const NameWithNamespace& eltName) override
@@ -1036,9 +1051,10 @@ namespace {
             {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 DOMNode*              child{};
-                u16string             ns16;
-                child           = doc->createElementNS (ElementNS2Use_ (fNode_, eltName, &ns16), eltName.fName.As<u16string> ().c_str ());
-                DOMNode* childx = fNode_->appendChild (child);
+                u16string             ns16, qName;
+                const XMLCh*          useNS = ElementNS2Use_ (fNode_, eltName, &ns16, &qName);
+                child                       = doc->createElementNS (useNS, qName.c_str ());
+                DOMNode* childx             = fNode_->appendChild (child);
                 ThrowIfNull (childx);
                 return WrapXercesNodeInStroikaNode_ (childx);
             }
@@ -1389,12 +1405,18 @@ namespace {
                 });
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS) override
+        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, const optional<String>& namespacePrefix) override
         {
+            // a prefix is said to createElementNS as part of the QUALIFIED name, which also declares xmlns:PREFIX; without
+            // one the namespace becomes the element's default declaration
+            u16string qName = newEltName.fName.As<u16string> ();
+            if (namespacePrefix) {
+                qName = namespacePrefix->As<u16string> () + u":" + qName;
+            }
             DOMElement* n = newEltName.fNamespace == nullopt
-                                ? fXMLDoc->createElement (newEltName.fName.As<u16string> ().c_str ())
+                                ? fXMLDoc->createElement (qName.c_str ())
                                 : fXMLDoc->createElementNS (newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
-                                                            newEltName.fName.As<u16string> ().c_str ());
+                                                            qName.c_str ());
             AssertNotNull (n);
             DOMElement* oldRoot = fXMLDoc->getDocumentElement ();
             if (oldRoot == nullptr) {
@@ -1422,8 +1444,10 @@ namespace {
             }
             Assert (fXMLDoc->getDocumentElement () == n);
             Element::Ptr r{WrapXercesNodeInStroikaNode_ (n)};
-            if (childrenInheritNS and newEltName.fNamespace) {
-                r.SetAttribute (kXMLNS, newEltName.fNamespace->As<String> ());
+            if (newEltName.fNamespace) {
+                // declare it: as the default (xmlns=), or for the prefix the element was just given its name with
+                r.SetAttribute (namespacePrefix == nullopt ? kXMLNS : NameWithNamespace{kXMLNS.fNamespace, *namespacePrefix},
+                                newEltName.fNamespace->As<String> ());
             }
             return r;
         }
