@@ -74,6 +74,12 @@ docker rm ${CONTAINER_NAME} >& /dev/null || true
 
 # -security-opt seccomp=unconfined  needed to run some google sanitizers (and probably to debug?/valgrind?)
 
+# --ulimit nofile=1024:524288 is what an ordinary Linux host gives a process. Docker's default can be the kernel's maximum
+#  (~2^31), and then valgrind often fails ("cannot create file"), and each process's first clang sanitizer stack trace
+#  stalls for over a minute - clang 22's runtime closes every fd up to the limit before starting llvm-symbolizer (LLVM 23
+#  uses close_range). It is set here, not in an image: CMD2RUN runs by docker exec, which does not inherit limits set by
+#  the container's entrypoint. A caller's own --ulimit nofile in EXTRA_DOCKER_ARGS comes later, so wins.
+
 
 # -e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" doesn't work perfectly, but better than completely shitty display of # of lines 
 #  which appears to be the docker default
@@ -126,6 +132,7 @@ RunCMD_ "docker run \
 	${PERSONAL_FILE_MOUNTS} \
 	-v ${PRIVATE_COMPILER_BUILDS_DIR}:/private-compiler-builds \
 	--security-opt seccomp=unconfined \
+	--ulimit nofile=1024:524288 \
 	$EXTRATERMARGS \
 	--name ${CONTAINER_NAME} \
 	-h ${CONTAINER_NAME} \
