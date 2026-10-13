@@ -119,6 +119,14 @@ String ActionResponse::ToString () const
  *************************** UPnP::SOAP::ActionError ****************************
  ********************************************************************************
  */
+/*
+ *  Deliberately NOT checked against UPnP's control-1-0.xsd, where the two descriptions are checked against theirs
+ *  (@see UPnP::DeviceDescriptionSchema): an unsigned int and an escaped string, in two fixed elements, cannot come out
+ *  invalid. The published schema would refuse it anyway - it omits the elementFormDefault="qualified" that device-1-0
+ *  and service-1-0 both carry, so it wants errorCode and errorDescription in NO namespace, where UPnP Device
+ *  Architecture's own example has them inheriting UPnPError's. Adding that one attribute makes what this writes hold
+ *  (measured 2026-10-13).
+ */
 GenericSOAP_::Fault ActionError::AsFault () const
 {
     return GenericSOAP_::Fault{.fFaultCode   = GenericSOAP_::Fault::kClient,
