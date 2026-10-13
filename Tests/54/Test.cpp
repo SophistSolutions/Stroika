@@ -16,7 +16,7 @@
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
-#include "Stroika/Foundation/DataExchange/XML/Common.h" // for qStroika_Foundation_DataExchange_XML_SupportParsing
+#include "Stroika/Foundation/DataExchange/XML/Common.h" // for qStroika_Foundation_DataExchange_XML_SupportDOM and SupportParsing
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -210,7 +210,10 @@ namespace {
     GTEST_TEST (Frameworks_UPnP, DeviceDescription_RoundTrip_)
     {
         Debug::TraceContextBumper ctx{"DeviceDescription_RoundTrip_"};
-        DeviceDescription         dd;
+#if not qStroika_Foundation_DataExchange_XML_SupportDOM
+        GTEST_SKIP () << "no XML DOM built in (neither libxml2 nor Xerces) - Serialize writes through one";
+#endif
+        DeviceDescription dd;
         dd.fPresentationURL  = URI{"http://www.sophists.com/"sv};
         dd.fDeviceType       = "urn:sophists.com:device:deviceType:1.0"sv;
         dd.fManufactureName  = "Sophist Solutions, Inc."sv;
@@ -264,6 +267,9 @@ namespace {
     GTEST_TEST (Frameworks_UPnP, ServiceDescription_RoundTrip_)
     {
         Debug::TraceContextBumper ctx{"ServiceDescription_RoundTrip_"};
+#if not qStroika_Foundation_DataExchange_XML_SupportDOM
+        GTEST_SKIP () << "no XML DOM built in (neither libxml2 nor Xerces) - Serialize writes through one";
+#endif
         using SD = ServiceDescription;
         // each part of an SCPD: in and out arguments (one a retval), an action with none, a state variable not evented, one with
         // allowed values (one XML must quote), and one with an allowed range
