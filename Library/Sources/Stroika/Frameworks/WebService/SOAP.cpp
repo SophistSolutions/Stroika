@@ -51,6 +51,7 @@ namespace {
     namespace WriteElement = XML::DOM::Element;
 
     constexpr string_view  kEnvelopePrefix_ = "s"sv;
+    constexpr string_view  kMethodPrefix_   = "m"sv;
     const IO::Network::URI kEnvelopeNamespaceURI_{String{kEnvelopeNamespace_}};
     const IO::Network::URI kEncodingNamespaceURI_{"http://schemas.xmlsoap.org/soap/encoding/"sv};
 
@@ -64,11 +65,16 @@ namespace {
 
         Envelope_ (const Options& options)
         {
-            fDoc = XML::DOM::Document::New (options.GetXMLProvider (), XML::NameWithNamespace{kEnvelopeNamespaceURI_, "Envelope"sv});
-            WriteElement::Ptr envelope = fDoc.GetRootElement ();
-            // the prefix by which everyone writes SOAP - declared, and not left to whatever a provider would invent,
-            // because a Fault's code NAMES it in text (@see Serialize (const Fault&)) and so it must be one we know
-            envelope.SetAttribute (XML::NameWithNamespace{XML::kXMLNS.fNamespace, kEnvelopePrefix_}, kEnvelopeNamespaceURI_.As<String> ());
+            /*
+             *  s: - the prefix everyone writes SOAP with - said at the root, so that it and everything under it are
+             *  written with it, and not left to whatever a provider would invent. A Fault's code NAMES the prefix in
+             *  text (@see Serialize (const Fault&)), so it has to be one we chose; and declaring it rather than a
+             *  default namespace is what lets a Fault's unqualified children simply be unqualified, with no xmlns=""
+             *  to escape a default that is not there.
+             */
+            fDoc = XML::DOM::Document::New (options.GetXMLProvider ());
+            WriteElement::Ptr envelope =
+                fDoc.ReplaceRootElement (XML::NameWithNamespace{kEnvelopeNamespaceURI_, "Envelope"sv}, String{kEnvelopePrefix_});
             fBody = envelope.Append ("Body"sv);
             // on the BODY: SOAP 1.1's schema lets an Envelope carry attributes of ##other namespaces only, so one of its
             // OWN - s:encodingStyle - is not allowed there, where a Body takes ##any
@@ -86,6 +92,9 @@ namespace {
     // are unqualified, where the method's namespace would otherwise be inherited
     void AppendMethodElement_ (WriteElement::Ptr body, const String& elementName, const String& methodNamespace, const Arguments& arguments)
     {
+        // m: - what SOAP's own RPC examples call a method's namespace - declared before the element is made, so that
+        // making it finds the prefix rather than inventing one
+        body.SetAttribute (XML::NameWithNamespace{XML::kXMLNS.fNamespace, kMethodPrefix_}, methodNamespace);
         WriteElement::Ptr method = body.Append (XML::NameWithNamespace{IO::Network::URI{methodNamespace}, elementName});
         for (const KeyValuePair<String, String>& a : arguments) {
             method.Append (XML::NameWithNamespace{XML::kNoNamespace, a.fKey}, a.fValue);
