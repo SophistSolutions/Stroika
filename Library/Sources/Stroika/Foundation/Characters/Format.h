@@ -26,9 +26,9 @@ namespace Stroika::Foundation::Characters {
      *  \brief what Stroika's formatting - FormatString (_f), Format, DbgTrace - formats: anything std::format can, and anything
      *         else Characters::ToString can print, as its ToString
      *
-     *  So a std::optional, an exception_ptr or an enum formats with "{}"_f, though std::format has no formatter for it (and
-     *  Stroika registers none: @see Private_::IUseToStringFormatterForFormatter_); a format-spec then applies to its ToString, as to
-     *  a String.
+     *  Stroikas formatting accomodates a wider range of types than std::format, by using Characters::ToString().
+     *  Most notably, any types with a .ToString () method (about all of Stroikas classes), and std::optional,
+     *  and a few others.
      */
     template <typename T>
     concept IFormattable = Common::StdCompat::formattable<remove_cvref_t<T>, wchar_t> or IToString<remove_cvref_t<T>>;
@@ -75,8 +75,8 @@ namespace Stroika::Foundation::Characters {
      *  \brief Stroika's format string: it always formats WIDE - each argument as std::formatter<T, wchar_t> formats it - into a
      *         String; written narrow ("..."_f) only as a terser spelling, so then it must be ASCII
      *
-     *  Only the format string must be ASCII - so what a narrow one means cannot depend on the compiler's narrow character set;
-     *  what is formatted into it, a String say, may be any UNICODE.
+     *  A narrow format string (FormatString<char>) must be ASCII - so what it means cannot depend on the compiler's narrow
+     *  character set. A wide one may be any UNICODE, and so may what is formatted into either - a String, say.
      *
      *  For narrow output instead - a std::string, in the program's narrow character set - use std::format with a narrow format
      *  string. Stroika's own types format there too (a String as AsNarrowSDKString (eIgnoreErrors) gives it), but not what only
