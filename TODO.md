@@ -83,9 +83,7 @@ Generally will track stuff here between releases
      Tests/52). Until then, Tests/54's SSDP_CachingListener_ and SSDP_CachingListener_Search_ read told under its lock (a BWA,
      so 3.0d25's ThreadSanitizer runs are quiet): restore their told.load () - the reproducer - with the fix.
    - **Concepts - the rest of 2026-10-08's follow-ups** (the rules: Design-Overview.md, "Rules for writing concepts"):
-       - **audit Stroika's concepts** (108 in Library) against those rules - including IStdFormatterPredefinedFor_, a hand-kept
-         list of what std formats: libstdc++ also formats __int128, unsigned __int128 and _Float128, which it omits (the g++
-         build of the IToString fix, 2026-10-08).
+       - **audit Stroika's concepts** (108 in Library) against those rules.
        - **StringBuilder's `sb << x` constraint cannot say no**: Characters::Private_::IUnoverloadedToString_ asks
          UnoverloadedToString, which takes any type - make it ask IToString, with the same care (never before ToString.inl's
          overloads are declared).
