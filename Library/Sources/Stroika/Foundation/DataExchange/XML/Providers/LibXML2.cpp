@@ -640,7 +640,7 @@ namespace {
                 // unfortunately complicated - no prepend api (just append). Can say xmlAddPrevSibling for first child though which amounts
                 // to same thing (unless there is no first child)
                 if (fNode_->children == nullptr) {
-                    ::xmlAddChild (fNode_->parent, newNode); // append=prepend
+                    ::xmlAddChild (fNode_, newNode); // nothing to go before, so append=prepend
                 }
                 else {
                     ::xmlAddPrevSibling (fNode_->children, newNode);

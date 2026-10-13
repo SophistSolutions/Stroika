@@ -1762,6 +1762,44 @@ namespace {
     }
 
     /*
+     *  Element::Ptr::Insert with a nullptr afterNode means PREPEND - into an element with no children yet as much as
+     *  into one that has some, where prepending and appending amount to the same thing.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_InsertPrependsIntoAChildlessElement)
+    {
+        using namespace XML::DOM;
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            {
+                // the case that went wrong: the element being inserted into has no children, so there is no first child
+                // to insert before
+                Document::Ptr doc   = domFactory (BLOB{as_bytes (span{"<root><empty/><sibling/></root>"sv})}, nullptr);
+                Element::Ptr  root  = doc.GetRootElement ();
+                Element::Ptr  empty = root.GetChildElements ().FirstValue ();
+                ASSERT_EQ (empty.GetName ().fName, "empty"sv);
+                Element::Ptr inserted = empty.Insert ("inserted"sv, nullptr);
+                EXPECT_EQ (inserted.GetParent ().GetName ().fName, "empty"sv) << "a CHILD of the element asked, not its sibling";
+                EXPECT_EQ (empty.GetChildElements ().size (), 1u);
+                EXPECT_EQ (root.GetChildElements ().size (), 2u) << "'root' gained nothing";
+            }
+            {
+                // and the same of a childless ROOT element, whose parent is the document itself
+                Document::Ptr doc  = domFactory (BLOB{as_bytes (span{"<root/>"sv})}, nullptr);
+                Element::Ptr  root = doc.GetRootElement ();
+                root.Insert ("inserted"sv, nullptr);
+                EXPECT_EQ (root.GetChildElements ().size (), 1u);
+            }
+            {
+                // the control: an element that HAS children, where afterNode nullptr prepends before the first of them
+                Document::Ptr doc  = domFactory (BLOB{as_bytes (span{"<root><alreadyHere/></root>"sv})}, nullptr);
+                Element::Ptr  root = doc.GetRootElement ();
+                root.Insert ("inserted"sv, nullptr);
+                EXPECT_EQ (root.GetChildElements ().size (), 2u);
+                EXPECT_EQ (root.GetChildElements ().FirstValue ().GetName ().fName, "inserted"sv) << "prepended, not appended";
+            }
+        });
+    }
+
+    /*
      *  An attribute in a namespace needs a PREFIX: unprefixed, it is in no namespace at all, whatever default is in scope
      *  (XML Namespaces, section 6.2). So SetAttribute must not quietly reuse a prefixless default declaration.
      */
