@@ -38,7 +38,7 @@ namespace {
 }
 #endif
 
-Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
+Compression::Ptr Deflate::Compress::New ([[maybe_unused]] const Deflate::Compress::Options& o)
 {
 #if qStroika_HasComponent_zlib
     struct MyRep_ final : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {

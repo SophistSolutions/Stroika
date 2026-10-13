@@ -22,7 +22,8 @@ using namespace Stroika::Foundation::Streams;
  ************************* Cryptography::SSL::SocketStream **********************
  ********************************************************************************
  */
-auto Cryptography::SSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ClientContext::Options& o) -> Ptr
+auto Cryptography::SSL::SocketStream::New ([[maybe_unused]] const ConnectionOrientedStreamSocket::Ptr& sd,
+                                           [[maybe_unused]] const ClientContext::Options&              o) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
     return Providers::OpenSSL::SocketStream::New (sd, Providers::OpenSSL::ClientContext::Options{o});
@@ -30,7 +31,8 @@ auto Cryptography::SSL::SocketStream::New (const ConnectionOrientedStreamSocket:
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
 }
-auto Cryptography::SSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ServerContext::Options& o) -> Ptr
+auto Cryptography::SSL::SocketStream::New ([[maybe_unused]] const ConnectionOrientedStreamSocket::Ptr& sd,
+                                           [[maybe_unused]] const ServerContext::Options&              o) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
     return Providers::OpenSSL::SocketStream::New (sd, Providers::OpenSSL::ServerContext::Options{o});

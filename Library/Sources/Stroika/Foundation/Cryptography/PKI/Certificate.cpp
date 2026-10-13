@@ -59,7 +59,7 @@ auto Cryptography::PKI::Certificate::Ptr::ToString () const -> String
  ************************ Cryptography::Certificate::New ************************
  ********************************************************************************
  */
-auto Cryptography::PKI::Certificate::New (const SelfSignedCertParams& params) -> tuple<Cryptography::PKI::PrivateKey::Ptr, Ptr>
+auto Cryptography::PKI::Certificate::New ([[maybe_unused]] const SelfSignedCertParams& params) -> tuple<Cryptography::PKI::PrivateKey::Ptr, Ptr>
 {
 #if qStroika_HasComponent_OpenSSL
     return Cryptography::Providers::OpenSSL::Certificate::New (params);

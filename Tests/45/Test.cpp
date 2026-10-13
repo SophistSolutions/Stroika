@@ -1017,7 +1017,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"OtherMethodsSendTheirBody_"};
         EchoMethodAndBodyServer_  server;
-        auto                      check = [&] (Connection::Ptr c) {
+        [[maybe_unused]] auto     check = [&] (Connection::Ptr c) {
             using namespace Memory::Literals;
             c.SetSchemeAndAuthority (server.fSite);
             Request notify;
@@ -1044,7 +1044,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"MethodsWithNoBody_"};
         EchoMethodAndBodyServer_  server;
-        auto                      check = [&] (Connection::Ptr c) {
+        [[maybe_unused]] auto     check = [&] (Connection::Ptr c) {
             using namespace Memory::Literals;
             c.SetSchemeAndAuthority (server.fSite);
             auto sent = [&] (const String& method, const Memory::BLOB& body) {

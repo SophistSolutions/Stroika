@@ -179,7 +179,7 @@ Response Connection::Ptr::SendAndThrowOnFailure (const Request& r)
  **************************** Transfer::Connection ******************************
  ********************************************************************************
  */
-Connection::Ptr Transfer::Connection::New (const Connection::Options& options)
+Connection::Ptr Transfer::Connection::New ([[maybe_unused]] const Connection::Options& options)
 {
 #if qStroika_HasComponent_libcurl
     return LibCurl::Connection::New (options);

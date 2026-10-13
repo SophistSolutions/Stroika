@@ -127,7 +127,7 @@ namespace {
 }
 
 namespace {
-    DataExchange::Archive::Reader::Ptr OpenArchive_ (const filesystem::path& archiveName)
+    DataExchange::Archive::Reader::Ptr OpenArchive_ ([[maybe_unused]] const filesystem::path& archiveName)
     {
 // @todo - must support other formats, have a registry, and autodetect
 #if qStroika_HasComponent_LZMA
@@ -145,7 +145,7 @@ namespace {
 }
 
 namespace {
-    DataExchange::Archive::Writer::Ptr CreateWritingArchive_ (const filesystem::path& archiveName)
+    DataExchange::Archive::Writer::Ptr CreateWritingArchive_ ([[maybe_unused]] const filesystem::path& archiveName)
     {
 #if qStroika_HasComponent_zlib
         // for now require just zip

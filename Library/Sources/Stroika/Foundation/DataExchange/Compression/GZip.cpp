@@ -36,7 +36,7 @@ using Compression::Private_::DeflateRep_;
 using Compression::Private_::InflateRep_;
 #endif
 
-Compression::Ptr GZip::Compress::New (const GZip::Compress::Options& o)
+Compression::Ptr GZip::Compress::New ([[maybe_unused]] const GZip::Compress::Options& o)
 {
 #if qStroika_HasComponent_zlib
     struct MyRep_ final : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {

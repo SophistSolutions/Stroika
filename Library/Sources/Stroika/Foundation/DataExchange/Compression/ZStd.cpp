@@ -390,7 +390,7 @@ namespace {
 }
 #endif
 
-Compression::Ptr ZStd::Compress::New (const ZStd::Compress::Options& o)
+Compression::Ptr ZStd::Compress::New ([[maybe_unused]] const ZStd::Compress::Options& o)
 {
 #if qStroika_HasComponent_zstd
     struct MyRep_ final : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {

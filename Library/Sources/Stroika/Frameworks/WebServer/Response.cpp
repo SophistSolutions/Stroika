@@ -403,7 +403,7 @@ void Response::ApplyBodyEncodingIfNeeded_ ()
         }
         if constexpr (Compression::GZip::kSupported) {
             if (currentCompression == nullptr and fBodyEncoding_->Contains (HTTP::ContentEncoding::kGZip)) {
-                static const auto compressOpts = Compression::GZip::Compress::Options{{.fCompressionLevel = 1.0f}}; // @todo config option - passed in - didn't seem to help here
+                const auto compressOpts = Compression::GZip::Compress::Options{{.fCompressionLevel = 1.0f}}; // @todo config option - passed in - didn't seem to help here
                 currentCompression = Compression::GZip::Compress::New (compressOpts);
                 applyBodyEncoding (HTTP::ContentEncoding::kGZip);
             }

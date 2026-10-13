@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::IO::Network::SOAP;
  ********************** Network::SOAP::Deserialize_Fault ************************
  ********************************************************************************
  */
-optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream::Ptr<byte>& from)
+optional<Fault> SOAP::Deserialize_Fault ([[maybe_unused]] const Streams::InputStream::Ptr<byte>& from)
 {
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
     using namespace ObjectReader;

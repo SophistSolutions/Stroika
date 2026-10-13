@@ -230,7 +230,7 @@ Memory::BLOB UPnP::Serialize ([[maybe_unused]] const DeviceDescription& dd, [[ma
  ******************************* UPnP::DeSerialize ******************************
  ********************************************************************************
  */
-DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b, [[maybe_unused]] const Options& options)
+DeviceDescription UPnP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, [[maybe_unused]] const Options& options)
 {
     using namespace Stroika::Foundation::DataExchange;
     using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;

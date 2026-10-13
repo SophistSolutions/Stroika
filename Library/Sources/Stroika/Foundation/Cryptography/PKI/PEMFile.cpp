@@ -40,7 +40,7 @@ auto PKI::PEMFile::New (const filesystem::path& pemFile) -> Ptr
 {
     return New (IO::FileSystem::FileInputStream::New (pemFile).ReadAll ());
 }
-auto PKI::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
+auto PKI::PEMFile::New ([[maybe_unused]] const Memory::BLOB& pemData) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
     return Cryptography::Providers::OpenSSL::PEMFile::New (pemData);
@@ -48,7 +48,7 @@ auto PKI::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
 }
-auto PKI::PEMFile::New (const Sequence<EntryType>& entries) -> Ptr
+auto PKI::PEMFile::New ([[maybe_unused]] const Sequence<EntryType>& entries) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
     return Cryptography::Providers::OpenSSL::PEMFile::New (entries);
