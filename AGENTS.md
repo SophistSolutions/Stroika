@@ -503,6 +503,12 @@ still compile". Say which one you did.
   then Foundation, then Frameworks.** Outside namespace `Stroika` (any .cpp, any test) plain `byte` needs that
   `using std::byte;`: Windows' `<windows.h>` declares a `::byte` too, so the name is otherwise ambiguous there (MSVC
   C2872), though it compiles everywhere else. Inside namespace `Stroika` nothing is needed - Common.h declares it.
+- **#includes: standard headers first (they cannot depend on Stroika), then Foundation, then Frameworks** - as with
+  using-declarations. Keep a low-level header's includes of other modules to a minimum - mutual includes are an
+  include-order nightmare - so prefer a forward declaration (Debug/Trace.h declares FormatString rather than including
+  Characters/Format.h, and FormatString checks its CHAR_T with a static_assert, not a constraint, so that declaration need
+  not include Common/Concepts.h). Common/StdCompat.h includes nothing of Stroika's: a thin layer over std, usable wherever
+  std is.
 - **String literals**: narrow where one initializes a `String` (`"..."sv` in library code) - but keep `L"..."_f`: a wide
   format literal is CHEAPER than a narrow one, which is widened at run time. Leave `\u`/`\x` escapes, and genuinely wide
   targets (`wchar_t` APIs, `EnumName` tables), alone. Opportunistic, not a sweep.

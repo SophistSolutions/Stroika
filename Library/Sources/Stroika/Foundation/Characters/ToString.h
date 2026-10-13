@@ -137,14 +137,12 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     String UnoverloadedToString (const T& t);
 
-    //// @todo read https://stackoverflow.com/questions/59909102/stdformat-of-user-defined-types
-    // I THINK I want to SUBCLASS from std::formatter<std::string> - or something close to that...
     /**
      *  define a 'std::formatter' for Stroika (and other types) for which formatter not already predefined - which use
      *  Characters::ToString (T)
      */
     template <IToString T>
-    struct ToStringFormatter /* : std::formatter<std::wstring>*/ {
+    struct ToStringFormatter {
         qStroika_Foundation_Characters_FMT_PREFIX_::formatter<String, wchar_t> fDelegate2_;
 
         template <class ParseContext>
@@ -157,16 +155,6 @@ namespace Stroika::Foundation::Characters {
         typename FmtContext::iterator format (T s, FmtContext& ctx) const
         {
             return fDelegate2_.format (UnoverloadedToString (s), ctx);
-#if 0
-
-            std::wstringstream out;
-            out << UnoverloadedToString (s);
-#if __cpp_lib_ranges >= 202207L
-            return std::ranges::copy (std::move (out).str (), ctx.out ()).out;
-#else
-            return Common::StdCompat::format_to (ctx.out (), L"{}", String{out.str ()});
-#endif
-#endif
         }
     };
     template <IToString T>

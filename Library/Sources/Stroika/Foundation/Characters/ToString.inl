@@ -164,16 +164,6 @@ namespace Stroika::Foundation::Characters {
             sb << "]"_k;
             return sb;
         }
-#if 0
-        // Until Stroika 3.0d6x we did this - but new format specification stuff generally better ":.100" and I think leading <> etc for which to keep? Maybe not - no way to add elipsis, maybe I can add that?
-        // @todo consider - but do differntly than this - so remove and then add somethign in spirit of new format code later
-        template <typename T>
-        inline String ToString (const T& t, StringShorteningPreference shortenPref = StringShorteningPreference::eDEFAULT, size_t maxLen2Display = 100)
-            requires (is_convertible_v<T, String>)
-        {
-            return "'"sv + static_cast<String> (t).LimitLength (maxLen2Display, shortenPref) + "'"sv;
-        }
-#endif
         template <typename T>
         inline String ToString (const T& t)
             requires (is_convertible_v<T, String>)
@@ -409,13 +399,6 @@ namespace Stroika::Foundation::Characters {
         {
             return Characters::ToString (static_cast<unsigned char> (t), ios_base::hex);
         }
-#if 0
-        inline String ToString (const filesystem::path& t, StringShorteningPreference shortenPref = StringShorteningPreference::ePreferKeepRight,
-                                size_t maxLen2Display = 100)
-        {
-            return Characters::ToString (t.wstring (), shortenPref, maxLen2Display); // wrap in 'ToString' for surrounding quotes
-        }
-#endif
         inline String ToString (const filesystem::path& t)
         {
             return t.wstring ();

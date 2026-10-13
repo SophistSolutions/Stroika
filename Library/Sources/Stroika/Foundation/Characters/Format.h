@@ -118,10 +118,11 @@ namespace Stroika::Foundation::Characters {
      *      \endcode
      * 
      */
-    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
-    //requires (Common::IAnyOf<CHAR_T,char,wchar_t>)
+    template <typename CHAR_T>
     struct FormatString {
-        static_assert (Common::IAnyOf<CHAR_T, char, wchar_t>); // not sure why this works but requires/concept applied in template not working...
+        // a static_assert rather than a constraint, so Debug/Trace.h can forward-declare FormatString without including
+        // Common/Concepts.h - a redeclaration must repeat a constraint
+        static_assert (Common::IAnyOf<CHAR_T, char, wchar_t>);
 
     public:
         /**
@@ -158,7 +159,7 @@ namespace Stroika::Foundation::Characters {
         constexpr FormatString (const basic_string_view<CHAR_T>& s, Unchecked_);
 
     private:
-        wstring_view fSV_; // maybe SB wformat_string here??
+        wstring_view fSV_;
     };
     template <typename CHAR_T>
     FormatString (const CHAR_T*) -> FormatString<CHAR_T>;
@@ -280,9 +281,8 @@ namespace Stroika::Foundation::Characters {
     }
 
     /**
-     *  Same as vformat, except always produces valid UNICODE Stroika String...
-     *   \brief same as std::vformat, except always uses wformat_args, and produces Stroika String (and maybe more - soon - ??? - add extra conversions if I can find how?)
-     * 
+     *  \brief same as std::vformat, except that it always uses wformat_args, and produces a Stroika String
+     *
      *  \note FormatString typically created with _f, as in "foo={}"_f
      */
     template <typename CHAR_T>
@@ -291,10 +291,6 @@ namespace Stroika::Foundation::Characters {
     [[nodiscard]] String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Common::StdCompat::wformat_args& args);
 
     /*
-    * 
-    *   &&& SOON TO BE OSBOLETE &&&& - NOT SURE IF/HOW MUCH WE WANT TO MAINTAIN THIS FUNCTIONALITY???
-    *   MAYBE OK - since probably not intrinsically confusing?
-    * 
      * Format is the Stroika wrapper on sprintf().
      * The main differences between sprintf () and Format are:
      *      (1)     No need for buffer management. ANY sized buffer will be automatically allocated internally and returned as a

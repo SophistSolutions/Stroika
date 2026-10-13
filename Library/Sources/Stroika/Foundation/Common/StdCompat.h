@@ -45,6 +45,9 @@
  *  This doesn't strictly violate any rules about sticking stuff into namespace std - cuz we don't. That's why we use a
  *  separate namespace (that often just indirects to the namespace std - where the function/class is defined already).
  *
+ *  A thin layer over the standard library: it includes nothing of Stroika's (beyond StroikaPreComp.h), so it is usable
+ *  wherever std is.
+ *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  */

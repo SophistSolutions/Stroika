@@ -1982,8 +1982,6 @@ namespace Stroika::Foundation::DataExchange {
 /**
  *  Allow std::format to work with String class
  *
- *  \note SUPER PRIMITIVE ROUGH FIRST DRAFT
- *
  *  \note   These specializations are written inside namespace qStroika_Foundation_Characters_FMT_PREFIX_ { ... }, NOT with
  *          the equivalent (and perfectly legal) qualified form:
  *              template <> struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<String, wchar_t> {...};

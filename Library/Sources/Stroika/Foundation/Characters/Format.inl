@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Characters {
      ***************************** FormatString<CHAR_T> *****************************
      ********************************************************************************
      */
-    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template <typename CHAR_T>
     constexpr FormatString<CHAR_T>::FormatString (const basic_string_view<CHAR_T>& s)
         : fSV_{s}
     {
@@ -89,29 +89,29 @@ namespace Stroika::Foundation::Characters {
         }
 #endif
     }
-    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template <typename CHAR_T>
     constexpr FormatString<CHAR_T>::FormatString (const basic_string_view<CHAR_T>& s, Unchecked_)
         : fSV_{s}
     {
     }
-    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template <typename CHAR_T>
     constexpr wstring_view FormatString<CHAR_T>::get () const
     {
         return fSV_;
     }
-    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template <typename CHAR_T>
     constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view FormatString<CHAR_T>::getx_ () const
     {
         return qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view{fSV_.data (), fSV_.size ()};
     }
-    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template <typename CHAR_T>
     template <IFormattable... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (ARGS&&... args) const
     {
         return Private_::WithFormatArgs_<String> (
             [this] (Common::StdCompat::wformat_args a) { return Common::StdCompat::vformat (getx_ (), a); }, args...);
     }
-    template </*Common::IAnyOf< char, wchar_t>*/ typename CHAR_T>
+    template <typename CHAR_T>
     template <IFormattable... ARGS>
     [[nodiscard]] inline String FormatString<CHAR_T>::operator() (const locale& loc, ARGS&&... args) const
     {
