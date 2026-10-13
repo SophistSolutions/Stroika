@@ -1414,11 +1414,23 @@ namespace {
         }
     }
 
+    // the first network interface SSDP talks on by default that has an IPv4 address - for a test sending out of just one
+    optional<Interface> AnSSDPInterface_ ()
+    {
+        return SystemInterfacesMgr{}.GetAll ().First ([] (const Interface& i) {
+            return SSDP::DefaultInterfaceFilter (i) and i.fBindings.fAddresses.Any ([] (const InternetAddress& a) {
+                return a.GetAddressFamily () == InternetAddress::AddressFamily::V4;
+            });
+        });
+    }
+
     /*
      *  A BasicServer that stops says so: an ssdp:byebye for each of its advertisements, out of each interface it announced on -
      *  so control points drop the device at once, rather than when its max-age (30 minutes) runs out - and no ssdp:alive after
      *  it. Its advertisements include one for each of its service types: once, however many of its services are of it (UPnP
-     *  Device Architecture 1.1, section 1.1.2). As in SSDP_Loopback_Notify_, anything that keeps the exchange from happening
+     *  Device Architecture 1.1, section 1.1.2). Server and listener on one interface, so each NOTIFY is heard just once: on a
+     *  machine with two on one network, one sent out of either comes in on the other too - by Wi-Fi, perhaps, which loses
+     *  some - and the counts would not be exact. As in SSDP_Loopback_Notify_, anything that keeps the exchange from happening
      *  is a test issue.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_Byebye_)
@@ -1443,6 +1455,12 @@ namespace {
             DeviceDescription::Service{.fServiceType = serviceType1, .fServiceID = "urn:stroika-regression-test:serviceId:A"sv},
             DeviceDescription::Service{.fServiceType = serviceType1, .fServiceID = "urn:stroika-regression-test:serviceId:B"sv},
             DeviceDescription::Service{.fServiceType = serviceType2, .fServiceID = "urn:stroika-regression-test:serviceId:C"sv}};
+        optional<Interface> via = AnSSDPInterface_ ();
+        if (not via) {
+            Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_Byebye_ skipped - no network interface with an IPv4 address");
+            return;
+        }
+        const SSDP::InterfaceFilter onlyVia = [id = via->fInterfaceID] (const Interface& i) { return i.fInterfaceID == id; };
         Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> heard; // Synchronized: the listener calls back on its own thread
         Execution::WaitableEvent                                           aliveHeard;
         Execution::WaitableEvent                                           byebyeHeard;
@@ -1453,17 +1471,17 @@ namespace {
                                                     (a.fAlive == false ? byebyeHeard : aliveHeard).Set ();
                                                 }
                                             },
-                                            SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only},
+                                            SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only, .fInterfaces = onlyVia},
                                             SSDP::Client::Listener::eAutoStart};
             {
                 SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
-                                                 SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+                                                 SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only, .fInterfaces = onlyVia}};
                 if (aliveHeard.WaitQuietly (10s) != Execution::WaitableEvent::WaitStatus::eTriggered) {
                     Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_Byebye_ skipped - our own NOTIFY was not heard within 10 "
                                                               "seconds (this environment probably blocks multicast, or UDP 1900)");
                     return;
                 }
-                Execution::Sleep (1s); // and the ones out of the other interfaces: each its own socket, read in no set order
+                Execution::Sleep (1s); // and the rest of that round of ssdp:alive - its second set, 100 ms after the first
             } // the server stops
             EXPECT_TRUE (byebyeHeard.WaitQuietly (10s) == Execution::WaitableEvent::WaitStatus::eTriggered)
                 << "no ssdp:byebye heard after the server stopped";
@@ -1917,8 +1935,10 @@ namespace {
     /*
      *  A CachingListener keeps each advertisement - a USN at a LOCATION - from its ssdp:alive until its max-age runs out, or an
      *  ssdp:byebye withdraws its device (one, for any of the device's advertisements, withdraws them all); and tells its
-     *  callbacks of each change, once. Told by NOTIFYs this test sends itself, out of each interface - so each arrives more than
-     *  once, as a device's do. As in SSDP_Loopback_Notify_, anything that keeps the exchange from happening is a test issue.
+     *  callbacks of each change, once. Told by NOTIFYs this test sends itself, each twice - so each arrives more than once, as a
+     *  device's do - and out of the one interface it listens on: on a machine with two on one network, one sent out of either
+     *  comes in on the other too, by Wi-Fi perhaps, late enough to come after the next. As in SSDP_Loopback_Notify_, anything
+     *  that keeps the exchange from happening is a test issue.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_CachingListener_)
     {
@@ -1960,35 +1980,32 @@ namespace {
             }
             return told.cget ()->size () >= n;
         };
+        optional<Interface> via = AnSSDPInterface_ ();
+        if (not via) {
+            Stroika::Frameworks::Test::WarnTestIssue ("SSDP_CachingListener_ skipped - no network interface with an IPv4 address");
+            return;
+        }
+        const SSDP::InterfaceFilter onlyVia = [id = via->fInterfaceID] (const Interface& i) { return i.fInterfaceID == id; };
         try {
             CachingListener cache{[&] (const SSDP::Advertisement& a) {
                                       if (a.fUSN.Contains (deviceID)) {
                                           told.rwget ()->Append (a);
                                       }
                                   },
-                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = nullopt},
+                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only, .fInterfaces = onlyVia},
+                                                           .fSearchFor = nullopt},
                                   CachingListener::eAutoStart};
             auto            cached = [&] () {
                 return Containers::Sequence<SSDP::Advertisement>{
                     cache.GetAdvertisements ().Where ([&] (const SSDP::Advertisement& a) { return a.fUSN.Contains (deviceID); })};
             };
-            // out of each interface it listens on, as a device's NOTIFYs come
             ConnectionlessSocket::Ptr sender = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             sender.SetMulticastLoopMode (true); // so this process hears it
+            sender.SetMulticastInterface (*via);
             auto notify = [&] (const SSDP::Advertisement& a) {
                 Memory::BLOB packet = SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SSDP::SearchOrNotify::Notify, a, SSDP::V4::kSocketAddress);
-                for (const Interface& i : SystemInterfacesMgr{}.GetAll ()) {
-                    if (SSDP::DefaultInterfaceFilter (i) and i.fBindings.fAddresses.Any ([] (const InternetAddress& ia) {
-                            return ia.GetAddressFamily () == InternetAddress::AddressFamily::V4;
-                        })) {
-                        try {
-                            sender.SetMulticastInterface (i);
-                            sender.SendTo (packet, SSDP::V4::kSocketAddress);
-                        }
-                        catch (...) {
-                            DbgTrace ("could not send on {}: {}"_f, i.fInterfaceID, current_exception ());
-                        }
-                    }
+                for (int i = 0; i < 2; ++i) {
+                    sender.SendTo (packet, SSDP::V4::kSocketAddress);
                 }
             };
             notify (alive ("upnp:rootdevice"sv, rootUSN, location1, 60s));
@@ -2035,7 +2052,7 @@ namespace {
         EXPECT_EQ (Execution::IntervalTimer::Manager::sThe.GetAllRegisteredTasks ().size (), 0u);
         Containers::Sequence<SSDP::Advertisement> changes = told.load ();
         DbgTrace ("told: {}"_f, changes);
-        // each change told once, in order - though each NOTIFY came once per interface; fAlive says which: added or removed
+        // each change told once, in order - though each NOTIFY came twice; fAlive says which: added or removed
         ASSERT_EQ (changes.size (), 9u);
         auto is = [] (const SSDP::Advertisement& a, bool alive, const String& usn, const URI& location) {
             return a.fAlive == alive and a.fUSN == usn and a.fLocation == location;
@@ -2376,16 +2393,6 @@ namespace {
                     .c_str ());
             return;
         }
-    }
-
-    // the first network interface SSDP talks on by default that has an IPv4 address - for a test sending out of just one
-    optional<Interface> AnSSDPInterface_ ()
-    {
-        return SystemInterfacesMgr{}.GetAll ().First ([] (const Interface& i) {
-            return SSDP::DefaultInterfaceFilter (i) and i.fBindings.fAddresses.Any ([] (const InternetAddress& a) {
-                return a.GetAddressFamily () == InternetAddress::AddressFamily::V4;
-            });
-        });
     }
 
     /*
