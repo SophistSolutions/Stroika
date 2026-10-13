@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
@@ -190,26 +191,91 @@ namespace Stroika::Frameworks::WebService::SOAP {
     };
 
     /**
+     *  \brief The SOAP 1.1 envelope schema, compiled for that provider - embedded, so nothing is fetched and no
+     *         Resource::Resolver is wanted (it imports and includes nothing)
+     *
+     *  What it checks is the ENVELOPE: that Body holds what a Body may, that a Fault's children are the ones SOAP names
+     *  and unqualified, that encodingStyle is qualified. A Body's own content is xs:any to it, so a message's payload is
+     *  the caller's business, not this schema's.
+     *
+     *  Compiled once per provider and kept, compiling not being free. Ask for it only where it is wanted: it carries the
+     *  schema's 6K, in a translation unit of its own, so a program that never calls this never links either.
+     *
+     *  \note The schema is http://schemas.xmlsoap.org/soap/envelope/ verbatim, under the W3C Software License, whose
+     *        notice travels with it - @see Schemas/soap-envelope-1.1.xsd
+     */
+    DataExchange::XML::Schema::Ptr EnvelopeSchema (const DataExchange::XML::Providers::ISchemaProvider& p);
+
+    /**
+     *  \brief What SOAP must be told that has a sensible default - taken by Serialize and DeSerialize, defaulted, so a
+     *         caller says only what it wants different
+     */
+    struct Options {
+        /**
+         *  \brief Read and write XML with this provider - nullptr, the default, meaning DataExchange::XML::Providers::kDefaultProvider
+         */
+        const DataExchange::XML::Providers::IXMLProvider* fXMLProvider{nullptr};
+
+        /**
+         *  \brief Check a message being READ against this schema, throwing where it does not hold - nullptr, the
+         *         default, checking nothing
+         *
+         *      \code
+         *          // told early rather than half understanding a message
+         *          const SOAP::Options kStrict_{.fValidateReadAgainst = SOAP::EnvelopeSchema (*XML::Providers::kDefaultProvider ())};
+         *      \endcode
+         *
+         *  Nothing by default, because validating refuses messages that work today, and SOAP 1.1 itself is why. Its
+         *  prose (section 4.1.1) says of encodingStyle "This attribute MAY appear on any element"; all six of its
+         *  example messages put it on the Envelope; and its schema declares Envelope with
+         *  <xs:anyAttribute namespace="##other">, which excludes SOAP's own namespace and so forbids exactly that.
+         *  Stacks followed the prose and the examples, as Stroika did until a schema was pointed at it, so an
+         *  encodingStyle on the Envelope is what much of the world sends - Tests/54's SOAP_Others_, written from what
+         *  other stacks emit, is two such messages, in two prefix styles, one carrying Microsoft's
+         *  urn:schemas-microsoft-com:datatypes attributes. A library that validated by default would refuse traffic it
+         *  has always answered, which is not a library's decision to make.
+         *
+         *  \note Naming the schema here, rather than this being a flag that reaches for one, is also what lets a program
+         *        that never validates not carry it: nothing inside SOAP mentions EnvelopeSchema, so its 6K is linked
+         *        only by a caller that asks for it (@see EnvelopeSchema).
+         *
+         *  \note What Stroika WRITES does validate - @see Tests/56's SOAP_ValidatesAgainstItsSchema_, which is what
+         *        found the Envelope/encodingStyle problem in the first place.
+         */
+        DataExchange::XML::Schema::Ptr fValidateReadAgainst{nullptr};
+
+#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
+        /**
+         *  \brief fXMLProvider, or Stroika's default where that is nullptr - the one Serialize and DeSerialize actually use
+         */
+        nonvirtual const DataExchange::XML::Providers::IXMLProvider& GetXMLProvider () const
+        {
+            return fXMLProvider == nullptr ? *DataExchange::XML::Providers::kDefaultProvider () : *fXMLProvider;
+        }
+#endif
+    };
+
+    /**
      *  \brief The SOAP message - its XML, UTF-8 - which sends it: a call, its answer, or a fault
      */
-    Memory::BLOB Serialize (const Request& request);
-    Memory::BLOB Serialize (const Response& response); ///< \brief The SOAP message - its XML, UTF-8 - which sends it
-    Memory::BLOB Serialize (const Fault& fault);       ///< \brief The SOAP message - its XML, UTF-8 - which sends it
+    Memory::BLOB Serialize (const Request& request, const Options& options = {});
+    Memory::BLOB Serialize (const Response& response, const Options& options = {}); ///< \brief The SOAP message - its XML, UTF-8 - which sends it
+    Memory::BLOB Serialize (const Fault& fault, const Options& options = {}); ///< \brief The SOAP message - its XML, UTF-8 - which sends it
 
     /**
      *  \brief The SOAP message read: what Serialize writes, and any other's. Throws DataExchange::BadFormatException if it is not
      *         one - a Response read from a fault, say; and throws in a build with no XML parser.
      */
-    void DeSerialize (const Memory::BLOB& b, Request* request);
-    void DeSerialize (const Memory::BLOB& b, Response* response); ///< \brief The SOAP message read
-    void DeSerialize (const Memory::BLOB& b, Fault* fault);       ///< \brief The SOAP message read
+    void DeSerialize (const Memory::BLOB& b, Request* request, const Options& options = {});
+    void DeSerialize (const Memory::BLOB& b, Response* response, const Options& options = {}); ///< \brief The SOAP message read
+    void DeSerialize (const Memory::BLOB& b, Fault* fault, const Options& options = {});       ///< \brief The SOAP message read
 
     /**
      *  \brief Call a method: POST request to url, with soapAction (in quotes, as SOAPAction headers are: section 6.1.1) - and
      *         return its answer. Throws FaultException if answered with a fault; another failed HTTP response as
      *         IO::Network::Transfer::Exception; an answer that is not SOAP as DataExchange::BadFormatException.
      */
-    Response Invoke (const URI& url, const String& soapAction, const Request& request);
+    Response Invoke (const URI& url, const String& soapAction, const Request& request, const Options& options = {});
 
     /**
      *  \brief Answer a call, at its URL's route: 415 (Unsupported Media Type) if its body is not text/xml; else its Request read

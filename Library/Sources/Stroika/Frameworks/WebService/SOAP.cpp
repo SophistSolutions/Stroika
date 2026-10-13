@@ -62,15 +62,17 @@ namespace {
         XML::DOM::Document::Ptr fDoc;
         WriteElement::Ptr       fBody;
 
-        Envelope_ ()
+        Envelope_ (const Options& options)
         {
-            fDoc                       = XML::DOM::Document::New (XML::NameWithNamespace{kEnvelopeNamespaceURI_, "Envelope"sv});
+            fDoc = XML::DOM::Document::New (options.GetXMLProvider (), XML::NameWithNamespace{kEnvelopeNamespaceURI_, "Envelope"sv});
             WriteElement::Ptr envelope = fDoc.GetRootElement ();
             // the prefix by which everyone writes SOAP - declared, and not left to whatever a provider would invent,
             // because a Fault's code NAMES it in text (@see Serialize (const Fault&)) and so it must be one we know
             envelope.SetAttribute (XML::NameWithNamespace{XML::kXMLNS.fNamespace, kEnvelopePrefix_}, kEnvelopeNamespaceURI_.As<String> ());
-            envelope.SetAttribute (XML::NameWithNamespace{kEnvelopeNamespaceURI_, "encodingStyle"sv}, kEncodingNamespaceURI_.As<String> ());
             fBody = envelope.Append ("Body"sv);
+            // on the BODY: SOAP 1.1's schema lets an Envelope carry attributes of ##other namespaces only, so one of its
+            // OWN - s:encodingStyle - is not allowed there, where a Body takes ##any
+            fBody.SetAttribute (XML::NameWithNamespace{kEnvelopeNamespaceURI_, "encodingStyle"sv}, kEncodingNamespaceURI_.As<String> ());
         }
         Memory::BLOB Write () const
         {
@@ -96,7 +98,7 @@ namespace {
 
     // f (the Body's one element - a call, an answer, or a fault), while its document is kept: its elements do not keep it
     template <typename RESULT>
-    RESULT WithBodyElement_ (const Memory::BLOB& b, const function<RESULT (const Element::Ptr&)>& f)
+    RESULT WithBodyElement_ (const Memory::BLOB& b, const Options& options, const function<RESULT (const Element::Ptr&)>& f)
     {
         using namespace XML::DOM;
         auto child = [] (const Element::Ptr& e, const optional<String>& name) -> Element::Ptr {
@@ -107,10 +109,12 @@ namespace {
             }
             return nullptr;
         };
-        Document::Ptr doc      = Document::New (b.As<Streams::InputStream::Ptr<std::byte>> ());
-        Element::Ptr  envelope = doc.GetRootElement ();
-        Element::Ptr  body     = envelope == nullptr or envelope.GetName ().fName != "Envelope"sv ? nullptr : child (envelope, "Body"sv);
-        Element::Ptr  top      = body == nullptr ? nullptr : child (body, nullopt);
+        // a schema, where the caller named one, is checked AS it reads - so a message that does not hold throws here
+        // rather than being half understood. Named, never reached for: @see Options::fValidateReadAgainst on why
+        Document::Ptr doc = Document::New (options.GetXMLProvider (), b.As<Streams::InputStream::Ptr<std::byte>> (), options.fValidateReadAgainst);
+        Element::Ptr envelope = doc.GetRootElement ();
+        Element::Ptr body     = envelope == nullptr or envelope.GetName ().fName != "Envelope"sv ? nullptr : child (envelope, "Body"sv);
+        Element::Ptr top      = body == nullptr ? nullptr : child (body, nullopt);
         if (top == nullptr) {
             Execution::Throw (BadFormatException{"not a SOAP message: no element in an Envelope's Body"sv});
         }
@@ -223,23 +227,23 @@ Fault FaultException::GetFault () const
  ************************** WebService::SOAP::Serialize *************************
  ********************************************************************************
  */
-Memory::BLOB SOAP::Serialize (const Request& request)
+Memory::BLOB SOAP::Serialize (const Request& request, const Options& options)
 {
-    Envelope_ envelope;
+    Envelope_ envelope{options};
     AppendMethodElement_ (envelope.fBody, request.fMethod, request.fNamespace, request.fArguments);
     return envelope.Write ();
 }
 
-Memory::BLOB SOAP::Serialize (const Response& response)
+Memory::BLOB SOAP::Serialize (const Response& response, const Options& options)
 {
-    Envelope_ envelope;
+    Envelope_ envelope{options};
     AppendMethodElement_ (envelope.fBody, response.fMethod + "Response"sv, response.fNamespace, response.fArguments);
     return envelope.Write ();
 }
 
-Memory::BLOB SOAP::Serialize (const Fault& fault)
+Memory::BLOB SOAP::Serialize (const Fault& fault, const Options& options)
 {
-    Envelope_         envelope;
+    Envelope_         envelope{options};
     WriteElement::Ptr faultElt = envelope.fBody.Append ("Fault"sv);
     // SOAP 1.1 has a Fault's own children unqualified (section 4.4), where the envelope's namespace would be inherited
     // a QName, naming the envelope namespace through the prefix declared on it (section 4.4)
@@ -260,11 +264,11 @@ Memory::BLOB SOAP::Serialize (const Fault& fault)
  ************************* WebService::SOAP::DeSerialize ************************
  ********************************************************************************
  */
-void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Request* request)
+void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Request* request, [[maybe_unused]] const Options& options)
 {
     RequireNotNull (request);
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
-    *request = WithBodyElement_<Request> (b, [] (const Element::Ptr& e) {
+    *request = WithBodyElement_<Request> (b, options, [] (const Element::Ptr& e) {
         if (IsFault_ (e)) {
             Execution::Throw (BadFormatException{"not a SOAP call: a fault"sv});
         }
@@ -275,11 +279,11 @@ void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Request* request
 #endif
 }
 
-void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Response* response)
+void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Response* response, [[maybe_unused]] const Options& options)
 {
     RequireNotNull (response);
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
-    *response = WithBodyElement_<Response> (b, [] (const Element::Ptr& e) {
+    *response = WithBodyElement_<Response> (b, options, [] (const Element::Ptr& e) {
         const String name = e.GetName ().fName;
         if (IsFault_ (e) or not name.EndsWith ("Response"sv)) {
             Execution::Throw (BadFormatException{"not a SOAP call's answer: {}"_f(name)});
@@ -291,11 +295,11 @@ void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Response* respon
 #endif
 }
 
-void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Fault* fault)
+void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Fault* fault, [[maybe_unused]] const Options& options)
 {
     RequireNotNull (fault);
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
-    *fault = WithBodyElement_<Fault> (b, [] (const Element::Ptr& e) {
+    *fault = WithBodyElement_<Fault> (b, options, [] (const Element::Ptr& e) {
         if (not IsFault_ (e)) {
             Execution::Throw (BadFormatException{"not a SOAP fault: {}"_f(e.GetName ().fName)});
         }
@@ -330,7 +334,7 @@ void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Fault* fault)
  **************************** WebService::SOAP::Invoke **************************
  ********************************************************************************
  */
-SOAP::Response SOAP::Invoke (const URI& url, const String& soapAction, const Request& request)
+SOAP::Response SOAP::Invoke (const URI& url, const String& soapAction, const Request& request, const Options& options)
 {
     Transfer::Connection::Ptr c = Transfer::Connection::New ();
     c.SetSchemeAndAuthority (url.GetSchemeAndAuthority ());
@@ -338,18 +342,18 @@ SOAP::Response SOAP::Invoke (const URI& url, const String& soapAction, const Req
     r.fMethod               = HTTP::Methods::kPost;
     r.fAuthorityRelativeURL = url.GetAuthorityRelativeResource<URI> ();
     r.fOverrideHeaders      = Containers::Mapping<String, String>{{String{HTTP::HeaderName::kSOAPAction}, soapAction}};
-    r.SetTypedBLOB (TypedBLOB{.fData = Serialize (request), .fType = kContentType});
+    r.SetTypedBLOB (TypedBLOB{.fData = Serialize (request, options), .fType = kContentType});
     Transfer::Response answer = c.Send (r); // not SendAndThrowOnFailure: a fault's answer - status 500 - says what the fault was
     if (answer.GetSucceeded ()) {
         Response response;
-        DeSerialize (answer.GetData (), &response);
+        DeSerialize (answer.GetData (), &response, options);
         return response;
     }
     if (answer.GetStatus () == HTTP::StatusCodes::kInternalError) {
         optional<Fault> fault;
         try {
             Fault f;
-            DeSerialize (answer.GetData (), &f);
+            DeSerialize (answer.GetData (), &f, options);
             fault = f;
         }
         catch (const BadFormatException&) {

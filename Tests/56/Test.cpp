@@ -240,6 +240,56 @@ namespace {
      *  SOAP's messages: a call, its answer, and a fault (with and without detail) - each read back as written, with values XML
      *  must quote, one not ASCII, and an empty one - and each read as what it is not, refused.
      */
+    /*
+     *  What Serialize writes holds against SOAP 1.1's own envelope schema - which is the only thing that can say so, our
+     *  own reader being as lenient as it must be. The schema declares just what was argued about by eye: a Fault's
+     *  children unqualified, encodingStyle qualified, and what a Body may hold.
+     */
+    GTEST_TEST (Frameworks_WebService, SOAP_ValidatesAgainstItsSchema_)
+    {
+        Debug::TraceContextBumper ctx{"SOAP_ValidatesAgainstItsSchema_"};
+        const SOAP::Options       kValidating_{.fValidateReadAgainst = SOAP::EnvelopeSchema (*XML::Providers::kDefaultProvider ())};
+        // a call, its answer, a fault, and a fault carrying XML of someone else's
+        const SOAP::Request kRequest_{
+            .fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Symbol"sv, "IBM & <co>"sv}, {"Qty"sv, "100"sv}}};
+        const SOAP::Response kResponse_{.fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Price"sv, "1.23"sv}}};
+        const SOAP::Fault kFault_{.fFaultCode = SOAP::Fault::kClient, .fFaultString = "bad"sv};
+        const SOAP::Fault kFaultWithDetail_{
+            .fFaultCode = SOAP::Fault::kServer, .fFaultString = "later"sv, .fDetail = "<x:Why xmlns:x=\"urn:example:why\">because</x:Why>"sv};
+        {
+            SOAP::Request back;
+            EXPECT_NO_THROW (SOAP::DeSerialize (SOAP::Serialize (kRequest_), &back, kValidating_));
+            EXPECT_EQ (back, kRequest_);
+        }
+        {
+            SOAP::Response back;
+            EXPECT_NO_THROW (SOAP::DeSerialize (SOAP::Serialize (kResponse_), &back, kValidating_));
+            EXPECT_EQ (back, kResponse_);
+        }
+        for (const SOAP::Fault& f : {kFault_, kFaultWithDetail_}) {
+            SOAP::Fault back;
+            EXPECT_NO_THROW (SOAP::DeSerialize (SOAP::Serialize (f), &back, kValidating_)) << f.ToString ().AsNarrowSDKString ();
+            EXPECT_EQ (back, f);
+        }
+        // the envelope Stroika wrote BEFORE it built one with the DOM (a8e0307e90) - held then, and must still
+        constexpr string_view kHandWritten_ =
+            "<?xml version=\"1.0\"?>\r\n"
+            "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+            "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+            "<s:Body><s:Fault><faultcode>s:Client</faultcode><faultstring>bad</faultstring></s:Fault></s:Body></s:Envelope>\r\n"sv;
+        SOAP::Fault wasWritten;
+        // ... did NOT hold: s:encodingStyle sat on the Envelope, whose anyAttribute is ##other, so an attribute of SOAP's
+        // own namespace was never allowed there. That is what moved to the Body
+        EXPECT_THROW (SOAP::DeSerialize (Memory::BLOB{as_bytes (span{kHandWritten_})}, &wasWritten, kValidating_), BadFormatException);
+        // but it is still READ by default - as a message from any stack that does the same must be
+        EXPECT_NO_THROW (SOAP::DeSerialize (Memory::BLOB{as_bytes (span{kHandWritten_})}, &wasWritten, SOAP::Options{}));
+        EXPECT_EQ (wasWritten, kFault_) << "and means the same as what is written now";
+        // and something that is NOT a SOAP envelope is caught by the schema, not merely tolerated
+        constexpr string_view kNotSOAP_ = "<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\"><Nonsense/></Envelope>"sv;
+        SOAP::Request         ignored;
+        EXPECT_ANY_THROW (SOAP::DeSerialize (Memory::BLOB{as_bytes (span{kNotSOAP_})}, &ignored, kValidating_));
+    }
+
     GTEST_TEST (Frameworks_WebService, SOAP_RoundTrip_)
     {
         Debug::TraceContextBumper ctx{"SOAP_RoundTrip_"};

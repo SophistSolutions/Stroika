@@ -8,6 +8,8 @@ Generally will track stuff here between releases
 
 ## Open
 
+- config var name ObjDir_ToolsSafe funny name - probably lose the Safe!! part and DOCUMENT what it means!
+
 - Consider rewrite of remaining perl stuff - mostly configure - to use python?
 
 - MakeBuildRoot / out-of-source builds: moved to
@@ -32,6 +34,30 @@ Generally will track stuff here between releases
          own tests. #955 (a web service answering JSON or XML) is unblocked by the same work, and not started.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
+   - **Validate the UPnP descriptions against their schemas too** (LGP 2026-10-13). SOAP's is done - its envelope schema
+     is embedded and Tests/56 checks what Serialize writes, which caught encodingStyle sitting where the schema forbids
+     it. The same for UPnP's published device-1-0 and service-1-0 schemas would check the two descriptions, which are now
+     DOM-built and have never been checked against anything but their own round trip. The SOAP one imported nothing, so
+     it needed no Resolver; do not assume UPnP's are as simple.
+   - **An element cannot be created with a namespace PREFIX of one's choosing** (2026-10-13; after the XSD work above,
+     which may well settle whether it matters). Creating one in a namespace always declares that namespace as the DEFAULT
+     (xmlns=), and nothing says "in this namespace, written s:Envelope". a8e0307e90's SOAP envelope shows the three
+     symptoms it causes, all legal, none what a SOAP writer would choose:
+       - the envelope namespace is declared TWICE, `xmlns=` and `xmlns:s=`, since s:encodingStyle and the faultcode QName
+         s:Client need a prefixed binding while the elements have the default one
+       - Envelope/Body/Fault come out unprefixed, where every other SOAP stack writes s:Envelope
+       - every unqualified child then needs an explicit xmlns="" to escape the default - <faultcode xmlns="">, <Symbol
+         xmlns=""> - which it would not if the envelope declared no default at all
+     Fixing it would make the output byte-near-identical to the hand-written envelope that preceded a8e0307e90, so it also
+     retires that commit's UPGRADE NOTE. The root element is the hard part: Document::New names it, so the prefix would
+     have to be said there (or a prefix made settable on an element after the fact, which both providers can do - libxml2
+     xmlNewNs + reassign node->ns, Xerces setPrefix).
+   - **Variant::XML + XML::Binding has no caller** (2026-10-13) - built, and Tests/32 exercises it, but nothing in Stroika
+     writes through it: UPnP's two descriptions and SOAP all went to the DOM instead, which suits a document whose shape is
+     fixed and which carries XML of someone else's. What Variant::XML is actually for is a value that must serve EITHER
+     format - #955, a web service answering JSON or XML from one ObjectVariantMapper - so that, or #1217 (generate a
+     Binding from an ObjectVariantMapper), is what would drive it against a real schema from a real caller. Until one
+     does, it is a capability tested only by its own tests.
    - **Variant::XML::Writer.h's TODO block is mostly wrong or dated** (2026-10-12) - "probably wrong, and certainly
      incomplete, but it is now at the point of being testable" was written before any of this release's work, and Tests/32
      asserts against it now. Of the rest: the XML declaration and pretty-printing are no longer wishes but unconditional
