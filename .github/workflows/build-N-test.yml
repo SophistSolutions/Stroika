@@ -232,6 +232,10 @@ jobs:
           df -h
           du -hs Builds/*/* IntermediateFiles/*/* ThirdPartyComponents/*
       - name: Run Tests
+        env:
+          # UBSan reports and carries on by default - into a log nobody reads, the job green; halting fails the test (ASan
+          # halts already). Local release runs need not: their summary counts each 'runtime error:' line
+          UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
         run: |
           make run-tests
       - name: Save space
@@ -341,6 +345,9 @@ jobs:
         run: |
           make tests
       - name: Run-Tests
+        env:
+          # as for Linux: a UBSan finding fails the test, rather than printing into a green log
+          UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
         run: |
           make run-tests
       - name: Workaround GitHub-Actions-MacOS Issue with env.TMPDIR

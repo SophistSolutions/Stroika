@@ -67,14 +67,17 @@ Generally will track stuff here between releases
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
-       - **GitHub Actions runs no sanitizer or valgrind job at all** - so dynamic analysis is entirely
-         a local-release-run activity. Worth deciding if that is intentional.
+       - **GitHub Actions runs ASan+UBSan, but no TSan or valgrind** (corrected 2026-10-13). Each Debug job's
+         --apply-default-debug-flags turns them on - ASan+UBSan with gcc and clang (not on 22.04), UBSan alone on macOS,
+         ASan with MSVC - so clang++-22-debug and the two Windows x86 Debug jobs run them on every push. Since 2026-10-13 a
+         UBSan finding fails the test there (UBSAN_OPTIONS=halt_on_error=1); before, it printed into a green log. TSan and
+         valgrind stay local-release-run only: TSan in CI waits for #1205's work (3.0d26), valgrind is too slow for it.
        - msan is not usable with gcc (clang-only, and needs a specially rebuilt libc++) - see the note
          near the top of MakeRegressionTestConfigurations. So the realistic menu is asan/ubsan/leak,
          tsan, and valgrind - and valgrind does find what the first two cannot: its first 26.04 run caught
          libstdc++'s from_chars overread (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=127666), which ASan missed.
-       - **every sanitizer configuration is a `g++-*` one - there is no clang asan/tsan/ubsan anywhere**
-         (noted 2026-09-10 during the compiler-coverage audit). clang's sanitizers are the better-supported
+       - **no clang TSan anywhere** - every TSan configuration is a `g++-*` one (clang's ASan+UBSan do run: in CI, and in
+         the local clang Debug configurations - corrected 2026-10-13). clang's sanitizers are the better-supported
          ones upstream and diagnose somewhat different things, so this is a real second axis of the same
          single-platform problem, not a duplicate of it.
        - **no tool sees inside BlockAllocator's pools**, though block allocation is on by default -
