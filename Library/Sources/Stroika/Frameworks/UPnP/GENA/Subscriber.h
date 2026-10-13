@@ -75,6 +75,9 @@ namespace Stroika::Frameworks::UPnP::GENA {
 
     public:
         /**
+         *  \note There is nothing here to validate a NOTIFY against, where a description has one (@see
+         *        UPnP::Options::fValidateReadAgainst) - @see GENA::Publisher::Options, which says why no schema for an
+         *        event can exist.
          */
         struct Options {
             /**

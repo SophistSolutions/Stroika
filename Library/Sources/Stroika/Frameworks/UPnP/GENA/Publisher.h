@@ -59,6 +59,14 @@ namespace Stroika::Frameworks::UPnP::GENA {
     class Publisher {
     public:
         /**
+         *  \note There is nothing here to validate an event against, where a description has one (@see
+         *        UPnP::Options::fValidateReadAgainst). An event's elements are NAMED FOR THE STATE VARIABLES
+         *        themselves, so no fixed schema could describe one. What UPnP publishes as event-1-0.xsd, beside the
+         *        two real schemas, is a template for a device author to fill in - it declares
+         *        <xsd:element name="[stateVariableName]">, twice, once for simple and once for complex content - and
+         *        brackets are not legal in an XML name, so it compiles with nothing (libxml2, Xerces and .NET's
+         *        XmlSchemaSet all refuse it, 2026-10-13). Nobody validates eventing: pupnp ships no schemas at all,
+         *        and GUPnP renders exactly the two that are real.
          */
         struct Options {
             /**
