@@ -72,8 +72,16 @@ namespace Stroika::Foundation::Characters {
     }
 
     /**
-     *  \brief Roughly equivalent to std::wformat_string, except that it can be constructed from 'char' string, and if 'char' require ASCII characters for format string
-     * 
+     *  \brief Stroika's format string: it always formats WIDE - each argument as std::formatter<T, wchar_t> formats it - into a
+     *         String; written narrow ("..."_f) only as a terser spelling, so then it must be ASCII
+     *
+     *  Only the format string must be ASCII - so what a narrow one means cannot depend on the compiler's narrow character set;
+     *  what is formatted into it, a String say, may be any UNICODE.
+     *
+     *  For narrow output instead - a std::string, in the program's narrow character set - use std::format with a narrow format
+     *  string. Stroika's own types format there too (a String as AsNarrowSDKString (eIgnoreErrors) gives it), but not what only
+     *  _f adds: the types std::format cannot format, formatted through their Characters::ToString (@see IFormattable).
+     *
      *  \note - the string argument to FormatString must have application lifetime (@see String::FromStringConstant), as it is
      *        saved by reference. This is meant to be used with "foo={}"_f syntax - with constant c strings. (FormatString<char>
      *        keeps its own, widened, copy - so only FormatString<wchar_t>'s argument must.) Debug builds check it.
@@ -257,7 +265,8 @@ namespace Stroika::Foundation::Characters {
     /**
      * \brief Create a format-string (see std::wformat_string or Stroika FormatString, or python 'f' strings) - a FormatLiteral
      *
-     *  The literal must be ASCII if narrow (a compile-time error otherwise).
+     *  The literal must be ASCII if narrow (a compile-time error otherwise) - narrow or wide, it formats wide, into a String
+     *  (@see FormatString).
      *
      *  \par Example Usage
      *      \code
