@@ -1974,7 +1974,8 @@ namespace {
             }
             // either way the namespaces MEAN the same, which is what a reader sees
             for (const optional<String>& prefix : {optional<String>{"s"sv}, optional<String>{}}) {
-                const string  writtenUTF8 = build (prefix).AsUTF8<string> ();
+                const String  writtenStr  = build (prefix);
+                const string  writtenUTF8 = writtenStr.AsUTF8<string> ();
                 Document::Ptr reRead      = domFactory (BLOB{as_bytes (span{writtenUTF8})}, nullptr);
                 Element::Ptr  root        = reRead.GetRootElement ();
                 EXPECT_EQ (root.GetName ().fNamespace, kNS_) << writtenUTF8;
