@@ -163,9 +163,47 @@ namespace {
             RegisterResolver_    registerResolver{resolver};
             xmlSchemaParserCtxt* schemaParseContext =
                 xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (fSchemaData.data ()), static_cast<int> (fSchemaData.size ()));
+            Execution::ThrowIfNull (schemaParseContext); // this one IS an allocation, so bad_alloc is what it means
+            /*
+             *  What is WRONG with the schema comes through these callbacks and nowhere else: xmlSchemaParse answers only
+             *  nullptr. Without them libxml2 prints its diagnostic to stderr, which is not a library's business, and the
+             *  caller is left with nothing to go on - as it was before Stroika v3.0d25, when the nullptr went to
+             *  Execution::ThrowIfNull and so came out as std::bad_alloc.
+             */
+            struct ParseCB_ {
+                static void warnFun ([[maybe_unused]] void* ctx, [[maybe_unused]] const char* msg, ...)
+                {
+                    DbgTrace ("schema parse warn function ignored"_f);
+                }
+                static void errFun (void* ctx, const char* msg, ...)
+                {
+                    // keep the first, as the validation callback below does
+                    auto useCtx = reinterpret_cast<ParseCB_*> (ctx);
+                    if (useCtx->msg.empty ()) {
+                        va_list argsList;
+                        va_start (argsList, msg);
+                        auto b = Characters::CString::FormatV (msg, argsList);
+                        va_end (argsList);
+                        useCtx->msg = String{"Failed to compile schema: "_k + NarrowSDK2Wide (b, Characters::eIgnoreErrors)}.Trim ();
+                    }
+                }
+                String msg;
+            };
+            ParseCB_ parseCB;
+            xmlSchemaSetParserErrors (schemaParseContext, &ParseCB_::errFun, &ParseCB_::warnFun, &parseCB);
             fCompiledSchema = xmlSchemaParse (schemaParseContext);
             xmlSchemaFreeParserCtxt (schemaParseContext);
-            Execution::ThrowIfNull (fCompiledSchema);
+            if (fCompiledSchema == nullptr) [[unlikely]] {
+                optional<unsigned int> lineNumber;
+                optional<unsigned int> columnNumber;
+                if (const xmlError* err = xmlGetLastError ()) {
+                    lineNumber = static_cast<unsigned int> (err->line);
+                    if (static_cast<unsigned int> (err->int2) != 0) {
+                        columnNumber = static_cast<unsigned int> (err->int2);
+                    }
+                }
+                Execution::Throw (BadFormatException{parseCB.msg.empty () ? "Failed to compile schema"_k : parseCB.msg, lineNumber, columnNumber, nullopt});
+            }
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
 #endif

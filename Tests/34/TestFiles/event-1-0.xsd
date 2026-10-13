@@ -1,0 +1,33 @@
+<xsd:schema targetNamespace="urn:schemas-upnp-org:event-1-0"
+ xmlns="urn:schemas-upnp-org:event-1-0"
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="propertyset" type="propertysetType"/>
+	<xsd:complexType name="propertysetType">
+		<xsd:sequence>
+			<xsd:element name="property" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<!-- Use this for a stateVariable of simple content. -->
+						<xsd:element name="[stateVariableName]" form="unqualified">
+							<xsd:complexType>
+								<xsd:simpleContent>
+									<xsd:extension base="[stateVariableType]">
+										<xsd:anyAttribute namespace="##other" processContents="lax"/>
+									</xsd:extension>
+								</xsd:simpleContent>
+							</xsd:complexType>
+						</xsd:element>
+						<!-- Use this for a stateVariable of complex content. -->
+						<xsd:element name="[stateVariableName]" type="[stateVariableType]"
+						 form="unqualified"/>
+						<xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded"
+						 processContents="lax"/>
+					</xsd:sequence>
+					<xsd:anyAttribute namespace="##other" processContents="lax"/>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xsd:sequence>
+		<xsd:anyAttribute namespace="##other" processContents="lax"/>
+	</xsd:complexType>
+</xsd:schema>

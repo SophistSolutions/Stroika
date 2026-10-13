@@ -45,6 +45,8 @@ namespace Resources_ {
 #include "HealthFrameWorks_v3.xml.embed"
         constexpr
 #include "ReferenceContent-2012-03.xsd.embed"
+        constexpr
+#include "event-1-0.xsd.embed"
 }
 
 using std::byte;
@@ -1453,6 +1455,33 @@ namespace {
             DOM::Document::Ptr d      = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), schema);
             String             tmp    = d.Write ();
             DbgTrace (L"tmp={}"_f, Characters::ToString (tmp));
+        });
+    }
+
+    /*
+     *  A SCHEMA that is not a schema: a BadFormatException saying so, from each provider. Before Stroika v3.0d25 libxml2's
+     *  came out as std::bad_alloc - xmlSchemaParse merely returns nullptr, and that was fed to Execution::ThrowIfNull, which
+     *  means "allocation failed" - sending anyone who met it looking for a memory bug rather than at their schema.
+     *
+     *  TestFiles/event-1-0.xsd is a real one: UPnP publishes it beside device-1-0.xsd and service-1-0.xsd, but it is a
+     *  TEMPLATE for a device author to fill in, declaring <xsd:element name="[stateVariableName]">, and brackets are not
+     *  legal in an XML name. @see UPnP::GENA::Publisher::Options, which is why UPnP eventing cannot be validated at all.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, Schema_NotASchema_)
+    {
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            const Memory::BLOB kNotASchema_ = Memory::BLOB::Attach (Resources_::TestFiles_event_1_0_xsd);
+            EXPECT_THROW (schemaFactory (kNotASchema_, nullptr), BadFormatException);
+            // and what it says names the trouble, rather than being empty or about memory
+            try {
+                schemaFactory (kNotASchema_, nullptr);
+                ADD_FAILURE () << "should have thrown";
+            }
+            catch (const BadFormatException& e) {
+                const String what = Characters::ToString (e);
+                EXPECT_FALSE (what.empty ());
+                EXPECT_NE (what.Find ("stateVariableName"sv), nullopt) << what.AsNarrowSDKString ();
+            }
         });
     }
 

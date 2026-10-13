@@ -8,4 +8,4 @@ $(ObjDir): $(SrcDir)
 $(ObjDir)%.embed:	TestFiles/% | $(ObjDir)
 	xxd -i TestFiles/$* $@
 
-$(ObjDir)Test${OBJ_SUFFIX}:	$(ObjDir)personal.xml.embed $(ObjDir)personal.xsd.embed $(ObjDir)HealthFrameWorks_v3.xml.embed $(ObjDir)ReferenceContent-2012-03.xsd.embed $(ObjDir)ASTM_CCR_V1.xsd.embed $(ObjDir)SampleCCR.ccr.embed
+$(ObjDir)Test${OBJ_SUFFIX}:	$(ObjDir)personal.xml.embed $(ObjDir)personal.xsd.embed $(ObjDir)HealthFrameWorks_v3.xml.embed $(ObjDir)ReferenceContent-2012-03.xsd.embed $(ObjDir)ASTM_CCR_V1.xsd.embed $(ObjDir)SampleCCR.ccr.embed $(ObjDir)event-1-0.xsd.embed
