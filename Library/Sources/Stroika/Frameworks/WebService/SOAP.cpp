@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Status.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Exception.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
 #include "Stroika/Foundation/DataExchange/XML/DOM.h"
 #endif
@@ -46,27 +47,49 @@ namespace {
         return nullopt;
     }
 
-    // the SOAP envelope round body (section 4)
-    Memory::BLOB Envelope_ (const String& body)
-    {
-        const string utf8 =
-            "<?xml version=\"1.0\"?>\r\n<s:Envelope xmlns:s=\"{}\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-            "<s:Body>{}</s:Body></s:Envelope>\r\n"_f(String{kEnvelopeNamespace_}, body)
-                .AsUTF8<string> ();
-        return Memory::BLOB{as_bytes (span{utf8})};
-    }
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+    namespace WriteElement = XML::DOM::Element;
 
-    // a call's or answer's element: elementName, in the method's namespace, its arguments its elements (section 7.1)
-    String MethodElement_ (const String& elementName, const String& methodNamespace, const Arguments& arguments)
-    {
-        StringBuilder sb;
-        sb << "<m:"sv << elementName << " xmlns:m=\""sv << XML::QuoteForXMLAttributeW (methodNamespace) << "\">"sv;
-        for (const KeyValuePair<String, String>& a : arguments) {
-            sb << "<"sv << a.fKey << ">"sv << XML::QuoteForXMLW (a.fValue) << "</"sv << a.fKey << ">"sv;
+    constexpr string_view  kEnvelopePrefix_ = "s"sv;
+    const IO::Network::URI kEnvelopeNamespaceURI_{String{kEnvelopeNamespace_}};
+    const IO::Network::URI kEncodingNamespaceURI_{"http://schemas.xmlsoap.org/soap/encoding/"sv};
+
+    /*
+     *  The SOAP envelope round a body (section 4), and that Body to put the one element of the message in. One struct, with
+     *  the Document FIRST, so the Body - a node of it - is destroyed before the document it points into.
+     */
+    struct Envelope_ {
+        XML::DOM::Document::Ptr fDoc;
+        WriteElement::Ptr       fBody;
+
+        Envelope_ ()
+        {
+            fDoc                       = XML::DOM::Document::New (XML::NameWithNamespace{kEnvelopeNamespaceURI_, "Envelope"sv});
+            WriteElement::Ptr envelope = fDoc.GetRootElement ();
+            // the prefix by which everyone writes SOAP - declared, and not left to whatever a provider would invent,
+            // because a Fault's code NAMES it in text (@see Serialize (const Fault&)) and so it must be one we know
+            envelope.SetAttribute (XML::NameWithNamespace{XML::kXMLNS.fNamespace, kEnvelopePrefix_}, kEnvelopeNamespaceURI_.As<String> ());
+            envelope.SetAttribute (XML::NameWithNamespace{kEnvelopeNamespaceURI_, "encodingStyle"sv}, kEncodingNamespaceURI_.As<String> ());
+            fBody = envelope.Append ("Body"sv);
         }
-        sb << "</m:"sv << elementName << ">"sv;
-        return sb;
+        Memory::BLOB Write () const
+        {
+            Streams::MemoryStream::Ptr<std::byte> out = Streams::MemoryStream::New<std::byte> ();
+            fDoc.Write (out);
+            return out.As<Memory::BLOB> ();
+        }
+    };
+
+    // a call's or answer's element: elementName, in the method's namespace, its arguments its elements (section 7.1) - which
+    // are unqualified, where the method's namespace would otherwise be inherited
+    void AppendMethodElement_ (WriteElement::Ptr body, const String& elementName, const String& methodNamespace, const Arguments& arguments)
+    {
+        WriteElement::Ptr method = body.Append (XML::NameWithNamespace{IO::Network::URI{methodNamespace}, elementName});
+        for (const KeyValuePair<String, String>& a : arguments) {
+            method.Append (XML::NameWithNamespace{XML::kNoNamespace, a.fKey}, a.fValue);
+        }
     }
+#endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
     namespace Element = XML::DOM::Element;
@@ -202,24 +225,34 @@ Fault FaultException::GetFault () const
  */
 Memory::BLOB SOAP::Serialize (const Request& request)
 {
-    return Envelope_ (MethodElement_ (request.fMethod, request.fNamespace, request.fArguments));
+    Envelope_ envelope;
+    AppendMethodElement_ (envelope.fBody, request.fMethod, request.fNamespace, request.fArguments);
+    return envelope.Write ();
 }
 
 Memory::BLOB SOAP::Serialize (const Response& response)
 {
-    return Envelope_ (MethodElement_ (response.fMethod + "Response"sv, response.fNamespace, response.fArguments));
+    Envelope_ envelope;
+    AppendMethodElement_ (envelope.fBody, response.fMethod + "Response"sv, response.fNamespace, response.fArguments);
+    return envelope.Write ();
 }
 
 Memory::BLOB SOAP::Serialize (const Fault& fault)
 {
-    StringBuilder sb;
-    sb << "<s:Fault><faultcode>s:"sv << XML::QuoteForXMLW (fault.fFaultCode) << "</faultcode><faultstring>"sv
-       << XML::QuoteForXMLW (fault.fFaultString) << "</faultstring>"sv;
+    Envelope_         envelope;
+    WriteElement::Ptr faultElt = envelope.fBody.Append ("Fault"sv);
+    // SOAP 1.1 has a Fault's own children unqualified (section 4.4), where the envelope's namespace would be inherited
+    // a QName, naming the envelope namespace through the prefix declared on it (section 4.4)
+    faultElt.Append (XML::NameWithNamespace{XML::kNoNamespace, "faultcode"sv}, String{kEnvelopePrefix_} + ":"sv + fault.fFaultCode);
+    faultElt.Append (XML::NameWithNamespace{XML::kNoNamespace, "faultstring"sv}, fault.fFaultString);
     if (fault.fDetail) {
-        sb << "<detail>"sv << *fault.fDetail << "</detail>"sv;
+        WriteElement::Ptr detail = faultElt.Append (XML::NameWithNamespace{XML::kNoNamespace, "detail"sv});
+        // the detail is the application's own XML: parsed, so a malformed one is caught here rather than written out as a
+        // malformed envelope, and imported as ELEMENTS - escaping it into text would change what the receiver reads
+        XML::DOM::Document::Ptr detailDoc = XML::DOM::Document::New (*fault.fDetail);
+        detail.ImportNode (detailDoc.GetRootElement ());
     }
-    sb << "</s:Fault>"sv;
-    return Envelope_ (sb);
+    return envelope.Write ();
 }
 
 /*
