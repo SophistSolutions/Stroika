@@ -198,8 +198,12 @@ namespace Stroika::Frameworks::WebService::SOAP {
      *  and unqualified, that encodingStyle is qualified. A Body's own content is xs:any to it, so a message's payload is
      *  the caller's business, not this schema's.
      *
-     *  Compiled once per provider and kept, compiling not being free. Ask for it only where it is wanted: it carries the
-     *  schema's 6K, in a translation unit of its own, so a program that never calls this never links either.
+     *  Compiled afresh each call, and NOT cached: a Schema::Ptr may not outlive the provider that made it, and nothing
+     *  held in a static can promise that. A caller sending more than the occasional message holds one in its own
+     *  Options, where the lifetime is plain. Compiling is not free, so do not call this per message.
+     *
+     *  Ask for it only where it is wanted: it carries the schema's 6K, in a translation unit of its own, so a program
+     *  that never calls this never links either.
      *
      *  \note The schema is http://schemas.xmlsoap.org/soap/envelope/ verbatim, under the W3C Software License, whose
      *        notice travels with it - @see Schemas/soap-envelope-1.1.xsd
