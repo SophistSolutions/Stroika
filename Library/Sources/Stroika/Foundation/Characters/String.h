@@ -2016,38 +2016,24 @@ namespace qStroika_Foundation_Characters_FMT_PREFIX_ {
     };
     template <>
     struct formatter<Stroika::Foundation::Characters::String, char> {
-        bool ignoreerrors{true}; // maybe set from thread-local variable, or parse() settings, or both
+        qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::string_view, char> fDelegate2_;
 
         template <typename ParseContext>
         constexpr typename ParseContext::iterator parse (ParseContext& ctx)
         {
-            auto it = ctx.begin ();
-            while (it != ctx.end () and *it != '}') {
-                ++it;
+#if qCompilerAndStdLib_formatter_parse_closingBraceAsFill_Buggy
+            if (ctx.begin () == ctx.end () or *ctx.begin () == '}') {
+                return ctx.begin ();
             }
-            return it;
+#endif
+            return fDelegate2_.parse (ctx);
         }
 
         template <typename FmtContext>
         typename FmtContext::iterator format (Stroika::Foundation::Characters::String s, FmtContext& ctx) const
         {
-            using namespace Stroika::Foundation::Characters;
-            //  wformat_context delegateCTX;
-            String dr{s}; // really want to delegate to wchar_t version (with vformat) but no documented easy way to extract format_args from ctx (though its in there)
-            if (ignoreerrors) {
-#if __cpp_lib_ranges >= 202207L
-                return std::ranges::copy (dr.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
-#else
-                return format_to (ctx.out (), "{}", dr.AsNarrowSDKString (eIgnoreErrors));
-#endif
-            }
-            else {
-#if __cpp_lib_ranges >= 202207L
-                return std::ranges::copy (dr.AsNarrowSDKString (), ctx.out ()).out;
-#else
-                return format_to (ctx.out (), "{}", dr.AsNarrowSDKString ());
-#endif
-            }
+            // in the SDK's narrow character set; a character it lacks is mapped as best it can be, rather than throwing
+            return fDelegate2_.format (s.AsNarrowSDKString (Stroika::Foundation::Characters::eIgnoreErrors), ctx);
         }
     };
 }

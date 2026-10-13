@@ -171,32 +171,18 @@ namespace Stroika::Foundation::Characters {
     };
     template <IToString T>
     struct ToStringFormatterASCII {
+        qStroika_Foundation_Characters_FMT_PREFIX_::formatter<String, char> fDelegate2_;
 
-        ToStringFormatter<T> fDelegate2_;
         template <class ParseContext>
         constexpr typename ParseContext::iterator parse (ParseContext& ctx)
         {
-            // Not clear how to forward...
-            auto it = ctx.begin ();
-            while (it != ctx.end () and *it != '}') {
-                ++it;
-            }
-            return it;
+            return fDelegate2_.parse (ctx);
         }
 
         template <class FmtContext>
         typename FmtContext::iterator format (T s, FmtContext& ctx) const
         {
-            using namespace Stroika::Foundation::Characters;
-            std::wstringstream out;
-            out << UnoverloadedToString (s);
-
-            // @todo delegate to string version so we can use its ignore errors code......
-#if __cpp_lib_ranges >= 202207L
-            return std::ranges::copy (String{out.str ()}.AsNarrowSDKString (eIgnoreErrors), ctx.out ()).out;
-#else
-            return Common::StdCompat::format_to (ctx.out (), "{}", String{out.str ()}.AsNarrowSDKString (eIgnoreErrors));
-#endif
+            return fDelegate2_.format (UnoverloadedToString (s), ctx);
         }
     };
 

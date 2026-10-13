@@ -2387,6 +2387,12 @@ namespace {
         // narrow, a String and a type formatted with ToString: each field ends at its own '}', not at the next one
         EXPECT_EQ (format ("{}-{}!", String{"a"}, String{"b"}), "a-b!");
         EXPECT_EQ (format ("[{}] {}", foo{}, 3), "[foo as a string] 3");
+        // and a format-spec applies to them, as to a string - narrow as wide
+        EXPECT_EQ (format ("[{:>6}]", String{"abc"}), "[   abc]");
+        EXPECT_EQ (format ("[{:.3}]", String{"abcdef"}), "[abc]");
+        EXPECT_EQ (format ("[{:*^19}]", foo{}), "[**foo as a string**]");
+        EXPECT_EQ (format (L"[{:>6}]", String{"abc"}), L"[   abc]");
+        EXPECT_EQ (format (L"[{:*^19}]", foo{}), L"[**foo as a string**]");
         {
             // Stroika's own types - its containers, a class derived from one, BLOB - format as their ToString, with _f and std::format
             // alike, in every standard (in C++23 the standard's range formatter would format them otherwise)
