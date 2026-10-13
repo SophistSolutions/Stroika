@@ -17,18 +17,18 @@
 /**
  *  \file
  *
- *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Characters {
 
     /**
-     *  \brief what Stroika's formatting - FormatString (_f), Format, DbgTrace - formats: anything std::format can, and anything
+     *  \brief what types Stroika's formatting - FormatString (_f), Format, DbgTrace - formats: anything std::format can, and anything
      *         else Characters::ToString can print, as its ToString
      *
-     *  Stroikas formatting accomodates a wider range of types than std::format, by using Characters::ToString().
-     *  Most notably, any types with a .ToString () method (about all of Stroikas classes), and std::optional,
-     *  and a few others.
+     *  So it takes more types than std::format. It also formats a std::optional, an exception_ptr,
+     *  an enum - as its Characters::ToString, a format-spec applying to that as to a String. (Stroika's own types, and any of
+     *  yours with a ToString () method, std::format formats too: Stroika registers a std::formatter for them.)
      */
     template <typename T>
     concept IFormattable = Common::StdCompat::formattable<remove_cvref_t<T>, wchar_t> or IToString<remove_cvref_t<T>>;
@@ -78,40 +78,21 @@ namespace Stroika::Foundation::Characters {
      *  A narrow format string (FormatString<char>) must be ASCII - so what it means cannot depend on the compiler's narrow
      *  character set. A wide one may be any UNICODE, and so may what is formatted into either - a String, say.
      *
+     *  But EITHER way it produces a fully UNICODE String, and all the conversions - {} - are UNICODE.
+     * 
      *  For narrow output instead - a std::string, in the program's narrow character set - use std::format with a narrow format
      *  string. Stroika's own types format there too (a String as AsNarrowSDKString (eIgnoreErrors) gives it), but not what only
      *  _f adds: the types std::format cannot format, formatted through their Characters::ToString (@see IFormattable).
      *
-     *  \note - the string argument to FormatString must have application lifetime (@see String::FromStringConstant), as it is
-     *        saved by reference. This is meant to be used with "foo={}"_f syntax - with constant c strings. (FormatString<char>
-     *        keeps its own, widened, copy - so only FormatString<wchar_t>'s argument must.) Debug builds check it.
-     * 
-     *  \note   Types that can be formatted with FormatString are those IFormattable: anything std::formattable<T,wchar_t>
-     *          (see https://en.cppreference.com/w/cpp/utility/format/formatter), and anything else Characters::ToString prints.
-     *          In particular:
-     *              o   any class with .ToString() method
-     *              o   std::type_index
-     *              o   std::is_enum<>
-     *              o   std::exception
-     *              o   std::filesystem::path
-     *              o   exception_ptr
-     *              o   POD types (int, bool, double, etc)
-     *              o   String, or any T IConvertibleToString<T> (such as std::wstring)
-     *              o   container (T) where T is a IToString (something you can call Characters::ToStirng() on), such as
-     *                  o   is_array<T>
-     *                  o   anything with .begin (), .end () - so any container/iterable
-     *                  o   std::pair<T1,T2>
-     *                  o   std::tuple<TN...>
-     *                  o   std::optional<T>
-     *                  o   KeyValuePair<T1,T2>
-     *                  o   CountedValue<T>
-     *                  o   atomic<T>
-     *                  o   std::variant<TN....>
-     * 
+     *  \note A FormatString<wchar_t> views its text, so that text must last as long as the program (@see String::FromStringConstant)
+     *        - Debug builds check it. A FormatString<char> keeps its own, widened, copy; "..."_f's is static (@see FormatLiteral).
+     *
+     *  \note What it formats: @see IFormattable.
+     *
      *  \par Example Usage
      *      \code
-     *          String a = FormatString<char>{"Internet Media Type {} not supported"sv}(mediaType);
-     *          String sameAsA = "Internet Media Type {} not supported"_f (mediaType);
+     *          String a       = FormatString<char>{"Internet Media Type {} not supported"sv}(mediaType); // checked at run time
+     *          String sameAsA = "Internet Media Type {} not supported"_f (mediaType);                    // checked at compile time
      *          DbgTrace ("prettyVersionString={}"_f, ppv);
      *          DbgTrace ("currentException={}"_f, current_exception ());
      *          DbgTrace ("seq={}"_f, Sequence<IO::Networking::URI>{...});
@@ -139,17 +120,20 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Hack for interfacing with fmtlib - dont use unless you need to interact directly with fmtlib
+         *  \brief the format string as the formatting library's own wstring_view (std's, or fmtlib's) - only for calling
+         *         Common::StdCompat::vformat directly
          */
         constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
 
     public:
         /**
+         *  \brief format args - checked against the format string at run time: a mismatch throws format_error (a FormatLiteral,
+         *         "..."_f, checks at compile time)
          */
         template <IFormattable... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
         template <IFormattable... ARGS>
-        [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
+        [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const; ///< \brief As above, with a locale
 
     protected:
         // not checked: for FormatString<char>, whose view is of its own copy, which lasts as long as it does, and FormatLiteral,
@@ -165,6 +149,11 @@ namespace Stroika::Foundation::Characters {
     FormatString (const CHAR_T*) -> FormatString<CHAR_T>;
     template <typename CHAR_T>
     FormatString (const basic_string_view<CHAR_T>&) -> FormatString<CHAR_T>;
+
+    /**
+     *  \brief a narrow FormatString: its text must be ASCII - checked at run time, it throws otherwise - and it keeps its own
+     *         widened copy, so that text need not last
+     */
     template <>
     struct FormatString<char> {
     private:
@@ -288,33 +277,13 @@ namespace Stroika::Foundation::Characters {
     template <typename CHAR_T>
     [[nodiscard]] String VFormat (const FormatString<CHAR_T>& f, const Common::StdCompat::wformat_args& args);
     template <typename CHAR_T>
-    [[nodiscard]] String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Common::StdCompat::wformat_args& args);
+    [[nodiscard]] String VFormat (const locale& loc, const FormatString<CHAR_T>& f, const Common::StdCompat::wformat_args& args); ///< \brief As above, with a locale
 
-    /*
-     * Format is the Stroika wrapper on sprintf().
-     * The main differences between sprintf () and Format are:
-     *      (1)     No need for buffer management. ANY sized buffer will be automatically allocated internally and returned as a
-     *              String.
+    /**
+     *  \brief printf-style formatting of a va_list, into a String - with one difference from vswprintf: %s takes a const wchar_t*
+     *         (as Microsoft's does - the better reading, with wide characters)
      *
-     *      (2)     This version of format has a SUBTLE - but important difference from std::c++ / sprintf() in the interpretation of
-     *              %s format strings in Format(const wchar_t*): %s is assumed to match a const wchar_t* string in the variable
-     *              argument list.
-     *
-     *              This deviation from the c++ standard (technically not a deviation because Stroika::Foundation::Characters::Format() isn't
-     *              covered by the stdc++ ;-)) - is because of two reasons:
-     *                  a)  Microsoft has this interpretation.
-     *                  b)  Its a BETTER interpretation when using wide characters.
-     *
-     *  \note   The type of 'format' must be - basically  a POD type - not String - due to:
-     *          From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf
-     *
-     *              If the parameter parmN is of a reference type, or of a type that is not compatible
-     *              with the type that results when passing an argument for which there is no parameter,
-     *              the behavior is undefined
-     *          
-     *          I have to say, I don't understand this. It makes sense for the parameters after paramN, but not for the parameter
-     *          to va_start () - and BTW, I've used it with type String for a while, and except for compiler warnings, never saw
-     *          a problem.
+     *  New code formats with "..."_f; a C format string, with CString::Format.
      */
     String FormatV (const wchar_t* format, va_list argsList);
     [[deprecated ("Since Stroika v3.0d6 - use _f format strings - not old style c format strings - use CString::Format for old style C "
@@ -322,7 +291,7 @@ namespace Stroika::Foundation::Characters {
     Format (const wchar_t* format, ...);
 
     /**
-     *  \brief Like std::format, except returning stroika String, and taking _f (FormatString) string as argument (which can be ASCII, but still produce UNICODE output).
+     *  \brief Like std::format, but formats wide, into a String: f (args...) - its args checked at run time
      */
     template <typename CHAR_T, IFormattable... ARGS>
     String Format (const FormatString<CHAR_T>& f, ARGS&&... args);
