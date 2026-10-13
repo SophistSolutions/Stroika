@@ -778,7 +778,16 @@ namespace {
             {
                 AssertNotNull (fNode_->getNodeName ());
                 const XMLCh* n = fNode_->getNamespaceURI ();
-                return NameWithNamespace{n == nullptr ? optional<URI>{} : URI{xercesString2String (n)}, fNode_->getNodeName ()};
+                /*
+                 *  getLocalName, NOT getNodeName: a NameWithNamespace carries the local name, and the prefix a
+                 *  document chose is no part of it (@see XML::NameWithNamespace). getNodeName is the QUALIFIED name,
+                 *  so this said "x:Why" where libxml2 said "Why" until Stroika v3.0d25. It is null only for a node
+                 *  made by a DOM Level 1 call, which has no namespace to speak of - nothing here makes one, and a
+                 *  parsed document always has it, but fall back rather than return nothing.
+                 */
+                const XMLCh* localName = fNode_->getLocalName ();
+                return NameWithNamespace{n == nullptr ? optional<URI>{} : URI{xercesString2String (n)},
+                                         localName == nullptr ? fNode_->getNodeName () : localName};
             }
             END_LIB_EXCEPTION_MAPPER_
         }

@@ -50,12 +50,25 @@ namespace Stroika::Foundation::DataExchange::XML {
     };
 
     /**
-     *  Note name argument slightly more flexible than just String so double conversion works ("" can be assigned to NameWithNamespace)
-     * 
+     *  \brief An element's or attribute's name (local-name, not including a prefix), plus the namespace that name is in
+     *
+     *  Reading <x:Why xmlns:x="urn:example:why"/> gives {.fName = "Why", .fNamespace = "urn:example:why"}
+     *
      *  \note similar to NamespaceDefinition, but this refers to elements which may or may not have an associated namespace.
+     *
+     *  \note The one-argument CTOR takes anything a String can be built from, so that a literal can be passed wherever
+     *        a NameWithNamespace is wanted - Append ("kid"sv) - which C++ allows only because that is a single
+     *        user-defined conversion.
      */
     struct NameWithNamespace {
-        String        fName;
+        /**
+         *  \brief The LOCAL name - "Why" for <x:Why>
+         */
+        String fName;
+
+        /**
+         *  \brief The namespace fName is in, however the document said so - nullopt for a name in no namespace
+         */
         optional<URI> fNamespace;
 
         template <Characters::IConvertibleToString NAME_TYPE>

@@ -1459,6 +1459,40 @@ namespace {
     }
 
     /*
+     *  GetName () gives the LOCAL name and the namespace beside it - never the prefix the document happened to choose
+     *  (@see XML::NameWithNamespace). Before Stroika v3.0d25 Xerces gave the QUALIFIED name, "x:Why" where libxml2 gave
+     *  "Why", so the same document read through the two providers did not compare equal - and any code matching a name
+     *  against a literal, as WebService::SOAP does for Envelope/Body/Fault, saw a prefixed element and did not match.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_GetNameIsTheLocalName_)
+    {
+        using namespace XML::DOM;
+        const IO::Network::URI kNS_{"urn:example:why"sv};
+        const BLOB             kDoc_{as_bytes (span{"<x:Why xmlns:x=\"urn:example:why\" x:attr=\"1\"><x:kid/><plain/></x:Why>"sv})};
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            Document::Ptr doc  = domFactory (kDoc_, nullptr);
+            Element::Ptr  root = doc.GetRootElement ();
+            EXPECT_EQ (root.GetName ().fName, "Why"sv) << "the local name, not the prefix the document chose";
+            EXPECT_EQ (root.GetName ().fNamespace, kNS_);
+            EXPECT_EQ (root.GetName (), (XML::NameWithNamespace{kNS_, "Why"sv})) << "so it compares equal to the name built from its parts";
+            // a prefixed child, and one in no namespace at all
+            for (const Element::Ptr& c : root.GetChildElements ()) {
+                if (c.GetName ().fNamespace) {
+                    EXPECT_EQ (c.GetName ().fName, "kid"sv);
+                    EXPECT_EQ (c.GetName ().fNamespace, kNS_);
+                }
+                else {
+                    EXPECT_EQ (c.GetName ().fName, "plain"sv);
+                }
+            }
+            // and an ATTRIBUTE's name is local too - which is already what GetAttribute requires of a caller
+            EXPECT_EQ (root.GetAttribute (XML::NameWithNamespace{kNS_, "attr"sv}), "1"sv);
+            EXPECT_FALSE (root.GetAttribute (XML::NameWithNamespace{kNS_, "x:attr"sv}).has_value ())
+                << "the qualified name is not the name";
+        });
+    }
+
+    /*
      *  A SCHEMA that is not a schema: a BadFormatException saying so, from each provider. Before Stroika v3.0d25 libxml2's
      *  came out as std::bad_alloc - xmlSchemaParse merely returns nullptr, and that was fed to Execution::ThrowIfNull, which
      *  means "allocation failed" - sending anyone who met it looking for a memory bug rather than at their schema.
