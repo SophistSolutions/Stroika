@@ -632,8 +632,11 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, TestWithCache_)
     {
         Debug::TraceContextBumper ctx{"{}::TestWithCache_"};
-        constexpr Activity        kActivity_{"running TestWithCache_"sv};
-        DeclareActivity           declareActivity{&kActivity_};
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP)";
+#endif
+        constexpr Activity kActivity_{"running TestWithCache_"sv};
+        DeclareActivity    declareActivity{&kActivity_};
         using namespace Test_6_TestWithCache_;
 #if qStroika_HasComponent_libcurl
         DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection::Ptr {
@@ -950,6 +953,8 @@ namespace {
         EXPECT_FALSE ((error_code{CURLE_TOO_MANY_REDIRECTS, LibCurl::error_category ()} == errc::timed_out));
         EXPECT_FALSE ((error_code{CURLE_TOO_MANY_REDIRECTS, LibCurl::error_category ()} == errc::io_error));
         EXPECT_FALSE ((error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()} == errc::timed_out));
+#else
+        GTEST_SKIP () << "libcurl not built in - these are its error codes";
 #endif
     }
 }
@@ -1016,8 +1021,11 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, OtherMethodsSendTheirBody_)
     {
         Debug::TraceContextBumper ctx{"OtherMethodsSendTheirBody_"};
-        EchoMethodAndBodyServer_  server;
-        [[maybe_unused]] auto     check = [&] (Connection::Ptr c) {
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP)";
+#endif
+        EchoMethodAndBodyServer_ server;
+        [[maybe_unused]] auto    check = [&] (Connection::Ptr c) {
             using namespace Memory::Literals;
             c.SetSchemeAndAuthority (server.fSite);
             Request notify;
@@ -1043,8 +1051,11 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, MethodsWithNoBody_)
     {
         Debug::TraceContextBumper ctx{"MethodsWithNoBody_"};
-        EchoMethodAndBodyServer_  server;
-        [[maybe_unused]] auto     check = [&] (Connection::Ptr c) {
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP)";
+#endif
+        EchoMethodAndBodyServer_ server;
+        [[maybe_unused]] auto    check = [&] (Connection::Ptr c) {
             using namespace Memory::Literals;
             c.SetSchemeAndAuthority (server.fSite);
             auto sent = [&] (const String& method, const Memory::BLOB& body) {
