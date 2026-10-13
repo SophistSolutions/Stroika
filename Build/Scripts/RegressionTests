@@ -61,6 +61,13 @@ if [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
 	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_${DETECTED_HOST_OS}_VS2k26"; fi
     echo "USING Visual Studio ($USE_TEST_BASENAME)..."
 fi
+if [ "$DETECTED_HOST_OS" == "Linux" ] ; then
+	# Cap open files at 1024, Linux's usual default, for the whole run - in a docker container the limit can be ~2^31, and
+	# then valgrind frequently fails with "cannot create file", and a clang sanitizer's first stack trace in each process
+	# stalls for over a minute: to start llvm-symbolizer, its runtime closes every fd up to the limit, one at a time (clang 22
+	# still does; LLVM 23 uses close_range - https://github.com/llvm/llvm-project/pull/192114)
+	ulimit -n 1024
+fi
 
 
 ARM_TEST_MACHINE_AVAIL=`(ping ${RASPBERRYPI_REMOTE_MACHINE} -c 4 2>/dev/null 1>/dev/null); echo $?`
@@ -379,7 +386,6 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	CONFIG2USE=$2
 	BEFORE_CMD=$3
 	if [[ "$LOCAL_VALGRIND_CONFIGS" =~ "$CONFIG2USE" ]]; then
-		ulimit -n 1024  ## without this valgrind frequently fails with "cannot create file" error
 		echo -n "eval \"${BEFORE_CMD}\" && make CONFIGURATION=$CONFIG2USE  VALGRIND=$VALGRINDCMD2USE run-tests ..."
 		echo "$PREFIX_OUT_LABEL" "eval \"${BEFORE_CMD}\" && make TEST_FAILURES_CAUSE_FAILED_MAKE=0 CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests ..." >>$TEST_OUT_FILE 2>&1
 		STAGE_STARTAT_INT=$(date +%s)
