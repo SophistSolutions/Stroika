@@ -47,6 +47,10 @@ namespace Stroika::Frameworks::UPnP {
          *         default, checking nothing
          *
          *      \code
+         *          DeviceDescription dd = UPnP::DeSerialize (fetched); // no validation by default, because real devices in the field are loose and a control point that refused them would see fewer than one that did not
+         *      \endcode
+         *
+         *      \code
          *          // told a description is malformed, rather than silently getting half of one
          *          const UPnP::Options kStrict_{.fValidateReadAgainst = UPnP::DeviceDescriptionSchema (*XML::Providers::kDefaultProvider ())};
          *          DeviceDescription dd = UPnP::DeSerialize (fetched, kStrict_);
