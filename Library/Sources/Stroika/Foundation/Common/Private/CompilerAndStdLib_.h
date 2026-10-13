@@ -1718,6 +1718,25 @@ int main ()
 #endif
 
 /**
+ *  libc++ before 21, in C++23, formats a narrow string - a std::string, a std::string_view or a char array - into a wide
+ *  string as a range of char, though the standard disables those formatters (LWG 3944), as C++20 already did
+ *  formatter<const char*, wchar_t>. So std::formattable<std::string, wchar_t> says yes, and "..."_f - which hands std::format
+ *  any argument it can format - never takes the string as a String (ASCII):
+ *
+ *      Expected equality of these values: "{}"_f(string{"abc"}) Which is: ['a', 'b', 'c'] and "abc"
+ *
+ *  Seen with libc++ 16, 17 and 18 (in C++20 it has no range formatting, so no such formatter). Fixed in libc++ 21.1.0
+ *  (https://github.com/llvm/llvm-project/pull/128355, "Disables narrow string to wide string formatters").
+ */
+#ifndef qCompilerAndStdLib_formatter_narrowStringIntoWide_Buggy
+#if defined(_LIBCPP_VERSION) and not qStroika_HasComponent_fmtlib and __cplusplus > 202002L
+#define qCompilerAndStdLib_formatter_narrowStringIntoWide_Buggy (_LIBCPP_VERSION < 210000)
+#else
+#define qCompilerAndStdLib_formatter_narrowStringIntoWide_Buggy 0
+#endif
+#endif
+
+/**
  mmandLine.cpp:121:20: error: unable to find string literal operator ‘operator""_f’ with ‘const char [17]’, ‘long unsigned int’ arguments
   121 |             return "(-{} {}|--{}={})"_f(*fSingleCharName, argName, *fLongName, argName);
       |                    ^~~~~~~~~~~~~~~~~~~~

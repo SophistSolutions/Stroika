@@ -10,12 +10,21 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     namespace Private_ {
+#if qCompilerAndStdLib_formatter_narrowStringIntoWide_Buggy
+        // the narrow strings the standard disables formatting into a wide string
+        template <typename T>
+        concept INarrowString_ = same_as<T, string> or same_as<T, string_view> or (is_bounded_array_v<T> and same_as<remove_extent_t<T>, char>);
+#endif
         // t itself where std::format can format it, else its Characters::ToString. A char itself too: with fmtlib, StdCompat::formattable
         // says no to one, though fmtlib formats it as the character - where ToString would print its number
         template <typename T>
         inline decltype (auto) AsFormatArg_ (const T& t)
         {
+#if qCompilerAndStdLib_formatter_narrowStringIntoWide_Buggy
+            if constexpr ((Common::StdCompat::formattable<T, wchar_t> and not INarrowString_<T>) or same_as<T, char>) {
+#else
             if constexpr (Common::StdCompat::formattable<T, wchar_t> or same_as<T, char>) {
+#endif
                 return (t);
             }
             else {

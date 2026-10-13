@@ -2411,6 +2411,8 @@ namespace {
         EXPECT_EQ ("{}"_f(optional<int>{3}), "3");
         EXPECT_EQ ("[{:>4}]"_f(optional<int>{3}), "[   3]");
         EXPECT_EQ ("{}"_f(string{"abc"}), "abc"); // an 8-bit string as String takes one: ASCII
+        EXPECT_EQ ("{}"_f("abc"sv), "abc");
+        EXPECT_EQ ("{}"_f("abc"), "abc");
 
         EXPECT_EQ ("a{}a"_f(3), "a3a");
         EXPECT_EQ ("-{}"_f('x'), "-x"); // a char into the wide result - once failed to compile, formatting with fmtlib
