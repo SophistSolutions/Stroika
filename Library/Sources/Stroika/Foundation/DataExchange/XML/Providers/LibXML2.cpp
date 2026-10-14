@@ -1039,7 +1039,10 @@ namespace {
             if (newEltName.fNamespace) {
                 n->nsDef = ns; // UGH - the declaration must hang on the element, prefixed or not, or nothing declares it
             }
-            xmlDocSetRootElement (fLibRep_, n);
+            // the root it replaces comes back unlinked - so no longer freed with the document - and goes, as Replace's does
+            if (xmlNodePtr oldRoot = xmlDocSetRootElement (fLibRep_, n)) {
+                xmlFreeNode (oldRoot);
+            }
             auto r = WrapLibXML2NodeInStroikaNode_ (n);
             Ensure (r.GetName () == newEltName);
             return r;
