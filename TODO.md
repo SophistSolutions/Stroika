@@ -41,35 +41,13 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **NOW: UPnP's descriptions and SOAP messages through Variant::XML** - both are hand-rolled text today. The
-         Reader/Writer they were waiting on is done (#954's title, 2026-10-11): attributes, namespaces and prefixes, element
-         order, repeated elements, XML::Binding where a schema wants a shape other than the default, and Tests/32's
-         XML_ONLY_* - so #954 wants closing, or reducing to the Binding producers its 2026-10-10 comment adds (an XSD/WSDL,
-         and ObjectVariantMapper - #1217). UPnP is what tries the new code against someone else's schema rather than its
-         own tests. #955 (a web service answering JSON or XML) is unblocked by the same work, and not started.
+       - **Decide #954's fate** - its Reader/Writer work is done (2026-10-11), and UPnP's descriptions and SOAP
+         messages, which were the intended first callers, were built with the DOM instead (it suits a document of
+         fixed shape carrying someone else's XML). So close #954, or reduce it to the Binding producers its
+         2026-10-10 comment adds: an XSD/WSDL, and ObjectVariantMapper (#1217). #955 (a web service answering JSON
+         or XML) is unblocked by the same work and not started.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
-   - **UPnP's descriptions validate against UPnP's own schemas** - DONE 2026-10-13. device-1-0.xsd and service-1-0.xsd
-     embedded under Frameworks/UPnP/Schemas/, reached by DeviceDescriptionSchema () / ServiceDescriptionSchema () and
-     given to Options::fValidateReadAgainst; Tests/54 checks what Serialize writes. LGP settled that they may be shipped
-     (2026-10-13); DeviceDescriptionSchema.cpp says why a copy is carried. The work found that
-     **service-1-0.xsd as published is wrong**: it restricts
-     stateVariable's sendEvents and multicast to {"1","0"} where UDA 1.0 says sendEvents="yes"/"no", so as published it
-     refuses every real device. ServiceDescriptionSchema widens those two enumerations and nothing else; device-1-0.xsd
-     needs no correction.
-   - **An element cannot be created with a namespace PREFIX of one's choosing** (2026-10-13; after the XSD work above,
-     which may well settle whether it matters). Creating one in a namespace always declares that namespace as the DEFAULT
-     (xmlns=), and nothing says "in this namespace, written s:Envelope". a8e0307e90's SOAP envelope shows the three
-     symptoms it causes, all legal, none what a SOAP writer would choose:
-       - the envelope namespace is declared TWICE, `xmlns=` and `xmlns:s=`, since s:encodingStyle and the faultcode QName
-         s:Client need a prefixed binding while the elements have the default one
-       - Envelope/Body/Fault come out unprefixed, where every other SOAP stack writes s:Envelope
-       - every unqualified child then needs an explicit xmlns="" to escape the default - <faultcode xmlns="">, <Symbol
-         xmlns=""> - which it would not if the envelope declared no default at all
-     Fixing it would make the output byte-near-identical to the hand-written envelope that preceded a8e0307e90, so it also
-     retires that commit's UPGRADE NOTE. The root element is the hard part: Document::New names it, so the prefix would
-     have to be said there (or a prefix made settable on an element after the fact, which both providers can do - libxml2
-     xmlNewNs + reassign node->ns, Xerces setPrefix).
    - **Variant::XML + XML::Binding has no caller** (2026-10-13) - built, and Tests/32 exercises it, but nothing in Stroika
      writes through it: UPnP's two descriptions and SOAP all went to the DOM instead, which suits a document whose shape is
      fixed and which carries XML of someone else's. What Variant::XML is actually for is a value that must serve EITHER
