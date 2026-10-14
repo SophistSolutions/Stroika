@@ -18,6 +18,12 @@
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
+#if qStroika_HasComponent_libxml2
+#include "Stroika/Foundation/DataExchange/XML/Providers/LibXML2.h"
+#endif
+#if qStroika_HasComponent_xerces
+#include "Stroika/Foundation/DataExchange/XML/Providers/Xerces.h"
+#endif
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -288,6 +294,52 @@ namespace {
         constexpr string_view kNotSOAP_ = "<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\"><Nonsense/></Envelope>"sv;
         SOAP::Request         ignored;
         EXPECT_ANY_THROW (SOAP::DeSerialize (Memory::BLOB{as_bytes (span{kNotSOAP_})}, &ignored, kValidating_));
+    }
+
+    /*
+     *  Every message, through each XML provider, and across them - what one writes another reads. Nothing exercised
+     *  SOAP through Xerces until this, which is how it went unnoticed that Xerces could not read back the envelope it
+     *  had just written: its GetName () gave the QUALIFIED name, so "s:Envelope" never matched the "Envelope" this
+     *  code looks for, and every prefixed message - which is to say every message - was "not a SOAP message".
+     *  @see XML::NameWithNamespace, and Tests/34's DOM_GetNameIsTheLocalName_, which holds the providers to it.
+     */
+    GTEST_TEST (Frameworks_WebService, SOAP_EachXMLProvider_)
+    {
+        Debug::TraceContextBumper                                               ctx{"SOAP_EachXMLProvider_"};
+        Containers::Sequence<const DataExchange::XML::Providers::IXMLProvider*> providers{nullptr}; // nullptr: whichever is default
+#if qStroika_HasComponent_libxml2
+        providers += &DataExchange::XML::Providers::LibXML2::kDefaultProvider;
+#endif
+#if qStroika_HasComponent_xerces
+        providers += &DataExchange::XML::Providers::Xerces::kDefaultProvider;
+#endif
+        EXPECT_GE (providers.size (), 2u) << "this build configured no XML provider at all?";
+        const String        kAwkward_{u"R&D <\"caf\u00e9\"> 'x'"sv};
+        const SOAP::Request kRequest_{
+            .fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Symbol"sv, kAwkward_}, {"Empty"sv, String{}}}};
+        const SOAP::Response kResponse_{.fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Price"sv, "1.23"sv}}};
+        const SOAP::Fault kFault_{.fFaultCode = SOAP::Fault::kServer, .fFaultString = "later"sv, .fDetail = "<x:Why xmlns:x=\"urn:example:why\">because</x:Why>"sv};
+        for (const DataExchange::XML::Providers::IXMLProvider* writeWith : providers) {
+            for (const DataExchange::XML::Providers::IXMLProvider* readWith : providers) {
+                const SOAP::Options kW_{.fXMLProvider = writeWith};
+                const SOAP::Options kR_{.fXMLProvider = readWith};
+                {
+                    SOAP::Request back;
+                    EXPECT_NO_THROW (SOAP::DeSerialize (SOAP::Serialize (kRequest_, kW_), &back, kR_));
+                    EXPECT_EQ (back, kRequest_) << back.ToString ().AsNarrowSDKString ();
+                }
+                {
+                    SOAP::Response back;
+                    EXPECT_NO_THROW (SOAP::DeSerialize (SOAP::Serialize (kResponse_, kW_), &back, kR_));
+                    EXPECT_EQ (back, kResponse_) << back.ToString ().AsNarrowSDKString ();
+                }
+                {
+                    SOAP::Fault back;
+                    EXPECT_NO_THROW (SOAP::DeSerialize (SOAP::Serialize (kFault_, kW_), &back, kR_));
+                    EXPECT_EQ (back, kFault_) << back.ToString ().AsNarrowSDKString ();
+                }
+            }
+        }
     }
 
     GTEST_TEST (Frameworks_WebService, SOAP_RoundTrip_)

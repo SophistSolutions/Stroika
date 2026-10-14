@@ -262,7 +262,9 @@ Memory::BLOB SOAP::Serialize (const Fault& fault, const Options& options)
         WriteElement::Ptr detail = faultElt.Append (XML::NameWithNamespace{XML::kNoNamespace, "detail"sv});
         // the detail is the application's own XML: parsed, so a malformed one is caught here rather than written out as a
         // malformed envelope, and imported as ELEMENTS - escaping it into text would change what the receiver reads
-        XML::DOM::Document::Ptr detailDoc = XML::DOM::Document::New (*fault.fDetail);
+        // the SAME provider the envelope is being built with, since ImportNode requires that of both documents - with the
+        // default here instead, a caller naming a provider got a failed Require rather than a fault
+        XML::DOM::Document::Ptr detailDoc = XML::DOM::Document::New (options.GetXMLProvider (), *fault.fDetail);
         detail.ImportNode (detailDoc.GetRootElement ());
     }
     return envelope.Write ();
