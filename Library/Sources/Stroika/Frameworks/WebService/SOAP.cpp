@@ -148,9 +148,9 @@ namespace {
         return result;
     }
 #else
-    [[noreturn]] void NoXMLParser_ ()
+    [[noreturn]] void NoXMLDOM_ ()
     {
-        Execution::Throw (Execution::Exception<runtime_error>{"SOAP messages cannot be read: this build has no XML parser"sv});
+        Execution::Throw (Execution::Exception<runtime_error>{"SOAP messages cannot be read or written: this build has no XML DOM"sv});
     }
 #endif
 }
@@ -236,22 +236,31 @@ Fault FaultException::GetFault () const
  ************************** WebService::SOAP::Serialize *************************
  ********************************************************************************
  */
-Memory::BLOB SOAP::Serialize (const Request& request, const Options& options)
+Memory::BLOB SOAP::Serialize ([[maybe_unused]] const Request& request, [[maybe_unused]] const Options& options)
 {
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
     Envelope_ envelope{options};
     AppendMethodElement_ (envelope.fBody, request.fMethod, request.fNamespace, request.fArguments);
     return envelope.Write ();
+#else
+    NoXMLDOM_ ();
+#endif
 }
 
-Memory::BLOB SOAP::Serialize (const Response& response, const Options& options)
+Memory::BLOB SOAP::Serialize ([[maybe_unused]] const Response& response, [[maybe_unused]] const Options& options)
 {
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
     Envelope_ envelope{options};
     AppendMethodElement_ (envelope.fBody, response.fMethod + "Response"sv, response.fNamespace, response.fArguments);
     return envelope.Write ();
+#else
+    NoXMLDOM_ ();
+#endif
 }
 
-Memory::BLOB SOAP::Serialize (const Fault& fault, const Options& options)
+Memory::BLOB SOAP::Serialize ([[maybe_unused]] const Fault& fault, [[maybe_unused]] const Options& options)
 {
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
     Envelope_         envelope{options};
     WriteElement::Ptr faultElt = envelope.fBody.Append ("Fault"sv);
     // SOAP 1.1 has a Fault's own children unqualified (section 4.4), where the envelope's namespace would be inherited
@@ -268,6 +277,9 @@ Memory::BLOB SOAP::Serialize (const Fault& fault, const Options& options)
         detail.ImportNode (detailDoc.GetRootElement ());
     }
     return envelope.Write ();
+#else
+    NoXMLDOM_ ();
+#endif
 }
 
 /*
@@ -286,7 +298,7 @@ void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Request* request
         return Request{.fNamespace = NamespaceOf_ (e), .fMethod = e.GetName ().fName, .fArguments = ChildValues_ (e)};
     });
 #else
-    NoXMLParser_ ();
+    NoXMLDOM_ ();
 #endif
 }
 
@@ -302,7 +314,7 @@ void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Response* respon
         return Response{.fNamespace = NamespaceOf_ (e), .fMethod = name.SubString (0, name.size () - "Response"sv.size ()), .fArguments = ChildValues_ (e)};
     });
 #else
-    NoXMLParser_ ();
+    NoXMLDOM_ ();
 #endif
 }
 
@@ -336,7 +348,7 @@ void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Fault* fault, [[
         return result;
     });
 #else
-    NoXMLParser_ ();
+    NoXMLDOM_ ();
 #endif
 }
 

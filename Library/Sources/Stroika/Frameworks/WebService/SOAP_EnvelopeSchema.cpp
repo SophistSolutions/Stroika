@@ -29,6 +29,9 @@
  *      @todo   the xxd rule in this directory's Makefile, and the .embed it generates, go away for #embed once every
  *              compiler Stroika supports has it - the file, and everything said above, stay as they are.
  */
+// the embed too, not just the function: with no schema support this file has nothing to compile, and an unused array of 6K
+// would warn
+#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
 namespace {
     constexpr
 #include "soap-envelope-1.1.xsd.embed"
@@ -51,3 +54,4 @@ XML::Schema::Ptr SOAP::EnvelopeSchema (const XML::Providers::ISchemaProvider& p)
      */
     return XML::Schema::New (p, Memory::BLOB::Attach (Schemas_soap_envelope_1_1_xsd), nullptr);
 }
+#endif

@@ -35,8 +35,8 @@
  *  Only what RPC with simple arguments uses: arguments as text, a fault's detail as XML text - no SOAP encoding of types, no
  *  headers, no SOAP 1.2. UPnP's control (Frameworks::UPnP::SOAP) is built on it.
  *
- *  Read with the XML DOM: in a build without an XML parser (qStroika_Foundation_DataExchange_XML_SupportDOM), DeSerialize - and
- *  so Invoke and HandleRequest - throw.
+ *  Read and written with the XML DOM: in a build without one (qStroika_Foundation_DataExchange_XML_SupportDOM), Serialize and
+ *  DeSerialize - and so Invoke and HandleRequest - throw, and there is no EnvelopeSchema.
  *
  *  \par Example Usage
  *      \code
@@ -190,6 +190,7 @@ namespace Stroika::Frameworks::WebService::SOAP {
         Fault fFault_;
     };
 
+#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
     /**
      *  \brief The SOAP 1.1 envelope schema, compiled for that provider - embedded, so nothing is fetched and no
      *         Resource::Resolver is wanted (it imports and includes nothing)
@@ -209,6 +210,7 @@ namespace Stroika::Frameworks::WebService::SOAP {
      *        notice travels with it - @see Schemas/soap-envelope-1.1.xsd
      */
     DataExchange::XML::Schema::Ptr EnvelopeSchema (const DataExchange::XML::Providers::ISchemaProvider& p);
+#endif
 
     /**
      *  \brief What SOAP must be told that has a sensible default - taken by Serialize and DeSerialize, defaulted, so a
