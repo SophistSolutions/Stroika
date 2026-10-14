@@ -162,6 +162,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\JSON\Writer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Writer.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Binding.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Writer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.cpp" />
@@ -172,7 +173,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Resource.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedChecker.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
@@ -566,7 +566,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Writer.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Binding.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Binding.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.h" />
@@ -576,7 +576,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Resource.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedChecker.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.h" />
@@ -1085,7 +1084,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Writer.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Binding.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.inl" />
@@ -1093,7 +1091,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Resource.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedChecker.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Cast.inl" />

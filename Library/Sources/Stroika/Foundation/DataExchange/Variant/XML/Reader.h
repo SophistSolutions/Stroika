@@ -9,21 +9,17 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/DataExchange/Variant/Reader.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
-#include "Stroika/Foundation/DataExchange/XML/SerializationConfiguration.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
+
+#include "Binding.h"
 
 /**
  *  \file
  *
- * TODO:
- *      @todo   NotYetImplemented
- *
- *      @todo   fix thread-safety - cloning rep - lock for access config data
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::DataExchange::Variant::XML {
-
-    using DataExchange::XML::SerializationConfiguration;
 
     /**
      *  \brief Read XML as a VariantValue - the inverse of Variant::XML::Writer, whose documentation has the shape
@@ -31,11 +27,22 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  An element with child elements reads as an object, one with only text as that text, and children of one name as an
      *  array. **Every leaf reads as a String**: XML says nothing of types, and VariantValue::As (so ObjectVariantMapper's
      *  ToObject) coerces. An attribute reads as a member too, by its name, so reading a document of someone else's drops
-     *  nothing silently - as does an XML::Binding, which says which members are attributes, what they are named, and which
+     *  nothing silently - as does a Binding, which says which members are attributes, what they are named, and which
      *  are arrays however few elements a document happens to have.
      *
+     *  So what the Writer wrote reads back with every leaf its As<String> (3 as "3", true as "true"), and an empty element as
+     *  "" - which is what null, {} and an empty array of `<Array>`s are all written as. A Binding saying a member is an array
+     *  (fItems naming its items) reads its empty element back as []; an empty array written as the member's element repeated
+     *  is no element at all, so reads back absent.
+     *
+     *  Give it the Binding the Writer was given. With the default - no Binding::fName - the document element is the value's one
+     *  member, so its name is kept: `<a><b>1</b></a>` reads as `{"a": {"b": "1"}}`. A Binding with an fName reads the document
+     *  element's content as the value - and throws DataExchange::BadFormatException where that element has another (local)
+     *  name, the document not being one the Binding describes.
+     *
      *  \note Throws DataExchange::BadFormatException on mixed content (text beside child elements), which this shape cannot
-     *        hold: reading on would silently drop the text.
+     *        hold: reading on would silently drop the text. And on text beside attributes, unless a Binding says which member
+     *        it is (Binding::Kind::eText).
      *
      *  \note Comments and processing instructions are dropped - StructuredStreamEvents::IConsumer reports neither, so this
      *        Reader never sees them. So a document rewritten through a VariantValue loses the comments it had, which would
@@ -54,11 +61,18 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
         class Rep_;
 
     public:
-        Reader (const SerializationConfiguration& config = {});
+        Reader (const Binding& binding = {});
 
     public:
-        nonvirtual SerializationConfiguration GetConfiguration () const;
-        nonvirtual void                       SetConfiguration (const SerializationConfiguration& config);
+        /**
+         */
+        nonvirtual Binding GetBinding () const;
+
+    public:
+        /**
+         *  @see GetBinding
+         */
+        nonvirtual void SetBinding (const Binding& binding);
 
     private:
         nonvirtual const Rep_& GetRep_ () const;

@@ -1055,187 +1055,299 @@ namespace {
      */
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_)
     {
-        using DataExchange::XML::SerializationConfiguration;
+        using DataExchange::Variant::XML::Binding;
+        using DataExchange::Variant::XML::Writer;
         // what the writer makes of a value, as a String (so no XML declaration - @see Variant::XML::Writer)
-        auto written = [] (const VariantValue& v, const SerializationConfiguration& config) {
-            return DataExchange::Variant::XML::Writer{config}.WriteAsString (v);
-        };
+        auto written = [] (const VariantValue& v, const Binding& binding) { return Writer{{.fBinding = binding}}.WriteAsString (v); };
         {
-            // the document element names the root, and a scalar is its text
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("MaxFiles"sv);
-            EXPECT_EQ (written (VariantValue{405}, config), "<MaxFiles>405</MaxFiles>\n"sv);
-            EXPECT_EQ (written (VariantValue{true}, config), "<MaxFiles>true</MaxFiles>\n"sv);
-            EXPECT_EQ (written (VariantValue{}, config), "<MaxFiles></MaxFiles>\n"sv);                     // null: an empty element
-            EXPECT_EQ (written (VariantValue{"<&>"sv}, config), "<MaxFiles>&lt;&amp;&gt;</MaxFiles>\n"sv); // quoted
+            // the Binding names the document element, and a scalar is its text
+            const Binding maxFiles{.fName = "MaxFiles"sv};
+            EXPECT_EQ (written (VariantValue{405}, maxFiles), "<MaxFiles>405</MaxFiles>\n"sv);
+            EXPECT_EQ (written (VariantValue{true}, maxFiles), "<MaxFiles>true</MaxFiles>\n"sv);
+            EXPECT_EQ (written (VariantValue{}, maxFiles), "<MaxFiles></MaxFiles>\n"sv);                     // null: an empty element
+            EXPECT_EQ (written (VariantValue{"<&>"sv}, maxFiles), "<MaxFiles>&lt;&amp;&gt;</MaxFiles>\n"sv); // quoted
         }
         {
-            // no document element: the value is an object of one member, which is the root
-            SerializationConfiguration config;
-            config.SetDocumentElementName (nullopt);
-            EXPECT_EQ (written (VariantValue{Mapping<String, VariantValue>{{"a"sv, VariantValue{1}}}}, config), "<a>1</a>\n"sv);
+            // with none named - the default - the value is an object of one member, and that member is the document element
+            EXPECT_EQ (written (VariantValue{Mapping<String, VariantValue>{{"a"sv, VariantValue{1}}}}, Binding{}), "<a>1</a>\n"sv);
         }
         {
-            // an array: each item in the array element name, so an array of one still reads as an array
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("list"sv);
+            // an array: an <Array> per item, so an array of one still reads as an array
             VariantValue v{Sequence<VariantValue>{VariantValue{"a"sv}, VariantValue{"b"sv}}};
-            EXPECT_EQ (written (v, config), "<list>\n    <Array>a</Array>\n    <Array>b</Array>\n</list>\n"sv);
-            config.SetArrayElementName ("item"sv);
-            EXPECT_EQ (written (v, config), "<list>\n    <item>a</item>\n    <item>b</item>\n</list>\n"sv);
-            // or, with none, the member's own name repeated - how a schema of someone else's usually has it
-            config.SetArrayElementName (nullopt);
-            config.SetDocumentElementName ("serviceList"sv);
-            EXPECT_EQ (written (VariantValue{Mapping<String, VariantValue>{{"service"sv, v}}}, config),
+            EXPECT_EQ (written (v, Binding{.fName = "list"sv}), "<list>\n    <Array>a</Array>\n    <Array>b</Array>\n</list>\n"sv);
+            // or items of another name, from the default array items
+            EXPECT_EQ (written (v, Binding{.fName = "list"sv, .fDefaultArrayItems = make_shared<Binding> (Binding{.fName = "item"sv})}),
+                       "<list>\n    <item>a</item>\n    <item>b</item>\n</list>\n"sv);
+            // or, where those name none, the member's own element repeated - how a schema of someone else's usually has it
+            EXPECT_EQ (written (VariantValue{Mapping<String, VariantValue>{{"service"sv, v}}},
+                                Binding{.fName = "serviceList"sv, .fDefaultArrayItems = make_shared<Binding> (Binding::kRepeatedArrayItems)}),
                        "<serviceList>\n    <service>a</service>\n    <service>b</service>\n</serviceList>\n"sv);
         }
         {
-            // nested objects, indented; members in the order a Mapping gives them (sorted - XML element order is not expressible yet)
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("device"sv);
+            // nested objects, indented; members in the order the Mapping gives them (none in particular; a Binding gives one)
             VariantValue v{Mapping<String, VariantValue>{
                 {"specVersion"sv, VariantValue{Mapping<String, VariantValue>{{"major"sv, VariantValue{1}}, {"minor"sv, VariantValue{0}}}}},
                 {"UDN"sv, VariantValue{"uuid:abc"sv}}}};
-            EXPECT_EQ (written (v, config), "<device>\n"
-                                            "    <UDN>uuid:abc</UDN>\n"
-                                            "    <specVersion>\n"
-                                            "        <major>1</major>\n"
-                                            "        <minor>0</minor>\n"
-                                            "    </specVersion>\n"
-                                            "</device>\n"sv);
+            EXPECT_EQ (written (v, Binding{.fName = "device"sv}), "<device>\n"
+                                                                  "    <UDN>uuid:abc</UDN>\n"
+                                                                  "    <specVersion>\n"
+                                                                  "        <major>1</major>\n"
+                                                                  "        <minor>0</minor>\n"
+                                                                  "    </specVersion>\n"
+                                                                  "</device>\n"sv);
+        }
+        {
+            // Variant::XML::Writer's own Example Usage, verbatim - here so the documentation cannot drift from what is written
+            VariantValue v{Mapping<String, VariantValue>{
+                {"specVersion"sv, VariantValue{Mapping<String, VariantValue>{{"major"sv, VariantValue{1}}}}},
+                {"serviceList"sv, VariantValue{Mapping<String, VariantValue>{
+                                      {"service"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}, VariantValue{"b"sv}}}}}}}}};
+            // <service> repeated, not <Array>s
+            Binding device{.fName = "device"sv, .fDefaultArrayItems = make_shared<Binding> (Binding::kRepeatedArrayItems)};
+            EXPECT_EQ (Writer{{.fBinding = device}}.WriteAsString (v), "<device>\n"
+                                                                       "    <serviceList>\n"
+                                                                       "        <service>a</service>\n"
+                                                                       "        <service>b</service>\n"
+                                                                       "    </serviceList>\n"
+                                                                       "    <specVersion>\n"
+                                                                       "        <major>1</major>\n"
+                                                                       "    </specVersion>\n"
+                                                                       "</device>\n"sv);
         }
         {
             // the byte overload writes a document, so it declares its encoding
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("a"sv);
             Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
-            DataExchange::Variant::XML::Writer{config}.Write (VariantValue{1}, out);
+            Writer{{.fBinding = Binding{.fName = "a"sv}}}.Write (VariantValue{1}, out);
             EXPECT_EQ (out.As<string> (), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<a>1</a>\n");
+        }
+        {
+            // not pretty printed: no whitespace between elements, nor after the declaration, nor at the end; or another indent
+            VariantValue  v{Mapping<String, VariantValue>{
+                {"UDN"sv, VariantValue{"uuid:abc"sv}}, {"specVersion"sv, VariantValue{Mapping<String, VariantValue>{{"major"sv, VariantValue{1}}}}}}};
+            const Binding device{.fName = "device"sv};
+            EXPECT_EQ ((Writer{{.fBinding = device, .fPrettyPrint = false}}.WriteAsString (v)),
+                       "<device><UDN>uuid:abc</UDN><specVersion><major>1</major></specVersion></device>"sv);
+            Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+            Writer{{.fBinding = device, .fPrettyPrint = false}}.Write (v, out);
+            EXPECT_EQ (out.As<string> (),
+                       "<?xml version=\"1.0\" "
+                       "encoding=\"UTF-8\"?><device><UDN>uuid:abc</UDN><specVersion><major>1</major></specVersion></device>");
+            EXPECT_EQ ((Writer{{.fBinding = device, .fSpacesPerIndent = 1}}.WriteAsString (v)),
+                       "<device>\n <UDN>uuid:abc</UDN>\n <specVersion>\n  <major>1</major>\n </specVersion>\n</device>\n"sv);
+        }
+        {
+            // a key that is not an XML name cannot be written as one - it would make malformed XML - so the Writer throws
+            using DataExchange::XML::NameWithNamespace;
+            using IO::Network::URI;
+            using VVMap = Mapping<String, VariantValue>;
+            EXPECT_THROW (written (VariantValue{VVMap{{"my key"sv, VariantValue{"x"sv}}}}, Binding{}), BadFormatException);
+            EXPECT_THROW (written (VariantValue{VVMap{{"1a"sv, VariantValue{"x"sv}}}}, Binding{}), BadFormatException);
+            EXPECT_THROW (written (VariantValue{VVMap{{"a"sv, VariantValue{VVMap{{"b:c"sv, VariantValue{1}}}}}}}, Binding{}), BadFormatException);
+            EXPECT_THROW (written (VariantValue{VVMap{{""sv, VariantValue{1}}}}, Binding{}), BadFormatException);
+            // ... nor can a Binding's prefix that is not one
+            const URI kNS_{"urn:a"sv};
+            EXPECT_THROW (written (VariantValue{1}, Binding{.fName = NameWithNamespace{kNS_, "a"sv}, .fNamespacePrefixes = {{kNS_, "1p"sv}}}),
+                          BadFormatException);
+            // but a name need not be ASCII
+            EXPECT_EQ (written (VariantValue{VVMap{{String{L"caf\u00e9"}, VariantValue{1}}}}, Binding{}),
+                       String{L"<caf\u00e9>1</caf\u00e9>\n"});
+        }
+        {
+            // a document has exactly one root element: with none named, a value that is not an object of exactly one member
+            // has nothing to be it - and a VariantValue is data, not code, so writing it throws, as any unwritable value does
+            using VVMap = Mapping<String, VariantValue>;
+            EXPECT_THROW (written (VariantValue{3}, Binding{}), BadFormatException);
+            EXPECT_THROW (written (VariantValue{Sequence<VariantValue>{VariantValue{1}}}, Binding{}), BadFormatException);
+            EXPECT_THROW (written (VariantValue{VVMap{{"a"sv, VariantValue{1}}, {"b"sv, VariantValue{2}}}}, Binding{}), BadFormatException);
+            EXPECT_THROW (written (VariantValue{VVMap{}}, Binding{}), BadFormatException);
+            // ... nor can the document element be repeated, for an array whose items have no name of their own
+            const Binding repeated{.fName = "a"sv, .fDefaultArrayItems = make_shared<Binding> (Binding::kRepeatedArrayItems)};
+            EXPECT_THROW (written (VariantValue{Sequence<VariantValue>{VariantValue{1}, VariantValue{2}}}, repeated), BadFormatException);
+            EXPECT_EQ (written (VariantValue{Sequence<VariantValue>{VariantValue{1}}}, repeated), "<a>1</a>\n"sv); // one item: one root
         }
     }
 }
 
 namespace {
     /*
-     *  An XML::Binding - what a schema of someone else's needs, and the default shape cannot say: an attribute rather than an
+     *  A Binding - what a schema of someone else's needs, and the default shape cannot say: an attribute rather than an
      *  element, a namespace, a name of its own, and an order of its own (a VariantValue object has none; XML cares).
      */
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_Binding_)
     {
-        using DataExchange::XML::Binding;
+        using DataExchange::Variant::XML::Binding;
+        using DataExchange::Variant::XML::Writer;
         using DataExchange::XML::NameWithNamespace;
-        using DataExchange::XML::SerializationConfiguration;
         using IO::Network::URI;
         using VVMap  = Mapping<String, VariantValue>;
-        auto written = [] (const VariantValue& v, const SerializationConfiguration& config) {
-            return DataExchange::Variant::XML::Writer{config}.WriteAsString (v);
-        };
-        SerializationConfiguration config;
-        config.SetArrayElementName (nullopt); // repeated elements, as a UPnP document has them
+        auto written = [] (const VariantValue& v, const Binding& binding) { return Writer{{.fBinding = binding}}.WriteAsString (v); };
         {
             // UPnP's <stateVariable sendEvents="yes">: an attribute, and name before dataType - which the value, a Mapping,
             // has no say in (it would give dataType, name, sendEvents, sorted)
-            config.SetDocumentElementName ("stateVariable"sv);
-            config.SetBinding (Binding{.fMembers = {{"sendEvents"sv, Binding{.fKind = Binding::Kind::eAttribute}}, {"name"sv}, {"dataType"sv}}});
+            const Binding stateVariable{.fName = "stateVariable"sv,
+                                        .fMembers = {{"sendEvents"sv, Binding{.fKind = Binding::Kind::eAttribute}}, {"name"sv}, {"dataType"sv}}};
             VariantValue v{VVMap{{"dataType"sv, VariantValue{"boolean"sv}}, {"name"sv, VariantValue{"Status"sv}}, {"sendEvents"sv, VariantValue{"yes"sv}}}};
-            EXPECT_EQ (written (v, config), "<stateVariable sendEvents=\"yes\">\n"
-                                            "    <name>Status</name>\n"
-                                            "    <dataType>boolean</dataType>\n"
-                                            "</stateVariable>\n"sv);
+            EXPECT_EQ (written (v, stateVariable), "<stateVariable sendEvents=\"yes\">\n"
+                                                   "    <name>Status</name>\n"
+                                                   "    <dataType>boolean</dataType>\n"
+                                                   "</stateVariable>\n"sv);
         }
         {
             // a namespace, written as a default one on the element that has it - and inherited, so written once
-            config.SetDocumentElementName ("root"sv);
-            config.SetBinding (Binding{.fName    = NameWithNamespace{URI{"urn:schemas-upnp-org:device-1-0"sv}, "root"sv},
-                                       .fMembers = {{"specVersion"sv}, {"URLBase"sv}}});
-            VariantValue v{VVMap{{"URLBase"sv, VariantValue{"http://1.2.3.4/"sv}},
-                                 {"specVersion"sv, VariantValue{VVMap{{"major"sv, VariantValue{1}}}}}}};
-            EXPECT_EQ (written (v, config), "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">\n"
-                                            "    <specVersion>\n"
-                                            "        <major>1</major>\n"
-                                            "    </specVersion>\n"
-                                            "    <URLBase>http://1.2.3.4/</URLBase>\n"
-                                            "</root>\n"sv);
+            const Binding root{.fName    = NameWithNamespace{URI{"urn:schemas-upnp-org:device-1-0"sv}, "root"sv},
+                               .fMembers = {{"specVersion"sv}, {"URLBase"sv}}};
+            VariantValue  v{VVMap{{"URLBase"sv, VariantValue{"http://1.2.3.4/"sv}},
+                                  {"specVersion"sv, VariantValue{VVMap{{"major"sv, VariantValue{1}}}}}}};
+            EXPECT_EQ (written (v, root), "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">\n"
+                                          "    <specVersion>\n"
+                                          "        <major>1</major>\n"
+                                          "    </specVersion>\n"
+                                          "    <URLBase>http://1.2.3.4/</URLBase>\n"
+                                          "</root>\n"sv);
         }
         {
-            // a member named something else, a member that is the element's text, and an array whose items have a Binding
-            config.SetDocumentElementName ("serviceList"sv);
-            config.SetBinding (
-                Binding{.fMembers = {{"services"sv, Binding{.fName  = NameWithNamespace{"service"sv},
-                                                            .fItems = make_shared<Binding> (
-                                                                Binding{.fMembers = {{"id"sv, Binding{.fKind = Binding::Kind::eAttribute}},
-                                                                                     {"type"sv, Binding{.fKind = Binding::Kind::eText}}}})}}}});
+            // a member named something else, a member that is the element's text, and an array whose item Binding names no item
+            // element - so the member's own element, repeated
+            const Binding serviceList{
+                .fName    = "serviceList"sv,
+                .fMembers = {{"services"sv, Binding{.fName  = "service"sv,
+                                                    .fItems = make_shared<Binding> (
+                                                        Binding{.fMembers = {{"id"sv, Binding{.fKind = Binding::Kind::eAttribute}},
+                                                                             {"type"sv, Binding{.fKind = Binding::Kind::eText}}}})}}}};
             VariantValue v{VVMap{{"services"sv, VariantValue{Sequence<VariantValue>{
                                                     VariantValue{VVMap{{"id"sv, VariantValue{1}}, {"type"sv, VariantValue{"SwitchPower"sv}}}},
                                                     VariantValue{VVMap{{"id"sv, VariantValue{2}}, {"type"sv, VariantValue{"Dimming"sv}}}}}}}}};
-            EXPECT_EQ (written (v, config), "<serviceList>\n"
-                                            "    <service id=\"1\">SwitchPower</service>\n"
-                                            "    <service id=\"2\">Dimming</service>\n"
-                                            "</serviceList>\n"sv);
+            EXPECT_EQ (written (v, serviceList), "<serviceList>\n"
+                                                 "    <service id=\"1\">SwitchPower</service>\n"
+                                                 "    <service id=\"2\">Dimming</service>\n"
+                                                 "</serviceList>\n"sv);
         }
         {
-            // a prefixed namespace: declared on the document element, and used by every element and attribute in it - which is
-            // the only way to write an attribute in a namespace at all. SOAP's envelope
-            const URI kSOAP_{"http://schemas.xmlsoap.org/soap/envelope/"sv};
-            config.SetDocumentElementName ("Envelope"sv);
-            config.SetNamespacePrefixes ({{kSOAP_, "s"sv}});
-            config.SetBinding (Binding{
+            // a prefixed namespace: declared on the element whose Binding gives it, and used by every element and attribute in
+            // that namespace there and inside - the only way to write an attribute in a namespace at all. SOAP's envelope, as in
+            // Binding::fNamespacePrefixes' Example Usage
+            const URI     kSOAP_{"http://schemas.xmlsoap.org/soap/envelope/"sv};
+            const Binding envelope{
                 .fName = NameWithNamespace{kSOAP_, "Envelope"sv},
                 .fMembers = {{"encodingStyle"sv, Binding{.fKind = Binding::Kind::eAttribute, .fName = NameWithNamespace{kSOAP_, "encodingStyle"sv}}},
-                             {"Body"sv, Binding{.fName = NameWithNamespace{kSOAP_, "Body"sv}}}}});
+                             {"Body"sv, Binding{.fName = NameWithNamespace{kSOAP_, "Body"sv}}}},
+                .fNamespacePrefixes = {{kSOAP_, "s"sv}}};
             VariantValue v{VVMap{{"encodingStyle"sv, VariantValue{"http://schemas.xmlsoap.org/soap/encoding/"sv}},
                                  {"Body"sv, VariantValue{VVMap{{"GetStatus"sv, VariantValue{""sv}}}}}}};
-            EXPECT_EQ (written (v, config), "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" "
-                                            "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n"
-                                            "    <s:Body>\n"
-                                            "        <GetStatus></GetStatus>\n"
-                                            "    </s:Body>\n"
-                                            "</s:Envelope>\n"sv);
-            config.SetNamespacePrefixes ({});
+            EXPECT_EQ (written (v, envelope), "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                                              "s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n"
+                                              "    <s:Body>\n"
+                                              "        <GetStatus></GetStatus>\n"
+                                              "    </s:Body>\n"
+                                              "</s:Envelope>\n"sv);
+            // a prefix declared on an inner element: UPnP's action, in its service's namespace - <u:GetStatus xmlns:u="...">
+            const URI     kSwitchPower_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
+            const Binding withAction{
+                .fName = NameWithNamespace{kSOAP_, "Envelope"sv},
+                .fMembers = {{"Body"sv, Binding{.fName = NameWithNamespace{kSOAP_, "Body"sv},
+                                                .fMembers = {{"GetStatus"sv, Binding{.fName = NameWithNamespace{kSwitchPower_, "GetStatus"sv},
+                                                                                     .fNamespacePrefixes = {{kSwitchPower_, "u"sv}}}}}}}},
+                .fNamespacePrefixes = {{kSOAP_, "s"sv}}};
+            EXPECT_EQ (written (VariantValue{VVMap{{"Body"sv, VariantValue{VVMap{{"GetStatus"sv, VariantValue{""sv}}}}}}}, withAction),
+                       "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
+                       "    <s:Body>\n"
+                       "        <u:GetStatus xmlns:u=\"urn:schemas-upnp-org:service:SwitchPower:1\"></u:GetStatus>\n"
+                       "    </s:Body>\n"
+                       "</s:Envelope>\n"sv);
+            // with no document element named, the document's prefixes are declared on the one element it has
+            const Binding document{.fMembers           = {{"Envelope"sv, Binding{.fName = NameWithNamespace{kSOAP_, "Envelope"sv}}}},
+                                   .fNamespacePrefixes = {{kSOAP_, "s"sv}}};
+            EXPECT_EQ (written (VariantValue{VVMap{{"Envelope"sv, VariantValue{""sv}}}}, document),
+                       "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"></s:Envelope>\n"sv);
+        }
+        {
+            // a prefix declared again inside, for another namespace, names only that one there - so an element inside it, in the
+            // first namespace, has a default namespace instead
+            const URI     kA_{"urn:a"sv};
+            const URI     kB_{"urn:b"sv};
+            const Binding a{.fName              = NameWithNamespace{kA_, "a"sv},
+                            .fMembers           = {{"b"sv, Binding{.fName              = NameWithNamespace{kB_, "b"sv},
+                                                                   .fMembers           = {{"c"sv, Binding{.fName = NameWithNamespace{kA_, "c"sv}}}},
+                                                                   .fNamespacePrefixes = {{kB_, "p"sv}}}}},
+                            .fNamespacePrefixes = {{kA_, "p"sv}}};
+            EXPECT_EQ (written (VariantValue{VVMap{{"b"sv, VariantValue{VVMap{{"c"sv, VariantValue{1}}}}}}}, a),
+                       "<p:a xmlns:p=\"urn:a\">\n"
+                       "    <p:b xmlns:p=\"urn:b\">\n"
+                       "        <c xmlns=\"urn:a\">1</c>\n"
+                       "    </p:b>\n"
+                       "</p:a>\n"sv);
+        }
+        {
+            // Binding::fItems' own example, verbatim: items with a name of their own, wrapped in the member's element
+            // {"allowedValueList": ["yes", "no"]}
+            const Binding b =
+                Binding{.fMembers = {{"allowedValueList"sv, Binding{.fItems = make_shared<Binding> (Binding{.fName = "allowedValue"sv})}}}};
+            VariantValue v{VVMap{{"allowedValueList"sv, VariantValue{Sequence<VariantValue>{VariantValue{"yes"sv}, VariantValue{"no"sv}}}}}};
+            EXPECT_EQ (written (v, b), "<allowedValueList>\n"
+                                       "    <allowedValue>yes</allowedValue>\n"
+                                       "    <allowedValue>no</allowedValue>\n"
+                                       "</allowedValueList>\n"sv);
         }
         {
             // a member the Binding says nothing about is written after those it does, in the value's own order
-            config.SetDocumentElementName ("a"sv);
-            config.SetBinding (Binding{.fMembers = {{"z"sv}}});
             VariantValue v{VVMap{{"m"sv, VariantValue{1}}, {"z"sv, VariantValue{2}}}};
-            EXPECT_EQ (written (v, config), "<a>\n    <z>2</z>\n    <m>1</m>\n</a>\n"sv);
+            EXPECT_EQ (written (v, Binding{.fName = "a"sv, .fMembers = {{"z"sv}}}), "<a>\n    <z>2</z>\n    <m>1</m>\n</a>\n"sv);
         }
         {
             // an item Binding with a name of its own wraps that array, each item of that name - so one document can wrap two
-            // arrays differently, which the configuration's single array element name cannot say. UPnP's service description
-            config.SetDocumentElementName ("scpd"sv);
-            auto itemsNamed = [] (const String& itemName) { return make_shared<Binding> (Binding{.fName = NameWithNamespace{itemName}}); };
-            config.SetBinding (Binding{.fMembers = {{"actionList"sv, Binding{.fItems = itemsNamed ("action"sv)}},
-                                                    {"allowedValueList"sv, Binding{.fItems = itemsNamed ("allowedValue"sv)}}}});
-            VariantValue v{
+            // arrays differently. UPnP's service description
+            auto          itemsNamed = [] (const String& itemName) { return make_shared<Binding> (Binding{.fName = itemName}); };
+            const Binding scpd{.fName    = "scpd"sv,
+                               .fMembers = {{"actionList"sv, Binding{.fItems = itemsNamed ("action"sv)}},
+                                            {"allowedValueList"sv, Binding{.fItems = itemsNamed ("allowedValue"sv)}}}};
+            VariantValue  v{
                 VVMap{{"actionList"sv, VariantValue{Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"SetTarget"sv}}}},
                                                                            VariantValue{VVMap{{"name"sv, VariantValue{"GetTarget"sv}}}}}}},
                       {"allowedValueList"sv, VariantValue{Sequence<VariantValue>{VariantValue{"yes"sv}, VariantValue{"no"sv}}}}}};
-            EXPECT_EQ (written (v, config), "<scpd>\n"
-                                            "    <actionList>\n"
-                                            "        <action>\n"
-                                            "            <name>SetTarget</name>\n"
-                                            "        </action>\n"
-                                            "        <action>\n"
-                                            "            <name>GetTarget</name>\n"
-                                            "        </action>\n"
-                                            "    </actionList>\n"
-                                            "    <allowedValueList>\n"
-                                            "        <allowedValue>yes</allowedValue>\n"
-                                            "        <allowedValue>no</allowedValue>\n"
-                                            "    </allowedValueList>\n"
-                                            "</scpd>\n"sv);
+            EXPECT_EQ (written (v, scpd), "<scpd>\n"
+                                          "    <actionList>\n"
+                                          "        <action>\n"
+                                          "            <name>SetTarget</name>\n"
+                                          "        </action>\n"
+                                          "        <action>\n"
+                                          "            <name>GetTarget</name>\n"
+                                          "        </action>\n"
+                                          "    </actionList>\n"
+                                          "    <allowedValueList>\n"
+                                          "        <allowedValue>yes</allowedValue>\n"
+                                          "        <allowedValue>no</allowedValue>\n"
+                                          "    </allowedValueList>\n"
+                                          "</scpd>\n"sv);
             // an empty array is still its wrapper, and a one-item array is still an array - which is what a Binding settles
             VariantValue one{VVMap{{"actionList"sv, VariantValue{Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"X"sv}}}}}}},
                                    {"allowedValueList"sv, VariantValue{Sequence<VariantValue>{}}}}};
-            EXPECT_EQ (written (one, config), "<scpd>\n"
-                                              "    <actionList>\n"
-                                              "        <action>\n"
-                                              "            <name>X</name>\n"
-                                              "        </action>\n"
-                                              "    </actionList>\n"
-                                              "    <allowedValueList></allowedValueList>\n"
-                                              "</scpd>\n"sv);
+            EXPECT_EQ (written (one, scpd), "<scpd>\n"
+                                            "    <actionList>\n"
+                                            "        <action>\n"
+                                            "            <name>X</name>\n"
+                                            "        </action>\n"
+                                            "    </actionList>\n"
+                                            "    <allowedValueList></allowedValueList>\n"
+                                            "</scpd>\n"sv);
+        }
+        {
+            // default array items hold at and inside the element whose Binding gives them, until another's does - and kDefaultArrayItems
+            // gives back the default shape's
+            const Binding a{.fName    = "a"sv,
+                            .fMembers = {{"inner"sv, Binding{.fDefaultArrayItems = make_shared<Binding> (Binding::kDefaultArrayItems)}}},
+                            .fDefaultArrayItems = make_shared<Binding> (Binding::kRepeatedArrayItems)};
+            VariantValue v{VVMap{{"x"sv, VariantValue{Sequence<VariantValue>{VariantValue{1}, VariantValue{2}}}},
+                                 {"inner"sv, VariantValue{VVMap{{"y"sv, VariantValue{Sequence<VariantValue>{VariantValue{3}, VariantValue{4}}}}}}}}};
+            EXPECT_EQ (written (v, a), "<a>\n"
+                                       "    <inner>\n"
+                                       "        <y>\n"
+                                       "            <Array>3</Array>\n"
+                                       "            <Array>4</Array>\n"
+                                       "        </y>\n"
+                                       "    </inner>\n"
+                                       "    <x>1</x>\n"
+                                       "    <x>2</x>\n"
+                                       "</a>\n"sv);
         }
     }
 }
@@ -1248,124 +1360,184 @@ namespace {
      */
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_RoundTrip_)
     {
-        using DataExchange::XML::SerializationConfiguration;
+        using DataExchange::Variant::XML::Binding;
+        using DataExchange::Variant::XML::Reader;
+        using DataExchange::Variant::XML::Writer;
         using VVMap    = Mapping<String, VariantValue>; // a comma in a template argument would end an EXPECT_EQ's first argument
-        auto roundTrip = [] (const VariantValue& v, const SerializationConfiguration& config) {
-            return DataExchange::Variant::XML::Reader{config}.Read (DataExchange::Variant::XML::Writer{config}.WriteAsString (v));
+        auto roundTrip = [] (const VariantValue& v, const Binding& binding) {
+            return Reader{binding}.Read (Writer{{.fBinding = binding}}.WriteAsString (v));
         };
         {
+            // Binding's own Example Usage, verbatim - here so the documentation cannot drift from what is written and read back
+            // UPnP's <stateVariable>: sendEvents an attribute, and name before dataType (a VariantValue object has no order)
+            VariantValue v{Mapping<String, VariantValue>{
+                {"name"sv, VariantValue{"Status"sv}}, {"dataType"sv, VariantValue{"boolean"sv}}, {"sendEvents"sv, VariantValue{"yes"sv}}}};
+            Binding      b{.fName    = "stateVariable"sv,
+                           .fMembers = {{"sendEvents"sv, Binding{.fKind = Binding::Kind::eAttribute}}, {"name"sv}, {"dataType"sv}}};
+            String       xml  = Variant::XML::Writer{{.fBinding = b}}.WriteAsString (v);
+            VariantValue back = Variant::XML::Reader{b}.Read (xml); // == v
+
+            // With no fName, the document element is the value's one member: its name moves from the Binding into the value.
+            // So the same XML again, from v wrapped in a member of that name - whose Binding is b:
+            VariantValue w{Mapping<String, VariantValue>{{"stateVariable"sv, v}}};
+            Binding      d{.fMembers = {{"stateVariable"sv, b}}};
+            String       xml2  = Variant::XML::Writer{{.fBinding = d}}.WriteAsString (w); // == xml
+            VariantValue back2 = Variant::XML::Reader{d}.Read (xml2);                     // == w
+            VariantValue plain = Variant::XML::Reader{}.Read (xml);                       // == w too: read with no Binding at all
+
+            EXPECT_EQ (xml, "<stateVariable sendEvents=\"yes\">\n"
+                            "    <name>Status</name>\n"
+                            "    <dataType>boolean</dataType>\n"
+                            "</stateVariable>\n"sv);
+            EXPECT_EQ (back, v);
+            EXPECT_EQ (xml2, xml);
+            EXPECT_EQ (back2, w);
+            EXPECT_EQ (plain, w);
+        }
+        {
             // an object, and its leaves - each back as a String
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("device"sv);
-            VariantValue v{Mapping<String, VariantValue>{{"UDN"sv, VariantValue{"uuid:abc"sv}}, {"port"sv, VariantValue{80}}}};
-            VariantValue back = roundTrip (v, config);
+            VariantValue v{VVMap{{"UDN"sv, VariantValue{"uuid:abc"sv}}, {"port"sv, VariantValue{80}}}};
+            VariantValue back = roundTrip (v, Binding{.fName = "device"sv});
             EXPECT_EQ (back.As<VVMap> ().Lookup ("UDN"sv)->As<String> (), "uuid:abc"sv);
             EXPECT_EQ (back.As<VVMap> ().Lookup ("port"sv)->As<int> (), 80); // XML has no types: "80"
             EXPECT_EQ (back.As<VVMap> ().Lookup ("port"sv)->GetType (), VariantValue::eString);
         }
         {
-            // an array, each item in the array element - so an array of ONE still reads as an array
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("list"sv);
+            // an array, an <Array> per item - so an array of ONE still reads as an array
             for (const Sequence<VariantValue>& items :
                  {Sequence<VariantValue>{VariantValue{"a"sv}, VariantValue{"b"sv}}, Sequence<VariantValue>{VariantValue{"a"sv}}}) {
-                VariantValue back = roundTrip (VariantValue{items}, config);
+                VariantValue back = roundTrip (VariantValue{items}, Binding{.fName = "list"sv});
                 EXPECT_EQ (back.GetType (), VariantValue::eArray);
                 EXPECT_EQ (back.As<Sequence<VariantValue>> ().size (), items.size ());
                 EXPECT_EQ (back.As<Sequence<VariantValue>> ()[0].As<String> (), "a"sv);
             }
         }
         {
-            // with no array element name, a repeated element name is the array - how someone else's schema has it; but then an
-            // array of one is indistinguishable from a scalar, and reads back as one
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("serviceList"sv);
-            config.SetArrayElementName (nullopt);
-            VariantValue two{
-                Mapping<String, VariantValue>{{"service"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}, VariantValue{"b"sv}}}}}};
-            EXPECT_EQ (roundTrip (two, config), two);
-            VariantValue one{Mapping<String, VariantValue>{{"service"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}}}}}};
-            EXPECT_EQ (roundTrip (one, config).As<VVMap> ().Lookup ("service"sv)->As<String> (), "a"sv);
+            // with the member's own element repeated, a repeated element name is the array - how someone else's schema has it; but
+            // then an array of one is indistinguishable from a scalar, and reads back as one
+            const Binding serviceList{.fName = "serviceList"sv, .fDefaultArrayItems = make_shared<Binding> (Binding::kRepeatedArrayItems)};
+            VariantValue  two{VVMap{{"service"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}, VariantValue{"b"sv}}}}}};
+            EXPECT_EQ (roundTrip (two, serviceList), two);
+            VariantValue one{VVMap{{"service"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}}}}}};
+            EXPECT_EQ (roundTrip (one, serviceList).As<VVMap> ().Lookup ("service"sv)->As<String> (), "a"sv);
+            // ... unless a Binding says that member is an array: an item Binding naming no item element, so repeated too
+            const Binding bound{.fName    = "serviceList"sv,
+                                .fMembers = {{"service"sv, Binding{.fItems = make_shared<Binding> (Binding::kRepeatedArrayItems)}}}};
+            EXPECT_EQ (roundTrip (one, bound), one);
+            EXPECT_EQ (roundTrip (two, bound), two);
         }
         {
             // reading someone else's XML: an attribute reads as a member too, so nothing is silently dropped
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("stateVariable"sv);
-            config.SetArrayElementName (nullopt);
-            VariantValue v = DataExchange::Variant::XML::Reader{config}.Read (
-                String{"<stateVariable sendEvents=\"yes\"><name>Status</name><dataType>boolean</dataType></stateVariable>"sv});
-            VVMap m = v.As<VVMap> ();
+            VVMap m = Reader{Binding{.fName = "stateVariable"sv}}
+                          .Read (String{"<stateVariable sendEvents=\"yes\"><name>Status</name><dataType>boolean</dataType></stateVariable>"sv})
+                          .As<VVMap> ();
             EXPECT_EQ (m.Lookup ("sendEvents"sv)->As<String> (), "yes"sv);
             EXPECT_EQ (m.Lookup ("name"sv)->As<String> (), "Status"sv);
             EXPECT_EQ (m.Lookup ("dataType"sv)->As<String> (), "boolean"sv);
         }
         {
             // through a Binding, both ways: an attribute, a renamed member, a member that is the element's text, a member that
-            // is an array however few elements there are, and an order of its own
-            using DataExchange::XML::Binding;
-            using DataExchange::XML::NameWithNamespace;
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("serviceList"sv);
-            config.SetArrayElementName (nullopt);
-            config.SetBinding (
-                Binding{.fMembers = {{"services"sv, Binding{.fName  = NameWithNamespace{"service"sv},
-                                                            .fItems = make_shared<Binding> (
-                                                                Binding{.fMembers = {{"id"sv, Binding{.fKind = Binding::Kind::eAttribute}},
-                                                                                     {"type"sv, Binding{.fKind = Binding::Kind::eText}}}})}}}});
+            // is an array however few elements there are, and an order of its own - its items repeated, or wrapped
+            const Sequence<Binding::Member> serviceMembers{{"id"sv, Binding{.fKind = Binding::Kind::eAttribute}},
+                                                           {"type"sv, Binding{.fKind = Binding::Kind::eText}}};
+            const Binding                   repeated{
+                .fName = "serviceList"sv,
+                .fMembers = {{"services"sv, Binding{.fName = "service"sv, .fItems = make_shared<Binding> (Binding{.fMembers = serviceMembers})}}}};
+            const Binding wrapped{
+                .fName = "serviceList"sv,
+                .fMembers = {{"services"sv, Binding{.fItems = make_shared<Binding> (Binding{.fName = "service"sv, .fMembers = serviceMembers})}}}};
             for (const Sequence<VariantValue>& services :
                  {Sequence<VariantValue>{VariantValue{VVMap{{"id"sv, VariantValue{"1"sv}}, {"type"sv, VariantValue{"SwitchPower"sv}}}},
                                          VariantValue{VVMap{{"id"sv, VariantValue{"2"sv}}, {"type"sv, VariantValue{"Dimming"sv}}}}},
                   Sequence<VariantValue>{VariantValue{VVMap{{"id"sv, VariantValue{"1"sv}}, {"type"sv, VariantValue{"SwitchPower"sv}}}}}}) {
                 VariantValue v{VVMap{{"services"sv, VariantValue{services}}}};
-                EXPECT_EQ (roundTrip (v, config), v) << services.size (); // including the array of one
+                EXPECT_EQ (roundTrip (v, repeated), v) << services.size (); // including the array of one
+                EXPECT_EQ (roundTrip (v, wrapped), v) << services.size ();
             }
         }
         {
             // mixed content - text beside child elements - cannot be held, and reading on would drop the text silently
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("p"sv);
-            EXPECT_THROW (DataExchange::Variant::XML::Reader{config}.Read (String{"<p>Hello <b>world</b>!</p>"sv}), BadFormatException);
+            Reader p{Binding{.fName = "p"sv}};
+            EXPECT_THROW (p.Read (String{"<p>Hello <b>world</b>!</p>"sv}), BadFormatException);
+            // ... array items among them too, as the default shape's <Array>s or a Binding's
+            EXPECT_THROW (Reader{Binding{.fName = "list"sv}}.Read (String{"<list>hello<Array>a</Array></list>"sv}), BadFormatException);
+            const Binding scpd{.fName    = "scpd"sv,
+                               .fMembers = {{"actionList"sv, Binding{.fItems = make_shared<Binding> (Binding{.fName = "action"sv})}}}};
+            EXPECT_THROW (Reader{scpd}.Read (String{"<scpd><actionList>hello<action>a</action></actionList></scpd>"sv}), BadFormatException);
             // but the whitespace a pretty-printed document has between elements is not mixed content
-            EXPECT_NO_THROW (DataExchange::Variant::XML::Reader{config}.Read (String{"<p>\n    <b>world</b>\n</p>"sv}));
+            EXPECT_NO_THROW (p.Read (String{"<p>\n    <b>world</b>\n</p>"sv}));
+            // nor is text beside attributes alone: a Binding saying which member the text is reads it, and with none there is
+            // no member to read it into - which is what the exception says
+            EXPECT_EQ ((Reader{Binding{.fName = "p"sv, .fMembers = {{"text"sv, Binding{.fKind = Binding::Kind::eText}}}}}.Read (String{"<p id=\"1\">hello</p>"sv})),
+                       (VariantValue{VVMap{{"id"sv, VariantValue{"1"sv}}, {"text"sv, VariantValue{"hello"sv}}}}));
+            try {
+                p.Read (String{"<p id=\"1\">hello</p>"sv});
+                ADD_FAILURE () << "should have thrown";
+            }
+            catch (const BadFormatException& e) {
+                const String what = Characters::ToString (e);
+                EXPECT_EQ (what.Find ("child elements"sv), nullopt) << what.AsNarrowSDKString ();
+                EXPECT_NE (what.Find ("attributes"sv), nullopt) << what.AsNarrowSDKString ();
+            }
         }
         {
-            // with no document element named, the root element is the value's one member - as the Writer takes it
-            SerializationConfiguration config;
-            config.SetDocumentElementName (nullopt);
-            EXPECT_EQ (DataExchange::Variant::XML::Reader{config}.Read (String{"<a><b>1</b></a>"sv}),
+            // with no document element named - the default - the document element is the value's one member, as the Writer
+            // takes it: named, and bound, as any member is
+            EXPECT_EQ (Reader{}.Read (String{"<a><b>1</b></a>"sv}),
                        (VariantValue{VVMap{{"a"sv, VariantValue{VVMap{{"b"sv, VariantValue{"1"sv}}}}}}}));
+            VariantValue dev{VVMap{{"dev"sv, VariantValue{VVMap{{"UDN"sv, VariantValue{"uuid:abc"sv}}}}}}};
+            EXPECT_EQ (roundTrip (dev, Binding{.fMembers = {{"dev"sv, Binding{.fName = "device"sv}}}}), dev);
+            VariantValue list{VVMap{{"list"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}}}}}};
+            EXPECT_EQ (roundTrip (list, Binding{.fDefaultArrayItems = make_shared<Binding> (Binding{.fName = "item"sv})}), list);
+        }
+        {
+            // a Binding naming the document element reads only a document with that element - another is not what it describes
+            const Binding stateVariable{.fName = "stateVariable"sv};
+            EXPECT_THROW (Reader{stateVariable}.Read (String{"<scpd><x>1</x></scpd>"sv}), BadFormatException);
+            // ... matched by its local name, as every member is, whatever namespace and prefix the document gives it
+            EXPECT_EQ (Reader{stateVariable}.Read (String{"<s:stateVariable xmlns:s=\"urn:x\"><x>1</x></s:stateVariable>"sv}),
+                       (VariantValue{VVMap{{"x"sv, VariantValue{"1"sv}}}}));
+            // and with none named, any document element reads - as the value's one member
+            EXPECT_EQ (Reader{}.Read (String{"<scpd><x>1</x></scpd>"sv}),
+                       (VariantValue{VVMap{{"scpd"sv, VariantValue{VVMap{{"x"sv, VariantValue{"1"sv}}}}}}}));
         }
         {
             // array items BESIDE other members: the array is one member among them, and not lost
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("a"sv);
-            config.SetArrayElementName ("item"sv);
-            VVMap m = DataExchange::Variant::XML::Reader{config}.Read (String{"<a><item>1</item><item>2</item><other>x</other></a>"sv}).As<VVMap> ();
+            VVMap m = Reader{Binding{.fName = "a"sv, .fDefaultArrayItems = make_shared<Binding> (Binding{.fName = "item"sv})}}
+                          .Read (String{"<a><item>1</item><item>2</item><other>x</other></a>"sv})
+                          .As<VVMap> ();
             EXPECT_EQ (m.Lookup ("other"sv)->As<String> (), "x"sv);
             ASSERT_TRUE (m.Lookup ("item"sv).has_value ());
             EXPECT_EQ (m.Lookup ("item"sv)->As<Sequence<VariantValue>> ().size (), 2u);
         }
         {
             // an array each item Binding names: its wrapper reads back as that member's array, two differently named wrappers in
-            // the one document - and still an array where the document holds only one. UPnP's service description
-            using DataExchange::XML::Binding;
-            using DataExchange::XML::NameWithNamespace;
-            SerializationConfiguration config;
-            config.SetDocumentElementName ("scpd"sv);
-            auto itemsNamed = [] (const String& itemName) { return make_shared<Binding> (Binding{.fName = NameWithNamespace{itemName}}); };
-            config.SetBinding (Binding{.fMembers = {{"actionList"sv, Binding{.fItems = itemsNamed ("action"sv)}},
-                                                    {"allowedValueList"sv, Binding{.fItems = itemsNamed ("allowedValue"sv)}}}});
-            for (const Sequence<VariantValue>& actions : {Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"SetTarget"sv}}}},
-                                                                                 VariantValue{VVMap{{"name"sv, VariantValue{"GetTarget"sv}}}}},
-                                                          Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"SetTarget"sv}}}}}}) {
+            // the one document - and still an array where the document holds one item, or none. UPnP's service description
+            auto          itemsNamed = [] (const String& itemName) { return make_shared<Binding> (Binding{.fName = itemName}); };
+            const Binding scpd{.fName    = "scpd"sv,
+                               .fMembers = {{"actionList"sv, Binding{.fItems = itemsNamed ("action"sv)}},
+                                            {"allowedValueList"sv, Binding{.fItems = itemsNamed ("allowedValue"sv)}}}};
+            for (const Sequence<VariantValue>& actions :
+                 {Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"SetTarget"sv}}}},
+                                         VariantValue{VVMap{{"name"sv, VariantValue{"GetTarget"sv}}}}},
+                  Sequence<VariantValue>{VariantValue{VVMap{{"name"sv, VariantValue{"SetTarget"sv}}}}}, Sequence<VariantValue>{}}) {
                 VariantValue v{VVMap{{"actionList"sv, VariantValue{actions}},
                                      {"allowedValueList"sv, VariantValue{Sequence<VariantValue>{VariantValue{"yes"sv}}}}}};
-                EXPECT_EQ (roundTrip (v, config), v) << actions.size (); // including the array of one
+                EXPECT_EQ (roundTrip (v, scpd), v) << actions.size (); // including the arrays of one, and of none
             }
             // someone else's document, read through the same Binding
-            VariantValue read =
-                DataExchange::Variant::XML::Reader{config}.Read (String{"<scpd><actionList><action><name>A</name></action></actionList></scpd>"sv});
+            VariantValue read = Reader{scpd}.Read (String{"<scpd><actionList><action><name>A</name></action></actionList></scpd>"sv});
             EXPECT_EQ (read.As<VVMap> ().Lookup ("actionList"sv)->GetType (), VariantValue::eArray);
+        }
+        {
+            // default array items read back as they were written, at and inside the element whose Binding gives them
+            const Binding a{.fName    = "a"sv,
+                            .fMembers = {{"inner"sv, Binding{.fDefaultArrayItems = make_shared<Binding> (Binding::kDefaultArrayItems)}}},
+                            .fDefaultArrayItems = make_shared<Binding> (Binding::kRepeatedArrayItems)};
+            VariantValue  v{VVMap{
+                {"x"sv, VariantValue{Sequence<VariantValue>{VariantValue{"1"sv}, VariantValue{"2"sv}}}},
+                {"inner"sv, VariantValue{VVMap{{"y"sv, VariantValue{Sequence<VariantValue>{VariantValue{"3"sv}, VariantValue{"4"sv}}}}}}}}};
+            EXPECT_EQ (roundTrip (v, a), v);
         }
     }
 }

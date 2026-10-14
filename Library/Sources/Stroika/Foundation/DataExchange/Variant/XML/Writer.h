@@ -11,27 +11,23 @@
 #include "Stroika/Foundation/DataExchange/Variant/Writer.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
-#include "Stroika/Foundation/DataExchange/XML/SerializationConfiguration.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 
-/*
+#include "Binding.h"
+
+/**
+ *  \file
+ *
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
+ *
  * TODO:
- *   @todo   Probably wrong, and certainly incomplete, but it is now at the point of being testable.
- *
- *   @todo   Add SerializationOptions (distingished from SerializationConfiguariton cuz thats used for
- *           both reader and writer).
- *           o   include?xml... header
- *           o   Pretty print (spacing/tabs etc)
- *           o   POSSIBLY option for characterset to write wiith?
- *
- *      @todo   fix thread-safety - cloning rep - lock for access config data
+ *      @todo   The XML declaration (which the byte overload writes, and the Character overload does not) and its character
+ *              set (UTF-8) as Options too, if ever wanted.
  */
 
 namespace Stroika::Foundation::DataExchange::Variant::XML {
 
     using Characters::String;
-
-    using DataExchange::XML::SerializationConfiguration;
 
     /**
      *  \brief Write a VariantValue as XML - an object's member is an element, an array is repeated elements
@@ -39,28 +35,30 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  | VariantValue                  | XML |
      *  |-------------------------------|-----|
      *  | an object's member K          | the element `<K>` |
-     *  | an array under member K       | an element per item: `<Array>` each, or - with SetArrayElementName (nullopt) - `<K>` repeated, or the name an XML::Binding's fItems carries, wrapped in `<K>` |
+     *  | an array under member K       | `<K>`, wrapping an `<Array>` per item - or as the Binding's fItems or fDefaultArrayItems say: items of another name, or `<K>` repeated |
      *  | anything else                 | its element's text, as VariantValue::As<String> writes it (a date ISO 8601, a BLOB base64) |
-     *  | null                          | an empty element |
+     *  | null, or an empty object      | an empty element |
      *
      *  \par Example Usage
      *      \code
-     *          SerializationConfiguration config;
-     *          config.SetDocumentElementName ("device"sv);
-     *          config.SetArrayElementName (nullopt);           // <service> repeated, rather than <Array>
-     *          Variant::XML::Writer{config}.Write (v, out);
+     *          // v is {"specVersion": {"major": 1}, "serviceList": {"service": ["a", "b"]}}
+     *          // <service> repeated, not <Array>s
+     *          Binding device{.fName = "device"sv, .fDefaultArrayItems = make_shared<Binding> (Binding::kRepeatedArrayItems)};
+     *          Variant::XML::Writer{{.fBinding = device}}.WriteAsString (v);
      *      \endcode
      *      \code
      *          <device>
-     *              <specVersion>
-     *                  <major>1</major>
-     *              </specVersion>
      *              <serviceList>
      *                  <service>a</service>
      *                  <service>b</service>
      *              </serviceList>
+     *              <specVersion>
+     *                  <major>1</major>
+     *              </specVersion>
      *          </device>
      *      \endcode
+     *      Members come out in whatever order the value's Mapping gives them (here serviceList first), a VariantValue object
+     *      having no order of its own. A Binding gives them one (UPnP wants specVersion first).
      *
      *  \note The byte overload of Write writes a document, so it begins with an XML declaration naming the encoding it writes
      *        (UTF-8); the Character overload writes none, the caller owning the encoding, and perhaps writing this into a
@@ -68,26 +66,19 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *
      *  That is the shape with nothing declared. Where it is not the shape wanted - an attribute rather than an element, a
      *  namespace, a name of its own, an order of its own (XML cares about the order of an element's children, and a
-     *  VariantValue object has none) - say so in an XML::Binding, which SerializationConfiguration carries, and which the
-     *  Reader needs as much as the Writer. @see XML::Binding
+     *  VariantValue object has none) - say so in a Binding, which the Reader needs as much as the Writer. @see Binding
      *
      *  \note A namespace is written as a default namespace (xmlns="..."), inherited by the elements inside it - or with a
-     *        prefix, where SerializationConfiguration::SetNamespacePrefixes gives it one, which an attribute in a namespace
-     *        requires. Mixed content, comments and processing instructions are still not expressible (and SAX reports no
-     *        comment, so none could be read back anyway).
+     *        prefix, where a Binding's fNamespacePrefixes gives it one, which an attribute in a namespace requires. Mixed
+     *        content, comments and processing instructions are still not expressible (and SAX reports no comment, so none
+     *        could be read back anyway).
      *        @see https://github.com/SophistSolutions/Stroika/issues/954
      *
-     * The argument VariantValue must be composed of any combination of these types:
-     *          o   VariantValue::eBoolean
-     *          o   VariantValue::eInteger
-     *          o   VariantValue::eFloat
-     *          o   VariantValue::eString
-     *          o   VariantValue::eMap
-     *          o   VariantValue::eArray
-     *  or it can be the type:
-     *          o   VariantValue::eNull
-     *
-     *  Other types are illegal an XML and will trigger a 'Require' failure.
+     *  \note Throws DataExchange::BadFormatException where v cannot be written as XML - v is data, not code:
+     *          - a name that is not an XML name: a key such as "my key" or "1a", or a Binding's name or prefix
+     *          - no single document element, a document having exactly one: with no Binding::fName, a v that is not an object of
+     *            exactly one member (that member is the document element); or a document element that would be repeated, for an
+     *            array of items with no name of their own
      */
     class Writer : public Variant::Writer {
     private:
@@ -97,11 +88,44 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
         class Rep_;
 
     public:
-        Writer (const SerializationConfiguration& config = SerializationConfiguration{});
+        /**
+         */
+        struct Options {
+            /**
+             *  \brief How the value differs from the default shape - so the Reader must be given the same, to read it back
+             */
+            Binding fBinding;
+
+            /**
+             *  \brief An element to a line, indented by its depth; false: no whitespace between elements - nor after the XML
+             *         declaration, nor at the end
+             */
+            bool fPrettyPrint{true};
+
+            /**
+             *  \brief Spaces per level of indentation - ignored unless fPrettyPrint
+             */
+            unsigned int fSpacesPerIndent{4};
+        };
 
     public:
-        nonvirtual SerializationConfiguration GetConfiguration () const;
-        nonvirtual void                       SetConfiguration (const SerializationConfiguration& config);
+        /**
+         *  \note Two constructors, not one with a default argument (= {}): within Writer, that default argument cannot use the
+         *        member initializers of Options, nested in it (C++ CWG 1397) - MSVC allows it, clang and gcc do not.
+         */
+        Writer ();
+        Writer (const Options& options); ///< \brief Writing as options says
+
+    public:
+        /**
+         */
+        nonvirtual Options GetOptions () const;
+
+    public:
+        /**
+         *  @see GetOptions
+         */
+        nonvirtual void SetOptions (const Options& options);
 
     private:
         nonvirtual const Rep_& GetRep_ () const;

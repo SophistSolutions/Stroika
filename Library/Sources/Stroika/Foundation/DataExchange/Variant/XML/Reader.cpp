@@ -10,7 +10,6 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/IConsumer.h"
-#include "Stroika/Foundation/DataExchange/XML/Binding.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -27,6 +26,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
+using namespace Stroika::Foundation::DataExchange::Variant::XML;
 
 using Characters::Character;
 using Memory::MakeSharedPtr;
@@ -40,60 +40,101 @@ namespace {
      *  The inverse of Variant::XML::Writer (its documentation has the shape): an element with child elements is an object, one
      *  with only text is that text (a String - XML says nothing of types, so the reader types nothing), and children of one
      *  name are an array. An attribute reads as a member too, by its name, so that reading a document of someone else's does
-     *  not silently drop it - which the writer, having no attributes yet, writes back as an element.
+     *  not silently drop it.
      */
     struct Builder_ : StructuredStreamEvents::IConsumer {
         using Name = StructuredStreamEvents::Name;
 
-        Builder_ (const String& arrayItemElementName, const Binding* binding)
-            : fArrayItemElementName{arrayItemElementName}
-            , fRootBinding{binding}
+        Builder_ (const Binding& binding)
+            : fBinding{binding}
         {
         }
-        String         fArrayItemElementName; // children of this name are the element's array; empty: any one name repeated is
-        const Binding* fRootBinding;          // how the document differs from the default shape; nullptr: it does not
+        const Binding& fBinding; // the document's - with an fName, the document element's own (@see Binding)
 
         struct Frame_ {
-            String                        fName; // the member key this element is - its own name, unless a Binding renamed it
-            const Binding*                fBinding{nullptr};
-            StringBuilder<>               fText;
+            String           fKey;              // the member it is: its own name, unless a Binding renamed it
+            const Binding*   fBinding{nullptr}; // how its content differs from the default shape
+            const Binding*   fDefaultArrayItems{&Binding::kDefaultArrayItems}; // the item Binding, here, of an array with no fItems
+            bool             fIsItem{false};           // an item of the array the element it is in wraps - so not a member of it
+            bool             fIsRepeatedItem{false};   // one of a member's elements, repeated: a Binding says the member is an array
+            bool             fIsBoundArray{false};     // a Binding says it wraps an array - so it is one, however few items it has
+            bool             fHasChildElements{false}; // any child element - an array item or a member - not merely attributes
+            optional<String> fItemName;                // what the items of an array it wraps are called, where it may wrap one
+            const Binding*   fItemBinding{nullptr};    // ... and their Binding
+            StringBuilder<>  fText;
             Mapping<String, VariantValue> fChildren;
             Set<String>                   fRepeated;   // a name seen more than once, so fChildren holds its array
-            Sequence<VariantValue>        fArrayItems; // children named as this element's items are
-            optional<String>              fItemName;   // what this element's items are called, where its Binding named them
+            Sequence<VariantValue>        fArrayItems; // its children named fItemName
         };
-        // what an element's array items are called: its Binding's, else the one name the configuration gives every array
-        nonvirtual String ItemNameFor_ (const Frame_& f) const
-        {
-            return f.fItemName ? *f.fItemName : fArrayItemElementName;
-        }
-        vector<Frame_> fStack;
-        String         fRootName;
-        VariantValue   fRootValue;
+        vector<Frame_>         fStack;
+        String                 fRootKey;
+        optional<VariantValue> fRootValue;
 
         virtual void StartElement (const Name& name, const Mapping<Name, String>& attributes) override
         {
-            // what the element is a member of says what member it is: a Binding may have given it a name of its own
-            const Binding*   parentBinding = fStack.empty () ? fRootBinding : fStack.back ().fBinding;
-            String           key           = name.fLocalName;
-            const Binding*   binding       = nullptr;
-            optional<String> itemName;
-            if (fStack.empty () and fRootBinding != nullptr) {
-                binding = fRootBinding; // the root element IS the document's value
-            }
-            else if (parentBinding != nullptr) {
-                key     = parentBinding->KeyForName (name.fLocalName);
-                binding = parentBinding->MemberBinding (key);
-                if (binding != nullptr and binding->fItems != nullptr) {
-                    if (binding->fItems->fName) {
-                        itemName = binding->fItems->fName->fName; // this element wraps its items, each of that name
+            // what an element is, its own Binding says - and what it is inside says which Binding that is
+            Frame_         f;
+            const Binding* ownBinding = nullptr;
+            if (fStack.empty ()) {
+                if (fBinding.fName) {
+                    // it names the document element, so it is that element's - and a document element of another name is not what
+                    // it describes. By local name, as every member is matched
+                    if (name.fLocalName != fBinding.fName->fName) {
+                        Execution::Throw (BadFormatException{
+                            L"the document element is <{}>, where the Binding names <{}>"_f(name.fLocalName, fBinding.fName->fName)});
                     }
-                    binding = binding->fItems.get (); // each element is an item of that member's array
+                    ownBinding = &fBinding;
+                }
+                else {
+                    // the document element is the value's one member, so its key and Binding are that member's
+                    f.fKey     = fBinding.KeyForName (name.fLocalName);
+                    ownBinding = fBinding.MemberBinding (f.fKey);
+                    if (fBinding.fDefaultArrayItems != nullptr) {
+                        f.fDefaultArrayItems = fBinding.fDefaultArrayItems.get ();
+                    }
                 }
             }
-            fStack.push_back (Frame_{.fName = key, .fBinding = binding, .fItemName = itemName});
+            else {
+                const Frame_& parent = fStack.back ();
+                f.fDefaultArrayItems = parent.fDefaultArrayItems;
+                if (parent.fItemName and name.fLocalName == *parent.fItemName) {
+                    f.fIsItem  = true;
+                    ownBinding = parent.fItemBinding;
+                }
+                else {
+                    f.fKey     = parent.fBinding == nullptr ? name.fLocalName : parent.fBinding->KeyForName (name.fLocalName);
+                    ownBinding = parent.fBinding == nullptr ? nullptr : parent.fBinding->MemberBinding (f.fKey);
+                }
+            }
+            f.fBinding = ownBinding;
+            if (ownBinding != nullptr and ownBinding->fItems != nullptr and not ownBinding->fItems->fName) {
+                // items with no name of their own are the member's element, repeated: this is one of them, so the item
+                // Binding is what its content has
+                f.fIsRepeatedItem = true;
+                f.fBinding        = ownBinding->fItems.get ();
+            }
+            if (ownBinding != nullptr and ownBinding->fDefaultArrayItems != nullptr) {
+                f.fDefaultArrayItems = ownBinding->fDefaultArrayItems.get ();
+            }
+            if (f.fBinding != ownBinding and f.fBinding->fDefaultArrayItems != nullptr) {
+                f.fDefaultArrayItems = f.fBinding->fDefaultArrayItems.get ();
+            }
+            // what the items of an array it wraps are called: as its Binding says, else as the default array items in scope do
+            if (f.fBinding != nullptr and f.fBinding->fItems != nullptr) {
+                if (f.fBinding->fItems->fName) {
+                    f.fIsBoundArray = true;
+                    f.fItemName     = f.fBinding->fItems->fName->fName;
+                    f.fItemBinding  = f.fBinding->fItems.get ();
+                }
+            }
+            else if (f.fDefaultArrayItems->fName) {
+                f.fItemName    = f.fDefaultArrayItems->fName->fName;
+                f.fItemBinding = f.fDefaultArrayItems;
+            }
+            fStack.push_back (move (f));
+            Frame_& top = fStack.back ();
             for (const auto& i : attributes) {
-                AddChild_ (fStack.back (), binding == nullptr ? i.fKey.fLocalName : binding->KeyForName (i.fKey.fLocalName), VariantValue{i.fValue});
+                AddMember_ (top, top.fBinding == nullptr ? i.fKey.fLocalName : top.fBinding->KeyForName (i.fKey.fLocalName), VariantValue{i.fValue});
             }
         }
         virtual void TextInsideElement (const String& text) override
@@ -105,63 +146,57 @@ namespace {
         virtual void EndElement ([[maybe_unused]] const Name& name) override
         {
             Require (not fStack.empty ());
-            Frame_ f = fStack.back ();
+            Frame_ f = move (fStack.back ());
             fStack.pop_back ();
             VariantValue v = ValueOf_ (f);
             if (fStack.empty ()) {
-                fRootName  = f.fName;
-                fRootValue = v;
-            }
-            else {
-                AddChild_ (fStack.back (), f.fName, v);
-            }
-        }
-        void AddChild_ (Frame_& f, const String& name, const VariantValue& v)
-        {
-            if (String itemName = ItemNameFor_ (f); not itemName.empty () and name == itemName) {
-                f.fArrayItems.Append (v);
+                fRootKey   = f.fKey;
+                fRootValue = f.fIsRepeatedItem ? VariantValue{Sequence<VariantValue>{v}} : v; // a document has one root element
                 return;
             }
-            AddMember_ (f, name, v);
-        }
-        void AddMember_ (Frame_& f, const String& name, const VariantValue& v)
-        {
-            // a Binding saying this member is an array makes it one, however few elements the document has
-            if (f.fBinding != nullptr) {
-                if (const Binding* mb = f.fBinding->MemberBinding (name); mb != nullptr and mb->fItems != nullptr) {
-                    if (mb->fItems->fName) {
-                        f.fChildren.Add (name, v); // that member wraps its items, so the element just read IS its array
-                        return;
-                    }
-                    Sequence<VariantValue> items;
-                    if (optional<VariantValue> already = f.fChildren.Lookup (name)) {
-                        items = already->As<Sequence<VariantValue>> ();
-                    }
-                    items.Append (v);
-                    f.fChildren.Add (name, VariantValue{items});
-                    f.fRepeated.Add (name);
-                    return;
-                }
+            Frame_& parent           = fStack.back ();
+            parent.fHasChildElements = true;
+            if (f.fIsItem) {
+                parent.fArrayItems.Append (v);
             }
-            if (optional<VariantValue> already = f.fChildren.Lookup (name)) {
-                // a name seen again: the member is the array of them, in document order
-                Sequence<VariantValue> items = f.fRepeated.Contains (name) ? already->As<Sequence<VariantValue>> () : Sequence<VariantValue>{*already};
+            else if (f.fIsRepeatedItem) {
+                // a Binding says the member is an array, so it is one however few elements the document has
+                Sequence<VariantValue> items;
+                if (optional<VariantValue> already = parent.fChildren.Lookup (f.fKey)) {
+                    items = already->As<Sequence<VariantValue>> ();
+                }
                 items.Append (v);
-                f.fChildren.Add (name, VariantValue{items});
-                f.fRepeated.Add (name);
+                parent.fChildren.Add (f.fKey, VariantValue{items});
             }
             else {
-                f.fChildren.Add (name, v);
+                AddMember_ (parent, f.fKey, v);
+            }
+        }
+        // a member - and a name seen again makes it the array of them, in document order
+        void AddMember_ (Frame_& f, const String& key, const VariantValue& v)
+        {
+            if (optional<VariantValue> already = f.fChildren.Lookup (key)) {
+                Sequence<VariantValue> items = f.fRepeated.Contains (key) ? already->As<Sequence<VariantValue>> () : Sequence<VariantValue>{*already};
+                items.Append (v);
+                f.fChildren.Add (key, VariantValue{items});
+                f.fRepeated.Add (key);
+            }
+            else {
+                f.fChildren.Add (key, v);
             }
         }
         VariantValue ValueOf_ (Frame_& f)
         {
-            if (not f.fArrayItems.empty () and f.fChildren.empty ()) {
+            bool textBlank = f.fText.str ().Trim ().empty ();
+            if (f.fIsBoundArray and f.fChildren.empty () and textBlank) {
+                return VariantValue{f.fArrayItems}; // a Binding says it is an array, so it is one - of no items, if it is empty
+            }
+            if (not f.fArrayItems.empty () and f.fChildren.empty () and textBlank) {
                 return VariantValue{f.fArrayItems}; // all its children were array items, so the element IS the array
             }
             if (not f.fArrayItems.empty ()) {
-                // ... beside other members: just a member. AddMember_, not AddChild_, which would take it for one more item
-                AddMember_ (f, ItemNameFor_ (f), VariantValue{f.fArrayItems});
+                // ... beside other members, or text: just a member
+                AddMember_ (f, *f.fItemName, VariantValue{f.fArrayItems});
                 f.fArrayItems.clear ();
             }
             // a Binding may say this element's text is one of its members, beside its attributes
@@ -172,11 +207,17 @@ namespace {
             if (f.fChildren.empty ()) {
                 return VariantValue{f.fText.str ()}; // text, kept as it came: XML whitespace is significant
             }
-            if (not f.fText.str ().Trim ().empty ()) {
-                // mixed content: text beside child elements. This shape cannot hold it, and reading on would silently drop
-                // the text - so say so, rather than lose it (it comes from the document, not from any caller's mistake)
-                static const auto kException_ = BadFormatException{"mixed content (text beside child elements) cannot be read into a VariantValue"sv};
-                Execution::Throw (kException_);
+            if (not textBlank) {
+                // text this shape cannot hold, which reading on would silently drop - so say so, rather than lose it (it comes
+                // from the document, not from any caller's mistake). Beside attributes alone, a Binding could have held it
+                if (f.fHasChildElements) {
+                    static const auto kMixedContent_ =
+                        BadFormatException{"mixed content (text beside child elements) cannot be read into a VariantValue"sv};
+                    Execution::Throw (kMixedContent_);
+                }
+                static const auto kTextBesideAttributes_ = BadFormatException{
+                    "text beside attributes cannot be read into a VariantValue with no Binding member for it (Binding::Kind::eText)"sv};
+                Execution::Throw (kTextBesideAttributes_);
             }
             return VariantValue{f.fChildren};
         }
@@ -186,15 +227,15 @@ namespace {
 
 class Variant::XML::Reader::Rep_ final : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
-    Rep_ (const SerializationConfiguration& config)
-        : fSerializationConfiguration_{config}
+    Rep_ (const Binding& binding)
+        : fBinding_{binding}
     {
     }
 
 public:
     virtual _SharedPtrIRep Clone () const override
     {
-        return MakeSharedPtr<Rep_> (fSerializationConfiguration_);
+        return MakeSharedPtr<Rep_> (fBinding_);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -203,17 +244,17 @@ public:
     virtual VariantValue Read ([[maybe_unused]] const Streams::InputStream::Ptr<byte>& in) const override
     {
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-        optional<Binding> binding = fSerializationConfiguration_.GetBinding ();
-        Builder_          builder{fSerializationConfiguration_.GetArrayElementName ().value_or (String{}), binding ? &*binding : nullptr};
+        Builder_ builder{fBinding_};
         SAXParse (in, &builder, nullptr);
-        if (builder.fRootName.empty ()) {
+        if (not builder.fRootValue) {
             static const auto kException_ = BadFormatException{"no root element"sv};
             Execution::Throw (kException_);
         }
-        // as the Writer does it: with a document element named, that element is the value; else the value is the object it is in
-        return fSerializationConfiguration_.GetDocumentElementName ().has_value () ? builder.fRootValue : VariantValue{Mapping<String, VariantValue> {
-            { builder.fRootName,
-              builder.fRootValue }
+        // as the Writer has it: with the document element named, its content is the value; else the value is the object it is
+        // the one member of
+        return fBinding_.fName ? *builder.fRootValue : VariantValue{Mapping<String, VariantValue> {
+            { builder.fRootKey,
+              *builder.fRootValue }
         }};
 #else
         static const Execution::Exception<runtime_error> kException_{
@@ -226,21 +267,21 @@ public:
         // SAXParse reads bytes - so write the characters back out as UTF-8 for it
         return Read (Streams::TextToBinary::Reader::New (in));
     }
-    nonvirtual SerializationConfiguration GetConfiguration () const
+    nonvirtual Binding GetBinding () const
     {
-        return fSerializationConfiguration_;
+        return fBinding_;
     }
-    nonvirtual void SetConfiguration (const SerializationConfiguration& config)
+    nonvirtual void SetBinding (const Binding& binding)
     {
-        fSerializationConfiguration_ = config;
+        fBinding_ = binding;
     }
 
 private:
-    SerializationConfiguration fSerializationConfiguration_;
+    Binding fBinding_;
 };
 
-Variant::XML::Reader::Reader (const SerializationConfiguration& config)
-    : inherited{MakeSharedPtr<Rep_> (config)}
+Variant::XML::Reader::Reader (const Binding& binding)
+    : inherited{MakeSharedPtr<Rep_> (binding)}
 {
 }
 
@@ -256,12 +297,12 @@ const Variant::XML::Reader::Rep_& Variant::XML::Reader::GetRep_ () const
     return reinterpret_cast<const Rep_&> (inherited::_ConstGetRep ());
 }
 
-SerializationConfiguration Variant::XML::Reader::GetConfiguration () const
+Binding Variant::XML::Reader::GetBinding () const
 {
-    return GetRep_ ().GetConfiguration ();
+    return GetRep_ ().GetBinding ();
 }
 
-void Variant::XML::Reader::SetConfiguration (const SerializationConfiguration& config)
+void Variant::XML::Reader::SetBinding (const Binding& binding)
 {
-    GetRep_ ().SetConfiguration (config);
+    GetRep_ ().SetBinding (binding);
 }

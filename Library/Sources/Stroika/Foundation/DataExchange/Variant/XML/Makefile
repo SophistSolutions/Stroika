@@ -10,6 +10,7 @@ include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	:=	\
+	$(ObjDir)Binding${OBJ_SUFFIX}\
 	$(ObjDir)Reader${OBJ_SUFFIX}\
 	$(ObjDir)Writer${OBJ_SUFFIX}\
 

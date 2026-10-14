@@ -375,8 +375,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.cpp">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.cpp">
-      <Filter>Sources\DataExchange\XML</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Binding.cpp">
+      <Filter>Sources\DataExchange\Variant\XML</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -1240,9 +1240,6 @@
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.h">
@@ -2430,8 +2427,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Private_minizip_.h">
       <Filter>Sources\DataExchange\Archive\Zip</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Binding.h">
-      <Filter>Sources\DataExchange\XML</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Binding.h">
+      <Filter>Sources\DataExchange\Variant\XML</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2734,9 +2731,6 @@
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.inl">
       <Filter>Sources\DataExchange\XML</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TODO.md">
@@ -4011,9 +4005,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Writer.inl">
       <Filter>Sources\DataExchange\Archive</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Binding.inl">
-      <Filter>Sources\DataExchange\XML</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
