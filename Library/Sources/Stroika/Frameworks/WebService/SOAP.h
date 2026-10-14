@@ -256,7 +256,7 @@ namespace Stroika::Frameworks::WebService::SOAP {
          */
         nonvirtual const DataExchange::XML::Providers::IXMLProvider& GetXMLProvider () const
         {
-            return fXMLProvider == nullptr ? *DataExchange::XML::Providers::kDefaultProvider () : *fXMLProvider;
+            return DataExchange::XML::Providers::ProviderOrDefault (fXMLProvider);
         }
 #endif
     };

@@ -3,6 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Debug/Assertions.h"
+
 #include "IProvider.h"
 
 #if qStroika_HasComponent_xerces
@@ -26,5 +28,15 @@ const XML::Providers::IXMLProvider* XML::Providers::Private_::GetDefaultProvider
 #elif qStroika_HasComponent_xerces
     return &Xerces::kDefaultProvider;
 #endif
+}
+
+const XML::Providers::IXMLProvider& XML::Providers::ProviderOrDefault (const IXMLProvider* p)
+{
+    if (p != nullptr) {
+        return *p;
+    }
+    const IXMLProvider* d = kDefaultProvider ();
+    EnsureNotNull (d); // this compiles only where SupportDOM is, and that means xerces or libxml2 is configured
+    return *d;
 }
 #endif

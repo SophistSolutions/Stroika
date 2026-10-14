@@ -55,11 +55,22 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
     }
 #endif
 
-    /**
-     *  Provided as using LazyInitialized so can be ...??? so used before main - and still destroyed properly... without forcing include of libxml2/xerces stuff
-     */
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
+    /**
+     *  \brief The provider Stroika uses where none is named - libxml2 where it is configured, else Xerces. Never null.
+     *
+     *  LazyInitialized so it can be used before main and still be destroyed in order, without this header having to
+     *  include libxml2's or Xerces's.
+     */
     inline const Foundation::Execution::LazyInitialized<const IXMLProvider*> kDefaultProvider{Private_::GetDefaultProvider_};
+
+    /**
+     *  \brief p, or kDefaultProvider where p is nullptr
+     *
+     *  For an Options holding an optional choice of provider, where nullptr is how a caller asks for the default - so
+     *  every reader of one gets a provider, and the rule is written once.
+     */
+    const IXMLProvider& ProviderOrDefault (const IXMLProvider* p);
 #endif
 
 }

@@ -92,14 +92,6 @@ Generally will track stuff here between releases
      Xerces globals, `symaddr.exe EXE SYMBOL` + `dumpbin /disasm /range:` shows the code; the failing copy is kept
      there to compare. Candidate workaround: build Xerces without `-GL` under MSVC.
 
-   - **Options::GetXMLProvider () READS as unsafe, though it is not** (LGP 2026-10-13). Both copies - WebService/SOAP.h
-     and Frameworks/UPnP/Options.inl - are `return fXMLProvider == nullptr ? *kDefaultProvider () : *fXMLProvider;`,
-     two bare dereferences and no check in sight at any of the call sites. It IS safe: the function returns a
-     REFERENCE, nullptr is the documented way of saying "use the default" rather than a failure, and kDefaultProvider
-     cannot itself be null where this compiles at all (the whole thing is guarded by SupportDOM, which Common.h
-     defines as "xerces or libxml2"). But a reader has to reconstruct all of that, which is the problem. Find a
-     spelling that carries the invariant where it is read - a named helper, or an Ensure, or holding the default in
-     the field rather than nullptr - and use the same one in both places.
    - **UPnP's Options types want rationalizing - there are NINE of them** (LGP 2026-10-13, "a bit of a morass"):
      UPnP::Options, GENA::Publisher::Options, GENA::Subscriber::Options, SSDP::Client::{CachingListener, Listener,
      Search}::Options, SSDP::Server::{BasicServer, PeriodicNotifier, SearchResponder}::Options - plus
