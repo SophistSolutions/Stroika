@@ -137,7 +137,7 @@ Memory::BLOB UPnP::Serialize ([[maybe_unused]] const ServiceDescription& sd, [[m
     // is in the document's, declared once on <scpd> and inherited - which is what UPnP's schema says of every one of these
     DOM::Document::Ptr doc  = DOM::Document::New (options.GetXMLProvider (), NameWithNamespace{kServiceNamespace_, "scpd"sv});
     Element::Ptr       scpd = doc.GetRootElement ();
-    Element::Ptr       spec = scpd.Append ("specVersion"sv);
+    Element::Ptr       spec = scpd.Append ("specVersion"sv); // 1.0, not 1.1, on purpose - @see this framework's ReadMe.md
     spec.Append ("major"sv, "1"sv);
     spec.Append ("minor"sv, "0"sv);
     if (not sd.fActions.empty ()) {

@@ -178,7 +178,7 @@ Memory::BLOB UPnP::Serialize ([[maybe_unused]] const DeviceDescription& dd, [[ma
     // in the document's, declared once on <root> and inherited - which is what UPnP's schema says of every one of these
     DOM::Document::Ptr doc  = DOM::Document::New (options.GetXMLProvider (), NameWithNamespace{kDeviceNamespace_, "root"sv});
     Element::Ptr       root = doc.GetRootElement ();
-    Element::Ptr       spec = root.Append ("specVersion"sv);
+    Element::Ptr       spec = root.Append ("specVersion"sv); // 1.0, not 1.1, on purpose - @see this framework's ReadMe.md
     spec.Append ("major"sv, "1"sv);
     spec.Append ("minor"sv, "0"sv);
     Element::Ptr device = root.Append ("device"sv);

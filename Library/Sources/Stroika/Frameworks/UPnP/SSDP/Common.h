@@ -47,7 +47,9 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     using Foundation::Characters::String;
 
     /**
-     *  MakeServerHeaderValue
+     *  \brief An SSDP SERVER header's value: "platform/version UPnP/1.0 product/version" (UPnP Device Architecture 1.1,
+     *         section 1.2.2) - UPnP/1.0, as Stroika implements 1.0, not 1.1, on purpose: @see the UPnP framework's ReadMe.md,
+     *         "UPnP Device Architecture version".
      */
     String
     MakeServerHeaderValue (const String& useProductTokenWithVersion,

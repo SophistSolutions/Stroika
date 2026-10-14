@@ -39,7 +39,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      *  As the UPnP Device Architecture asks (1.1, section 1.3.3), each answer to a multicast M-SEARCH is sent after a random wait
      *  of up to its MX seconds (5 at most) - so devices, and a device's several answers, do not all come at once - while it goes
      *  on answering others; and a multicast M-SEARCH without an MX is ignored. A unicast one (its HOST not a multicast address)
-     *  is answered at once.
+     *  is answered at once - though on Windows none arrives while Windows' own SSDP Discovery service runs, as it binds port
+     *  1900 on each of the machine's addresses (@see the UPnP framework's ReadMe.md, SEARCHPORT.UPNP.ORG).
      *
      *  Instantiating the class starts the (background) listening for searches automatically, and it continues
      *  until the SearchResponder object is destroyed. (so a smart pointer to one of these is typically kept around for the life of the application).
