@@ -89,7 +89,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
     public:
         /**
-         *  Binds the sockets on construction, then sends the advertisements - out of every network interface
+         *  Makes its sockets on construction, then sends the advertisements - out of every network interface
          *  options.fInterfaces accepts, each with the LOCATION location gives for that interface - after a random wait of up to
          *  100 ms (as the UPnP Device Architecture asks, so devices starting together do not all announce at once; and again when
          *  a network appears), then about every options.fFrequencyInfo.fRepeatInterval (@see FrequencyInfo), until this object is
@@ -98,7 +98,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          *
          *  Each set of NOTIFYs goes out twice, 100 ms apart, as UDP loses packets (the UPnP Device Architecture says more than once)
          *  - the first set during construction, so making it up to 200 ms slower; and destruction too, for its ssdp:byebye.
-         * 
+         *
+         *  Its sockets are not bound - they only send - so NOTIFYs come from an ephemeral port, not SSDP's 1900.
+         *
          *  Errors doing sends are just logged with DbgTrace()
          */
         PeriodicNotifier (const Iterable<Advertisement>& advertisements, const LocationProvider& location, const Options& options = kDefaultOptions);

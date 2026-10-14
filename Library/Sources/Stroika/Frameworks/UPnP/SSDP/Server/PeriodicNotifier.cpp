@@ -57,20 +57,20 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
     }
 
-    // Construction of notifier will fail if we cannot bind - instead of failing quietly inside the loop
+    // Construction of notifier will fail if we cannot make the sockets - instead of failing quietly inside the loop. They are NOT
+    // bound: they only send, and bound to SSDP's port they could take unicast M-SEARCHes meant for a SearchResponder's sockets
+    // there - of sockets sharing an address, a unicast datagram reaches just one, which the OS picks (Socket::BindFlags::fSO_REUSEADDR)
     Collection<pair<ConnectionlessSocket::Ptr, SocketAddress>> sockets;
     {
-        static constexpr Execution::Activity kActivity_{"SSDP Binding in PeriodNotifier"sv};
+        static constexpr Execution::Activity kActivity_{"creating SSDP sockets in PeriodicNotifier"sv};
         Execution::DeclareActivity           da{&kActivity_};
         if (InternetProtocol::IP::SupportIPV4 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
-            s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastTTL (options.fMulticastTTL);
             sockets += make_pair (s, UPnP::SSDP::V4::kSocketAddress);
         }
         if (InternetProtocol::IP::SupportIPV6 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
-            s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
             s.SetMulticastTTL (options.fMulticastTTL);
             sockets += make_pair (s, UPnP::SSDP::V6::kSocketAddress);
         }

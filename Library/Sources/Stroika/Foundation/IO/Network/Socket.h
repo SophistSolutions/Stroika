@@ -113,7 +113,10 @@ namespace Stroika::Foundation::IO::Network {
              *  \par What Stroika means by it - on every platform
              *      The address being reused is the SOCKET address (internet address AND port):
              *          o   UDP: other sockets that also set this may bind the same socket address - as multicast listeners
-             *              (SSDP, say) must, to share the well-known port. Multicast datagrams reach all of them.
+             *              (SSDP, say) must, to share the well-known port. Multicast and broadcast datagrams reach all of them;
+             *              a UNICAST datagram reaches just one, and which one the OS decides (Linux 7.0: the last bound;
+             *              macOS 26: the first; Windows documents it as indeterminate). So a socket that must hear unicast
+             *              should be the only one bound there - and a socket that only sends should not bind at all.
              *          o   TCP: the socket may bind a socket address that an old connection still holds in TIME_WAIT - so a
              *              server can restart at once. It does NOT let two live listeners share the address.
              *
