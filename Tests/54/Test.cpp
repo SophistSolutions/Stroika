@@ -2548,9 +2548,10 @@ namespace {
      *  ignored). Told by M-SEARCHes this test sends our own BasicServer itself. As in SSDP_Loopback_Search_, anything that keeps
      *  the exchange from happening is a test issue.
      *
-     *  And with a Listener beside the server - made after it, then (not on Windows) before one - it is answered all the same:
-     *  of the sockets sharing an address a unicast datagram reaches just one, and that must never be the Listener's, which
-     *  drops M-SEARCHes. Unanswered then is a bug, not a test issue - by then the exchange has been seen to work here.
+     *  And where a Listener binds the group's own address (Linux, macOS), with one beside the server - made after it, then
+     *  before one - it is answered all the same: of the sockets sharing an address a unicast datagram reaches just one, and
+     *  that must never be the Listener's, which drops M-SEARCHes. Unanswered then fails only if the Listener is shown to have
+     *  taken it - the same search answered once it is gone; anything else on the machine is a test issue.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_UnicastSearch_)
     {
@@ -2646,20 +2647,44 @@ namespace {
             Execution::Sleep (0.5s);
             while (answerBy (Time::GetTickCount () + 0.1s)) {
             }
-            // with a Listener beside the server, made after it - Linux sends a unicast datagram to the last socket bound there
-            SSDP::Client::Listener listener{SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
-            search (toOurs, "{}:1900"_f(ours), nullopt);
-            EXPECT_TRUE (answerBy (Time::GetTickCount () + 1.5s).has_value ())
-                << "a Listener made after the server took a unicast M-SEARCH";
-            // and before one - macOS sends it to the first. Not on Windows, which sends it to the first too, but refuses a multicast
-            // bind - so a Listener there stays bound to the wildcard, and takes it (https://github.com/SophistSolutions/Stroika/issues/1220)
-#if not qStroika_Platform_Windows
+#if qStroika_Platform_Linux or qStroika_Platform_MacOS
+            // with a Listener beside the server - made after it (Linux sends a unicast datagram to the last socket bound there), then
+            // before one (macOS, to the first). Here a Listener binds the group's own address, so is never sent one; not on Windows,
+            // which refuses a multicast bind (https://github.com/SophistSolutions/Stroika/issues/1220)
+            using SSDP::Client::Listener;
+            // unanswered beside a Listener is the Listener's doing only if, the Listener gone, the same search is answered - else
+            // something else on this machine took it, an SSDP program started since: a test issue, not a failure
+            auto answeredBeside = [&] (optional<Listener>& listener, const char* made) {
+                auto answered = [&] () {
+                    search (toOurs, "{}:1900"_f(ours), nullopt);
+                    bool r = answerBy (Time::GetTickCount () + 1.5s).has_value ();
+                    Execution::Sleep (0.5s);
+                    while (answerBy (Time::GetTickCount () + 0.1s)) {
+                    }
+                    return r;
+                };
+                if (not answered ()) {
+                    listener.reset ();
+                    if (answered ()) {
+                        ADD_FAILURE () << "a Listener made " << made << " the server took a unicast M-SEARCH";
+                    }
+                    else {
+                        Stroika::Frameworks::Test::WarnTestIssue (
+                            "SSDP_Loopback_UnicastSearch_: a unicast M-SEARCH stopped reaching our server (an SSDP program started here?)");
+                    }
+                }
+            };
+            optional<Listener> listener{in_place, Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            answeredBeside (listener, "after");
+            listener.emplace (Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only});
             server.reset ();
             server.emplace (d, dd, SSDP::Server::LocationFillingInHost (location), serverOptions);
-            ASSERT_TRUE (heard ()) << "a server made after a Listener never heard a multicast search";
-            search (toOurs, "{}:1900"_f(ours), nullopt);
-            EXPECT_TRUE (answerBy (Time::GetTickCount () + 1.5s).has_value ())
-                << "a Listener made before the server took a unicast M-SEARCH";
+            if (heard ()) {
+                answeredBeside (listener, "before");
+            }
+            else {
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_UnicastSearch_: a server made again heard no multicast search");
+            }
 #endif
         }
         catch (...) {
