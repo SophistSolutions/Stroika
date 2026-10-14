@@ -195,7 +195,7 @@ if [ "$INCLUDE_RASPBERRYPI_TESTS" == "" ]; then
 	fi
 fi
 
-NUM_CONFIGURATIONS=`Build/Scripts/GetConfigurations --quiet --all-default | wc -w`
+NUM_CONFIGURATIONS=`Build/Scripts/GetConfigurations --quiet --all-default | wc -w | tr -d ' '`
 # Nothing to build means nothing gets tested - and everything after this would still print a clean summary
 # ("0 items failed (expected 0)"). Seen on a fresh WSL distro with no make or compiler: every configure line is
 # --only-if-has-compiler, so each skipped quietly, and the reasons went only to $TEST_OUT_FILE.
@@ -205,11 +205,11 @@ if [ $NUM_CONFIGURATIONS -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "ERROR: no configurations to build - nothing would be tested" >>$TEST_OUT_FILE 2>&1
 	exit 1
 fi
-NUM_CROSS_COMPILE_CONFIGURATIONS=`echo $CROSS_COMPILE_CONFIGS | wc -w`
-NUM_REMOTE_CONFIGURATIONS=`echo $RASPBERRYPICONFIGS | wc -w`
+NUM_CROSS_COMPILE_CONFIGURATIONS=`echo $CROSS_COMPILE_CONFIGS | wc -w | tr -d ' '`
+NUM_REMOTE_CONFIGURATIONS=`echo $RASPBERRYPICONFIGS | wc -w | tr -d ' '`
 NUM_REGTESTS=`grep -c '^\[' Tests/Tests-Description.txt`
-NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=`echo $LOCAL_VALGRIND_CONFIGS | wc -w`
-NUM_REMOTE_TEST_VALGRINDCONFIGURATIONS=`echo $RASPBERRYPIVALGRINDCONFIGS | wc -w`
+NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=`echo $LOCAL_VALGRIND_CONFIGS | wc -w | tr -d ' '`
+NUM_REMOTE_TEST_VALGRINDCONFIGURATIONS=`echo $RASPBERRYPIVALGRINDCONFIGS | wc -w | tr -d ' '`
 
 
 if [ "$INCLUDE_LOCAL_TESTS" == "" ]; then
@@ -558,8 +558,8 @@ echo "$PREFIX_OUT_LABEL" "Regression Tests Summary:" >>$TEST_OUT_FILE 2>&1
 
 TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS))
 
-X1=`cat $TEST_OUT_FILE | grep -F "[  PASSED  ]" | wc -l`
-NTSANS=`cat $TEST_OUT_FILE | grep -F "because sudo sysctl vm.mmap_rnd_bits" | wc -l`
+X1=`grep -c -F "[  PASSED  ]" $TEST_OUT_FILE`
+NTSANS=`grep -c -F "because sudo sysctl vm.mmap_rnd_bits" $TEST_OUT_FILE`
 ### A WARNING: line is never a failure or an error, even when its text says so (e.g. "REGRESSION TEST ISSUE: ... Child
 ### process failed", "mirror failed, so retrying", "SSL connect error {LibCurl error: 35}") - it is already counted as a
 ### warning, below.
@@ -567,16 +567,16 @@ NTSANS=`cat $TEST_OUT_FILE | grep -F "because sudo sysctl vm.mmap_rnd_bits" | wc
 ### does, five times: a test's '[  FAILED  ] Suite.Test (N ms)' (gtest's own, not its closing list), 'FAILED: ...' (the test
 ### harness - an assertion, a signal, an exception - or Tests/Scripts/RunTest, for a test that exited non-zero saying
 ### nothing), RunTest's '... FAILED - not run', and this script's '**FAILED**' (a sample app, or the skel app's build).
-XF=`cat $TEST_OUT_FILE | grep -v -E '^[[:space:]]*WARNING:' | grep -E '\[  FAILED  \] .+ \([0-9]+ ms\)|FAILED: |FAILED - not run|\*\*FAILED\*\*' | wc -l`
-XE=`cat $TEST_OUT_FILE | grep -v -E '^[[:space:]]*WARNING:' | grep -E -i "error[ \t]*:" | wc -l`
-XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
-VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep "^==" | wc -l`
-XW=`cat $TEST_OUT_FILE | grep -E -i "warning.*:" | wc -l`
+XF=`grep -v -E '^[[:space:]]*WARNING:' $TEST_OUT_FILE | grep -c -E '\[  FAILED  \] .+ \([0-9]+ ms\)|FAILED: |FAILED - not run|\*\*FAILED\*\*'`
+XE=`grep -v -E '^[[:space:]]*WARNING:' $TEST_OUT_FILE | grep -c -E -i "error[ \t]*:"`
+XC=`grep -c -i "core dump" $TEST_OUT_FILE`
+VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep -c "^=="`
+XW=`grep -c -E -i "warning.*:" $TEST_OUT_FILE`
 ### each test executable that skipped any (GTEST_SKIP, SkipTestPart) ends with '[  SKIPPED ] N test(s).' - sum the N's
 XS=`cat $TEST_OUT_FILE | grep -oE '\[  SKIPPED \] [0-9]+ tests?' | awk '{ s += $4 } END { print s + 0 }'`
 ### a test executable built without googletest runs nothing, and says '[  SKIPPED ] every test' in place of its '[  PASSED  ]':
 ### it accounts for one expected result (so it is not a missing one), but it is not counted as a success
-XSE=`cat $TEST_OUT_FILE | grep -F "[  SKIPPED ] every test" | wc -l`
+XSE=`grep -c -F "[  SKIPPED ] every test" $TEST_OUT_FILE`
 LESS_SKIPPED_=""
 if [ $XSE -gt 0 ]; then
 	TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($TOTAL_REGTESTS_EXPECTED_TO_PASS - $XSE))
@@ -589,7 +589,7 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 fi
 
 TOTAL_WARNINGS_EXPECTED=0
-TOTAL_WARNINGS_EXPECTED=$(expr $TOTAL_WARNINGS_EXPECTED + $(cat $TEST_OUT_FILE | grep fFailConnectionIfSSLCertificateInvalid | wc -l))
+TOTAL_WARNINGS_EXPECTED=$(expr $TOTAL_WARNINGS_EXPECTED + $(grep -c fFailConnectionIfSSLCertificateInvalid $TEST_OUT_FILE))
 
 if [ $X1 -eq $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS$LESS_SKIPPED_)"
