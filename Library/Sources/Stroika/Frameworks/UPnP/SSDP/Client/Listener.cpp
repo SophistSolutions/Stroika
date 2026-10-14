@@ -90,14 +90,25 @@ public:
         if (InternetProtocol::IP::SupportIPV4 (fOptions_.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.SetReceivePacketInfo (true); // for Advertisement::fReceivedOn
+            // the group's own address, so it is never sent a unicast datagram - an M-SEARCH meant for a device on this machine
+            // (@see Socket::BindFlags::fSO_REUSEADDR). Windows refuses to bind a multicast address
+#if qStroika_Platform_Linux or qStroika_Platform_MacOS
+            s.Bind (UPnP::SSDP::V4::kSocketAddress, bindFlags);
+#else
             s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, bindFlags);
+#endif
             fSocketsAndGroups_ += make_pair (s, UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
             fSockets_.Add (s);
         }
         if (InternetProtocol::IP::SupportIPV6 (fOptions_.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             s.SetReceivePacketInfo (true); // for Advertisement::fReceivedOn
+            // likewise on macOS; Linux binds IPv6's link-local group only per interface (a scope id), Windows not at all
+#if qStroika_Platform_MacOS
+            s.Bind (UPnP::SSDP::V6::kSocketAddress, bindFlags);
+#else
             s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, bindFlags);
+#endif
             fSocketsAndGroups_ += make_pair (s, UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
             fSockets_.Add (s);
         }

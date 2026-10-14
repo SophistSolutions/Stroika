@@ -28,6 +28,10 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      *  The SSDP Listener object will listen for SSDP 'multicast messages, and call any
      *  designated callbacks with the values in those SSDP multicast 'NOTIFY' messages.
      *
+     *  Where the OS allows it (Linux; macOS, IPv6 too), it binds the SSDP group's own address, not the wildcard - so it never
+     *  takes a unicast M-SEARCH meant for an SSDP device on this machine, its program's or another's (@see
+     *  IO::Network::Socket::BindFlags::fSO_REUSEADDR).
+     *
      *  Firewall Note:
      *      Nothing heard, and no error, usually means a firewall - this machine's - or a network that passes no multicast
      *      (Docker's default bridge network passes none from the LAN). SSDP needs inbound UDP: to port 1900 - the NOTIFYs a

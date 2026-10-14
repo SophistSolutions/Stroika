@@ -2504,6 +2504,10 @@ namespace {
      *  names the multicast group, as some control points send (from which alone it was taken for multicast, and, with no MX,
      *  ignored). Told by M-SEARCHes this test sends our own BasicServer itself. As in SSDP_Loopback_Search_, anything that keeps
      *  the exchange from happening is a test issue.
+     *
+     *  And with a Listener beside the server - made after it, then before one - it is answered all the same: of the sockets
+     *  sharing an address a unicast datagram reaches just one, and that must never be the Listener's, which drops M-SEARCHes.
+     *  Unanswered then is a bug, not a test issue - by then the exchange has been seen to work here.
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_UnicastSearch_)
     {
@@ -2528,9 +2532,9 @@ namespace {
         const InternetAddress ours = *via->fBindings.fAddresses.First (
             [] (const InternetAddress& a) { return a.GetAddressFamily () == InternetAddress::AddressFamily::V4; });
         try {
-            SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
-                                             SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
-            ConnectionlessSocket::Ptr asker = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            const SSDP::Server::BasicServer::Options serverOptions{.fIPVersion = IPVersionSupport::eIPV4Only};
+            optional<SSDP::Server::BasicServer>      server{in_place, d, dd, SSDP::Server::LocationFillingInHost (location), serverOptions};
+            ConnectionlessSocket::Ptr                asker = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             asker.SetMulticastLoopMode (true); // so our own server hears it
             asker.SetMulticastInterface (*via);
             auto search = [&] (const SocketAddress& to, const String& host, optional<unsigned int> mx) {
@@ -2553,19 +2557,25 @@ namespace {
                 }
                 return nullopt;
             };
-            // until the server hears us (it joins the multicast group on its own thread) - a multicast search, answered
-            bool answered = false;
-            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not answered and Time::GetTickCount () < giveUpAt;) {
-                search (SSDP::V4::kSocketAddress, "239.255.255.250:1900"sv, 1);
-                answered = answerBy (Time::GetTickCount () + 1.5s).has_value ();
-            }
-            if (not answered) {
+            // until the server hears us (it joins the multicast group on its own thread) - a multicast search, answered - then the
+            // rest of those answers
+            auto heard = [&] () {
+                bool answered = false;
+                for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not answered and Time::GetTickCount () < giveUpAt;) {
+                    search (SSDP::V4::kSocketAddress, "239.255.255.250:1900"sv, 1);
+                    answered = answerBy (Time::GetTickCount () + 1.5s).has_value ();
+                }
+                if (answered) {
+                    Execution::Sleep (1.5s);
+                    while (answerBy (Time::GetTickCount () + 0.1s)) {
+                    }
+                }
+                return answered;
+            };
+            if (not heard ()) {
                 Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_UnicastSearch_ skipped - our own device did not answer within 10 "
                                                           "seconds (this environment probably blocks multicast, or UDP 1900)");
                 return;
-            }
-            Execution::Sleep (1.5s); // the rest of those answers
-            while (answerBy (Time::GetTickCount () + 0.1s)) {
             }
             // unicast, its HOST saying so: answered, with the address it was sent to
             const SocketAddress toOurs{ours, SSDP::V4::kSocketAddress.GetPort ()};
@@ -2590,6 +2600,21 @@ namespace {
             answer = answerBy (Time::GetTickCount () + 1.5s);
             ASSERT_TRUE (answer.has_value ()) << "no answer to a unicast M-SEARCH whose HOST names the multicast group";
             EXPECT_EQ (answer->GetAuthority ()->GetHost ()->AsInternetAddress (), ours);
+            Execution::Sleep (0.5s);
+            while (answerBy (Time::GetTickCount () + 0.1s)) {
+            }
+            // with a Listener beside the server, made after it - Linux sends a unicast datagram to the last socket bound there
+            SSDP::Client::Listener listener{SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            search (toOurs, "{}:1900"_f(ours), nullopt);
+            EXPECT_TRUE (answerBy (Time::GetTickCount () + 1.5s).has_value ())
+                << "a Listener made after the server took a unicast M-SEARCH";
+            // and before one - macOS sends it to the first
+            server.reset ();
+            server.emplace (d, dd, SSDP::Server::LocationFillingInHost (location), serverOptions);
+            ASSERT_TRUE (heard ()) << "a server made after a Listener never heard a multicast search";
+            search (toOurs, "{}:1900"_f(ours), nullopt);
+            EXPECT_TRUE (answerBy (Time::GetTickCount () + 1.5s).has_value ())
+                << "a Listener made before the server took a unicast M-SEARCH";
         }
         catch (...) {
             Stroika::Frameworks::Test::WarnTestIssue (
