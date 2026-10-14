@@ -30,7 +30,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      *
      *  Where the OS allows it (Linux; macOS, IPv6 too), it binds the SSDP group's own address, not the wildcard - so it never
      *  takes a unicast M-SEARCH meant for an SSDP device on this machine, its program's or another's (@see
-     *  IO::Network::Socket::BindFlags::fSO_REUSEADDR).
+     *  IO::Network::Socket::BindFlags::fSO_REUSEADDR). Windows refuses that, and gives a unicast datagram to the first socket
+     *  bound - so there a Listener made before a device's SearchResponder takes its unicast M-SEARCHes (unless Windows' own
+     *  SSDP service, running, holds port 1900 and takes them first).
      *
      *  Firewall Note:
      *      Nothing heard, and no error, usually means a firewall - this machine's - or a network that passes no multicast
