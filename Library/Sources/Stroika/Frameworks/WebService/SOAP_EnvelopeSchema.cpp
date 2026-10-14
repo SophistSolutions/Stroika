@@ -33,8 +33,10 @@
 // would warn
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
 namespace {
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-variable\""); // warning suppression for Schemas_soap_envelope_1_1_xsd_len
     constexpr
 #include "soap-envelope-1.1.xsd.embed"
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-variable\"");
 }
 
 using namespace Stroika::Foundation;

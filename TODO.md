@@ -57,10 +57,6 @@ Generally will track stuff here between releases
      stateVariable's sendEvents and multicast to {"1","0"} where UDA 1.0 says sendEvents="yes"/"no", so as published it
      refuses every real device. ServiceDescriptionSchema widens those two enumerations and nothing else; device-1-0.xsd
      needs no correction.
-   - **Since then, every g++ build with XML schema support warns three times** (found 2026-10-13): each embedded schema's
-     xxd-generated `..._len` is "defined but not used" [-Wunused-variable] - SOAP_EnvelopeSchema.cpp, and UPnP's
-     DeviceDescriptionSchema.cpp and ServiceDescriptionSchema.cpp. clang does not warn. One line each - use the length - or
-     drop it in the xxd rule of WebService's and UPnP's Makefiles.
    - **Three tests fail, rather than skip, where no HTTP client is built in** (found 2026-10-13, a macOS Debug build without
      libcurl): Tests/56's SOAP_InvokeAndHandleRequest_, Tests/54's SOAP_InvokeAndHandleAction_ and GENA_Subscriber_ - each
      throws "A required component - IO-Network-Transfer-Client-Factory - is missing". GTEST_SKIP, as Tests/45's tests and
