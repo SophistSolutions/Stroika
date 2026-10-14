@@ -38,8 +38,8 @@
  *
  *  \par Example Usage
  *      \code
- *          // a control point: switch a light on, then ask it its status
- *          const URI controlURL = location.Combine (service.fControlURL);
+ *          // a control point: switch a light on, then ask it its status (service: one of dd.fServices, dd read from location)
+ *          const URI controlURL = dd.fURLBase.value_or (location).Combine (service.fControlURL);
  *          SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, true}}});
  *          optional<bool> on = SOAP::Invoke (controlURL, {.fServiceType = kSwitchPower, .fAction = "GetStatus"sv}).LookupArgument<bool> ("ResultStatus"sv);
  *

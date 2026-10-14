@@ -39,6 +39,16 @@ namespace Stroika::Frameworks::UPnP {
      *  This is based on http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf, page 43-46 apx
      */
     struct DeviceDescription {
+        /**
+         *  The description's <URLBase>, if it has one: what its relative URLs - each service's, the icons', fPresentationURL -
+         *  are relative to. Without one, they are relative to the URL the description was read from. So a control point
+         *  resolves one as fURLBase.value_or (descriptionURL).Combine (url).
+         *
+         *  An older (UPnP 1.0) device may send one, and a control point must then apply it; UPnP 1.1 forbids a device to send
+         *  one (section 2.3), so a device built on Stroika leaves it unset. Read, an empty one - or one that is not a URL - is
+         *  taken for none.
+         */
+        optional<URI>    fURLBase;
         optional<URI>    fPresentationURL;
         String           fDeviceType; //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
         String           fManufactureName;
@@ -85,7 +95,7 @@ namespace Stroika::Frameworks::UPnP {
         /**
          *  One of the device's services: what it is, and where its description, its actions and its events are - each URL
          *  relative to the device description's own (UPnP Device Architecture 1.1, section 2.3; an older device's may be
-         *  absolute), so a control point resolves it with that URL's Combine ().
+         *  absolute, or relative to its fURLBase), so a control point resolves it with fURLBase.value_or (descriptionURL).Combine ().
          */
         struct Service {
             String fServiceType; // e.g. urn:schemas-upnp-org:service:serviceType:v

@@ -128,10 +128,11 @@ namespace {
             using namespace IO::Network::Transfer;
             DeviceDescription dd = DeSerialize (Connection::New ().GET (location).GetData ());
             Print_ ("\t{}: {} ({})"_f(dd.fUDN, dd.fFriendlyName, dd.fDeviceType));
+            const URI base = dd.fURLBase.value_or (location); // what its URLs are relative to: its URLBase if it has one, else its own URL
             for (const DeviceDescription::Service& s : dd.fServices.value_or (Containers::Collection<DeviceDescription::Service>{})) {
                 Print_ ("\t\tservice: {}"_f(s.fServiceType));
                 if (s.fServiceType == kSwitchPowerServiceType_) {
-                    URI controlURL = location.Combine (s.fControlURL); // relative to the description's URL
+                    URI controlURL = base.Combine (s.fControlURL);
                     if (fetching->fSwitchLightsTo and not fetching->fSwitched.Contains (dd.fUDN)) {
                         fetching->fSwitched.Add (dd.fUDN);
                         SwitchPowerAction_ (controlURL, "SetTarget"sv, {{"newTargetValue"sv, *fetching->fSwitchLightsTo}});
@@ -141,7 +142,7 @@ namespace {
                     Print_ ("\t\tit is {}"_f(String{on ? (*on ? "on"sv : "off"sv) : "neither on nor off?"sv}));
                 }
                 if (fetching->fWatch and not s.fEventSubURL.GetPath ().empty ()) { // empty: it has no events
-                    Watch_ (location.Combine (s.fEventSubURL), dd.fUDN, s.fServiceID, fetching);
+                    Watch_ (base.Combine (s.fEventSubURL), dd.fUDN, s.fServiceID, fetching);
                 }
             }
         }

@@ -24,6 +24,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 
 using Memory::MakeSharedPtr;
@@ -83,6 +84,9 @@ String DeviceDescription::ToString () const
     sb << "{"sv;
     if (fPresentationURL) {
         sb << "Presentation-URL: "sv << fPresentationURL;
+    }
+    if (fURLBase) {
+        sb << ", URL-Base: "sv << *fURLBase;
     }
     sb << ", Device-Type: "sv << fDeviceType;
     sb << ", Manufacture-Name: "sv << fManufactureName;
@@ -145,6 +149,7 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
     mapper.AddCommonType<optional<URI>> ();
 
     mapper.AddClass<DeviceDescription> ({
+        {"URLBase"sv, &DeviceDescription::fURLBase},
         {"presentationURL"sv, &DeviceDescription::fPresentationURL},
         {"deviceType"sv, &DeviceDescription::fDeviceType},
         {"manufacturer"sv, &DeviceDescription::fManufactureName},
@@ -181,6 +186,7 @@ Memory::BLOB UPnP::Serialize ([[maybe_unused]] const DeviceDescription& dd, [[ma
     Element::Ptr       spec = root.Append ("specVersion"sv); // 1.0, not 1.1, on purpose - @see this framework's ReadMe.md
     spec.Append ("major"sv, "1"sv);
     spec.Append ("minor"sv, "0"sv);
+    root.AppendIf ("URLBase"sv, urlOf (dd.fURLBase));
     Element::Ptr device = root.Append ("device"sv);
     device.Append ("deviceType"sv, dd.fDeviceType);
     device.Append ("friendlyName"sv, dd.fFriendlyName);
@@ -236,6 +242,11 @@ DeviceDescription UPnP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, [[m
     using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
     using namespace Stroika::Foundation::DataExchange::XML;
 
+    // read from <root>, not just <device>: <URLBase>, where there is one, is <device>'s sibling
+    struct Root_ {
+        optional<String>  fURLBase; // not optional<URI>: that reader returns an empty or bad one as an EMPTY URI, not nullopt
+        DeviceDescription fDevice;
+    };
     static const ObjectReader::Registry kTypesRegistry_ = [] () {
         ObjectReader::Registry registry;
         registry.AddCommonType<String> ();
@@ -278,22 +289,39 @@ DeviceDescription UPnP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, [[m
             {Name{"iconList"sv}, &DeviceDescription::fIcons},
             {Name{"serviceList"sv}, &DeviceDescription::fServices},
         });
+        registry.AddCommonReader_Class<Root_> ({
+            {Name{"URLBase"sv}, &Root_::fURLBase},
+            {Name{"device"sv}, &Root_::fDevice},
+        });
         return registry;
     }();
 
-    DeviceDescription deviceDescription;
+    Root_ root;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"xml data: %s", Streams::BinaryToText::Reader::New (b).ReadAll ().c_str ());
 #endif
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
     {
         ObjectReader::IConsumerDelegateToContext ctx{
-            kTypesRegistry_, MakeSharedPtr<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{"device"sv})};
+            kTypesRegistry_, MakeSharedPtr<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&root), Name{"root"sv})};
         XML::SAXParse (options.GetXMLProvider (), b, &ctx, options.fValidateReadAgainst);
     }
 #else
     WeakAssertNotImplemented (); // may want to allow to continue, as this may not be critical functionality, but you probably want XML parser when running this code...
 #endif
+    DeviceDescription deviceDescription = move (root.fDevice);
+    // an empty <URLBase> means none (UPnP Device Architecture 1.0); one that is not a URL is taken for none too - ignored, as
+    // every <URLBase> was before Stroika v3.0d25 - rather than failing the whole description
+    if (root.fURLBase) {
+        if (String u = root.fURLBase->Trim (); not u.empty ()) {
+            try {
+                deviceDescription.fURLBase = URI::Parse (u);
+            }
+            catch (...) {
+                DbgTrace ("Ignoring <URLBase>{}</URLBase>, which is not a URL: {}"_f, u, current_exception ());
+            }
+        }
+    }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("deviceDescription: {}"_f, deviceDescription);
 #endif

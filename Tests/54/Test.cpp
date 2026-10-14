@@ -236,6 +236,7 @@ namespace {
         DbgTrace ("xml: {}"_f, String::FromUTF8 (xml.As<string> ()));
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
         DeviceDescription back = UPnP::DeSerialize (xml);
+        EXPECT_EQ (back.fURLBase, nullopt); // a device built on Stroika sends none
         EXPECT_EQ (back.fPresentationURL, dd.fPresentationURL);
         EXPECT_EQ (back.fDeviceType, dd.fDeviceType);
         EXPECT_EQ (back.fManufactureName, dd.fManufactureName);
@@ -262,6 +263,46 @@ namespace {
         Stroika::Frameworks::Test::WarnTestIssue (
             "DeviceDescription_RoundTrip_ only checks Serialize: this configuration has no XML parser");
 #endif
+    }
+
+    /*
+     *  An older (UPnP 1.0) device's <URLBase>: read into fURLBase, and the description's relative URLs resolve against it,
+     *  not against where the description was read from - as a control point must (UPnP Device Architecture 1.0). An empty one
+     *  is none; one that is not a URL is taken for none, rather than failing the read.
+     */
+    GTEST_TEST (Frameworks_UPnP, DeviceDescription_URLBase_)
+    {
+        Debug::TraceContextBumper ctx{"DeviceDescription_URLBase_"};
+#if not qStroika_Foundation_DataExchange_XML_SupportParsing
+        GTEST_SKIP () << "no XML parser built in (neither libxml2 nor Xerces)";
+#endif
+        auto read = [] (const String& urlBase) {
+            string xml = "<?xml version=\"1.0\"?><root xmlns=\"urn:schemas-upnp-org:device-1-0\"><specVersion><major>1</major>"
+                         "<minor>0</minor></specVersion>{}<device><deviceType>urn:schemas-upnp-org:device:BinaryLight:1</deviceType>"
+                         "<friendlyName>a UPnP 1.0 light</friendlyName><manufacturer>m</manufacturer><modelName>n</modelName>"
+                         "<UDN>uuid:315caae0-1335-57bf-a178-24c9ee756628</UDN><serviceList><service>"
+                         "<serviceType>urn:schemas-upnp-org:service:SwitchPower:1</serviceType>"
+                         "<serviceId>urn:upnp-org:serviceId:SwitchPower</serviceId><SCPDURL>SwitchPower.xml</SCPDURL>"
+                         "<controlURL>/upnp/control</controlURL><eventSubURL>/upnp/event</eventSubURL></service></serviceList>"
+                         "</device></root>"_f(urlBase)
+                             .AsUTF8<string> ();
+            return UPnP::DeSerialize (Memory::BLOB{as_bytes (span{xml})});
+        };
+        const URI location{"http://192.168.1.5:5000/description.xml"sv}; // where it was read from
+        // with one: each URL is relative to it
+        const DeviceDescription dd = read ("<URLBase>http://192.168.1.5:49152/</URLBase>"sv);
+        EXPECT_EQ (dd.fURLBase, URI{"http://192.168.1.5:49152/"sv});
+        ASSERT_TRUE (dd.fServices and dd.fServices->size () == 1);
+        const DeviceDescription::Service s    = *dd.fServices->First ();
+        const URI                        base = dd.fURLBase.value_or (location);
+        EXPECT_EQ (base.Combine (s.fControlURL), URI{"http://192.168.1.5:49152/upnp/control"sv});
+        EXPECT_EQ (base.Combine (s.fSCPDURL), URI{"http://192.168.1.5:49152/SwitchPower.xml"sv});
+        // without one, or with an empty one: relative to where it was read from
+        EXPECT_EQ (read (""sv).fURLBase, nullopt);
+        EXPECT_EQ (read ("<URLBase> </URLBase>"sv).fURLBase, nullopt);
+        EXPECT_EQ (read (""sv).fURLBase.value_or (location).Combine (s.fControlURL), URI{"http://192.168.1.5:5000/upnp/control"sv});
+        // one that is not a URL (not ASCII): taken for none
+        EXPECT_EQ (read (L"<URLBase>http://\u00e9/</URLBase>"sv).fURLBase, nullopt);
     }
 
     GTEST_TEST (Frameworks_UPnP, ServiceDescription_RoundTrip_)
@@ -321,6 +362,7 @@ namespace {
 #endif
         // every field a DeviceDescription has - the optional ones are where an element lands in the wrong place
         DeviceDescription dd;
+        dd.fURLBase          = URI{"http://192.168.1.5:49152/"sv};
         dd.fPresentationURL  = URI{"http://www.sophists.com/"sv};
         dd.fDeviceType       = "urn:sophists.com:device:deviceType:1.0"sv;
         dd.fManufactureName  = "Sophist Solutions, Inc."sv;
@@ -365,6 +407,7 @@ namespace {
                 const Memory::BLOB written = UPnP::Serialize (dd, kPlain_);
                 EXPECT_NO_THROW (UPnP::DeSerialize (written, kValidatingDevice_)) << written.As<string> ();
                 EXPECT_EQ (UPnP::DeSerialize (written, kValidatingDevice_).fUDN, dd.fUDN) << "and still reads as itself";
+                EXPECT_EQ (UPnP::DeSerialize (written, kValidatingDevice_).fURLBase, dd.fURLBase);
             }
             {
                 const Memory::BLOB written = Serialize (sd, kPlain_);

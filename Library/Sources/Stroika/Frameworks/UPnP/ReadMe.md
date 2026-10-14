@@ -23,8 +23,8 @@ point claims next to nothing; it just makes use of whatever devices send.
 
 Stroika's devices claim 1.0. They follow some of 1.1's rules anyway, as those cost nothing: NOTIFYs and M-SEARCHes go out
 with TTL 2 (1.1, section 1.1); a multicast M-SEARCH is answered within its MX, at most 5 seconds (1.3.3), and a unicast one
-at once (1.3.2); descriptions carry no `URLBase` (2.3); and GENA gives a subscription asking for "infinite" a finite
-duration (4.1.2).
+at once (1.3.2); a description carries no `URLBase` unless the application sets one (2.3); and GENA gives a subscription
+asking for "infinite" a finite duration (4.1.2).
 
 ### What claiming 1.1 would take
 
