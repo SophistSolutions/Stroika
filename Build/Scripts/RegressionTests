@@ -538,7 +538,11 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		git -C $USE_SKEL_NAME/ThirdPartyComponents/Stroika/StroikaRoot checkout --quiet $SKEL_STROIKA_COMMIT >>$TEST_OUT_FILE 2>&1
 		echo -n "cd $USE_SKEL_NAME && make CONFIGURATION=Debug ... " 2>&1
 		echo "cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
-		(cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1
+		if ! (cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1 ; then
+			# a failure of its own, counted in the summary as a sample app's is - the build's output, above, says why
+			echo -n "**FAILED** "
+			echo "**FAILED**" >>$TEST_OUT_FILE
+		fi
 		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
@@ -559,7 +563,11 @@ NTSANS=`cat $TEST_OUT_FILE | grep -F "because sudo sysctl vm.mmap_rnd_bits" | wc
 ### A WARNING: line is never a failure or an error, even when its text says so (e.g. "REGRESSION TEST ISSUE: ... Child
 ### process failed", "mirror failed, so retrying", "SSL connect error {LibCurl error: 35}") - it is already counted as a
 ### warning, below.
-XF=`cat $TEST_OUT_FILE | grep -i FAILED | grep -v TEST_FAILURES_CAUSE_FAILED_MAKE | grep -v -E '^[[:space:]]*WARNING:' | wc -l`
+### Failures are counted by their MARKERS, once each - not by every line that says "failed", as a download that is retried
+### does, five times: a test's '[  FAILED  ] Suite.Test (N ms)' (gtest's own, not its closing list), 'FAILED: ...' (the test
+### harness - an assertion, a signal, an exception - or Tests/Scripts/RunTest, for a test that exited non-zero saying
+### nothing), RunTest's '... FAILED - not run', and this script's '**FAILED**' (a sample app, or the skel app's build).
+XF=`cat $TEST_OUT_FILE | grep -v -E '^[[:space:]]*WARNING:' | grep -E '\[  FAILED  \] .+ \([0-9]+ ms\)|FAILED: |FAILED - not run|\*\*FAILED\*\*' | wc -l`
 XE=`cat $TEST_OUT_FILE | grep -v -E '^[[:space:]]*WARNING:' | grep -E -i "error[ \t]*:" | wc -l`
 XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
 VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep "^==" | wc -l`
