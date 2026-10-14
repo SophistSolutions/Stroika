@@ -116,6 +116,28 @@ Generally will track stuff here between releases
      defines as "xerces or libxml2"). But a reader has to reconstruct all of that, which is the problem. Find a
      spelling that carries the invariant where it is read - a named helper, or an Ensure, or holding the default in
      the field rather than nullptr - and use the same one in both places.
+   - **UPnP's Options types want rationalizing - there are NINE of them** (LGP 2026-10-13, "a bit of a morass"):
+     UPnP::Options, GENA::Publisher::Options, GENA::Subscriber::Options, SSDP::Client::{CachingListener, Listener,
+     Search}::Options, SSDP::Server::{BasicServer, PeriodicNotifier, SearchResponder}::Options - plus
+     WebService::SOAP::Options next door, which UPnP forwards to. What is actually wrong, as against merely numerous:
+       - **UPnP::SOAP::Action takes NO Options at all** - not Invoke, HandleAction, CheckRequest or any of the six
+         Serialize/DeSerialize overloads. So a device that picked Xerces for its descriptions silently gets the
+         default provider for its control traffic, and nobody can switch on envelope validation
+         (SOAP::Options::fValidateReadAgainst) on the UPnP path at all. Same family as the fault-detail provider bug
+         fixed in a3eb3ff6f3, just not reachable yet. Deciding WHICH Options it should take is the real question:
+         WebService::SOAP::Options (honest - Action is SOAP with UPnP conventions on top - but callers then juggle
+         two types); or UPnP::Options mapped onto it (tidier, but fValidateReadAgainst would silently not apply,
+         since a DESCRIPTION schema is not an ENVELOPE schema); or a third UPnP::SOAP::Options naming both. First
+         preference is the first, weakly held.
+       - **UPnP::Options and WebService::SOAP::Options are structurally identical and semantically different** - same
+         two fields, but fValidateReadAgainst means the description schema in one and the envelope schema in the
+         other. Nothing says so at either declaration.
+       - **GENA::Publisher::Options and GENA::Subscriber::Options are the same type written twice** - one
+         fTimeout{1800.0} each, with near-identical doc comments.
+       - The six SSDP ones are probably fine - genuinely different knobs per class - but nobody has checked whether
+         they share fields that ought to be one type.
+     The field that actually crosses module boundaries is fXMLProvider, and it has no shared convention: each Options
+     redeclares it, and each DeSerialize has to remember to thread it (one did not - a3eb3ff6f3).
 - v3.0d26x - at the start
    - **PRIORITY: threaded-code bugs, and Synchronized's flawed design choices** -
      https://github.com/SophistSolutions/Stroika/issues/1205 (from IntervalTimer's five removal bugs, fixed 2026-10-05).
