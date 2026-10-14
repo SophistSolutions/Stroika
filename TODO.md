@@ -129,6 +129,8 @@ Generally will track stuff here between releases
      x86, but ThreadSanitizer does not model fences), or an acquire RMW on the count (two atomics per write: measure with
      Tests/52). Until then, Tests/54's SSDP_CachingListener_ and SSDP_CachingListener_Search_ read told under its lock (a BWA,
      so 3.0d25's ThreadSanitizer runs are quiet): restore their told.load () - the reproducer - with the fix.
+   - **SSDP: a shared transport `Ptr`** owning port 1900's sockets, an optional argument to every SSDP class -
+     https://github.com/SophistSolutions/Stroika/issues/1220 (after #1205: its dispatch thread is the risk).
    - **Concepts - the rest of 2026-10-08's follow-ups** (the rules: Design-Overview.md, "Rules for writing concepts"):
        - **audit Stroika's concepts** (108 in Library) against those rules.
        - **StringBuilder's `sb << x` constraint cannot say no**: Characters::Private_::IUnoverloadedToString_ asks
