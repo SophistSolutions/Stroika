@@ -57,10 +57,6 @@ Generally will track stuff here between releases
      stateVariable's sendEvents and multicast to {"1","0"} where UDA 1.0 says sendEvents="yes"/"no", so as published it
      refuses every real device. ServiceDescriptionSchema widens those two enumerations and nothing else; device-1-0.xsd
      needs no correction.
-   - **Three tests fail, rather than skip, where no HTTP client is built in** (found 2026-10-13, a macOS Debug build without
-     libcurl): Tests/56's SOAP_InvokeAndHandleRequest_, Tests/54's SOAP_InvokeAndHandleAction_ and GENA_Subscriber_ - each
-     throws "A required component - IO-Network-Transfer-Client-Factory - is missing". GTEST_SKIP, as Tests/45's tests and
-     GENA_Publisher_ do.
    - **An element cannot be created with a namespace PREFIX of one's choosing** (2026-10-13; after the XSD work above,
      which may well settle whether it matters). Creating one in a namespace always declares that namespace as the DEFAULT
      (xmlns=), and nothing says "in this namespace, written s:Envelope". a8e0307e90's SOAP envelope shows the three

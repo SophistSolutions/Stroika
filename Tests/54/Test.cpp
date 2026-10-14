@@ -655,6 +655,9 @@ namespace {
     GTEST_TEST (Frameworks_UPnP, SOAP_InvokeAndHandleAction_)
     {
         Debug::TraceContextBumper ctx{"SOAP_InvokeAndHandleAction_"};
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP) - Invoke sends through one";
+#endif
         using namespace Stroika::Frameworks::WebServer;
         const String kServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
         const URI    controlURL{"http://127.0.0.1:{}/control"_f(kSOAPDevicePort_)};
@@ -2964,7 +2967,10 @@ namespace {
      */
     GTEST_TEST (Frameworks_UPnP, GENA_Subscriber_)
     {
-        Debug::TraceContextBumper                    ctx{"GENA_Subscriber_"};
+        Debug::TraceContextBumper ctx{"GENA_Subscriber_"};
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP) - it subscribes, renews and unsubscribes through one";
+#endif
         Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by Subscriber, to renew
         using namespace Stroika::Frameworks::WebServer;
         atomic<int>     status{0};

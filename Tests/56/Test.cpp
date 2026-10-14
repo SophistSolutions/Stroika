@@ -381,7 +381,10 @@ namespace {
      */
     GTEST_TEST (Frameworks_WebService, SOAP_InvokeAndHandleRequest_)
     {
-        Debug::TraceContextBumper       ctx{"SOAP_InvokeAndHandleRequest_"};
+        Debug::TraceContextBumper ctx{"SOAP_InvokeAndHandleRequest_"};
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP) - Invoke sends through one";
+#endif
         constexpr IO::Network::PortType kPort_ = 8084; // on loopback only
         const IO::Network::URI          url{"http://127.0.0.1:{}/stock"_f(kPort_)};
         const SOAP::Fault kBusy_{.fFaultCode = "Server.Busy"sv, .fFaultString = "try later"sv, .fDetail = "<x:Why xmlns:x=\"urn:example:why\">because</x:Why>"sv};
