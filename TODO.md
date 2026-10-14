@@ -41,19 +41,11 @@ Generally will track stuff here between releases
 - v3.0d25
    - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - **Decide #954's fate** - its Reader/Writer work is done (2026-10-11), and UPnP's descriptions and SOAP
-         messages, which were the intended first callers, were built with the DOM instead (it suits a document of
-         fixed shape carrying someone else's XML). So close #954, or reduce it to the Binding producers its
-         2026-10-10 comment adds: an XSD/WSDL, and ObjectVariantMapper (#1217). #955 (a web service answering JSON
-         or XML) is unblocked by the same work and not started.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
-   - **Variant::XML and its Binding have no caller** (2026-10-13) - built, and Tests/32 exercises it, but nothing in Stroika
-     writes through it: UPnP's two descriptions and SOAP all went to the DOM instead, which suits a document whose shape is
-     fixed and which carries XML of someone else's. What Variant::XML is actually for is a value that must serve EITHER
-     format - #955, a web service answering JSON or XML from one ObjectVariantMapper - so that, or #1217 (generate a
-     Binding from an ObjectVariantMapper), is what would drive it against a real schema from a real caller. Until one
-     does, it is a capability tested only by its own tests.
+   - **Variant::XML has no caller yet** (#954 closed 2026-10-14) - UPnP and SOAP went to the DOM. #955 (a web service
+     answering JSON or XML from one ObjectVariantMapper), or #1217 (a Binding generated from the mapper), is what would
+     drive it against a real schema; until then Tests/32 is its only user.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
