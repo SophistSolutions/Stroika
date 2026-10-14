@@ -8,6 +8,20 @@ Generally will track stuff here between releases
 
 ## Open
 
+- **Does `SerializationOptions::fPrettyPrint = false` PROMISE no whitespace, or merely not add any?** (2026-10-12)
+  Nothing asserts it, nothing documents it, and the two XML providers would quite likely disagree about a document
+  they did not write. It came up because a regression test matched exact output and LGP rightly objected that the
+  spec may promise no such thing. Either write the contract down and test both providers against it, or say that
+  output is not byte-stable and stop tests depending on it.
+
+- **ModuleInit's deprecation text does not cover the case that actually bites** (2026-10-12). "Use call_once or
+  static inline" is right for construction order, and for destruction where the dependency is formed AT
+  construction. It is not right for a global that LATER acquires a reference to another module's object - the
+  reverse-destruction guarantee of [basic.start.term] does not reach that. A cached XML Schema::Ptr is exactly that
+  case (a Schema::Ptr may not outlive its provider), and the answer is not to hold one - which is what
+  WebService::SOAP::EnvelopeSchema and UPnP's two schema accessors all do, compiling afresh per call. Worth a
+  sentence in the deprecation note so the next person does not re-derive it.
+
 - config var name ObjDir_ToolsSafe funny name - probably lose the Safe!! part and DOCUMENT what it means!
 
 - Consider rewrite of remaining perl stuff - mostly configure - to use python?
