@@ -8,12 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- **Does `SerializationOptions::fPrettyPrint = false` PROMISE no whitespace, or merely not add any?** (2026-10-12)
-  Nothing asserts it, nothing documents it, and the two XML providers would quite likely disagree about a document
-  they did not write. It came up because a regression test matched exact output and LGP rightly objected that the
-  spec may promise no such thing. Either write the contract down and test both providers against it, or say that
-  output is not byte-stable and stop tests depending on it.
-
 - **ModuleInit's deprecation text does not cover the case that actually bites** (2026-10-12). "Use call_once or
   static inline" is right for construction order, and for destruction where the dependency is formed AT
   construction. It is not right for a global that LATER acquires a reference to another module's object - the

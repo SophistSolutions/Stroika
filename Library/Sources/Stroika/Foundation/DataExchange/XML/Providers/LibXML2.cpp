@@ -1063,6 +1063,11 @@ namespace {
             // use xmlSaveToBuffer instead of xmlDocDumpFormatMemoryEnc () since that has options to control XML_SAVE_NO_EMPTY which changed in libxml2 2.13.1
             xmlSaveCtxtPtr          saveCtx  = xmlSaveToBuffer (xmlBuf, kTxtEncoding_, useOptions);
             [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept { xmlSaveClose (saveCtx); });
+#if LIBXML_VERSION >= 21400
+            if (options.fPrettyPrint and options.fIndent) {
+                (void)xmlSaveSetIndentString (saveCtx, string (*options.fIndent, ' ').c_str ()); // one it rejects (0, over 60) leaves its default
+            }
+#endif
             // could check for > 0 but bug in incomplete iml in current impl as libxml2 2.13.2
             if (xmlSaveDoc (saveCtx, fLibRep_) >= 0 and xmlSaveFlush (saveCtx) >= 0) {
                 to.Write (span{reinterpret_cast<const byte*> (xmlBufferContent (xmlBuf)), static_cast<size_t> (xmlBufferLength (xmlBuf))});

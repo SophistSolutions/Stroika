@@ -44,10 +44,31 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
      */
 
     /**
-     *  \note - some serializers (xerces) may ignore fIndent
+     *  How Document::Ptr::Write writes a document.
      */
     struct SerializationOptions {
-        bool                   fPrettyPrint{false};
+        /**
+         *  false (the default) ADDS no whitespace: what is written is the document's text as it is - its whitespace-only
+         *  text included - and nothing more. So a document built with this API is written with no whitespace between its
+         *  elements, and one read in is written with exactly the whitespace text it was read with (text, not bytes: XML
+         *  has every reader turn a line end into a line feed). Outside the root element a provider may still write line
+         *  breaks (libxml2 does, after the XML declaration and at the end): no reader sees them as content.
+         *
+         *  true adds whitespace to show the structure, so a reader of the result sees whitespace text the document did not
+         *  have - and where differs by provider: as of libxml2 2.15 and Xerces 3.3, libxml2 indents only elements that hold
+         *  no text, Xerces mixed content too, changing whitespace that is part of the text. For people, not for comparing.
+         *
+         *  Neither promises the BYTES: a byte order mark (Xerces writes one), the XML declaration, quotes, empty elements and
+         *  namespace declarations may all be spelled differently by each provider. So a test may compare the text read back, or
+         *  look for pieces of it (with false, `</a><b` is safe) - never Write's whole output, which differs by provider, and has
+         *  changed between libxml2 versions.
+         */
+        bool fPrettyPrint{false};
+
+        /**
+         *  Spaces per level of indentation, when fPrettyPrint. Without it, both providers indent by 2. Xerces ignores it;
+         *  libxml2 (2.14 and later) mostly uses it - within its limits, and otherwise keeping to 2.
+         */
         optional<unsigned int> fIndent{};
     };
 

@@ -2015,6 +2015,53 @@ namespace {
         });
     }
 
+    /*
+     *  SerializationOptions::fPrettyPrint false ADDS no whitespace: written and read back, a document's text - its
+     *  whitespace-only text included - is what it was. Checked on its text, not on the bytes written, which it does not promise.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_WriteAddsNoWhitespace_)
+    {
+        using namespace XML::DOM;
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            auto writtenAndReadBack = [&] (const Document::Ptr& doc) {
+                const string written = doc.Write (SerializationOptions{.fPrettyPrint = false}).AsUTF8<string> ();
+                return domFactory (BLOB{as_bytes (span{written})}, nullptr).GetRootElement ().GetValue ();
+            };
+            {
+                // built with the DOM API, it has no whitespace - and gets none
+                Document::Ptr doc  = domFactory (BLOB{as_bytes (span{"<root/>"sv})}, nullptr);
+                Element::Ptr  root = doc.GetRootElement ();
+                root.Append ("a"sv, "x"sv);
+                root.Append ("b"sv).Append ("c"sv, "y"sv);
+                EXPECT_EQ (writtenAndReadBack (doc), "xy"sv) << doc.Write ().AsNarrowSDKString ();
+            }
+            {
+                // read in, its whitespace - indentation, and the space between words of mixed content - is kept, as is
+                constexpr string_view kDoc_ = "<root>\n  <a>x</a>\n\t<p><b>bold</b> <i>italic</i></p>\n  <c>\n    <d>two  spaces</d>\n  </c>\n</root>"sv;
+                constexpr string_view kText_ = "\n  x\n\tbold italic\n  \n    two  spaces\n  \n"sv;
+                Document::Ptr         doc    = domFactory (BLOB{as_bytes (span{kDoc_})}, nullptr);
+                ASSERT_EQ (doc.GetRootElement ().GetValue (), kText_) << "read in, the whitespace is there to keep";
+                EXPECT_EQ (writtenAndReadBack (doc), kText_) << doc.Write ().AsNarrowSDKString ();
+            }
+        });
+    }
+
+#if qStroika_HasComponent_libxml2 and LIBXML_VERSION >= 21400
+    /*
+     *  libxml2 indents a pretty-printed document by SerializationOptions::fIndent, where it is given - 2 where it is not.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_LibXML2Indent_)
+    {
+        using namespace XML::DOM;
+        Document::Ptr doc = Document::New (XML::Providers::LibXML2::kDefaultProvider, BLOB{as_bytes (span{"<root><a>x</a></root>"sv})}, nullptr);
+        auto written = [&] (optional<unsigned int> indent) {
+            return doc.Write (SerializationOptions{.fPrettyPrint = true, .fIndent = indent}).AsUTF8<string> ();
+        };
+        EXPECT_NE (written (nullopt).find ("\n  <a>x</a>"), string::npos) << written (nullopt);
+        EXPECT_NE (written (4).find ("\n    <a>x</a>"), string::npos) << written (4);
+    }
+#endif
+
     GTEST_TEST (Foundation_DataExchange_XML, DOM_XPath)
     {
         const Memory::BLOB kPersonalXML_            = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
