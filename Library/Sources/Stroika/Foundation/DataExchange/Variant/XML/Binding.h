@@ -107,12 +107,17 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
 
         /**
          *  Whether the member this Binding goes with is written as a child element (the default), as an attribute of the
-         *  element it is a member of, or as that element's text. The document element is always an element.
+         *  element it is a member of, as that element's text, or as a presence marker. The document element is always an element.
+         *
+         *  A presence marker (ePresenceMarker) is a Boolean member written as an element's presence: an empty element for true,
+         *  none for false - as UPnP's `<retval/>`, which says an argument is the return value by being there. So a presence
+         *  marker absent reads back as false.
          */
         enum class Kind {
             eElement,
             eAttribute,
-            eText
+            eText,
+            ePresenceMarker
         };
         Kind fKind{Kind::eElement};
 
@@ -136,7 +141,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *  | an empty element, read back   | "" (but [] where fItems is set)     | {} for eMap, [] for eArray         |
          *  | a null member, written        | as an empty element: read back ""   | as none: read back absent          |
          *  | another type's value, written | as it is (a leaf as its As<String>) | throws                             |
-         *  | a member it does not name     | written after those it names; read  | throws, writing and reading        |
+         *  | a member it does not name     | written after those it names; read  | throws (unless fUndeclaredMembers) |
          *  | a child named <Array>, read   | an item, unless fMembers names it   | an item only where fType is eArray |
          *
          *  A null member is written as none as ObjectVariantMapper omits a null field. Per Binding, so per value: a member of a
@@ -154,9 +159,36 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
 
         /**
          *  This object's members, in the order to write them. A member of the value that is not named here is written after
-         *  those that are, in the order the value gives them.
+         *  those that are, in the order the value gives them - where fUndeclaredMembers is eKeep.
          */
         Sequence<Member> fMembers;
+
+        /**
+         *  \brief What an object does with a member fMembers does not declare - an element or attribute in a document, or a
+         *         value's member - as XSD's xs:any and xs:anyAttribute say (processContents)
+         */
+        enum class UndeclaredMembers {
+            /**
+             *  reading or writing one throws BadFormatException: it is not of the Binding's type
+             */
+            eReject,
+            /**
+             *  reading skips it, unread (so whatever it holds), as XSD's processContents="skip" - a vendor's own elements, say;
+             *  writing one throws, as it would not read back
+             */
+            eSkip,
+            /**
+             *  read and written in the default shape: a member by its name, and untyped - so a Binding keeping them is not complete
+             */
+            eKeep,
+        };
+
+        /**
+         *  nullopt (the default) is eReject where fType is declared, and eKeep where not. eSkip is how a complete Binding reads
+         *  someone else's documents - UPnP's descriptions, which devices extend with their own elements - and still round-trips
+         *  every value of its type.
+         */
+        optional<UndeclaredMembers> fUndeclaredMembers;
 
         /**
          *  A Binding for each item of this array - and, reading, what says this member IS an array, however few elements the
@@ -292,10 +324,10 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
         nonvirtual Kind KindFor (const String& key) const;
 
         /**
-         *  \brief Reading: the key of the member of that kind (an element or an attribute) written with that local name - the
-         *         name itself, where no such member is named
+         *  \brief Reading: the key of the member of that kind (an element - or presence marker - or an attribute) written with that local
+         *         name - the name itself, where no such member is named
          *
-         *  By kind, as an element and an attribute may have the same name.
+         *  By kind, as an element and an attribute may have the same name. A presence marker is an element.
          */
         nonvirtual String KeyForName (Kind kind, const String& name) const;
 
@@ -303,6 +335,11 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *  \brief Reading: the key of the member that is this element's text, if one is
          */
         nonvirtual optional<String> TextMemberKey () const;
+
+        /**
+         *  \brief fUndeclaredMembers, or its default: eReject where fType is declared, eKeep where not
+         */
+        nonvirtual UndeclaredMembers GetUndeclaredMembers () const;
 
         /**
          *  \brief Whether, given this Binding as the top level Binding (the one a Reader or Writer is given), the Writer and Reader
@@ -324,8 +361,12 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *        prefix (fNamespacePrefixes) in scope
          *
          *  The one exception, by design: XML has no way to write a null member, an empty array of repeated elements, or a text
-         *  member (Kind::eText) whose text is empty - an empty string or BLOB - but as nothing, so each reads back absent. (As
-         *  ObjectVariantMapper omits a null field anyway, and reads an absent one as its default.)
+         *  member (Kind::eText) whose text is empty - an empty string or BLOB - but as nothing, so each reads back absent; and a
+         *  presence marker (Kind::ePresenceMarker) null or absent reads back false, as a false one is written as nothing too.
+         *  (As ObjectVariantMapper omits a null field anyway, and reads an absent one as its default.)
+         *
+         *  A complete Binding may skip what it does not declare (fUndeclaredMembers eSkip): reading someone else's document then
+         *  skips a vendor's own elements, while the round trip of the Binding's own values stays exact.
          *
          *  A Binding generated from a type's declaration (an ObjectVariantMapper's -
          *  https://github.com/SophistSolutions/Stroika/issues/1217) can be complete by construction; one written by hand may

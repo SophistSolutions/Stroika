@@ -1649,12 +1649,17 @@ namespace {
                     }
                     else {
                         for (unsigned int i = Pick (5); i > 0; --i) {
-                            Binding m = Pick (3) == 0 ? Leaf (Binding::Kind::eAttribute) : Make (depth - 1, true);
+                            Binding m = Pick (3) == 0   ? Leaf (Binding::Kind::eAttribute)
+                                        : Pick (6) == 0 ? Binding{.fKind = Binding::Kind::ePresenceMarker, .fType = VariantValue::eBoolean}
+                                                        : Make (depth - 1, true);
                             if (Pick (4) == 0) {
                                 m.fName = NewName (); // a name of its own, not its key
                             }
                             b.fMembers.Append (Binding::Member{NewName (), m});
                         }
+                    }
+                    if (Pick (3) == 0) {
+                        b.fUndeclaredMembers = Binding::UndeclaredMembers::eSkip; // still complete
                     }
                     return b;
                 }
@@ -1761,6 +1766,12 @@ namespace {
                             continue;
                         }
                         m.Add (i.fKey, Expected (i.fValue, mb));
+                    }
+                    // a presence marker absent - or null, or false: each written as nothing - reads back false
+                    for (const Binding::Member& i : b.fMembers) {
+                        if (i.fBinding->fKind == Binding::Kind::ePresenceMarker and not m.ContainsKey (i.fKey)) {
+                            m.Add (i.fKey, VariantValue{false});
+                        }
                     }
                     return VariantValue{m};
                 }
@@ -1907,6 +1918,49 @@ namespace {
                     ADD_FAILURE () << items.size () << " item(s): " << e.what ();
                 }
             }
+        }
+        {
+            // undeclared members, as XSD's xs:any says: rejected (the default where fType is declared), skipped unread, or kept
+            const Binding rejecting{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"n"sv, leaf (VariantValue::eInteger)}}};
+            Binding       skipping      = rejecting;
+            skipping.fUndeclaredMembers = Binding::UndeclaredMembers::eSkip;
+            Binding keeping             = rejecting;
+            keeping.fUndeclaredMembers  = Binding::UndeclaredMembers::eKeep;
+            // a vendor's elements and attributes - one with mixed content, which could not be read into a VariantValue at all
+            const String vendor{"<a xmlns:v=\"urn:v\" v:x=\"1\" y=\"2\"><n>3</n><v:note>a <b>vendor</b>'s</v:note><other k=\"v\">t</other></a>"sv};
+            EXPECT_THROW (Reader{rejecting}.Read (vendor), BadFormatException);
+            EXPECT_TRUE (SameTyped_ (Reader{skipping}.Read (vendor), VariantValue{VVMap{{"n"sv, VariantValue{3LL}}}}));
+            EXPECT_THROW (Reader{keeping}.Read (vendor), BadFormatException); // kept, so read - and mixed content cannot be
+            EXPECT_TRUE (SameTyped_ (Reader{keeping}.Read (String{"<a y=\"2\"><n>3</n><other>t</other></a>"sv}),
+                                     VariantValue{VVMap{{"n"sv, VariantValue{3LL}}, {"y"sv, VariantValue{"2"sv}}, {"other"sv, VariantValue{"t"sv}}}}));
+            // writing, a member it does not declare would not read back - unless kept
+            auto         write = [] (const VariantValue& v, const Binding& b) { return Writer{{.fBinding = b}}.WriteAsString (v); };
+            VariantValue extra{VVMap{{"n"sv, VariantValue{3}}, {"other"sv, VariantValue{"t"sv}}}};
+            EXPECT_THROW (write (extra, rejecting), BadFormatException);
+            EXPECT_THROW (write (extra, skipping), BadFormatException);
+            EXPECT_EQ (write (extra, keeping), "<a>\n    <n>3</n>\n    <other>t</other>\n</a>\n"sv);
+            // skipping still round-trips every value of its type - keeping does not, so is not complete
+            EXPECT_TRUE (skipping.IsComplete ()) << skipping.ToString ().AsUTF8<string> ();
+            incomplete (keeping, "keeps the members it does not declare");
+        }
+        {
+            // a presence marker: an empty element, true by being there - as UPnP's <retval/>
+            const Binding argument{.fName    = "argument"sv,
+                                   .fType    = VariantValue::eMap,
+                                   .fMembers = {{"name"sv, leaf (VariantValue::eString)},
+                                                {"retval"sv, leaf (VariantValue::eBoolean, Binding::Kind::ePresenceMarker)}}};
+            EXPECT_TRUE (argument.IsComplete ()) << argument.ToString ().AsUTF8<string> ();
+            VariantValue yes{VVMap{{"name"sv, VariantValue{"r"sv}}, {"retval"sv, VariantValue{true}}}};
+            VariantValue no{VVMap{{"name"sv, VariantValue{"r"sv}}, {"retval"sv, VariantValue{false}}}};
+            EXPECT_EQ (Writer{{.fBinding = argument}}.WriteAsString (yes), "<argument>\n    <name>r</name>\n    <retval></retval>\n</argument>\n"sv);
+            EXPECT_EQ (Writer{{.fBinding = argument}}.WriteAsString (no), "<argument>\n    <name>r</name>\n</argument>\n"sv);
+            EXPECT_TRUE (SameTyped_ (roundTrip (yes, argument), yes));
+            EXPECT_TRUE (SameTyped_ (roundTrip (no, argument), no)); // absent: false
+            EXPECT_TRUE (SameTyped_ (Reader{argument}.Read (String{"<argument><retval/><name>r</name></argument>"sv}), yes));
+            // ... and only empty
+            EXPECT_THROW (Reader{argument}.Read (String{"<argument><retval>no</retval></argument>"sv}), BadFormatException);
+            incomplete (Binding{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"f"sv, leaf (VariantValue::eString, Binding::Kind::ePresenceMarker)}}},
+                        "a presence marker (ePresenceMarker) that is not a Boolean");
         }
         {
             // each way a Binding can fall short of complete - and ToString says why

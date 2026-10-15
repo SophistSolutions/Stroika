@@ -37,7 +37,9 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *        as []; an empty array written as the member's element repeated is no element at all, so reads back absent.
      *      - **A type declared**: the value reads back as that type - 3 as 3, an empty object as {}, an empty array as [] - and
      *        a document that is not of that type (text that is not a number, an element or attribute the Binding does not
-     *        declare, a member repeated that it declares as one value) throws BadFormatException.
+     *        declare, a member repeated that it declares as one value) throws BadFormatException - unless the Binding says to
+     *        skip what it does not declare (Binding::fUndeclaredMembers eSkip, as XSD's xs:any), as reading someone else's
+     *        document - a vendor's own elements - needs.
      *
      *  **Given a complete Binding (Binding::IsComplete), what the Writer wrote reads back exactly - or the Writer, or this
      *  Reader, throws BadFormatException, the value not being one the Binding describes: never anything in between** (but for

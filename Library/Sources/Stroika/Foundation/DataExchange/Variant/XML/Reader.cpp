@@ -44,12 +44,27 @@ using Memory::MakeSharedPtr;
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
 namespace {
     // whether the Binding names a member written as an element (or attribute) of that name - which the element then is, whatever
-    // else its name could make it (an item of an array)
+    // else its name could make it (an item of an array). A presence marker is an element
     bool NamesMember_ (const Binding* binding, Binding::Kind kind, const String& name)
     {
+        auto isElement = [] (Binding::Kind k) { return k == Binding::Kind::eElement or k == Binding::Kind::ePresenceMarker; };
         return binding != nullptr and binding->fMembers.Any ([&] (const Binding::Member& m) {
-            return binding->KindFor (m.fKey) == kind and binding->NameFor (m.fKey).fName == name;
+            Binding::Kind k = binding->KindFor (m.fKey);
+            return (isElement (kind) ? isElement (k) : k == kind) and binding->NameFor (m.fKey).fName == name;
         });
+    }
+
+    // what reading does with an element or attribute the Binding of the element it is in does not declare - and an array or a
+    // leaf the Binding declares has no members to declare
+    Binding::UndeclaredMembers UndeclaredIn_ (const Binding* binding)
+    {
+        if (binding == nullptr) {
+            return Binding::UndeclaredMembers::eKeep;
+        }
+        if (binding->fType and binding->fType != VariantValue::eMap) {
+            return Binding::UndeclaredMembers::eReject;
+        }
+        return binding->GetUndeclaredMembers ();
     }
 
     template <typename INT>
@@ -126,17 +141,18 @@ namespace {
         const Binding& fBinding; // the top level Binding - with an fName, the document element's own (@see Binding)
 
         struct Frame_ {
-            String           fElement;          // its local name
-            String           fKey;              // the member it is: its own name, unless a Binding renamed it
-            const Binding*   fBinding{nullptr}; // how its content differs from the default shape
-            const Binding*   fDefaultArrayItems{&Binding::kDefaultArrayItems}; // the item Binding, here, of an array with no fItems
-            bool             fIsItem{false};           // an item of the array the element it is in wraps - so not a member of it
-            bool             fIsRepeatedItem{false};   // one of a member's elements, repeated: a Binding says the member is an array
-            bool             fIsBoundArray{false};     // a Binding says it wraps an array - so it is one, however few items it has
-            bool             fHasChildElements{false}; // any child element - an array item or a member - not merely attributes
-            optional<String> fItemName;                // what the items of an array it wraps are called, where it may wrap one
-            const Binding*   fItemBinding{nullptr};    // ... and their Binding
-            StringBuilder<>  fText;
+            String         fElement;                                         // its local name
+            String         fKey;                                             // the member it is: its own name, unless a Binding renamed it
+            const Binding* fBinding{nullptr};                                // how its content differs from the default shape
+            const Binding* fDefaultArrayItems{&Binding::kDefaultArrayItems}; // the item Binding, here, of an array with no fItems
+            bool           fIsItem{false};           // an item of the array the element it is in wraps - so not a member of it
+            bool           fIsRepeatedItem{false};   // one of a member's elements, repeated: a Binding says the member is an array
+            bool           fIsBoundArray{false};     // a Binding says it wraps an array - so it is one, however few items it has
+            bool           fHasChildElements{false}; // any child element - an array item or a member - not merely attributes
+            bool fIsPresenceMarker{false}; // a presence marker (Binding::Kind::ePresenceMarker): an empty element, true by being there
+            optional<String>              fItemName;             // what the items of an array it wraps are called, where it may wrap one
+            const Binding*                fItemBinding{nullptr}; // ... and their Binding
+            StringBuilder<>               fText;
             Mapping<String, VariantValue> fChildren;
             Set<String>                   fRepeated;   // a name seen more than once, so fChildren holds its array
             Sequence<VariantValue>        fArrayItems; // its children named fItemName
@@ -144,9 +160,14 @@ namespace {
         vector<Frame_>         fStack;
         String                 fRootKey;
         optional<VariantValue> fRootValue;
+        unsigned int           fSkipDepth_{0}; // inside an element being skipped (Binding::UndeclaredMembers::eSkip): how deep
 
         virtual void StartElement (const Name& name, const Mapping<Name, String>& attributes) override
         {
+            if (fSkipDepth_ > 0) {
+                ++fSkipDepth_; // inside an element being skipped
+                return;
+            }
             // what an element is, its own Binding says - and what it is inside says which Binding that is
             Frame_         f;
             const Binding* ownBinding = nullptr;
@@ -179,11 +200,17 @@ namespace {
                     ownBinding = parent.fItemBinding;
                 }
                 else {
-                    // where the Binding declares what the parent is, it declares all the child elements it has: an object's
-                    // members, an array's items (above), a leaf none
-                    if (parent.fBinding != nullptr and parent.fBinding->fType and
-                        not(parent.fBinding->fType == VariantValue::eMap and NamesMember_ (parent.fBinding, Binding::Kind::eElement, name.fLocalName))) {
-                        Execution::Throw (BadFormatException{"<{}> is not an element its parent's Binding declares"_f(name.fLocalName)});
+                    // one its parent's Binding does not declare (an array's items are, above): as that Binding says
+                    if (not NamesMember_ (parent.fBinding, Binding::Kind::eElement, name.fLocalName)) {
+                        switch (UndeclaredIn_ (parent.fBinding)) {
+                            case Binding::UndeclaredMembers::eReject:
+                                Execution::Throw (BadFormatException{"<{}> is not an element its parent's Binding declares"_f(name.fLocalName)});
+                            case Binding::UndeclaredMembers::eSkip:
+                                fSkipDepth_ = 1; // it, and everything in it, unread
+                                return;
+                            case Binding::UndeclaredMembers::eKeep:
+                                break;
+                        }
                     }
                     f.fKey = parent.fBinding == nullptr ? name.fLocalName : parent.fBinding->KeyForName (Binding::Kind::eElement, name.fLocalName);
                     ownBinding = parent.fBinding == nullptr ? nullptr : parent.fBinding->MemberBinding (f.fKey);
@@ -200,7 +227,8 @@ namespace {
                         : ownBinding->fType == VariantValue::eArray ? f.fDefaultArrayItems
                                                                     : nullptr;
             }
-            f.fBinding = ownBinding;
+            f.fBinding          = ownBinding;
+            f.fIsPresenceMarker = ownBinding != nullptr and ownBinding->fKind == Binding::Kind::ePresenceMarker;
             if (items != nullptr and not items->fName) {
                 // items with no name of their own are the member's element, repeated: this is one of them, so the item
                 // Binding is what its content has
@@ -227,9 +255,16 @@ namespace {
             fStack.push_back (move (f));
             Frame_& top = fStack.back ();
             for (const auto& i : attributes) {
-                if (top.fBinding != nullptr and top.fBinding->fType and
-                    not(top.fBinding->fType == VariantValue::eMap and NamesMember_ (top.fBinding, Binding::Kind::eAttribute, i.fKey.fLocalName))) {
-                    Execution::Throw (BadFormatException{"<{}>'s attribute '{}' is not one its Binding declares"_f(name.fLocalName, i.fKey.fLocalName)});
+                if (not NamesMember_ (top.fBinding, Binding::Kind::eAttribute, i.fKey.fLocalName)) {
+                    switch (UndeclaredIn_ (top.fBinding)) {
+                        case Binding::UndeclaredMembers::eReject:
+                            Execution::Throw (BadFormatException{
+                                "<{}>'s attribute '{}' is not one its Binding declares"_f(name.fLocalName, i.fKey.fLocalName)});
+                        case Binding::UndeclaredMembers::eSkip:
+                            continue;
+                        case Binding::UndeclaredMembers::eKeep:
+                            break;
+                    }
                 }
                 String key = top.fBinding == nullptr ? i.fKey.fLocalName : top.fBinding->KeyForName (Binding::Kind::eAttribute, i.fKey.fLocalName);
                 const Binding* attrBinding = top.fBinding == nullptr ? nullptr : top.fBinding->MemberBinding (key);
@@ -239,12 +274,16 @@ namespace {
         }
         virtual void TextInsideElement (const String& text) override
         {
-            if (not fStack.empty ()) {
+            if (not fStack.empty () and fSkipDepth_ == 0) {
                 fStack.back ().fText << text;
             }
         }
         virtual void EndElement ([[maybe_unused]] const Name& name) override
         {
+            if (fSkipDepth_ > 0) {
+                --fSkipDepth_;
+                return;
+            }
             Require (not fStack.empty ());
             Frame_ f = move (fStack.back ());
             fStack.pop_back ();
@@ -295,6 +334,13 @@ namespace {
             String                       text      = f.fText.str ();
             bool                         textBlank = text.Trim ().empty ();
             optional<VariantValue::Type> declared  = f.fBinding == nullptr ? nullopt : f.fBinding->fType;
+            if (f.fIsPresenceMarker) {
+                // there, so true: it says so by being there, and says nothing else
+                if (not f.fChildren.empty () or f.fHasChildElements or not textBlank) {
+                    Execution::Throw (BadFormatException{"<{}> is a presence marker (Binding::Kind::ePresenceMarker), so an empty element"_f(f.fElement)});
+                }
+                return VariantValue{true};
+            }
             if (declared and *declared != VariantValue::eMap) {
                 // its Binding says what it is - and StartElement has let in no child element or attribute it does not declare
                 Assert (*declared == VariantValue::eArray or f.fChildren.empty ());
@@ -316,6 +362,14 @@ namespace {
                 // ... beside other members, or text: just a member
                 AddMember_ (f, *f.fItemName, VariantValue{f.fArrayItems});
                 f.fArrayItems.clear ();
+            }
+            // a presence marker its Binding declares, absent, is false - as a false one is written: as nothing
+            if (f.fBinding != nullptr) {
+                for (const Binding::Member& m : f.fBinding->fMembers) {
+                    if (f.fBinding->KindFor (m.fKey) == Binding::Kind::ePresenceMarker and not f.fChildren.ContainsKey (m.fKey)) {
+                        f.fChildren.Add (m.fKey, VariantValue{false});
+                    }
+                }
             }
             // a Binding may say this element's text is one of its members, beside its attributes - an empty one, where that member's
             // Binding declares its type, written as none, so absent

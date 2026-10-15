@@ -61,6 +61,12 @@ could an XSD or WSDL, where the order is normative rather than incidental.
 Namespaces are written as a default namespace (`xmlns=`), inherited by the elements inside - or with a prefix, where a
 Binding's `fNamespacePrefixes` declares one on its element, which an attribute in a namespace requires.
 
+Two things such schemas say that a VariantValue has no word for. A **presence marker**: a Boolean written as an empty element, there for
+true - UPnP's `<retval/>` (`Binding::Kind::ePresenceMarker`). And **what a document may hold that the Binding does not declare** - a
+vendor's own elements, an embedded `<deviceList>` nothing models: `fUndeclaredMembers` rejects it, skips it unread (as XSD's
+`xs:any processContents="skip"`), or keeps it as untyped members. Skipping is how a complete Binding reads documents from the
+field.
+
 ## Declaring types - a schema, not a guess
 
 **Declaring a value's type (`Binding::fType`) changes what the Writer and Reader do with it, a great deal.** With no type
@@ -75,7 +81,7 @@ throw `BadFormatException` on any other:
 | an empty element, read back | `""` (but `[]` where `fItems` is set) | `{}` for `eMap`, `[]` for `eArray` |
 | a null member, written | as an empty element: read back `""` | as none: read back absent |
 | another type's value, written | as it is (a leaf as its `As<String>`) | throws |
-| a member it does not name | written after those it names; read | throws, writing and reading |
+| a member it does not name | written after those it names; read | throws, writing and reading - unless `fUndeclaredMembers` says skip (reading) or keep |
 | a child named `<Array>`, read | an item, unless `fMembers` names it | an item only where `fType` is `eArray` |
 
 It is per Binding, so per value: a member of a declared object whose own Binding declares no type is still written and read

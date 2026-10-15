@@ -30,6 +30,12 @@ namespace {
         return t != VariantValue::eNull and t != VariantValue::eMap and t != VariantValue::eArray;
     }
 
+    // a member of this kind is written as one of its element's children (a presence marker is an empty one)
+    bool IsElement_ (Binding::Kind k)
+    {
+        return k == Binding::Kind::eElement or k == Binding::Kind::ePresenceMarker;
+    }
+
     // where a Binding sits, which decides what it may be: an array of repeated elements repeats its member's element inside the
     // object it is a member of - so as an array's item, or the document element, it has none to repeat
     enum class Place_ {
@@ -59,6 +65,9 @@ namespace {
                 if (b.fItems != nullptr) {
                     return "{}: an object (eMap) with fItems"_f(where);
                 }
+                if (b.fUndeclaredMembers == Binding::UndeclaredMembers::eKeep) {
+                    return "{}: keeps the members it does not declare (eKeep), untyped"_f(where);
+                }
                 Set<String> keys;
                 Set<String> elementNames;
                 Set<String> attributeNames;
@@ -78,7 +87,10 @@ namespace {
                     }
                     NameWithNamespace name = b.NameFor (m.fKey);
                     if (m.fBinding->fKind != Binding::Kind::eElement and not IsLeaf_ (*m.fBinding->fType)) {
-                        return "{}: an attribute or text that is not a leaf"_f(memberWhere);
+                        return "{}: an attribute, text or presence marker that is not a leaf"_f(memberWhere);
+                    }
+                    if (m.fBinding->fKind == Binding::Kind::ePresenceMarker and m.fBinding->fType != VariantValue::eBoolean) {
+                        return "{}: a presence marker (ePresenceMarker) that is not a Boolean"_f(memberWhere);
                     }
                     switch (m.fBinding->fKind) {
                         case Binding::Kind::eAttribute:
@@ -214,7 +226,7 @@ Binding::Kind Binding::KindFor (const String& key) const
 String Binding::KeyForName (Kind kind, const String& name) const
 {
     for (const Member& i : fMembers) {
-        if (KindFor (i.fKey) == kind and NameFor (i.fKey).fName == name) {
+        if ((IsElement_ (kind) ? IsElement_ (KindFor (i.fKey)) : KindFor (i.fKey) == kind) and NameFor (i.fKey).fName == name) {
             return i.fKey;
         }
     }
@@ -229,6 +241,11 @@ optional<String> Binding::TextMemberKey () const
         }
     }
     return nullopt;
+}
+
+auto Binding::GetUndeclaredMembers () const -> UndeclaredMembers
+{
+    return fUndeclaredMembers.value_or (fType ? UndeclaredMembers::eReject : UndeclaredMembers::eKeep);
 }
 
 bool Binding::IsComplete () const
@@ -254,7 +271,8 @@ optional<String> Binding::WhyIncomplete_ () const
 
 bool Binding::operator== (const Binding& rhs) const
 {
-    return fKind == rhs.fKind and fName == rhs.fName and fType == rhs.fType and fMembers == rhs.fMembers and SameBinding_ (fItems, rhs.fItems) and
+    return fKind == rhs.fKind and fName == rhs.fName and fType == rhs.fType and fMembers == rhs.fMembers and
+           fUndeclaredMembers == rhs.fUndeclaredMembers and SameBinding_ (fItems, rhs.fItems) and
            SameBinding_ (fDefaultArrayItems, rhs.fDefaultArrayItems) and fNamespacePrefixes == rhs.fNamespacePrefixes;
 }
 
@@ -274,6 +292,9 @@ String Binding::ToString_ (bool top) const
         case Kind::eText:
             sb << "text"sv;
             break;
+        case Kind::ePresenceMarker:
+            sb << "presence marker"sv;
+            break;
         default:
             sb << "element"sv;
             break;
@@ -286,6 +307,19 @@ String Binding::ToString_ (bool top) const
     }
     if (not fMembers.empty ()) {
         sb << ", Members: "sv << fMembers;
+    }
+    if (fUndeclaredMembers) {
+        switch (*fUndeclaredMembers) {
+            case UndeclaredMembers::eReject:
+                sb << ", UndeclaredMembers: reject"sv;
+                break;
+            case UndeclaredMembers::eSkip:
+                sb << ", UndeclaredMembers: skip"sv;
+                break;
+            case UndeclaredMembers::eKeep:
+                sb << ", UndeclaredMembers: keep"sv;
+                break;
+        }
     }
     if (fItems != nullptr) {
         sb << ", Items: "sv << fItems->ToString_ (false);

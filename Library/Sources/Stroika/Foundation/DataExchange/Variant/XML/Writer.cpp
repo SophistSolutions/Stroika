@@ -97,8 +97,10 @@ namespace {
             if (binding != nullptr) {
                 for (const Binding::Member& i : binding->fMembers) {
                     named.Add (i.fKey);
-                    if (binding->KindFor (i.fKey) == Binding::Kind::eElement) {
-                        if (optional<VariantValue> v = members.Lookup (i.fKey); v and not OmitNull_ (*v, binding->MemberBinding (i.fKey))) {
+                    if (Binding::Kind k = binding->KindFor (i.fKey); k == Binding::Kind::eElement or k == Binding::Kind::ePresenceMarker) {
+                        // a presence marker is written only where true (as an empty element): false, there is nothing to write
+                        if (optional<VariantValue> v = members.Lookup (i.fKey); v and not OmitNull_ (*v, binding->MemberBinding (i.fKey)) and
+                                                                                (k != Binding::Kind::ePresenceMarker or v->As<bool> ())) {
                             result.Append (Common::KeyValuePair<String, VariantValue>{i.fKey, *v});
                         }
                     }
@@ -185,8 +187,8 @@ namespace {
                     BindPrefix_ (&declare, i.fKey, i.fValue);
                 }
                 ThrowUnlessDeclaredType_ (name.fName, v, binding);
-                if (binding->fType == VariantValue::eMap) {
-                    // the members it declares are all the object has
+                if (v.GetType () == VariantValue::eMap and binding->GetUndeclaredMembers () != Binding::UndeclaredMembers::eKeep) {
+                    // the members it declares are all the object has - one it does not would not read back
                     for (const auto& i : v.As<Mapping<String, VariantValue>> ()) {
                         if (not binding->fMembers.Any ([&] (const Binding::Member& m) { return m.fKey == i.fKey; })) {
                             Execution::Throw (BadFormatException{"'{}' has a member '{}', which its Binding does not declare"_f(name.fName, i.fKey)});
@@ -281,6 +283,14 @@ namespace {
                         for (const auto& i : elements) {
                             const Binding*    memberBinding = binding == nullptr ? nullptr : binding->MemberBinding (i.fKey);
                             NameWithNamespace memberName    = binding == nullptr ? NameWithNamespace{i.fKey} : binding->NameFor (i.fKey);
+                            if (memberBinding != nullptr and memberBinding->fKind == Binding::Kind::ePresenceMarker) {
+                                // a presence marker ElementMembers_ gave is true: an empty element says so by being there
+                                Scope_ markerScope = scope;
+                                StartTag_ (memberName, {}, &markerScope, indentLevel + 1);
+                                fOut.Write ('>');
+                                EndTag_ (memberName, markerScope);
+                                continue;
+                            }
                             WriteElement (memberName, i.fValue, memberBinding, scope, indentLevel + 1);
                         }
                         Indent_ (indentLevel);
