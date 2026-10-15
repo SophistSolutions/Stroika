@@ -3,6 +3,10 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <charconv>
+#include <cmath>
+
+#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
@@ -13,9 +17,12 @@
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
+#include "Stroika/Foundation/Time/Date.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 
 #include "Reader.h"
 
@@ -36,13 +43,71 @@ using Memory::MakeSharedPtr;
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
 namespace {
-    // whether the Binding names a member written as an element of that name - which the element then is, whatever else its
-    // name could make it (an item of an array)
-    bool NamesElementMember_ (const Binding* binding, const String& elementName)
+    // whether the Binding names a member written as an element (or attribute) of that name - which the element then is, whatever
+    // else its name could make it (an item of an array)
+    bool NamesMember_ (const Binding* binding, Binding::Kind kind, const String& name)
     {
         return binding != nullptr and binding->fMembers.Any ([&] (const Binding::Member& m) {
-            return binding->KindFor (m.fKey) == Binding::Kind::eElement and binding->NameFor (m.fKey).fName == elementName;
+            return binding->KindFor (m.fKey) == kind and binding->NameFor (m.fKey).fName == name;
         });
+    }
+
+    template <typename INT>
+    optional<INT> ParseInteger_ (const String& text)
+    {
+        if (optional<string> s = text.AsASCIIQuietly ()) {
+            INT r{};
+            auto [ptr, ec] = from_chars (s->data (), s->data () + s->size (), r);
+            if (ec == errc{} and ptr == s->data () + s->size ()) {
+                return r;
+            }
+        }
+        return nullopt;
+    }
+
+    // text read back as the leaf type a Binding declares - throwing where it is not one, the document then not being what the
+    // Binding describes. Whitespace around a number, date or BLOB is dropped, as XML Schema collapses it
+    VariantValue AsDeclaredType_ (const String& text, VariantValue::Type type)
+    {
+        String trimmed = text.Trim ();
+        switch (type) {
+            case VariantValue::eString:
+                return VariantValue{text};
+            case VariantValue::eBoolean:
+                // as XML Schema's xs:boolean
+                if (trimmed == "true"sv or trimmed == "1"sv) {
+                    return VariantValue{true};
+                }
+                if (trimmed == "false"sv or trimmed == "0"sv) {
+                    return VariantValue{false};
+                }
+                break;
+            case VariantValue::eInteger:
+                if (optional<long long> i = ParseInteger_<long long> (trimmed)) {
+                    return VariantValue{*i};
+                }
+                break;
+            case VariantValue::eUnsignedInteger:
+                if (optional<unsigned long long> i = ParseInteger_<unsigned long long> (trimmed)) {
+                    return VariantValue{*i};
+                }
+                break;
+            case VariantValue::eFloat: {
+                long double d = FloatConversion::ToFloat<long double> (trimmed); // nan where it is not a number at all
+                if (not isnan (d) or trimmed.ToLowerCase ().Find ("nan"sv)) {
+                    return VariantValue{d};
+                }
+            } break;
+            case VariantValue::eDate:
+                return VariantValue{Time::Date::Parse (trimmed, Time::Date::kISO8601Format)};
+            case VariantValue::eDateTime:
+                return VariantValue{Time::DateTime::Parse (trimmed, Time::DateTime::kISO8601Format)};
+            case VariantValue::eBLOB:
+                return VariantValue{VariantValue{trimmed}.As<Memory::BLOB> ()}; // base64, as the Writer writes it
+            default:
+                break; // not a leaf
+        }
+        Execution::Throw (BadFormatException{"'{}' is not {}"_f(text, type)});
     }
 
     /*
@@ -58,9 +123,10 @@ namespace {
             : fBinding{binding}
         {
         }
-        const Binding& fBinding; // the document's - with an fName, the document element's own (@see Binding)
+        const Binding& fBinding; // the top level Binding - with an fName, the document element's own (@see Binding)
 
         struct Frame_ {
+            String           fElement;          // its local name
             String           fKey;              // the member it is: its own name, unless a Binding renamed it
             const Binding*   fBinding{nullptr}; // how its content differs from the default shape
             const Binding*   fDefaultArrayItems{&Binding::kDefaultArrayItems}; // the item Binding, here, of an array with no fItems
@@ -84,6 +150,7 @@ namespace {
             // what an element is, its own Binding says - and what it is inside says which Binding that is
             Frame_         f;
             const Binding* ownBinding = nullptr;
+            f.fElement                = name.fLocalName;
             if (fStack.empty ()) {
                 if (fBinding.fName) {
                     // it names the document element, so it is that element's - and a document element of another name is not what
@@ -96,7 +163,7 @@ namespace {
                 }
                 else {
                     // the document element is the value's one member, so its key and Binding are that member's
-                    f.fKey     = fBinding.KeyForName (name.fLocalName);
+                    f.fKey     = fBinding.KeyForName (Binding::Kind::eElement, name.fLocalName);
                     ownBinding = fBinding.MemberBinding (f.fKey);
                     if (fBinding.fDefaultArrayItems != nullptr) {
                         f.fDefaultArrayItems = fBinding.fDefaultArrayItems.get ();
@@ -106,29 +173,46 @@ namespace {
             else {
                 const Frame_& parent = fStack.back ();
                 f.fDefaultArrayItems = parent.fDefaultArrayItems;
-                if (parent.fItemName and name.fLocalName == *parent.fItemName and not NamesElementMember_ (parent.fBinding, name.fLocalName)) {
+                if (parent.fItemName and name.fLocalName == *parent.fItemName and
+                    not NamesMember_ (parent.fBinding, Binding::Kind::eElement, name.fLocalName)) {
                     f.fIsItem  = true;
                     ownBinding = parent.fItemBinding;
                 }
                 else {
-                    f.fKey     = parent.fBinding == nullptr ? name.fLocalName : parent.fBinding->KeyForName (name.fLocalName);
+                    // where the Binding declares what the parent is, it declares all the child elements it has: an object's
+                    // members, an array's items (above), a leaf none
+                    if (parent.fBinding != nullptr and parent.fBinding->fType and
+                        not(parent.fBinding->fType == VariantValue::eMap and NamesMember_ (parent.fBinding, Binding::Kind::eElement, name.fLocalName))) {
+                        Execution::Throw (BadFormatException{"<{}> is not an element its parent's Binding declares"_f(name.fLocalName)});
+                    }
+                    f.fKey = parent.fBinding == nullptr ? name.fLocalName : parent.fBinding->KeyForName (Binding::Kind::eElement, name.fLocalName);
                     ownBinding = parent.fBinding == nullptr ? nullptr : parent.fBinding->MemberBinding (f.fKey);
                 }
-            }
-            f.fBinding = ownBinding;
-            if (ownBinding != nullptr and ownBinding->fItems != nullptr and not ownBinding->fItems->fName) {
-                // items with no name of their own are the member's element, repeated: this is one of them, so the item
-                // Binding is what its content has
-                f.fIsRepeatedItem = true;
-                f.fBinding        = ownBinding->fItems.get ();
             }
             if (ownBinding != nullptr and ownBinding->fDefaultArrayItems != nullptr) {
                 f.fDefaultArrayItems = ownBinding->fDefaultArrayItems.get ();
             }
+            // its items' Binding, where its own says it is an array: fItems - else, where it declares an array, the default items
+            // in scope, as the Writer takes them
+            const Binding* items = nullptr;
+            if (ownBinding != nullptr) {
+                items = ownBinding->fItems != nullptr               ? ownBinding->fItems.get ()
+                        : ownBinding->fType == VariantValue::eArray ? f.fDefaultArrayItems
+                                                                    : nullptr;
+            }
+            f.fBinding = ownBinding;
+            if (items != nullptr and not items->fName) {
+                // items with no name of their own are the member's element, repeated: this is one of them, so the item
+                // Binding is what its content has
+                f.fIsRepeatedItem = true;
+                f.fBinding        = items;
+            }
             if (f.fBinding != ownBinding and f.fBinding->fDefaultArrayItems != nullptr) {
                 f.fDefaultArrayItems = f.fBinding->fDefaultArrayItems.get ();
             }
-            // what the items of an array it wraps are called: as its Binding says, else as the default array items in scope do
+            // what the items of an array it wraps are called: as its Binding says, else as the default array items in scope do -
+            // and none, where its Binding declares an object or a leaf
+            bool declaresNoArray = f.fBinding != nullptr and f.fBinding->fType and f.fBinding->fType != VariantValue::eArray;
             if (f.fBinding != nullptr and f.fBinding->fItems != nullptr) {
                 if (f.fBinding->fItems->fName) {
                     f.fIsBoundArray = true;
@@ -136,14 +220,21 @@ namespace {
                     f.fItemBinding  = f.fBinding->fItems.get ();
                 }
             }
-            else if (f.fDefaultArrayItems->fName) {
+            else if (f.fDefaultArrayItems->fName and not declaresNoArray) {
                 f.fItemName    = f.fDefaultArrayItems->fName->fName;
                 f.fItemBinding = f.fDefaultArrayItems;
             }
             fStack.push_back (move (f));
             Frame_& top = fStack.back ();
             for (const auto& i : attributes) {
-                AddMember_ (top, top.fBinding == nullptr ? i.fKey.fLocalName : top.fBinding->KeyForName (i.fKey.fLocalName), VariantValue{i.fValue});
+                if (top.fBinding != nullptr and top.fBinding->fType and
+                    not(top.fBinding->fType == VariantValue::eMap and NamesMember_ (top.fBinding, Binding::Kind::eAttribute, i.fKey.fLocalName))) {
+                    Execution::Throw (BadFormatException{"<{}>'s attribute '{}' is not one its Binding declares"_f(name.fLocalName, i.fKey.fLocalName)});
+                }
+                String key = top.fBinding == nullptr ? i.fKey.fLocalName : top.fBinding->KeyForName (Binding::Kind::eAttribute, i.fKey.fLocalName);
+                const Binding* attrBinding = top.fBinding == nullptr ? nullptr : top.fBinding->MemberBinding (key);
+                AddMember_ (top, key,
+                            attrBinding != nullptr and attrBinding->fType ? AsDeclaredType_ (i.fValue, *attrBinding->fType) : VariantValue{i.fValue});
             }
         }
         virtual void TextInsideElement (const String& text) override
@@ -181,10 +272,15 @@ namespace {
                 AddMember_ (parent, f.fKey, v);
             }
         }
-        // a member - and a name seen again makes it the array of them, in document order
+        // a member - and a name seen again makes it the array of them, in document order; but not where the element's Binding
+        // declares its type, which says what each member is (one its own Binding says is an array, its element repeated, is not
+        // added here: EndElement)
         void AddMember_ (Frame_& f, const String& key, const VariantValue& v)
         {
             if (optional<VariantValue> already = f.fChildren.Lookup (key)) {
+                if (f.fBinding != nullptr and f.fBinding->fType) {
+                    Execution::Throw (BadFormatException{"<{}> has '{}' more than once, where its Binding declares one"_f(f.fElement, key)});
+                }
                 Sequence<VariantValue> items = f.fRepeated.Contains (key) ? already->As<Sequence<VariantValue>> () : Sequence<VariantValue>{*already};
                 items.Append (v);
                 f.fChildren.Add (key, VariantValue{items});
@@ -196,7 +292,20 @@ namespace {
         }
         VariantValue ValueOf_ (Frame_& f)
         {
-            bool textBlank = f.fText.str ().Trim ().empty ();
+            String                       text      = f.fText.str ();
+            bool                         textBlank = text.Trim ().empty ();
+            optional<VariantValue::Type> declared  = f.fBinding == nullptr ? nullopt : f.fBinding->fType;
+            if (declared and *declared != VariantValue::eMap) {
+                // its Binding says what it is - and StartElement has let in no child element or attribute it does not declare
+                Assert (*declared == VariantValue::eArray or f.fChildren.empty ());
+                if (*declared == VariantValue::eArray) {
+                    if (not f.fChildren.empty () or not textBlank) {
+                        Execution::Throw (BadFormatException{"<{}> is not an array, as its Binding declares"_f(f.fElement)});
+                    }
+                    return VariantValue{f.fArrayItems}; // [] where it is empty
+                }
+                return AsDeclaredType_ (text, *declared);
+            }
             if (f.fIsBoundArray and f.fChildren.empty () and textBlank) {
                 return VariantValue{f.fArrayItems}; // a Binding says it is an array, so it is one - of no items, if it is empty
             }
@@ -208,13 +317,23 @@ namespace {
                 AddMember_ (f, *f.fItemName, VariantValue{f.fArrayItems});
                 f.fArrayItems.clear ();
             }
-            // a Binding may say this element's text is one of its members, beside its attributes
+            // a Binding may say this element's text is one of its members, beside its attributes - an empty one, where that member's
+            // Binding declares its type, written as none, so absent
             if (optional<String> textKey = f.fBinding == nullptr ? nullopt : f.fBinding->TextMemberKey ()) {
-                f.fChildren.Add (*textKey, VariantValue{f.fText.str ()});
+                const Binding* textBinding = f.fBinding->MemberBinding (*textKey);
+                if (textBinding == nullptr or not textBinding->fType) {
+                    f.fChildren.Add (*textKey, VariantValue{text});
+                }
+                else if (not text.empty ()) {
+                    f.fChildren.Add (*textKey, AsDeclaredType_ (text, *textBinding->fType));
+                }
                 return VariantValue{f.fChildren};
             }
-            if (f.fChildren.empty ()) {
-                return VariantValue{f.fText.str ()}; // text, kept as it came: XML whitespace is significant
+            if (f.fChildren.empty () and declared != VariantValue::eMap) {
+                return VariantValue{text}; // text, kept as it came: XML whitespace is significant
+            }
+            if (f.fChildren.empty () and not textBlank) {
+                Execution::Throw (BadFormatException{"<{}> has text, where its Binding declares an object"_f(f.fElement)});
             }
             if (not textBlank) {
                 // text this shape cannot hold, which reading on would silently drop - so say so, rather than lose it (it comes

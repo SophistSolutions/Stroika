@@ -29,31 +29,11 @@ using namespace Stroika::Foundation::Streams;
 using Memory::MakeSharedPtr;
 
 namespace {
-    // XML 1.0's NameStartChar and NameChar (https://www.w3.org/TR/xml/#NT-NameStartChar), less ':' - so an NCName
-    // (https://www.w3.org/TR/xml-names/#NT-NCName), as a local name and a prefix must each be
-    constexpr bool IsNCNameStartChar_ (char32_t c)
-    {
-        return (c >= 'A' and c <= 'Z') or c == '_' or (c >= 'a' and c <= 'z') or (c >= 0xC0 and c <= 0xD6) or (c >= 0xD8 and c <= 0xF6) or
-               (c >= 0xF8 and c <= 0x2FF) or (c >= 0x370 and c <= 0x37D) or (c >= 0x37F and c <= 0x1FFF) or (c >= 0x200C and c <= 0x200D) or
-               (c >= 0x2070 and c <= 0x218F) or (c >= 0x2C00 and c <= 0x2FEF) or (c >= 0x3001 and c <= 0xD7FF) or
-               (c >= 0xF900 and c <= 0xFDCF) or (c >= 0xFDF0 and c <= 0xFFFD) or (c >= 0x10000 and c <= 0xEFFFF);
-    }
-    constexpr bool IsNCNameChar_ (char32_t c)
-    {
-        return IsNCNameStartChar_ (c) or c == '-' or c == '.' or (c >= '0' and c <= '9') or c == 0xB7 or (c >= 0x300 and c <= 0x36F) or
-               (c >= 0x203F and c <= 0x2040);
-    }
     // a name comes from data - a member's key - as often as from a Binding, and one that is not an XML name would be written
     // as malformed XML, which nothing could read back
     void ThrowUnlessNCName_ (const String& name)
     {
-        bool ok    = not name.empty ();
-        bool first = true;
-        for (Character c : name) {
-            ok    = ok and (first ? IsNCNameStartChar_ (c.GetCharacterCode ()) : IsNCNameChar_ (c.GetCharacterCode ()));
-            first = false;
-        }
-        if (not ok) {
+        if (not IsNCName (name)) {
             Execution::Throw (BadFormatException{L"'{}' is not an XML name, so cannot be written as one"_f(name)});
         }
     }
@@ -95,6 +75,19 @@ namespace {
             prefixes->RemoveAll ([&] (const Common::KeyValuePair<URI, String>& i) { return i.fValue == prefix; });
             prefixes->Add (ns, prefix);
         }
+        // a member whose Binding declares its type is written as no member at all where it is null (as ObjectVariantMapper omits
+        // a null field) - so it reads back absent
+        static bool OmitNull_ (const VariantValue& v, const Binding* memberBinding)
+        {
+            return v.GetType () == VariantValue::eNull and memberBinding != nullptr and memberBinding->fType;
+        }
+        // where a Binding declares a type, the value has that type - v is data, not code, so this throws
+        static void ThrowUnlessDeclaredType_ (const String& name, const VariantValue& v, const Binding* binding)
+        {
+            if (binding != nullptr and binding->fType and v.GetType () != *binding->fType) {
+                Execution::Throw (BadFormatException{"'{}' is {}, where its Binding declares {}"_f(name, v.GetType (), *binding->fType)});
+            }
+        }
         // an object's members written as child elements, in the Binding's order - then any it does not name, as the value
         // gives them
         Sequence<Common::KeyValuePair<String, VariantValue>> ElementMembers_ (const Mapping<String, VariantValue>& members, const Binding* binding)
@@ -105,7 +98,7 @@ namespace {
                 for (const Binding::Member& i : binding->fMembers) {
                     named.Add (i.fKey);
                     if (binding->KindFor (i.fKey) == Binding::Kind::eElement) {
-                        if (optional<VariantValue> v = members.Lookup (i.fKey)) {
+                        if (optional<VariantValue> v = members.Lookup (i.fKey); v and not OmitNull_ (*v, binding->MemberBinding (i.fKey))) {
                             result.Append (Common::KeyValuePair<String, VariantValue>{i.fKey, *v});
                         }
                     }
@@ -177,7 +170,7 @@ namespace {
             fOut.Write ('>');
             NewLine_ ();
         }
-        // the element for a member (or the document's) - binding nullptr for the default shape. outer is what the element it
+        // the element for a member (or the document element) - binding nullptr for the default shape. outer is what the element it
         // is inside has in scope, and alsoDeclare prefixes in scope that no element has declared yet
         void WriteElement (const NameWithNamespace& name, const VariantValue& v, const Binding* binding, const Scope_& outer,
                            int indentLevel, const Mapping<URI, String>& alsoDeclare = {})
@@ -190,6 +183,15 @@ namespace {
                 }
                 for (const auto& i : binding->fNamespacePrefixes) {
                     BindPrefix_ (&declare, i.fKey, i.fValue);
+                }
+                ThrowUnlessDeclaredType_ (name.fName, v, binding);
+                if (binding->fType == VariantValue::eMap) {
+                    // the members it declares are all the object has
+                    for (const auto& i : v.As<Mapping<String, VariantValue>> ()) {
+                        if (not binding->fMembers.Any ([&] (const Binding::Member& m) { return m.fKey == i.fKey; })) {
+                            Execution::Throw (BadFormatException{"'{}' has a member '{}', which its Binding does not declare"_f(name.fName, i.fKey)});
+                        }
+                    }
                 }
             }
             if (v.GetType () == VariantValue::eArray) {
@@ -231,8 +233,11 @@ namespace {
                 if (binding != nullptr) {
                     for (const Binding::Member& i : binding->fMembers) {
                         optional<VariantValue> mv = members.Lookup (i.fKey);
-                        if (not mv) {
+                        if (not mv or OmitNull_ (*mv, i.fBinding.get ())) {
                             continue;
+                        }
+                        if (binding->KindFor (i.fKey) != Binding::Kind::eElement) {
+                            ThrowUnlessDeclaredType_ (i.fKey, *mv, i.fBinding.get ()); // an element member's, WriteElement checks
                         }
                         switch (binding->KindFor (i.fKey)) {
                             case Binding::Kind::eAttribute: {
@@ -340,9 +345,9 @@ public:
             w.WriteElement (*binding.fName, v, &binding, document, 0);
         }
         else {
-            // no name: the value's one member is the document element - so the Binding is the document's, its default array items
-            // in scope there, and its prefixes declared there. A document has exactly one root element; a value with no single
-            // member to be it throws, as any value that cannot be written does - it is data, not code
+            // no name: the value's one member is the document element, and the top level Binding describes the value - so its default
+            // array items are in scope there, and its prefixes declared there. A document has exactly one root element; a value
+            // with no single member to be it throws, as any value that cannot be written does - it is data, not code
             Mapping<String, VariantValue> members;
             if (v.GetType () == VariantValue::eMap) {
                 members = v.As<Mapping<String, VariantValue>> ();

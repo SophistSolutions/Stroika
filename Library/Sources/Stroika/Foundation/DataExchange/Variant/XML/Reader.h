@@ -25,15 +25,23 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  \brief Read XML as a VariantValue - the inverse of Variant::XML::Writer, whose documentation has the shape
      *
      *  An element with child elements reads as an object, one with only text as that text, and children of one name as an
-     *  array. **Every leaf reads as a String**: XML says nothing of types, and VariantValue::As (so ObjectVariantMapper's
-     *  ToObject) coerces. An attribute reads as a member too, by its name, so reading a document of someone else's drops
-     *  nothing silently - as does a Binding, which says which members are attributes, what they are named, and which
-     *  are arrays however few elements a document happens to have.
+     *  array. An attribute reads as a member too, by its name, so reading a document of someone else's drops nothing
+     *  silently. A Binding says the rest: which members are attributes, what they are named, which are arrays however few
+     *  elements a document has - and (Binding::fType) what type each value is.
      *
-     *  So what the Writer wrote reads back with every leaf its As<String> (3 as "3", true as "true"), and an empty element as
-     *  "" - which is what null, {} and an empty array of `<Array>`s are all written as. A Binding saying a member is an array
-     *  (fItems naming its items) reads its empty element back as []; an empty array written as the member's element repeated
-     *  is no element at all, so reads back absent.
+     *  **Whether the Binding declares a value's type changes how it reads, a great deal** (Binding::fType's table):
+     *      - **No type declared** - the default - XML says nothing of one, so this guesses: **a leaf reads back as a String**
+     *        (3 as "3", true as "true" - VariantValue::As, so ObjectVariantMapper's ToObject, coerces), an empty element as ""
+     *        (which is what null, {} and an empty array of `<Array>`s are all written as), and an element it does not name as a
+     *        member, by its name. A Binding saying a member is an array (fItems naming its items) reads its empty element back
+     *        as []; an empty array written as the member's element repeated is no element at all, so reads back absent.
+     *      - **A type declared**: the value reads back as that type - 3 as 3, an empty object as {}, an empty array as [] - and
+     *        a document that is not of that type (text that is not a number, an element or attribute the Binding does not
+     *        declare, a member repeated that it declares as one value) throws BadFormatException.
+     *
+     *  **Given a complete Binding (Binding::IsComplete), what the Writer wrote reads back exactly - or the Writer, or this
+     *  Reader, throws BadFormatException, the value not being one the Binding describes: never anything in between** (but for
+     *  what XML writes as nothing - @see Binding::IsComplete).
      *
      *  Give it the Binding the Writer was given. With the default - no Binding::fName - the document element is the value's one
      *  member, so its name is kept: `<a><b>1</b></a>` reads as `{"a": {"b": "1"}}`. A Binding with an fName reads the document

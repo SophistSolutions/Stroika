@@ -16,6 +16,41 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
 
+namespace {
+    // XML 1.0's NameStartChar and NameChar (https://www.w3.org/TR/xml/#NT-NameStartChar), less ':' - ranges of code points
+    constexpr bool IsNCNameStartChar_ (Character ch)
+    {
+        char32_t c = ch.GetCharacterCode ();
+        return (c >= 'A' and c <= 'Z') or c == '_' or (c >= 'a' and c <= 'z') or (c >= 0xC0 and c <= 0xD6) or (c >= 0xD8 and c <= 0xF6) or
+               (c >= 0xF8 and c <= 0x2FF) or (c >= 0x370 and c <= 0x37D) or (c >= 0x37F and c <= 0x1FFF) or (c >= 0x200C and c <= 0x200D) or
+               (c >= 0x2070 and c <= 0x218F) or (c >= 0x2C00 and c <= 0x2FEF) or (c >= 0x3001 and c <= 0xD7FF) or
+               (c >= 0xF900 and c <= 0xFDCF) or (c >= 0xFDF0 and c <= 0xFFFD) or (c >= 0x10000 and c <= 0xEFFFF);
+    }
+    constexpr bool IsNCNameChar_ (Character ch)
+    {
+        char32_t c = ch.GetCharacterCode ();
+        return IsNCNameStartChar_ (ch) or c == '-' or c == '.' or (c >= '0' and c <= '9') or c == 0xB7 or (c >= 0x300 and c <= 0x36F) or
+               (c >= 0x203F and c <= 0x2040);
+    }
+}
+
+/*
+ ********************************************************************************
+ ************************************ IsNCName **********************************
+ ********************************************************************************
+ */
+bool XML::IsNCName (const String& s)
+{
+    bool first = true;
+    for (Character c : s) {
+        if (not(first ? IsNCNameStartChar_ (c) : IsNCNameChar_ (c))) {
+            return false;
+        }
+        first = false;
+    }
+    return not s.empty ();
+}
+
 /*
  ********************************************************************************
  ****************************** QuoteForXMLAttribute ****************************

@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/DataExchange/XML/Namespace.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 
@@ -30,29 +31,31 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
 
     /**
      *  \brief How a VariantValue is to be written as XML, and read back, where the default shape (@see Variant::XML::Writer) is
-     *         not what is wanted - an attribute rather than an element, a namespace, a name of its own, an order of its own
+     *         not what is wanted (e.g. an attribute rather than an element, a namespace, a name of its own, an order of its own)
      *
      *  A Binding mirrors the shape of the value it goes with: an object's members are fMembers, **in the order XML wants them**
      *  (an element's children are an ordered list, and xs:sequence is XSD's normal idiom, while a VariantValue object has no
      *  order); each item of an array is fItems. Nothing is required - a member fMembers does not name keeps the default shape,
      *  and is written after those it does - so a Binding need say only how its value differs.
      *
-     *  **A complete Binding maps ANY value of the shape it describes, both ways, whatever values it holds** - as an XSD or a
-     *  WSDL does. Complete means it leaves nothing to the default shape: every member of every object is named in its fMembers,
-     *  written with a local name no other member of that object has, and every array has fItems. A Binding that leaves things
-     *  to defaults is shorter, and particular values can then collide with them (a member keyed "Array" reads back as an
-     *  array's item) - the price of the short Binding, not a bug.
+     *  **Declaring a value's type (fType) changes what the Writer and Reader do with it, a great deal** - fType's table says
+     *  how: with no type declared they take any value, and guess at any document; with one, they read back that type, and throw
+     *  on anything else.
      *
-     *  \note Not yet so, even of a complete Binding: every leaf reads back as a String (types:
-     *        https://github.com/SophistSolutions/Stroika/issues/1217); null and {} read back as ""; and an empty array of
-     *        repeated elements reads back as no member at all.
+     *  **Given a complete Binding (IsComplete), the Writer and Reader round-trip a VariantValue faithfully, or throw
+     *  BadFormatException because the value is not one the Binding describes - never anything in between**: nothing guessed,
+     *  nothing silently lost, whatever values it holds - as an XSD or a WSDL does. A complete Binding declares every value's
+     *  type, and leaves nothing to the default shape. The one exception is what XML writes as nothing, read back absent (@see
+     *  IsComplete). A Binding that leaves things to defaults is shorter, and particular values can then collide with them (a
+     *  member keyed "Array" reads back as an array's item) - the price of the short Binding, not a bug.
      *
-     *  The Binding a Reader or Writer is given is the document's. With an fName, that names the document element, and the value
-     *  is its content (reading a document element of another name throws BadFormatException). With none, the value is an object
-     *  of exactly one member, and that member is the document element - named, and bound, as any other member is (writing any
-     *  other value throws BadFormatException).
+     *  **The top level Binding** - the one a Reader or Writer is given - describes the whole document; those inside it (fMembers,
+     *  fItems) each describe a part of it. With an fName, the top level Binding names the document element, and the value is its
+     *  content (reading a document element of another name throws BadFormatException). With none, the value is an object of
+     *  exactly one member, and that member is the document element - named, and bound, as any other member is (writing any other
+     *  value throws BadFormatException).
      *
-     *  Anything may produce one: written by hand, as below; generated from an ObjectVariantMapper, which knows a type's field
+     *  Anything may produce a Binding: written by hand, as below; generated from an ObjectVariantMapper, which knows a type's field
      *  names and their declaration order (https://github.com/SophistSolutions/Stroika/issues/1217); or taken from a schema of
      *  someone else's, an XSD or a WSDL, where the order is normative rather than incidental.
      *
@@ -114,10 +117,40 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
         Kind fKind{Kind::eElement};
 
         /**
-         *  The element's (or attribute's) name, where that is not the member's own key - and its namespace. On the document's
-         *  Binding, the document element's.
+         *  The element's (or attribute's) name, where that is not the member's own key - and its namespace. On the top level Binding,
+         *  the document element's.
          */
         optional<NameWithNamespace> fName;
+
+        /**
+         *  The type of the value this Binding goes with - nullopt (the default) leaving it to the value.
+         *
+         *  **Declaring it changes what the Writer and Reader do, and a great deal.** With none, a Binding says only how a value
+         *  is written: the Writer takes any value, and the Reader any document, guessing its shape. Declared, it also says which
+         *  values there may be - as an XSD does - and the Writer and Reader throw BadFormatException on any other:
+         *
+         *  |                               | fType nullopt - the default         | fType declared                     |
+         *  |-------------------------------|-------------------------------------|------------------------------------|
+         *  | a leaf, read back             | a String: 3 as "3"                  | that type: 3 as 3                  |
+         *  | text not of its type, read    | - (every leaf reads as a String)    | throws                             |
+         *  | an empty element, read back   | "" (but [] where fItems is set)     | {} for eMap, [] for eArray         |
+         *  | a null member, written        | as an empty element: read back ""   | as none: read back absent          |
+         *  | another type's value, written | as it is (a leaf as its As<String>) | throws                             |
+         *  | a member it does not name     | written after those it names; read  | throws, writing and reading        |
+         *  | a child named <Array>, read   | an item, unless fMembers names it   | an item only where fType is eArray |
+         *
+         *  A null member is written as none as ObjectVariantMapper omits a null field. Per Binding, so per value: a member of a
+         *  declared object whose own Binding declares no type is still written and read the first way. A Binding declaring the
+         *  type of every value in it, and leaving nothing else to the default shape, is complete (@see IsComplete).
+         *
+         *  @todo An eMap OPEN to members it does not declare (XSD's xs:any, JSON Schema's additionalProperties), if a need
+         *        appears. Extra members left to the default shape could never be complete - their types lost, their names free
+         *        to collide. The likely need is a dictionary (a Mapping<String, T> field, which a Binding generated from an
+         *        ObjectVariantMapper will meet - https://github.com/SophistSolutions/Stroika/issues/1217): every extra member of
+         *        ONE declared Binding. That can be complete only with its keys written as data, not as element names (a key
+         *        need not be an XML name) - entries, as <e key="k">v</e>.
+         */
+        optional<VariantValue::Type> fType;
 
         /**
          *  This object's members, in the order to write them. A member of the value that is not named here is written after
@@ -259,15 +292,51 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
         nonvirtual Kind KindFor (const String& key) const;
 
         /**
-         *  \brief Reading: the key of the member written with that element (or attribute) name - the name itself, where no
-         *         member was given a name of its own
+         *  \brief Reading: the key of the member of that kind (an element or an attribute) written with that local name - the
+         *         name itself, where no such member is named
+         *
+         *  By kind, as an element and an attribute may have the same name.
          */
-        nonvirtual String KeyForName (const String& elementName) const;
+        nonvirtual String KeyForName (Kind kind, const String& name) const;
 
         /**
          *  \brief Reading: the key of the member that is this element's text, if one is
          */
         nonvirtual optional<String> TextMemberKey () const;
+
+        /**
+         *  \brief Whether, given this Binding as the top level Binding (the one a Reader or Writer is given), the Writer and Reader
+         *         round-trip every VariantValue faithfully, or throw - never anything in between
+         *
+         *  **Given a complete Binding, writing a VariantValue and reading it back gives that value - or throws
+         *  BadFormatException, the value not being one the Binding describes.** The Writer throws on a value of another type,
+         *  or with a member the Binding does not declare; the Reader, on a document not of the Binding's type (an element or
+         *  attribute it does not declare, a member repeated that it declares as one value, text that is not of its type).
+         *  Nothing is guessed, and nothing silently lost - but for what XML writes as nothing (below).
+         *
+         *  Complete means it leaves nothing to the default shape, or to the value:
+         *      - it names the document element (fName), and each Binding in it declares fType
+         *      - each member of an object (fMembers) has a Binding, and is written with an XML name no other element member - or,
+         *        for an attribute, no other attribute - of that object has (by local name, as the Reader matches them)
+         *      - each array has fItems; an array whose items are its member's element repeated is an object's member (not an
+         *        array's item, nor the document element)
+         *      - attributes and text are leaves, a text member is beside attributes only, and an attribute in a namespace has a
+         *        prefix (fNamespacePrefixes) in scope
+         *
+         *  The one exception, by design: XML has no way to write a null member, an empty array of repeated elements, or a text
+         *  member (Kind::eText) whose text is empty - an empty string or BLOB - but as nothing, so each reads back absent. (As
+         *  ObjectVariantMapper omits a null field anyway, and reads an absent one as its default.)
+         *
+         *  A Binding generated from a type's declaration (an ObjectVariantMapper's -
+         *  https://github.com/SophistSolutions/Stroika/issues/1217) can be complete by construction; one written by hand may
+         *  instead be short, leaving the rest to the default shape. ToString () says which - and, where it is not complete, why.
+         *
+         *  @todo NOT YET SO of a string holding a character the XML escaping gets wrong - a bug, silently changing it: CR (read
+         *        back as LF), tab or LF in an attribute (read back as a space). And the Reader, not the Writer, throws on another
+         *        control character (written as a reference XML 1.0 does not allow), and on Windows on a character outside the BMP
+         *        (written as two surrogate references) - which should round-trip.
+         */
+        nonvirtual bool IsComplete () const;
 
         /**
          *  \brief Equal where every field is - fItems and fDefaultArrayItems by the Bindings they point to, not the pointers
@@ -278,6 +347,12 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+
+    private:
+        // why this Binding, as the top level Binding, is not complete - the first thing found; nullopt where it is
+        nonvirtual optional<String> WhyIncomplete_ () const;
+        // with whether it is complete only where top: a Binding inside another is not the top level one
+        nonvirtual String ToString_ (bool top) const;
     };
 
 }

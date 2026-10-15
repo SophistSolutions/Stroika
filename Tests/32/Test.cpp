@@ -5,6 +5,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
+#include <random>
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/Format.h"
@@ -1254,7 +1255,7 @@ namespace {
                        "        <u:GetStatus xmlns:u=\"urn:schemas-upnp-org:service:SwitchPower:1\"></u:GetStatus>\n"
                        "    </s:Body>\n"
                        "</s:Envelope>\n"sv);
-            // with no document element named, the document's prefixes are declared on the one element it has
+            // with no document element named, the top level Binding's prefixes are declared on the one element it has
             const Binding document{.fMembers           = {{"Envelope"sv, Binding{.fName = NameWithNamespace{kSOAP_, "Envelope"sv}}}},
                                    .fNamespacePrefixes = {{kSOAP_, "s"sv}}};
             EXPECT_EQ (written (VariantValue{VVMap{{"Envelope"sv, VariantValue{""sv}}}}, document),
@@ -1555,6 +1556,428 @@ namespace {
             VariantValue withArray{VVMap{{"x"sv, VariantValue{VVMap{{"Array"sv, VariantValue{"1"sv}},
                                                                     {"list"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}}}}}}}}};
             EXPECT_EQ (roundTrip (withArray, named), withArray);
+        }
+    }
+}
+
+namespace {
+    using DataExchange::Variant::XML::Binding;
+
+    // equal, and of the same type all the way down - VariantValue's == calls 3 and "3" equal (it compares them Normalize ()d)
+    bool SameTyped_ (const VariantValue& a, const VariantValue& b)
+    {
+        if (a.GetType () != b.GetType ()) {
+            return false;
+        }
+        switch (a.GetType ()) {
+            case VariantValue::eArray: {
+                Sequence<VariantValue> l = a.As<Sequence<VariantValue>> ();
+                Sequence<VariantValue> r = b.As<Sequence<VariantValue>> ();
+                if (l.size () != r.size ()) {
+                    return false;
+                }
+                for (size_t i = 0; i < l.size (); ++i) {
+                    if (not SameTyped_ (l[i], r[i])) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            case VariantValue::eMap: {
+                Mapping<String, VariantValue> l = a.As<Mapping<String, VariantValue>> ();
+                Mapping<String, VariantValue> r = b.As<Mapping<String, VariantValue>> ();
+                if (l.size () != r.size ()) {
+                    return false;
+                }
+                for (const auto& i : l) {
+                    optional<VariantValue> o = r.Lookup (i.fKey);
+                    if (not o or not SameTyped_ (i.fValue, *o)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            default:
+                return a == b;
+        }
+    }
+
+    /*
+     *  Random complete Bindings, and random values of the type each declares - so that what IsComplete promises (every such value
+     *  read back exactly as written) is tested over many Bindings and values, not only the few written out by hand. Seeded, so a
+     *  failure repeats.
+     */
+    struct CompleteBindings_ {
+        mt19937      fRandom;
+        unsigned int fNextName{0};
+
+        explicit CompleteBindings_ (unsigned int seed)
+            : fRandom{seed}
+        {
+        }
+
+        unsigned int Pick (size_t n)
+        {
+            return uniform_int_distribution<unsigned int>{0, static_cast<unsigned int> (n - 1)}(fRandom);
+        }
+        String NewName ()
+        {
+            return "n{}"_f(fNextName++);
+        }
+        Binding Leaf (Binding::Kind kind = Binding::Kind::eElement)
+        {
+            static constexpr VariantValue::Type kLeaves_[] = {
+                VariantValue::eString, VariantValue::eBoolean, VariantValue::eInteger,  VariantValue::eUnsignedInteger,
+                VariantValue::eFloat,  VariantValue::eDate,    VariantValue::eDateTime, VariantValue::eBLOB};
+            return Binding{.fKind = kind, .fType = kLeaves_[Pick (size (kLeaves_))]};
+        }
+        // a Binding for a value depth deep; a member's may be an array of its own element repeated - an item's, or the top level one,
+        // has no element of its own to repeat
+        Binding Make (unsigned int depth, bool member)
+        {
+            switch (depth == 0 ? 0 : Pick (3)) {
+                case 0:
+                    return Leaf ();
+                case 1: {
+                    Binding b{.fType = VariantValue::eMap};
+                    if (Pick (4) == 0) {
+                        // text beside attributes, as UPnP's <service id="1">SwitchPower</service>
+                        for (unsigned int i = Pick (3); i > 0; --i) {
+                            b.fMembers.Append (Binding::Member{NewName (), Leaf (Binding::Kind::eAttribute)});
+                        }
+                        b.fMembers.Append (Binding::Member{NewName (), Leaf (Binding::Kind::eText)});
+                    }
+                    else {
+                        for (unsigned int i = Pick (5); i > 0; --i) {
+                            Binding m = Pick (3) == 0 ? Leaf (Binding::Kind::eAttribute) : Make (depth - 1, true);
+                            if (Pick (4) == 0) {
+                                m.fName = NewName (); // a name of its own, not its key
+                            }
+                            b.fMembers.Append (Binding::Member{NewName (), m});
+                        }
+                    }
+                    return b;
+                }
+                default: {
+                    Binding item = Make (depth - 1, false);
+                    if (not member or Pick (2) == 0) {
+                        item.fName = NewName (); // wrapped in the member's element, each item an element of this name
+                    }
+                    return Binding{.fType = VariantValue::eArray, .fItems = make_shared<Binding> (item)};
+                }
+            }
+        }
+
+        // a string XML carries both ways today - not CR or another control character, nor a character outside the BMP (on
+        // Windows), nor in an attribute tab or LF (@todo widen with the escaping fixes)
+        String RandomString (bool attribute)
+        {
+            static constexpr char32_t kChars_[]        = {U'a', U'Z', U'0', U' ', U'-', U'&', U'<', U'>', U'"', char32_t (39), U';',
+                                                          char32_t (0xE9), char32_t (0x4E2D),
+                                                          // element text only
+                                                          char32_t (10), char32_t (9)};
+            constexpr size_t          kAttributeChars_ = 13;
+            u32string                 s;
+            for (unsigned int i = Pick (7); i > 0; --i) {
+                s += kChars_[Pick (attribute ? kAttributeChars_ : size (kChars_))];
+            }
+            return String{s};
+        }
+        VariantValue Value (const Binding& b)
+        {
+            switch (*b.fType) {
+                case VariantValue::eString:
+                    return VariantValue{RandomString (b.fKind == Binding::Kind::eAttribute)};
+                case VariantValue::eBoolean:
+                    return VariantValue{Pick (2) == 0};
+                case VariantValue::eInteger:
+                    return VariantValue{
+                        uniform_int_distribution<long long>{numeric_limits<long long>::min (), numeric_limits<long long>::max ()}(fRandom)};
+                case VariantValue::eUnsignedInteger:
+                    return VariantValue{uniform_int_distribution<unsigned long long>{0, numeric_limits<unsigned long long>::max ()}(fRandom)};
+                case VariantValue::eFloat: {
+                    static const long double kSome_[] = {0.0L,
+                                                         -1.5L,
+                                                         1e300L,
+                                                         numeric_limits<long double>::max (),
+                                                         numeric_limits<long double>::denorm_min (),
+                                                         numeric_limits<long double>::infinity ()};
+                    return VariantValue{Pick (2) == 0 ? kSome_[Pick (size (kSome_))] : uniform_real_distribution<long double>{-1e10L, 1e10L}(fRandom)};
+                }
+                case VariantValue::eDate:
+                    return VariantValue{Time::Date{chrono::year{static_cast<int> (1900 + Pick (300))}, chrono::month{1 + Pick (12)},
+                                                   chrono::day{1 + Pick (28)}}};
+                case VariantValue::eDateTime: {
+                    Time::Date d{chrono::year{static_cast<int> (1900 + Pick (300))}, chrono::month{1 + Pick (12)}, chrono::day{1 + Pick (28)}};
+                    return VariantValue{Time::DateTime{d, Time::TimeOfDay{Pick (86400)}, Pick (2) == 0 ? Time::Timezone::kUTC : Time::Timezone::kUnknown}};
+                }
+                case VariantValue::eBLOB: {
+                    vector<byte> bytes;
+                    for (unsigned int i = Pick (12); i > 0; --i) {
+                        bytes.push_back (static_cast<byte> (Pick (256)));
+                    }
+                    return VariantValue{Memory::BLOB{bytes}};
+                }
+                case VariantValue::eMap: {
+                    Mapping<String, VariantValue> m;
+                    for (const Binding::Member& i : b.fMembers) {
+                        switch (Pick (8)) {
+                            case 0:
+                                break; // absent
+                            case 1:
+                                m.Add (i.fKey, VariantValue{}); // null
+                                break;
+                            default:
+                                m.Add (i.fKey, Value (*i.fBinding));
+                                break;
+                        }
+                    }
+                    return VariantValue{m};
+                }
+                case VariantValue::eArray: {
+                    Sequence<VariantValue> items;
+                    for (unsigned int i = Pick (4); i > 0; --i) {
+                        items.Append (Value (*b.fItems));
+                    }
+                    return VariantValue{items};
+                }
+                default:
+                    AssertNotReached ();
+                    return VariantValue{};
+            }
+        }
+        // what v reads back as: v, less what is written as nothing - a null member, an empty array of repeated elements, and text
+        // (Kind::eText) written as none
+        static VariantValue Expected (const VariantValue& v, const Binding& b)
+        {
+            switch (v.GetType ()) {
+                case VariantValue::eMap: {
+                    Mapping<String, VariantValue> m;
+                    for (const auto& i : v.As<Mapping<String, VariantValue>> ()) {
+                        const Binding& mb = *b.MemberBinding (i.fKey);
+                        if (i.fValue.GetType () == VariantValue::eNull or
+                            (mb.fType == VariantValue::eArray and not mb.fItems->fName and i.fValue.As<Sequence<VariantValue>> ().empty ()) or
+                            (mb.fKind == Binding::Kind::eText and i.fValue.As<String> ().empty ())) {
+                            continue;
+                        }
+                        m.Add (i.fKey, Expected (i.fValue, mb));
+                    }
+                    return VariantValue{m};
+                }
+                case VariantValue::eArray: {
+                    Sequence<VariantValue> items;
+                    for (const VariantValue& i : v.As<Sequence<VariantValue>> ()) {
+                        items.Append (Expected (i, *b.fItems));
+                    }
+                    return VariantValue{items};
+                }
+                default:
+                    return v;
+            }
+        }
+    };
+
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_CompleteBinding_)
+    {
+        using DataExchange::Variant::XML::Reader;
+        using DataExchange::Variant::XML::Writer;
+        using DataExchange::XML::NameWithNamespace;
+        using IO::Network::URI;
+        using VVMap = Mapping<String, VariantValue>;
+        auto leaf = [] (VariantValue::Type t, Binding::Kind kind = Binding::Kind::eElement) { return Binding{.fKind = kind, .fType = t}; };
+        auto incomplete = [] (const Binding& b, const char* why) {
+            EXPECT_FALSE (b.IsComplete ()) << why;
+            String s = b.ToString ();
+            EXPECT_TRUE (s.Contains ("Incomplete: "sv) and s.Contains (String{why})) << s.AsUTF8<string> ();
+        };
+        auto roundTrip = [] (const VariantValue& v, const Binding& b) { return Reader{b}.Read (Writer{{.fBinding = b}}.WriteAsString (v)); };
+        // UPnP's <stateVariable sendEvents="yes">, every value's type declared
+        const Binding stateVariable{
+            .fName    = "stateVariable"sv,
+            .fType    = VariantValue::eMap,
+            .fMembers = {{"sendEvents"sv, leaf (VariantValue::eBoolean, Binding::Kind::eAttribute)},
+                         {"name"sv, leaf (VariantValue::eString)},
+                         {"allowedValueList"sv,
+                          Binding{.fType  = VariantValue::eArray,
+                                  .fItems = make_shared<Binding> (Binding{.fName = "allowedValue"sv, .fType = VariantValue::eInteger})}}}};
+        {
+            // complete, and so read back exactly - each value of the type it was written as
+            EXPECT_TRUE (stateVariable.IsComplete ()) << stateVariable.ToString ().AsUTF8<string> ();
+            EXPECT_TRUE (stateVariable.ToString ().Contains (", Complete}"sv));
+            VariantValue v{VVMap{{"sendEvents"sv, VariantValue{true}},
+                                 {"name"sv, VariantValue{"Status"sv}},
+                                 {"allowedValueList"sv, VariantValue{Sequence<VariantValue>{VariantValue{1}, VariantValue{2}}}}}};
+            VariantValue back = roundTrip (v, stateVariable);
+            EXPECT_TRUE (SameTyped_ (back, v)) << Characters::ToString (back).AsUTF8<string> ();
+            EXPECT_EQ (back.As<VVMap> ().Lookup ("sendEvents"sv)->GetType (), VariantValue::eBoolean);
+            // an empty object and an empty array read back as themselves, not as ""
+            const Binding empty{
+                .fName    = "e"sv,
+                .fType    = VariantValue::eMap,
+                .fMembers = {{"o"sv, Binding{.fType = VariantValue::eMap}},
+                             {"a"sv, Binding{.fType  = VariantValue::eArray,
+                                             .fItems = make_shared<Binding> (Binding{.fName = "i"sv, .fType = VariantValue::eString})}}}};
+            VariantValue nothing{VVMap{{"o"sv, VariantValue{VVMap{}}}, {"a"sv, VariantValue{Sequence<VariantValue>{}}}}};
+            EXPECT_TRUE (SameTyped_ (roundTrip (nothing, empty), nothing));
+            // a null member is written as none, so reads back absent
+            VariantValue withNull{VVMap{{"name"sv, VariantValue{}}}};
+            EXPECT_TRUE (SameTyped_ (roundTrip (withNull, stateVariable), VariantValue{VVMap{}}));
+            // a member keyed as the default shape's array items are named is just a member, given a complete Binding
+            const Binding arrayKey{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"Array"sv, leaf (VariantValue::eString)}}};
+            VariantValue  a{VVMap{{"Array"sv, VariantValue{"x"sv}}}};
+            EXPECT_TRUE (SameTyped_ (roundTrip (a, arrayKey), a));
+            // an attribute and an element may have the same name
+            const Binding sameName{.fName = "a"sv,
+                                   .fType = VariantValue::eMap,
+                                   .fMembers = {{"id"sv, Binding{.fKind = Binding::Kind::eAttribute, .fName = "x"sv, .fType = VariantValue::eInteger}},
+                                                {"x"sv, leaf (VariantValue::eString)}}};
+            EXPECT_TRUE (sameName.IsComplete ()) << sameName.ToString ().AsUTF8<string> ();
+            VariantValue s{VVMap{{"id"sv, VariantValue{7}}, {"x"sv, VariantValue{"seven"sv}}}};
+            EXPECT_TRUE (SameTyped_ (roundTrip (s, sameName), s)) << Characters::ToString (roundTrip (s, sameName)).AsUTF8<string> ();
+        }
+        {
+            // the Writer writes only values of the type declared - a value is data, so it throws
+            auto write = [&] (const VariantValue& v) { return Writer{{.fBinding = stateVariable}}.WriteAsString (v); };
+            EXPECT_THROW (write (VariantValue{VVMap{{"name"sv, VariantValue{3}}}}), BadFormatException);
+            EXPECT_THROW (write (VariantValue{VVMap{{"other"sv, VariantValue{"x"sv}}}}), BadFormatException);
+            EXPECT_THROW (write (VariantValue{VVMap{{"sendEvents"sv, VariantValue{"yes"sv}}}}), BadFormatException);
+            // ... and the Reader reads only documents of that type: an element or attribute not declared, a leaf not of its type
+            Reader r{stateVariable};
+            EXPECT_THROW (r.Read (String{"<stateVariable><other>x</other></stateVariable>"sv}), BadFormatException);
+            EXPECT_THROW (r.Read (String{"<stateVariable other=\"x\"></stateVariable>"sv}), BadFormatException);
+            EXPECT_THROW (r.Read (String{"<stateVariable sendEvents=\"yes\"></stateVariable>"sv}), BadFormatException);
+            EXPECT_THROW (r.Read (String{"<stateVariable><allowedValueList><allowedValue>x</allowedValue></allowedValueList></stateVariable>"sv}),
+                          BadFormatException);
+            EXPECT_THROW (r.Read (String{"<stateVariable><name><b>x</b></name></stateVariable>"sv}), BadFormatException);
+            // ... nor a member repeated that its Binding declares as one value - not silently made an array
+            EXPECT_THROW (r.Read (String{"<stateVariable><name>a</name><name>b</name></stateVariable>"sv}), BadFormatException);
+            // but someone else's document of that type reads, as XML Schema reads it - whitespace around a number dropped, 1 a boolean
+            VariantValue read =
+                r.Read (String{"<stateVariable sendEvents=\"1\"><allowedValueList><allowedValue> 3 </allowedValue></allowedValueList></stateVariable>"sv});
+            EXPECT_TRUE (SameTyped_ (read, VariantValue{VVMap{{"sendEvents"sv, VariantValue{true}},
+                                                              {"allowedValueList"sv, VariantValue{Sequence<VariantValue>{VariantValue{3LL}}}}}}))
+                << Characters::ToString (read).AsUTF8<string> ();
+        }
+        {
+            // Variant/XML/ReadMe.md's example, verbatim
+            Binding b{.fName    = "stateVariable"sv,
+                      .fType    = VariantValue::eMap,
+                      .fMembers = {{"sendEvents"sv, Binding{.fKind = Binding::Kind::eAttribute, .fType = VariantValue::eBoolean}},
+                                   {"name"sv, Binding{.fType = VariantValue::eString}}}};
+            EXPECT_TRUE (b.IsComplete ()) << b.ToString ().AsUTF8<string> ();
+        }
+        {
+            // the same document read with no fType, and with it - Binding::fType's table
+            const String  xml{"<a><n>3</n><o></o><l></l></a>"sv};
+            const Binding loose{.fName = "a"sv};
+            const Binding typed{
+                .fName    = "a"sv,
+                .fType    = VariantValue::eMap,
+                .fMembers = {{"n"sv, leaf (VariantValue::eInteger)},
+                             {"o"sv, Binding{.fType = VariantValue::eMap}},
+                             {"l"sv, Binding{.fType  = VariantValue::eArray,
+                                             .fItems = make_shared<Binding> (Binding{.fName = "i"sv, .fType = VariantValue::eString})}}}};
+            EXPECT_TRUE (SameTyped_ (Reader{loose}.Read (xml),
+                                     VariantValue{VVMap{{"n"sv, VariantValue{"3"sv}}, {"o"sv, VariantValue{""sv}}, {"l"sv, VariantValue{""sv}}}}));
+            EXPECT_TRUE (SameTyped_ (
+                Reader{typed}.Read (xml),
+                VariantValue{VVMap{{"n"sv, VariantValue{3LL}}, {"o"sv, VariantValue{VVMap{}}}, {"l"sv, VariantValue{Sequence<VariantValue>{}}}}}));
+            // a member it does not name: read, or thrown on
+            EXPECT_NO_THROW (Reader{loose}.Read (String{"<a><x>1</x></a>"sv}));
+            EXPECT_THROW (Reader{typed}.Read (String{"<a><x>1</x></a>"sv}), BadFormatException);
+            // a null member: an empty element, or none
+            VariantValue nullN{VVMap{{"n"sv, VariantValue{}}}};
+            EXPECT_EQ (Writer{{.fBinding = loose}}.WriteAsString (nullN), "<a>\n    <n></n>\n</a>\n"sv);
+            EXPECT_EQ (Writer{{.fBinding = typed}}.WriteAsString (nullN), "<a></a>\n"sv);
+        }
+        {
+            // a declared array its Binding gives no fItems takes the default items in scope, as the Writer does - here its own
+            // element repeated: so an array however few elements there are
+            const Binding repeated{.fName              = "a"sv,
+                                   .fType              = VariantValue::eMap,
+                                   .fMembers           = {{"k"sv, Binding{.fType = VariantValue::eArray}}},
+                                   .fDefaultArrayItems = make_shared<Binding> (Binding::kRepeatedArrayItems)};
+            for (const Sequence<VariantValue>& items :
+                 {Sequence<VariantValue>{VariantValue{"x"sv}}, Sequence<VariantValue>{VariantValue{"x"sv}, VariantValue{"y"sv}}}) {
+                VariantValue v{VVMap{{"k"sv, VariantValue{items}}}};
+                try {
+                    EXPECT_TRUE (SameTyped_ (roundTrip (v, repeated), v)) << items.size ();
+                }
+                catch (const std::exception& e) {
+                    ADD_FAILURE () << items.size () << " item(s): " << e.what ();
+                }
+            }
+        }
+        {
+            // each way a Binding can fall short of complete - and ToString says why
+            const auto kString = leaf (VariantValue::eString);
+            incomplete (Binding{.fType = VariantValue::eMap}, "not named");
+            incomplete (Binding{.fName = "a"sv}, "a: declares no fType");
+            incomplete (Binding{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"x"sv}}}, "a/x: no Binding");
+            incomplete (Binding{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"x"sv, Binding{}}}}, "a/x: declares no fType");
+            incomplete (Binding{.fName = "a"sv, .fType = VariantValue::eArray}, "no fItems");
+            incomplete (Binding{.fName = "a"sv, .fType = VariantValue::eArray, .fItems = make_shared<Binding> (kString)},
+                        "not an object's member");
+            incomplete (Binding{.fName  = "a"sv,
+                                .fType  = VariantValue::eArray,
+                                .fItems = make_shared<Binding> (
+                                    Binding{.fName = "i"sv, .fType = VariantValue::eArray, .fItems = make_shared<Binding> (kString)})},
+                        "a[]: an array of repeated elements");
+            incomplete (Binding{.fName    = "a"sv,
+                                .fType    = VariantValue::eMap,
+                                .fMembers = {{"x"sv, kString}, {"y"sv, Binding{.fName = "x"sv, .fType = VariantValue::eString}}}},
+                        "local name too");
+            incomplete (Binding{.fName    = "a"sv,
+                                .fType    = VariantValue::eMap,
+                                .fMembers = {{"t"sv, leaf (VariantValue::eString, Binding::Kind::eText)}, {"x"sv, kString}}},
+                        "mixed content");
+            incomplete (Binding{.fName    = "a"sv,
+                                .fType    = VariantValue::eMap,
+                                .fMembers = {{"t"sv, leaf (VariantValue::eString, Binding::Kind::eText)},
+                                             {"u"sv, leaf (VariantValue::eString, Binding::Kind::eText)}}},
+                        "a second text member");
+            incomplete (Binding{.fName    = "a"sv,
+                                .fType    = VariantValue::eMap,
+                                .fMembers = {{"x"sv, Binding{.fKind = Binding::Kind::eAttribute, .fType = VariantValue::eMap}}}},
+                        "not a leaf");
+            incomplete (Binding{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"my key"sv, kString}}}, "not an XML name");
+            incomplete (Binding{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"x"sv, kString}, {"x"sv, kString}}},
+                        "listed twice");
+            incomplete (Binding{.fName = "a"sv, .fType = VariantValue::eString, .fMembers = {{"x"sv, kString}}},
+                        "a leaf (String) with fMembers");
+            // an attribute in a namespace needs a prefix in scope - declared where it is, or on an element it is inside
+            const URI kNS{"urn:x"sv};
+            const Binding attrInNS{.fKind = Binding::Kind::eAttribute, .fName = NameWithNamespace{kNS, "x"sv}, .fType = VariantValue::eString};
+            incomplete (Binding{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"x"sv, attrInNS}}}, "no prefix in scope");
+            EXPECT_TRUE (
+                (Binding{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"x"sv, attrInNS}}, .fNamespacePrefixes = {{kNS, "p"sv}}}.IsComplete ()));
+        }
+        {
+            // the claim itself - every value of a complete Binding's type reads back exactly - over random complete Bindings, and
+            // random values of each
+            CompleteBindings_ g{20261015};
+            for (unsigned int i = 0; i < 300; ++i) {
+                Binding b = g.Make (3, false);
+                b.fName   = "root"sv;
+                ASSERT_TRUE (b.IsComplete ()) << b.ToString ().AsUTF8<string> ();
+                for (unsigned int j = 0; j < 4; ++j) {
+                    VariantValue v   = g.Value (b);
+                    String       xml = Writer{{.fBinding = b}}.WriteAsString (v);
+                    try {
+                        VariantValue back = Reader{b}.Read (xml);
+                        EXPECT_TRUE (SameTyped_ (back, CompleteBindings_::Expected (v, b)))
+                            << "Binding: " << b.ToString ().AsUTF8<string> () << endl
+                            << "value:   " << Characters::ToString (v).AsUTF8<string> () << endl
+                            << "read:    " << Characters::ToString (back).AsUTF8<string> () << endl
+                            << "xml:     " << xml.AsUTF8<string> ();
+                    }
+                    catch (const std::exception& e) {
+                        ADD_FAILURE () << "read threw " << e.what () << endl
+                                       << "Binding: " << b.ToString ().AsUTF8<string> () << endl
+                                       << "xml:     " << xml.AsUTF8<string> ();
+                    }
+                }
+            }
         }
     }
 }

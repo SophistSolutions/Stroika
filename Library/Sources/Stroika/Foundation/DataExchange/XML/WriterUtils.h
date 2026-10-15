@@ -29,6 +29,12 @@ namespace Stroika::Foundation::DataExchange::XML {
     using Characters::String;
 
     /**
+     *  \brief Whether s is an NCName (https://www.w3.org/TR/xml-names/#NT-NCName) - an XML name with no ':', as a local name and
+     *         a namespace prefix must each be
+     */
+    bool IsNCName (const String& s);
+
+    /**
      */
     string QuoteForXMLAttribute (const string& s);
     string QuoteForXMLAttribute (const wstring& s); // encode non-ascii characters as entity-references
