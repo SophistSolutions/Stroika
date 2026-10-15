@@ -179,6 +179,14 @@ LIBCURL_CONFIGURE += --without-ssl
 else
 #finds right one through PKG_CONFIG_PATH
 LIBCURL_CONFIGURE += --with-ssl
+# configure looks for the system's CA certificates only when building natively (so does curl's CMake build): cross-compiled,
+# libcurl trusts no certificate at all, so every verified HTTPS connection fails (error 60). For a Linux target, name what
+# native configure finds on Debian and Ubuntu; a target of another family would need its own paths.
+ifeq ($(CrossCompiling),true)
+ifneq ($(findstring Linux,$(TargetPlatforms)),)
+LIBCURL_CONFIGURE += --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt --with-ca-path=/etc/ssl/certs
+endif
+endif
 endif
 ifeq ($(qFeatureFlag_ZLib), no)
 LIBCURL_CONFIGURE += --without-zlib

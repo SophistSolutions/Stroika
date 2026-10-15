@@ -540,7 +540,7 @@ namespace {
         catch (...) {
             // if transient issue, ignore
             Stroika::Frameworks::Test::WarnTestIssue (
-                "badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: {}"_f(current_exception ()));
+                "badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = true: {}"_f(current_exception ()));
         }
         try {
             o.fFailConnectionIfSSLCertificateInvalid = false;
