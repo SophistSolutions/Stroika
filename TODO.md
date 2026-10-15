@@ -95,22 +95,11 @@ Generally will track stuff here between releases
      The field that actually crosses module boundaries is fXMLProvider, and it has no shared convention: each Options
      redeclares it, and each DeSerialize has to remember to thread it (one did not - a3eb3ff6f3).
 - v3.0d26x - at the start
-   - **PRIORITY: threaded-code bugs, and Synchronized's flawed design choices** -
-     https://github.com/SophistSolutions/Stroika/issues/1205 (from IntervalTimer's five removal bugs, fixed 2026-10-05).
-     Synchronized: its recursive_mutex default hides calling out while holding a lock (#1206); it cannot wait on its own
-     lock, so handshakes need a second one (#1207); per-expression locking reads like an atomic check-then-act (#1208). Then
-     write the patterns down in Thread-Safety.md and audit Stroika for them - callback registries' unregister guarantee
-     (Execution::CallbackRegistry has it), blocking under a lock (ThreadPool, Logger), thread members declared last (#1209).
-     Also: **copy-on-write's "not shared, so write in place" check is a data race** (by the C++ memory model; harmless on x86
-     and ARM in practice, so it waited for 3.0d26 - LGP 2026-10-07): Memory::SharedByValue::AssureNOrFewerReferences tests
-     shared_ptr::use_count () - a relaxed load - so its write is not ordered after another thread's read through a copy it has
-     since dropped. ThreadSanitizer reports it (3.0d25x's Ubuntu 26.04 regression run: Tests/53 - now 54 - SSDP_CachingListener_, its main
-     thread polling told.load ().size () as the listener's thread appends). The fix needs an acquire there: a fence (free on
-     x86, but ThreadSanitizer does not model fences), or an acquire RMW on the count (two atomics per write: measure with
-     Tests/52). Until then, Tests/54's SSDP_CachingListener_ and SSDP_CachingListener_Search_ read told under its lock (a BWA,
-     so 3.0d25's ThreadSanitizer runs are quiet): restore their told.load () - the reproducer - with the fix.
-   - **SSDP: a shared transport `Ptr`** owning port 1900's sockets, an optional argument to every SSDP class -
-     https://github.com/SophistSolutions/Stroika/issues/1220 (after #1205: its dispatch thread is the risk).
+   - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
+     What follows here has no issue.
+   - **With #1205's copy-on-write race fixed, restore Tests/54's reproducer**: its SSDP_CachingListener_ and
+     SSDP_CachingListener_Search_ read told under its lock (a BWA, so 3.0d25's ThreadSanitizer runs are quiet) - put their
+     told.load () back.
    - **Concepts - the rest of 2026-10-08's follow-ups** (the rules: Design-Overview.md, "Rules for writing concepts"):
        - **audit Stroika's concepts** (108 in Library) against those rules.
        - **StringBuilder's `sb << x` constraint cannot say no**: Characters::Private_::IUnoverloadedToString_ asks
@@ -119,9 +108,6 @@ Generally will track stuff here between releases
        - **constrain Characters::ToString itself**, so requires { Characters::ToString (x) } answers truly - then the
          non-template inline functions in ToString.inl that call it (ToString (byte), ToString (chrono::duration<double>))
          call ToStringDefaults::ToString instead.
-   - **WebServer::Router design** - https://github.com/SophistSolutions/Stroika/issues/1214 - from comparing it with other
-     C++ HTTP servers: a route's methods listable (so 405's Allow and OPTIONS include custom methods and HEAD); named, typed
-     path parameters, any number; mounting routes under a prefix; CORS as an Interceptor of its own.
    - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
      been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
      the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.

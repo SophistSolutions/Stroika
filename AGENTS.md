@@ -361,8 +361,13 @@ old staged versions of the commit's files.
 - **Priority is a field, never a label** - create no labels (applying existing ones is fine). There are TWO priority
   fields, the "Stroika Issues" project's (#1) and the organization's issue field; setting one does not set the other, so
   set both (`gh api graphql`, from a POSIX shell - PowerShell mangles the quoting).
-- **TODO.md outranks any ticket priority**: an entry there - even one that only points at a ticket - is a priority marker.
-  Never delete one unless LGP says so. In a triage, every recommendation is NOW (before the release), TICKET, or PROCESS (a
+- **A release's scheduled issues are its GitHub milestone**, named for the release (`3.0d26`; LGP, 2026-10-15) - not a
+  label, and not TODO.md, which lists only work with no issue (a release's section there opens with a pointer to its
+  milestone). Saying what is left for a release includes its milestone's open issues - and any still open in a past
+  release's milestone. At release, each open one is finished or moved to the next milestone, and the milestone closed.
+- **TODO.md outranks any ticket priority**: an entry there is a priority marker - so an entry that leaves for a milestone
+  (once its issue holds everything the entry said) takes its priority into the issue's Priority fields. Never delete one
+  otherwise unless LGP says so. In a triage, every recommendation is NOW (before the release), TICKET, or PROCESS (a
   mechanical trigger) - never "wait for X".
 - **When a commit is about an issue, comment on the issue with the commit link** once it is pushed, saying exactly what it
   fixes. A real fix on v3-Dev is closed by hand ("Fixed in <next release>") - GitHub's `fixes #N` fires only on the
