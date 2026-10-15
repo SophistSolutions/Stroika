@@ -162,6 +162,24 @@ escapes) belongs to its format, in DataExchange.
 
 ---
 
+## Data interchange: VariantValue
+
+Most of Stroika's data code is built on
+[DataExchange::VariantValue](../Library/Sources/Stroika/Foundation/DataExchange/VariantValue.h): a null, Boolean, number,
+string, date, BLOB, array, or map from string to VariantValue. That is the data model nearly every system that exchanges or
+scripts data has settled on - JSON and JavaScript, Python, SQL's values, BSON, CBOR, YAML - and so it is Stroika's lingua
+franca between C++ types and the world outside.
+
+Each format reads and writes VariantValue once, and each C++ type is mapped to and from it once, by an ObjectVariantMapper: N
+formats and M types take N + M pieces of code, not N x M. The layers above lean on that - configuration files (OptionsFile), the
+SQL and document databases, and the web service framework, which hands a service its request's arguments, and takes its result,
+as C++ objects.
+
+Why this design, which types it holds and why, and its limits: [DataExchange's
+ReadMe](../Library/Sources/Stroika/Foundation/DataExchange/ReadMe.md#why-variantvalue).
+
+---
+
 ## Coding Conventions
 
 ### Formatting

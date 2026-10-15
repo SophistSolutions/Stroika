@@ -53,6 +53,11 @@ namespace Stroika::Foundation::DataExchange {
     /**
      * \brief   Simple variant-value (case variant union) object, with (variant) basic types analogous to a value in any weakly typed language (like JavaScript, Lisp, etc)
      *
+     *  It is Stroika's lingua franca for data: the data model JSON, Python, SQL's values and most other interchange formats share.
+     *  So each format reads and writes VariantValue once (Variant::JSON, Variant::XML, ...), and each C++ type is mapped to and
+     *  from it once (ObjectVariantMapper) - N formats and M types take N + M pieces of code, not N x M. Why this design, which
+     *  types and why, and its limits: DataExchange/ReadMe.md, "Why VariantValue".
+     *
      *  These objects are internally efficiently copied (shared_ptr), but have copy
      *  by value semantics (since they are never modifiable).
      *
