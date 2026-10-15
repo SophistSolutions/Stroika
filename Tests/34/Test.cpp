@@ -247,6 +247,34 @@ namespace {
             saxParser (kHealthFrameWorks_v3_xml, &myCallback, nullptr);
         });
     }
+    GTEST_TEST (Foundation_DataExchange_XML, SAX_AttributeValues_)
+    {
+        // an attribute's value as the document means it - each reference decoded, as in an element's text - by every provider
+        struct Attributes_ : StructuredStreamEvents::IConsumer {
+            virtual void StartElement ([[maybe_unused]] const StructuredStreamEvents::Name& name,
+                                       const Mapping<StructuredStreamEvents::Name, String>& attributes) override
+            {
+                for (const auto& i : attributes) {
+                    fValues.Add (i.fKey.fLocalName, i.fValue);
+                }
+            }
+            Mapping<String, String> fValues;
+        };
+        auto read = [] (auto saxParser, string_view doc) {
+            Attributes_ a;
+            saxParser (Memory::BLOB{span{reinterpret_cast<const byte*> (doc.data ()), doc.size ()}}, &a, nullptr);
+            return a.fValues;
+        };
+        DoWithEachXMLProvider_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            // '&' - and a reference to it is that character, not the start of another reference
+            Mapping<String, String> v = read (saxParser, "<a x=\"&amp;&lt;b\" y=\"&#38;amp;\"/>"sv);
+            EXPECT_EQ (v.Lookup ("x"sv), "&<b"sv);
+            EXPECT_EQ (v.Lookup ("y"sv), "&amp;"sv);
+            // not ASCII: e-acute, and a CJK character
+            const String kNotASCII{u32string{U'c', U'a', U'f', char32_t (0xE9), char32_t (0x4E2D)}};
+            EXPECT_EQ (read (saxParser, "<a x=\"caf&#233;&#x4E2D;\"/>"sv).Lookup ("x"sv), kNotASCII);
+        });
+    }
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER_SchemaValidate)
     {
         TraceContextBumper ctx{"SAX_PARSER2"};

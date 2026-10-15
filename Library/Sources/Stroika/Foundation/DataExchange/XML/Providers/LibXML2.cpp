@@ -309,8 +309,10 @@ namespace {
                         auto ai = attributes;
                         for (int i = 0; i < nb_attributes; ++i) {
                             // @todo fix must grab namespace, probably from namespaces, but will take some research to figure out how!!!
+                            // libxml2 hands over the value decoded - except that, not replacing entities (which would expand external
+                            // ones too), it leaves each '&' it decoded as the reference "&#38;"
                             attrs.Add (Name{"", libXMLString2String (ai[0]), Name::eAttribute},
-                                       libXMLString2String (ai[3], static_cast<int> (ai[4] - ai[3])));
+                                       libXMLString2String (ai[3], static_cast<int> (ai[4] - ai[3])).ReplaceAll ("&#38;"sv, "&"sv));
                             ai += 5;
                         }
                     }
@@ -1171,7 +1173,7 @@ namespace {
  */
 String Providers::LibXML2::libXMLString2String (const xmlChar* s, int len)
 {
-    return String{span{reinterpret_cast<const char*> (s), static_cast<size_t> (len)}};
+    return String::FromUTF8 (span{reinterpret_cast<const char*> (s), static_cast<size_t> (len)});
 }
 String Providers::LibXML2::libXMLString2String (const xmlChar* t)
 {
