@@ -37,6 +37,16 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  order); each item of an array is fItems. Nothing is required - a member fMembers does not name keeps the default shape,
      *  and is written after those it does - so a Binding need say only how its value differs.
      *
+     *  **A complete Binding maps ANY value of the shape it describes, both ways, whatever values it holds** - as an XSD or a
+     *  WSDL does. Complete means it leaves nothing to the default shape: every member of every object is named in its fMembers,
+     *  written with a local name no other member of that object has, and every array has fItems. A Binding that leaves things
+     *  to defaults is shorter, and particular values can then collide with them (a member keyed "Array" reads back as an
+     *  array's item) - the price of the short Binding, not a bug.
+     *
+     *  \note Not yet so, even of a complete Binding: every leaf reads back as a String (types:
+     *        https://github.com/SophistSolutions/Stroika/issues/1217); null and {} read back as ""; and an empty array of
+     *        repeated elements reads back as no member at all.
+     *
      *  The Binding a Reader or Writer is given is the document's. With an fName, that names the document element, and the value
      *  is its content (reading a document element of another name throws BadFormatException). With none, the value is an object
      *  of exactly one member, and that member is the document element - named, and bound, as any other member is (writing any
@@ -186,6 +196,9 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *  | ["a", "b"]   | ["a", "b"]   | ["a", "b"]   | ["a", "b"]   |
          *  | ["a"]        | ["a"]        | ["a"]        | "a"          |
          *  | []           | ""           | ""           | absent       |
+         *
+         *  Reading, an element with the item name is an item - so is a member written with that name (a key "Array", in the
+         *  default shape), unless the Binding of the object it is in names it in fMembers.
          */
         shared_ptr<Binding> fDefaultArrayItems;
 

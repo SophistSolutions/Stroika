@@ -67,6 +67,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  That is the shape with nothing declared. Where it is not the shape wanted - an attribute rather than an element, a
      *  namespace, a name of its own, an order of its own (XML cares about the order of an element's children, and a
      *  VariantValue object has none) - say so in a Binding, which the Reader needs as much as the Writer. @see Binding
+     *  A member keyed "Array" needs one too, naming it, or it reads back as an array's item (@see Binding::fDefaultArrayItems).
      *
      *  \note A namespace is written as a default namespace (xmlns="..."), inherited by the elements inside it - or with a
      *        prefix, where a Binding's fNamespacePrefixes gives it one, which an attribute in a namespace requires. Mixed

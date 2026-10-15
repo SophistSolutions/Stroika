@@ -1539,6 +1539,23 @@ namespace {
                 {"inner"sv, VariantValue{VVMap{{"y"sv, VariantValue{Sequence<VariantValue>{VariantValue{"3"sv}, VariantValue{"4"sv}}}}}}}}};
             EXPECT_EQ (roundTrip (v, a), v);
         }
+        {
+            // an element with the item name in scope (<Array>) is a member, not an item, where the object's Binding names a member
+            // written with that name - so any value reads back, given a Binding that says enough
+            const Binding named{.fName = "a"sv, .fMembers = {{"x"sv, Binding{.fMembers = {{"Array"sv}}}}}};
+            VariantValue  alone{VVMap{{"x"sv, VariantValue{VVMap{{"Array"sv, VariantValue{"1"sv}}}}}}};
+            EXPECT_EQ (roundTrip (alone, named), alone);
+            VariantValue beside{VVMap{{"x"sv, VariantValue{VVMap{{"Array"sv, VariantValue{"1"sv}}, {"b"sv, VariantValue{"2"sv}}}}}}};
+            EXPECT_EQ (roundTrip (beside, named), beside);
+            // ... a member renamed to it too
+            const Binding renamed{.fName = "a"sv, .fMembers = {{"x"sv, Binding{.fMembers = {{"y"sv, Binding{.fName = "Array"sv}}}}}}};
+            VariantValue  y{VVMap{{"x"sv, VariantValue{VVMap{{"y"sv, VariantValue{"1"sv}}}}}}};
+            EXPECT_EQ (roundTrip (y, renamed), y);
+            // ... while an array beside it, in its own element, still reads back as one
+            VariantValue withArray{VVMap{{"x"sv, VariantValue{VVMap{{"Array"sv, VariantValue{"1"sv}},
+                                                                    {"list"sv, VariantValue{Sequence<VariantValue>{VariantValue{"a"sv}}}}}}}}};
+            EXPECT_EQ (roundTrip (withArray, named), withArray);
+        }
     }
 }
 #endif

@@ -36,6 +36,15 @@ using Memory::MakeSharedPtr;
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
 namespace {
+    // whether the Binding names a member written as an element of that name - which the element then is, whatever else its
+    // name could make it (an item of an array)
+    bool NamesElementMember_ (const Binding* binding, const String& elementName)
+    {
+        return binding != nullptr and binding->fMembers.Any ([&] (const Binding::Member& m) {
+            return binding->KindFor (m.fKey) == Binding::Kind::eElement and binding->NameFor (m.fKey).fName == elementName;
+        });
+    }
+
     /*
      *  The inverse of Variant::XML::Writer (its documentation has the shape): an element with child elements is an object, one
      *  with only text is that text (a String - XML says nothing of types, so the reader types nothing), and children of one
@@ -97,7 +106,7 @@ namespace {
             else {
                 const Frame_& parent = fStack.back ();
                 f.fDefaultArrayItems = parent.fDefaultArrayItems;
-                if (parent.fItemName and name.fLocalName == *parent.fItemName) {
+                if (parent.fItemName and name.fLocalName == *parent.fItemName and not NamesElementMember_ (parent.fBinding, name.fLocalName)) {
                     f.fIsItem  = true;
                     ownBinding = parent.fItemBinding;
                 }
