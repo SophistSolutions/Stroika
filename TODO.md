@@ -131,6 +131,15 @@ Generally will track stuff here between releases
    - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
      been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
      the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.
+   - **Node 26 in the build images, on every platform where practical** (LGP 2026-10-14: next release, not this one - not
+     enough of a problem). Why: Windows CI's HTMLUI build fails now and then with "Error 127" at
+     Samples/HTMLUI/QuasarBasedHTMLApp/Makefile:60 - Node crashing on EXIT, after Quasar has printed "Build succeeded" (a libuv
+     assertion, https://github.com/nodejs/node/issues/56645; reported still in Node 24.18, gone in 26.5). Seen 2026-10-05 and
+     10-09, both windows-vs2k26-msys-x86_64-Release, both passed on re-run. Node today: 24.12.0 pinned in
+     Build/Docker/Windows-MSYS/Dockerfile; choco's nodejs-lts in Windows-Cygwin; NODE_MAJOR=24 (NodeSource) in the Ubuntu
+     2204/2404/2604 RegressionTests images; the distro's in 2504 (v20 - HTMLUI skipped there) and Stroika-Dev. Older
+     platforms may not take 26 - skip those rather than force it - and check Quasar's build with 26 first (Windows-MSYS's
+     Dockerfile notes Node 23.5 once broke it).
 
 
   - DO PLANNING for CMAKE change
