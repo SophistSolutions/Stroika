@@ -120,6 +120,11 @@ Generally will track stuff here between releases
      2204/2404/2604 RegressionTests images; the distro's in 2504 (v20 - HTMLUI skipped there) and Stroika-Dev. Older
      platforms may not take 26 - skip those rather than force it - and check Quasar's build with 26 first (Windows-MSYS's
      Dockerfile notes Node 23.5 once broke it).
+   - **Code review of the Streams API** (LGP 2026-10-16). Starting points, from fixing the wide std stream adapters: two ways
+     to make a stream seekable - ToSeekableInputStream (byte only) and BufferedInputStream::New (in, eSeekable) (any type);
+     InputStreamFromStdIStream's RemainingLength is AssertNotImplemented, and its eDontBlock Read can still block
+     (istream::read waits for the whole buffer); seek offsets mean different things - the istream's own position there,
+     counted from where it started in BinaryToText's seekable reader.
 
 
   - DO PLANNING for CMAKE change
