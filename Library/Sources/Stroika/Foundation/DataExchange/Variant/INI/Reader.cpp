@@ -27,10 +27,6 @@ using namespace Stroika::Foundation::Streams;
  */
 class Variant::INI::Reader::Rep_ final : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return Memory::MakeSharedPtr<Rep_> (); // no instance data
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".ini"sv;

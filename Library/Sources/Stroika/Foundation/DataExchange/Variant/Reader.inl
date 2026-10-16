@@ -10,11 +10,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
      ******************************* Variant::Reader ********************************
      ********************************************************************************
      */
-    inline auto Reader::MakeSharedRep_ (const _IRep& t) -> shared_ptr<_IRep>
-    {
-        return t.Clone ();
-    }
-    inline Reader::Reader (const shared_ptr<_IRep>& rep)
+    inline Reader::Reader (const shared_ptr<const _IRep>& rep)
         : fRep_{rep}
     {
         RequireNotNull (rep);
@@ -46,16 +42,10 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         return Read (_ToCharacterReader (in));
     }
-    inline Reader::_IRep& Reader::_GetRep ()
-    {
-        AssertNotNull (fRep_);
-        EnsureNotNull (fRep_.rwget ());
-        return *fRep_.rwget ();
-    }
     inline const Reader::_IRep& Reader::_ConstGetRep () const
     {
-        EnsureNotNull (fRep_.cget ());
-        return *fRep_.cget ();
+        AssertNotNull (fRep_);
+        return *fRep_;
     }
     inline Streams::InputStream::Ptr<byte> Reader::_ToByteReader (const Streams::InputStream::Ptr<byte>& in)
     {

@@ -30,10 +30,6 @@ using Memory::MakeSharedPtr;
 class FormURLEncoded::Writer::Rep_ final : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ () = default;
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<Rep_> (); // no instance data
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return nullopt;
@@ -94,12 +90,12 @@ FormURLEncoded::Writer::Writer ()
 {
 }
 
-void FormURLEncoded::Writer::Write (const Association<String, String>& m, const OutputStream::Ptr<byte>& out)
+void FormURLEncoded::Writer::Write (const Association<String, String>& m, const OutputStream::Ptr<byte>& out) const
 {
-    Debug::UncheckedDynamicCast<Rep_&> (_GetRep ()).Write (m, out);
+    Debug::UncheckedDynamicCast<const Rep_&> (_ConstGetRep ()).Write (m, out);
 }
 
-Memory::BLOB FormURLEncoded::Writer::WriteAsBLOB (const Association<String, String>& m)
+Memory::BLOB FormURLEncoded::Writer::WriteAsBLOB (const Association<String, String>& m) const
 {
     return _WriteAsBLOBHelper ([&m, this] (const OutputStream::Ptr<byte>& out) { Write (m, out); });
 }

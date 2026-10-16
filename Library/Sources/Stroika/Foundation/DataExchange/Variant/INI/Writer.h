@@ -40,27 +40,24 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
          *        able to overload on return type).
          */
         using inherited::Write;
-        nonvirtual void Write (const Profile& profile, const Streams::OutputStream::Ptr<byte>& out);
-        nonvirtual void Write (const Profile& profile, const Streams::OutputStream::Ptr<Characters::Character>& out);
-        nonvirtual void Write (const Profile& profile, ostream& out);
-        nonvirtual void Write (const Profile& profile, wostream& out);
+        nonvirtual void Write (const Profile& profile, const Streams::OutputStream::Ptr<byte>& out) const;
+        nonvirtual void Write (const Profile& profile, const Streams::OutputStream::Ptr<Characters::Character>& out) const;
+        nonvirtual void Write (const Profile& profile, ostream& out) const;
+        nonvirtual void Write (const Profile& profile, wostream& out) const;
 
     public:
         /**
          *  @See Variant::Writer::WriteAsString, but overloaded to also take array of array of strings to write.
          */
         using inherited::WriteAsString;
-        nonvirtual String WriteAsString (const Profile& profile);
+        [[nodiscard]] nonvirtual String WriteAsString (const Profile& profile) const;
 
     public:
         /**
          *  @See Variant::Writer::WriteAsBLOB, but overloaded to also take array of array of strings to write.
          */
         using inherited::WriteAsBLOB;
-        nonvirtual Memory::BLOB WriteAsBLOB (const Profile& profile);
-
-    private:
-        nonvirtual shared_ptr<Rep_> GetRep_ () const;
+        [[nodiscard]] nonvirtual Memory::BLOB WriteAsBLOB (const Profile& profile) const;
     };
 
 }

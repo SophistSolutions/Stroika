@@ -68,27 +68,24 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
          *        able to overload on return type).
          */
         using inherited::Write;
-        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream::Ptr<byte>& out);
-        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream::Ptr<Characters::Character>& out);
-        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, ostream& out);
-        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, wostream& out);
+        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream::Ptr<byte>& out) const;
+        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream::Ptr<Characters::Character>& out) const;
+        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, ostream& out) const;
+        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, wostream& out) const;
 
     public:
         /**
          *  @See Variant::Writer::WriteAsString, but overloaded to also take array of array of strings to write.
          */
         using inherited::WriteAsString;
-        [[nodiscard]] nonvirtual String WriteAsString (const Traversal::Iterable<Sequence<String>>& m);
+        [[nodiscard]] nonvirtual String WriteAsString (const Traversal::Iterable<Sequence<String>>& m) const;
 
     public:
         /**
          *  @See Variant::Writer::WriteAsBLOB, but overloaded to also take array of array of strings to write.
          */
         using inherited::WriteAsBLOB;
-        [[nodiscard]] nonvirtual Memory::BLOB WriteAsBLOB (const Traversal::Iterable<Sequence<String>>& m);
-
-    private:
-        nonvirtual shared_ptr<Rep_> GetRep_ () const;
+        [[nodiscard]] nonvirtual Memory::BLOB WriteAsBLOB (const Traversal::Iterable<Sequence<String>>& m) const;
     };
 
 }

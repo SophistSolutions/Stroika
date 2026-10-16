@@ -38,10 +38,6 @@ using Traversal::Iterable;
 class FormURLEncoded::Reader::Rep_ final : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ () = default;
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<Rep_> ();
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return nullopt;

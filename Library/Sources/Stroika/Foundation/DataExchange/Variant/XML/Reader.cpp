@@ -415,10 +415,6 @@ public:
     }
 
 public:
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<Rep_> (fOptions_);
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".xml"sv;

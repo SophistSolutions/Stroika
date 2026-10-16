@@ -16,11 +16,11 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
         : Writer{Options{}}
     {
     }
-    inline void Writer::Write (const Traversal::Iterable<Sequence<String>>& m, ostream& out)
+    inline void Writer::Write (const Traversal::Iterable<Sequence<String>>& m, ostream& out) const
     {
         Write (m, _WrapBinaryOutput (out));
     }
-    inline void Writer::Write (const Traversal::Iterable<Sequence<String>>& m, wostream& out)
+    inline void Writer::Write (const Traversal::Iterable<Sequence<String>>& m, wostream& out) const
     {
         Write (m, _WrapTextOutput (out));
     }

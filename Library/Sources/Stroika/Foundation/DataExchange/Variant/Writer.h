@@ -33,6 +33,13 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
     /**
      *  \brief  abstract class specifying interface for writers VariantValue objects to serialized formats like JSON, CSV, XML, etc
+     *
+     *  **A Writer is configured when it is constructed, and immutable after**: what the subclass's constructor was given (its
+     *  Options, say) is how it writes, and every method is const. To write differently, construct another Writer - that is
+     *  cheap. Copies share one representation, never modified, so a Writer is cheap to copy - to store, to pass by value, to
+     *  hand out from a factory.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Writer {
     protected:
@@ -42,7 +49,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         /**
          *  \pre rep != nullptr
          */
-        explicit Writer (const shared_ptr<_IRep>& rep);
+        explicit Writer (const shared_ptr<const _IRep>& rep);
         Writer () = delete;
 
     public:
@@ -79,11 +86,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         [[nodiscard]] nonvirtual String WriteAsString (const VariantValue& v) const;
 
     protected:
-        nonvirtual _IRep&       _GetRep ();
         nonvirtual const _IRep& _ConstGetRep () const;
-
-    protected:
-        using _SharedPtrIRep = shared_ptr<_IRep>;
 
     protected:
         /**
@@ -114,13 +117,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         static String _WriteAsStringHelper (const function<void (Streams::OutputStream::Ptr<Characters::Character>)>& f);
 
     private:
-        static _SharedPtrIRep CloneAsShared_ (const _IRep& t); // forward declare so can define _IRep out of line
-
-    private:
-        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, &CloneAsShared_>>;
-
-    private:
-        SharedRepByValuePtr_ fRep_;
+        shared_ptr<const _IRep> fRep_;
 
     public:
         [[deprecated ("Since v3.0d1, use WriteAsBLOB or another Write overload)")]] Memory::BLOB Write (const VariantValue& v)
@@ -132,7 +129,6 @@ namespace Stroika::Foundation::DataExchange::Variant {
     class Writer::_IRep {
     public:
         virtual ~_IRep ()                                                                                                   = default;
-        virtual _SharedPtrIRep             Clone () const                                                                   = 0;
         virtual optional<filesystem::path> GetDefaultFileSuffix () const                                                    = 0;
         virtual void                       Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out) const = 0;
         virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out) const      = 0;

@@ -472,10 +472,6 @@ class Variant::JSON::Reader::NativeRep_ : public Variant::Reader::_IRep {
 public:
     NativeRep_ ()                  = default;
     NativeRep_ (const NativeRep_&) = default;
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<NativeRep_> (*this);
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".json"sv;
@@ -771,10 +767,6 @@ class Variant::JSON::Reader::BoostRep_ : public Variant::Reader::_IRep {
 public:
     BoostRep_ ()                 = default;
     BoostRep_ (const BoostRep_&) = default;
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<BoostRep_> (*this);
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".json"sv;

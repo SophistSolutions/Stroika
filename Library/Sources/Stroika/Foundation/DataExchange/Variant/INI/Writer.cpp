@@ -29,10 +29,6 @@ using Memory::MakeSharedPtr;
 class INI::Writer::Rep_ final : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ () = default;
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<Rep_> (); // no instance data
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".ini"sv;
@@ -73,22 +69,32 @@ INI::Writer::Writer ()
 {
 }
 
-void INI::Writer::Write (const Profile& profile, const OutputStream::Ptr<byte>& out)
+void INI::Writer::Write (const Profile& profile, const OutputStream::Ptr<byte>& out) const
 {
     return Write (profile, Streams::TextToBinary::Writer::New (out));
 }
 
-void INI::Writer::Write (const Profile& profile, const OutputStream::Ptr<Characters::Character>& out)
+void INI::Writer::Write (const Profile& profile, const OutputStream::Ptr<Characters::Character>& out) const
 {
-    Debug::UncheckedDynamicCast<Rep_&> (_GetRep ()).Write (profile, out);
+    Debug::UncheckedDynamicCast<const Rep_&> (_ConstGetRep ()).Write (profile, out);
 }
 
-Memory::BLOB INI::Writer::WriteAsBLOB (const Profile& profile)
+void INI::Writer::Write (const Profile& profile, ostream& out) const
+{
+    Write (profile, _WrapBinaryOutput (out));
+}
+
+void INI::Writer::Write (const Profile& profile, wostream& out) const
+{
+    Write (profile, _WrapTextOutput (out));
+}
+
+Memory::BLOB INI::Writer::WriteAsBLOB (const Profile& profile) const
 {
     return _WriteAsBLOBHelper ([&profile, this] (const OutputStream::Ptr<byte>& out) { Write (profile, out); });
 }
 
-String INI::Writer::WriteAsString (const Profile& profile)
+String INI::Writer::WriteAsString (const Profile& profile) const
 {
     return _WriteAsStringHelper ([&profile, this] (const OutputStream::Ptr<Characters::Character>& out) { Write (profile, out); });
 }

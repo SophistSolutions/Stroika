@@ -30,10 +30,6 @@ public:
         : fOptions_{options}
     {
     }
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<Rep_> (fOptions_); // no instance data
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".txt"sv;
@@ -87,22 +83,22 @@ CharacterDelimitedLines::Writer::Writer (const Options& options)
 {
 }
 
-void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream::Ptr<byte>& out)
+void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream::Ptr<byte>& out) const
 {
     return Write (m, Streams::TextToBinary::Writer::New (out));
 }
 
-void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream::Ptr<Characters::Character>& out)
+void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream::Ptr<Characters::Character>& out) const
 {
-    Debug::UncheckedDynamicCast<Rep_&> (_GetRep ()).Write (m, out);
+    Debug::UncheckedDynamicCast<const Rep_&> (_ConstGetRep ()).Write (m, out);
 }
 
-Memory::BLOB CharacterDelimitedLines::Writer::WriteAsBLOB (const Iterable<Sequence<String>>& m)
+Memory::BLOB CharacterDelimitedLines::Writer::WriteAsBLOB (const Iterable<Sequence<String>>& m) const
 {
     return _WriteAsBLOBHelper ([&m, this] (const OutputStream::Ptr<byte>& out) { Write (m, out); });
 }
 
-String CharacterDelimitedLines::Writer::WriteAsString (const Iterable<Sequence<String>>& m)
+String CharacterDelimitedLines::Writer::WriteAsString (const Iterable<Sequence<String>>& m) const
 {
     return _WriteAsStringHelper ([&m, this] (const OutputStream::Ptr<Characters::Character>& out) { Write (m, out); });
 }

@@ -269,10 +269,6 @@ public:
         : fOptions_{options}
     {
     }
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<Rep_> (fOptions_); // no instance data
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".json"sv;

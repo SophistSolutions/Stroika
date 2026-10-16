@@ -53,9 +53,9 @@ namespace Stroika::Foundation::DataExchange::Variant::FormURLEncoded {
          */
         nonvirtual Association<String, String> ReadAssociation (const Streams::InputStream::Ptr<byte>& in) const;
         nonvirtual Association<String, String> ReadAssociation (const Streams::InputStream::Ptr<Character>& in) const;
-        nonvirtual Association<String, String> ReadAssociation (const Iterable<Character>& in);
-        nonvirtual Association<String, String> ReadAssociation (istream& in);
-        nonvirtual Association<String, String> ReadAssociation (wistream& in);
+        nonvirtual Association<String, String> ReadAssociation (const Iterable<Character>& in) const;
+        nonvirtual Association<String, String> ReadAssociation (istream& in) const;
+        nonvirtual Association<String, String> ReadAssociation (wistream& in) const;
     };
 
 }

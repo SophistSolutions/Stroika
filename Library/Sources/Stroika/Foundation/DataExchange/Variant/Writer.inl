@@ -9,13 +9,10 @@ namespace Stroika::Foundation::DataExchange::Variant {
      ***************************** DataExchange::Writer *****************************
      ********************************************************************************
      */
-    inline auto Writer::CloneAsShared_ (const _IRep& t) -> _SharedPtrIRep
-    {
-        return t.Clone ();
-    }
-    inline Writer::Writer (const shared_ptr<_IRep>& rep)
+    inline Writer::Writer (const shared_ptr<const _IRep>& rep)
         : fRep_{rep}
     {
+        RequireNotNull (rep);
     }
     inline optional<filesystem::path> Writer::GetDefaultFileSuffix () const
     {
@@ -37,21 +34,16 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         Write (v, _WrapTextOutput (out));
     }
-    inline Writer::_IRep& Writer::_GetRep ()
-    {
-        EnsureNotNull (fRep_.rwget ());
-        return *fRep_.rwget ();
-    }
     inline const Writer::_IRep& Writer::_ConstGetRep () const
     {
-        EnsureNotNull (fRep_.cget ());
-        return *fRep_.cget ();
+        AssertNotNull (fRep_);
+        return *fRep_;
     }
-    inline Streams::OutputStream::Ptr<byte> _WrapBinaryOutput (const Streams::OutputStream::Ptr<byte>& out)
+    inline Streams::OutputStream::Ptr<byte> Writer::_WrapBinaryOutput (const Streams::OutputStream::Ptr<byte>& out)
     {
         return out;
     }
-    inline Streams::OutputStream::Ptr<Characters::Character> _WrapTextOutput (const Streams::OutputStream::Ptr<Characters::Character>& out)
+    inline Streams::OutputStream::Ptr<Characters::Character> Writer::_WrapTextOutput (const Streams::OutputStream::Ptr<Characters::Character>& out)
     {
         return out;
     }

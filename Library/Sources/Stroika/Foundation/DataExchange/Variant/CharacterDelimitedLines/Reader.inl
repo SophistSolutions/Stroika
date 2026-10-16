@@ -9,15 +9,15 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
      ******************** CharacterDelimitedLines::Reader ***************************
      ********************************************************************************
      */
-    inline Iterable<Sequence<String>> Reader::ReadMatrix (const Traversal::Iterable<Characters::Character>& in)
+    inline Iterable<Sequence<String>> Reader::ReadMatrix (const Traversal::Iterable<Characters::Character>& in) const
     {
         return ReadMatrix (_ToCharacterReader (in));
     }
-    inline Iterable<Sequence<String>> Reader::ReadMatrix (istream& in)
+    inline Iterable<Sequence<String>> Reader::ReadMatrix (istream& in) const
     {
         return ReadMatrix (_ToByteReader (in));
     }
-    inline Iterable<Sequence<String>> Reader::ReadMatrix (wistream& in)
+    inline Iterable<Sequence<String>> Reader::ReadMatrix (wistream& in) const
     {
         return ReadMatrix (_ToCharacterReader (in));
     }

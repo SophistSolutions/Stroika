@@ -126,21 +126,6 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          */
         Writer ();
         Writer (const Options& options); ///< \brief Writing as options says
-
-    public:
-        /**
-         */
-        nonvirtual Options GetOptions () const;
-
-    public:
-        /**
-         *  @see GetOptions
-         */
-        nonvirtual void SetOptions (const Options& options);
-
-    private:
-        nonvirtual const Rep_& GetRep_ () const;
-        nonvirtual Rep_&       GetRep_ ();
     };
 
 }

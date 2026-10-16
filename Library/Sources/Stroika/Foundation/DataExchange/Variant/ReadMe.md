@@ -1,10 +1,12 @@
 # This folder contains all the Stroika Library [Foundation](../../)::[DataExchange](../)::Variant source code
 
-This module provides readers and writers which convert binary streams to binary streams
-of the same data
+This module provides readers and writers which map between VariantValue objects and a format - JSON, XML, INI, ... - read
+from, or written to, streams (InputStream::Ptr, OutputStream::Ptr, std streams), BLOBs and Strings.
 
-This module provides readers and writers which map between VariantValue objects
-and InputStreamPtr<> and OutputStream<> object.
+A Reader or Writer is configured when it is constructed - its format's constructor arguments, often an Options - and
+immutable after: every method is const. To read or write differently, construct another - that is cheap. Copies share one
+representation, never modified, so a Reader or Writer is cheap to copy - to store, to pass by value, to hand out from a
+factory.
 
 ### Abstract Interfaces:
 
@@ -17,6 +19,11 @@ and InputStreamPtr<> and OutputStream<> object.
 
   - [Reader.h](CharacterDelimitedLines/Reader.h)
   - [Writer.h](CharacterDelimitedLines/Writer.h)
+
+- FormURLEncoded
+
+  - [Reader.h](FormURLEncoded/Reader.h)
+  - [Writer.h](FormURLEncoded/Writer.h)
 
 - INI
 

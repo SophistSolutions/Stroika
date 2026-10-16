@@ -55,17 +55,14 @@ namespace Stroika::Foundation::DataExchange::Variant::FormURLEncoded {
          *        able to overload on return type).
          */
         using inherited::Write;
-        nonvirtual void Write (const Association<String, String>& m, const Streams::OutputStream::Ptr<byte>& out);
+        nonvirtual void Write (const Association<String, String>& m, const Streams::OutputStream::Ptr<byte>& out) const;
 
     public:
         /**
          *  @See Variant::Writer::WriteAsBLOB, but overloaded to also take array of array of strings to write.
          */
         using inherited::WriteAsBLOB;
-        [[nodiscard]] nonvirtual Memory::BLOB WriteAsBLOB (const Association<String, String>& m);
-
-    private:
-        nonvirtual shared_ptr<Rep_> GetRep_ () const;
+        [[nodiscard]] nonvirtual Memory::BLOB WriteAsBLOB (const Association<String, String>& m) const;
     };
 
 }

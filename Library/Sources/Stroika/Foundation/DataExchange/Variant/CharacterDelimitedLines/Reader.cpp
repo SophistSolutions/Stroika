@@ -42,10 +42,6 @@ public:
         , fTrimTokens_{trimTokens}
     {
     }
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<Rep_> (fDelimiters_, fTrimTokens_);
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".txt"sv;

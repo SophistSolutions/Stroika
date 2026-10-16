@@ -9,7 +9,6 @@
 #include <istream>
 
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
-#include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
 /**
@@ -38,6 +37,13 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
     /**
      *  \brief  abstract class specifying interface for readers that map a source like XML or JSON to a VariantValue objects
+     *
+     *  **A Reader is configured when it is constructed, and immutable after**: what the subclass's constructor was given (its
+     *  Options, say) is how it reads, and every method is const. To read differently, construct another Reader - that is
+     *  cheap. Copies share one representation, never modified, so a Reader is cheap to copy - to store, to pass by value, to
+     *  hand out from a factory.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Reader {
     protected:
@@ -50,7 +56,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         /**
          *  \pre rep != nullptr
          */
-        explicit Reader (const shared_ptr<_IRep>& rep);
+        explicit Reader (const shared_ptr<const _IRep>& rep);
 
     public:
         /**
@@ -67,7 +73,6 @@ namespace Stroika::Foundation::DataExchange::Variant {
         nonvirtual VariantValue Read (wistream& in) const;
 
     protected:
-        nonvirtual _IRep&       _GetRep ();
         nonvirtual const _IRep& _ConstGetRep () const;
 
     protected:
@@ -87,17 +92,8 @@ namespace Stroika::Foundation::DataExchange::Variant {
         static Streams::InputStream::Ptr<Characters::Character> _ToCharacterReader (const Traversal::Iterable<Characters::Character>& in);
         static Streams::InputStream::Ptr<Characters::Character> _ToCharacterReader (wistream& in);
 
-    protected:
-        using _SharedPtrIRep = shared_ptr<_IRep>;
-
     private:
-        static shared_ptr<_IRep> MakeSharedRep_ (const _IRep& t); // forward declare so can delay defining _IRep til outside of class scope
-
-    private:
-        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, &MakeSharedRep_>>;
-
-    private:
-        SharedRepByValuePtr_ fRep_;
+        shared_ptr<const _IRep> fRep_;
     };
 
     /**
@@ -105,7 +101,6 @@ namespace Stroika::Foundation::DataExchange::Variant {
     class Reader::_IRep {
     public:
         virtual ~_IRep ()                                                                                          = default;
-        virtual _SharedPtrIRep             Clone () const                                                          = 0;
         virtual optional<filesystem::path> GetDefaultFileSuffix () const                                           = 0;
         virtual VariantValue               Read (const Streams::InputStream::Ptr<byte>& in) const                  = 0;
         virtual VariantValue               Read (const Streams::InputStream::Ptr<Characters::Character>& in) const = 0;

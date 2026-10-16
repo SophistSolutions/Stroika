@@ -318,10 +318,6 @@ public:
         : fOptions_{options}
     {
     }
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return MakeSharedPtr<Rep_> (fOptions_);
-    }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".xml"sv;
@@ -375,14 +371,6 @@ public:
             }
         }
     }
-    nonvirtual Options GetOptions () const
-    {
-        return fOptions_;
-    }
-    nonvirtual void SetOptions (const Options& options)
-    {
-        fOptions_ = options;
-    }
 
 private:
     Options fOptions_;
@@ -396,26 +384,4 @@ Variant::XML::Writer::Writer ()
 Variant::XML::Writer::Writer (const Options& options)
     : inherited{MakeSharedPtr<Rep_> (options)}
 {
-}
-
-Variant::XML::Writer::Rep_& Variant::XML::Writer::GetRep_ ()
-{
-    EnsureMember (&inherited::_GetRep (), Rep_);
-    return reinterpret_cast<Rep_&> (inherited::_GetRep ());
-}
-
-const Variant::XML::Writer::Rep_& Variant::XML::Writer::GetRep_ () const
-{
-    EnsureMember (&inherited::_ConstGetRep (), Rep_);
-    return reinterpret_cast<const Rep_&> (inherited::_ConstGetRep ());
-}
-
-auto Variant::XML::Writer::GetOptions () const -> Options
-{
-    return GetRep_ ().GetOptions ();
-}
-
-void Variant::XML::Writer::SetOptions (const Options& options)
-{
-    GetRep_ ().SetOptions (options);
 }
