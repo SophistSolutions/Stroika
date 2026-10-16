@@ -286,9 +286,9 @@ namespace Stroika::Frameworks::WebService::SOAP {
     /**
      *  \brief Answer a call, at its URL's route: 415 (Unsupported Media Type) if its body is not text/xml; else its Request read
      *         and answered with handler's Response - or, status 500, with the Fault handler throws (as FaultException), or a Client
-     *         fault if the request is not a SOAP call.
+     *         fault if the request is not a SOAP call (nor, with options.fValidateReadAgainst, a valid one).
      */
-    void HandleRequest (WebServer::Message& m, const function<Response (const Request&)>& handler);
+    void HandleRequest (WebServer::Message& m, const function<Response (const Request&)>& handler, const Options& options = {});
 
 }
 

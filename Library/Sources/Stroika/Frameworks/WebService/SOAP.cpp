@@ -394,7 +394,7 @@ SOAP::Response SOAP::Invoke (const URI& url, const String& soapAction, const Req
  ************************ WebService::SOAP::HandleRequest ***********************
  ********************************************************************************
  */
-void SOAP::HandleRequest (WebServer::Message& m, const function<Response (const Request&)>& handler)
+void SOAP::HandleRequest (WebServer::Message& m, const function<Response (const Request&)>& handler, const Options& options)
 {
     static const InternetMediaType kTextXML_{"text/xml"sv};
     WebServer::Response&           response = m.rwResponse ();
@@ -406,18 +406,18 @@ void SOAP::HandleRequest (WebServer::Message& m, const function<Response (const 
     response.contentType = kContentType;
     auto answerFault     = [&] (const Fault& fault) {
         response.status = HTTP::StatusCodes::kInternalError; // how SOAP says it failed: section 6.2
-        response.write (Serialize (fault));
+        response.write (Serialize (fault, options));
     };
     Request request;
     try {
-        DeSerialize (m.rwRequest ().GetBody (), &request);
+        DeSerialize (m.rwRequest ().GetBody (), &request, options);
     }
     catch (const BadFormatException& e) {
         answerFault (Fault{.fFaultCode = Fault::kClient, .fFaultString = "not a SOAP call: {}"_f(e)});
         return;
     }
     try {
-        response.write (Serialize (handler (request)));
+        response.write (Serialize (handler (request), options));
     }
     catch (const FaultException& e) {
         answerFault (e.GetFault ());
