@@ -15,8 +15,8 @@
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
-#include "Device.h"
-#include "Options.h"
+#include "Stroika/Frameworks/UPnP/Device.h"
+#include "Stroika/Frameworks/UPnP/Options.h"
 
 /*
  * TODO:

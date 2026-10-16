@@ -3,7 +3,7 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "DeviceDescription.h"
+#include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 
 /*
  *  The UPnP device description schema, embedded.

@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
-#include "Options.h"
+#include "Stroika/Frameworks/UPnP/Options.h"
 
 /**
  *  \file
