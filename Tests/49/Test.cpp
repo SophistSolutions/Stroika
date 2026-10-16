@@ -437,6 +437,48 @@ namespace {
         EXPECT_ANY_THROW (s.Seek (kABCsLen_ * 10));
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Streams, iostream_WideStreams_)
+    {
+        Debug::TraceContextBumper ctx{"iostream_WideStreams_"};
+        using Characters::Character;
+        using Characters::String;
+        // A wide std stream holds UTF-16 where wchar_t is 16 bits (Windows), so the emoji - beyond the BMP - is two
+        // wchar_ts there, and one elsewhere
+        const String  kText_{U"a\U0001F600b\u00E9c"};
+        const wstring kWide_ = kText_.As<wstring> ();
+        {
+            wstringstream                              out;
+            OutputStreamFromStdOStream::Ptr<Character> w = OutputStreamFromStdOStream::New<Character> (out);
+            w.Write (kText_);
+            EXPECT_EQ (out.str (), kWide_);
+        }
+        {
+            wstringstream in{kWide_};
+            EXPECT_EQ (InputStreamFromStdIStream::New<Character> (in).ReadAll (), kText_);
+        }
+        {
+            // a Character at a time, so where wchar_t is 16 bits the emoji's two wchar_ts are split across Reads
+            wstringstream               in{kWide_};
+            InputStream::Ptr<Character> r = InputStreamFromStdIStream::New<Character> (in, eNotSeekable);
+            Characters::StringBuilder   sb;
+            while (optional<Character> c = r.ReadBlocking ()) {
+                sb << *c;
+            }
+            EXPECT_EQ (sb.str (), kText_);
+        }
+        {
+            // seekable by default - so it can be read again
+            wstringstream               in{kWide_};
+            InputStream::Ptr<Character> r = InputStreamFromStdIStream::New<Character> (in);
+            EXPECT_TRUE (r.IsSeekable ());
+            EXPECT_EQ (r.ReadAll (2), kText_.SubString (0, 2));
+            r.Seek (0);
+            EXPECT_EQ (r.ReadAll (), kText_);
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

@@ -57,6 +57,11 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
      *          XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), myCallback);
      *      \endcode
      *
+     *  \note   Where wchar_t is 16 bits (Windows), a std::wistream holds UTF-16, so a Character may be two of its elements: the
+     *          stream converts. It cannot seek by Character over the wistream itself, so seekable (the default) buffers what it
+     *          reads (BufferedInputStream), offsets counting Characters from where it started - and, holding data read ahead,
+     *          the wistream must not be read directly meanwhile.
+     *
      *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::istream
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>

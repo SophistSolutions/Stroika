@@ -41,6 +41,9 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
      *          EXPECT_TRUE (s.str () == kData_);
      *      \endcode
      *
+     *  \note   Where wchar_t is 16 bits (Windows), a std::wostream holds UTF-16, so a Character may be two of its elements: the
+     *          stream converts, and is not seekable (its offsets would count wchar_ts) - GetWriteOffset counts Characters written.
+     *
      *  \note   The lifetime of the underlying created (shared_ptr) Stream must be <= the lifetime of the argument std::ostream
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>

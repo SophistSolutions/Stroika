@@ -475,12 +475,16 @@ namespace {
                 EXPECT_EQ (deserialized, kCase1_.data);
                 EXPECT_EQ ((Variant::INI::Reader{}.ReadProfile (Memory::BLOB{kCase1_.dataAsFile})), kCase1_.data);
 
-                // and through a std stream, with a const Writer and Reader - a Reader or Writer is immutable, every method const
+                // and through std streams, narrow and wide, with a const Writer and Reader - a Reader or Writer is immutable, every
+                // method const
                 const Variant::INI::Writer writer;
                 const Variant::INI::Reader reader;
                 stringstream               narrow;
                 writer.Write (kCase1_.data, narrow);
                 EXPECT_EQ (reader.ReadProfile (narrow), kCase1_.data);
+                wstringstream wide;
+                writer.Write (kCase1_.data, wide);
+                EXPECT_EQ (reader.ReadProfile (wide), kCase1_.data);
             }
         };
         DoBasicReader1_ ();
