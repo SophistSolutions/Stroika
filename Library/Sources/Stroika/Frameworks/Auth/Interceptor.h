@@ -9,9 +9,10 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Concepts.h"
 
-#include "Stroika/Frameworks/Auth/CurrentIdentity.h"
 #include "Stroika/Frameworks/WebServer/Interceptor.h"
 #include "Stroika/Frameworks/WebServer/Request.h"
+
+#include "Stroika/Frameworks/Auth/CurrentIdentity.h"
 
 /**
  *  \file
