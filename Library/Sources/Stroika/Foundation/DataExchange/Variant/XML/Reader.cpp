@@ -409,15 +409,15 @@ namespace {
 
 class Variant::XML::Reader::Rep_ final : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
-    Rep_ (const Binding& binding)
-        : fBinding_{binding}
+    Rep_ (const Options& options)
+        : fOptions_{options}
     {
     }
 
 public:
     virtual _SharedPtrIRep Clone () const override
     {
-        return MakeSharedPtr<Rep_> (fBinding_);
+        return MakeSharedPtr<Rep_> (fOptions_);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -426,15 +426,20 @@ public:
     virtual VariantValue Read ([[maybe_unused]] const Streams::InputStream::Ptr<byte>& in) const override
     {
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-        Builder_ builder{fBinding_};
-        SAXParse (in, &builder, nullptr);
+        Builder_ builder{fOptions_.fBinding};
+        if (fOptions_.fXMLProvider == nullptr) {
+            SAXParse (in, &builder, fOptions_.fValidateAgainst);
+        }
+        else {
+            SAXParse (*fOptions_.fXMLProvider, in, &builder, fOptions_.fValidateAgainst);
+        }
         if (not builder.fRootValue) {
             static const auto kException_ = BadFormatException{"no root element"sv};
             Execution::Throw (kException_);
         }
         // as the Writer has it: with the document element named, its content is the value; else the value is the object it is
         // the one member of
-        return fBinding_.fName ? *builder.fRootValue : VariantValue{Mapping<String, VariantValue> {
+        return fOptions_.fBinding.fName ? *builder.fRootValue : VariantValue{Mapping<String, VariantValue> {
             { builder.fRootKey,
               *builder.fRootValue }
         }};
@@ -449,42 +454,22 @@ public:
         // SAXParse reads bytes - so write the characters back out as UTF-8 for it
         return Read (Streams::TextToBinary::Reader::New (in));
     }
-    nonvirtual Binding GetBinding () const
-    {
-        return fBinding_;
-    }
-    nonvirtual void SetBinding (const Binding& binding)
-    {
-        fBinding_ = binding;
-    }
 
 private:
-    Binding fBinding_;
+    Options fOptions_;
 };
 
+Variant::XML::Reader::Reader ()
+    : Reader{Options{}}
+{
+}
+
+Variant::XML::Reader::Reader (const Options& options)
+    : inherited{MakeSharedPtr<Rep_> (options)}
+{
+}
+
 Variant::XML::Reader::Reader (const Binding& binding)
-    : inherited{MakeSharedPtr<Rep_> (binding)}
+    : Reader{Options{.fBinding = binding}}
 {
-}
-
-Variant::XML::Reader::Rep_& Variant::XML::Reader::GetRep_ ()
-{
-    EnsureMember (&inherited::_GetRep (), Rep_);
-    return reinterpret_cast<Rep_&> (inherited::_GetRep ());
-}
-
-const Variant::XML::Reader::Rep_& Variant::XML::Reader::GetRep_ () const
-{
-    EnsureMember (&inherited::_ConstGetRep (), Rep_);
-    return reinterpret_cast<const Rep_&> (inherited::_ConstGetRep ());
-}
-
-Binding Variant::XML::Reader::GetBinding () const
-{
-    return GetRep_ ().GetBinding ();
-}
-
-void Variant::XML::Reader::SetBinding (const Binding& binding)
-{
-    GetRep_ ().SetBinding (binding);
 }

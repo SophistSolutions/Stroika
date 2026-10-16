@@ -12,7 +12,8 @@ asked for, XML or JSON, since both writers take the same VariantValue.
 One key note to understand: VariantValue doesn't fit perfectly with XML (detecting arrays a bit ambiguous, no clear notion of attributes vs elements, and others). These ambiguities must somehow be addressible.
 
 A [Binding](Binding.h) addresses them, and the Reader and Writer are given the same one - what one wrote, the other must
-know to read. The Writer's Options add only how it lays the text out (pretty printing, indentation).
+know to read. The Writer's Options add how it lays the text out (pretty printing, indentation); the Reader's, which parser
+reads it, and a schema the document must hold to.
 
 ## The default <-> correspondence between VariantValue and XML
 

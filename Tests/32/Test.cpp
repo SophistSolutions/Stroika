@@ -41,6 +41,13 @@
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
+#if qStroika_HasComponent_libxml2
+#include "Stroika/Foundation/DataExchange/XML/Providers/LibXML2.h"
+#endif
+#if qStroika_HasComponent_xerces
+#include "Stroika/Foundation/DataExchange/XML/Providers/Xerces.h"
+#endif
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Math/Common.h"
@@ -2033,6 +2040,45 @@ namespace {
                 }
             }
         }
+    }
+
+    /*
+     *  Variant::XML::Reader::Options: which provider's parser reads, and a schema the document must hold to
+     */
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_ReaderOptions_)
+    {
+        using DataExchange::Variant::XML::Binding;
+        using DataExchange::Variant::XML::Reader;
+        using VVMap = Mapping<String, VariantValue>;
+        Sequence<const DataExchange::XML::Providers::IXMLProvider*> providers{nullptr}; // nullptr: Stroika's default
+#if qStroika_HasComponent_libxml2
+        providers += &DataExchange::XML::Providers::LibXML2::kDefaultProvider;
+#endif
+#if qStroika_HasComponent_xerces
+        providers += &DataExchange::XML::Providers::Xerces::kDefaultProvider;
+#endif
+        // each provider reads it alike
+        const Binding typed{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"n"sv, Binding{.fType = VariantValue::eInteger}}}};
+        for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
+            EXPECT_EQ ((Reader{{.fBinding = typed, .fXMLProvider = p}}.Read (String{"<a><n>3</n></a>"sv})),
+                       (VariantValue{VVMap{{"n"sv, VariantValue{3}}}}));
+        }
+#if qStroika_Foundation_DataExchange_XML_SupportSchema
+        // validated as it is read: a document the schema refuses throws - here one a lenient Binding would have read
+        constexpr string_view kXSD = R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="a"><xs:complexType><xs:sequence><xs:element name="n" type="xs:int"/></xs:sequence></xs:complexType></xs:element>
+</xs:schema>)";
+        const Memory::BLOB    kSchemaData{as_bytes (span{kXSD})};
+        const Binding         lenient{.fName = "a"sv};
+        for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
+            DataExchange::XML::Schema::Ptr schema =
+                p == nullptr ? DataExchange::XML::Schema::New (kSchemaData) : DataExchange::XML::Schema::New (*p, kSchemaData);
+            Reader validating{{.fBinding = lenient, .fXMLProvider = p, .fValidateAgainst = schema}};
+            EXPECT_EQ (validating.Read (String{"<a><n>3</n></a>"sv}), (VariantValue{VVMap{{"n"sv, VariantValue{"3"sv}}}}));
+            EXPECT_NO_THROW (Reader{lenient}.Read (String{"<a><m>3</m></a>"sv})); // not validated: read
+            EXPECT_ANY_THROW (validating.Read (String{"<a><m>3</m></a>"sv}));     // validated: refused
+        }
+#endif
     }
 }
 #endif

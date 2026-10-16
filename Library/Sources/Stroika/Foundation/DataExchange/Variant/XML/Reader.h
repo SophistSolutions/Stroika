@@ -9,6 +9,8 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/DataExchange/Variant/Reader.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
 #include "Binding.h"
@@ -45,10 +47,10 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  Reader, throws BadFormatException, the value not being one the Binding describes: never anything in between** (but for
      *  what XML writes as nothing - @see Binding::IsComplete).
      *
-     *  Give it the Binding the Writer was given. With the default - no Binding::fName - the document element is the value's one
-     *  member, so its name is kept: `<a><b>1</b></a>` reads as `{"a": {"b": "1"}}`. A Binding with an fName reads the document
-     *  element's content as the value - and throws DataExchange::BadFormatException where that element has another (local)
-     *  name, the document not being one the Binding describes.
+     *  Give it (Options::fBinding) the Binding the Writer was given. With the default - no Binding::fName - the document
+     *  element is the value's one member, so its name is kept: `<a><b>1</b></a>` reads as `{"a": {"b": "1"}}`. A Binding with
+     *  an fName reads the document element's content as the value - and throws DataExchange::BadFormatException where that
+     *  element has another (local) name, the document not being one the Binding describes.
      *
      *  \note Throws DataExchange::BadFormatException on mixed content (text beside child elements), which this shape cannot
      *        hold: reading on would silently drop the text. And on text beside attributes, unless a Binding says which member
@@ -71,22 +73,37 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
         class Rep_;
 
     public:
-        Reader (const Binding& binding = {});
+        /**
+         *  \brief How to read: the Binding - and which parser reads, and a schema the document must hold to
+         */
+        struct Options {
+            /**
+             *  \brief The Binding the Writer was given (@see Binding)
+             */
+            Binding fBinding;
+
+            /**
+             *  \brief The provider whose parser reads - nullptr for Stroika's default. A SAX parser is all the Reader needs
+             */
+            const DataExchange::XML::Providers::ISAXProvider* fXMLProvider{nullptr};
+
+            /**
+             *  \brief A schema the document is validated against as it is read: reading one that does not hold to it throws.
+             *         nullptr (the default) validates nothing
+             *
+             *  Best compiled by the provider that reads (fXMLProvider) - @see DataExchange::XML::SAXParse.
+             */
+            DataExchange::XML::Schema::Ptr fValidateAgainst{nullptr};
+        };
 
     public:
         /**
+         *  \note Two constructors, not one with a default argument (= {}): within Reader, that default argument cannot use the
+         *        member initializers of Options, nested in it (C++ CWG 1397) - MSVC allows it, clang and gcc do not.
          */
-        nonvirtual Binding GetBinding () const;
-
-    public:
-        /**
-         *  @see GetBinding
-         */
-        nonvirtual void SetBinding (const Binding& binding);
-
-    private:
-        nonvirtual const Rep_& GetRep_ () const;
-        nonvirtual Rep_&       GetRep_ ();
+        Reader ();
+        Reader (const Options& options); ///< \brief Reading as options says
+        Reader (const Binding& binding); ///< \brief As Reader{Options{.fBinding = binding}}
     };
 
 }
