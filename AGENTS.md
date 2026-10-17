@@ -547,8 +547,10 @@ still compile". Say which one you did.
   version-gated, the error text above it; reuse one for the same bug), with the natural code in its `#else` - even when
   the workaround compiles everywhere - so dropping the old toolchain leaves clean code. No comment at the use: the
   define says why.
-- **Warnings**: removing a suppression that provably suppresses nothing is welcome. `-Wno-switch`, `-Wno-sign-compare` and
-  `-Wno-unused-function` stay on purpose (2026-10-05); never silence sign-compare with a cast - `std::cmp_less` fixes it.
+- **Warnings**: removing a suppression that provably suppresses nothing is welcome - on BOTH supported MSVC versions.
+  `-Wno-switch`, `-Wno-sign-compare` and `-Wno-unused-function` stay on purpose (2026-10-05); never silence sign-compare with
+  a cast - `std::cmp_less` fixes it. A warning whose fix would make the code worse (MSVC's C4127 on a condition constant on
+  some platforms) is suppressed, not bowed to (LGP, 2026-10-17).
 - **Kept on purpose, though nothing calls them**: toolbox scripts such as `Build/Scripts/BuildGCC`, `BuildClang` and
   `BuildGLIBCLocally` ("unreferenced" means dead only for code paths). Led's `qStroika_Frameworks_Led_HeavyDebugging`
   stays off - it is turned on by hand for a build or two when debugging Led. A private downstream depends on Led's
