@@ -1962,6 +1962,24 @@ namespace {
             incomplete (keeping, "keeps the members it does not declare");
         }
         {
+            // an array can skip what is not its item, too - a vendor's element among UPnP's <service>s, say - where its Binding
+            // says so; by default that is rejected, an array having no member to read it into
+            const Binding item{.fName = "i"sv, .fType = VariantValue::eInteger};
+            const Binding rejecting{.fName = "a"sv,
+                                    .fType = VariantValue::eMap,
+                                    .fMembers = {{"list"sv, Binding{.fType = VariantValue::eArray, .fItems = make_shared<Binding> (item)}}}};
+            const Binding skipping{.fName    = "a"sv,
+                                   .fType    = VariantValue::eMap,
+                                   .fMembers = {{"list"sv, Binding{.fType              = VariantValue::eArray,
+                                                                   .fUndeclaredMembers = Binding::UndeclaredMembers::eSkip,
+                                                                   .fItems             = make_shared<Binding> (item)}}}};
+            const String  vendor{"<a xmlns:v=\"urn:v\"><list v:x=\"1\"><i>1</i><v:note>a <b>vendor</b>'s</v:note><i>2</i></list></a>"sv};
+            EXPECT_THROW (Reader{rejecting}.Read (vendor), BadFormatException);
+            EXPECT_TRUE (SameTyped_ (Reader{skipping}.Read (vendor),
+                                     VariantValue{VVMap{{"list"sv, VariantValue{Sequence<VariantValue>{VariantValue{1LL}, VariantValue{2LL}}}}}}));
+            EXPECT_TRUE (skipping.IsComplete ()) << skipping.ToString ().AsUTF8<string> ();
+        }
+        {
             // a presence marker: an empty element, true by being there - as UPnP's <retval/>
             const Binding argument{.fName    = "argument"sv,
                                    .fType    = VariantValue::eMap,

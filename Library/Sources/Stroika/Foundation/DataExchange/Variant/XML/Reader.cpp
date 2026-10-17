@@ -55,13 +55,17 @@ namespace {
     }
 
     // what reading does with an element or attribute the Binding of the element it is in does not declare - and an array or a
-    // leaf the Binding declares has no members to declare
+    // leaf the Binding declares has no members to declare, so none to keep: an array's Binding can say to skip what is not its
+    // item, and otherwise it is refused
     Binding::UndeclaredMembers UndeclaredIn_ (const Binding* binding)
     {
         if (binding == nullptr) {
             return Binding::UndeclaredMembers::eKeep;
         }
         if (binding->fType and binding->fType != VariantValue::eMap) {
+            if (binding->fType == VariantValue::eArray and binding->fUndeclaredMembers == Binding::UndeclaredMembers::eSkip) {
+                return Binding::UndeclaredMembers::eSkip;
+            }
             return Binding::UndeclaredMembers::eReject;
         }
         return binding->GetUndeclaredMembers ();

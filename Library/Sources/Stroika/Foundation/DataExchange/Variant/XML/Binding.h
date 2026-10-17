@@ -187,6 +187,9 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *  nullopt (the default) is eReject where fType is declared, and eKeep where not. eSkip is how a complete Binding reads
          *  someone else's documents - UPnP's descriptions, which devices extend with their own elements - and still round-trips
          *  every value of its type.
+         *
+         *  An array (fType eArray) has no members, but eSkip skips what is not its item there too - an element or attribute
+         *  among a list's items; anything else refuses it, as for a value of any other type.
          */
         optional<UndeclaredMembers> fUndeclaredMembers;
 
