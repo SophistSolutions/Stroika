@@ -125,6 +125,11 @@ Generally will track stuff here between releases
      InputStreamFromStdIStream's RemainingLength is AssertNotImplemented, and its eDontBlock Read can still block
      (istream::read waits for the whole buffer); seek offsets mean different things - the istream's own position there,
      counted from where it started in BinaryToText's seekable reader.
+   - **A brief, table-based way to map an enum spelled another way** (LGP 2026-10-17) - UPnP's ServiceDescription.cpp maps an
+     argument's Direction to in/out with two hand-written lambdas. ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations
+     (an EnumNames or Bijection table) is that brief way, but reads strictly - a name not in the table throws, untrimmed -
+     where UPnP reads anything but "out" as in. Give it a fallback for names the table lacks (and trimming), then use it there;
+     sendEvents' yes/no (a bool) is the same shape.
 
 
   - DO PLANNING for CMAKE change
