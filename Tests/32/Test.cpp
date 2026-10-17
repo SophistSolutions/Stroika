@@ -1581,6 +1581,20 @@ namespace {
 namespace {
     using DataExchange::Variant::XML::Binding;
 
+    // a Float anywhere in it - under valgrind, which holds long double in 64 bits, such a value need not survive text and back
+    bool HasFloat_ (const Binding& b)
+    {
+        if (b.fType == VariantValue::eFloat) {
+            return true;
+        }
+        for (const Binding::Member& m : b.fMembers) {
+            if (m.fBinding != nullptr and HasFloat_ (*m.fBinding)) {
+                return true;
+            }
+        }
+        return (b.fItems != nullptr and HasFloat_ (*b.fItems)) or (b.fDefaultArrayItems != nullptr and HasFloat_ (*b.fDefaultArrayItems));
+    }
+
     // equal, and of the same type all the way down - VariantValue's == calls 3 and "3" equal (it compares them Normalize ()d)
     bool SameTyped_ (const VariantValue& a, const VariantValue& b)
     {
@@ -2046,6 +2060,7 @@ namespace {
             // the claim itself - every value of a complete Binding's type reads back exactly - over random complete Bindings, and
             // random values of each
             CompleteBindings_ g{20261015};
+            unsigned int      floatsNotCheckedUnderValgrind = 0;
             for (unsigned int i = 0; i < 300; ++i) {
                 Binding b = g.Make (3, false);
                 b.fName   = "root"sv;
@@ -2055,11 +2070,15 @@ namespace {
                     String       xml = Writer{{.fBinding = b}}.WriteAsString (v);
                     try {
                         VariantValue back = Reader{b}.Read (xml);
-                        EXPECT_TRUE (SameTyped_ (back, CompleteBindings_::Expected (v, b)))
-                            << "Binding: " << b.ToString ().AsUTF8<string> () << endl
-                            << "value:   " << Characters::ToString (v).AsUTF8<string> () << endl
-                            << "read:    " << Characters::ToString (back).AsUTF8<string> () << endl
-                            << "xml:     " << xml.AsUTF8<string> ();
+                        const bool   same = SameTyped_ (back, CompleteBindings_::Expected (v, b));
+                        if (not same and Debug::IsRunningUnderValgrind () and HasFloat_ (b)) {
+                            ++floatsNotCheckedUnderValgrind; // as JSONONLY_Test_09_ReadWriteNANShouldNotFail_: long double held in 64 bits
+                            continue;
+                        }
+                        EXPECT_TRUE (same) << "Binding: " << b.ToString ().AsUTF8<string> () << endl
+                                           << "value:   " << Characters::ToString (v).AsUTF8<string> () << endl
+                                           << "read:    " << Characters::ToString (back).AsUTF8<string> () << endl
+                                           << "xml:     " << xml.AsUTF8<string> ();
                     }
                     catch (const std::exception& e) {
                         ADD_FAILURE () << "read threw " << e.what () << endl
@@ -2067,6 +2086,10 @@ namespace {
                                        << "xml:     " << xml.AsUTF8<string> ();
                     }
                 }
+            }
+            if (floatsNotCheckedUnderValgrind != 0) {
+                Stroika::Frameworks::Test::WarnTestIssue ("XML_ONLY_CompleteBinding_ (valgrind holds long double in 64 bits): {} round trips with a Float not checked"_f(
+                    floatsNotCheckedUnderValgrind));
             }
         }
     }
