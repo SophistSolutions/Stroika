@@ -12,13 +12,12 @@
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/DataExchange/XML/Namespace.h"
+#include "Stroika/Foundation/DataExchange/XML/Options.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 
-namespace Stroika::Foundation::DataExchange::XML::Schema {
-    class Ptr;
-}
 namespace Stroika::Foundation::DataExchange::XML::Providers {
     struct IDOMProvider;
 };
@@ -842,22 +841,23 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *  @todo consider adding 'Resolver' argument - so missing #includes get loaded.
          * 
          *  If not otherwise specified (e..g if not read from stream where specified otherwise), XML documents default to standalone (=yes)
+         *
+         *  The overloads taking a provider first use exactly that one; the rest use the one o names (by default, Stroika's).
          */
         Ptr New (const Providers::IDOMProvider& p);
-        Ptr New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName);
-        Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in);
-        Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
-        Ptr New (const Providers::IDOMProvider& p, const String& in);
-        Ptr New (const Providers::IDOMProvider& p, const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
-        Ptr New (const Providers::IDOMProvider& p, const Ptr& clone);
+        Ptr New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName); ///< \brief Create a Document object
+        Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in,
+                 const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr); ///< \brief Create a Document object
+        Ptr New (const Providers::IDOMProvider& p, const String& in,
+                 const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr); ///< \brief Create a Document object
+        Ptr New (const Providers::IDOMProvider& p, const Ptr& clone);               ///< \brief Create a Document object
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
-        Ptr New ();
-        Ptr New (const NameWithNamespace& documentElementName);
-        Ptr New (const Streams::InputStream::Ptr<byte>& in);
-        Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
-        Ptr New (const String& in);
-        Ptr New (const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
-        Ptr New (const Ptr& clone);
+        Ptr New (const Options& o = {}); ///< \brief Create a Document object - with the provider o names
+        Ptr New (const NameWithNamespace& documentElementName, const Options& o = {}); ///< \brief Create a Document object - with the provider o names
+        Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr,
+                 const Options& o = {}); ///< \brief Create a Document object - with the provider o names
+        Ptr New (const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr, const Options& o = {}); ///< \brief Create a Document object - with the provider o names
+        Ptr New (const Ptr& clone, const Options& o = {}); ///< \brief Create a Document object - with the provider o names
 #endif
 
         /**

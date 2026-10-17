@@ -3,8 +3,6 @@
  */
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 
-#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
-
 namespace Stroika::Foundation::DataExchange::XML::Schema {
 
     /*

@@ -46,7 +46,7 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
 
-XML::Schema::Ptr UPnP::DeviceDescriptionSchema (const XML::Providers::ISchemaProvider& p)
+XML::Schema::Ptr UPnP::DeviceDescriptionSchema (const XML::Options& o)
 {
     /*
      *  Compiled afresh each call, and deliberately not kept: a Schema::Ptr belongs to the provider that made it and may
@@ -55,6 +55,6 @@ XML::Schema::Ptr UPnP::DeviceDescriptionSchema (const XML::Providers::ISchemaPro
      *  caller's anyway. A device reading more than the occasional description holds its own, in its own Options, where
      *  the lifetime is plain to see.
      */
-    return XML::Schema::New (p, Memory::BLOB::Attach (Schemas_device_1_0_xsd), nullptr);
+    return XML::Schema::New (Memory::BLOB::Attach (Schemas_device_1_0_xsd), nullptr, o);
 }
 #endif

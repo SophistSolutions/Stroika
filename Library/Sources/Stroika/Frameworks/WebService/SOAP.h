@@ -192,7 +192,7 @@ namespace Stroika::Frameworks::WebService::SOAP {
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
     /**
-     *  \brief The SOAP 1.1 envelope schema, compiled for that provider - embedded, so nothing is fetched and no
+     *  \brief The SOAP 1.1 envelope schema, compiled by the provider o names - embedded, so nothing is fetched and no
      *         Resource::Resolver is wanted (it imports and includes nothing)
      *
      *  What it checks is the ENVELOPE: that Body holds what a Body may, that a Fault's children are the ones SOAP names
@@ -209,7 +209,7 @@ namespace Stroika::Frameworks::WebService::SOAP {
      *  \note The schema is http://schemas.xmlsoap.org/soap/envelope/ verbatim, under the W3C Software License, whose
      *        notice travels with it - @see Schemas/soap-envelope-1.1.xsd
      */
-    DataExchange::XML::Schema::Ptr EnvelopeSchema (const DataExchange::XML::Providers::ISchemaProvider& p);
+    DataExchange::XML::Schema::Ptr EnvelopeSchema (const DataExchange::XML::Options& o = {});
 #endif
 
     /**
@@ -218,9 +218,9 @@ namespace Stroika::Frameworks::WebService::SOAP {
      */
     struct Options {
         /**
-         *  \brief Read and write XML with this provider - nullptr, the default, meaning DataExchange::XML::Providers::kDefaultProvider
+         *  \brief How XML is read and written - by default, with Stroika's default provider
          */
-        const DataExchange::XML::Providers::IXMLProvider* fXMLProvider{nullptr};
+        DataExchange::XML::Options fXMLOptions;
 
         /**
          *  \brief Check a message being READ against this schema, throwing where it does not hold - nullptr, the
@@ -228,7 +228,7 @@ namespace Stroika::Frameworks::WebService::SOAP {
          *
          *      \code
          *          // told early rather than half understanding a message
-         *          const SOAP::Options kStrict_{.fValidateReadAgainst = SOAP::EnvelopeSchema (*XML::Providers::kDefaultProvider ())};
+         *          const SOAP::Options kStrict_{.fValidateReadAgainst = SOAP::EnvelopeSchema ()};
          *      \endcode
          *
          *  Nothing by default, because validating refuses messages that work today, and SOAP 1.1 itself is why. Its
@@ -249,16 +249,6 @@ namespace Stroika::Frameworks::WebService::SOAP {
          *        found the Envelope/encodingStyle problem in the first place.
          */
         DataExchange::XML::Schema::Ptr fValidateReadAgainst{nullptr};
-
-#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
-        /**
-         *  \brief fXMLProvider, or Stroika's default where that is nullptr - the one Serialize and DeSerialize actually use
-         */
-        nonvirtual const DataExchange::XML::Providers::IXMLProvider& GetXMLProvider () const
-        {
-            return DataExchange::XML::Providers::ProviderOrDefault (fXMLProvider);
-        }
-#endif
     };
 
     /**

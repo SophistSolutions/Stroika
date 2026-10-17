@@ -274,6 +274,6 @@ Memory::BLOB UPnP::Serialize (const ServiceDescription& sd, [[maybe_unused]] con
 void UPnP::DeSerialize (const Memory::BLOB& b, ServiceDescription* sd, const Options& options)
 {
     RequireNotNull (sd);
-    const Variant::XML::Reader reader{{.fBinding = Binding_ (), .fXMLProvider = options.fXMLProvider, .fValidateAgainst = options.fValidateReadAgainst}};
+    const Variant::XML::Reader reader{{.fBinding = Binding_ (), .fXMLOptions = options.fXMLOptions, .fValidateAgainst = options.fValidateReadAgainst}};
     *sd = Mapper_ ().ToObject<ServiceDescription> (reader.Read (b.As<Streams::InputStream::Ptr<byte>> ()));
 }

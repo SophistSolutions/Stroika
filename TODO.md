@@ -92,8 +92,8 @@ Generally will track stuff here between releases
          fTimeout{1800.0} each, with near-identical doc comments.
        - The six SSDP ones are probably fine - genuinely different knobs per class - but nobody has checked whether
          they share fields that ought to be one type.
-     The field that actually crosses module boundaries is fXMLProvider, and it has no shared convention: each Options
-     redeclares it, and each DeSerialize has to remember to thread it (one did not - a3eb3ff6f3).
+     The field that crosses module boundaries is now one type, DataExchange::XML::Options, held as fXMLOptions - but each
+     DeSerialize still has to remember to thread it (one did not - a3eb3ff6f3).
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.

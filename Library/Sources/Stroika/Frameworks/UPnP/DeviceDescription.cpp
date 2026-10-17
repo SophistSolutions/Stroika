@@ -276,7 +276,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b, const Options& optio
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("xml data: {}"_f, Streams::BinaryToText::Reader::New (b).ReadAll ());
 #endif
-    const Variant::XML::Reader reader{{.fBinding = Binding_ (), .fXMLProvider = options.fXMLProvider, .fValidateAgainst = options.fValidateReadAgainst}};
+    const Variant::XML::Reader reader{{.fBinding = Binding_ (), .fXMLOptions = options.fXMLOptions, .fValidateAgainst = options.fValidateReadAgainst}};
     VVMap_ root   = reader.Read (b.As<Streams::InputStream::Ptr<byte>> ()).As<VVMap_> ();
     VVMap_ device = root.LookupValue ("device"sv).As<VVMap_> ();
     // an empty <URLBase> means none (UPnP Device Architecture 1.0); one that is not a URL is taken for none too - ignored, as

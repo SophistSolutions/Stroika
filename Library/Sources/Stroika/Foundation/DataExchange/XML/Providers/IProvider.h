@@ -63,14 +63,6 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
      *  include libxml2's or Xerces's.
      */
     inline const Foundation::Execution::LazyInitialized<const IXMLProvider*> kDefaultProvider{Private_::GetDefaultProvider_};
-
-    /**
-     *  \brief p, or kDefaultProvider where p is nullptr
-     *
-     *  For an Options holding an optional choice of provider, where nullptr is how a caller asks for the default - so
-     *  every reader of one gets a provider, and the rule is written once.
-     */
-    const IXMLProvider& ProviderOrDefault (const IXMLProvider* p);
 #endif
 
 }

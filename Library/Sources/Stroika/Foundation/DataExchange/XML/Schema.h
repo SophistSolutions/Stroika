@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
 #include "Stroika/Foundation/DataExchange/XML/Namespace.h"
+#include "Stroika/Foundation/DataExchange/XML/Options.h"
 #include "Stroika/Foundation/DataExchange/XML/Resource.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
@@ -111,7 +112,7 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
      */
     Ptr New (const Providers::ISchemaProvider& p, const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver = nullptr);
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-    Ptr New (const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver = nullptr);
+    Ptr New (const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver = nullptr, const Options& o = {}); ///< \brief Compiled by the provider o names
 #endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing

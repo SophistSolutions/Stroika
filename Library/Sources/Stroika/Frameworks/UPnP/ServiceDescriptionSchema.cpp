@@ -49,7 +49,7 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
 
-XML::Schema::Ptr UPnP::ServiceDescriptionSchema (const XML::Providers::ISchemaProvider& p)
+XML::Schema::Ptr UPnP::ServiceDescriptionSchema (const XML::Options& o)
 {
     /*
      *  Compiled afresh each call, and deliberately not kept - @see DeviceDescriptionSchema.cpp, which says why at
@@ -68,6 +68,6 @@ XML::Schema::Ptr UPnP::ServiceDescriptionSchema (const XML::Providers::ISchemaPr
     // sendEvents and multicast, and nothing else in the file is written that way. A published schema that had changed
     // would land here first
     Assert (nWidened == 2);
-    return XML::Schema::New (p, Memory::BLOB{as_bytes (span{corrected})}, nullptr);
+    return XML::Schema::New (Memory::BLOB{as_bytes (span{corrected})}, nullptr, o);
 }
 #endif

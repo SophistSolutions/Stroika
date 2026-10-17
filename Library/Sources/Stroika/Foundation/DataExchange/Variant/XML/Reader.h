@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/DataExchange/Variant/Reader.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
-#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
+#include "Stroika/Foundation/DataExchange/XML/Options.h"
 #include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
@@ -83,15 +83,15 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
             Binding fBinding;
 
             /**
-             *  \brief The provider whose parser reads - nullptr for Stroika's default. A SAX parser is all the Reader needs
+             *  \brief How the XML is parsed - by default, with Stroika's default provider
              */
-            const DataExchange::XML::Providers::ISAXProvider* fXMLProvider{nullptr};
+            DataExchange::XML::Options fXMLOptions;
 
             /**
              *  \brief A schema the document is validated against as it is read: reading one that does not hold to it throws.
              *         nullptr (the default) validates nothing
              *
-             *  Best compiled by the provider that reads (fXMLProvider) - @see DataExchange::XML::SAXParse.
+             *  Best compiled by the provider that reads (fXMLOptions) - @see DataExchange::XML::SAXParse.
              */
             DataExchange::XML::Schema::Ptr fValidateAgainst{nullptr};
         };

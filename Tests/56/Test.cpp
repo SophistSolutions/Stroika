@@ -254,7 +254,7 @@ namespace {
     GTEST_TEST (Frameworks_WebService, SOAP_ValidatesAgainstItsSchema_)
     {
         Debug::TraceContextBumper ctx{"SOAP_ValidatesAgainstItsSchema_"};
-        const SOAP::Options       kValidating_{.fValidateReadAgainst = SOAP::EnvelopeSchema (*XML::Providers::kDefaultProvider ())};
+        const SOAP::Options       kValidating_{.fValidateReadAgainst = SOAP::EnvelopeSchema ()};
         // a call, its answer, a fault, and a fault carrying XML of someone else's
         const SOAP::Request kRequest_{
             .fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Symbol"sv, "IBM & <co>"sv}, {"Qty"sv, "100"sv}}};
@@ -321,8 +321,8 @@ namespace {
         const SOAP::Fault kFault_{.fFaultCode = SOAP::Fault::kServer, .fFaultString = "later"sv, .fDetail = "<x:Why xmlns:x=\"urn:example:why\">because</x:Why>"sv};
         for (const DataExchange::XML::Providers::IXMLProvider* writeWith : providers) {
             for (const DataExchange::XML::Providers::IXMLProvider* readWith : providers) {
-                const SOAP::Options kW_{.fXMLProvider = writeWith};
-                const SOAP::Options kR_{.fXMLProvider = readWith};
+                const SOAP::Options kW_{.fXMLOptions = {.fProvider = writeWith}};
+                const SOAP::Options kR_{.fXMLOptions = {.fProvider = readWith}};
                 {
                     SOAP::Request back;
                     EXPECT_NO_THROW (SOAP::DeSerialize (SOAP::Serialize (kRequest_, kW_), &back, kR_));

@@ -446,11 +446,11 @@ namespace {
                                                   .fDataType = "ui1"sv,
                                                   .fAllowedValueRange = SD::AllowedValueRange{.fMinimum = "0"sv, .fMaximum = "100"sv, .fStep = "5"sv}}}};
         for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
-            const UPnP::Options kPlain_{.fXMLProvider = p};
-            const UPnP::Options kValidatingDevice_{.fXMLProvider         = p,
-                                                   .fValidateReadAgainst = UPnP::DeviceDescriptionSchema (kPlain_.GetXMLProvider ())};
-            const UPnP::Options kValidatingService_{.fXMLProvider         = p,
-                                                    .fValidateReadAgainst = UPnP::ServiceDescriptionSchema (kPlain_.GetXMLProvider ())};
+            const UPnP::Options kPlain_{.fXMLOptions = {.fProvider = p}};
+            const UPnP::Options kValidatingDevice_{.fXMLOptions          = kPlain_.fXMLOptions,
+                                                   .fValidateReadAgainst = UPnP::DeviceDescriptionSchema (kPlain_.fXMLOptions)};
+            const UPnP::Options kValidatingService_{.fXMLOptions          = kPlain_.fXMLOptions,
+                                                    .fValidateReadAgainst = UPnP::ServiceDescriptionSchema (kPlain_.fXMLOptions)};
             {
                 const Memory::BLOB written = UPnP::Serialize (dd, kPlain_);
                 EXPECT_NO_THROW (UPnP::DeSerialize (written, kValidatingDevice_)) << written.As<string> ();
@@ -531,7 +531,7 @@ namespace {
     }
 
     /*
-     *  Options::fXMLProvider is honoured reading - so one library's UPnP need not use the provider another's does, and nullptr
+     *  Options::fXMLOptions is honoured reading - so one library's UPnP need not use the provider another's does, and nullptr
      *  means Stroika's default. Writing uses no provider, so what is written reads back whichever reads it.
      */
     GTEST_TEST (Frameworks_UPnP, ServiceDescription_XMLProviderOption_)
@@ -551,7 +551,7 @@ namespace {
         const Memory::BLOB written = Serialize (sd);
         for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
             SD back;
-            DeSerialize (written, &back, UPnP::Options{.fXMLProvider = p});
+            DeSerialize (written, &back, UPnP::Options{.fXMLOptions = {.fProvider = p}});
             EXPECT_EQ (back, sd) << back.ToString ().AsNarrowSDKString ();
         }
     }

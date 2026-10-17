@@ -30,12 +30,17 @@ const XML::Providers::IXMLProvider* XML::Providers::Private_::GetDefaultProvider
 #endif
 }
 
-const XML::Providers::IXMLProvider& XML::Providers::ProviderOrDefault (const IXMLProvider* p)
+/*
+ ********************************************************************************
+ ********************************** XML::Options ********************************
+ ********************************************************************************
+ */
+const XML::Providers::IXMLProvider& XML::Options::GetProvider () const
 {
-    if (p != nullptr) {
-        return *p;
+    if (fProvider != nullptr) {
+        return *fProvider;
     }
-    const IXMLProvider* d = kDefaultProvider ();
+    const Providers::IXMLProvider* d = Providers::kDefaultProvider ();
     EnsureNotNull (d); // this compiles only where SupportDOM is, and that means xerces or libxml2 is configured
     return *d;
 }

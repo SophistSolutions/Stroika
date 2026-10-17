@@ -6,7 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
+#include "Stroika/Foundation/DataExchange/XML/Options.h"
 #include "Stroika/Foundation/DataExchange/XML/Schema.h"
 
 /**
@@ -27,22 +27,19 @@ namespace Stroika::Frameworks::UPnP {
      *  \par Example Usage
      *      \code
      *          // this control point reads descriptions with Xerces, whatever the rest of the process does
-     *          const UPnP::Options kOptions_{.fXMLProvider = &XML::Providers::Xerces::kDefaultProvider};
+     *          const UPnP::Options kOptions_{.fXMLOptions = {.fProvider = &XML::Providers::Xerces::kDefaultProvider}};
      *          DeviceDescription   dd = UPnP::DeSerialize (fetched, kOptions_);
      *      \endcode
      */
     struct Options {
         /**
-         *  \brief Read XML with this provider - nullptr, the default, meaning DataExchange::XML::Providers::kDefaultProvider
-         *
-         *  Which is libxml2 where it is configured, else Xerces. A provider is a static singleton, so this is a plain
-         *  pointer and nothing owns it.
+         *  \brief How XML is read - by default, with Stroika's default provider
          *
          *  Writing needs none: Serialize writes a description's text itself (Variant::XML::Writer).
          *
          *  \note This is a UPnP option, not a process-wide one, so two libraries that each speak UPnP need not agree.
          */
-        const Foundation::DataExchange::XML::Providers::IXMLProvider* fXMLProvider{nullptr};
+        Foundation::DataExchange::XML::Options fXMLOptions;
 
         /**
          *  \brief Check a description being READ against this schema, throwing where it does not hold - nullptr, the
@@ -74,22 +71,8 @@ namespace Stroika::Frameworks::UPnP {
          *  \note What Stroika WRITES does validate - @see Tests/54's DescriptionsValidateAgainstPublishedSchemas_.
          */
         Foundation::DataExchange::XML::Schema::Ptr fValidateReadAgainst{nullptr};
-
-#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
-        /**
-         *  \brief fXMLProvider, or Stroika's default where that is nullptr - the one DeSerialize actually reads with
-         */
-        nonvirtual const Foundation::DataExchange::XML::Providers::IXMLProvider& GetXMLProvider () const;
-#endif
     };
 
 }
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include "Options.inl"
 
 #endif /*_Stroika_Frameworks_UPnP_Options_h_*/

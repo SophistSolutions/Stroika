@@ -2112,7 +2112,7 @@ namespace {
         // each provider reads it alike
         const Binding typed{.fName = "a"sv, .fType = VariantValue::eMap, .fMembers = {{"n"sv, Binding{.fType = VariantValue::eInteger}}}};
         for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
-            EXPECT_EQ ((Reader{{.fBinding = typed, .fXMLProvider = p}}.Read (String{"<a><n>3</n></a>"sv})),
+            EXPECT_EQ ((Reader{{.fBinding = typed, .fXMLOptions = {.fProvider = p}}}.Read (String{"<a><n>3</n></a>"sv})),
                        (VariantValue{VVMap{{"n"sv, VariantValue{3}}}}));
         }
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
@@ -2123,9 +2123,10 @@ namespace {
         const Memory::BLOB    kSchemaData{as_bytes (span{kXSD})};
         const Binding         lenient{.fName = "a"sv};
         for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
-            DataExchange::XML::Schema::Ptr schema =
-                p == nullptr ? DataExchange::XML::Schema::New (kSchemaData) : DataExchange::XML::Schema::New (*p, kSchemaData);
-            Reader validating{{.fBinding = lenient, .fXMLProvider = p, .fValidateAgainst = schema}};
+            const DataExchange::XML::Options kXMLOptions_{.fProvider = p};
+            Reader validating{{.fBinding         = lenient,
+                               .fXMLOptions      = kXMLOptions_,
+                               .fValidateAgainst = DataExchange::XML::Schema::New (kSchemaData, nullptr, kXMLOptions_)}};
             EXPECT_EQ (validating.Read (String{"<a><n>3</n></a>"sv}), (VariantValue{VVMap{{"n"sv, VariantValue{"3"sv}}}}));
             EXPECT_NO_THROW (Reader{lenient}.Read (String{"<a><m>3</m></a>"sv})); // not validated: read
             EXPECT_ANY_THROW (validating.Read (String{"<a><m>3</m></a>"sv}));     // validated: refused

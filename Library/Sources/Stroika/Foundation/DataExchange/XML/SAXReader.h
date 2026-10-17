@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/IConsumer.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
+#include "Stroika/Foundation/DataExchange/XML/Options.h"
 #include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Execution/ProgressMonitor.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
@@ -33,8 +34,8 @@ namespace Stroika::Foundation::DataExchange::XML {
                    StructuredStreamEvents::IConsumer* callback = nullptr, const Schema::Ptr& schema = nullptr,
                    Execution::ProgressMonitor::Updater progress = nullptr);
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-    void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback = nullptr,
-                   const Schema::Ptr& schema = nullptr, Execution::ProgressMonitor::Updater progress = nullptr);
+    void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback = nullptr, const Schema::Ptr& schema = nullptr,
+                   Execution::ProgressMonitor::Updater progress = nullptr, const Options& o = {}); ///< \brief Parse with the provider o names
 #endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing

@@ -145,7 +145,7 @@ namespace Stroika::Frameworks::UPnP {
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
     /**
-     *  \brief UPnP's own device description schema, compiled for a provider - what to give Options::fValidateReadAgainst
+     *  \brief UPnP's own device description schema, compiled by the provider o names - what to give Options::fValidateReadAgainst
      *
      *  @see Options::fValidateReadAgainst, which is how a description being read is checked against it, and which says
      *       why nothing does so by default.
@@ -157,13 +157,12 @@ namespace Stroika::Frameworks::UPnP {
      *  Nothing inside UPnP calls this, which is what lets a program that never validates not carry the schema's ~11K
      *  (it lives in a translation unit of its own; Stroika is a static library).
      *
-     *  \note Give it the provider the matching Options names, where that is not the default one: a schema and a parser
-     *        from different providers do work together, but slowly (@see XML::SAXParse).
+     *  \note Give it the matching Options' fXMLOptions: a schema and a parser from different providers do work together,
+     *        but slowly (@see XML::SAXParse).
      *
      *  \note The schema is https://upnp.org/schemas/device-1-0.xsd as it stood 2026-10-13.
      */
-    Foundation::DataExchange::XML::Schema::Ptr DeviceDescriptionSchema (
-        const Foundation::DataExchange::XML::Providers::ISchemaProvider& p = *Foundation::DataExchange::XML::Providers::kDefaultProvider ());
+    Foundation::DataExchange::XML::Schema::Ptr DeviceDescriptionSchema (const Foundation::DataExchange::XML::Options& o = {});
 #endif
 
 }

@@ -49,10 +49,9 @@ Ptr Schema::New (const Providers::ISchemaProvider& p, const Streams::InputStream
 }
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-Ptr Schema::New (const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver)
+Ptr Schema::New (const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver, const Options& o)
 {
-    static const XML::Providers::ISchemaProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
-    return New (*kDefaultProvider_, schemaData, resolver);
+    return New (o.GetProvider (), schemaData, resolver);
 }
 #endif
 

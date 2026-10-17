@@ -427,12 +427,7 @@ public:
     {
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
         Builder_ builder{fOptions_.fBinding};
-        if (fOptions_.fXMLProvider == nullptr) {
-            SAXParse (in, &builder, fOptions_.fValidateAgainst);
-        }
-        else {
-            SAXParse (*fOptions_.fXMLProvider, in, &builder, fOptions_.fValidateAgainst);
-        }
+        SAXParse (in, &builder, fOptions_.fValidateAgainst, nullptr, fOptions_.fXMLOptions);
         if (not builder.fRootValue) {
             static const auto kException_ = BadFormatException{"no root element"sv};
             Execution::Throw (kException_);

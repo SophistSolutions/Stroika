@@ -165,7 +165,7 @@ namespace Stroika::Frameworks::UPnP {
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
     /**
-     *  \brief UPnP's own SCPD schema, compiled for a provider - what to give Options::fValidateReadAgainst
+     *  \brief UPnP's own SCPD schema, compiled by the provider o names - what to give Options::fValidateReadAgainst
      *
      *  @see Options::fValidateReadAgainst, which is how an SCPD being read is checked against it, and which says why
      *       nothing does so by default. @see DeviceDescriptionSchema, which this matches in every other way.
@@ -177,8 +177,7 @@ namespace Stroika::Frameworks::UPnP {
      *        published it would refuse every real device, Stroika's own output included. The two enumerations are
      *        widened to accept yes and no as well; nothing else is touched. @see ServiceDescriptionSchema.cpp.
      */
-    Foundation::DataExchange::XML::Schema::Ptr ServiceDescriptionSchema (
-        const Foundation::DataExchange::XML::Providers::ISchemaProvider& p = *Foundation::DataExchange::XML::Providers::kDefaultProvider ());
+    Foundation::DataExchange::XML::Schema::Ptr ServiceDescriptionSchema (const Foundation::DataExchange::XML::Options& o = {});
 #endif
 
 }

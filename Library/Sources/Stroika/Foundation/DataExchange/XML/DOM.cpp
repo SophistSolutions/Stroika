@@ -182,19 +182,9 @@ Document::Ptr Document::New (const Providers::IDOMProvider& p, const NameWithNam
     return doc;
 }
 
-Document::Ptr Document::New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in)
-{
-    return Document::Ptr{p.DocumentFactory (in, nullptr)};
-}
-
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading)
 {
     return Document::Ptr{p.DocumentFactory (in, schemaToValidateAgainstWhileReading)};
-}
-
-Document::Ptr Document::New (const Providers::IDOMProvider& p, const String& in)
-{
-    return New (p, Streams::TextToBinary::Reader::New (in), nullptr);
 }
 
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading)
@@ -211,42 +201,28 @@ Document::Ptr Document::New (const Providers::IDOMProvider& p, const Ptr& clone)
 }
 
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
-Document::Ptr Document::New ()
+Document::Ptr Document::New (const Options& o)
 {
-    static const XML::Providers::IDOMProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
-    return New (*kDefaultProvider_);
+    return New (o.GetProvider ());
 }
 
-Document::Ptr Document::New (const NameWithNamespace& documentElementName)
+Document::Ptr Document::New (const NameWithNamespace& documentElementName, const Options& o)
 {
-    static const XML::Providers::IDOMProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
-    return New (*kDefaultProvider_, documentElementName);
+    return New (o.GetProvider (), documentElementName);
 }
 
-Document::Ptr Document::New (const Streams::InputStream::Ptr<byte>& in)
+Document::Ptr Document::New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema, const Options& o)
 {
-    return New (in, nullptr);
+    return New (o.GetProvider (), in, schema);
 }
 
-Document::Ptr Document::New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema)
+Document::Ptr Document::New (const String& in, const Schema::Ptr& schema, const Options& o)
 {
-    static const XML::Providers::IDOMProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
-    return New (*kDefaultProvider_, in, schema);
+    return New (o.GetProvider (), in, schema);
 }
 
-Document::Ptr Document::New (const String& in)
+Document::Ptr Document::New (const Ptr& clone, const Options& o)
 {
-    return New (Streams::TextToBinary::Reader::New (in), nullptr);
-}
-
-Document::Ptr Document::New (const String& in, const Schema::Ptr& schema)
-{
-    return New (Streams::TextToBinary::Reader::New (in), schema);
-}
-
-Document::Ptr Document::New (const Ptr& clone)
-{
-    static const XML::Providers::IDOMProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
-    return New (*kDefaultProvider_, clone);
+    return New (o.GetProvider (), clone);
 }
 #endif

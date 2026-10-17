@@ -6,6 +6,7 @@
 #include <atomic>
 
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Finally.h"
@@ -35,10 +36,9 @@ using namespace Stroika::Foundation::Streams;
  */
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
 void XML::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema,
-                    Execution::ProgressMonitor::Updater progress)
+                    Execution::ProgressMonitor::Updater progress, const Options& o)
 {
-    static const XML::Providers::ISAXProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
-    return SAXParse (*kDefaultProvider_, in, callback, schema, progress);
+    return SAXParse (o.GetProvider (), in, callback, schema, progress);
 }
 #endif
 

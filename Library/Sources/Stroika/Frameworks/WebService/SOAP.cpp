@@ -72,7 +72,7 @@ namespace {
              *  default namespace is what lets a Fault's unqualified children simply be unqualified, with no xmlns=""
              *  to escape a default that is not there.
              */
-            fDoc = XML::DOM::Document::New (options.GetXMLProvider ());
+            fDoc = XML::DOM::Document::New (options.fXMLOptions);
             WriteElement::Ptr envelope =
                 fDoc.ReplaceRootElement (XML::NameWithNamespace{kEnvelopeNamespaceURI_, "Envelope"sv}, String{kEnvelopePrefix_});
             fBody = envelope.Append ("Body"sv);
@@ -120,7 +120,7 @@ namespace {
         };
         // a schema, where the caller named one, is checked AS it reads - so a message that does not hold throws here
         // rather than being half understood. Named, never reached for: @see Options::fValidateReadAgainst on why
-        Document::Ptr doc = Document::New (options.GetXMLProvider (), b.As<Streams::InputStream::Ptr<std::byte>> (), options.fValidateReadAgainst);
+        Document::Ptr doc = Document::New (b.As<Streams::InputStream::Ptr<std::byte>> (), options.fValidateReadAgainst, options.fXMLOptions);
         Element::Ptr envelope = doc.GetRootElement ();
         Element::Ptr body     = envelope == nullptr or envelope.GetName ().fName != "Envelope"sv ? nullptr : child (envelope, "Body"sv);
         Element::Ptr top      = body == nullptr ? nullptr : child (body, nullopt);
@@ -273,7 +273,7 @@ Memory::BLOB SOAP::Serialize ([[maybe_unused]] const Fault& fault, [[maybe_unuse
         // malformed envelope, and imported as ELEMENTS - escaping it into text would change what the receiver reads
         // the SAME provider the envelope is being built with, since ImportNode requires that of both documents - with the
         // default here instead, a caller naming a provider got a failed Require rather than a fault
-        XML::DOM::Document::Ptr detailDoc = XML::DOM::Document::New (options.GetXMLProvider (), *fault.fDetail);
+        XML::DOM::Document::Ptr detailDoc = XML::DOM::Document::New (*fault.fDetail, nullptr, options.fXMLOptions);
         detail.ImportNode (detailDoc.GetRootElement ());
     }
     return envelope.Write ();

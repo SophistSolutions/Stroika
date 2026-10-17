@@ -45,7 +45,7 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebService;
 
-XML::Schema::Ptr SOAP::EnvelopeSchema (const XML::Providers::ISchemaProvider& p)
+XML::Schema::Ptr SOAP::EnvelopeSchema (const XML::Options& o)
 {
     /*
      *  Compiled afresh each call, and deliberately not kept: a Schema::Ptr belongs to the provider that made it and may
@@ -54,6 +54,6 @@ XML::Schema::Ptr SOAP::EnvelopeSchema (const XML::Providers::ISchemaProvider& p)
      *  caller's anyway. A caller sending more than the occasional message holds its own, in its own Options, where the
      *  lifetime is plain to see.
      */
-    return XML::Schema::New (p, Memory::BLOB::Attach (Schemas_soap_envelope_1_1_xsd), nullptr);
+    return XML::Schema::New (Memory::BLOB::Attach (Schemas_soap_envelope_1_1_xsd), nullptr, o);
 }
 #endif
