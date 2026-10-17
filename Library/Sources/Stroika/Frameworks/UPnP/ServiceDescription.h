@@ -157,9 +157,10 @@ namespace Stroika::Frameworks::UPnP {
     Foundation::Memory::BLOB Serialize (const ServiceDescription& sd, const Options& options = {});
 
     /**
-     *  \brief An SCPD read - what Serialize writes, and any other's: what it does not know - a vendor's own elements, say - is
-     *         skipped. Throws if it is not XML, its document element is not <scpd>, or the build has no XML parser
-     *         (qStroika_Foundation_DataExchange_XML_SupportParsing).
+     *  \brief An SCPD read - what Serialize writes, and any other's, leniently: what it does not know - a vendor's own
+     *         elements, say - is skipped, and an element given twice keeps its last. Throws if it is not XML, its document
+     *         element is not <scpd>, or the build has no XML parser (qStroika_Foundation_DataExchange_XML_SupportParsing).
+     *         @see Variant::XML::Reader::Options::fLenient
      */
     void DeSerialize (const Foundation::Memory::BLOB& b, ServiceDescription* sd, const Options& options = {});
 

@@ -305,7 +305,8 @@ namespace {
     /*
      *  A device as another stack writes one: its elements in another order, a vendor's (DLNA's) elements - one inside a list -
      *  and an embedded <deviceList>, which DeviceDescription has no field for, with mixed content in it. What it knows is read,
-     *  the rest skipped. And a URL that is not one, and an icon size that is not a number, do not fail the whole description.
+     *  the rest skipped. And a URL that is not one, an icon size that is not a number, an element given twice (the last read)
+     *  and text where nothing is declared, do not fail the whole description.
      */
     GTEST_TEST (Frameworks_UPnP, DeviceDescription_Others_)
     {
@@ -317,15 +318,18 @@ namespace {
 <root xmlns="urn:schemas-upnp-org:device-1-0" xmlns:dlna="urn:schemas-dlna-org:device-1-0">
   <specVersion><major>1</major><minor>0</minor></specVersion>
   <device>
+    a device's stray text
     <UDN>uuid:315caae0-1335-57bf-a178-24c9ee756629</UDN>
     <deviceType>urn:schemas-upnp-org:device:InternetGatewayDevice:1</deviceType>
     <friendlyName>a router</friendlyName>
     <manufacturer>m</manufacturer>
     <manufacturerURL>http://[192.168.1.1/</manufacturerURL>
     <modelName>n</modelName>
+    <modelNumber>1</modelNumber>
+    <modelNumber>2</modelNumber>
     <dlna:X_DLNADOC>DMS-1.50</dlna:X_DLNADOC>
     <iconList><icon><mimetype>image/png</mimetype><width>48</width><height>32</height><depth>24</depth><url>/i.png</url></icon><icon><mimetype>image/jpeg</mimetype><width>48px</width><height>48</height><depth>24</depth><url>/i.jpg</url></icon></iconList>
-    <serviceList><service><serviceType>urn:schemas-upnp-org:service:Layer3Forwarding:1</serviceType><serviceId>urn:upnp-org:serviceId:L3Forwarding1</serviceId><SCPDURL>/l3f.xml</SCPDURL><controlURL>/l3f</controlURL><eventSubURL>/l3fe</eventSubURL></service><dlna:X_note>a vendor's</dlna:X_note></serviceList>
+    <serviceList>stray text<service><serviceType>urn:schemas-upnp-org:service:Layer3Forwarding:1</serviceType><serviceId>urn:upnp-org:serviceId:L3Forwarding1</serviceId><SCPDURL>/l3f.xml</SCPDURL><controlURL>/l3f</controlURL><eventSubURL>/l3fe</eventSubURL></service><dlna:X_note>a vendor's</dlna:X_note></serviceList>
     <deviceList><device><deviceType>urn:schemas-upnp-org:device:WANDevice:1</deviceType><friendlyName>a <b>WAN</b> device</friendlyName></device></deviceList>
     <presentationURL>http://192.168.1.1/</presentationURL>
   </device>
@@ -337,6 +341,7 @@ namespace {
         EXPECT_EQ (dd.fFriendlyName, "a router"sv); // not the embedded device's
         EXPECT_EQ (dd.fManufactureName, "m"sv);
         EXPECT_EQ (dd.fModelName, "n"sv);
+        EXPECT_EQ (dd.fModelNumber, "2"sv); // given twice: the last
         EXPECT_EQ (dd.fPresentationURL, URI{"http://192.168.1.1/"sv});
         EXPECT_EQ (dd.fManufacturingURL, URI{}); // not a URL: read as an empty one
         ASSERT_TRUE (dd.fIcons and dd.fIcons->size () == 2);
@@ -349,7 +354,7 @@ namespace {
         EXPECT_EQ (png->fColorDepth, uint16_t{24});
         optional<DeviceDescription::Icon> jpeg = iconAt (URI{"/i.jpg"sv});
         ASSERT_TRUE (jpeg);
-        EXPECT_EQ (jpeg->fHorizontalPixels, uint16_t{0}); // not a number: read as 0
+        EXPECT_EQ (jpeg->fHorizontalPixels, DeviceDescription::Icon{}.fHorizontalPixels); // not a number: absent, so its default
         ASSERT_TRUE (dd.fServices and dd.fServices->size () == 1);
         const DeviceDescription::Service service = *dd.fServices->First ();
         EXPECT_EQ (service.fServiceID, "urn:upnp-org:serviceId:L3Forwarding1"sv);
@@ -495,8 +500,8 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"ServiceDescription_Others_"};
         using SD = ServiceDescription;
-        // as another stack writes one: an argument's elements in another order, a vendor's elements and attributes, and no
-        // sendEvents (so yes)
+        // as another stack writes one: an argument's elements in another order, a vendor's elements and attributes, no
+        // sendEvents (so yes), a <retval> with text in it, and text in a list
         constexpr string_view kSCPD_ = R"(<?xml version="1.0" encoding="utf-8"?>
 <scpd xmlns="urn:schemas-upnp-org:service-1-0" xmlns:v="urn:vendor-example">
   <specVersion><major>1</major><minor>1</minor></specVersion>
@@ -510,8 +515,15 @@ namespace {
       </argumentList>
       <v:note>a vendor's - <b>with</b> mixed content</v:note>
     </action>
+    <action>
+      <name>GetMute</name>
+      <argumentList>
+        <argument><name>CurrentMute</name><direction>out</direction><retval>1</retval><relatedStateVariable>Mute</relatedStateVariable></argument>
+      </argumentList>
+    </action>
   </actionList>
   <serviceStateTable>
+    stray text
     <stateVariable sendEvents="no" multicast="no"><name>A_ARG_TYPE_Channel</name><dataType>string</dataType><allowedValueList><allowedValue>Master</allowedValue><allowedValue>LF</allowedValue></allowedValueList></stateVariable>
     <stateVariable><name>Volume</name><dataType>ui2</dataType><allowedValueRange><minimum>0</minimum><maximum>100</maximum></allowedValueRange></stateVariable>
   </serviceStateTable>
@@ -520,10 +532,11 @@ namespace {
         SD                    sd;
         DeSerialize (Memory::BLOB{as_bytes (span{kSCPD_})}, &sd);
         const SD expected{
-            .fActions        = {SD::Action{
-                .fName = "GetVolume"sv,
-                .fArguments = {{.fName = "Channel"sv, .fRelatedStateVariable = "A_ARG_TYPE_Channel"sv},
-                               {.fName = "CurrentVolume"sv, .fDirection = SD::Argument::Direction::eOut, .fRetval = true, .fRelatedStateVariable = "Volume"sv}}}},
+            .fActions = {SD::Action{.fName = "GetVolume"sv,
+                                    .fArguments = {{.fName = "Channel"sv, .fRelatedStateVariable = "A_ARG_TYPE_Channel"sv},
+                                                   {.fName = "CurrentVolume"sv, .fDirection = SD::Argument::Direction::eOut, .fRetval = true, .fRelatedStateVariable = "Volume"sv}}},
+                         SD::Action{.fName = "GetMute"sv,
+                                    .fArguments = {{.fName = "CurrentMute"sv, .fDirection = SD::Argument::Direction::eOut, .fRetval = true, .fRelatedStateVariable = "Mute"sv}}}},
             .fStateVariables = {
                 SD::StateVariable{.fName = "A_ARG_TYPE_Channel"sv, .fDataType = "string"sv, .fSendEvents = false, .fAllowedValues = {"Master"sv, "LF"sv}},
                 SD::StateVariable{.fName = "Volume"sv, .fDataType = "ui2"sv, .fAllowedValueRange = SD::AllowedValueRange{.fMinimum = "0"sv, .fMaximum = "100"sv}}}};

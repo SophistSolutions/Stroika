@@ -3,7 +3,6 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/Variant/XML/Binding.h"
@@ -35,7 +34,7 @@ namespace {
 
     using VVMap_ = Containers::Mapping<String, VariantValue>;
 
-    // DeviceDescription::kMapper - its fields, by UPnP's names - with two of its conversions changed for a description's XML
+    // DeviceDescription::kMapper - its fields, by UPnP's names - with one of its conversions changed for a description's XML
     const ObjectVariantMapper& Mapper_ ()
     {
         static const ObjectVariantMapper kMapper_ = [] () {
@@ -46,13 +45,6 @@ namespace {
                              [] (const ObjectVariantMapper&, const VariantValue& v, URI* u) {
                                  IgnoreExceptionsForCall (*u = URI::Parse (v.As<String> ()));
                              });
-            // an icon's sizes as text, as the Binding declares them - so one that is not a number reads as 0, as UPnP's reader
-            // always has, rather than failing the whole description (declared a number, the Reader would throw)
-            mapper.Add<uint16_t> (
-                [] (const ObjectVariantMapper&, const uint16_t* n) -> VariantValue { return VariantValue{Characters::ToString (*n)}; },
-                [] (const ObjectVariantMapper&, const VariantValue& v, uint16_t* n) {
-                    *n = Characters::String2Int<uint16_t> (v.As<String> ()); // 0 where it is not a number
-                });
             return mapper;
         }();
         return kMapper_;
@@ -71,6 +63,7 @@ namespace {
         static const Binding kBinding_ = [] () {
             constexpr auto kSkip = Binding::UndeclaredMembers::eSkip;
             auto           text  = [] () { return Binding{.fType = VariantValue::eString}; };
+            auto           size  = [] () { return Binding{.fType = VariantValue::eUnsignedInteger}; };
             auto           list  = [] (const Binding& item) {
                 return Binding{.fType              = VariantValue::eArray,
                                .fUndeclaredMembers = Binding::UndeclaredMembers::eSkip,
@@ -78,7 +71,7 @@ namespace {
             };
             Binding icon{.fName = "icon"sv,
                          .fType = VariantValue::eMap,
-                         .fMembers = {{"mimetype"sv, text ()}, {"width"sv, text ()}, {"height"sv, text ()}, {"depth"sv, text ()}, {"url"sv, text ()}},
+                         .fMembers = {{"mimetype"sv, text ()}, {"width"sv, size ()}, {"height"sv, size ()}, {"depth"sv, size ()}, {"url"sv, text ()}},
                          .fUndeclaredMembers = kSkip};
             Binding service{
                 .fName = "service"sv,
@@ -276,7 +269,9 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b, const Options& optio
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("xml data: {}"_f, Streams::BinaryToText::Reader::New (b).ReadAll ());
 #endif
-    const Variant::XML::Reader reader{{.fBinding = Binding_ (), .fXMLOptions = options.fXMLOptions, .fValidateAgainst = options.fValidateReadAgainst}};
+    // leniently: devices in the field are loose (@see Options::fValidateReadAgainst)
+    const Variant::XML::Reader reader{
+        {.fBinding = Binding_ (), .fXMLOptions = options.fXMLOptions, .fValidateAgainst = options.fValidateReadAgainst, .fLenient = true}};
     VVMap_ root   = reader.Read (b.As<Streams::InputStream::Ptr<byte>> ()).As<VVMap_> ();
     VVMap_ device = root.LookupValue ("device"sv).As<VVMap_> ();
     // an empty <URLBase> means none (UPnP Device Architecture 1.0); one that is not a URL is taken for none too - ignored, as

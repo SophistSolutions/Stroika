@@ -136,10 +136,11 @@ namespace Stroika::Frameworks::UPnP {
     Memory::BLOB Serialize (const DeviceDescription& dd, const Options& options = {});
 
     /**
-     *  \brief A device description read - what Serialize writes, and any other's: what it does not know - a vendor's own
-     *         elements, an embedded <deviceList> - is skipped, and a URL or icon size that is not one is read as an empty
-     *         URL or 0. Throws if it is not XML, its document element is not <root>, or the build has no XML parser
-     *         (qStroika_Foundation_DataExchange_XML_SupportParsing).
+     *  \brief A device description read - what Serialize writes, and any other's, leniently: what it does not know - a
+     *         vendor's own elements, an embedded <deviceList> - is skipped, an element given twice keeps its last, a URL
+     *         that is not one reads as an empty URL and an icon size that is not a number as its default. Throws if it is
+     *         not XML, its document element is not <root>, or the build has no XML parser
+     *         (qStroika_Foundation_DataExchange_XML_SupportParsing). @see Variant::XML::Reader::Options::fLenient
      */
     DeviceDescription DeSerialize (const Memory::BLOB& b, const Options& options = {});
 

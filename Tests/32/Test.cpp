@@ -2116,22 +2116,76 @@ namespace {
                        (VariantValue{VVMap{{"n"sv, VariantValue{3}}}}));
         }
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-        // validated as it is read: a document the schema refuses throws - here one a lenient Binding would have read
+        // validated as it is read: a document the schema refuses throws - here one an untyped Binding would have read
         constexpr string_view kXSD = R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="a"><xs:complexType><xs:sequence><xs:element name="n" type="xs:int"/></xs:sequence></xs:complexType></xs:element>
 </xs:schema>)";
         const Memory::BLOB    kSchemaData{as_bytes (span{kXSD})};
-        const Binding         lenient{.fName = "a"sv};
+        const Binding         untyped{.fName = "a"sv};
         for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
             const DataExchange::XML::Options kXMLOptions_{.fProvider = p};
-            Reader validating{{.fBinding         = lenient,
+            Reader validating{{.fBinding         = untyped,
                                .fXMLOptions      = kXMLOptions_,
                                .fValidateAgainst = DataExchange::XML::Schema::New (kSchemaData, nullptr, kXMLOptions_)}};
             EXPECT_EQ (validating.Read (String{"<a><n>3</n></a>"sv}), (VariantValue{VVMap{{"n"sv, VariantValue{"3"sv}}}}));
-            EXPECT_NO_THROW (Reader{lenient}.Read (String{"<a><m>3</m></a>"sv})); // not validated: read
+            EXPECT_NO_THROW (Reader{untyped}.Read (String{"<a><m>3</m></a>"sv})); // not validated: read
             EXPECT_ANY_THROW (validating.Read (String{"<a><m>3</m></a>"sv}));     // validated: refused
         }
 #endif
+    }
+
+    /*
+     *  Variant::XML::Reader::Options::fLenient: what the Binding cannot hold is passed over, not thrown - each case here
+     *  refused reading strictly, and read leniently as the option says
+     */
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_ReaderLenient_)
+    {
+        using DataExchange::Variant::XML::Binding;
+        using DataExchange::Variant::XML::Reader;
+        using DataExchange::Variant::XML::Writer;
+        using VVMap = Mapping<String, VariantValue>;
+        const Binding b{.fName = "a"sv,
+                        .fType = VariantValue::eMap,
+                        .fMembers = {{"s"sv, Binding{.fType = VariantValue::eString}},
+                                     {"n"sv, Binding{.fType = VariantValue::eInteger}},
+                                     {"m"sv, Binding{.fKind = Binding::Kind::ePresenceMarker, .fType = VariantValue::eBoolean}},
+                                     {"list"sv, Binding{.fType = VariantValue::eArray,
+                                                        .fItems = make_shared<Binding> (Binding{.fName = "i"sv, .fType = VariantValue::eInteger})}}}};
+        ASSERT_TRUE (b.IsComplete ()) << b.ToString ().AsUTF8<string> ();
+        const Reader strict{b};
+        const Reader lenient{{.fBinding = b, .fLenient = true}};
+        auto         withM = [] (VVMap m, bool marker = false) {
+            m.Add ("m"sv, VariantValue{marker}); // a presence marker absent is false
+            return VariantValue{m};
+        };
+        const pair<string_view, VariantValue> kCases[] = {
+            {"<a><s>x</s><s>y</s></a>"sv, withM (VVMap{{"s"sv, VariantValue{"y"sv}}})},       // given twice: the last
+            {"<a><s>x <b>y</b> z</s></a>"sv, withM (VVMap{{"s"sv, VariantValue{"x  z"sv}}})}, // markup inside a leaf: skipped
+            {"<a><m>yes</m></a>"sv, withM (VVMap{}, true)},                                   // a presence marker with text: there
+            {"<a><list>stray<i>1</i></list></a>"sv, withM (VVMap{{"list"sv, VariantValue{Sequence<VariantValue>{VariantValue{1LL}}}}})}, // text in an array
+            {"<a>stray<s>x</s></a>"sv, withM (VVMap{{"s"sv, VariantValue{"x"sv}}})},            // text in an object
+            {"<a><n>4x</n><s>x</s></a>"sv, withM (VVMap{{"s"sv, VariantValue{"x"sv}}})},        // not of its declared type: absent
+            {"<a v=\"1\"><u>w</u><s>x</s></a>"sv, withM (VVMap{{"s"sv, VariantValue{"x"sv}}})}, // an attribute, an element, undeclared
+        };
+        for (const auto& [xmlText, expected] : kCases) {
+            const String xml{xmlText};
+            EXPECT_THROW (strict.Read (xml), BadFormatException) << xml.AsUTF8<string> ();
+            try {
+                VariantValue read = lenient.Read (xml);
+                EXPECT_TRUE (SameTyped_ (read, expected)) << xml.AsUTF8<string> () << " read as " << Characters::ToString (read).AsUTF8<string> ();
+            }
+            catch (const std::exception& e) {
+                ADD_FAILURE () << xml.AsUTF8<string> () << ": " << e.what ();
+            }
+        }
+        // what the Writer writes reads the same either way
+        const VariantValue v{VVMap{{"s"sv, VariantValue{"x"sv}},
+                                   {"n"sv, VariantValue{3LL}},
+                                   {"m"sv, VariantValue{true}},
+                                   {"list"sv, VariantValue{Sequence<VariantValue>{VariantValue{1LL}}}}}};
+        const String       written = Writer{{.fBinding = b}}.WriteAsString (v);
+        EXPECT_TRUE (SameTyped_ (strict.Read (written), v)) << written.AsUTF8<string> ();
+        EXPECT_TRUE (SameTyped_ (lenient.Read (written), v)) << written.AsUTF8<string> ();
     }
 }
 #endif

@@ -138,11 +138,27 @@ namespace {
     struct Builder_ : StructuredStreamEvents::IConsumer {
         using Name = StructuredStreamEvents::Name;
 
-        Builder_ (const Binding& binding)
+        Builder_ (const Binding& binding, bool lenient)
             : fBinding{binding}
+            , fLenient{lenient}
         {
         }
         const Binding& fBinding; // the top level Binding - with an fName, the document element's own (@see Binding)
+        const bool     fLenient; // Reader::Options::fLenient: what the Binding cannot hold is passed over, not thrown
+
+        // text as the type a Binding declares - or, read leniently, nullopt where it is not one: absent, rather than thrown
+        optional<VariantValue> Declared_ (const String& text, VariantValue::Type type) const
+        {
+            if (fLenient) {
+                try {
+                    return AsDeclaredType_ (text, type);
+                }
+                catch (...) {
+                    return nullopt;
+                }
+            }
+            return AsDeclaredType_ (text, type);
+        }
 
         struct Frame_ {
             String         fElement;                                         // its local name
@@ -208,7 +224,10 @@ namespace {
                     if (not NamesMember_ (parent.fBinding, Binding::Kind::eElement, name.fLocalName)) {
                         switch (UndeclaredIn_ (parent.fBinding)) {
                             case Binding::UndeclaredMembers::eReject:
-                                Execution::Throw (BadFormatException{"<{}> is not an element its parent's Binding declares"_f(name.fLocalName)});
+                                if (not fLenient) {
+                                    Execution::Throw (BadFormatException{"<{}> is not an element its parent's Binding declares"_f(name.fLocalName)});
+                                }
+                                [[fallthrough]]; // read leniently, skipped - even inside a leaf, as markup in its text
                             case Binding::UndeclaredMembers::eSkip:
                                 fSkipDepth_ = 1; // it, and everything in it, unread
                                 return;
@@ -262,8 +281,11 @@ namespace {
                 if (not NamesMember_ (top.fBinding, Binding::Kind::eAttribute, i.fKey.fLocalName)) {
                     switch (UndeclaredIn_ (top.fBinding)) {
                         case Binding::UndeclaredMembers::eReject:
-                            Execution::Throw (BadFormatException{
-                                "<{}>'s attribute '{}' is not one its Binding declares"_f(name.fLocalName, i.fKey.fLocalName)});
+                            if (not fLenient) {
+                                Execution::Throw (BadFormatException{
+                                    "<{}>'s attribute '{}' is not one its Binding declares"_f(name.fLocalName, i.fKey.fLocalName)});
+                            }
+                            continue; // read leniently, skipped
                         case Binding::UndeclaredMembers::eSkip:
                             continue;
                         case Binding::UndeclaredMembers::eKeep:
@@ -272,8 +294,12 @@ namespace {
                 }
                 String key = top.fBinding == nullptr ? i.fKey.fLocalName : top.fBinding->KeyForName (Binding::Kind::eAttribute, i.fKey.fLocalName);
                 const Binding* attrBinding = top.fBinding == nullptr ? nullptr : top.fBinding->MemberBinding (key);
-                AddMember_ (top, key,
-                            attrBinding != nullptr and attrBinding->fType ? AsDeclaredType_ (i.fValue, *attrBinding->fType) : VariantValue{i.fValue});
+                if (attrBinding == nullptr or not attrBinding->fType) {
+                    AddMember_ (top, key, VariantValue{i.fValue});
+                }
+                else if (optional<VariantValue> v = Declared_ (i.fValue, *attrBinding->fType)) {
+                    AddMember_ (top, key, *v);
+                }
             }
         }
         virtual void TextInsideElement (const String& text) override
@@ -291,16 +317,20 @@ namespace {
             Require (not fStack.empty ());
             Frame_ f = move (fStack.back ());
             fStack.pop_back ();
-            VariantValue v = ValueOf_ (f);
+            optional<VariantValue> v = ValueOf_ (f);
             if (fStack.empty ()) {
-                fRootKey   = f.fKey;
-                fRootValue = f.fIsRepeatedItem ? VariantValue{Sequence<VariantValue>{v}} : v; // a document has one root element
+                fRootKey          = f.fKey;
+                VariantValue root = v.value_or (VariantValue{});
+                fRootValue = f.fIsRepeatedItem ? VariantValue{Sequence<VariantValue>{root}} : root; // a document has one root element
                 return;
             }
             Frame_& parent           = fStack.back ();
             parent.fHasChildElements = true;
+            if (not v) {
+                return; // read leniently, a value not of its declared type: absent
+            }
             if (f.fIsItem) {
-                parent.fArrayItems.Append (v);
+                parent.fArrayItems.Append (*v);
             }
             else if (f.fIsRepeatedItem) {
                 // a Binding says the member is an array, so it is one however few elements the document has
@@ -308,11 +338,11 @@ namespace {
                 if (optional<VariantValue> already = parent.fChildren.Lookup (f.fKey)) {
                     items = already->As<Sequence<VariantValue>> ();
                 }
-                items.Append (v);
+                items.Append (*v);
                 parent.fChildren.Add (f.fKey, VariantValue{items});
             }
             else {
-                AddMember_ (parent, f.fKey, v);
+                AddMember_ (parent, f.fKey, *v);
             }
         }
         // a member - and a name seen again makes it the array of them, in document order; but not where the element's Binding
@@ -322,6 +352,10 @@ namespace {
         {
             if (optional<VariantValue> already = f.fChildren.Lookup (key)) {
                 if (f.fBinding != nullptr and f.fBinding->fType) {
+                    if (fLenient) {
+                        f.fChildren.Add (key, v); // read leniently, the last
+                        return;
+                    }
                     Execution::Throw (BadFormatException{"<{}> has '{}' more than once, where its Binding declares one"_f(f.fElement, key)});
                 }
                 Sequence<VariantValue> items = f.fRepeated.Contains (key) ? already->As<Sequence<VariantValue>> () : Sequence<VariantValue>{*already};
@@ -333,14 +367,15 @@ namespace {
                 f.fChildren.Add (key, v);
             }
         }
-        VariantValue ValueOf_ (Frame_& f)
+        // its value - nullopt only read leniently, where it is not of its declared type, so is absent
+        optional<VariantValue> ValueOf_ (Frame_& f)
         {
             String                       text      = f.fText.str ();
             bool                         textBlank = text.Trim ().empty ();
             optional<VariantValue::Type> declared  = f.fBinding == nullptr ? nullopt : f.fBinding->fType;
             if (f.fIsPresenceMarker) {
-                // there, so true: it says so by being there, and says nothing else
-                if (not f.fChildren.empty () or f.fHasChildElements or not textBlank) {
+                // there, so true: it says so by being there, and says nothing else - read leniently, whatever is in it passed over
+                if (not fLenient and (not f.fChildren.empty () or f.fHasChildElements or not textBlank)) {
                     Execution::Throw (BadFormatException{"<{}> is a presence marker (Binding::Kind::ePresenceMarker), so an empty element"_f(f.fElement)});
                 }
                 return VariantValue{true};
@@ -349,12 +384,12 @@ namespace {
                 // its Binding says what it is - and StartElement has let in no child element or attribute it does not declare
                 Assert (*declared == VariantValue::eArray or f.fChildren.empty ());
                 if (*declared == VariantValue::eArray) {
-                    if (not f.fChildren.empty () or not textBlank) {
+                    if (not fLenient and (not f.fChildren.empty () or not textBlank)) {
                         Execution::Throw (BadFormatException{"<{}> is not an array, as its Binding declares"_f(f.fElement)});
                     }
-                    return VariantValue{f.fArrayItems}; // [] where it is empty
+                    return VariantValue{f.fArrayItems}; // [] where it is empty - read leniently, text beside its items passed over
                 }
-                return AsDeclaredType_ (text, *declared);
+                return Declared_ (text, *declared);
             }
             if (f.fIsBoundArray and f.fChildren.empty () and textBlank) {
                 return VariantValue{f.fArrayItems}; // a Binding says it is an array, so it is one - of no items, if it is empty
@@ -383,12 +418,17 @@ namespace {
                     f.fChildren.Add (*textKey, VariantValue{text});
                 }
                 else if (not text.empty ()) {
-                    f.fChildren.Add (*textKey, AsDeclaredType_ (text, *textBinding->fType));
+                    if (optional<VariantValue> v = Declared_ (text, *textBinding->fType)) {
+                        f.fChildren.Add (*textKey, *v);
+                    }
                 }
                 return VariantValue{f.fChildren};
             }
             if (f.fChildren.empty () and declared != VariantValue::eMap) {
                 return VariantValue{text}; // text, kept as it came: XML whitespace is significant
+            }
+            if (fLenient) {
+                return VariantValue{f.fChildren}; // read leniently, text it has nowhere for passed over
             }
             if (f.fChildren.empty () and not textBlank) {
                 Execution::Throw (BadFormatException{"<{}> has text, where its Binding declares an object"_f(f.fElement)});
@@ -426,7 +466,7 @@ public:
     virtual VariantValue Read ([[maybe_unused]] const Streams::InputStream::Ptr<byte>& in) const override
     {
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-        Builder_ builder{fOptions_.fBinding};
+        Builder_ builder{fOptions_.fBinding, fOptions_.fLenient};
         SAXParse (in, &builder, fOptions_.fValidateAgainst, nullptr, fOptions_.fXMLOptions);
         if (not builder.fRootValue) {
             static const auto kException_ = BadFormatException{"no root element"sv};

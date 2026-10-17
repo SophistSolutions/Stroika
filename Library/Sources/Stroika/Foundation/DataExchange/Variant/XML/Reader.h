@@ -41,7 +41,8 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *        a document that is not of that type (text that is not a number, an element or attribute the Binding does not
      *        declare, a member repeated that it declares as one value) throws BadFormatException - unless the Binding says to
      *        skip what it does not declare (Binding::fUndeclaredMembers eSkip, as XSD's xs:any), as reading someone else's
-     *        document - a vendor's own elements - needs.
+     *        document - a vendor's own elements - needs; or the Reader reads leniently (Options::fLenient), passing over
+     *        all of these.
      *
      *  **Given a complete Binding (Binding::IsComplete), what the Writer wrote reads back exactly - or the Writer, or this
      *  Reader, throws BadFormatException, the value not being one the Binding describes: never anything in between** (but for
@@ -94,6 +95,19 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
              *  Best compiled by the provider that reads (fXMLOptions) - @see DataExchange::XML::SAXParse.
              */
             DataExchange::XML::Schema::Ptr fValidateAgainst{nullptr};
+
+            /**
+             *  \brief Read what the Binding describes from a document that does not quite hold to it, rather than throw - as
+             *         reading others' documents wants: UPnP devices', say, which are famously loose
+             *
+             *  Then an element or attribute the Binding does not declare is skipped, wherever it is - markup inside a leaf's
+             *  text too; a member repeated that the Binding declares once keeps its last; text the Binding has nowhere for -
+             *  in an object, an array, a presence marker - is passed over; and a value not of its declared type is absent.
+             *
+             *  The Writer writes none of these, so what it wrote reads the same either way: a complete Binding still
+             *  round-trips every value of its type.
+             */
+            bool fLenient{false};
         };
 
     public:
