@@ -3,18 +3,15 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
-#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
-#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Binding.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
-#include "Stroika/Foundation/Streams/MemoryStream.h"
-#if qStroika_Foundation_DataExchange_XML_SupportDOM
-#include "Stroika/Foundation/DataExchange/XML/DOM.h"
-#endif
 
 #include "DeviceDescription.h"
 
@@ -35,6 +32,86 @@ using namespace Stroika::Frameworks::UPnP;
 namespace {
     // the namespace every element of a device description is in (UPnP Device Architecture 1.1, section 2.3)
     const IO::Network::URI kDeviceNamespace_{"urn:schemas-upnp-org:device-1-0"sv};
+
+    using VVMap_ = Containers::Mapping<String, VariantValue>;
+
+    // DeviceDescription::kMapper - its fields, by UPnP's names - with two of its conversions changed for a description's XML
+    const ObjectVariantMapper& Mapper_ ()
+    {
+        static const ObjectVariantMapper kMapper_ = [] () {
+            ObjectVariantMapper mapper = DeviceDescription::kMapper ();
+            // a URL that is not one reads as an empty URL - as UPnP's reader always has - rather than failing the whole
+            // description, as kMapper's would: devices in the field are loose
+            mapper.Add<URI> ([] (const ObjectVariantMapper&, const URI* u) -> VariantValue { return VariantValue{u->As<String> ()}; },
+                             [] (const ObjectVariantMapper&, const VariantValue& v, URI* u) {
+                                 IgnoreExceptionsForCall (*u = URI::Parse (v.As<String> ()));
+                             });
+            // an icon's sizes as text, as the Binding declares them - so one that is not a number reads as 0, as UPnP's reader
+            // always has, rather than failing the whole description (declared a number, the Reader would throw)
+            mapper.Add<uint16_t> (
+                [] (const ObjectVariantMapper&, const uint16_t* n) -> VariantValue { return VariantValue{Characters::ToString (*n)}; },
+                [] (const ObjectVariantMapper&, const VariantValue& v, uint16_t* n) {
+                    *n = Characters::String2Int<uint16_t> (v.As<String> ()); // 0 where it is not a number
+                });
+            return mapper;
+        }();
+        return kMapper_;
+    }
+
+    // the description's shape (UPnP Device Architecture 1.1, section 2.3): <root>'s specVersion, URLBase and <device>, their
+    // elements' names and order, UPnP's namespace, each list and its items - and what no DeviceDescription field holds, a
+    // vendor's own elements or an embedded <deviceList> say, skipped
+    //
+    // @todo derive this from Mapper_ (https://github.com/SophistSolutions/Stroika/issues/1217), or from UPnP's own schema
+    //       (DeviceDescriptionSchema), rather than spelling it out: what only XML says - item names, the namespace,
+    //       skipping - would be all that is left
+    const Variant::XML::Binding& Binding_ ()
+    {
+        using Variant::XML::Binding;
+        static const Binding kBinding_ = [] () {
+            constexpr auto kSkip = Binding::UndeclaredMembers::eSkip;
+            auto           text  = [] () { return Binding{.fType = VariantValue::eString}; };
+            auto           list  = [] (const Binding& item) {
+                return Binding{.fType              = VariantValue::eArray,
+                               .fUndeclaredMembers = Binding::UndeclaredMembers::eSkip,
+                               .fItems             = MakeSharedPtr<Binding> (item)};
+            };
+            Binding icon{.fName = "icon"sv,
+                         .fType = VariantValue::eMap,
+                         .fMembers = {{"mimetype"sv, text ()}, {"width"sv, text ()}, {"height"sv, text ()}, {"depth"sv, text ()}, {"url"sv, text ()}},
+                         .fUndeclaredMembers = kSkip};
+            Binding service{
+                .fName = "service"sv,
+                .fType = VariantValue::eMap,
+                .fMembers = {{"serviceType"sv, text ()}, {"serviceId"sv, text ()}, {"SCPDURL"sv, text ()}, {"controlURL"sv, text ()}, {"eventSubURL"sv, text ()}},
+                .fUndeclaredMembers = kSkip};
+            // a <deviceList> of embedded devices comes after serviceList - skipped, as DeviceDescription has no field for one
+            Binding device{.fType              = VariantValue::eMap,
+                           .fMembers           = {{"deviceType"sv, text ()},
+                                                  {"friendlyName"sv, text ()},
+                                                  {"manufacturer"sv, text ()},
+                                                  {"manufacturerURL"sv, text ()},
+                                                  {"modelDescription"sv, text ()},
+                                                  {"modelName"sv, text ()},
+                                                  {"modelNumber"sv, text ()},
+                                                  {"modelURL"sv, text ()},
+                                                  {"serialNumber"sv, text ()},
+                                                  {"UDN"sv, text ()},
+                                                  {"UPC"sv, text ()},
+                                                  {"iconList"sv, list (icon)},
+                                                  {"serviceList"sv, list (service)},
+                                                  {"presentationURL"sv, text ()}},
+                           .fUndeclaredMembers = kSkip};
+            Binding specVersion{.fType = VariantValue::eMap, .fMembers = {{"major"sv, text ()}, {"minor"sv, text ()}}, .fUndeclaredMembers = kSkip};
+            Binding root{.fName              = XML::NameWithNamespace{kDeviceNamespace_, "root"sv},
+                         .fType              = VariantValue::eMap,
+                         .fMembers           = {{"specVersion"sv, specVersion}, {"URLBase"sv, text ()}, {"device"sv, device}},
+                         .fUndeclaredMembers = kSkip};
+            Ensure (root.IsComplete ()); // so what Serialize writes, DeSerialize reads back exactly
+            return root;
+        }();
+        return kBinding_;
+    }
 }
 
 /*
@@ -173,62 +250,20 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
  ********************************* UPnP::Serialize ******************************
  ********************************************************************************
  */
-Memory::BLOB UPnP::Serialize ([[maybe_unused]] const DeviceDescription& dd, [[maybe_unused]] const Options& options)
+Memory::BLOB UPnP::Serialize (const DeviceDescription& dd, [[maybe_unused]] const Options& options)
 {
-#if qStroika_Foundation_DataExchange_XML_SupportDOM
-    using namespace DataExchange::XML;
-    namespace Element = DataExchange::XML::DOM::Element;
-    auto urlOf        = [] (const optional<URI>& u) -> optional<String> { return u == nullopt ? optional<String>{} : u->As<String> (); };
-    // each element, in the order UPnP Device Architecture 1.1, section 2.3, gives them. A name with no namespace of its own is
-    // in the document's, declared once on <root> and inherited - which is what UPnP's schema says of every one of these
-    DOM::Document::Ptr doc  = DOM::Document::New (options.GetXMLProvider (), NameWithNamespace{kDeviceNamespace_, "root"sv});
-    Element::Ptr       root = doc.GetRootElement ();
-    Element::Ptr       spec = root.Append ("specVersion"sv); // 1.0, not 1.1, on purpose - @see this framework's ReadMe.md
-    spec.Append ("major"sv, "1"sv);
-    spec.Append ("minor"sv, "0"sv);
-    root.AppendIf ("URLBase"sv, urlOf (dd.fURLBase));
-    Element::Ptr device = root.Append ("device"sv);
-    device.Append ("deviceType"sv, dd.fDeviceType);
-    device.Append ("friendlyName"sv, dd.fFriendlyName);
-    device.Append ("manufacturer"sv, dd.fManufactureName);
-    device.AppendIf ("manufacturerURL"sv, urlOf (dd.fManufacturingURL));
-    device.AppendIf ("modelDescription"sv, dd.fModelDescription);
-    device.Append ("modelName"sv, dd.fModelName);
-    device.AppendIf ("modelNumber"sv, dd.fModelNumber);
-    device.AppendIf ("modelURL"sv, urlOf (dd.fModelURL));
-    device.AppendIf ("serialNumber"sv, dd.fSerialNumber);
-    device.Append ("UDN"sv, dd.fUDN);
-    device.AppendIf ("UPC"sv, dd.fUPC);
-    if (dd.fIcons) {
-        Element::Ptr iconList = device.Append ("iconList"sv);
-        for (const DeviceDescription::Icon& i : *dd.fIcons) {
-            Element::Ptr icon = iconList.Append ("icon"sv);
-            icon.Append ("mimetype"sv, i.fMimeType.As<String> ());
-            icon.Append ("width"sv, Characters::ToString (i.fHorizontalPixels));
-            icon.Append ("height"sv, Characters::ToString (i.fVerticalPixels));
-            icon.Append ("depth"sv, Characters::ToString (i.fColorDepth));
-            icon.Append ("url"sv, i.fURL.As<String> ());
-        }
+    // DeviceDescription is flat, where the document is not: <URLBase> is <device>'s sibling, in <root>
+    VVMap_ device = Mapper_ ().FromObject (dd).As<VVMap_> ();
+    // 1.0, not 1.1, on purpose - @see this framework's ReadMe.md
+    VVMap_ root{{"specVersion"sv, VariantValue{VVMap_{{"major"sv, VariantValue{"1"sv}}, {"minor"sv, VariantValue{"0"sv}}}}}};
+    if (optional<VariantValue> urlBase = device.Lookup ("URLBase"sv)) {
+        root.Add ("URLBase"sv, *urlBase);
+        device.Remove ("URLBase"sv);
     }
-    if (dd.fServices) {
-        Element::Ptr serviceList = device.Append ("serviceList"sv);
-        for (const DeviceDescription::Service& i : *dd.fServices) {
-            Element::Ptr service = serviceList.Append ("service"sv);
-            service.Append ("serviceType"sv, i.fServiceType);
-            service.Append ("serviceId"sv, i.fServiceID);
-            service.Append ("SCPDURL"sv, i.fSCPDURL.As<String> ());
-            service.Append ("controlURL"sv, i.fControlURL.As<String> ());
-            service.Append ("eventSubURL"sv, i.fEventSubURL.As<String> ());
-        }
-    }
-    // a <deviceList> of embedded devices would go here, in this order - but DeviceDescription has no field to write one from
-    device.AppendIf ("presentationURL"sv, urlOf (dd.fPresentationURL));
-    Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
-    doc.Write (out, DOM::SerializationOptions{.fPrettyPrint = true});
-    return out.As<Memory::BLOB> ();
-#else
-    Execution::Throw (Execution::Exception<runtime_error>{"A device description cannot be written: this build has no XML DOM"sv});
-#endif
+    root.Add ("device"sv, VariantValue{device});
+    // the Writer writes the text itself, with no XML provider - so nothing in options applies
+    static const Variant::XML::Writer kWriter_{{.fBinding = Binding_ ()}};
+    return kWriter_.WriteAsBLOB (VariantValue{root});
 }
 
 /*
@@ -236,92 +271,28 @@ Memory::BLOB UPnP::Serialize ([[maybe_unused]] const DeviceDescription& dd, [[ma
  ******************************* UPnP::DeSerialize ******************************
  ********************************************************************************
  */
-DeviceDescription UPnP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, [[maybe_unused]] const Options& options)
+DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b, const Options& options)
 {
-    using namespace Stroika::Foundation::DataExchange;
-    using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
-    using namespace Stroika::Foundation::DataExchange::XML;
-
-    // read from <root>, not just <device>: <URLBase>, where there is one, is <device>'s sibling
-    struct Root_ {
-        optional<String>  fURLBase; // not optional<URI>: that reader returns an empty or bad one as an EMPTY URI, not nullopt
-        DeviceDescription fDevice;
-    };
-    static const ObjectReader::Registry kTypesRegistry_ = [] () {
-        ObjectReader::Registry registry;
-        registry.AddCommonType<String> ();
-        registry.AddCommonType<optional<String>> ();
-        registry.AddCommonType<uint16_t> ();
-        registry.AddCommonType<URI> ();
-        registry.AddCommonType<optional<URI>> ();
-        registry.AddCommonReader_Simple<InternetMediaType> ([] (const String& s) { return InternetMediaType{s}; });
-        registry.AddCommonReader_Class<DeviceDescription::Icon> ({
-            {Name{"mimetype"sv}, &DeviceDescription::Icon::fMimeType},
-            {Name{"width"sv}, &DeviceDescription::Icon::fHorizontalPixels},
-            {Name{"height"sv}, &DeviceDescription::Icon::fVerticalPixels},
-            {Name{"depth"sv}, &DeviceDescription::Icon::fColorDepth},
-            {Name{"url"sv}, &DeviceDescription::Icon::fURL},
-        });
-        registry.AddCommonReader_Class<DeviceDescription::Service> ({
-            {Name{"serviceType"sv}, &DeviceDescription::Service::fServiceType},
-            {Name{"serviceId"sv}, &DeviceDescription::Service::fServiceID},
-            {Name{"SCPDURL"sv}, &DeviceDescription::Service::fSCPDURL},
-            {Name{"controlURL"sv}, &DeviceDescription::Service::fControlURL},
-            {Name{"eventSubURL"sv}, &DeviceDescription::Service::fEventSubURL},
-        });
-        registry.AddCommonType<Collection<DeviceDescription::Icon>> (Name{"icon"});
-        registry.AddCommonType<optional<Collection<DeviceDescription::Icon>>> ();
-        registry.AddCommonType<Collection<DeviceDescription::Service>> (Name{"service"});
-        registry.AddCommonType<optional<Collection<DeviceDescription::Service>>> ();
-        registry.AddCommonReader_Class<DeviceDescription> ({
-            {Name{"presentationURL"sv}, &DeviceDescription::fPresentationURL},
-            {Name{"deviceType"sv}, &DeviceDescription::fDeviceType},
-            {Name{"manufacturer"sv}, &DeviceDescription::fManufactureName},
-            {Name{"friendlyName"sv}, &DeviceDescription::fFriendlyName},
-            {Name{"manufacturerURL"sv}, &DeviceDescription::fManufacturingURL},
-            {Name{"modelDescription"sv}, &DeviceDescription::fModelDescription},
-            {Name{"modelName"sv}, &DeviceDescription::fModelName},
-            {Name{"modelNumber"sv}, &DeviceDescription::fModelNumber},
-            {Name{"modelURL"sv}, &DeviceDescription::fModelURL},
-            {Name{"serialNumber"sv}, &DeviceDescription::fSerialNumber},
-            {Name{"UDN"sv}, &DeviceDescription::fUDN},
-            {Name{"UPC"sv}, &DeviceDescription::fUPC},
-            {Name{"iconList"sv}, &DeviceDescription::fIcons},
-            {Name{"serviceList"sv}, &DeviceDescription::fServices},
-        });
-        registry.AddCommonReader_Class<Root_> ({
-            {Name{"URLBase"sv}, &Root_::fURLBase},
-            {Name{"device"sv}, &Root_::fDevice},
-        });
-        return registry;
-    }();
-
-    Root_ root;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"xml data: %s", Streams::BinaryToText::Reader::New (b).ReadAll ().c_str ());
+    DbgTrace ("xml data: {}"_f, Streams::BinaryToText::Reader::New (b).ReadAll ());
 #endif
-#if qStroika_Foundation_DataExchange_XML_SupportParsing
-    {
-        ObjectReader::IConsumerDelegateToContext ctx{
-            kTypesRegistry_, MakeSharedPtr<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&root), Name{"root"sv})};
-        XML::SAXParse (options.GetXMLProvider (), b, &ctx, options.fValidateReadAgainst);
-    }
-#else
-    WeakAssertNotImplemented (); // may want to allow to continue, as this may not be critical functionality, but you probably want XML parser when running this code...
-#endif
-    DeviceDescription deviceDescription = move (root.fDevice);
+    const Variant::XML::Reader reader{{.fBinding = Binding_ (), .fXMLProvider = options.fXMLProvider, .fValidateAgainst = options.fValidateReadAgainst}};
+    VVMap_ root   = reader.Read (b.As<Streams::InputStream::Ptr<byte>> ()).As<VVMap_> ();
+    VVMap_ device = root.LookupValue ("device"sv).As<VVMap_> ();
     // an empty <URLBase> means none (UPnP Device Architecture 1.0); one that is not a URL is taken for none too - ignored, as
     // every <URLBase> was before Stroika v3.0d25 - rather than failing the whole description
-    if (root.fURLBase) {
-        if (String u = root.fURLBase->Trim (); not u.empty ()) {
+    if (optional<VariantValue> urlBase = root.Lookup ("URLBase"sv)) {
+        if (String u = urlBase->As<String> ().Trim (); not u.empty ()) {
             try {
-                deviceDescription.fURLBase = URI::Parse (u);
+                (void)URI::Parse (u);
+                device.Add ("URLBase"sv, VariantValue{u});
             }
             catch (...) {
                 DbgTrace ("Ignoring <URLBase>{}</URLBase>, which is not a URL: {}"_f, u, current_exception ());
             }
         }
     }
+    DeviceDescription deviceDescription = Mapper_ ().ToObject<DeviceDescription> (VariantValue{device});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("deviceDescription: {}"_f, deviceDescription);
 #endif

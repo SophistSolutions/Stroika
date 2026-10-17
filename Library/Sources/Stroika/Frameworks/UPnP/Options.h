@@ -26,17 +26,19 @@ namespace Stroika::Frameworks::UPnP {
      *
      *  \par Example Usage
      *      \code
-     *          // this device reads and writes with Xerces, whatever the rest of the process does
+     *          // this control point reads descriptions with Xerces, whatever the rest of the process does
      *          const UPnP::Options kOptions_{.fXMLProvider = &XML::Providers::Xerces::kDefaultProvider};
-     *          response.write (Serialize (kSwitchPower, kOptions_));
+     *          DeviceDescription   dd = UPnP::DeSerialize (fetched, kOptions_);
      *      \endcode
      */
     struct Options {
         /**
-         *  \brief Read and write XML with this provider - nullptr, the default, meaning DataExchange::XML::Providers::kDefaultProvider
+         *  \brief Read XML with this provider - nullptr, the default, meaning DataExchange::XML::Providers::kDefaultProvider
          *
          *  Which is libxml2 where it is configured, else Xerces. A provider is a static singleton, so this is a plain
          *  pointer and nothing owns it.
+         *
+         *  Writing needs none: Serialize writes a description's text itself (Variant::XML::Writer).
          *
          *  \note This is a UPnP option, not a process-wide one, so two libraries that each speak UPnP need not agree.
          */
@@ -75,7 +77,7 @@ namespace Stroika::Frameworks::UPnP {
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
         /**
-         *  \brief fXMLProvider, or Stroika's default where that is nullptr - the one Serialize and DeSerialize actually use
+         *  \brief fXMLProvider, or Stroika's default where that is nullptr - the one DeSerialize actually reads with
          */
         nonvirtual const Foundation::DataExchange::XML::Providers::IXMLProvider& GetXMLProvider () const;
 #endif

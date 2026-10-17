@@ -152,13 +152,14 @@ namespace Stroika::Frameworks::UPnP {
     /**
      *  \brief The SCPD's XML: what its SCPDURL serves - as UPnP's XML (text/xml), UTF-8
      *
-     *  \note Throws if the build has no XML DOM (qStroika_Foundation_DataExchange_XML_SupportDOM).
+     *  \note Needs no XML library: the text is written directly (Variant::XML::Writer), so options' provider plays no part.
      */
     Foundation::Memory::BLOB Serialize (const ServiceDescription& sd, const Options& options = {});
 
     /**
      *  \brief An SCPD read - what Serialize writes, and any other's: what it does not know - a vendor's own elements, say - is
-     *         skipped. Throws if it is not XML, or the build has no XML parser (qStroika_Foundation_DataExchange_XML_SupportParsing).
+     *         skipped. Throws if it is not XML, its document element is not <scpd>, or the build has no XML parser
+     *         (qStroika_Foundation_DataExchange_XML_SupportParsing).
      */
     void DeSerialize (const Foundation::Memory::BLOB& b, ServiceDescription* sd, const Options& options = {});
 

@@ -210,10 +210,7 @@ namespace {
     GTEST_TEST (Frameworks_UPnP, DeviceDescription_RoundTrip_)
     {
         Debug::TraceContextBumper ctx{"DeviceDescription_RoundTrip_"};
-#if not qStroika_Foundation_DataExchange_XML_SupportDOM
-        GTEST_SKIP () << "no XML DOM built in (neither libxml2 nor Xerces) - Serialize writes through one";
-#endif
-        DeviceDescription dd;
+        DeviceDescription         dd;
         dd.fPresentationURL  = URI{"http://www.sophists.com/"sv};
         dd.fDeviceType       = "urn:sophists.com:device:deviceType:1.0"sv;
         dd.fManufactureName  = "Sophist Solutions, Inc."sv;
@@ -305,12 +302,63 @@ namespace {
         EXPECT_EQ (read (L"<URLBase>http://\u00e9/</URLBase>"sv).fURLBase, nullopt);
     }
 
+    /*
+     *  A device as another stack writes one: its elements in another order, a vendor's (DLNA's) elements - one inside a list -
+     *  and an embedded <deviceList>, which DeviceDescription has no field for, with mixed content in it. What it knows is read,
+     *  the rest skipped. And a URL that is not one, and an icon size that is not a number, do not fail the whole description.
+     */
+    GTEST_TEST (Frameworks_UPnP, DeviceDescription_Others_)
+    {
+        Debug::TraceContextBumper ctx{"DeviceDescription_Others_"};
+#if not qStroika_Foundation_DataExchange_XML_SupportParsing
+        GTEST_SKIP () << "no XML parser built in (neither libxml2 nor Xerces)";
+#endif
+        constexpr string_view   kDevice_ = R"(<?xml version="1.0"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0" xmlns:dlna="urn:schemas-dlna-org:device-1-0">
+  <specVersion><major>1</major><minor>0</minor></specVersion>
+  <device>
+    <UDN>uuid:315caae0-1335-57bf-a178-24c9ee756629</UDN>
+    <deviceType>urn:schemas-upnp-org:device:InternetGatewayDevice:1</deviceType>
+    <friendlyName>a router</friendlyName>
+    <manufacturer>m</manufacturer>
+    <manufacturerURL>http://[192.168.1.1/</manufacturerURL>
+    <modelName>n</modelName>
+    <dlna:X_DLNADOC>DMS-1.50</dlna:X_DLNADOC>
+    <iconList><icon><mimetype>image/png</mimetype><width>48</width><height>32</height><depth>24</depth><url>/i.png</url></icon><icon><mimetype>image/jpeg</mimetype><width>48px</width><height>48</height><depth>24</depth><url>/i.jpg</url></icon></iconList>
+    <serviceList><service><serviceType>urn:schemas-upnp-org:service:Layer3Forwarding:1</serviceType><serviceId>urn:upnp-org:serviceId:L3Forwarding1</serviceId><SCPDURL>/l3f.xml</SCPDURL><controlURL>/l3f</controlURL><eventSubURL>/l3fe</eventSubURL></service><dlna:X_note>a vendor's</dlna:X_note></serviceList>
+    <deviceList><device><deviceType>urn:schemas-upnp-org:device:WANDevice:1</deviceType><friendlyName>a <b>WAN</b> device</friendlyName></device></deviceList>
+    <presentationURL>http://192.168.1.1/</presentationURL>
+  </device>
+</root>
+)";
+        const DeviceDescription dd       = UPnP::DeSerialize (Memory::BLOB{as_bytes (span{kDevice_})});
+        EXPECT_EQ (dd.fUDN, "uuid:315caae0-1335-57bf-a178-24c9ee756629"sv);
+        EXPECT_EQ (dd.fDeviceType, "urn:schemas-upnp-org:device:InternetGatewayDevice:1"sv);
+        EXPECT_EQ (dd.fFriendlyName, "a router"sv); // not the embedded device's
+        EXPECT_EQ (dd.fManufactureName, "m"sv);
+        EXPECT_EQ (dd.fModelName, "n"sv);
+        EXPECT_EQ (dd.fPresentationURL, URI{"http://192.168.1.1/"sv});
+        EXPECT_EQ (dd.fManufacturingURL, URI{}); // not a URL: read as an empty one
+        ASSERT_TRUE (dd.fIcons and dd.fIcons->size () == 2);
+        auto iconAt = [&] (const URI& url) { return dd.fIcons->First ([&] (const DeviceDescription::Icon& i) { return i.fURL == url; }); };
+        optional<DeviceDescription::Icon> png = iconAt (URI{"/i.png"sv});
+        ASSERT_TRUE (png);
+        EXPECT_EQ (png->fMimeType, InternetMediaType{"image/png"sv});
+        EXPECT_EQ (png->fHorizontalPixels, uint16_t{48});
+        EXPECT_EQ (png->fVerticalPixels, uint16_t{32});
+        EXPECT_EQ (png->fColorDepth, uint16_t{24});
+        optional<DeviceDescription::Icon> jpeg = iconAt (URI{"/i.jpg"sv});
+        ASSERT_TRUE (jpeg);
+        EXPECT_EQ (jpeg->fHorizontalPixels, uint16_t{0}); // not a number: read as 0
+        ASSERT_TRUE (dd.fServices and dd.fServices->size () == 1);
+        const DeviceDescription::Service service = *dd.fServices->First ();
+        EXPECT_EQ (service.fServiceID, "urn:upnp-org:serviceId:L3Forwarding1"sv);
+        EXPECT_EQ (service.fControlURL, URI{"/l3f"sv});
+    }
+
     GTEST_TEST (Frameworks_UPnP, ServiceDescription_RoundTrip_)
     {
         Debug::TraceContextBumper ctx{"ServiceDescription_RoundTrip_"};
-#if not qStroika_Foundation_DataExchange_XML_SupportDOM
-        GTEST_SKIP () << "no XML DOM built in (neither libxml2 nor Xerces) - Serialize writes through one";
-#endif
         using SD = ServiceDescription;
         // each part of an SCPD: in and out arguments (one a retval), an action with none, a state variable not evented, one with
         // allowed values (one XML must quote), and one with an allowed range
@@ -458,8 +506,9 @@ namespace {
       <argumentList>
         <argument><name>Channel</name><direction>in</direction><relatedStateVariable>A_ARG_TYPE_Channel</relatedStateVariable></argument>
         <argument><name>CurrentVolume</name><relatedStateVariable>Volume</relatedStateVariable><retval /><direction>out</direction></argument>
+        <v:extra>a vendor's, in a list</v:extra>
       </argumentList>
-      <v:note>a vendor's</v:note>
+      <v:note>a vendor's - <b>with</b> mixed content</v:note>
     </action>
   </actionList>
   <serviceStateTable>
@@ -482,8 +531,8 @@ namespace {
     }
 
     /*
-     *  Options::fXMLProvider is honoured, writing and reading - so one library's UPnP need not use the provider another's does,
-     *  and nullopt means Stroika's default.
+     *  Options::fXMLProvider is honoured reading - so one library's UPnP need not use the provider another's does, and nullptr
+     *  means Stroika's default. Writing uses no provider, so what is written reads back whichever reads it.
      */
     GTEST_TEST (Frameworks_UPnP, ServiceDescription_XMLProviderOption_)
     {
@@ -499,19 +548,11 @@ namespace {
         providers += &DataExchange::XML::Providers::Xerces::kDefaultProvider;
 #endif
         EXPECT_GE (providers.size (), 2u) << "this build configured no XML provider at all?";
+        const Memory::BLOB written = Serialize (sd);
         for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
-            const UPnP::Options options{.fXMLProvider = p};
-            SD                  back;
-            DeSerialize (Serialize (sd, options), &back, options);
+            SD back;
+            DeSerialize (written, &back, UPnP::Options{.fXMLProvider = p});
             EXPECT_EQ (back, sd) << back.ToString ().AsNarrowSDKString ();
-        }
-        // and what one provider writes, another reads
-        for (const DataExchange::XML::Providers::IXMLProvider* writeWith : providers) {
-            for (const DataExchange::XML::Providers::IXMLProvider* readWith : providers) {
-                SD back;
-                DeSerialize (Serialize (sd, UPnP::Options{.fXMLProvider = writeWith}), &back, UPnP::Options{.fXMLProvider = readWith});
-                EXPECT_EQ (back, sd);
-            }
         }
     }
 #endif

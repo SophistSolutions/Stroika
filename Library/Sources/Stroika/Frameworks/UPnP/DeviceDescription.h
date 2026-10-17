@@ -129,10 +129,17 @@ namespace Stroika::Frameworks::UPnP {
     const inline Foundation::Execution::LazyInitialized<Foundation::DataExchange::ObjectVariantMapper> DeviceDescription::kMapper{DeviceDescription::mkMapper_};
 
     /**
+     *  \brief The device's description XML: what its LOCATION serves - as UPnP's XML (text/xml), UTF-8
+     *
+     *  \note Needs no XML library: the text is written directly (Variant::XML::Writer), so options' provider plays no part.
      */
     Memory::BLOB Serialize (const DeviceDescription& dd, const Options& options = {});
 
     /**
+     *  \brief A device description read - what Serialize writes, and any other's: what it does not know - a vendor's own
+     *         elements, an embedded <deviceList> - is skipped, and a URL or icon size that is not one is read as an empty
+     *         URL or 0. Throws if it is not XML, its document element is not <root>, or the build has no XML parser
+     *         (qStroika_Foundation_DataExchange_XML_SupportParsing).
      */
     DeviceDescription DeSerialize (const Memory::BLOB& b, const Options& options = {});
 
