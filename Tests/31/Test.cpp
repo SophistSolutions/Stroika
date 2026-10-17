@@ -628,6 +628,7 @@ namespace {
 #else
                 constexpr bool kArm_ = false;
 #endif
+                DISABLE_COMPILER_MSC_WARNING_START (4127) // warning C4127: conditional expression is constant - VS2022 (19.44), not VS2026 (19.51)
                 if (kArm_ and Debug::kBuiltWithAddressSanitizer and
                     (
                         // clang-format off
@@ -645,6 +646,7 @@ namespace {
                     skippedCiphers.Add (ci.name ());
                     continue;
                 }
+                DISABLE_COMPILER_MSC_WARNING_END (4127)
                 for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.availableDigestAlgorithms ()) {
                     DbgTrace ("Testing ci={}, di={}"_f, ci, di);
                     size_t nFailsForThisCipherDigestCombo{};
