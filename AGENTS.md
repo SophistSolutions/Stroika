@@ -346,6 +346,10 @@ almost always matter less. Mark which kind it is in the headline, so nobody read
 missing). A fix's headline names the symptom, not the mechanism: "Variant::XML::Reader FIXED: lost a whole array,
 reading an element that had array items beside other members".
 
+**A commit makes sense on its own** (LGP, 2026-10-18): its reviewer cannot know what commits come next. So a change
+agreed while a commit is staged goes INTO it, not into a follow-up - re-prepare it as if nothing had been tested yet, and
+rebuild. An hour of rebuilding is cheap beside reviewing a commit whose comments argue against the next one.
+
 **Keep messages terse.** A cleanup is a title alone; a fix is a title plus 2-4 lines of what was wrong. Verification,
 measurements and why-not-X go in the chat reply, which LGP reads - he cuts them from the log. The exception is a breaking
 change: say what changed and who is affected, plus the `UPGRADE NOTE:`. A commit touching only TODO.md is just "todo".
@@ -474,6 +478,10 @@ still compile". Say which one you did.
 - **`Memory::MakeSharedPtr`, not `make_shared`**: the same, except that it block-allocates a type annotated for it (a
   `Memory::UseBlockAllocationIfAppropriate<T>` base) - so use it even where the type is not annotated. The annotation suits
   a small rep allocated often, making that indirection nearly free; elsewhere it hardly matters either way.
+- **Defaults favor ease and soundness; a cost gets a knob** (LGP, 2026-10-18): Stroika's aim is quick development of a
+  sound, robust application whose hot paths can be tuned to full C++ performance - not top performance out of the box.
+  So a default checks (validating what is written, say), and a caller on a hot path can turn it off, or hold the costly
+  part (a compiled schema) itself.
 - **Orthogonal interfaces**: give a setter its getter (an Add its Remove, a Start its Stop) even where the use for one of
   them is weak - LGP prefers the complete, symmetric API.
 - **Document every overload, with a trailing `///<`.** Doxygen and the VS Code C/C++ extension both
@@ -519,6 +527,9 @@ still compile". Say which one you did.
   targets (`wchar_t` APIs, `EnumName` tables), alone. Opportunistic, not a sweep.
 - **Comments state the invariant, not today's callers** - a reason anchored to a call site rots when it changes - and
   describe cost qualitatively ("cheap"), not with measurements ("~1ns"), which date. Numbers go in commits or issues.
+- **Comments say what IS, and why - not why it changed** (LGP, 2026-10-18): most readers meet the code for the first
+  time. The case for a change ("refuses what works today") goes in the chat and the commit - an UPGRADE NOTE aside. A
+  design question LGP keeps asking ("why validate reading, not writing?") is answered in the comment.
 - **A note that looks back names the version** - "before Stroika v3.0d25 it was an Execution::Function", not "it used to
   be" - in a `\note` and an `UPGRADE NOTE:` alike. That is the release the change first ships in: while `STROIKA_VERSION`
   says `3.0d25x`, the work is toward 3.0d25.
