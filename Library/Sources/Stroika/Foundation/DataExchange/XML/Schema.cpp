@@ -33,6 +33,11 @@ XML::DOM::Document::Ptr Ptr::As ()
 }
 #endif
 template <>
+XML::Schema::Ptr Schema::Ptr::As (const Providers::ISchemaProvider& p)
+{
+    return New (p, fRep_->GetData (), fRep_->GetResolver ());
+}
+template <>
 XML::DOM::Document::Ptr Schema::Ptr::As (const Providers::IDOMProvider& p)
 {
     return DOM::Document::New (p, fRep_->GetData ());

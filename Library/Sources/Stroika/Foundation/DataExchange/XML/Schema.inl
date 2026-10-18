@@ -46,14 +46,11 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
             return fRep_->GetData ();
         }
     }
-    template <typename AS_T>
-    AS_T Ptr::As (const Providers::ISchemaProvider& p)
-        requires (same_as<AS_T, XML::Schema::Ptr>)
-    {
-        if constexpr (same_as<AS_T, XML::Schema::Ptr>) {
-            return New (p, fRep_->GetData (), fRep_->GetResolver ());
-        }
-    }
+    // defined in Schema.cpp, where ISchemaProvider is complete: its call to New, not dependent on AS_T, is resolved where it
+    // is defined - and here, before IProvider.h defines ISchemaProvider, considering New (stream, ...) would test whether
+    // an incomplete ISchemaProvider converts to an InputStream::Ptr (g++'s -Wsfinae-incomplete)
+    template <>
+    XML::Schema::Ptr Ptr::As (const Providers::ISchemaProvider& p);
     template <>
     XML::DOM::Document::Ptr Ptr::As (const Providers::IDOMProvider& p);
 
