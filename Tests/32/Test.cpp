@@ -1705,18 +1705,15 @@ namespace {
             }
         }
 
-        // a string XML carries both ways today - not CR or another control character, nor a character outside the BMP (on
-        // Windows), nor in an attribute tab or LF (@todo widen with the escaping fixes)
-        String RandomString (bool attribute)
+        // a string of what XML spells in more than one way, or a parser would change unless spelled with care: entities, characters
+        // outside ASCII and the BMP, and TAB, LF and CR (in an attribute, each read as a space unless written as a reference)
+        String RandomString ()
         {
-            static constexpr char32_t kChars_[]        = {U'a', U'Z', U'0', U' ', U'-', U'&', U'<', U'>', U'"', char32_t (39), U';',
-                                                          char32_t (0xE9), char32_t (0x4E2D),
-                                                          // element text only
-                                                          char32_t (10), char32_t (9)};
-            constexpr size_t          kAttributeChars_ = 13;
-            u32string                 s;
+            static constexpr char32_t kChars_[] = {
+                U'a', U'Z', U'0', U' ', U'-', U'&', U'<', U'>', U'"', char32_t (39), U';', char32_t (0xE9), char32_t (0x4E2D), char32_t (0x1F600), char32_t (9), char32_t (10), char32_t (13)};
+            u32string s;
             for (unsigned int i = Pick (7); i > 0; --i) {
-                s += kChars_[Pick (attribute ? kAttributeChars_ : size (kChars_))];
+                s += kChars_[Pick (size (kChars_))];
             }
             return String{s};
         }
@@ -1724,7 +1721,7 @@ namespace {
         {
             switch (*b.fType) {
                 case VariantValue::eString:
-                    return VariantValue{RandomString (b.fKind == Binding::Kind::eAttribute)};
+                    return VariantValue{RandomString ()};
                 case VariantValue::eBoolean:
                     return VariantValue{Pick (2) == 0};
                 case VariantValue::eInteger:
@@ -2186,6 +2183,59 @@ namespace {
         const String       written = Writer{{.fBinding = b}}.WriteAsString (v);
         EXPECT_TRUE (SameTyped_ (strict.Read (written), v)) << written.AsUTF8<string> ();
         EXPECT_TRUE (SameTyped_ (lenient.Read (written), v)) << written.AsUTF8<string> ();
+    }
+
+    /*
+     *  Variant::XML's round trip is of values, not documents: a String comes back the same code points, however the Writer
+     *  spelled each one - so it must spell each as a parser reads it back - and a character XML 1.0 cannot hold at all, the
+     *  Writer throws on, rather than write a document no parser reads
+     */
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_RoundTripCharacters_)
+    {
+        using DataExchange::Variant::XML::Binding;
+        using DataExchange::Variant::XML::Reader;
+        using DataExchange::Variant::XML::Writer;
+        using VVMap = Mapping<String, VariantValue>;
+        const Binding kElement{.fName = "a"sv};
+        const Binding kAttribute{.fName = "a"sv, .fMembers = {{"t"sv, Binding{.fKind = Binding::Kind::eAttribute}}}};
+        const Binding kText{.fName = "a"sv, .fMembers = {{"t"sv, Binding{.fKind = Binding::Kind::eText}}}};
+        auto          member = [] (const String& s) { return VariantValue{VVMap{{"t"sv, VariantValue{s}}}}; };
+        auto          write  = [] (const VariantValue& v, const Binding& b) { return Writer{{.fBinding = b}}.WriteAsString (v); };
+        // what a parser changes, unless written so it cannot: a character outside the BMP (two code units in a 16-bit wchar_t),
+        // a CR (line ends are normalized to LF), and in an attribute a TAB, LF or CR (each normalized to a space)
+        for (const String& s : {String{U"a\U0001F600b"sv}, String{"a\rb"sv}, String{"a\r\nb"sv}, String{"a\tb\nc"sv}, String{" a\t\tb "sv}}) {
+            for (const Binding& b : {kElement, kAttribute, kText}) {
+                const String xml = write (member (s), b);
+                try {
+                    EXPECT_EQ (Reader{b}.Read (xml), member (s)) << xml.AsUTF8<string> ();
+                }
+                catch (const std::exception& e) {
+                    ADD_FAILURE () << xml.AsUTF8<string> () << ": " << e.what ();
+                }
+            }
+        }
+        // ... and however a character is spelled, it reads the same
+        for (const String& xml : {String{U"<a><t>\U0001F600</t></a>"sv}, String{"<a><t>&#128512;</t></a>"sv}, String{"<a><t>&#x1F600;</t></a>"sv}}) {
+            EXPECT_EQ (Reader{kElement}.Read (xml), member (String{U"\U0001F600"sv})) << xml.AsUTF8<string> ();
+        }
+        // a character XML 1.0 cannot hold at all - a C0 control but TAB, LF and CR, or U+FFFE, U+FFFF - not even as a reference: so
+        // the Writer throws, as on any value it cannot write
+        for (char32_t c : {U'\x01', U'\x1F', U'\xFFFE', U'\xFFFF'}) {
+            for (const Binding& b : {kElement, kAttribute, kText}) {
+                EXPECT_THROW (write (member (String{u32string_view{&c, 1}}), b), BadFormatException) << static_cast<unsigned int> (c);
+            }
+        }
+        // a text member (Binding::Kind::eText) is an element's text beside its attributes, not beside child elements - that is
+        // mixed content, which the Reader cannot read back: so the Writer throws, rather than drop the elements. Either alone
+        // round-trips - the whitespace a pretty-printed document has between elements being no text
+        const Binding kTextAndElement{.fName = "a"sv, .fMembers = {{"t"sv, Binding{.fKind = Binding::Kind::eText}}, {"e"sv}}};
+        EXPECT_THROW (write (VariantValue{VVMap{{"t"sv, VariantValue{"x"sv}}, {"e"sv, VariantValue{"y"sv}}}}, kTextAndElement), BadFormatException);
+        for (const VariantValue& v : {VariantValue{VVMap{{"t"sv, VariantValue{"x"sv}}}}, VariantValue{VVMap{{"e"sv, VariantValue{"y"sv}}}}}) {
+            const String xml = write (v, kTextAndElement);
+            EXPECT_EQ (Reader{kTextAndElement}.Read (xml), v) << xml.AsUTF8<string> ();
+        }
+        // ... and the Reader throws on mixed content there too, as with no text member
+        EXPECT_THROW (Reader{kTextAndElement}.Read (String{"<a>x<e>y</e></a>"sv}), BadFormatException);
     }
 }
 #endif

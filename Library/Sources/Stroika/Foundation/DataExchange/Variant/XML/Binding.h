@@ -348,9 +348,10 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *  \brief Whether, given this Binding as the top level Binding (the one a Reader or Writer is given), the Writer and Reader
          *         round-trip every VariantValue faithfully, or throw - never anything in between
          *
-         *  **Given a complete Binding, writing a VariantValue and reading it back gives that value - or throws
-         *  BadFormatException, the value not being one the Binding describes.** The Writer throws on a value of another type,
-         *  or with a member the Binding does not declare; the Reader, on a document not of the Binding's type (an element or
+         *  **Given a complete Binding, writing a VariantValue and reading it back gives a value equal to it - or throws
+         *  BadFormatException, the value not being one the Binding describes.** Equal values, not the same document: @see
+         *  Reader. The Writer throws on a value of another type, with a member the Binding does not declare, or holding a
+         *  character XML 1.0 cannot; the Reader, on a document not of the Binding's type (an element or
          *  attribute it does not declare, a member repeated that it declares as one value, text that is not of its type).
          *  Nothing is guessed, and nothing silently lost - but for what XML writes as nothing (below).
          *
@@ -374,11 +375,6 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *  A Binding generated from a type's declaration (an ObjectVariantMapper's -
          *  https://github.com/SophistSolutions/Stroika/issues/1217) can be complete by construction; one written by hand may
          *  instead be short, leaving the rest to the default shape. ToString () says which - and, where it is not complete, why.
-         *
-         *  @todo NOT YET SO of a string holding a character the XML escaping gets wrong - a bug, silently changing it: CR (read
-         *        back as LF), tab or LF in an attribute (read back as a space). And the Reader, not the Writer, throws on another
-         *        control character (written as a reference XML 1.0 does not allow), and on Windows on a character outside the BMP
-         *        (written as two surrogate references) - which should round-trip.
          */
         nonvirtual bool IsComplete () const;
 

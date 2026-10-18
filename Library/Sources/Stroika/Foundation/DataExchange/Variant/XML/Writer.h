@@ -73,9 +73,12 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  that type - anything else throws - an object only with the members its Binding declares, and a null member as none at
      *  all. With no type declared, any value is written, as it is.
      *
-     *  **Given a complete Binding (Binding::IsComplete), the Reader reads back exactly what this wrote - or this throws
+     *  **Given a complete Binding (Binding::IsComplete), the Reader reads back a value equal to what this wrote
+     *  (VariantValue::operator==: the same members, items and types, and Strings of the same code points) - or this throws
      *  BadFormatException, v not being one the Binding describes: never anything in between** (but for what XML writes as
-     *  nothing - @see Binding::IsComplete).
+     *  nothing - @see Binding::IsComplete). The document is not promised: this picks one spelling of each character - the
+     *  character itself, or a character reference - and any other spelling reads the same (U+1F600 written literally, as
+     *  `&#128512;` or as `&#x1F600;` is one character).
      *
      *  \note A namespace is written as a default namespace (xmlns="..."), inherited by the elements inside it - or with a
      *        prefix, where a Binding's fNamespacePrefixes gives it one, which an attribute in a namespace requires. Mixed
@@ -90,6 +93,9 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *            array of items with no name of their own
      *          - a value of another type than its Binding declares (Binding::fType), or a member of an object its Binding
      *            does not declare
+     *          - a character XML 1.0 cannot hold at all, not even as a character reference: U+0000 to U+001F but TAB, LF and
+     *            CR, U+FFFE, U+FFFF
+     *          - a text member (Binding::Kind::eText) beside child elements: mixed content, which the Reader cannot read back
      */
     class Writer : public Variant::Writer {
     private:

@@ -8,6 +8,8 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 #include "WriterUtils.h"
 
@@ -31,6 +33,29 @@ namespace {
         char32_t c = ch.GetCharacterCode ();
         return IsNCNameStartChar_ (ch) or c == '-' or c == '.' or (c >= '0' and c <= '9') or c == 0xB7 or (c >= 0x300 and c <= 0x36F) or
                (c >= 0x203F and c <= 0x2040);
+    }
+
+    // XML 1.0's Char (https://www.w3.org/TR/xml/#NT-Char): what a document can hold at all, literally or as a character reference
+    constexpr bool IsXMLChar_ (char32_t c)
+    {
+        return c == '\t' or c == '\n' or c == '\r' or (c >= 0x20 and c <= 0xD7FF) or (c >= 0xE000 and c <= 0xFFFD) or (c >= 0x10000 and c <= 0x10FFFF);
+    }
+
+    // c - a character with no entity of its own - spelled so a parser reads it back as c: in ASCII, so anything else as a
+    // reference to its code point; and as a reference too, what a parser would change - a CR (line ends are normalized to LF),
+    // and in an attribute a TAB or LF (attribute values are normalized, each to a space). One XML 1.0 cannot hold throws
+    void AppendCharacter_ (string* r, char32_t c, bool inAttribute)
+    {
+        if (not IsXMLChar_ (c)) {
+            Execution::Throw (
+                BadFormatException{"U+{:04X} is not a character XML 1.0 can hold, so cannot be written as XML"_f(static_cast<uint32_t> (c))});
+        }
+        if (c > 0x7F or c == '\r' or (inAttribute and (c == '\t' or c == '\n'))) {
+            *r += CString::Format ("&#%u;", static_cast<unsigned int> (c));
+        }
+        else {
+            r->push_back (static_cast<char> (c));
+        }
     }
 }
 
@@ -87,10 +112,16 @@ string XML::QuoteForXMLAttribute (const string& s)
 
 string XML::QuoteForXMLAttribute (const wstring& s)
 {
-    string r;
-    r.reserve (Containers::Support::ReserveTweaks::GetScaledUpCapacity (6 * s.size () / 5)); // most chars just written as character, but some take 5 characters, so WAG about percentage
-    for (auto i = s.begin (); i != s.end (); ++i) {
-        switch (*i) {
+    return QuoteForXMLAttribute (String{s});
+}
+
+string XML::QuoteForXMLAttribute (const String& s)
+{
+    u32string u = s.As<u32string> (); // code points, not code units - so a character outside the BMP is one reference, not two
+    string    r;
+    r.reserve (Containers::Support::ReserveTweaks::GetScaledUpCapacity (6 * u.size () / 5)); // most chars just written as character, but some take 5 characters, so WAG about percentage
+    for (char32_t c : u) {
+        switch (c) {
             case '&':
                 r += "&amp;";
                 break;
@@ -106,23 +137,12 @@ string XML::QuoteForXMLAttribute (const wstring& s)
             case '\'':
                 r += "&apos;";
                 break;
-            default: {
-                wchar_t ccode = *i;
-                if (ccode != '\t' and ccode != '\n' and ccode != '\r' and (ccode < 32 or ccode > 127)) {
-                    r += CString::Format ("&#%d;", ccode);
-                }
-                else {
-                    r.push_back (static_cast<char> (ccode));
-                }
-            } break;
+            default:
+                AppendCharacter_ (&r, c, true);
+                break;
         }
     }
     return r;
-}
-
-string XML::QuoteForXMLAttribute (const String& s)
-{
-    return QuoteForXMLAttribute (s.As<wstring> ());
 }
 
 string XML::QuoteForXMLAttribute (const optional<String>& s)
@@ -183,9 +203,21 @@ string XML::QuoteForXML (const string& s)
 
 string XML::QuoteForXML (const wstring& s)
 {
-    string r;
-    r.reserve (Containers::Support::ReserveTweaks::GetScaledUpCapacity (6 * s.size () / 5)); // most chars just written as character, but some take 5 characters, so WAG about percentage
-    for (auto i = s.begin (); i != s.end (); ++i) {
+    return QuoteForXML (String{s});
+}
+
+String XML::QuoteForXMLW (const String& s)
+{
+    string tmp = QuoteForXML (s);
+    return String::FromNarrowSDKString (tmp);
+}
+
+string XML::QuoteForXML (const String& s)
+{
+    u32string u = s.As<u32string> (); // code points, not code units - so a character outside the BMP is one reference, not two
+    string    r;
+    r.reserve (Containers::Support::ReserveTweaks::GetScaledUpCapacity (6 * u.size () / 5)); // most chars just written as character, but some take 5 characters, so WAG about percentage
+    for (auto i = u.begin (); i != u.end (); ++i) {
         switch (*i) {
             case '&':
                 r += "&amp;";
@@ -203,36 +235,19 @@ string XML::QuoteForXML (const wstring& s)
                 // NB: This code WOULD be simpler if we just always mapped, but then much ordinary and safe text with dashes becomes
                 // less readable (and produces huge diffs in my regression tests - but thats a one-time annoyance).
                 //
-                if ((i == s.begin ()) or (i + 1 == s.end ()) or (*(i - 1) == '-')) {
+                if ((i == u.begin ()) or (i + 1 == u.end ()) or (*(i - 1) == '-')) {
                     r += "&#45;";
                 }
                 else {
                     r.push_back ('-');
                 }
             } break;
-            default: {
-                wchar_t ccode = *i;
-                if (ccode != '\t' and ccode != '\n' and ccode != '\r' and (ccode < 32 or ccode > 127)) {
-                    r += CString::Format ("&#%d;", ccode);
-                }
-                else {
-                    r.push_back (static_cast<char> (ccode));
-                }
-            } break;
+            default:
+                AppendCharacter_ (&r, *i, false);
+                break;
         }
     }
     return r;
-}
-
-String XML::QuoteForXMLW (const String& s)
-{
-    string tmp = QuoteForXML (s);
-    return String::FromNarrowSDKString (tmp);
-}
-
-string XML::QuoteForXML (const String& s)
-{
-    return QuoteForXML (s.As<wstring> ());
 }
 
 string XML::QuoteForXML (const optional<String>& s)

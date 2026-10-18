@@ -410,9 +410,18 @@ namespace {
                     }
                 }
             }
+            static const auto kMixedContent_ = BadFormatException{"mixed content (text beside child elements) cannot be read into a VariantValue"sv};
             // a Binding may say this element's text is one of its members, beside its attributes - an empty one, where that member's
             // Binding declares its type, written as none, so absent
             if (optional<String> textKey = f.fBinding == nullptr ? nullopt : f.fBinding->TextMemberKey ()) {
+                if (f.fHasChildElements) {
+                    // ... but not beside child elements, which is mixed content - the whitespace of a pretty-printed document aside,
+                    // which is no text at all - read leniently, passed over
+                    if (not textBlank and not fLenient) {
+                        Execution::Throw (kMixedContent_);
+                    }
+                    return VariantValue{f.fChildren};
+                }
                 const Binding* textBinding = f.fBinding->MemberBinding (*textKey);
                 if (textBinding == nullptr or not textBinding->fType) {
                     f.fChildren.Add (*textKey, VariantValue{text});
@@ -437,8 +446,6 @@ namespace {
                 // text this shape cannot hold, which reading on would silently drop - so say so, rather than lose it (it comes
                 // from the document, not from any caller's mistake). Beside attributes alone, a Binding could have held it
                 if (f.fHasChildElements) {
-                    static const auto kMixedContent_ =
-                        BadFormatException{"mixed content (text beside child elements) cannot be read into a VariantValue"sv};
                     Execution::Throw (kMixedContent_);
                 }
                 static const auto kTextBesideAttributes_ = BadFormatException{

@@ -35,24 +35,37 @@ namespace Stroika::Foundation::DataExchange::XML {
     bool IsNCName (const String& s);
 
     /**
+     *  \brief s as an attribute's value, in ASCII: each character spelled so a parser reads it back as that character
+     *
+     *  So a character not ASCII is a reference to its code point (one, outside the BMP too), and so is a TAB, LF or CR, which a
+     *  parser would otherwise read as a space (attribute-value normalization). Throws DataExchange::BadFormatException on a
+     *  character XML 1.0 cannot hold at all, not even as a reference (U+0000 to U+001F but TAB, LF and CR, U+FFFE, U+FFFF).
+     *
+     *  \note The string overload passes s's bytes through, quoting only & < > " and ' - an encoding it cannot know.
      */
     string QuoteForXMLAttribute (const string& s);
-    string QuoteForXMLAttribute (const wstring& s); // encode non-ascii characters as entity-references
-    string QuoteForXMLAttribute (const String& s);
-    string QuoteForXMLAttribute (const optional<String>& s);
+    string QuoteForXMLAttribute (const wstring& s); ///< \brief s as an attribute's value, in ASCII, each character as a parser reads it back
+    string QuoteForXMLAttribute (const String& s); ///< \brief s as an attribute's value, in ASCII, each character as a parser reads it back
+    string QuoteForXMLAttribute (const optional<String>& s); ///< \brief s as an attribute's value - nothing, where s is missing
 
     /**
      */
     String QuoteForXMLAttributeW (const String& s);
 
     /**
-     * This function only emits ascii characters (so makes no assumptions about the codepage used for writing xml). It
-     * emits non-ascii characters as entity references.
+     *  \brief s as an element's text, in ASCII (so assuming nothing of the encoding the XML is written in): each character
+     *         spelled so a parser reads it back as that character
+     *
+     *  So a character not ASCII is a reference to its code point (one, outside the BMP too), and so is a CR, which a parser
+     *  would otherwise read as LF (line-end normalization). Throws DataExchange::BadFormatException on a character XML 1.0
+     *  cannot hold at all, not even as a reference (U+0000 to U+001F but TAB, LF and CR, U+FFFE, U+FFFF).
+     *
+     *  \note The string overload passes s's bytes through, quoting only & < > and dashes - an encoding it cannot know.
      */
     string QuoteForXML (const string& s);
-    string QuoteForXML (const wstring& s); // encode non-ascii characters as entity-references
-    string QuoteForXML (const String& s);
-    string QuoteForXML (const optional<String>& s);
+    string QuoteForXML (const wstring& s);          ///< \brief s as an element's text, in ASCII, each character as a parser reads it back
+    string QuoteForXML (const String& s);           ///< \brief s as an element's text, in ASCII, each character as a parser reads it back
+    string QuoteForXML (const optional<String>& s); ///< \brief s as an element's text - nothing, where s is missing
 
     /**
      */

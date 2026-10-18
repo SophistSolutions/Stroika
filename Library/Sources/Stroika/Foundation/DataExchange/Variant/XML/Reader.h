@@ -44,9 +44,13 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *        document - a vendor's own elements - needs; or the Reader reads leniently (Options::fLenient), passing over
      *        all of these.
      *
-     *  **Given a complete Binding (Binding::IsComplete), what the Writer wrote reads back exactly - or the Writer, or this
-     *  Reader, throws BadFormatException, the value not being one the Binding describes: never anything in between** (but for
-     *  what XML writes as nothing - @see Binding::IsComplete).
+     *  **Given a complete Binding (Binding::IsComplete), this reads back a value equal to what the Writer wrote
+     *  (VariantValue::operator==: the same members, items and types, and Strings of the same code points) - or the Writer, or
+     *  this Reader, throws BadFormatException, the value not being one the Binding describes: never anything in between** (but
+     *  for what XML writes as nothing - @see Binding::IsComplete). The document is not promised: the Writer picks one spelling
+     *  of each character - the character itself, or a character reference - and any other spelling reads the same (U+1F600
+     *  written literally, as `&#128512;` or as `&#x1F600;` is one character). A character XML 1.0 cannot hold at all (U+0000
+     *  to U+001F but TAB, LF and CR, U+FFFE, U+FFFF), the Writer throws on.
      *
      *  Give it (Options::fBinding) the Binding the Writer was given. With the default - no Binding::fName - the document
      *  element is the value's one member, so its name is kept: `<a><b>1</b></a>` reads as `{"a": {"b": "1"}}`. A Binding with
@@ -54,8 +58,8 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  element has another (local) name, the document not being one the Binding describes.
      *
      *  \note Throws DataExchange::BadFormatException on mixed content (text beside child elements), which this shape cannot
-     *        hold: reading on would silently drop the text. And on text beside attributes, unless a Binding says which member
-     *        it is (Binding::Kind::eText).
+     *        hold - nor can a text member (Binding::Kind::eText), text beside attributes only: reading on would silently drop
+     *        the text. And on text beside attributes, unless a Binding says which member it is (Binding::Kind::eText).
      *
      *  \note Comments and processing instructions are dropped - StructuredStreamEvents::IConsumer reports neither, so this
      *        Reader never sees them. So a document rewritten through a VariantValue loses the comments it had, which would

@@ -263,11 +263,18 @@ namespace {
                 }
             }
             fOut.Write ('>');
-            if (textMember) {
-                fOut.Write (String{QuoteForXML (textMember->As<String> ())});
+            // a text member is this element's text beside its attributes - an empty one written as nothing - not beside child
+            // elements: that is mixed content, which the Reader cannot read back, so v throws rather than lose them
+            String text = textMember ? textMember->As<String> () : String{};
+            if (text.empty ()) {
+                WriteContent_ (v, members, binding, scope, indentLevel);
             }
             else {
-                WriteContent_ (v, members, binding, scope, indentLevel);
+                if (not ElementMembers_ (members, binding).empty ()) {
+                    Execution::Throw (BadFormatException{
+                        "'{}' has text (Binding::Kind::eText) beside child elements - mixed content, which cannot be read back"_f(name.fName)});
+                }
+                fOut.Write (String{QuoteForXML (text)});
             }
             EndTag_ (name, scope);
         }
