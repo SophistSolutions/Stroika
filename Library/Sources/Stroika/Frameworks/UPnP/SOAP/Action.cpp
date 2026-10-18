@@ -46,6 +46,15 @@ namespace {
         return result;
     }
 
+    // options as UPnP writes with them: encodingStyle on the Envelope, whatever they say - UPnP Device Architecture 1.1
+    // (Table 3-1) prohibits it on the Body, and requires it on the Envelope of a UPnP 1.0 device's or control point's messages
+    GenericSOAP_::Options UPnPWriting_ (const GenericSOAP_::Options& options)
+    {
+        GenericSOAP_::Options result   = options;
+        result.fEncodingStyleAttribute = GenericSOAP_::EncodingStyleAttribute::eOnEnvelope;
+        return result;
+    }
+
     // a UPnPError's own namespace (UPnP Device Architecture 1.1, section 3.2.2)
     constexpr string_view kUPnPErrorNamespace_ = "urn:schemas-upnp-org:control-1-0"sv;
 
@@ -135,7 +144,7 @@ GenericSOAP_::Fault ActionError::AsFault () const
                                    String{kUPnPErrorNamespace_}, fErrorCode, DataExchange::XML::QuoteForXMLW (fErrorDescription))};
 }
 
-optional<ActionError> ActionError::FromFault ([[maybe_unused]] const GenericSOAP_::Fault& fault)
+optional<ActionError> ActionError::FromFault ([[maybe_unused]] const GenericSOAP_::Fault& fault, [[maybe_unused]] const GenericSOAP_::Options& options)
 {
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
     if (not fault.fDetail) {
@@ -143,7 +152,7 @@ optional<ActionError> ActionError::FromFault ([[maybe_unused]] const GenericSOAP
     }
     using namespace DataExchange::XML::DOM;
     // the detail's elements - perhaps more than one - in an element of their own, so a document
-    Document::Ptr doc = Document::New ("<detail>{}</detail>"_f(*fault.fDetail)); // kept: its elements do not keep it
+    Document::Ptr doc = Document::New ("<detail>{}</detail>"_f(*fault.fDetail), nullptr, options.fXMLOptions); // kept: its elements do not keep it
     for (const Element::Ptr& e : doc.GetRootElement ().GetChildElements ()) {
         if (e.GetName ().fName == "UPnPError"sv) {
             optional<String> code;
@@ -202,21 +211,23 @@ ActionError ActionException::GetError () const
  ****************************** UPnP::SOAP::Serialize ***************************
  ********************************************************************************
  */
-Memory::BLOB SOAP::Serialize (const ActionRequest& request)
+Memory::BLOB SOAP::Serialize (const ActionRequest& request, const GenericSOAP_::Options& options)
 {
     return GenericSOAP_::Serialize (
-        GenericSOAP_::Request{.fNamespace = request.fServiceType, .fMethod = request.fAction, .fArguments = ToGeneric_ (request.fArguments)});
+        GenericSOAP_::Request{.fNamespace = request.fServiceType, .fMethod = request.fAction, .fArguments = ToGeneric_ (request.fArguments)},
+        UPnPWriting_ (options));
 }
 
-Memory::BLOB SOAP::Serialize (const ActionResponse& response)
+Memory::BLOB SOAP::Serialize (const ActionResponse& response, const GenericSOAP_::Options& options)
 {
     return GenericSOAP_::Serialize (
-        GenericSOAP_::Response{.fNamespace = response.fServiceType, .fMethod = response.fAction, .fArguments = ToGeneric_ (response.fArguments)});
+        GenericSOAP_::Response{.fNamespace = response.fServiceType, .fMethod = response.fAction, .fArguments = ToGeneric_ (response.fArguments)},
+        UPnPWriting_ (options));
 }
 
-Memory::BLOB SOAP::Serialize (const ActionError& error)
+Memory::BLOB SOAP::Serialize (const ActionError& error, const GenericSOAP_::Options& options)
 {
-    return GenericSOAP_::Serialize (error.AsFault ());
+    return GenericSOAP_::Serialize (error.AsFault (), UPnPWriting_ (options));
 }
 
 /*
@@ -224,28 +235,28 @@ Memory::BLOB SOAP::Serialize (const ActionError& error)
  ***************************** UPnP::SOAP::DeSerialize **************************
  ********************************************************************************
  */
-void SOAP::DeSerialize (const Memory::BLOB& b, ActionRequest* request)
+void SOAP::DeSerialize (const Memory::BLOB& b, ActionRequest* request, const GenericSOAP_::Options& options)
 {
     RequireNotNull (request);
     GenericSOAP_::Request r;
-    GenericSOAP_::DeSerialize (b, &r);
+    GenericSOAP_::DeSerialize (b, &r, options);
     *request = ActionRequest{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)};
 }
 
-void SOAP::DeSerialize (const Memory::BLOB& b, ActionResponse* response)
+void SOAP::DeSerialize (const Memory::BLOB& b, ActionResponse* response, const GenericSOAP_::Options& options)
 {
     RequireNotNull (response);
     GenericSOAP_::Response r;
-    GenericSOAP_::DeSerialize (b, &r);
+    GenericSOAP_::DeSerialize (b, &r, options);
     *response = ActionResponse{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)};
 }
 
-void SOAP::DeSerialize (const Memory::BLOB& b, ActionError* error)
+void SOAP::DeSerialize (const Memory::BLOB& b, ActionError* error, const GenericSOAP_::Options& options)
 {
     RequireNotNull (error);
     GenericSOAP_::Fault f;
-    GenericSOAP_::DeSerialize (b, &f);
-    optional<ActionError> e = ActionError::FromFault (f);
+    GenericSOAP_::DeSerialize (b, &f, options);
+    optional<ActionError> e = ActionError::FromFault (f, options);
     if (not e) {
         Execution::Throw (BadFormatException{"not a UPnP error: a fault with no UPnPError"sv});
     }
@@ -257,16 +268,17 @@ void SOAP::DeSerialize (const Memory::BLOB& b, ActionError* error)
  ******************************* UPnP::SOAP::Invoke *****************************
  ********************************************************************************
  */
-ActionResponse SOAP::Invoke (const URI& controlURL, const ActionRequest& request)
+ActionResponse SOAP::Invoke (const URI& controlURL, const ActionRequest& request, const GenericSOAP_::Options& options)
 {
     try {
         GenericSOAP_::Response r = GenericSOAP_::Invoke (
             controlURL, request.GetSOAPAction (),
-            GenericSOAP_::Request{.fNamespace = request.fServiceType, .fMethod = request.fAction, .fArguments = ToGeneric_ (request.fArguments)});
+            GenericSOAP_::Request{.fNamespace = request.fServiceType, .fMethod = request.fAction, .fArguments = ToGeneric_ (request.fArguments)},
+            UPnPWriting_ (options));
         return ActionResponse{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)};
     }
     catch (const GenericSOAP_::FaultException& e) {
-        if (optional<ActionError> error = ActionError::FromFault (e.GetFault ())) {
+        if (optional<ActionError> error = ActionError::FromFault (e.GetFault (), options)) {
             Execution::Throw (ActionException{*error});
         }
         Execution::ReThrow ();
@@ -278,43 +290,54 @@ ActionResponse SOAP::Invoke (const URI& controlURL, const ActionRequest& request
  **************************** UPnP::SOAP::HandleAction **************************
  ********************************************************************************
  */
-void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ActionHandler& doAction)
+void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ActionHandler& doAction, const GenericSOAP_::Options& options)
 {
-    GenericSOAP_::HandleRequest (m, [&] (const GenericSOAP_::Request& r) {
-        try {
-            if (r.fNamespace != serviceType) {
-                Execution::Throw (ActionException{ActionError::kInvalidAction}); // another service's
+    GenericSOAP_::HandleRequest (
+        m,
+        [&] (const GenericSOAP_::Request& r) {
+            try {
+                if (r.fNamespace != serviceType) {
+                    Execution::Throw (ActionException{ActionError::kInvalidAction}); // another service's
+                }
+                return GenericSOAP_::Response{.fNamespace = r.fNamespace,
+                                              .fMethod    = r.fMethod,
+                                              .fArguments = ToGeneric_ (doAction (ActionRequest{
+                                                  .fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)}))};
             }
-            return GenericSOAP_::Response{.fNamespace = r.fNamespace,
-                                          .fMethod    = r.fMethod,
-                                          .fArguments = ToGeneric_ (doAction (ActionRequest{
-                                              .fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)}))};
-        }
-        catch (const ActionException& e) {
-            Execution::Throw (GenericSOAP_::FaultException{e.GetError ().AsFault ()});
-        }
-    });
+            catch (const ActionException& e) {
+                Execution::Throw (GenericSOAP_::FaultException{e.GetError ().AsFault ()});
+            }
+        },
+        UPnPWriting_ (options));
 }
 
-void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description, const ActionHandler& doAction)
+void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description,
+                         const ActionHandler& doAction, const GenericSOAP_::Options& options)
 {
-    HandleAction (m, serviceType, [&] (const ActionRequest& request) {
-        CheckRequest (request, description);
-        return doAction (request);
-    });
+    HandleAction (
+        m, serviceType,
+        [&] (const ActionRequest& request) {
+            CheckRequest (request, description);
+            return doAction (request);
+        },
+        options);
 }
 
-void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description, const ActionHandlers& actions)
+void SOAP::HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description,
+                         const ActionHandlers& actions, const GenericSOAP_::Options& options)
 {
     Require (actions.Keys ().All (
         [&] (const String& a) { return description.fActions.Any ([&] (const ServiceDescription::Action& d) { return d.fName == a; }); }));
     // CheckRequest has answered an action not described (401), so this one is: done by its handler, or not done here
-    HandleAction (m, serviceType, description, [&] (const ActionRequest& request) -> Arguments {
-        if (optional<ActionHandler> h = actions.Lookup (request.fAction)) {
-            return (*h) (request);
-        }
-        Execution::Throw (ActionException{ActionError::kOptionalActionNotImplemented});
-    });
+    HandleAction (
+        m, serviceType, description,
+        [&] (const ActionRequest& request) -> Arguments {
+            if (optional<ActionHandler> h = actions.Lookup (request.fAction)) {
+                return (*h) (request);
+            }
+            Execution::Throw (ActionException{ActionError::kOptionalActionNotImplemented});
+        },
+        options);
 }
 
 /*

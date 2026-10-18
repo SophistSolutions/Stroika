@@ -60,7 +60,7 @@ namespace Stroika::Frameworks::UPnP::GENA {
     public:
         /**
          *  \note There is nothing here to validate an event against, where a description has one (@see
-         *        UPnP::Options::fValidateReadAgainst). An event's elements are NAMED FOR THE STATE VARIABLES
+         *        DeviceDescription::Options::fValidateReadAgainst). An event's elements are NAMED FOR THE STATE VARIABLES
          *        themselves, so no fixed schema could describe one. What UPnP publishes as event-1-0.xsd, beside the
          *        two real schemas, is a template for a device author to fill in - it declares
          *        <xsd:element name="[stateVariableName]">, twice, once for simple and once for complex content - and

@@ -8,9 +8,9 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/DataExchange/XML/Options.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
-
-#include "Stroika/Frameworks/UPnP/Options.h"
 
 /**
  *  \file
@@ -141,6 +141,39 @@ namespace Stroika::Frameworks::UPnP {
         Sequence<Action>        fActions;
         Sequence<StateVariable> fStateVariables;
 
+        /**
+         *  \brief What Serialize and DeSerialize of an SCPD are told - defaulted, so a caller says only what it wants different.
+         *         As DeviceDescription::Options, for the SCPD's own schema: by default what is written is checked, and what is
+         *         read is not
+         */
+        struct Options {
+            /**
+             *  \brief The XML provider that reads, and that checks what is written - by default, Stroika's default provider;
+             *         nearly always left as is (@see XML::Options)
+             */
+            Foundation::DataExchange::XML::Options fXMLOptions;
+
+            /**
+             *  \brief Check an SCPD being read against this schema - ServiceDescriptionSchema - throwing where it does not
+             *         hold; nullptr, the default, checks nothing
+             *
+             *  Off by default, as for a device description: devices in the field are loose, and whether to see fewer of them
+             *  is the application's choice, not the library's (@see DeviceDescription::Options::fValidateReadAgainst).
+             */
+            Foundation::DataExchange::XML::Schema::Ptr fValidateReadAgainst{nullptr};
+
+            /**
+             *  \brief Check what Serialize writes against ServiceDescriptionSchema, throwing BadFormatException where it does
+             *         not hold - true, the default
+             *
+             *  On by default, as for a device description (@see DeviceDescription::Options::fValidateWrite): an SCPD a device
+             *  writes is its own, and one that does not hold - a state variable whose fDataType is not one of UPnP's (a
+             *  vendor's own, or a misspelling), or no state variables at all, where service-1-0 requires one - is a mistake
+             *  better found by its author than by its control points.
+             */
+            bool fValidateWrite{true};
+        };
+
         bool operator== (const ServiceDescription&) const = default;
 
         /**
@@ -152,9 +185,10 @@ namespace Stroika::Frameworks::UPnP {
     /**
      *  \brief The SCPD's XML: what its SCPDURL serves - as UPnP's XML (text/xml), UTF-8
      *
-     *  \note Needs no XML library: the text is written directly (Variant::XML::Writer), so options' provider plays no part.
+     *  The text is written directly (Variant::XML::Writer); an XML parser only checks it, as by default it does - throwing
+     *  BadFormatException where it does not hold (@see ServiceDescription::Options::fValidateWrite).
      */
-    Foundation::Memory::BLOB Serialize (const ServiceDescription& sd, const Options& options = {});
+    Foundation::Memory::BLOB Serialize (const ServiceDescription& sd, const ServiceDescription::Options& options = {});
 
     /**
      *  \brief An SCPD read - what Serialize writes, and any other's, leniently: what it does not know - a vendor's own
@@ -162,14 +196,14 @@ namespace Stroika::Frameworks::UPnP {
      *         element is not <scpd>, or the build has no XML parser (qStroika_Foundation_DataExchange_XML_SupportParsing).
      *         @see Variant::XML::Reader::Options::fLenient
      */
-    void DeSerialize (const Foundation::Memory::BLOB& b, ServiceDescription* sd, const Options& options = {});
+    void DeSerialize (const Foundation::Memory::BLOB& b, ServiceDescription* sd, const ServiceDescription::Options& options = {});
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
     /**
-     *  \brief UPnP's own SCPD schema, compiled by the provider o names - what to give Options::fValidateReadAgainst
+     *  \brief UPnP's own SCPD schema, compiled by the provider o names - what Serialize checks what it writes against
+     *         (ServiceDescription::Options::fValidateWrite), and what to give fValidateReadAgainst
      *
-     *  @see Options::fValidateReadAgainst, which is how an SCPD being read is checked against it, and which says why
-     *       nothing does so by default. @see DeviceDescriptionSchema, which this matches in every other way.
+     *  @see DeviceDescriptionSchema, which this matches in every other way.
      *
      *  \note The schema is https://upnp.org/schemas/service-1-0.xsd as it stood 2026-10-13 - BUT WITH ONE CORRECTION: as
      *        published it restricts stateVariable's sendEvents and multicast to {"1", "0"}, where the specification it

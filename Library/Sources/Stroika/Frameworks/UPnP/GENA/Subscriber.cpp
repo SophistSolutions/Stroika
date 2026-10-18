@@ -63,12 +63,12 @@ namespace {
 
     // a NOTIFY's body's variables: each e:property's one element, by name (UPnP Device Architecture 1.1, section 4.3.2) - their
     // values plain text, as UPnP's types are. Read with the XML DOM: without one, Start throws, so none is read
-    Mapping<String, String> PropertySet_ ([[maybe_unused]] const Memory::BLOB& body)
+    Mapping<String, String> PropertySet_ ([[maybe_unused]] const Memory::BLOB& body, [[maybe_unused]] const DataExchange::XML::Options& xmlOptions)
     {
         Mapping<String, String> result;
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
         using namespace DataExchange::XML::DOM;
-        Document::Ptr doc = Document::New (body.As<Streams::InputStream::Ptr<std::byte>> ()); // kept: its elements do not keep it
+        Document::Ptr doc = Document::New (body.As<Streams::InputStream::Ptr<std::byte>> (), nullptr, xmlOptions); // kept: its elements do not keep it
         if (Element::Ptr propertySet = doc.GetRootElement (); propertySet != nullptr) {
             for (const Element::Ptr& property : propertySet.GetChildElements ()) {
                 for (const Element::Ptr& variable : property.GetChildElements ()) {
@@ -270,7 +270,7 @@ void Subscriber::HandleNotify (WebServer::Message& m)
     }
     Event e{.fSEQ = String2Int<uint32_t> (request.headers ().LookupOne ("SEQ"sv).value_or (String{}))};
     try {
-        e.fVariables = PropertySet_ (m.rwRequest ().GetBody ());
+        e.fVariables = PropertySet_ (m.rwRequest ().GetBody (), fRep_->fOptions_.fXMLOptions);
     }
     catch (const DataExchange::BadFormatException&) {
         response.status = HTTP::StatusCodes::kBadRequest; // not a property set

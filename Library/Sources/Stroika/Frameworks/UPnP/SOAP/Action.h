@@ -36,6 +36,13 @@
  *  It is SOAP 1.1's RPC (WebService::SOAP) with UPnP's conventions on top: a method's namespace is its service's type, the
  *  SOAPACTION header is that type, # and the action, and an error is a UPnPError in a fault's detail.
  *
+ *  So each function here that reads or writes a control message takes WebService::SOAP::Options, defaulted: how SOAP reads
+ *  and writes one - with which XML provider, and whether an envelope read is checked against SOAP's schema - is all there
+ *  is to say. But for one thing: whatever its fEncodingStyleAttribute, what is written carries encodingStyle on the
+ *  Envelope. UPnP Device Architecture 1.1 (Table 3-1) prohibits it on the Body, and requires it on the Envelope of a
+ *  message to or from a UPnP 1.0 device or control point. So a control message holds to WebService::SOAP::EnvelopeSchema
+ *  as it is by default, corrected - not to SOAP's schema as published, which refuses encodingStyle on the Envelope.
+ *
  *  \par Example Usage
  *      \code
  *          // a control point: switch a light on, then ask it its status (service: one of dd.fServices, dd read from location)
@@ -195,9 +202,10 @@ namespace Stroika::Frameworks::UPnP::SOAP {
         nonvirtual WebService::SOAP::Fault AsFault () const;
 
         /**
-         *  \brief The UPnPError a SOAP fault's detail holds; nullopt if it holds none
+         *  \brief The UPnPError a SOAP fault's detail holds; nullopt if it holds none - the detail read with options' XML
+         *         provider (and checked against no schema: SOAP's is an envelope's)
          */
-        static optional<ActionError> FromFault (const WebService::SOAP::Fault& fault);
+        static optional<ActionError> FromFault (const WebService::SOAP::Fault& fault, const WebService::SOAP::Options& options = {});
 
         bool operator== (const ActionError&) const = default;
 
@@ -231,23 +239,24 @@ namespace Stroika::Frameworks::UPnP::SOAP {
     /**
      *  \brief The SOAP message - its XML, UTF-8 - which sends it: a request, a response, or an error (a SOAP fault)
      */
-    Foundation::Memory::BLOB Serialize (const ActionRequest& request);
-    Foundation::Memory::BLOB Serialize (const ActionResponse& response); ///< \brief The SOAP message - its XML, UTF-8 - which sends it
-    Foundation::Memory::BLOB Serialize (const ActionError& error);       ///< \brief The SOAP message - its XML, UTF-8 - which sends it
+    Foundation::Memory::BLOB Serialize (const ActionRequest& request, const WebService::SOAP::Options& options = {});
+    Foundation::Memory::BLOB Serialize (const ActionResponse& response, const WebService::SOAP::Options& options = {}); ///< \brief The SOAP message - its XML, UTF-8 - which sends it
+    Foundation::Memory::BLOB Serialize (const ActionError& error, const WebService::SOAP::Options& options = {}); ///< \brief The SOAP message - its XML, UTF-8 - which sends it
 
     /**
      *  \brief The SOAP message read: what Serialize writes, and any other's. Throws DataExchange::BadFormatException if it is not one
-     *         - an ActionResponse read from a fault, say; and throws in a build with no XML parser.
+     *         - an ActionResponse read from a fault, say, or with options.fValidateReadAgainst, one that schema refuses; and
+     *         throws in a build with no XML parser.
      */
-    void DeSerialize (const Foundation::Memory::BLOB& b, ActionRequest* request);
-    void DeSerialize (const Foundation::Memory::BLOB& b, ActionResponse* response); ///< \brief The SOAP message read
-    void DeSerialize (const Foundation::Memory::BLOB& b, ActionError* error);       ///< \brief The SOAP message read
+    void DeSerialize (const Foundation::Memory::BLOB& b, ActionRequest* request, const WebService::SOAP::Options& options = {});
+    void DeSerialize (const Foundation::Memory::BLOB& b, ActionResponse* response, const WebService::SOAP::Options& options = {}); ///< \brief The SOAP message read
+    void DeSerialize (const Foundation::Memory::BLOB& b, ActionError* error, const WebService::SOAP::Options& options = {}); ///< \brief The SOAP message read
 
     /**
      *  \brief Ask the service at controlURL to do request's action - and return its answer. Throws ActionException if the service
      *         answers with a UPnPError; otherwise as WebService::SOAP::Invoke.
      */
-    ActionResponse Invoke (const URI& controlURL, const ActionRequest& request);
+    ActionResponse Invoke (const URI& controlURL, const ActionRequest& request, const WebService::SOAP::Options& options = {});
 
     /**
      *  \brief Throws the ActionException a service answers request with if its description - its actions, their arguments, and
@@ -277,7 +286,8 @@ namespace Stroika::Frameworks::UPnP::SOAP {
     /**
      *  \brief Answer a control request, at the controlURL's route of the service of type serviceType: doAction's out arguments,
      *         or the ActionError it throws (as ActionException) - and 401 (Invalid Action) for another service type's request.
-     *         Otherwise as WebService::SOAP::HandleRequest: 415 if not text/xml, and a Client fault if not a SOAP call.
+     *         Otherwise as WebService::SOAP::HandleRequest: 415 if not text/xml, and a Client fault if not a SOAP call (nor, with
+     *         options.fValidateReadAgainst, a valid one).
      *
      *  Given the service's description, a request it rules out (CheckRequest) is answered with that error, and doAction never
      *  sees it - so doAction may count on each in argument being there, and of its type.
@@ -288,11 +298,11 @@ namespace Stroika::Frameworks::UPnP::SOAP {
      *
      *  \pre each of actions is an action description has
      */
-    void HandleAction (WebServer::Message& m, const String& serviceType, const ActionHandler& doAction);
-    void HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description,
-                       const ActionHandler& doAction); ///< \brief Answer a control request - having checked it against the service's description
-    void HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description,
-                       const ActionHandlers& actions); ///< \brief Answer a control request - checked against the service's description, and done by its action's handler
+    void HandleAction (WebServer::Message& m, const String& serviceType, const ActionHandler& doAction, const WebService::SOAP::Options& options = {});
+    void HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description, const ActionHandler& doAction,
+                       const WebService::SOAP::Options& options = {}); ///< \brief Answer a control request - having checked it against the service's description
+    void HandleAction (WebServer::Message& m, const String& serviceType, const ServiceDescription& description, const ActionHandlers& actions,
+                       const WebService::SOAP::Options& options = {}); ///< \brief Answer a control request - checked against the service's description, and done by its action's handler
 
 }
 

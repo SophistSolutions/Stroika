@@ -451,19 +451,19 @@ namespace {
                                                   .fDataType = "ui1"sv,
                                                   .fAllowedValueRange = SD::AllowedValueRange{.fMinimum = "0"sv, .fMaximum = "100"sv, .fStep = "5"sv}}}};
         for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
-            const UPnP::Options kPlain_{.fXMLOptions = {.fProvider = p}};
-            const UPnP::Options kValidatingDevice_{.fXMLOptions          = kPlain_.fXMLOptions,
-                                                   .fValidateReadAgainst = UPnP::DeviceDescriptionSchema (kPlain_.fXMLOptions)};
-            const UPnP::Options kValidatingService_{.fXMLOptions          = kPlain_.fXMLOptions,
-                                                    .fValidateReadAgainst = UPnP::ServiceDescriptionSchema (kPlain_.fXMLOptions)};
+            const DataExchange::XML::Options kXMLOptions_{.fProvider = p};
+            const DeviceDescription::Options kPlainDevice_{.fXMLOptions = kXMLOptions_};
+            const DeviceDescription::Options kValidatingDevice_{.fXMLOptions          = kXMLOptions_,
+                                                                .fValidateReadAgainst = UPnP::DeviceDescriptionSchema (kXMLOptions_)};
+            const SD::Options kValidatingService_{.fXMLOptions = kXMLOptions_, .fValidateReadAgainst = UPnP::ServiceDescriptionSchema (kXMLOptions_)};
             {
-                const Memory::BLOB written = UPnP::Serialize (dd, kPlain_);
+                const Memory::BLOB written = UPnP::Serialize (dd, kPlainDevice_);
                 EXPECT_NO_THROW (UPnP::DeSerialize (written, kValidatingDevice_)) << written.As<string> ();
                 EXPECT_EQ (UPnP::DeSerialize (written, kValidatingDevice_).fUDN, dd.fUDN) << "and still reads as itself";
                 EXPECT_EQ (UPnP::DeSerialize (written, kValidatingDevice_).fURLBase, dd.fURLBase);
             }
             {
-                const Memory::BLOB written = Serialize (sd, kPlain_);
+                const Memory::BLOB written = Serialize (sd, SD::Options{.fXMLOptions = kXMLOptions_});
                 SD                 back;
                 EXPECT_NO_THROW (DeSerialize (written, &back, kValidatingService_)) << written.As<string> ();
                 EXPECT_EQ (back, sd) << back.ToString ().AsNarrowSDKString ();
@@ -489,8 +489,46 @@ namespace {
                     "<?xml version=\"1.0\"?><root xmlns=\"urn:schemas-upnp-org:device-1-0\"><device><nonsense/></device></root>"sv;
                 EXPECT_ANY_THROW (UPnP::DeSerialize (Memory::BLOB{as_bytes (span{kNotADevice_})}, kValidatingDevice_));
                 // but read without a schema, as by default, it is tolerated - UPnP devices in the field are loose
-                EXPECT_NO_THROW (UPnP::DeSerialize (Memory::BLOB{as_bytes (span{kNotADevice_})}, kPlain_));
+                EXPECT_NO_THROW (UPnP::DeSerialize (Memory::BLOB{as_bytes (span{kNotADevice_})}, kPlainDevice_));
             }
+        }
+    }
+
+    /*
+     *  What Serialize writes is checked by default (Options::fValidateWrite), with each provider: a description its schema
+     *  refuses throws, and with the check off is written as asked - and still reads back.
+     */
+    GTEST_TEST (Frameworks_UPnP, DescriptionsCheckedAsWritten_)
+    {
+        Debug::TraceContextBumper                                               ctx{"DescriptionsCheckedAsWritten_"};
+        Containers::Sequence<const DataExchange::XML::Providers::IXMLProvider*> providers{nullptr}; // nullptr: whichever is default
+#if qStroika_HasComponent_libxml2
+        providers += &DataExchange::XML::Providers::LibXML2::kDefaultProvider;
+#endif
+#if qStroika_HasComponent_xerces
+        providers += &DataExchange::XML::Providers::Xerces::kDefaultProvider;
+#endif
+        // a device with no services: device-1-0 requires a <service>
+        DeviceDescription noServices;
+        noServices.fDeviceType      = "urn:schemas-upnp-org:device:BinaryLight:1"sv;
+        noServices.fManufactureName = "Sophist Solutions, Inc."sv;
+        noServices.fFriendlyName    = "Stroika regression test lamp"sv;
+        noServices.fModelName       = "model name"sv;
+        noServices.fUDN             = "uuid:315caae0-1335-57bf-a178-24c9ee756628"sv;
+        // a state variable of a vendor's own data type: service-1-0 allows only UPnP's
+        using SD = ServiceDescription;
+        const SD vendorType{.fStateVariables = {SD::StateVariable{.fName = "Target"sv, .fDataType = "x-vendor-boolean"sv}}};
+        for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
+            const DataExchange::XML::Options kXMLOptions_{.fProvider = p};
+            EXPECT_THROW (UPnP::Serialize (noServices, DeviceDescription::Options{.fXMLOptions = kXMLOptions_}), DataExchange::BadFormatException);
+            const Memory::BLOB writtenAnyway =
+                UPnP::Serialize (noServices, DeviceDescription::Options{.fXMLOptions = kXMLOptions_, .fValidateWrite = false});
+            EXPECT_EQ (UPnP::DeSerialize (writtenAnyway, DeviceDescription::Options{.fXMLOptions = kXMLOptions_}).fUDN, noServices.fUDN);
+            EXPECT_THROW (Serialize (vendorType, SD::Options{.fXMLOptions = kXMLOptions_}), DataExchange::BadFormatException);
+            SD back;
+            DeSerialize (Serialize (vendorType, SD::Options{.fXMLOptions = kXMLOptions_, .fValidateWrite = false}), &back,
+                         SD::Options{.fXMLOptions = kXMLOptions_});
+            EXPECT_EQ (back, vendorType) << back.ToString ().AsNarrowSDKString ();
         }
     }
 #endif
@@ -544,7 +582,7 @@ namespace {
     }
 
     /*
-     *  Options::fXMLOptions is honoured reading - so one library's UPnP need not use the provider another's does, and nullptr
+     *  ServiceDescription::Options::fXMLOptions is honoured reading - so one library's UPnP need not use the provider another's does, and nullptr
      *  means Stroika's default. Writing uses no provider, so what is written reads back whichever reads it.
      */
     GTEST_TEST (Frameworks_UPnP, ServiceDescription_XMLProviderOption_)
@@ -564,7 +602,7 @@ namespace {
         const Memory::BLOB written = Serialize (sd);
         for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
             SD back;
-            DeSerialize (written, &back, UPnP::Options{.fXMLOptions = {.fProvider = p}});
+            DeSerialize (written, &back, SD::Options{.fXMLOptions = {.fProvider = p}});
             EXPECT_EQ (back, sd) << back.ToString ().AsNarrowSDKString ();
         }
     }
@@ -686,12 +724,9 @@ namespace {
         }
     }
 
-    GTEST_TEST (Frameworks_UPnP, SOAP_Others_)
-    {
-        Debug::TraceContextBumper ctx{"SOAP_Others_"};
-        // as other stacks write them: other prefixes, line breaks and spaces, an encoding, an argument with attributes, an empty one
-        // as <x/>, and a fault's UPnPError with a prefix
-        constexpr string_view kRequest_ = R"(<?xml version="1.0" encoding="utf-8"?>
+    // as other stacks write them: other prefixes, line breaks and spaces, an encoding, an argument with attributes, an empty one
+    // as <x/>, and a fault's UPnPError with a prefix - each Envelope with an encodingStyle, which SOAP's own schema forbids
+    constexpr string_view kOthersRequest_ = R"(<?xml version="1.0" encoding="utf-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <SOAP-ENV:Body>
     <m:SetVolume xmlns:m="urn:schemas-upnp-org:service:RenderingControl:1">
@@ -703,7 +738,7 @@ namespace {
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 )";
-        constexpr string_view kFault_   = R"(<?xml version="1.0"?>
+    constexpr string_view kOthersFault_   = R"(<?xml version="1.0"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
  <soap:Body>
   <soap:Fault>
@@ -719,9 +754,13 @@ namespace {
  </soap:Body>
 </soap:Envelope>
 )";
-        const Memory::BLOB    request{as_bytes (span{kRequest_})};
-        const Memory::BLOB    fault{as_bytes (span{kFault_})};
-        SOAP::ActionRequest   r;
+
+    GTEST_TEST (Frameworks_UPnP, SOAP_Others_)
+    {
+        Debug::TraceContextBumper ctx{"SOAP_Others_"};
+        const Memory::BLOB        request{as_bytes (span{kOthersRequest_})};
+        const Memory::BLOB        fault{as_bytes (span{kOthersFault_})};
+        SOAP::ActionRequest       r;
         SOAP::DeSerialize (request, &r);
         EXPECT_EQ (r.fServiceType, "urn:schemas-upnp-org:service:RenderingControl:1"sv);
         EXPECT_EQ (r.fAction, "SetVolume"sv);
@@ -741,6 +780,121 @@ namespace {
         EXPECT_THROW (SOAP::DeSerialize (request, &notAnError), DataExchange::BadFormatException);
         EXPECT_ANY_THROW (SOAP::DeSerialize (Memory::BLOB{as_bytes (span{"not XML"sv})}, &notARequest));
     }
+
+#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema
+    constexpr PortType kSOAPOptionsDevicePort_ = 8089; // on loopback only
+
+    /*
+     *  WebService::SOAP::Options reaches control messages: read and written with its fXMLOptions' provider, and - asked, with
+     *  fValidateReadAgainst - checked against SOAP's envelope schema, as EnvelopeSchema gives it by default, corrected. That
+     *  is the one UPnP needs: what Stroika writes carries encodingStyle on the Envelope, as UPnP requires (UPnP Device
+     *  Architecture 1.1, Table 3-1, prohibits it on the Body), which SOAP's schema as published refuses. The other stacks'
+     *  messages above hold to it too; one with an attribute SOAP allows nowhere on the Envelope is read by default and refused
+     *  when checked, by DeSerialize and by HandleAction. Each provider checks with a schema it made, so this also shows the
+     *  provider reaching the read (given another's, libxml2 fails a Require and Xerces checks nothing).
+     */
+    GTEST_TEST (Frameworks_UPnP, SOAP_Options_)
+    {
+        Debug::TraceContextBumper                                               ctx{"SOAP_Options_"};
+        Containers::Sequence<const DataExchange::XML::Providers::IXMLProvider*> providers{nullptr}; // nullptr: whichever is default
+#if qStroika_HasComponent_libxml2
+        providers += &DataExchange::XML::Providers::LibXML2::kDefaultProvider;
+#endif
+#if qStroika_HasComponent_xerces
+        providers += &DataExchange::XML::Providers::Xerces::kDefaultProvider;
+#endif
+        const Memory::BLOB othersRequest{as_bytes (span{kOthersRequest_})};
+        const Memory::BLOB othersFault{as_bytes (span{kOthersFault_})};
+        // other stacks' request, with an attribute SOAP allows nowhere on the Envelope: a lenient reader ignores it, a checking one refuses it
+        string withStray{kOthersRequest_};
+        withStray.insert (withStray.find ("SOAP-ENV:encodingStyle"), "SOAP-ENV:stray=\"1\" ");
+        const Memory::BLOB        othersRequestWithStray{as_bytes (span{withStray})};
+        const SOAP::ActionRequest mine{.fServiceType = "urn:schemas-upnp-org:service:RenderingControl:1"sv,
+                                       .fAction      = "SetVolume"sv,
+                                       .fArguments   = {{"DesiredVolume"sv, "42"sv}}};
+        for (const DataExchange::XML::Providers::IXMLProvider* p : providers) {
+            const DataExchange::XML::Options xmlOptions{.fProvider = p};
+            const WebService::SOAP::Options  lenient{.fXMLOptions = xmlOptions};
+            const WebService::SOAP::Options strict{.fXMLOptions = xmlOptions, .fValidateReadAgainst = WebService::SOAP::EnvelopeSchema (xmlOptions)};
+            const WebService::SOAP::Options strictAsPublished{.fXMLOptions          = xmlOptions,
+                                                              .fValidateReadAgainst = WebService::SOAP::EnvelopeSchema (xmlOptions, false)};
+            // what Stroika writes carries encodingStyle on the Envelope, never the Body - whatever the options ask for
+            for (WebService::SOAP::EncodingStyleAttribute asked :
+                 {WebService::SOAP::EncodingStyleAttribute::eOnBody, WebService::SOAP::EncodingStyleAttribute::eOnEnvelope,
+                  WebService::SOAP::EncodingStyleAttribute::eOmitted}) {
+                const string written =
+                    SOAP::Serialize (mine, WebService::SOAP::Options{.fXMLOptions = xmlOptions, .fEncodingStyleAttribute = asked}).As<string> ();
+                EXPECT_TRUE (written.find ("encodingStyle") < written.find ("<s:Body")) << written;
+                EXPECT_EQ (written.find ("encodingStyle", written.find ("<s:Body")), string::npos) << written;
+            }
+            // so it holds to the corrected schema, and not to the published one
+            SOAP::ActionRequest back;
+            SOAP::DeSerialize (SOAP::Serialize (mine, lenient), &back, strict);
+            EXPECT_EQ (back, mine) << back.ToString ().AsNarrowSDKString ();
+            EXPECT_THROW (SOAP::DeSerialize (SOAP::Serialize (mine, lenient), &back, strictAsPublished), DataExchange::BadFormatException);
+            // other stacks' messages hold too
+            SOAP::ActionRequest r;
+            SOAP::DeSerialize (othersRequest, &r, strict);
+            EXPECT_EQ (r.fAction, "SetVolume"sv);
+            SOAP::ActionError e;
+            SOAP::DeSerialize (othersFault, &e, strict);
+            EXPECT_EQ (e.fErrorCode, 718u);
+            // but one with a stray attribute is read only unchecked
+            SOAP::DeSerialize (othersRequestWithStray, &r, lenient);
+            EXPECT_EQ (r.fAction, "SetVolume"sv);
+            EXPECT_THROW (SOAP::DeSerialize (othersRequestWithStray, &r, strict), DataExchange::BadFormatException);
+        }
+#if qStroika_HasComponent_libcurl or qStroika_HasComponent_WinHTTP
+        // and a device's HandleAction: the lenient route does what has a stray attribute, the strict one refuses it - but does
+        // what other stacks send
+        using namespace Stroika::Frameworks::WebServer;
+        const WebService::SOAP::Options strict{.fValidateReadAgainst = WebService::SOAP::EnvelopeSchema ()};
+        atomic<unsigned int>            lenientDone{0};
+        atomic<unsigned int>            strictDone{0};
+        auto                            countDone = [] (atomic<unsigned int>& done) {
+            return [&done] (const SOAP::ActionRequest&) -> SOAP::Arguments {
+                ++done;
+                return {};
+            };
+        };
+        optional<ConnectionManager> device;
+        try {
+            device.emplace (
+                SocketAddress{V4::kLocalhost, kSOAPOptionsDevicePort_},
+                Containers::Sequence<Route>{Route{IO::Network::HTTP::MethodsRegEx::kPost, "lenient"_RegEx,
+                                                  [&] (Message& m) { SOAP::HandleAction (m, mine.fServiceType, countDone (lenientDone)); }},
+                                            Route{IO::Network::HTTP::MethodsRegEx::kPost, "strict"_RegEx, [&] (Message& m) {
+                                                      SOAP::HandleAction (m, mine.fServiceType, countDone (strictDone), strict);
+                                                  }}});
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SOAP_Options_'s HandleAction part skipped - could not run its web server here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+            return;
+        }
+        auto post = [&] (const String& path, const Memory::BLOB& message) {
+            IO::Network::Transfer::Connection::Ptr c = IO::Network::Transfer::Connection::New ();
+            c.SetSchemeAndAuthority (URI{"http://127.0.0.1:{}/"_f(kSOAPOptionsDevicePort_)}.GetSchemeAndAuthority ());
+            IO::Network::Transfer::Request request;
+            request.fMethod               = IO::Network::HTTP::Methods::kPost;
+            request.fAuthorityRelativeURL = URI{path};
+            request.SetTypedBLOB (DataExchange::TypedBLOB{.fData = message, .fType = WebService::SOAP::kContentType});
+            return c.Send (request).GetStatus ();
+        };
+        EXPECT_EQ (post ("/lenient"sv, othersRequestWithStray), IO::Network::HTTP::StatusCodes::kOK);
+        EXPECT_EQ (lenientDone.load (), 1u);
+        EXPECT_EQ (post ("/strict"sv, othersRequestWithStray), IO::Network::HTTP::StatusCodes::kInternalError) << "refused: a Client fault";
+        EXPECT_EQ (strictDone.load (), 0u);
+        EXPECT_EQ (post ("/strict"sv, othersRequest), IO::Network::HTTP::StatusCodes::kOK);
+        EXPECT_EQ (strictDone.load (), 1u);
+        // what Stroika writes it does - and Invoke checks the answer as strictly
+        SOAP::Invoke (URI{"http://127.0.0.1:{}/strict"_f(kSOAPOptionsDevicePort_)}, mine, strict);
+        EXPECT_EQ (strictDone.load (), 2u);
+#endif
+    }
+#endif
 
     constexpr PortType kSOAPDevicePort_ = 8086; // on loopback only
 

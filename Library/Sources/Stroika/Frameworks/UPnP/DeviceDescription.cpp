@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/XML/Binding.h"
 #include "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
@@ -243,7 +244,7 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
  ********************************* UPnP::Serialize ******************************
  ********************************************************************************
  */
-Memory::BLOB UPnP::Serialize (const DeviceDescription& dd, [[maybe_unused]] const Options& options)
+Memory::BLOB UPnP::Serialize (const DeviceDescription& dd, [[maybe_unused]] const DeviceDescription::Options& options)
 {
     // DeviceDescription is flat, where the document is not: <URLBase> is <device>'s sibling, in <root>
     VVMap_ device = Mapper_ ().FromObject (dd).As<VVMap_> ();
@@ -254,9 +255,16 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd, [[maybe_unused]] cons
         device.Remove ("URLBase"sv);
     }
     root.Add ("device"sv, VariantValue{device});
-    // the Writer writes the text itself, with no XML provider - so nothing in options applies
+    // the Writer writes the text itself, with no XML provider - options' provider only checks it
     static const Variant::XML::Writer kWriter_{{.fBinding = Binding_ ()}};
-    return kWriter_.WriteAsBLOB (VariantValue{root});
+    Memory::BLOB                      result = kWriter_.WriteAsBLOB (VariantValue{root});
+#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
+    if (options.fValidateWrite) {
+        XML::SAXParse (result.As<Streams::InputStream::Ptr<byte>> (), nullptr, DeviceDescriptionSchema (options.fXMLOptions), nullptr,
+                       options.fXMLOptions);
+    }
+#endif
+    return result;
 }
 
 /*
@@ -264,12 +272,12 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd, [[maybe_unused]] cons
  ******************************* UPnP::DeSerialize ******************************
  ********************************************************************************
  */
-DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b, const Options& options)
+DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b, const DeviceDescription::Options& options)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("xml data: {}"_f, Streams::BinaryToText::Reader::New (b).ReadAll ());
 #endif
-    // leniently: devices in the field are loose (@see Options::fValidateReadAgainst)
+    // leniently: devices in the field are loose (@see DeviceDescription::Options::fValidateReadAgainst)
     const Variant::XML::Reader reader{
         {.fBinding = Binding_ (), .fXMLOptions = options.fXMLOptions, .fValidateAgainst = options.fValidateReadAgainst, .fLenient = true}};
     VVMap_ root   = reader.Read (b.As<Streams::InputStream::Ptr<byte>> ()).As<VVMap_> ();

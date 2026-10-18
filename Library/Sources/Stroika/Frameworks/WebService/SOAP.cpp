@@ -76,9 +76,19 @@ namespace {
             WriteElement::Ptr envelope =
                 fDoc.ReplaceRootElement (XML::NameWithNamespace{kEnvelopeNamespaceURI_, "Envelope"sv}, String{kEnvelopePrefix_});
             fBody = envelope.Append ("Body"sv);
-            // on the BODY: SOAP 1.1's schema lets an Envelope carry attributes of ##other namespaces only, so one of its
-            // OWN - s:encodingStyle - is not allowed there, where a Body takes ##any
-            fBody.SetAttribute (XML::NameWithNamespace{kEnvelopeNamespaceURI_, "encodingStyle"sv}, kEncodingNamespaceURI_.As<String> ());
+            // by default on the BODY: SOAP 1.1's schema lets an Envelope carry attributes of ##other namespaces only, so one
+            // of its OWN - s:encodingStyle - is not allowed there, where a Body takes ##any
+            const XML::NameWithNamespace kEncodingStyle_{kEnvelopeNamespaceURI_, "encodingStyle"sv};
+            switch (options.fEncodingStyleAttribute) {
+                case EncodingStyleAttribute::eOnBody:
+                    fBody.SetAttribute (kEncodingStyle_, kEncodingNamespaceURI_.As<String> ());
+                    break;
+                case EncodingStyleAttribute::eOnEnvelope:
+                    envelope.SetAttribute (kEncodingStyle_, kEncodingNamespaceURI_.As<String> ());
+                    break;
+                case EncodingStyleAttribute::eOmitted:
+                    break;
+            }
         }
         Memory::BLOB Write () const
         {

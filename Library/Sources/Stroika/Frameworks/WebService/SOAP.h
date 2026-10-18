@@ -190,65 +190,101 @@ namespace Stroika::Frameworks::WebService::SOAP {
         Fault fFault_;
     };
 
+    /**
+     *  \brief Where Serialize writes SOAP's encodingStyle attribute (http://schemas.xmlsoap.org/soap/encoding/) - which SOAP
+     *         1.1's prose says MAY go on any element, and on which its schema and its examples disagree
+     *
+     *      o   eOnBody - the default
+     *      o   eOnEnvelope - what SOAP 1.1's examples, and much of the world, write, and what UPnP requires; SOAP's schema as
+     *          published refuses it - EnvelopeSchema, corrected, does not
+     *      o   eOmitted - legal by SOAP's schema, where the attribute is optional wherever it may go; the message then claims
+     *          no encoding, and SOAP 1.1 defines no default (section 4.1.1), so its receiver goes by what it knows otherwise -
+     *          a WSDL binding, or its protocol (UPnP 1.1 takes a message with none to be SOAP-encoded)
+     */
+    enum class EncodingStyleAttribute {
+        eOnBody,
+        eOnEnvelope,
+        eOmitted,
+    };
+
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
     /**
-     *  \brief The SOAP 1.1 envelope schema, compiled by the provider o names - embedded, so nothing is fetched and no
+     *  \brief SOAP 1.1's envelope schema, compiled by the provider o names - embedded, so nothing is fetched and no
      *         Resource::Resolver is wanted (it imports and includes nothing)
      *
      *  What it checks is the ENVELOPE: that Body holds what a Body may, that a Fault's children are the ones SOAP names
      *  and unqualified, that encodingStyle is qualified. A Body's own content is xs:any to it, so a message's payload is
      *  the caller's business, not this schema's.
      *
-     *  Compiled afresh each call, and NOT cached: a Schema::Ptr may not outlive the provider that made it, and nothing
-     *  held in a static can promise that. A caller sending more than the occasional message holds one in its own
-     *  Options, where the lifetime is plain. Compiling is not free, so do not call this per message.
+     *  By default CORRECTED, as SOAP 1.1 itself has it: its prose (section 4.1.1) says of encodingStyle "This attribute MAY
+     *  appear on any element", and all six of its example messages put it on the Envelope - but its schema declares
+     *  Envelope with <xs:anyAttribute namespace="##other">, which excludes SOAP's own namespace and so forbids exactly
+     *  that. The correction is an <xs:attribute ref="tns:encodingStyle"/> on Envelope; nothing else is touched. So it
+     *  accepts encodingStyle wherever a message carries it (@see EncodingStyleAttribute); allowEncodingStyleOnEnvelope
+     *  false gives the schema as published, which refuses it on the Envelope.
      *
-     *  Ask for it only where it is wanted: it carries the schema's 6K, in a translation unit of its own, so a program
-     *  that never calls this never links either.
+     *  Compiled afresh each call. Compiling is not free, so a caller checking many messages compiles one and holds it in
+     *  its Options - which must not outlive the provider that made it.
      *
-     *  \note The schema is http://schemas.xmlsoap.org/soap/envelope/ verbatim, under the W3C Software License, whose
-     *        notice travels with it - @see Schemas/soap-envelope-1.1.xsd
+     *  It lives in a translation unit of its own, so its 6K is linked only into a program that calls it.
+     *
+     *  \note The schema is http://schemas.xmlsoap.org/soap/envelope/ - verbatim, but for that correction - under the W3C
+     *        Software License, whose notice travels with it - @see Schemas/soap-envelope-1.1.xsd
      */
-    DataExchange::XML::Schema::Ptr EnvelopeSchema (const DataExchange::XML::Options& o = {});
+    DataExchange::XML::Schema::Ptr EnvelopeSchema (const DataExchange::XML::Options& o = {}, bool allowEncodingStyleOnEnvelope = true);
 #endif
 
     /**
      *  \brief What SOAP must be told that has a sensible default - taken by Serialize and DeSerialize, defaulted, so a
      *         caller says only what it wants different
+     *
+     *  One Options for both, each field saying which it governs: fXMLOptions both, fValidateReadAgainst reading only,
+     *  fEncodingStyleAttribute writing only.
      */
     struct Options {
         /**
-         *  \brief How XML is read and written - by default, with Stroika's default provider
+         *  \brief How XML is read and written - by default, with Stroika's default provider; nearly always left as is (@see
+         *         XML::Options)
          */
         DataExchange::XML::Options fXMLOptions;
 
         /**
-         *  \brief Check a message being READ against this schema, throwing where it does not hold - nullptr, the
-         *         default, checking nothing
+         *  \brief Check a message being read against this schema - EnvelopeSchema - throwing where it does not hold;
+         *         nullptr, the default, checks nothing
          *
          *      \code
          *          // told early rather than half understanding a message
          *          const SOAP::Options kStrict_{.fValidateReadAgainst = SOAP::EnvelopeSchema ()};
          *      \endcode
          *
-         *  Nothing by default, because validating refuses messages that work today, and SOAP 1.1 itself is why. Its
-         *  prose (section 4.1.1) says of encodingStyle "This attribute MAY appear on any element"; all six of its
-         *  example messages put it on the Envelope; and its schema declares Envelope with
-         *  <xs:anyAttribute namespace="##other">, which excludes SOAP's own namespace and so forbids exactly that.
-         *  Stacks followed the prose and the examples, as Stroika did until a schema was pointed at it, so an
-         *  encodingStyle on the Envelope is what much of the world sends - Tests/54's SOAP_Others_, written from what
-         *  other stacks emit, is two such messages, in two prefix styles, one carrying Microsoft's
-         *  urn:schemas-microsoft-com:datatypes attributes. A library that validated by default would refuse traffic it
-         *  has always answered, which is not a library's decision to make.
+         *  Off by default: a reader that checked would refuse traffic other stacks send - each departs from SOAP in ways of
+         *  its own - and whether to is the application's choice, not the library's. Check with EnvelopeSchema as it is by
+         *  default, corrected: stacks follow SOAP 1.1's prose and examples in putting encodingStyle on the Envelope, which its
+         *  schema as published forbids - Tests/54's SOAP_Others_, written from what other stacks emit, is two such messages,
+         *  in two prefix styles, one carrying Microsoft's urn:schemas-microsoft-com:datatypes attributes.
          *
-         *  \note Naming the schema here, rather than this being a flag that reaches for one, is also what lets a program
-         *        that never validates not carry it: nothing inside SOAP mentions EnvelopeSchema, so its 6K is linked
-         *        only by a caller that asks for it (@see EnvelopeSchema).
+         *  Reading only - nothing checks what Serialize writes, because a message's data barely reaches what the schema
+         *  checks. An envelope's structure - Envelope, Body, a Fault's children, where encodingStyle goes (@see
+         *  fEncodingStyleAttribute) - is fixed by this code, and the schema leaves a message's content to its sender: Body
+         *  and a Fault's detail are xs:any to it.
+         *  The one exception is a Fault's code, written as a QName - so one that is not an XML name (with a space, say)
+         *  writes a faultcode the schema refuses. Otherwise a run-time check would only re-check this code, which Tests/56's
+         *  SOAP_ValidatesAgainstItsSchema_ does once.
          *
-         *  \note What Stroika WRITES does validate - @see Tests/56's SOAP_ValidatesAgainstItsSchema_, which is what
-         *        found the Envelope/encodingStyle problem in the first place.
+         *  \note A schema named here, rather than a flag that reaches for one, is what lets a program that never validates
+         *        not carry it: nothing inside SOAP mentions EnvelopeSchema, so its 6K is linked only by a caller that asks
+         *        (@see EnvelopeSchema).
          */
         DataExchange::XML::Schema::Ptr fValidateReadAgainst{nullptr};
+
+        /**
+         *  \brief Where Serialize writes encodingStyle - on the Body, the default, so what is written holds to SOAP's schema
+         *         as published (@see EncodingStyleAttribute). Writing only
+         *
+         *  DeSerialize reads a message whatever it carries - encodingStyle anywhere, or none; whether it may be where it
+         *  is is for a schema to say (fValidateReadAgainst).
+         */
+        EncodingStyleAttribute fEncodingStyleAttribute{EncodingStyleAttribute::eOnBody};
     };
 
     /**

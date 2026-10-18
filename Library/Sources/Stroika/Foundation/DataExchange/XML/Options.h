@@ -28,9 +28,12 @@ namespace Stroika::Foundation::DataExchange::XML {
      *  A module whose own Options say how it reads or writes XML holds one of these (fXMLOptions), rather than a provider of its
      *  own.
      *
+     *  Nearly every program leaves it as it is - {} - since it configures one XML library, and that is Stroika's default
+     *  provider. Naming one is for the rare program that links both and needs a particular one, and for testing each.
+     *
      *  \par Example Usage
      *      \code
-     *          // read with Xerces, whatever the process's default
+     *          // the rare case: read with Xerces, whatever the process's default
      *          const XML::Options      kXerces_{.fProvider = &XML::Providers::Xerces::kDefaultProvider};
      *          XML::DOM::Document::Ptr d = XML::DOM::Document::New (in, nullptr, kXerces_); // nullptr: no schema
      *      \endcode

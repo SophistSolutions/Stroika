@@ -88,7 +88,8 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
             Binding fBinding;
 
             /**
-             *  \brief How the XML is parsed - by default, with Stroika's default provider
+             *  \brief How the XML is parsed - by default, with Stroika's default provider; nearly always left as is (@see
+             *         DataExchange::XML::Options)
              */
             DataExchange::XML::Options fXMLOptions;
 

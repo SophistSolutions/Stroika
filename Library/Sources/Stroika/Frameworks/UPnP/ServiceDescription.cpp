@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/XML/Binding.h"
 #include "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "ServiceDescription.h"
@@ -259,11 +260,18 @@ String SD_::ToString () const
  ********************************* UPnP::Serialize ******************************
  ********************************************************************************
  */
-Memory::BLOB UPnP::Serialize (const ServiceDescription& sd, [[maybe_unused]] const Options& options)
+Memory::BLOB UPnP::Serialize (const ServiceDescription& sd, [[maybe_unused]] const ServiceDescription::Options& options)
 {
-    // the Writer writes the text itself, with no XML provider - so nothing in options applies
+    // the Writer writes the text itself, with no XML provider - options' provider only checks it
     static const Variant::XML::Writer kWriter_{{.fBinding = Binding_ ()}};
-    return kWriter_.WriteAsBLOB (Mapper_ ().FromObject (sd));
+    Memory::BLOB                      result = kWriter_.WriteAsBLOB (Mapper_ ().FromObject (sd));
+#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
+    if (options.fValidateWrite) {
+        XML::SAXParse (result.As<Streams::InputStream::Ptr<byte>> (), nullptr, ServiceDescriptionSchema (options.fXMLOptions), nullptr,
+                       options.fXMLOptions);
+    }
+#endif
+    return result;
 }
 
 /*
@@ -271,10 +279,10 @@ Memory::BLOB UPnP::Serialize (const ServiceDescription& sd, [[maybe_unused]] con
  ******************************* UPnP::DeSerialize ******************************
  ********************************************************************************
  */
-void UPnP::DeSerialize (const Memory::BLOB& b, ServiceDescription* sd, const Options& options)
+void UPnP::DeSerialize (const Memory::BLOB& b, ServiceDescription* sd, const ServiceDescription::Options& options)
 {
     RequireNotNull (sd);
-    // leniently: devices in the field are loose (@see Options::fValidateReadAgainst)
+    // leniently: devices in the field are loose (@see DeviceDescription::Options::fValidateReadAgainst)
     const Variant::XML::Reader reader{
         {.fBinding = Binding_ (), .fXMLOptions = options.fXMLOptions, .fValidateAgainst = options.fValidateReadAgainst, .fLenient = true}};
     *sd = Mapper_ ().ToObject<ServiceDescription> (reader.Read (b.As<Streams::InputStream::Ptr<byte>> ()));

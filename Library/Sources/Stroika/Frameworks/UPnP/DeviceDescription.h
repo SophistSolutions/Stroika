@@ -11,12 +11,13 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/XML/Options.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Execution/LazyInitialized.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Stroika/Frameworks/UPnP/Device.h"
-#include "Stroika/Frameworks/UPnP/Options.h"
 
 /*
  * TODO:
@@ -111,6 +112,58 @@ namespace Stroika::Frameworks::UPnP {
         };
         optional<Collection<Service>> fServices;
 
+        /**
+         *  \brief What Serialize and DeSerialize of a device description are told - defaulted, so a caller says only what it
+         *         wants different
+         *
+         *  By default what Serialize writes is checked against UPnP's schema, and what DeSerialize reads is not.
+         *
+         *  \par Example Usage
+         *      \code
+         *          // read leniently - the default
+         *          DeviceDescription dd = UPnP::DeSerialize (fetched);
+         *
+         *          // ... or be told a description is malformed, rather than silently getting half of one
+         *          const DeviceDescription::Options kStrict_{.fValidateReadAgainst = UPnP::DeviceDescriptionSchema ()};
+         *          DeviceDescription                checked = UPnP::DeSerialize (fetched, kStrict_);
+         *      \endcode
+         */
+        struct Options {
+            /**
+             *  \brief The XML provider that reads, and that checks what is written - by default, Stroika's default provider;
+             *         nearly always left as is (@see XML::Options)
+             *
+             *  \note A UPnP option, not a process-wide one, so two libraries that each speak UPnP need not agree.
+             */
+            Foundation::DataExchange::XML::Options fXMLOptions;
+
+            /**
+             *  \brief Check a description being read against this schema - DeviceDescriptionSchema - throwing where it does
+             *         not hold; nullptr, the default, checks nothing
+             *
+             *  Off by default: UPnP devices in the field are loose - a vendor's own elements in no namespace, elements out of
+             *  the order the schema fixes, required ones missing - so a control point that checked would see fewer devices
+             *  than one that did not, and which to be is the application's choice, not the library's. Reading is lenient to
+             *  match (@see ServiceDescription_Others_); this is how a caller that would rather be told says so.
+             *
+             *  A schema rather than a flag, so a caller checking many descriptions compiles it once, and a program that never
+             *  checks what it reads does not carry it.
+             */
+            Foundation::DataExchange::XML::Schema::Ptr fValidateReadAgainst{nullptr};
+
+            /**
+             *  \brief Check what Serialize writes against DeviceDescriptionSchema, throwing BadFormatException where it does
+             *         not hold - true, the default
+             *
+             *  On by default, unlike reading: what a device writes is its own, so a description that does not hold - a device
+             *  with no services, say, where device-1-0 requires a <service> - is a mistake better found by its author than by
+             *  its control points. Turn it off to serve one that knowingly departs from the schema, or to save what each check
+             *  costs: Serialize compiles the schema and parses what it wrote, every call. In a build with no XML parser,
+             *  nothing is checked.
+             */
+            bool fValidateWrite{true};
+        };
+
         DeviceDescription () = default;
 
         /**
@@ -131,9 +184,10 @@ namespace Stroika::Frameworks::UPnP {
     /**
      *  \brief The device's description XML: what its LOCATION serves - as UPnP's XML (text/xml), UTF-8
      *
-     *  \note Needs no XML library: the text is written directly (Variant::XML::Writer), so options' provider plays no part.
+     *  The text is written directly (Variant::XML::Writer); an XML parser only checks it, as by default it does - throwing
+     *  BadFormatException where it does not hold (@see DeviceDescription::Options::fValidateWrite).
      */
-    Memory::BLOB Serialize (const DeviceDescription& dd, const Options& options = {});
+    Memory::BLOB Serialize (const DeviceDescription& dd, const DeviceDescription::Options& options = {});
 
     /**
      *  \brief A device description read - what Serialize writes, and any other's, leniently: what it does not know - a
@@ -142,21 +196,18 @@ namespace Stroika::Frameworks::UPnP {
      *         not XML, its document element is not <root>, or the build has no XML parser
      *         (qStroika_Foundation_DataExchange_XML_SupportParsing). @see Variant::XML::Reader::Options::fLenient
      */
-    DeviceDescription DeSerialize (const Memory::BLOB& b, const Options& options = {});
+    DeviceDescription DeSerialize (const Memory::BLOB& b, const DeviceDescription::Options& options = {});
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
     /**
-     *  \brief UPnP's own device description schema, compiled by the provider o names - what to give Options::fValidateReadAgainst
+     *  \brief UPnP's own device description schema, compiled by the provider o names - what Serialize checks what it
+     *         writes against (DeviceDescription::Options::fValidateWrite), and what to give fValidateReadAgainst
      *
-     *  @see Options::fValidateReadAgainst, which is how a description being read is checked against it, and which says
-     *       why nothing does so by default.
+     *  Compiled afresh each call. Compiling is not free, so a caller checking many descriptions it reads compiles one and
+     *  holds it in its Options - which must not outlive the provider that made it.
      *
-     *  Compiled afresh each call, and NOT cached: a Schema::Ptr may not outlive the provider that made it, and nothing
-     *  held in a static can promise that. A caller reading more than the occasional description holds one in its own
-     *  Options, where the lifetime is plain. Compiling is not free, so do not call this per description.
-     *
-     *  Nothing inside UPnP calls this, which is what lets a program that never validates not carry the schema's ~11K
-     *  (it lives in a translation unit of its own; Stroika is a static library).
+     *  It lives in a translation unit of its own (Stroika is a static library), so its ~11K is linked only into a program
+     *  that calls it - as Serialize does, to check what it writes.
      *
      *  \note Give it the matching Options' fXMLOptions: a schema and a parser from different providers do work together,
      *        but slowly (@see XML::SAXParse).

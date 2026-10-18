@@ -3,6 +3,8 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Debug/Assertions.h"
+
 #include "SOAP.h"
 
 /*
@@ -14,8 +16,9 @@
  *  schema a caller wants rather than a flag that would reach for this one, which is what keeps the reference out.
  *
  *  The schema is http://schemas.xmlsoap.org/soap/envelope/ VERBATIM - Schemas/soap-envelope-1.1.xsd byte for byte,
- *  notice included, which its licence (the W3C Software License) requires travel with any copy. It imports and includes
- *  nothing, so it compiles with no Resource::Resolver.
+ *  notice included, which its licence (the W3C Software License) requires travel with any copy; EnvelopeSchema corrects
+ *  a copy of it as it compiles, unless asked for it as published. It imports and includes nothing, so it compiles with
+ *  no Resource::Resolver.
  *
  *  KEPT IN THE TREE rather than fetched at build time the way ThirdPartyComponents are (LGP 2026-10-13). That machinery
  *  is for versioned source that then gets built, and everything it fetches carries a configure feature flag so it can be
@@ -45,15 +48,21 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebService;
 
-XML::Schema::Ptr SOAP::EnvelopeSchema (const XML::Options& o)
+XML::Schema::Ptr SOAP::EnvelopeSchema (const XML::Options& o, bool allowEncodingStyleOnEnvelope)
 {
-    /*
-     *  Compiled afresh each call, and deliberately not kept: a Schema::Ptr belongs to the provider that made it and may
-     *  not outlive it (which XML::Providers::LibXML2::Provider's DTOR checks), and nothing holding one in a static can
-     *  promise that - destruction order across translation units is not ours to choose, and the provider is the
-     *  caller's anyway. A caller sending more than the occasional message holds its own, in its own Options, where the
-     *  lifetime is plain to see.
-     */
-    return XML::Schema::New (Memory::BLOB::Attach (Schemas_soap_envelope_1_1_xsd), nullptr, o);
+    // compiled afresh each call: a caller checking many messages holds its own, in its own Options
+    if (not allowEncodingStyleOnEnvelope) {
+        return XML::Schema::New (Memory::BLOB::Attach (Schemas_soap_envelope_1_1_xsd), nullptr, o);
+    }
+    // the one correction: Envelope takes SOAP's own encodingStyle too - declared before its anyAttribute, as XSD orders them
+    static constexpr string_view kEnvelopeType_{"<xs:complexType name=\"Envelope\" >"sv};
+    static constexpr string_view kAnyAttribute_{"<xs:anyAttribute"sv};
+    string       corrected{reinterpret_cast<const char*> (Schemas_soap_envelope_1_1_xsd), std::size (Schemas_soap_envelope_1_1_xsd)};
+    const size_t envelopeType = corrected.find (kEnvelopeType_);
+    Assert (envelopeType != string::npos); // a published schema that had changed would land here first
+    const size_t envelopesAnyAttribute = corrected.find (kAnyAttribute_, envelopeType);
+    Assert (envelopesAnyAttribute != string::npos);
+    corrected.insert (envelopesAnyAttribute, "<xs:attribute ref=\"tns:encodingStyle\" />"sv);
+    return XML::Schema::New (Memory::BLOB{as_bytes (span{corrected})}, nullptr, o);
 }
 #endif

@@ -12,6 +12,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/XML/Options.h"
 #include "Stroika/Foundation/IO/Network/Port.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -76,14 +77,20 @@ namespace Stroika::Frameworks::UPnP::GENA {
     public:
         /**
          *  \note There is nothing here to validate a NOTIFY against, where a description has one (@see
-         *        UPnP::Options::fValidateReadAgainst) - @see GENA::Publisher::Options, which says why no schema for an
-         *        event can exist.
+         *        DeviceDescription::Options::fValidateReadAgainst) - @see GENA::Publisher::Options, which says why no schema
+         *        for an event can exist.
          */
         struct Options {
             /**
              *  The TIMEOUT asked of the service - which may grant less. It is renewed at half what it grants.
              */
             Foundation::Time::DurationSeconds fTimeout{1800.0};
+
+            /**
+             *  \brief How an event's XML is read - by default, with Stroika's default provider; nearly always left as is (@see
+             *         XML::Options)
+             */
+            Foundation::DataExchange::XML::Options fXMLOptions;
         };
         static const Options kDefaultOptions;
 
