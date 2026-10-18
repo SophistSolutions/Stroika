@@ -151,6 +151,11 @@ namespace Stroika::Frameworks::WebService::SOAP {
 
         /**
          *  One of those - or one of them followed by its own, dotted: Client.Authentication, say. Without the envelope's prefix.
+         *
+         *  \pre an XML name (XML::IsNCName: letters, digits, '.', '-', '_'), since Serialize writes it as a QName's local part.
+         *       DeSerialize reads one that is not leniently, as its longest leading part that is a name ("Server Error" as
+         *       Server), or Server - so a Fault read can always be written back; checked (Options::fValidateReadAgainst),
+         *       the schema refuses it
          */
         String fFaultCode{kServer};
         /**

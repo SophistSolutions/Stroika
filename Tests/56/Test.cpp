@@ -336,6 +336,41 @@ namespace {
     }
 
     /*
+     *  A fault's code is written as a QName, so it must be an XML name (Fault::fFaultCode). SOAP's own codes, and dotted ones,
+     *  are written and hold to the schema. One that is not a name, from another stack, is read leniently - as its longest
+     *  leading part that is a name, or Server - so it can be written back; checked, it is refused.
+     */
+    GTEST_TEST (Frameworks_WebService, SOAP_FaultCodes_)
+    {
+        Debug::TraceContextBumper ctx{"SOAP_FaultCodes_"};
+        const SOAP::Options       kValidating_{.fValidateReadAgainst = SOAP::EnvelopeSchema ()};
+        for (const String& code : {SOAP::Fault::kVersionMismatch, SOAP::Fault::kMustUnderstand, SOAP::Fault::kClient, SOAP::Fault::kServer,
+                                   String{"Client.Authentication"sv}}) {
+            const SOAP::Fault f{.fFaultCode = code, .fFaultString = "bad"sv};
+            SOAP::Fault       back;
+            EXPECT_NO_THROW (SOAP::DeSerialize (SOAP::Serialize (f), &back, kValidating_)) << code.AsNarrowSDKString ();
+            EXPECT_EQ (back, f);
+        }
+        auto faultWithCode = [] (string_view code) {
+            const string message = string{"<?xml version=\"1.0\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+                                          "<s:Body><s:Fault><faultcode>"} +
+                                   string{code} + "</faultcode><faultstring>bad</faultstring></s:Fault></s:Body></s:Envelope>";
+            return Memory::BLOB{as_bytes (span{message})};
+        };
+        for (const auto& [sent, readAs] : std::initializer_list<std::pair<string_view, string_view>>{
+                 {"s:Server Error"sv, "Server"sv}, {"s:Client.Auth Failure"sv, "Client.Auth"sv}, {"s:1Bad"sv, "Server"sv}, {"Client"sv, "Client"sv}}) {
+            SOAP::Fault back;
+            SOAP::DeSerialize (faultWithCode (sent), &back);
+            EXPECT_EQ (back.fFaultCode, String{readAs}) << sent;
+            SOAP::Fault again;
+            EXPECT_NO_THROW (SOAP::DeSerialize (SOAP::Serialize (back), &again, kValidating_)) << sent; // written back, it holds
+            EXPECT_EQ (again, back);
+        }
+        SOAP::Fault ignored;
+        EXPECT_THROW (SOAP::DeSerialize (faultWithCode ("s:Server Error"sv), &ignored, kValidating_), BadFormatException);
+    }
+
+    /*
      *  Every message, through each XML provider, and across them - what one writes another reads. Nothing exercised
      *  SOAP through Xerces until this, which is how it went unnoticed that Xerces could not read back the envelope it
      *  had just written: its GetName () gave the QUALIFIED name, so "s:Envelope" never matched the "Envelope" this

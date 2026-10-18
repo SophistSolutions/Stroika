@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
 #include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
@@ -270,6 +271,7 @@ Memory::BLOB SOAP::Serialize ([[maybe_unused]] const Response& response, [[maybe
 Memory::BLOB SOAP::Serialize ([[maybe_unused]] const Fault& fault, [[maybe_unused]] const Options& options)
 {
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
+    Require (XML::IsNCName (fault.fFaultCode)); // it is written as a QName's local part - @see Fault::fFaultCode
     Envelope_         envelope{options};
     WriteElement::Ptr faultElt = envelope.fBody.Append ("Fault"sv);
     // SOAP 1.1 has a Fault's own children unqualified (section 4.4), where the envelope's namespace would be inherited
@@ -341,7 +343,19 @@ void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Fault* fault, [[
             if (name == "faultcode"sv) {
                 const String     code  = c.GetValue ().Trim ();
                 optional<size_t> colon = code.Find (':');
-                result.fFaultCode      = colon ? code.SubString (*colon + 1) : code; // its prefix is the envelope's, whatever it is
+                String           local = colon ? code.SubString (*colon + 1) : code; // its prefix is the envelope's, whatever it is
+                if (not XML::IsNCName (local)) {
+                    // not a QName, as a faultcode must be - read leniently (checked, the schema has refused it already): as its
+                    // longest leading part that is a name, or Server, so that what is read can always be written back
+                    size_t n = local.size ();
+                    while (n > 0 and not XML::IsNCName (local.SubString (0, n))) {
+                        --n;
+                    }
+                    const String readAs = n == 0 ? Fault::kServer : local.SubString (0, n);
+                    DbgTrace ("faultcode '{}' is not a QName: read as '{}'"_f, code, readAs);
+                    local = readAs;
+                }
+                result.fFaultCode = local;
             }
             else if (name == "faultstring"sv) {
                 result.fFaultString = c.GetValue ();
