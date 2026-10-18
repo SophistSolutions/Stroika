@@ -282,6 +282,10 @@ namespace {
                 EXPECT_EQ (back, f);
             }
         }
+        // ... by default with no encodingStyle at all, as the WS-I Basic Profile requires
+        EXPECT_EQ (SOAP::Serialize (kRequest_).As<string> ().find ("encodingStyle"), string::npos);
+        EXPECT_EQ (SOAP::Serialize (kResponse_).As<string> ().find ("encodingStyle"), string::npos);
+        EXPECT_EQ (SOAP::Serialize (kFault_).As<string> ().find ("encodingStyle"), string::npos);
         // where encodingStyle goes is the writer's choice (Options::fEncodingStyleAttribute): each is written where asked, holds
         // against the corrected schema, and - all but on the Envelope - against the published one too
         for (SOAP::EncodingStyleAttribute where :

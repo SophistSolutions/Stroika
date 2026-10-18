@@ -192,14 +192,16 @@ namespace Stroika::Frameworks::WebService::SOAP {
 
     /**
      *  \brief Where Serialize writes SOAP's encodingStyle attribute (http://schemas.xmlsoap.org/soap/encoding/) - which SOAP
-     *         1.1's prose says MAY go on any element, and on which its schema and its examples disagree
+     *         1.1's prose says MAY go on any element, and on which its schema, its examples and the WS-I Basic Profile disagree
      *
-     *      o   eOnBody - the default
-     *      o   eOnEnvelope - what SOAP 1.1's examples, and much of the world, write, and what UPnP requires; SOAP's schema as
-     *          published refuses it - EnvelopeSchema, corrected, does not
-     *      o   eOmitted - legal by SOAP's schema, where the attribute is optional wherever it may go; the message then claims
-     *          no encoding, and SOAP 1.1 defines no default (section 4.1.1), so its receiver goes by what it knows otherwise -
-     *          a WSDL binding, or its protocol (UPnP 1.1 takes a message with none to be SOAP-encoded)
+     *      o   eOmitted - the default: legal by SOAP's schema, where the attribute is optional wherever it may go, and what
+     *          the WS-I Basic Profile, which most stacks follow, requires (1.1, section 3.1.6: R1005 forbids it on SOAP's own
+     *          elements, R1006 on a Body's children). The message then claims no encoding, and SOAP 1.1 defines no default
+     *          (section 4.1.1), so its receiver goes by what it knows otherwise - a WSDL binding, or its protocol (UPnP 1.1
+     *          takes a message with none to be SOAP-encoded)
+     *      o   eOnBody - legal by SOAP's schema, but not by the WS-I Basic Profile
+     *      o   eOnEnvelope - what SOAP 1.1's examples, and older RPC stacks, write, and what UPnP requires; SOAP's schema as
+     *          published refuses it - EnvelopeSchema, corrected, does not - and so does the WS-I Basic Profile
      */
     enum class EncodingStyleAttribute {
         eOnBody,
@@ -278,13 +280,13 @@ namespace Stroika::Frameworks::WebService::SOAP {
         DataExchange::XML::Schema::Ptr fValidateReadAgainst{nullptr};
 
         /**
-         *  \brief Where Serialize writes encodingStyle - on the Body, the default, so what is written holds to SOAP's schema
-         *         as published (@see EncodingStyleAttribute). Writing only
+         *  \brief Where Serialize writes encodingStyle - nowhere, the default, so what is written holds to SOAP's schema as
+         *         published and to the WS-I Basic Profile (@see EncodingStyleAttribute). Writing only
          *
          *  DeSerialize reads a message whatever it carries - encodingStyle anywhere, or none; whether it may be where it
          *  is is for a schema to say (fValidateReadAgainst).
          */
-        EncodingStyleAttribute fEncodingStyleAttribute{EncodingStyleAttribute::eOnBody};
+        EncodingStyleAttribute fEncodingStyleAttribute{EncodingStyleAttribute::eOmitted};
     };
 
     /**
