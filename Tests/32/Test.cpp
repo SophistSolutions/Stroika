@@ -1595,7 +1595,8 @@ namespace {
         return (b.fItems != nullptr and HasFloat_ (*b.fItems)) or (b.fDefaultArrayItems != nullptr and HasFloat_ (*b.fDefaultArrayItems));
     }
 
-    // equal, and of the same type all the way down - VariantValue's == calls 3 and "3" equal (it compares them Normalize ()d)
+    // equal, and of the same type all the way down - VariantValue's == calls 3 and 3.0 equal (it compares them Normalize ()d,
+    // each number as a float)
     bool SameTyped_ (const VariantValue& a, const VariantValue& b)
     {
         if (a.GetType () != b.GetType ()) {
