@@ -495,6 +495,25 @@ namespace {
     }
 
     /*
+     *  Each schema accessor compiles once per provider, and keeps it: asked again, it gives the very schema it gave before -
+     *  and each provider, and each of SOAP's two envelope schemas, has its own.
+     */
+    GTEST_TEST (Frameworks_UPnP, SchemasCompiledOncePerProvider_)
+    {
+        EXPECT_EQ (UPnP::DeviceDescriptionSchema ().GetRep (), UPnP::DeviceDescriptionSchema ().GetRep ());
+        EXPECT_EQ (UPnP::ServiceDescriptionSchema ().GetRep (), UPnP::ServiceDescriptionSchema ().GetRep ());
+        EXPECT_EQ (WebService::SOAP::EnvelopeSchema ().GetRep (), WebService::SOAP::EnvelopeSchema ().GetRep ());
+        EXPECT_EQ (WebService::SOAP::EnvelopeSchema ({}, false).GetRep (), WebService::SOAP::EnvelopeSchema ({}, false).GetRep ());
+        EXPECT_NE (WebService::SOAP::EnvelopeSchema ({}, true).GetRep (), WebService::SOAP::EnvelopeSchema ({}, false).GetRep ());
+#if qStroika_HasComponent_libxml2 and qStroika_HasComponent_xerces
+        const DataExchange::XML::Options kLibXML2_{.fProvider = &DataExchange::XML::Providers::LibXML2::kDefaultProvider};
+        const DataExchange::XML::Options kXerces_{.fProvider = &DataExchange::XML::Providers::Xerces::kDefaultProvider};
+        EXPECT_EQ (UPnP::DeviceDescriptionSchema (kXerces_).GetRep (), UPnP::DeviceDescriptionSchema (kXerces_).GetRep ());
+        EXPECT_NE (UPnP::DeviceDescriptionSchema (kLibXML2_).GetRep (), UPnP::DeviceDescriptionSchema (kXerces_).GetRep ());
+#endif
+    }
+
+    /*
      *  What Serialize writes is checked by default (Options::fValidateWrite), with each provider: a description its schema
      *  refuses throws, and with the check off is written as asked - and still reads back.
      */

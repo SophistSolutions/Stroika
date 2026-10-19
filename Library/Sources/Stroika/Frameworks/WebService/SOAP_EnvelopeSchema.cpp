@@ -3,7 +3,9 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 
 #include "Stroika/Frameworks/WebService/SOAP.h"
 
@@ -50,19 +52,27 @@ using namespace Stroika::Frameworks::WebService;
 
 XML::Schema::Ptr SOAP::EnvelopeSchema (const XML::Options& o, bool allowEncodingStyleOnEnvelope)
 {
-    // compiled afresh each call: a caller checking many messages holds its own, in its own Options
-    if (not allowEncodingStyleOnEnvelope) {
-        return XML::Schema::New (Memory::BLOB::Attach (Schemas_soap_envelope_1_1_xsd), nullptr, o);
+    // compiled once per provider (libxml2's and Xerces') and allowEncodingStyleOnEnvelope, and kept; a schema keeps its XML
+    // library alive, so this may outlive the provider
+    static Execution::Synchronized<Containers::Mapping<pair<const XML::Providers::IXMLProvider*, bool>, XML::Schema::Ptr>> sCompiled_;
+    auto                                                  compiled = sCompiled_.rwget ();
+    const pair<const XML::Providers::IXMLProvider*, bool> key{&o.GetProvider (), allowEncodingStyleOnEnvelope};
+    if (optional<XML::Schema::Ptr> s = compiled->Lookup (key)) {
+        return *s;
     }
-    // the one correction: Envelope takes SOAP's own encodingStyle too - declared before its anyAttribute, as XSD orders them
-    static constexpr string_view kEnvelopeType_{"<xs:complexType name=\"Envelope\" >"sv};
-    static constexpr string_view kAnyAttribute_{"<xs:anyAttribute"sv};
-    string       corrected{reinterpret_cast<const char*> (Schemas_soap_envelope_1_1_xsd), std::size (Schemas_soap_envelope_1_1_xsd)};
-    const size_t envelopeType = corrected.find (kEnvelopeType_);
-    Assert (envelopeType != string::npos); // a published schema that had changed would land here first
-    const size_t envelopesAnyAttribute = corrected.find (kAnyAttribute_, envelopeType);
-    Assert (envelopesAnyAttribute != string::npos);
-    corrected.insert (envelopesAnyAttribute, "<xs:attribute ref=\"tns:encodingStyle\" />"sv);
-    return XML::Schema::New (Memory::BLOB{as_bytes (span{corrected})}, nullptr, o);
+    string xsd{reinterpret_cast<const char*> (Schemas_soap_envelope_1_1_xsd), std::size (Schemas_soap_envelope_1_1_xsd)};
+    if (allowEncodingStyleOnEnvelope) {
+        // the one correction: Envelope takes SOAP's own encodingStyle too - declared before its anyAttribute, as XSD orders them
+        static constexpr string_view kEnvelopeType_{"<xs:complexType name=\"Envelope\" >"sv};
+        static constexpr string_view kAnyAttribute_{"<xs:anyAttribute"sv};
+        const size_t                 envelopeType = xsd.find (kEnvelopeType_);
+        Assert (envelopeType != string::npos); // a published schema that had changed would land here first
+        const size_t envelopesAnyAttribute = xsd.find (kAnyAttribute_, envelopeType);
+        Assert (envelopesAnyAttribute != string::npos);
+        xsd.insert (envelopesAnyAttribute, "<xs:attribute ref=\"tns:encodingStyle\" />"sv);
+    }
+    XML::Schema::Ptr s = XML::Schema::New (Memory::BLOB{as_bytes (span{xsd})}, nullptr, o);
+    compiled->Add (key, s);
+    return s;
 }
 #endif

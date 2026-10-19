@@ -3,6 +3,9 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 
 /*
@@ -10,10 +13,10 @@
  *
  *  Its own translation unit so that a program which never validates never carries it: Stroika is a static library, so
  *  an object nothing references is not pulled from the archive at all - no linker flag, no pragma, nothing to get wrong
- *  on one toolchain and not another. That only holds while nothing ELSE in UPnP calls DeviceDescriptionSchema: Options
- *  takes the schema a caller wants rather than a flag that would reach for this one, which is what keeps the reference
- *  out. The service description's schema is a translation unit of its own for the same reason - a device that only ever
- *  reads descriptions carries neither, and one that reads only descriptions carries one.
+ *  on one toolchain and not another. Serialize references it, to check what it writes (Options::fValidateWrite), so a
+ *  device publishing its description carries it; reading references it only through the schema a caller gives
+ *  fValidateReadAgainst, so a program that only reads descriptions does not. The service description's schema is a
+ *  translation unit of its own for the same reason.
  *
  *  The schema is https://upnp.org/schemas/device-1-0.xsd as it stood 2026-10-13: what Serialize writes holds against
  *  it (@see Tests/55's DescriptionsValidateAgainstPublishedSchemas_).
@@ -48,7 +51,16 @@ using namespace Stroika::Frameworks::UPnP;
 
 XML::Schema::Ptr UPnP::DeviceDescriptionSchema (const XML::Options& o)
 {
-    // compiled afresh each call: a device reading more than the occasional description holds its own, in its own Options
-    return XML::Schema::New (Memory::BLOB::Attach (Schemas_device_1_0_xsd), nullptr, o);
+    // compiled once per provider - there are two, libxml2's and Xerces' - and kept; a schema keeps its XML library alive, so
+    // this may outlive the provider
+    static Execution::Synchronized<Containers::Mapping<const XML::Providers::IXMLProvider*, XML::Schema::Ptr>> sCompiled_;
+    auto                                compiled = sCompiled_.rwget ();
+    const XML::Providers::IXMLProvider* provider = &o.GetProvider ();
+    if (optional<XML::Schema::Ptr> s = compiled->Lookup (provider)) {
+        return *s;
+    }
+    XML::Schema::Ptr s = XML::Schema::New (Memory::BLOB::Attach (Schemas_device_1_0_xsd), nullptr, o);
+    compiled->Add (provider, s);
+    return s;
 }
 #endif

@@ -230,8 +230,8 @@ namespace Stroika::Frameworks::WebService::SOAP {
      *  accepts encodingStyle wherever a message carries it (@see EncodingStyleAttribute); allowEncodingStyleOnEnvelope
      *  false gives the schema as published, which refuses it on the Envelope.
      *
-     *  Compiled afresh each call. Compiling is not free, so a caller checking many messages compiles one and holds it in
-     *  its Options.
+     *  Compiled once per provider and allowEncodingStyleOnEnvelope, the first time each is asked for, and kept - so a call
+     *  after the first is cheap.
      *
      *  It lives in a translation unit of its own, so its 6K is linked only into a program that calls it.
      *

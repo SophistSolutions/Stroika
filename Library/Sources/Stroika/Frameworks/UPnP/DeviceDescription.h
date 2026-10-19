@@ -146,8 +146,7 @@ namespace Stroika::Frameworks::UPnP {
              *  than one that did not, and which to be is the application's choice, not the library's. Reading is lenient to
              *  match (@see ServiceDescription_Others_); this is how a caller that would rather be told says so.
              *
-             *  A schema rather than a flag, so a caller checking many descriptions compiles it once, and a program that never
-             *  checks what it reads does not carry it.
+             *  A schema rather than a flag, so a program that never checks what it reads does not carry it.
              */
             Foundation::DataExchange::XML::Schema::Ptr fValidateReadAgainst{nullptr};
 
@@ -158,7 +157,7 @@ namespace Stroika::Frameworks::UPnP {
              *  On by default, unlike reading: what a device writes is its own, so a description that does not hold - a device
              *  with no services, say, where device-1-0 requires a <service> - is a mistake better found by its author than by
              *  its control points. Turn it off to serve one that knowingly departs from the schema, or to save what each check
-             *  costs: Serialize compiles the schema and parses what it wrote, every call. In a build with no XML parser,
+             *  costs: Serialize parses what it wrote, every call (the schema is compiled once). In a build with no XML parser,
              *  nothing is checked.
              */
             bool fValidateWrite{true};
@@ -203,8 +202,7 @@ namespace Stroika::Frameworks::UPnP {
      *  \brief UPnP's own device description schema, compiled by the provider o names - what Serialize checks what it
      *         writes against (DeviceDescription::Options::fValidateWrite), and what to give fValidateReadAgainst
      *
-     *  Compiled afresh each call. Compiling is not free, so a caller checking many descriptions it reads compiles one and
-     *  holds it in its Options.
+     *  Compiled once per provider, the first time that provider asks, and kept - so a call after the first is cheap.
      *
      *  It lives in a translation unit of its own (Stroika is a static library), so its ~11K is linked only into a program
      *  that calls it - as Serialize does, to check what it writes.

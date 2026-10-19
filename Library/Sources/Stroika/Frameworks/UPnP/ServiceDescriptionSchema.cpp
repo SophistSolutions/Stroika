@@ -3,7 +3,9 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 
 #include "Stroika/Frameworks/UPnP/ServiceDescription.h"
 
@@ -51,8 +53,13 @@ using namespace Stroika::Frameworks::UPnP;
 
 XML::Schema::Ptr UPnP::ServiceDescriptionSchema (const XML::Options& o)
 {
-    // compiled afresh each call, as DeviceDescriptionSchema is; the correction costs one pass over 11K, which beside compiling
-    // a schema is nothing
+    // compiled once per provider, and kept, as DeviceDescriptionSchema is
+    static Execution::Synchronized<Containers::Mapping<const XML::Providers::IXMLProvider*, XML::Schema::Ptr>> sCompiled_;
+    auto                                compiled = sCompiled_.rwget ();
+    const XML::Providers::IXMLProvider* provider = &o.GetProvider ();
+    if (optional<XML::Schema::Ptr> s = compiled->Lookup (provider)) {
+        return *s;
+    }
     static constexpr string_view kAsPublished_{"<xsd:enumeration value=\"1\"/>"sv};
     static constexpr string_view kWidened_{"<xsd:enumeration value=\"1\"/><xsd:enumeration value=\"yes\"/><xsd:enumeration value=\"no\"/>"sv};
     string corrected{reinterpret_cast<const char*> (Schemas_service_1_0_xsd), std::size (Schemas_service_1_0_xsd)};
@@ -66,6 +73,8 @@ XML::Schema::Ptr UPnP::ServiceDescriptionSchema (const XML::Options& o)
     // sendEvents and multicast, and nothing else in the file is written that way. A published schema that had changed
     // would land here first
     Assert (nWidened == 2);
-    return XML::Schema::New (Memory::BLOB{as_bytes (span{corrected})}, nullptr, o);
+    XML::Schema::Ptr s = XML::Schema::New (Memory::BLOB{as_bytes (span{corrected})}, nullptr, o);
+    compiled->Add (provider, s);
+    return s;
 }
 #endif
