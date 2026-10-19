@@ -118,7 +118,8 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
     public:
         /**
          *  \note Two constructors, not one with a default argument (= {}): within Reader, that default argument cannot use the
-         *        member initializers of Options, nested in it (C++ CWG 1397) - MSVC allows it, clang and gcc do not.
+         *        member initializers of Options, nested in it - g++ and clang refuse it (as of g++ 16, clang 22), MSVC allows
+         *        it, and the standard has not settled it (https://cplusplus.github.io/CWG/issues/2335.html).
          */
         Reader ();
         Reader (const Options& options); ///< \brief Reading as options says
