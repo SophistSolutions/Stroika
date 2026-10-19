@@ -161,7 +161,16 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief Append a, if Append takes it (text, a character) - otherwise a as Characters::ToString writes it: a number,
+         *         an enum by its name, a container, an optional, a filesystem::path, a type with a ToString () method
+         *
          *  @aliases Append if that would work, and otherwise alias for Append (ToString(arg)), if that would work;
+         *
+         *  \par Example Usage
+         *      \code
+         *          StringBuilder sb;
+         *          sb << "found "sv << 3 << " in "sv << Sequence<int>{1, 2, 3}; // sb.str () == "found 3 in [ 1, 2, 3 ]"
+         *      \endcode
          */
         template <typename APPEND_ARG_T>
         nonvirtual auto
