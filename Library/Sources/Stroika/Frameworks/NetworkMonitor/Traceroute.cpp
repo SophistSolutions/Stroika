@@ -139,7 +139,7 @@ void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void
         }
         catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"exception {}"_f, current_exception ());
+            DbgTrace ("exception {}"_f, current_exception ());
 #endif
             perHopCallback (Hop{});
         }

@@ -258,7 +258,7 @@ namespace {
         {
             HANDLE hThreadSnap = ::CreateToolhelp32Snapshot (TH32CS_SNAPTHREAD, 0);
             if (hThreadSnap == INVALID_HANDLE_VALUE) {
-                DbgTrace (L"CreateToolhelp32Snapshot failed: {}"_f, ::GetLastError ());
+                DbgTrace ("CreateToolhelp32Snapshot failed: {}"_f, ::GetLastError ());
                 return;
             }
             [[maybe_unused]] auto&& cleanup = Finally ([hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
@@ -269,7 +269,7 @@ namespace {
 
             // Retrieve information about the first thread, and exit if unsuccessful
             if (not ::Thread32First (hThreadSnap, &te32)) {
-                DbgTrace (L"CreateToolhelp32Snapshot failed: {}"_f, ::GetLastError ());
+                DbgTrace ("CreateToolhelp32Snapshot failed: {}"_f, ::GetLastError ());
                 return;
             }
             // Now walk the thread list of the system,
@@ -1440,7 +1440,7 @@ namespace {
                                     convertFILETIME2DurationSeconds (kernelTime) + convertFILETIME2DurationSeconds (userTime);
                             }
                             else {
-                                DbgTrace (L"error calling GetProcessTimes: {}"_f, ::GetLastError ());
+                                DbgTrace ("error calling GetProcessTimes: {}"_f, ::GetLastError ());
                             }
                         }
                         {
@@ -1450,7 +1450,7 @@ namespace {
                                 processInfo.fCombinedIOWriteBytes = static_cast<double> (ioCounters.WriteTransferCount);
                             }
                             else {
-                                DbgTrace (L"error calling GetProcessIoCounters: {}"_f, ::GetLastError ());
+                                DbgTrace ("error calling GetProcessIoCounters: {}"_f, ::GetLastError ());
                             }
                         }
 

@@ -88,7 +88,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"FileInputStream::Rep_::~Rep_"};
             if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
-                DbgTrace (L"closing {}"_f, fFD_);
+                DbgTrace ("closing {}"_f, fFD_);
             }
 #endif
             if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {

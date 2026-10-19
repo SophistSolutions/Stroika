@@ -194,7 +194,7 @@ namespace {
             EXPECT_TRUE (r.GetSucceeded ());
             EXPECT_GT (r.GetData ().size (), 1u);
             String response = r.GetDataTextInputStream ().ReadAll ();
-            //DbgTrace (L"response={}"_f, response);
+            //DbgTrace ("response={}"_f, response);
             EXPECT_TRUE (response.StartsWith ("<html>"));
             EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
         }
@@ -218,7 +218,7 @@ namespace {
             //DbgTrace ("headers={}"_f, r.GetHeaders ());
             //DbgTrace ("data=byte[{}]{}"_f, r.GetData ().size (), r.GetData ());
             String response = r.GetDataTextInputStream ().ReadAll ();
-            //DbgTrace (L"response={}"_f, response);
+            //DbgTrace ("response={}"_f, response);
             EXPECT_TRUE (response.StartsWith ("<html>"));
             EXPECT_TRUE (response.EndsWith ("</html>\r\n"));
         }
@@ -245,7 +245,7 @@ namespace {
             EXPECT_TRUE (r.GetSucceeded ());
             EXPECT_GT (r.GetData ().size (), 1u);
             String response = r.GetDataTextInputStream ().ReadAll ();
-            //DbgTrace (L"response={}"_f, response);
+            //DbgTrace ("response={}"_f, response);
             EXPECT_EQ (response, "Start");
         }
         catch (const RequiredComponentMissingException&) {
@@ -272,7 +272,7 @@ namespace {
             EXPECT_TRUE (r.GetSucceeded ());
             EXPECT_GT (r.GetData ().size (), 1u);
             String response = r.GetDataTextInputStream ().ReadAll ();
-            //DbgTrace (L"response={}"_f, response);
+            //DbgTrace ("response={}"_f, response);
             EXPECT_EQ (response, "TEST");
             // @todo enhance this test so we force accept-encoding none, and force accept-endcing : deflate, and check raw
             // result???

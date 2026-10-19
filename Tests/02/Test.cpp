@@ -2423,7 +2423,7 @@ namespace {
         DbgTrace ("a5={}"_f, Characters::ToString (a5));
         String a5a = Format ("{}"_f, IO::Network::URI{"http://www.sophists.com"});
         DbgTrace ("a5a={}"_f, Characters::ToString (a5));
-        String a6 = Format (L"{}"_f, IO::Network::CIDR{"192.168.244.0/24"});
+        String a6 = Format ("{}"_f, IO::Network::CIDR{"192.168.244.0/24"});
         DbgTrace ("a6={}"_f, Characters::ToString (a6));
         {
             auto url = IO::Network::URI{"http://www.sophists.com"};
@@ -2434,7 +2434,7 @@ namespace {
         }
         String a7 = Format ("{}"_f, foo{});
         DbgTrace ("a7={}"_f, Characters::ToString (a7));
-        DbgTrace (L"yippie: {}"_f, foo{});
+        DbgTrace ("yippie: {}"_f, foo{});
         EXPECT_EQ (a7, "foo as a string"sv);
         DbgTrace (L"t2:  cidr= {}, s1={}, s2={}"_f, IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"});
         DbgTrace ("t2:  cidr= {}, s1={}, s2={}"_f, IO::Network::CIDR{"192.168.244.0/24"}, L"s1", String{"s2"});

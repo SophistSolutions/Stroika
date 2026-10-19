@@ -555,7 +555,7 @@ namespace {
                 ++countOfReallocCopies;
             }
         }
-        DbgTrace (L"For {} ({} its log) resizes, we got {} reallocs"_f, kCountOfResizes_, log (kCountOfResizes_), countOfReallocCopies);
+        DbgTrace ("For {} ({} its log) resizes, we got {} reallocs"_f, kCountOfResizes_, log (kCountOfResizes_), countOfReallocCopies);
         VerifyTestResultWarning (5 <= countOfReallocCopies and countOfReallocCopies <= 50);
     }
 }

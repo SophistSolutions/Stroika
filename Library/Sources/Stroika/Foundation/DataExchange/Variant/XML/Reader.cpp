@@ -198,7 +198,7 @@ namespace {
                     // it describes. By local name, as every member is matched
                     if (name.fLocalName != fBinding.fName->fName) {
                         Execution::Throw (BadFormatException{
-                            L"the document element is <{}>, where the Binding names <{}>"_f(name.fLocalName, fBinding.fName->fName)});
+                            "the document element is <{}>, where the Binding names <{}>"_f(name.fLocalName, fBinding.fName->fName)});
                     }
                     ownBinding = &fBinding;
                 }

@@ -387,7 +387,7 @@ namespace {
             }
             InternetMediaType contentType  = r.GetContentType ().value_or (InternetMediaType{});
             String            responseText = r.GetDataTextInputStream ().ReadAll ();
-            DbgTrace (L"responseText = {}"_f, responseText);
+            DbgTrace ("responseText = {}"_f, responseText);
             // rarely, but sometimes, this returns text that doesn't contain the word google --LGP 2019-04-19
             VerifyTestResultWarning (responseText.Contains ("google", Characters::eCaseInsensitive));
         }
@@ -556,7 +556,7 @@ namespace {
         catch (...) {
             // if transient issue, ignore
             Stroika::Frameworks::Test::WarnTestIssue (
-                L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: {}"_f(current_exception ()));
+                "badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: {}"_f(current_exception ()));
         }
 
         // BAD SSL SITE

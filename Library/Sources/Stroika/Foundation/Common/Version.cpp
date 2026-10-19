@@ -61,7 +61,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     auto my_wcstol_ = [&ppv] (const wchar_t* i, wchar_t** endResult) -> uint8_t {
         long l = wcstol (i, endResult, 10);
         if (l < 0 or l > numeric_limits<uint8_t>::max ()) [[unlikely]] {
-            DbgTrace (L"prettyVersionString={}"_f, ppv);
+            DbgTrace ("prettyVersionString={}"_f, ppv);
             static const Execution::Exception<runtime_error> kException_{"Invalid Version String: component out of range"_k};
             Throw (kException_);
         }
@@ -73,7 +73,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     wchar_t*       tokenEnd = nullptr;
     major                   = my_wcstol_ (i, &tokenEnd); // @todo should validate, but no biggie
     if (i == tokenEnd) [[unlikely]] {
-        DbgTrace (L"prettyVersionString={}"_f, ppv);
+        DbgTrace ("prettyVersionString={}"_f, ppv);
         static const Execution::Exception<runtime_error> kException_{"Invalid Version String"sv};
         Throw (kException_);
     }
@@ -119,7 +119,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     Assert (static_cast<size_t> (i - ppv.c_str ()) <= ppv.size ());
     uint8_t verSubStage = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) [[unlikely]] {
-        DbgTrace (L"prettyVersionString={}"_f, ppv);
+        DbgTrace ("prettyVersionString={}"_f, ppv);
         static const Execution::Exception<runtime_error> kException_{"Invalid Version String"sv};
         Throw (kException_); // require form 1.0a3, or at least 1.0, but no 1
     }

@@ -34,7 +34,7 @@ namespace {
     void ThrowUnlessNCName_ (const String& name)
     {
         if (not IsNCName (name)) {
-            Execution::Throw (BadFormatException{L"'{}' is not an XML name, so cannot be written as one"_f(name)});
+            Execution::Throw (BadFormatException{"'{}' is not an XML name, so cannot be written as one"_f(name)});
         }
     }
 

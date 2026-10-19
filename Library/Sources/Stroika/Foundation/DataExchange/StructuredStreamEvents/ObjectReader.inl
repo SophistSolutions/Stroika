@@ -141,7 +141,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             else {
                 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
-                DbgTrace (L"{}Context::Popped [back to: {}]"_f, TraceLeader_ (), type_index{typeid (*GetTop ().get ())});
+                DbgTrace ("{}Context::Popped [back to: {}]"_f, TraceLeader_ (), type_index{typeid (*GetTop ().get ())});
                 DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
             }
         }

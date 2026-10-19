@@ -122,7 +122,7 @@ using namespace std;
 Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String, VariantValue>& fields) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{L"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields={}"_f, fields)};
+    TraceContextBumper ctx{L"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs ("fields={}"_f, fields)};
 #endif
     Mapping<String, VariantValue> resultFields;
     Set<String>                   usedFields; // must track outside of resultFields.Keys () cuz input key could differ from output
@@ -150,7 +150,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
         }
         else if (fi.fRequired) {
             // throw or assert?
-            DbgTrace (L"IN ORM::Schema::Table::MapToDB for field {}: field required, but not present in the argument list to Map function; maybe need {{.fOmitNullEntriesInFromObject = false}} in type AddClass"_f,
+            DbgTrace ("IN ORM::Schema::Table::MapToDB for field {}: field required, but not present in the argument list to Map function; maybe need {{.fOmitNullEntriesInFromObject = false}} in type AddClass"_f,
                       fi.fName);
             AssertNotReached ();
         }

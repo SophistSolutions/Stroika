@@ -423,7 +423,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
             // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
             fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, ".txt"sv);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"succeeded with {} fSuffix2MediaTypeMap entries, and {} fMediaType2PreferredSuffixMap entries"_f,
+            DbgTrace ("succeeded with {} fSuffix2MediaTypeMap entries, and {} fMediaType2PreferredSuffixMap entries"_f,
                       fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
         }

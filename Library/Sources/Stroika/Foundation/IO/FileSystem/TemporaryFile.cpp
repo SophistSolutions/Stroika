@@ -77,7 +77,7 @@ AppTmpFileManager::AppTmpFileManager (const Options& options)
         create_directories (tmpDir);
     }
     catch (...) {
-        DbgTrace (L"Error creating tmpdirs, so adjusting and retrying : {}"_f, current_exception ());
+        DbgTrace ("Error creating tmpdirs, so adjusting and retrying : {}"_f, current_exception ());
         // tmpDir == GetEXEPath (): happens in regtests - maybe better way to handle -
         tmpDir.replace_filename (GetEXEPath ().stem ().generic_string () + "-tmpdir");
         create_directories (tmpDir); // if that doesn't do it, just throw
@@ -99,7 +99,7 @@ AppTmpFileManager::AppTmpFileManager (const Options& options)
 AppTmpFileManager::~AppTmpFileManager ()
 {
     if (not fTmpDir_.empty ()) {
-        DbgTrace (L"AppTmpFileManager::DTOR: clearing {}"_f, fTmpDir_);
+        DbgTrace ("AppTmpFileManager::DTOR: clearing {}"_f, fTmpDir_);
         try {
             remove_all (fTmpDir_);
         }

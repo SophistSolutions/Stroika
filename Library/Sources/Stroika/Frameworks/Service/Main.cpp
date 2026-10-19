@@ -397,7 +397,7 @@ void Main::LoggerServiceWrapper::_RunAsService ()
         fDelegateTo_->_RunAsService ();
     }
     catch (...) {
-        Logger::sThe.Log (Logger::eError, L"Exception running service - {} - aborting..."_f, current_exception ());
+        Logger::sThe.Log (Logger::eError, "Exception running service - {} - aborting..."_f, current_exception ());
         ReThrow ();
     }
     Logger::sThe.Log (Logger::eNotice, "Service stopped normally"_f);
@@ -791,7 +791,7 @@ void Main::WindowsService::_Install ()
         ::CloseServiceHandle (hSCM);
     });
 
-    DbgTrace (L"registering with command-line: '{}', serviceName: '{}'"_f, cmdLineForRunSvc, GetSvcName_ ());
+    DbgTrace ("registering with command-line: '{}', serviceName: '{}'"_f, cmdLineForRunSvc, GetSvcName_ ());
     SC_HANDLE hService = ::CreateService (hSCM, GetSvcName_ ().c_str (), fAppRep_->GetServiceDescription ().fPrettyName.AsSDKString ().c_str (),
                                           kServiceMgrAccessPrivs, SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
                                           cmdLineForRunSvc.AsSDKString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL);

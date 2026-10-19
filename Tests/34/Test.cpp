@@ -1055,7 +1055,7 @@ namespace {
             DbgTrace ("ScanStart={}"_f, data.ScanStart);
             DbgTrace ("ScanEnd={}"_f, data.ScanEnd);
             if (data.ScanLabel) {
-                DbgTrace (L"ScanLabel={}"_f, *data.ScanLabel);
+                DbgTrace ("ScanLabel={}"_f, *data.ScanLabel);
             }
             if (data.RawSpectrum) {
                 DbgTrace ("RawSpectrum={}"_f, Characters::ToString (*data.RawSpectrum));
@@ -1476,13 +1476,13 @@ namespace {
             Schema::Ptr        personalSchema = schemaFactory (kPersonalXSD_, nullptr);
             DOM::Document::Ptr d              = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), personalSchema);
             String             tmp            = d.Write ();
-            DbgTrace (L"tmp={}"_f, Characters::ToString (tmp));
+            DbgTrace ("tmp={}"_f, Characters::ToString (tmp));
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             Schema::Ptr        schema = schemaFactory (kReferenceContent_2012_03_xsd, nullptr);
             DOM::Document::Ptr d      = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), schema);
             String             tmp    = d.Write ();
-            DbgTrace (L"tmp={}"_f, Characters::ToString (tmp));
+            DbgTrace ("tmp={}"_f, Characters::ToString (tmp));
         });
     }
 

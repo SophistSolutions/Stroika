@@ -442,7 +442,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             }
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Returning {} characters"_f, result.size ());
+        DbgTrace ("Returning {} characters"_f, result.size ());
 #endif
         return result;
     }

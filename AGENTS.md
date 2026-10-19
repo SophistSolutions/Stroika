@@ -522,9 +522,10 @@ still compile". Say which one you did.
   Characters/Format.h, and FormatString checks its CHAR_T with a static_assert, not a constraint, so that declaration need
   not include Common/Concepts.h). Common/StdCompat.h includes nothing of Stroika's: a thin layer over std, usable wherever
   std is.
-- **String literals**: narrow where one initializes a `String` (`"..."sv` in library code) - but keep `L"..."_f`: a wide
-  format literal is CHEAPER than a narrow one, which is widened at run time. Leave `\u`/`\x` escapes, and genuinely wide
-  targets (`wchar_t` APIs, `EnumName` tables), alone. Opportunistic, not a sweep.
+- **String literals**: narrow where one initializes a `String` (`"..."sv` in library code), and a format literal too:
+  `"..."_f` and `L"..."_f` compile to the same thing (since Stroika v3.0d25, each widened at compile time), so `L"..."_f`
+  only where the text is not ASCII, or a test exercises the wide form on purpose (Tests/02). Leave `\u`/`\x` escapes, and
+  genuinely wide targets (`wchar_t` APIs, `EnumName` tables), alone. Opportunistic, not a sweep.
 - **Comments state the invariant, not today's callers** - a reason anchored to a call site rots when it changes - and
   describe cost qualitatively ("cheap"), not with measurements ("~1ns"), which date. Numbers go in commits or issues.
 - **Comments say what IS, and why - not why it changed** (LGP, 2026-10-18): most readers meet the code for the first

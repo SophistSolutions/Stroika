@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Execution {
                 Execution::ReThrow ();
             }
             catch (...) {
-                DbgTrace (L"Suppressing exception in PIDLoop: {}"_f, current_exception ());
+                DbgTrace ("Suppressing exception in PIDLoop: {}"_f, current_exception ());
             }
         }
     }

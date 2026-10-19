@@ -96,7 +96,7 @@ namespace {
                                      [[maybe_unused]] const wchar_t* file, [[maybe_unused]] unsigned int line, [[maybe_unused]] uintptr_t pReserved)
     {
         TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-            L"invalid_parameter_handler", L"Func='{}', expr='{}', file='{}', line={}."_f, function, expression, file, line)};
+            L"invalid_parameter_handler", "Func='{}', expr='{}', file='{}', line={}."_f, function, expression, file, line)};
         Assert (false);
         ThrowSystemErrNo (ERROR_INVALID_PARAMETER);
     }

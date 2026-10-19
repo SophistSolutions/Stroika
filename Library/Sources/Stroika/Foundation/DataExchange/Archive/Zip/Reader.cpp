@@ -261,7 +261,7 @@ namespace {
                 byte buf[10 * 1024];
                 err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (std::size (buf)));
                 if (err < 0) [[unlikely]] {
-                    Throw (Execution::Exception<runtime_error>{Format (L"File '{}' error {} extracting"_f, fileName, err)});
+                    Throw (Execution::Exception<runtime_error>{Format ("File '{}' error {} extracting"_f, fileName, err)});
                 }
                 else if (err > 0) {
                     Assert (static_cast<size_t> (err) <= std::size (buf));

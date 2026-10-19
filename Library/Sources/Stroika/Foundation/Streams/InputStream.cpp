@@ -32,7 +32,7 @@ template <>
 Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"InputStream::Ptr<byte>::ReadAll", L"upTo: {}"_f, static_cast<unsigned long long> (upTo)};
+    Debug::TraceContextBumper ctx{"InputStream::Ptr<byte>::ReadAll", "upTo: {}"_f, static_cast<unsigned long long> (upTo)};
 #endif
     Require (upTo >= 1);
     Memory::StackBuffer<byte> r;

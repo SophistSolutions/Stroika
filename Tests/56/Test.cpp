@@ -213,7 +213,7 @@ namespace {
         //EXPECT_TRUE (r.GetSucceeded ());
         //EXPECT_GT (r.GetData ().size (), 1u);
         //String response = r.GetDataTextInputStream ().ReadAll ();
-        ////DbgTrace (L"response={}"_f, response);
+        ////DbgTrace ("response={}"_f, response);
         //EXPECT_EQ (response, "TEST");
         //// @todo enhance this test so we force accept-encoding none, and force accept-encoding : deflate, and check raw
         //// result???

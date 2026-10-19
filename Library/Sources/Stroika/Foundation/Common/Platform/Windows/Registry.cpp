@@ -47,7 +47,7 @@ HKEY RegistryKey::OpenPath_ (HKEY parentKey, const String& path, REGSAM samDesir
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper trcCtx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::RegistryKey::OpenPath_", L"parentKey={}, path='{}'"_f, parentKey, path)};
+        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::RegistryKey::OpenPath_", "parentKey={}, path='{}'"_f, parentKey, path)};
 #endif
     Require (parentKey != nullptr);
     Require (parentKey != INVALID_HANDLE_VALUE);

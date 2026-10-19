@@ -748,7 +748,7 @@ namespace {
                             case dot11_phy_type_he:
                                 return WirelessInfo::PhysicalConnectionType::e80211ax;
                             default:
-                                DbgTrace (L"Unknown DOT11_PHY_TYPE {}"_f, static_cast<int> (s));
+                                DbgTrace ("Unknown DOT11_PHY_TYPE {}"_f, static_cast<int> (s));
                                 return WirelessInfo::PhysicalConnectionType::eUnknown;
                         }
                     };
@@ -781,7 +781,7 @@ namespace {
                             case DOT11_AUTH_ALGO_RSNA_PSK:
                                 return WirelessInfo::AuthAlgorithm::eRSNA_PSK;
                             default:
-                                DbgTrace (L"Unknown AuthAlgorithm {}"_f, static_cast<int> (s));
+                                DbgTrace ("Unknown AuthAlgorithm {}"_f, static_cast<int> (s));
                                 return WirelessInfo::AuthAlgorithm::eUnknown;
                         }
                     };
@@ -972,7 +972,7 @@ namespace {
                     WeakAssert (not wirelessInfo2Merge.ContainsKey (newInterface.fInterfaceID));
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"newInterface={}"_f, newInterface);
+                DbgTrace ("newInterface={}"_f, newInterface);
 #endif
                 results.Add (newInterface);
             }

@@ -1017,7 +1017,7 @@ namespace {
             seeIfReady.Add (2, 2);
             seeIfReady.Add (3, 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
-            DbgTrace (L"seeIfReady={}"_f, seeIfReady);
+            DbgTrace ("seeIfReady={}"_f, seeIfReady);
             EXPECT_TRUE (seeIfReady.size () == 3);
 
             const bool               kFails_ = true;
