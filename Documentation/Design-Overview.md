@@ -437,6 +437,39 @@ that you aren't converting (so maybe accidentally implicitly converting) a strin
 that the string is being parsed into that object type.
 
 
+### <a name="Options-structs"></a> Options structs: plain fields with their defaults, not optional\<T>
+
+An Options struct - the settings a class or function takes, as `Variant::JSON::Writer::Options` - declares each field as its
+own type, with its default written in:
+
+```c++
+struct Options {
+    bool         fPrettyPrint{true};
+    unsigned int fSpacesPerIndent{4}; // ignored where fPrettyPrint is false
+};
+```
+
+So the declaration is the default and its documentation in one place, and code reads a field as it is.
+
+A field is `optional<T>` only where unset means something no value of T can say:
+  - options merged, one set overlaid on another (`FloatConversion::ToStringOptions (b1, b2)`), where "not given" must differ
+    from "given, as the default"
+  - a default computed from other fields, or at run time (not a constant expression), or inherited from elsewhere
+
+The cost: an Options struct nested in a class cannot be the default argument (`= {}`) of that class's members while it has
+default member initializers - g++ and clang refuse it (as of g++ 16, clang 22), MSVC allows it, and the standard has not settled
+it (https://cplusplus.github.io/CWG/issues/2335.html). So such a class takes two constructors, `Writer ()` and
+`Writer (const Options&)`, not one `Writer (const Options& options = {})`. An Options struct at namespace scope, or a free
+function's, has no such problem.
+
+#### Rationale
+
+An `optional` field keeps its default twice - in the documentation ("defaults to true"), and in the code that resolves it
+(`value_or (true)`) - and the two drift; and each reader of the field must resolve it again. Nor does `optional` make a struct
+constexpr where plain fields would not: `optional<T>` is usable in constant expressions only where T is. Before Stroika v3.0d25,
+`Variant::JSON::Writer::Options` was all `optional` fields.
+
+
 ### <a name="Comparisons"></a> Comparisons: spaceship operator (operator<=>), operator== etc…
 
 Stroika types generally support the c++20 operator== and operator<=> semantics and operators.

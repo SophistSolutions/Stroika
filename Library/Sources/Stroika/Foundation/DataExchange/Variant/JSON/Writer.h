@@ -6,9 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <optional>
-
 #include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/DataExchange/Variant/Writer.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
@@ -74,30 +73,26 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
          */
         struct Options {
             /**
-             *  This defaults to true.
-             *
              *  If false, more compact, and no leading/trailing spaces.
              */
-            optional<bool> fPrettyPrint;
+            bool fPrettyPrint{true};
 
             /**
-             * This defaults to off, since its costly, and rarely needed. Principally used for regression tests
-             * where we want to compare we get the same results as last time.
+             *  Off by default, since it is costly, and rarely needed. Principally used for regression tests
+             *  where we want to compare we get the same results as last time.
              */
-            optional<bool> fCanonicalize;
+            bool fCanonicalize{false};
 
             /**
              */
-            optional<Characters::FloatConversion::ToStringOptions> fFloatOptions;
+            Characters::FloatConversion::ToStringOptions fFloatOptions{};
 
             /**
-             *  This defaults to 4. If fPrettyPrint evaluates false, then this is ignored.
+             *  Ignored where fPrettyPrint is false.
              */
-            optional<unsigned int> fSpacesPerIndent;
+            unsigned int fSpacesPerIndent{4};
 
             /**
-             *  This defaults to true.
-             *
              *  \note   Note - NAN values (if floating point) - are also illegal, and generate a 'Require' failure.
              *          From http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf:
              *              Numeric values that cannot be represented as sequences of digits (such as Infinity and NaN) are not
@@ -110,18 +105,23 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
              *          re-read the JSON, it will be read as a string. But when you coerce that string to a floating point type, the 'INF' or whatever,
              *          will be coerced to the proper IEEE floating point type.
              */
-            optional<bool> fAllowNANInf;
+            bool fAllowNANInf{true};
 
             /**
-             *  defaults to Characters::kEOL if not specified
              */
-            optional<String> fLineTermination;
+            String fLineTermination{Characters::kEOL<char>};
         };
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     public:
-        Writer (const Options& options = {});
+        /**
+         *  \note Two constructors, not one with a default argument (= {}): within Writer, that default argument cannot use the
+         *        member initializers of Options, nested in it - g++ and clang refuse it (as of g++ 16, clang 22), MSVC allows
+         *        it, and the standard has not settled it (https://cplusplus.github.io/CWG/issues/2335.html).
+         */
+        Writer ();
+        Writer (const Options& options); ///< \brief Writing as options says
     };
 
 }

@@ -480,6 +480,9 @@ still compile". Say which one you did.
 - **`Memory::MakeSharedPtr`, not `make_shared`**: the same, except that it block-allocates a type annotated for it (a
   `Memory::UseBlockAllocationIfAppropriate<T>` base) - so use it even where the type is not annotated. The annotation suits
   a small rep allocated often, making that indirection nearly free; elsewhere it hardly matters either way.
+- **An Options struct's fields are plain, with their defaults written in** (`bool fPrettyPrint{true};`) - `optional<T>` only
+  where unset means something no value can (merging, a computed default) - and a class an Options is nested in takes two
+  constructors, not `= {}` (CWG 2335). Design-Overview.md, "Options structs", has the why.
 - **Defaults favor ease and soundness; a cost gets a knob** (LGP, 2026-10-18): Stroika's aim is quick development of a
   sound, robust application whose hot paths can be tuned to full C++ performance - not top performance out of the box.
   So a default checks (validating what is written, say), and a caller on a hot path can turn it off, or hold the costly

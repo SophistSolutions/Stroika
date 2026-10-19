@@ -28,15 +28,10 @@ using Memory::MakeSharedPtr;
  */
 
 namespace {
-    // Just like Writer::Options but without optionals... fill those in
-    struct OptionValues_ final {
+    // Writer::Options, and what follows from them
+    struct OptionValues_ final : Variant::JSON::Writer::Options {
         OptionValues_ (const Variant::JSON::Writer::Options& o)
-            : fFloatOptions{o.fFloatOptions.value_or (Characters::FloatConversion::ToStringOptions{})}
-            , fPrettyPrint{o.fPrettyPrint.value_or (true)}
-            , fCanonicalize{o.fCanonicalize.value_or (false)}
-            , fSpacesPerIndent{o.fSpacesPerIndent.value_or (4)}
-            , fAllowNANInf{o.fAllowNANInf.value_or (true)}
-            , fLineTermination{o.fLineTermination.value_or (Characters::kEOL<char>)}
+            : Variant::JSON::Writer::Options{o}
         {
             if (not fPrettyPrint) {
                 fSpacesPerIndent = 0;
@@ -45,13 +40,7 @@ namespace {
                 fIndentSpace = String{" "sv}.Repeat (fSpacesPerIndent);
             }
         }
-        Characters::FloatConversion::ToStringOptions fFloatOptions;
-        bool                                         fPrettyPrint;
-        bool                                         fCanonicalize;
-        unsigned int                                 fSpacesPerIndent;
-        String                                       fIndentSpace;
-        bool                                         fAllowNANInf;
-        String                                       fLineTermination;
+        String fIndentSpace;
     };
 }
 
@@ -286,6 +275,11 @@ public:
         PrettyPrint_ (fOptions_, v, out, 0);
     }
 };
+
+Variant::JSON::Writer::Writer ()
+    : Writer{Options{}}
+{
+}
 
 Variant::JSON::Writer::Writer (const Options& options)
     : inherited{MakeSharedPtr<Rep_> (options)}
