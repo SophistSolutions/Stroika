@@ -49,14 +49,14 @@ private:
 public:
     Rep_ (const Options& options)
         : fOptions_{options}
-        , fListener_{[this] (const SSDP::Advertisement& a) { Heard_ (a, false); }, options.fListener}
+        , fListener_{[this] (const SSDP::Advertisement& a) { Heard_ (a, false); }, options.fListenerOptions}
     {
         if (options.fSearchFor) {
             fSearch_.emplace ([this] (const SSDP::Advertisement& a) { Heard_ (a, true); },
-                              Search::Options{.fIPVersion            = options.fListener.fIPVersion,
+                              Search::Options{.fIPVersion            = options.fListenerOptions.fIPVersion,
                                               .fMulticastTTL         = options.fMulticastTTL,
-                                              .fInterfaces           = options.fListener.fInterfaces,
-                                              .fFollowNetworkChanges = options.fListener.fFollowNetworkChanges});
+                                              .fInterfaces           = options.fListenerOptions.fInterfaces,
+                                              .fFollowNetworkChanges = options.fListenerOptions.fFollowNetworkChanges});
         }
     }
     ~Rep_ ()

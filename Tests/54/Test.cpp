@@ -1899,7 +1899,7 @@ namespace {
                                                         cached.Set ();
                                                     }
                                                 },
-                                                SSDP::Client::CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only},
+                                                SSDP::Client::CachingListener::Options{.fListenerOptions = {.fIPVersion = IPVersionSupport::eIPV4Only},
                                                                                        .fSearchFor    = deviceType,
                                                                                        .fMulticastTTL = ttl},
                                                 SSDP::Client::CachingListener::eAutoStart};
@@ -2258,7 +2258,7 @@ namespace {
                                           told.rwget ()->Append (a);
                                       }
                                   },
-                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only, .fInterfaces = onlyVia},
+                                  CachingListener::Options{.fListenerOptions = {.fIPVersion = IPVersionSupport::eIPV4Only, .fInterfaces = onlyVia},
                                                            .fSearchFor = nullopt},
                                   CachingListener::eAutoStart};
             auto            cached = [&] () {
@@ -2437,7 +2437,7 @@ namespace {
                                           told.rwget ()->Append (a);
                                       }
                                   },
-                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = nullopt},
+                                  CachingListener::Options{.fListenerOptions = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = nullopt},
                                   CachingListener::eAutoStart};
             auto            cached = [&] () {
                 return cache.GetAdvertisements ().Where ([&] (const SSDP::Advertisement& a) { return a.fUSN.Contains (deviceID); }).size ();
@@ -2526,7 +2526,7 @@ namespace {
                                           told.rwget ()->Append (a);
                                       }
                                   },
-                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = deviceType},
+                                  CachingListener::Options{.fListenerOptions = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = deviceType},
                                   CachingListener::eAutoStart};
             if (not waitUntil ([&] () { return usnsTold (true).ContainsAll (usns); })) {
                 Stroika::Frameworks::Test::WarnTestIssue ("SSDP_CachingListener_Search_ skipped - our own device was not found within 10 "
@@ -2612,7 +2612,7 @@ namespace {
                                           told.rwget ()->Append (a);
                                       }
                                   },
-                                  CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = deviceType},
+                                  CachingListener::Options{.fListenerOptions = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = deviceType},
                                   CachingListener::eAutoStart};
             auto            cached = [&] () {
                 return cache.GetAdvertisements ().Where ([&] (const SSDP::Advertisement& a) { return a.fUSN.Contains (deviceID); }).size ();

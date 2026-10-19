@@ -115,7 +115,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
         /**
          *  \par Example Usage
          *      \code
-         *          CachingListener cache{callOnChanges, CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = nullopt}, CachingListener::eAutoStart};
+         *          CachingListener cache{callOnChanges, CachingListener::Options{.fListenerOptions = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = nullopt}, CachingListener::eAutoStart};
          *      \endcode
          */
         struct Options {
@@ -123,7 +123,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
              *  How it listens - and searches, given fSearchFor: the same SSDP channels, network interfaces, and following of
              *  network changes (with its searches' TTL, fMulticastTTL).
              */
-            Listener::Options fListener;
+            Listener::Options fListenerOptions;
 
             /**
              *  What to search for, as it starts (and when a network appears): by default ssdp:all, which devices answer with each
