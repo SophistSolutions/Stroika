@@ -1,67 +1,101 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-//  TEST    Frameworks::SystemPerformance
+//  TEST    Frameworks::Led
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <atomic>
 #include <iostream>
 
-#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/Execution/Exceptions.h"
-#include "Stroika/Foundation/Execution/Sleep.h"
-#include "Stroika/Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
-#include "Stroika/Frameworks/SystemPerformance/Capturer.h"
+#include "Stroika/Frameworks/Led/SimpleTextStore.h"
+#include "Stroika/Frameworks/Led/StandardStyledTextImager.h"
+#include "Stroika/Frameworks/Led/StandardStyledTextInteractor.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_HTML.h"
+#include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_RTF.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
-using namespace Stroika::Frameworks::SystemPerformance;
+using namespace Stroika::Frameworks::Led;
+using namespace Stroika::Frameworks::Led::StyledTextIO;
+
+using Characters::String;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    /*
-     *  A Capturer's callback that throws stops neither the other callbacks, nor the capturing: it ended the capturing thread's
-     *  loop, so no measurements came after it at all.
-     */
-    GTEST_TEST (Frameworks_SystemPerformance, Capturer_CallbackThrows_)
+    // c a f e-acute, space, euro sign - as code points, since C++ source stays ASCII
+    constexpr char32_t kCafeEuro_[] = {'c', 'a', 'f', 0xE9, ' ', 0x20AC};
+
+    String TextOf_ (const TextStore& ts)
     {
-        Debug::TraceContextBumper ctx{"Capturer_CallbackThrows_"};
-        atomic<unsigned int>      calls{0}; // before the capturer, so it outlives the capturing thread's calls
-        Capturer                  capturer;
-        capturer.AddMeasurementsCallback (
-            [] ([[maybe_unused]] const MeasurementSet& ms) { Execution::Throw (Execution::Exception<>{"a test's callback, throwing"sv}); });
-        capturer.AddMeasurementsCallback ([&] ([[maybe_unused]] const MeasurementSet& ms) { ++calls; });
-        capturer.AddCaptureSet (CaptureSet{100ms}); // no instruments: just a MeasurementSet each 100ms, for the callbacks
-        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; calls < 3 and Time::GetTickCount () < giveUpAt;) {
-            Execution::Sleep (50ms);
-        }
-        EXPECT_GE (calls.load (), 3u) << "the capturing stopped after a callback threw";
+        vector<Led_tChar> buf (ts.GetLength ());
+        ts.CopyOut (0, buf.size (), buf.data ());
+        return String{span<const Led_tChar>{buf}};
+    }
+
+    template <typename READER>
+    String Read_ (const string& src)
+    {
+        SimpleTextStore                ts;
+        shared_ptr<StyleDatabaseRep>   styles = Memory::MakeSharedPtr<StyleDatabaseRep> (ts);
+        StyledTextIOSrcStream_Memory   source{src.data (), src.size ()};
+        StandardStyledTextIOSinkStream sink{&ts, styles};
+        READER                         reader{&source, &sink};
+        reader.Read ();
+        sink.Flush ();
+        return TextOf_ (ts);
+    }
+}
+
+namespace {
+    /*
+     *  RTF names its code page (\ansi, \mac, \ansicpgN), and gives the characters outside ASCII as \'xx bytes in it.
+     */
+    GTEST_TEST (Frameworks_Led, RTF_ReadsCodePageBytes_)
+    {
+        Debug::TraceContextBumper ctx{"RTF_ReadsCodePageBytes_"};
+        EXPECT_EQ (Read_<StyledTextIOReader_RTF> (R"({\rtf1\ansi caf\'e9 \'80})"), String{span{kCafeEuro_}});
+        EXPECT_EQ (Read_<StyledTextIOReader_RTF> (R"({\rtf1\ansi\ansicpg1252 caf\'e9 \'80})"), String{span{kCafeEuro_}});
+        EXPECT_EQ (Read_<StyledTextIOReader_RTF> (R"({\rtf1\mac caf\'8e \'db})"), String{span{kCafeEuro_}});
     }
 
     /*
-     *  RemoveMeasurementsCallback, given the ID AddMeasurementsCallback returned: once it returns, that callback is not called
-     *  again - while another goes on being called, as the capturing goes on.
+     *  Text written as RTF reads back as itself; each character outside ASCII is written as its code point, and then - for a
+     *  reader that does not know those - its byte in the document's code page (\ansi: Windows-1252).
      */
-    GTEST_TEST (Frameworks_SystemPerformance, Capturer_RemoveMeasurementsCallback_)
+    GTEST_TEST (Frameworks_Led, RTF_RoundTrip_)
     {
-        Debug::TraceContextBumper ctx{"Capturer_RemoveMeasurementsCallback_"};
-        atomic<unsigned int>      calls{0}; // these before the capturer, so they outlive the capturing thread's calls
-        atomic<unsigned int>      othersCalls{0};
-        Capturer                  capturer;
-        Capturer::MeasurementsCallbackID id = capturer.AddMeasurementsCallback ([&] ([[maybe_unused]] const MeasurementSet& ms) { ++calls; });
-        capturer.AddMeasurementsCallback ([&] ([[maybe_unused]] const MeasurementSet& ms) { ++othersCalls; });
-        capturer.AddCaptureSet (CaptureSet{100ms}); // its first capture is made on this thread, before this returns
-        EXPECT_GE (calls.load (), 1u);
-        capturer.RemoveMeasurementsCallback (id);
-        unsigned int callsThen       = calls;
-        unsigned int othersCallsThen = othersCalls;
-        Execution::Sleep (500ms); // five more captures
-        EXPECT_EQ (calls.load (), callsThen) << "called after RemoveMeasurementsCallback returned";
-        EXPECT_GT (othersCalls.load (), othersCallsThen) << "no capture since - so the test shows nothing";
+        Debug::TraceContextBumper    ctx{"RTF_RoundTrip_"};
+        const String                 text{span{kCafeEuro_}};
+        const wstring                textChars = text.As<wstring> ();
+        SimpleTextStore              ts;
+        shared_ptr<StyleDatabaseRep> styles = Memory::MakeSharedPtr<StyleDatabaseRep> (ts);
+        ts.Replace (0, 0, textChars.data (), textChars.size ());
+        StandardStyledTextIOSrcStream       source{&ts, styles};
+        StyledTextIOWriterSinkStream_Memory sink;
+        StyledTextIOWriter_RTF              writer{&source, &sink};
+        writer.Write ();
+        const string rtf{static_cast<const char*> (sink.PeekAtData ()), sink.GetLength ()};
+        EXPECT_NE (rtf.find (R"(\'e9)"), string::npos) << rtf;
+        EXPECT_NE (rtf.find (R"(\'80)"), string::npos) << rtf;
+        EXPECT_EQ (Read_<StyledTextIOReader_RTF> (rtf), text) << rtf;
+    }
+
+    /*
+     *  HTML's text - here with no charset named, so Windows-1252 - and its character entities.
+     */
+    GTEST_TEST (Frameworks_Led, HTML_ReadsText_)
+    {
+        Debug::TraceContextBumper ctx{"HTML_ReadsText_"};
+        string                    html = "<html><body>caf";
+        html += static_cast<char> (0xE9);
+        html += " &euro;</body></html>";
+        EXPECT_EQ (Read_<StyledTextIOReader_HTML> (html), String{span{kCafeEuro_}});
+        EXPECT_EQ (Read_<StyledTextIOReader_HTML> ("<html><body>caf&eacute; &#8364;</body></html>"), String{span{kCafeEuro_}});
     }
 }
 #endif

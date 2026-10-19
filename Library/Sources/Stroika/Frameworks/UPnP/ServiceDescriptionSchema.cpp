@@ -25,7 +25,7 @@
  *  no as well as 1 and 0, and nothing else about the schema is touched: the file stays what upnp.org serves, byte for
  *  byte, so it can be diffed against the source at any time, and the one disagreement lives here where the reason for
  *  it can be read. It is also the ONLY disagreement - with these two widened, a full SCPD holds as published
- *  (@see Tests/54's DescriptionsValidateAgainstPublishedSchemas_, which checks both halves of that).
+ *  (@see Tests/55's DescriptionsValidateAgainstPublishedSchemas_, which checks both halves of that).
  *
  *  Embedded as BYTES rather than written as a C++ string literal, for the same reason SOAP's is: a schema is someone
  *  else's file, and a literal would be read as cp1252 by the MSVC builds, which are passed no /utf-8, the day one of

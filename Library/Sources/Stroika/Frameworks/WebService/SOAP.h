@@ -269,7 +269,7 @@ namespace Stroika::Frameworks::WebService::SOAP {
          *  Off by default: a reader that checked would refuse traffic other stacks send - each departs from SOAP in ways of
          *  its own - and whether to is the application's choice, not the library's. Check with EnvelopeSchema as it is by
          *  default, corrected: stacks follow SOAP 1.1's prose and examples in putting encodingStyle on the Envelope, which its
-         *  schema as published forbids - Tests/54's SOAP_Others_, written from what other stacks emit, is two such messages,
+         *  schema as published forbids - Tests/55's SOAP_Others_, written from what other stacks emit, is two such messages,
          *  in two prefix styles, one carrying Microsoft's urn:schemas-microsoft-com:datatypes attributes.
          *
          *  Reading only - nothing checks what Serialize writes, because a message's data barely reaches what the schema
@@ -277,7 +277,7 @@ namespace Stroika::Frameworks::WebService::SOAP {
          *  fEncodingStyleAttribute) - is fixed by this code, and the schema leaves a message's content to its sender: Body
          *  and a Fault's detail are xs:any to it.
          *  The one exception is a Fault's code, written as a QName - so one that is not an XML name (with a space, say)
-         *  writes a faultcode the schema refuses. Otherwise a run-time check would only re-check this code, which Tests/56's
+         *  writes a faultcode the schema refuses. Otherwise a run-time check would only re-check this code, which Tests/57's
          *  SOAP_ValidatesAgainstItsSchema_ does once.
          *
          *  \note A schema named here, rather than a flag that reaches for one, is what lets a program that never validates

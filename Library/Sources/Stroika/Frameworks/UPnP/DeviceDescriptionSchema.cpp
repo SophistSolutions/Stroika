@@ -16,7 +16,7 @@
  *  reads descriptions carries neither, and one that reads only descriptions carries one.
  *
  *  The schema is https://upnp.org/schemas/device-1-0.xsd as it stood 2026-10-13: what Serialize writes holds against
- *  it (@see Tests/54's DescriptionsValidateAgainstPublishedSchemas_).
+ *  it (@see Tests/55's DescriptionsValidateAgainstPublishedSchemas_).
  *
  *  KEPT IN THE TREE and shipped, not fetched the way ThirdPartyComponents are - @see WebService/SOAP_EnvelopeSchema.cpp,
  *  which says why at length. upnp.org/schemas/ serves both files openly, and other open-source UPnP projects carry

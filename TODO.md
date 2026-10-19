@@ -78,7 +78,7 @@ Generally will track stuff here between releases
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.
-   - **With #1205's copy-on-write race fixed, restore Tests/54's reproducer**: its SSDP_CachingListener_ and
+   - **With #1205's copy-on-write race fixed, restore Tests/55's reproducer**: its SSDP_CachingListener_ and
      SSDP_CachingListener_Search_ read told under its lock (a BWA, so 3.0d25's ThreadSanitizer runs are quiet) - put their
      told.load () back.
    - **Concepts - the rest of 2026-10-08's follow-ups** (the rules: Design-Overview.md, "Rules for writing concepts"):
