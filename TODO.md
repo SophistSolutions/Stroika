@@ -58,16 +58,6 @@ Generally will track stuff here between releases
        - optional: one memcheck run of the suite on the Pi (aarch64; valgrind 3.24 is installed there). Its unsigned
          `char` and 128-bit software `long double` differ from x86_64 in ways memcheck can see. The 2019 attempts that
          gave up on it (#837) were 32-bit armhf on Debian 10.
-   - **WATCH: Windows Release-x86_64 SSDPClient segfault at startup** (parked 2026-09-27) - **DROP this entry if it
-     has not recurred by 2026-10-27.** Seen once: Windows_MSYS_VS2k22 run at eb58defd98 (2026-09-26), both SSDPClient
-     sample runs, Release-x86_64 only. It crashes before main: `Xerces::kDefaultProvider`'s initializer ->
-     `XMLPlatformUtils::Initialize` -> ... `XMLString::parseInt`, whose machine code called `gTranscoder->transcode`
-     with `this` = 0 (`xor ecx,ecx; call rax`) although `gTranscoder` was set. Relinking the same objects and libs with
-     the same linker (MSVC 19.44.35229) 4 times on medusa gave correct code every time. Xerces is built `-GL`, so its
-     code is generated at the final link - so a nondeterministic or link-environment-dependent LTCG miscompile.
-     If it recurs: keep the failing exe + pdb; `C:/Sandbox/claude/ssdp/crashstack2.exe EXE ARGS` prints the stack and
-     Xerces globals, `symaddr.exe EXE SYMBOL` + `dumpbin /disasm /range:` shows the code; the failing copy is kept
-     there to compare. Candidate workaround: build Xerces without `-GL` under MSVC.
    - **strace and tcpdump in the stroika-dev image** (LGP 2026-10-18, a suggestion) - for interactive debugging, not for any
      test, so not in the RegressionTests images. tcpdump -v shows what went on the wire (a packet's TTL, SSDP/GENA/HTTP
      messages); strace, the system call a hung thread is blocked in, and sendto/recvfrom addresses with their IPv6 scope id
@@ -81,14 +71,6 @@ Generally will track stuff here between releases
    - **With #1205's copy-on-write race fixed, restore Tests/55's reproducer**: its SSDP_CachingListener_ and
      SSDP_CachingListener_Search_ read told under its lock (a BWA, so 3.0d25's ThreadSanitizer runs are quiet) - put their
      told.load () back.
-   - **Concepts - the rest of 2026-10-08's follow-ups** (the rules: Design-Overview.md, "Rules for writing concepts"):
-       - **audit Stroika's concepts** (108 in Library) against those rules.
-       - **StringBuilder's `sb << x` constraint cannot say no**: Characters::Private_::IUnoverloadedToString_ asks
-         UnoverloadedToString, which takes any type - make it ask IToString, with the same care (never before ToString.inl's
-         overloads are declared).
-       - **constrain Characters::ToString itself**, so requires { Characters::ToString (x) } answers truly - then the
-         non-template inline functions in ToString.inl that call it (ToString (byte), ToString (chrono::duration<double>))
-         call ToStringDefaults::ToString instead.
    - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
      been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
      the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.
@@ -101,16 +83,6 @@ Generally will track stuff here between releases
      2204/2404/2604 RegressionTests images; the distro's in 2504 (v20 - HTMLUI skipped there) and Stroika-Dev. Older
      platforms may not take 26 - skip those rather than force it - and check Quasar's build with 26 first (Windows-MSYS's
      Dockerfile notes Node 23.5 once broke it).
-   - **Code review of the Streams API** (LGP 2026-10-16). Starting points, from fixing the wide std stream adapters: two ways
-     to make a stream seekable - ToSeekableInputStream (byte only) and BufferedInputStream::New (in, eSeekable) (any type);
-     InputStreamFromStdIStream's RemainingLength is AssertNotImplemented, and its eDontBlock Read can still block
-     (istream::read waits for the whole buffer); seek offsets mean different things - the istream's own position there,
-     counted from where it started in BinaryToText's seekable reader.
-   - **A brief, table-based way to map an enum spelled another way** (LGP 2026-10-17) - UPnP's ServiceDescription.cpp maps an
-     argument's Direction to in/out with two hand-written lambdas. ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations
-     (an EnumNames or Bijection table) is that brief way, but reads strictly - a name not in the table throws, untrimmed -
-     where UPnP reads anything but "out" as in. Give it a fallback for names the table lacks (and trimming), then use it there;
-     sendEvents' yes/no (a bool) is the same shape.
 
 
   - DO PLANNING for CMAKE change
@@ -118,5 +90,3 @@ Generally will track stuff here between releases
     - Maybe first step is the MACRO for the build root(discuss if that is done in a way to mirror fit with cmake)
     - MAYBE get all MY THIRDPARTYCOMPUNTENTS built using a single cmake build line. That seems doable, and a big step towards being able to USE conan (or similar).
     - then later can think about remaining stroika usage steps (using it internally to build/specify, and GENERATING making consumable from cmake, and skel/examples using it)
-
-  - Review UTFConvert and CodeCvt APIs (advice, performance, API choice).
