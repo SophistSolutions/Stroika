@@ -56,8 +56,8 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  value throws BadFormatException).
      *
      *  Anything may produce a Binding: written by hand, as below; generated from an ObjectVariantMapper, which knows a type's field
-     *  names and their declaration order (https://github.com/SophistSolutions/Stroika/issues/1230); or taken from a schema of
-     *  someone else's, an XSD or a WSDL, where the order is normative rather than incidental.
+     *  names and their declaration order (not yet - https://github.com/SophistSolutions/Stroika/issues/1230); or taken from a
+     *  schema of someone else's, an XSD or a WSDL, where the order is normative rather than incidental.
      *
      *  \par Example Usage
      *      \code
