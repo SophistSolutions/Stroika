@@ -71,7 +71,6 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
     struct Provider : Providers::IXMLProvider {
         Provider ();
         Provider (const Provider&) = delete;
-        ~Provider ();
 
         virtual shared_ptr<Schema::IRep>        SchemaFactory (const Streams::InputStream::Ptr<byte>& schemaData,
                                                                const Resource::ResolverPtr&           resolver) const override;
@@ -81,10 +80,9 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
                                const Schema::Ptr& schema) const override;
 
     private:
-#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
-        struct MyXercesMemMgr_;
-        MyXercesMemMgr_* fUseXercesMemoryManager_{nullptr};
-#endif
+        // Xerces itself, from XMLPlatformUtils::Initialize to Terminate - shared with each schema and document made, so it
+        // ends with the last of them, whatever the order: one may be destroyed after the provider (a static holding one, say)
+        shared_ptr<const void> fLibrary_;
     };
     inline const Provider kDefaultProvider;
 

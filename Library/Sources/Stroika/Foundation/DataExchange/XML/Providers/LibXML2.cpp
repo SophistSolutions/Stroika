@@ -90,8 +90,9 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver)
-            : fResolver_{resolver}
+        SchemaRep_ (const shared_ptr<const void>& library, const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver)
+            : fLibrary_{library}
+            , fResolver_{resolver}
             , fSchemaData{schemaData.ReadAll ()}
         {
             xmlSchemaParserCtxt* schemaParseContext =
@@ -153,9 +154,10 @@ namespace {
             --sLiveCnt;
 #endif
         }
-        Resource::ResolverPtr fResolver_{nullptr};
-        Memory::BLOB          fSchemaData;
-        xmlSchema*            fCompiledSchema{nullptr};
+        shared_ptr<const void> fLibrary_; // first, so destroyed last: libxml2 lasts while anything of it does
+        Resource::ResolverPtr  fResolver_{nullptr};
+        Memory::BLOB           fSchemaData;
+        xmlSchema*             fCompiledSchema{nullptr};
 
         virtual const Providers::ISchemaProvider* GetProvider () const override
         {
@@ -878,7 +880,8 @@ namespace {
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
     public:
-        DocRep_ (const Streams::InputStream::Ptr<byte>& in)
+        DocRep_ (const shared_ptr<const void>& library, const Streams::InputStream::Ptr<byte>& in)
+            : fLibrary_{library}
         {
             if (in == nullptr) {
                 fLibRep_             = xmlNewDoc (BAD_CAST "1.0");
@@ -920,6 +923,7 @@ namespace {
 #endif
         }
         DocRep_ (const DocRep_& from)
+            : fLibrary_{from.fLibrary_}
         {
             fLibRep_ = xmlCopyDoc (from.fLibRep_, 1); // unclear if this does the right thing with the xmlns???? if any pointers to it??? --LGP 2024-02-04
             fLibRep_->_private = this;
@@ -1071,7 +1075,8 @@ namespace {
                 Execution::Throw (BadFormatException{validationCB.msg, lineNumber, columnNumber, fileOffset});
             }
         }
-        xmlDoc* fLibRep_{nullptr};
+        shared_ptr<const void> fLibrary_; // first, so destroyed last: libxml2 lasts while anything of it does
+        xmlDoc*                fLibRep_{nullptr};
         xmlNs* fXmlnsNamespace2Use{nullptr}; // some APIs require this existing, but not sure where to put it??? and dont want to create a bunch of them... --LGP 2024-02-04
         list<xmlNsPtr> fNSs2Free_; // There probably is a better way with limxml2, but I cannot see how to avoid leaking these namespaces without this
         Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
@@ -1126,35 +1131,46 @@ String Providers::LibXML2::libXMLString2String (const xmlChar* t)
  ***************** Provider::Xerces::Providers::LibXML2::Provider ***************
  ********************************************************************************
  */
+namespace {
+    // libxml2 itself: the provider, and each schema and document it makes, hold one of these (as a shared_ptr<const void>), so
+    // xmlCleanupParser runs once the last of them is gone, in whatever order they go
+    struct Library_ {
+        Library_ ()
+        {
+            LIBXML_TEST_VERSION;
+        }
+        Library_ (const Library_&) = delete;
+        ~Library_ ()
+        {
+            TraceContextBumper ctx{"LibXML2::Library_::DTOR"};
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+            Assert (SchemaRep_::sLiveCnt == 0); // each holds this, so none can be left
+            Assert (DocRep_::sLiveCnt == 0);    // ""
+#endif
+            xmlCleanupParser ();
+        }
+    };
+}
+
 Providers::LibXML2::Provider::Provider ()
+    : fLibrary_{MakeSharedPtr<Library_> ()}
 {
     TraceContextBumper ctx{"LibXML2::Provider::CTOR"};
 #if qStroika_Foundation_Debug_AssertionsChecked
     static unsigned int sNProvidersCreated_{0}; // don't create multiple of these - will lead to confusion
     Assert (++sNProvidersCreated_ == 1);
 #endif
-    LIBXML_TEST_VERSION;
-}
-
-Providers::LibXML2::Provider::~Provider ()
-{
-    TraceContextBumper ctx{"LibXML2::Provider::DTOR"};
-#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
-    Require (SchemaRep_::sLiveCnt == 0); // Check for leaks but better/clearer than memory leaks check below
-    Require (DocRep_::sLiveCnt == 0);    // ""
-#endif
-    xmlCleanupParser ();
 }
 
 shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver) const
 {
-    return MakeSharedPtr<SchemaRep_> (schemaData, resolver);
+    return MakeSharedPtr<SchemaRep_> (fLibrary_, schemaData, resolver);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                                const Schema::Ptr& schemaToValidateAgainstWhileReading) const
 {
-    auto r = MakeSharedPtr<DocRep_> (in);
+    auto r = MakeSharedPtr<DocRep_> (fLibrary_, in);
     if (schemaToValidateAgainstWhileReading != nullptr) {
         r->Validate (schemaToValidateAgainstWhileReading);
     }
@@ -1172,7 +1188,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         seek2    = useInput.GetOffset ();
     }
     if (schema != nullptr) {
-        DocRep_ dr{useInput};
+        DocRep_ dr{fLibrary_, useInput};
         dr.Validate (schema);
     }
     if (callback != nullptr) {

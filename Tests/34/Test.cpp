@@ -23,6 +23,19 @@
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
+#if qStroika_Foundation_DataExchange_XML_SupportDOM and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
+namespace {
+    /*
+     *  For Schema_AndDocumentOutliveTheProvider_, given a schema and a document after they are constructed. Constant-initialized,
+     *  and defined before the providers' headers below: so in this translation unit they come before each kDefaultProvider (an
+     *  inline variable those headers define), and are destroyed after it - as a program's own static is, in a file that never
+     *  includes a provider's header.
+     */
+    constinit std::optional<Stroika::Foundation::DataExchange::XML::Schema::Ptr>        sHeldPastTheProvidersSchemas_[3];
+    constinit std::optional<Stroika::Foundation::DataExchange::XML::DOM::Document::Ptr> sHeldPastTheProvidersDocuments_[3];
+}
+#endif
+
 #if qStroika_HasComponent_libxml2
 #include "Stroika/Foundation/DataExchange/XML/Providers/LibXML2.h"
 #endif
@@ -1592,6 +1605,26 @@ namespace {
             EXPECT_THROW (saxParser (blob (kInvalid_).As<InputStream::Ptr<byte>> (), nullptr, schema), BadFormatException);
             // without the resolver, b.xsd is nowhere to be found
             EXPECT_ANY_THROW (saxParser (blob (kValid_).As<InputStream::Ptr<byte>> (), nullptr, schemaFactory (blob (kA_), nullptr)));
+        });
+    }
+
+    /*
+     *  A schema, and a document read with it, destroyed after the provider that made them - kept in statics (at the top of
+     *  this file) given them after they were constructed. Each keeps its XML library alive. Before Stroika v3.0d25 each
+     *  provider's DTOR ended its library, and Debug builds Required no schema or document be left by then - so this one
+     *  fails, if it does, at exit.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, Schema_AndDocumentOutliveTheProvider_)
+    {
+        constexpr string_view kXSD_ = R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"><xs:element name="a" type="xs:int"/></xs:schema>)";
+        constexpr string_view kValid_ = "<a>3</a>"sv;
+        auto                  blob    = [] (string_view s) { return Memory::BLOB{as_bytes (span{s.data (), s.size ()})}; };
+        size_t                i       = 0;
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, auto schemaFactory, auto domFactory) {
+            Require (i < std::size (sHeldPastTheProvidersSchemas_));
+            sHeldPastTheProvidersSchemas_[i] = schemaFactory (blob (kXSD_), nullptr);
+            sHeldPastTheProvidersDocuments_[i] = domFactory (blob (kValid_).As<InputStream::Ptr<byte>> (), *sHeldPastTheProvidersSchemas_[i]);
+            ++i;
         });
     }
 

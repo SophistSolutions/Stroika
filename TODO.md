@@ -11,10 +11,10 @@ Generally will track stuff here between releases
 - **ModuleInit's deprecation text does not cover the case that actually bites** (2026-10-12). "Use call_once or
   static inline" is right for construction order, and for destruction where the dependency is formed AT
   construction. It is not right for a global that LATER acquires a reference to another module's object - the
-  reverse-destruction guarantee of [basic.start.term] does not reach that. A cached XML Schema::Ptr is exactly that
-  case (a Schema::Ptr may not outlive its provider), and the answer is not to hold one - which is what
-  WebService::SOAP::EnvelopeSchema and UPnP's two schema accessors all do, compiling afresh per call. Worth a
-  sentence in the deprecation note so the next person does not re-derive it.
+  reverse-destruction guarantee of [basic.start.term] does not reach that. A cached XML Schema::Ptr was exactly that
+  case, until each schema and document came to share its XML library's lifetime with the provider (3.0d25): the answer
+  is that - what is held keeps alive what it needs - or not to hold one. Worth a sentence in the deprecation note so the
+  next person does not re-derive it.
 
 - config var name ObjDir_ToolsSafe funny name - probably lose the Safe!! part and DOCUMENT what it means!
 

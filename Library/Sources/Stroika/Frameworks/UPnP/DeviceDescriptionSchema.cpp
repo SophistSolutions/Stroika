@@ -48,13 +48,7 @@ using namespace Stroika::Frameworks::UPnP;
 
 XML::Schema::Ptr UPnP::DeviceDescriptionSchema (const XML::Options& o)
 {
-    /*
-     *  Compiled afresh each call, and deliberately not kept: a Schema::Ptr belongs to the provider that made it and may
-     *  not outlive it (which XML::Providers::LibXML2::Provider's DTOR checks), and nothing holding one in a static can
-     *  promise that - destruction order across translation units is not ours to choose, and the provider is the
-     *  caller's anyway. A device reading more than the occasional description holds its own, in its own Options, where
-     *  the lifetime is plain to see.
-     */
+    // compiled afresh each call: a device reading more than the occasional description holds its own, in its own Options
     return XML::Schema::New (Memory::BLOB::Attach (Schemas_device_1_0_xsd), nullptr, o);
 }
 #endif

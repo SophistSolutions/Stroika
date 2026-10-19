@@ -77,58 +77,60 @@ namespace {
  *  of future performance/memory optimizations, but for now, just a helpful debugging/tracking
  *  class.
  */
-struct Provider::MyXercesMemMgr_ : public MemoryManager {
-public:
-    MyXercesMemMgr_ ()
-        : fAllocator{fBaseAllocator}
-    {
-    }
-    ~MyXercesMemMgr_ ()
-    {
+namespace {
+    struct MyXercesMemMgr_ : public MemoryManager {
+    public:
+        MyXercesMemMgr_ ()
+            : fAllocator{fBaseAllocator}
+        {
+        }
+        ~MyXercesMemMgr_ ()
+        {
 #if qStroika_Foundation_Debug_AssertionsChecked
-        auto snapshot = fAllocator.GetSnapshot ();
-        Assert (snapshot.fAllocations.empty ()); // else we have a memory leak which can be perused here in the debugger
+            auto snapshot = fAllocator.GetSnapshot ();
+            Assert (snapshot.fAllocations.empty ()); // else we have a memory leak which can be perused here in the debugger
 #endif
-    }
-
-public:
-    Memory::SimpleAllocator_CallLIBCNewDelete             fBaseAllocator;
-    Memory::LeakTrackingGeneralPurposeAllocator           fAllocator;
-    mutex                                                 fLastSnapshot_CritSection;
-    Memory::LeakTrackingGeneralPurposeAllocator::Snapshot fLastSnapshot;
-
-public:
-    void DUMPCurMemStats ()
-    {
-        TraceContextBumper          ctx{"Xerces::MyXercesMemMgr_::DUMPCurMemStats"};
-        [[maybe_unused]] lock_guard critSec{fLastSnapshot_CritSection};
-        fAllocator.DUMPCurMemStats (fLastSnapshot);
-        // now copy current map to prev for next time this gets called
-        fLastSnapshot = fAllocator.GetSnapshot ();
-    }
-
-public:
-    virtual MemoryManager* getExceptionMemoryManager () override
-    {
-        return this;
-    }
-    virtual void* allocate (XMLSize_t size) override
-    {
-        try {
-            return fAllocator.Allocate (size);
         }
-        catch (...) {
-            // NB: use throw not Exception::Throw () since that requires its a subclass of exception (or SilentException)
-            throw (OutOfMemoryException{}); // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
+
+    public:
+        Memory::SimpleAllocator_CallLIBCNewDelete             fBaseAllocator;
+        Memory::LeakTrackingGeneralPurposeAllocator           fAllocator;
+        mutex                                                 fLastSnapshot_CritSection;
+        Memory::LeakTrackingGeneralPurposeAllocator::Snapshot fLastSnapshot;
+
+    public:
+        void DUMPCurMemStats ()
+        {
+            TraceContextBumper          ctx{"Xerces::MyXercesMemMgr_::DUMPCurMemStats"};
+            [[maybe_unused]] lock_guard critSec{fLastSnapshot_CritSection};
+            fAllocator.DUMPCurMemStats (fLastSnapshot);
+            // now copy current map to prev for next time this gets called
+            fLastSnapshot = fAllocator.GetSnapshot ();
         }
-    }
-    virtual void deallocate (void* p) override
-    {
-        if (p != nullptr) {
-            return fAllocator.Deallocate (p);
+
+    public:
+        virtual MemoryManager* getExceptionMemoryManager () override
+        {
+            return this;
         }
-    }
-};
+        virtual void* allocate (XMLSize_t size) override
+        {
+            try {
+                return fAllocator.Allocate (size);
+            }
+            catch (...) {
+                // NB: use throw not Exception::Throw () since that requires its a subclass of exception (or SilentException)
+                throw (OutOfMemoryException{}); // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
+            }
+        }
+        virtual void deallocate (void* p) override
+        {
+            if (p != nullptr) {
+                return fAllocator.Deallocate (p);
+            }
+        }
+    };
+}
 #endif
 
 namespace {
@@ -236,8 +238,9 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver)
-            : fTargetNamespace{}
+        SchemaRep_ (const shared_ptr<const void>& library, const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver)
+            : fLibrary_{library}
+            , fTargetNamespace{}
             , fResolver{resolver}
             , fSchemaData{schemaData.ReadAll ()}
         {
@@ -290,6 +293,7 @@ namespace {
             --sLiveCnt;
 #endif
         }
+        shared_ptr<const void>              fLibrary_; // first, so destroyed last: Xerces lasts while anything of it does
         optional<URI>                       fTargetNamespace;
         Resource::ResolverPtr               fResolver;
         Memory::BLOB                        fSchemaData;
@@ -1352,7 +1356,8 @@ namespace {
         // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
         // failing the read (for http://bugzilla/show_bug.cgi?id=513).
         //
-        DocRep_ (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema)
+        DocRep_ (const shared_ptr<const void>& library, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema)
+            : fLibrary_{library}
         {
             [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
             START_LIB_EXCEPTION_MAPPER_
@@ -1374,6 +1379,7 @@ namespace {
 #endif
         }
         DocRep_ (const DocRep_& from)
+            : fLibrary_{from.fLibrary_}
         {
             START_LIB_EXCEPTION_MAPPER_
             {
@@ -1575,6 +1581,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
+        shared_ptr<const void>                      fLibrary_; // first, so destroyed last: Xerces lasts while anything of it does
         shared_ptr<xercesc::DOMDocument>            fXMLDoc;
         Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
     };
@@ -1657,41 +1664,53 @@ String Providers::Xerces::xercesString2String (const XMLCh* t)
  ************************* XML::Providers::LibXML2::Provider ********************
  ********************************************************************************
  */
+namespace {
+    // Xerces itself: the provider, and each schema and document it makes, hold one of these (as a shared_ptr<const void>), so
+    // XMLPlatformUtils::Terminate runs once the last of them is gone, in whatever order they go
+    struct Library_ {
+        Library_ ()
+        {
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+            XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, &fMemoryManager_);
+#else
+            XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0);
+#endif
+        }
+        Library_ (const Library_&) = delete;
+        ~Library_ ()
+        {
+            TraceContextBumper ctx{"Xerces::Library_::DTOR"};
+            XMLPlatformUtils::Terminate ();
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+            Assert (SchemaRep_::sLiveCnt == 0); // each holds this, so none can be left
+            Assert (DocRep_::sLiveCnt == 0);    // ""
+#endif
+        }
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+        MyXercesMemMgr_ fMemoryManager_; // its DTOR, after Terminate, checks for leaks
+#endif
+    };
+}
+
 Providers::Xerces::Provider::Provider ()
+    : fLibrary_{MakeSharedPtr<Library_> ()}
 {
     TraceContextBumper ctx{"Xerces::Provider::CTOR"};
 #if qStroika_Foundation_Debug_AssertionsChecked
     static unsigned int sNProvidersCreated_{0}; // don't create multiple of these - will lead to confusion
     Assert (++sNProvidersCreated_ == 1);
 #endif
-#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
-    fUseXercesMemoryManager_ = new MyXercesMemMgr_{};
-    XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager_);
-#else
-    XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0);
-#endif
-}
-
-Providers::Xerces::Provider::~Provider ()
-{
-    TraceContextBumper ctx{"Xerces::Provider::DTOR"};
-    XMLPlatformUtils::Terminate ();
-#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
-    Require (SchemaRep_::sLiveCnt == 0); // Check for leaks but better/clearer than memory leaks check below
-    Require (DocRep_::sLiveCnt == 0);    // ""
-    delete fUseXercesMemoryManager_;     // checks for leaks
-#endif
 }
 
 shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver) const
 {
-    return MakeSharedPtr<SchemaRep_> (schemaData, resolver);
+    return MakeSharedPtr<SchemaRep_> (fLibrary_, schemaData, resolver);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                               const Schema::Ptr& schemaToValidateAgainstWhileReading) const
 {
-    return MakeSharedPtr<DocRep_> (in, schemaToValidateAgainstWhileReading);
+    return MakeSharedPtr<DocRep_> (fLibrary_, in, schemaToValidateAgainstWhileReading);
 }
 
 void Providers::Xerces::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,

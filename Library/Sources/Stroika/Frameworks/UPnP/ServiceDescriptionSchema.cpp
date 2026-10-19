@@ -51,10 +51,8 @@ using namespace Stroika::Frameworks::UPnP;
 
 XML::Schema::Ptr UPnP::ServiceDescriptionSchema (const XML::Options& o)
 {
-    /*
-     *  Compiled afresh each call, and deliberately not kept - @see DeviceDescriptionSchema.cpp, which says why at
-     *  length. The correction costs one pass over 11K, which beside compiling a schema is nothing.
-     */
+    // compiled afresh each call, as DeviceDescriptionSchema is; the correction costs one pass over 11K, which beside compiling
+    // a schema is nothing
     static constexpr string_view kAsPublished_{"<xsd:enumeration value=\"1\"/>"sv};
     static constexpr string_view kWidened_{"<xsd:enumeration value=\"1\"/><xsd:enumeration value=\"yes\"/><xsd:enumeration value=\"no\"/>"sv};
     string corrected{reinterpret_cast<const char*> (Schemas_service_1_0_xsd), std::size (Schemas_service_1_0_xsd)};

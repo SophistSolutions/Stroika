@@ -204,7 +204,7 @@ namespace Stroika::Frameworks::UPnP {
      *         writes against (DeviceDescription::Options::fValidateWrite), and what to give fValidateReadAgainst
      *
      *  Compiled afresh each call. Compiling is not free, so a caller checking many descriptions it reads compiles one and
-     *  holds it in its Options - which must not outlive the provider that made it.
+     *  holds it in its Options.
      *
      *  It lives in a translation unit of its own (Stroika is a static library), so its ~11K is linked only into a program
      *  that calls it - as Serialize does, to check what it writes.

@@ -61,7 +61,6 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
     struct Provider : Providers::IXMLProvider {
         Provider ();
         Provider (const Provider&) = delete;
-        ~Provider ();
 
         virtual shared_ptr<Schema::IRep>        SchemaFactory (const Streams::InputStream::Ptr<byte>& schemaData,
                                                                const Resource::ResolverPtr&           resolver) const override;
@@ -69,6 +68,11 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
                                                                  const Schema::Ptr& schemaToValidateAgainstWhileReading) const override;
         virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                                const Schema::Ptr& schema) const override;
+
+    private:
+        // libxml2 itself, from its initialization to xmlCleanupParser - shared with each schema and document made, so it ends
+        // with the last of them, whatever the order: one may be destroyed after the provider (a static holding one, say)
+        shared_ptr<const void> fLibrary_;
     };
     inline const Provider kDefaultProvider;
 

@@ -231,7 +231,7 @@ namespace Stroika::Frameworks::WebService::SOAP {
      *  false gives the schema as published, which refuses it on the Envelope.
      *
      *  Compiled afresh each call. Compiling is not free, so a caller checking many messages compiles one and holds it in
-     *  its Options - which must not outlive the provider that made it.
+     *  its Options.
      *
      *  It lives in a translation unit of its own, so its 6K is linked only into a program that calls it.
      *
