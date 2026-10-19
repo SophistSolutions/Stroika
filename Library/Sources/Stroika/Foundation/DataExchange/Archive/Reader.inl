@@ -17,11 +17,6 @@ namespace Stroika::Foundation::DataExchange::Archive::Reader {
         : fRep_{move (src.fRep_)}
     {
     }
-    inline IRep& Ptr::_GetRep ()
-    {
-        EnsureNotNull (fRep_);
-        return *fRep_;
-    }
     inline const IRep& Ptr::_ConstGetRep () const
     {
         EnsureNotNull (fRep_);

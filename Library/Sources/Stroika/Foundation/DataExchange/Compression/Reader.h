@@ -41,7 +41,6 @@ namespace Stroika::Foundation::DataExchange::Compression {
         nonvirtual BLOB                   Decompress (const BLOB& src) const;
 
     protected:
-        nonvirtual IRep&       _GetRep ();
         nonvirtual const IRep& _GetRep () const;
 
     private:

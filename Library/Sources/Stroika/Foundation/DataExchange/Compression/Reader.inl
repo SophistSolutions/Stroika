@@ -19,11 +19,6 @@ namespace Stroika::Foundation::DataExchange::Compression {
         : fRep_{move (src.fRep_)}
     {
     }
-    inline Reader::IRep& Reader::_GetRep ()
-    {
-        EnsureNotNull (fRep_.get ());
-        return *fRep_;
-    }
     inline const Reader::IRep& Reader::_GetRep () const
     {
         EnsureNotNull (fRep_.get ());
