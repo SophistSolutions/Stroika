@@ -259,6 +259,8 @@ namespace Stroika::Frameworks::WebService::SOAP {
          *  \brief Check a message being read against this schema - EnvelopeSchema - throwing where it does not hold;
          *         nullptr, the default, checks nothing
          *
+         *  \pre compiled by the provider that reads: EnvelopeSchema (fXMLOptions)
+         *
          *      \code
          *          // told early rather than half understanding a message
          *          const SOAP::Options kStrict_{.fValidateReadAgainst = SOAP::EnvelopeSchema ()};

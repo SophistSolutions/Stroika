@@ -1288,6 +1288,8 @@ namespace {
         MyMaybeSchemaDOMParser_ (const Schema::Ptr& schema)
             : fSchema{schema}
         {
+            // a schema another provider compiled would not validate at all here, so it is refused, as libxml2 refuses one
+            Require (schema == nullptr or schema.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider);
             shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
             if (accessSchema != nullptr) {
                 fParser = MakeSharedPtr<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ());
@@ -1479,6 +1481,7 @@ namespace {
             TraceContextBumper                               ctx{"Xerces::DocRep_::Validate"};
             AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
             RequireNotNull (schema);
+            Require (schema.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider);
             START_LIB_EXCEPTION_MAPPER_
             {
                 try {
@@ -1512,7 +1515,7 @@ namespace {
                         readReadSrc.setEncoding (XMLUni::fgUTF8EncodingString);
                         shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
                         {
-                            AssertNotNull (accessSchema); // for now only rep supported
+                            AssertNotNull (accessSchema); // Required above: this provider's schema
                             shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (
                                 XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));
                             SetupCommonParserFeatures_ (*parser, true);
@@ -1686,6 +1689,9 @@ shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (co
 void Providers::Xerces::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                                             const Schema::Ptr& schema) const
 {
+    // a schema another provider compiled would not validate at all here, so it is refused, as libxml2 refuses one
+    // (XML::SAXParse converts one first)
+    Require (schema == nullptr or schema.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider);
     SAX2PrintHandlers_           handler{callback};
     shared_ptr<IXercesSchemaRep> accessSchema;
     if (schema != nullptr) {

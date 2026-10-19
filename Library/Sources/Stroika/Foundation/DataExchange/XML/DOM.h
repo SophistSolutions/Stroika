@@ -754,6 +754,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              *  throws BadFormatException exception on failure
+             *
+             *  \pre schema was compiled by this document's provider - one another compiled is converted first
+             *       (schema.As<Schema::Ptr> (provider))
              */
             nonvirtual void Validate (const Schema::Ptr& schema) const;
 
@@ -843,6 +846,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *  If not otherwise specified (e..g if not read from stream where specified otherwise), XML documents default to standalone (=yes)
          *
          *  The overloads taking a provider first use exactly that one; the rest use the one o names (by default, Stroika's).
+         *
+         *  \pre schemaToValidateAgainstWhileReading, if given, was compiled by the provider that reads - one another
+         *       compiled is converted first (schemaToValidateAgainstWhileReading.As<Schema::Ptr> (provider)), as XML::SAXParse
+         *       does itself
          */
         Ptr New (const Providers::IDOMProvider& p);
         Ptr New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName); ///< \brief Create a Document object
