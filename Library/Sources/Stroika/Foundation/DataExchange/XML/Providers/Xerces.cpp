@@ -269,6 +269,10 @@ namespace {
                 delete grammarPool;
                 Execution::ReThrow ();
             }
+            // locked, as Xerces requires of a pool parsers on different threads share (XMLGrammarPool::lockPool): each parser
+            // adds the namespace URIs it meets to the pool's string pool - unlocked, an unsynchronized hash table. Locked here,
+            // before any parser is given it, as each takes that string pool as it is constructed
+            grammarPool->lockPool ();
             fCachedGrammarPool = grammarPool;
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;

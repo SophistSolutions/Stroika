@@ -4,12 +4,14 @@
 //  TEST    Foundation::Execution::ThreadSafetyBuiltinObject
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <atomic>
 #include <iostream>
 #include <mutex>
 
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Deque.h"
@@ -23,14 +25,26 @@
 #include "Stroika/Foundation/Containers/SortedMultiSet.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/Containers/Stack.h"
+#include "Stroika/Foundation/DataExchange/StructuredStreamEvents/IConsumer.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/NullLock.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
+
+#if qStroika_HasComponent_libxml2
+#include "Stroika/Foundation/DataExchange/XML/Providers/LibXML2.h"
+#endif
+#if qStroika_HasComponent_xerces
+#include "Stroika/Foundation/DataExchange/XML/Providers/Xerces.h"
+#endif
 
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -688,6 +702,77 @@ namespace {
         }
     }
 }
+
+#if qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
+namespace {
+    namespace Test12_XMLSchemaSharedAcrossThreads_ {
+        namespace Private_ {
+            struct TextOf_ : DataExchange::StructuredStreamEvents::IConsumer {
+                StringBuilder<> fText;
+                virtual void    TextInsideElement (const String& text) override
+                {
+                    fText << text;
+                }
+            };
+            /*
+             *  One XML::Schema::Ptr validating on several threads at once - as a validating Variant::XML::Reader, whose Read is
+             *  const, is used. Each document declares a namespace no other does, so each parse adds a URI to whatever the
+             *  provider shares between parses (Xerces: the schema's grammar pool, safe to share between threads only locked).
+             *  Each parse's text is checked, and every tenth document is invalid, so a corrupted pool shows as a wrong answer,
+             *  not only as a crash.
+             */
+            template <typename PROVIDER>
+            void ValidateOnManyThreads_ (const PROVIDER& provider)
+            {
+                using namespace DataExchange;
+                constexpr string_view  kXSD_  = R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="a"><xs:complexType><xs:sequence><xs:element name="n" type="xs:int"/></xs:sequence></xs:complexType></xs:element>
+</xs:schema>)";
+                const XML::Schema::Ptr schema = XML::Schema::New (provider, Memory::BLOB{as_bytes (span{kXSD_.data (), kXSD_.size ()})});
+                atomic<unsigned int>   wrong{0};
+                Sequence<Thread::Ptr>  threads;
+                for (unsigned int t = 0; t < 8; ++t) {
+                    threads += Thread::New ([&, t] () {
+                        constexpr unsigned int kParsesEach_{200};
+                        for (unsigned int i = 0; i < kParsesEach_; ++i) {
+                            const bool   valid = i % 10 != 0;
+                            const string doc =
+                                "<a xmlns:p{}x{}=\"urn:stroika-test:{}-{}\"><n>{}</n></a>"_f(t, i, t, i, valid ? "7"sv : "seven"sv).AsUTF8<string> ();
+                            TextOf_ text;
+                            try {
+                                XML::SAXParse (provider,
+                                               Memory::BLOB{as_bytes (span{doc.data (), doc.size ()})}.As<Streams::InputStream::Ptr<std::byte>> (),
+                                               &text, schema);
+                                if (not valid or text.fText.str () != "7"sv) {
+                                    ++wrong; // an invalid document accepted, or a valid one read wrongly
+                                }
+                            }
+                            catch (...) {
+                                if (valid) {
+                                    ++wrong; // a valid document refused
+                                }
+                            }
+                        }
+                    });
+                }
+                Thread::Start (threads);
+                Thread::WaitForDone (threads);
+                EXPECT_EQ (wrong.load (), 0u);
+            }
+        }
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test12_XMLSchemaSharedAcrossThreads_)
+        {
+            Debug::TraceContextBumper traceCtx{"Test12_XMLSchemaSharedAcrossThreads_"};
+#if qStroika_HasComponent_libxml2
+            Private_::ValidateOnManyThreads_ (DataExchange::XML::Providers::LibXML2::kDefaultProvider);
+#endif
+#if qStroika_HasComponent_xerces
+            Private_::ValidateOnManyThreads_ (DataExchange::XML::Providers::Xerces::kDefaultProvider);
+#endif
+        }
+    }
+}
+#endif
 #endif
 
 int main (int argc, const char* argv[])

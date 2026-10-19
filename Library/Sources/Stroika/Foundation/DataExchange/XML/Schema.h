@@ -51,6 +51,10 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
 
     /**
      *  This is the main way you work with Schema objects - through a smart pointer.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
+     *          A compiled schema is only read once built, so one may validate on several threads at once - each parse keeps its
+     *          own validation state (and Xerces' grammar pool is locked, as Xerces requires of one shared between threads).
      */
     class Ptr {
     public:
