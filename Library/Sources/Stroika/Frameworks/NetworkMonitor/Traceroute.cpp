@@ -59,15 +59,9 @@ String Traceroute::Options::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    if (fMaxHops) {
-        sb << "maxHops: "sv << *fMaxHops;
-    }
-    if (fTimeout) {
-        sb << ", timeout: "sv << *fTimeout;
-    }
-    if (fPacketPayloadSize) {
-        sb << ", packetPayloadSize: "sv << *fPacketPayloadSize;
-    }
+    sb << "maxHops: "sv << fMaxHops;
+    sb << ", timeout: "sv << fTimeout;
+    sb << ", packetPayloadSize: "sv << fPacketPayloadSize;
     if (fSampleInfo) {
         sb << ", sample: "sv << *fSampleInfo;
     }
@@ -105,9 +99,10 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
 void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void (Hop)> perHopCallback, const Options& options)
 {
     Debug::TraceContextBumper ctx{"Frameworks::NetworkMonitor::Traceroute::Run", "addr={}, options={}"_f, addr, options};
-    unsigned int              maxTTL = options.fMaxHops.value_or (Options::kDefaultMaxHops);
+    unsigned int              maxTTL = options.fMaxHops;
 
     Ping::Options pingOptions{};
+    pingOptions.fTimeout           = options.fTimeout;
     pingOptions.fPacketPayloadSize = options.fPacketPayloadSize;
     Ping::Pinger pinger{addr, pingOptions};
 

@@ -102,7 +102,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
 
         /**
          */
-        optional<DataExchange::Variant::JSON::Writer::Options> fJSONWriterOptions;
+        DataExchange::Variant::JSON::Writer::Options fJSONWriterOptions{};
 
         /**
          */

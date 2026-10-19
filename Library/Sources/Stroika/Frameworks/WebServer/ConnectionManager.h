@@ -80,7 +80,7 @@ namespace Stroika::Frameworks::WebServer {
              * 
              *  \note NYI tracking and rejecting extra connections - just used as a hint for other values
              */
-            optional<unsigned int> fMaxConnections;
+            unsigned int fMaxConnections{kDefault_MaxConnections};
 
             /**
              *  This is basically the number of threads to use. It can be automatically inferred from fMaxConnections

@@ -150,7 +150,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         VariantValue vv2Write = fOptions_.fObjectMapper.FromObject (r);
         if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, ct)) {
             using Variant::JSON::Writer;
-            response.write (Writer{fOptions_.fJSONWriterOptions.value_or (Writer::Options{})}.WriteAsString (vv2Write));
+            response.write (Writer{fOptions_.fJSONWriterOptions}.WriteAsString (vv2Write));
         }
         else if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText_PLAIN, ct)) {
             response.write (vv2Write.As<String> ()); // may throw if cannot convert to String, like accept: text/plain on content that was a map - should throw!

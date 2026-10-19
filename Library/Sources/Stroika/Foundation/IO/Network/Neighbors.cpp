@@ -236,11 +236,11 @@ public:
 #endif
         switch (s) {
             case Options::Strategy::eArpProgram:
-                return ArpDashA_ (fOptions_.fIncludePurgedEntries.value_or (false), fOptions_.fOmitAllFFHardwareAddresses.value_or (true));
+                return ArpDashA_ (fOptions_.fIncludePurgedEntries, fOptions_.fOmitAllFFHardwareAddresses);
 #if qStroika_Platform_Linux
             case Options::Strategy::eProcNetArp:
                 // fOmitAllFFHardwareAddresses not needed here apparently
-                return ProcNetArp_ (fOptions_.fIncludePurgedEntries.value_or (false));
+                return ProcNetArp_ (fOptions_.fIncludePurgedEntries);
 #endif
             default:
                 Assert (false);
@@ -249,6 +249,11 @@ public:
     }
     Options fOptions_;
 };
+
+NeighborsMonitor::NeighborsMonitor ()
+    : NeighborsMonitor{Options{}}
+{
+}
 
 NeighborsMonitor::NeighborsMonitor (const Options& options)
     : fRep_{Memory::MakeSharedPtr<Rep_> (options)}

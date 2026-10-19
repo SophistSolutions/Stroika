@@ -44,15 +44,9 @@ String Ping::Options::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    if (fMaxHops) {
-        sb << "maxHops: "sv << *fMaxHops;
-    }
-    if (fTimeout) {
-        sb << ", timeout: "sv << *fTimeout;
-    }
-    if (fPacketPayloadSize) {
-        sb << ", packetPayloadSize: "sv << *fPacketPayloadSize;
-    }
+    sb << "maxHops: "sv << fMaxHops;
+    sb << ", timeout: "sv << fTimeout;
+    sb << ", packetPayloadSize: "sv << fPacketPayloadSize;
     sb << "}"sv;
     return sb;
 }
@@ -80,12 +74,11 @@ String Pinger::ResultType::ToString () const
 Pinger::Pinger (const InternetAddress& addr, const Options& options)
     : fDestination_{addr}
     , fOptions_{options}
-    , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.value_or (Options::kDefaultPayloadSize)) +
-                       sizeof (ICMP::V4::PacketHeader)}
+    , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize) + sizeof (ICMP::V4::PacketHeader)}
     , fSendPacket_{fICMPPacketSize_}
     , fSocket_{IO::Network::ConnectionlessSocket::New (SocketAddress::INET, Socket::RAW, IPPROTO_ICMP)}
     , fNextSequenceNumber_{static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_))}
-    , fPingTimeout_{options.fTimeout.value_or (Options::kDefaultTimeout)}
+    , fPingTimeout_{options.fTimeout}
 {
     Debug::TraceContextBumper ctx{"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", "addr={}, options={}"_f, fDestination_, fOptions_};
     // use random data as a payload
@@ -98,7 +91,7 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
 Pinger::ResultType Pinger::RunOnce (const optional<unsigned int>& ttl)
 {
     Debug::TraceContextBumper ctx{"Frameworks::NetworkMonitor::Ping::Pinger::RunOnce", "ttl={}"_f, ttl};
-    return RunOnce_ICMP_ (ttl.value_or (fOptions_.fMaxHops.value_or (Options::kDefaultMaxHops)));
+    return RunOnce_ICMP_ (ttl.value_or (fOptions_.fMaxHops));
 }
 
 Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)

@@ -135,24 +135,19 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Se
 namespace {
     inline unsigned int ComputeThreadPoolSize_ (const ConnectionManager::Options& options)
     {
-        using Options = ConnectionManager::Options;
         constexpr unsigned int kMinThreadCnt_{1u}; // one enough now that we support separate thread doing epoll/select and one read when data avail
-        return Math::AtLeast (kMinThreadCnt_, options.fMaxConcurrentlyHandledConnections.value_or (
-                                                  options.fMaxConnections.value_or (Options::kDefault_MaxConnections) / 5));
+        return Math::AtLeast (kMinThreadCnt_, options.fMaxConcurrentlyHandledConnections.value_or (options.fMaxConnections / 5));
     }
     inline unsigned int ComputeConnectionBacklog_ (const ConnectionManager::Options& options)
     {
-        using Options = ConnectionManager::Options;
         constexpr unsigned int kMinDefaultTCPBacklog_{3u};
-        return options.fTCPBacklog.value_or (
-            Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections.value_or (Options::kDefault_MaxConnections) * 3 / 4));
+        return options.fTCPBacklog.value_or (Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections * 3 / 4));
     }
     ConnectionManager::Options FillInDefaults_ (const ConnectionManager::Options& o)
     {
         using Options = ConnectionManager::Options;
         Options result{o};
-        result.fCORS           = NullCoalesce (result.fCORS, Options::kDefault_CORS);
-        result.fMaxConnections = NullCoalesce (result.fMaxConnections, Options::kDefault_MaxConnections);
+        result.fCORS = NullCoalesce (result.fCORS, Options::kDefault_CORS);
         result.fMaxConcurrentlyHandledConnections = NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
         result.fBindFlags               = NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
         result.fDefaultResponseHeaders  = NullCoalesce (result.fDefaultResponseHeaders, Options::kDefault_Headers);

@@ -34,8 +34,14 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
      */
     template <typename FLOAT_TYPE>
     struct Options {
-        optional<unsigned int> fMaxIterations;
-        optional<FLOAT_TYPE>   fNoImprovementThreshold;
+        /**
+         *  0: no limit
+         */
+        unsigned int fMaxIterations{0};
+
+        /**
+         */
+        FLOAT_TYPE fNoImprovementThreshold{static_cast<FLOAT_TYPE> (10e-6)};
 
         nonvirtual String ToString () const;
     };

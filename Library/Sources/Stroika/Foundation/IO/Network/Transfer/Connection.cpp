@@ -147,16 +147,12 @@ Response Connection::Ptr::OPTIONS (const URI& l, const Mapping<String, String>& 
     return SendAndThrowOnFailure (r);
 }
 
-namespace {
-    constexpr bool kDeclareActivitiesFlag_Default_{true};
-}
-
 Response Connection::Ptr::Send (const Request& r)
 {
     const LazyEvalActivity activity{[&] () {
         return "sending '"sv + r.fMethod + "' request to "sv + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL));
     }};
-    DeclareActivity declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
+    DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities ? &activity : nullptr};
     return fRep_->Send (r);
 }
 
@@ -165,8 +161,8 @@ Response Connection::Ptr::SendAndThrowOnFailure (const Request& r)
     const LazyEvalActivity activity{[&] () {
         return "sending '"sv + r.fMethod + "' request to "sv + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL));
     }};
-    DeclareActivity declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
-    Response        response = fRep_->Send (r);
+    DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities ? &activity : nullptr};
+    Response               response = fRep_->Send (r);
     if (not response.GetSucceeded ()) [[unlikely]] {
         Throw (Exception{response});
     }

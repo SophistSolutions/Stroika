@@ -351,7 +351,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *  If true, the Execution::DeclareActivity API will be used during some selected operations which will produce
          *  more detailed exception messages (mostly include url) when exceptions happen.
          */
-        optional<bool> fDeclareActivities{};
+        bool fDeclareActivities{true};
 
         /**
          *  Set to 0 to disable automatic redirects. 10 is a reasonable number if you allow auto-redirects (windows default).

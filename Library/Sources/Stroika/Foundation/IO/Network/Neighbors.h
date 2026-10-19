@@ -68,17 +68,20 @@ namespace Stroika::Foundation::IO::Network {
 
             // sometimes entries will remain in arp table after they have expired (just with address deleted).
             // Probably best to not include those
-            optional<bool> fIncludePurgedEntries;
+            bool fIncludePurgedEntries{false};
 
             // On windows, we appear to get bogus hardware addresses for broadcast entries
-            // defaults true
-            optional<bool> fOmitAllFFHardwareAddresses;
+            bool fOmitAllFFHardwareAddresses{true};
         };
 
     public:
         /**
+         *  \note Two constructors, not one with a default argument (= {}): within NeighborsMonitor, that default argument cannot
+         *        use the member initializers of Options, nested in it - g++ and clang refuse it (as of g++ 16, clang 22), MSVC
+         *        allows it, and the standard has not settled it (https://cplusplus.github.io/CWG/issues/2335.html).
          */
-        NeighborsMonitor (const Options& options = {});
+        NeighborsMonitor ();
+        NeighborsMonitor (const Options& options); ///< \brief Monitoring as options says
 
     public:
         /**

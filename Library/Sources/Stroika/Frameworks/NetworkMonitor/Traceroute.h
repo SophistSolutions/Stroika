@@ -37,7 +37,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Traceroute {
 
         /**
          */
-        optional<unsigned int> fMaxHops;
+        unsigned int fMaxHops{kDefaultMaxHops};
 
         /**
          */
@@ -47,7 +47,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Traceroute {
          *  time after a single ping is sent before we treat the ping as having timed out 
          *  (so not total time if multiple samples taken).
          */
-        optional<Duration> fTimeout;
+        Duration fTimeout{kDefaultTimeout};
 
         /*
          * No standard for this, but just what this library does.
@@ -70,7 +70,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Traceroute {
         /**
          *  \not including ICMP nor IP header overhead.
          */
-        optional<size_t> fPacketPayloadSize;
+        size_t fPacketPayloadSize{kDefaultPayloadSize};
 
         /**
          */
