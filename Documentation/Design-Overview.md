@@ -457,10 +457,22 @@ A field is `optional<T>` only where unset means something no value of T can say:
   - a default computed from other fields, or at run time (not a constant expression), or inherited from elsewhere
 
 The cost: an Options struct nested in a class cannot be the default argument (`= {}`) of that class's members while it has
-default member initializers - g++ and clang refuse it (as of g++ 16, clang 22), MSVC allows it, and the standard has not settled
-it (https://cplusplus.github.io/CWG/issues/2335.html). So such a class takes two constructors, `Writer ()` and
-`Writer (const Options&)`, not one `Writer (const Options& options = {})`. An Options struct at namespace scope, or a free
-function's, has no such problem.
+default member initializers - g++ and clang refuse it, MSVC allows it, and the standard has not settled it. So such a class
+declares the natural `Writer (const Options& options = {})` only where the compiler allows it, and two constructors elsewhere,
+behind `qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy` (Common/Private/CompilerAndStdLib_.h
+has the details, and the errors):
+
+```c++
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
+    Writer ();
+    Writer (const Options& options);
+#else
+    Writer (const Options& options = {});
+#endif
+```
+
+with the extra `Writer ()`'s definition behind the same `#if`. An Options struct at namespace scope, or a free function's, has
+no such problem.
 
 #### Rationale
 

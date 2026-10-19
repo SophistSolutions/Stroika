@@ -54,10 +54,12 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
         };
 
     public:
-        /**
-         */
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
         Writer (const Options& options);
         Writer (); ///< \brief Same as Writer{Options{}}
+#else
+        Writer (const Options& options = {});
+#endif
 
     public:
         /**

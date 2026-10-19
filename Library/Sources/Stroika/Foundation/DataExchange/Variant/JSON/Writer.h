@@ -115,13 +115,12 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     public:
-        /**
-         *  \note Two constructors, not one with a default argument (= {}): within Writer, that default argument cannot use the
-         *        member initializers of Options, nested in it - g++ and clang refuse it (as of g++ 16, clang 22), MSVC allows
-         *        it, and the standard has not settled it (https://cplusplus.github.io/CWG/issues/2335.html).
-         */
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
         Writer ();
         Writer (const Options& options); ///< \brief Writing as options says
+#else
+        Writer (const Options& options = {}); ///< \brief Writing as options says
+#endif
     };
 
 }

@@ -141,8 +141,12 @@ namespace Stroika::Foundation::Characters {
          * 
          * A converter is copyable (but thats not super helpful). It maintains essentially no state, except for the options its constructed with.
          */
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
         constexpr UTFConvert (const Options& options);
         constexpr UTFConvert (); ///< \brief Same as UTFConvert{Options{}}
+#else
+        constexpr UTFConvert (const Options& options = {});
+#endif
         constexpr UTFConvert (const UTFConvert&) noexcept = default;
 
     public:

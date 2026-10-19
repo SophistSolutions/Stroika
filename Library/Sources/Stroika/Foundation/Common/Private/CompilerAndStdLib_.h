@@ -461,6 +461,44 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 #endif
 
 /*
+ *  A default argument (= {}) of a class's member, of a type nested in that class with default member initializers - typically
+ *  an Options struct - so the class takes two constructors instead (Foo (); Foo (const Options&);). The standard has not
+ *  settled whether this is legal (https://cplusplus.github.io/CWG/issues/2335.html, "Drafting" since 2017; CWG's direction
+ *  is to parse such initializers when needed). MSVC accepts it. GCC 17 accepts it only where every such initializer does no
+ *  name lookup (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96645, r17-2718) - not, say, String f{Characters::kEOL<char>}.
+ *
+ *      struct Writer {
+ *          struct Options {
+ *              bool fPrettyPrint{true};
+ *          };
+ *          Writer (const Options& options = {});
+ *      };
+ *
+ *  g++-16:
+ *      probe.cpp:5:39: error: could not convert '<brace-enclosed initializer list>()' from '<brace-enclosed initializer list>' to 'const Writer::Options&'
+ *  clang++-22:
+ *      probe.cpp:5:39: error: default member initializer for 'fPrettyPrint' needed within definition of enclosing class 'Writer' outside of member functions
+ */
+#ifndef qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy                                                  \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+#elif defined(__clang__)
+// still broken in clang++ 22 (https://github.com/llvm/llvm-project/issues/124088)
+#define qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy                                                  \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 22))
+#elif defined(__GNUC__)
+// still broken in g++ 16
+#define qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy                                                  \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 16))
+#else
+#define qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy 0
+#endif
+
+#endif
+
+/*
 s/13/Test.cpp ... 
 In file included from Test.cpp:15:
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cache/TimedCache.h:110:61: error: sorry, non-type template argument of type 'float' is not yet supported

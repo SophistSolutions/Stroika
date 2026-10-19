@@ -501,10 +501,12 @@ private:
     Options fOptions_;
 };
 
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
 Variant::XML::Reader::Reader ()
     : Reader{Options{}}
 {
 }
+#endif
 
 Variant::XML::Reader::Reader (const Options& options)
     : inherited{MakeSharedPtr<Rep_> (options)}

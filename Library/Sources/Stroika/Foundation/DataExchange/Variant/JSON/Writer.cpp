@@ -276,10 +276,12 @@ public:
     }
 };
 
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
 Variant::JSON::Writer::Writer ()
     : Writer{Options{}}
 {
 }
+#endif
 
 Variant::JSON::Writer::Writer (const Options& options)
     : inherited{MakeSharedPtr<Rep_> (options)}

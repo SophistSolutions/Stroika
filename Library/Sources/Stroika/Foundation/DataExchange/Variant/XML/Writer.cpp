@@ -383,10 +383,12 @@ private:
     Options fOptions_;
 };
 
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
 Variant::XML::Writer::Writer ()
     : Writer{Options{}}
 {
 }
+#endif
 
 Variant::XML::Writer::Writer (const Options& options)
     : inherited{MakeSharedPtr<Rep_> (options)}

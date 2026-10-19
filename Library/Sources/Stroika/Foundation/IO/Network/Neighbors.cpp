@@ -250,10 +250,12 @@ public:
     Options fOptions_;
 };
 
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
 NeighborsMonitor::NeighborsMonitor ()
     : NeighborsMonitor{Options{}}
 {
 }
+#endif
 
 NeighborsMonitor::NeighborsMonitor (const Options& options)
     : fRep_{Memory::MakeSharedPtr<Rep_> (options)}
