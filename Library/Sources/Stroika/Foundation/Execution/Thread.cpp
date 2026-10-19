@@ -22,17 +22,17 @@
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
-#include "Common.h"
-#include "DLLSupport.h"
-#include "Exceptions.h"
-#include "Synchronized.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/DLLSupport.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 
 #if qStroika_Platform_POSIX
-#include "Platform/POSIX/SignalBlock.h"
-#include "SignalHandlers.h"
+#include "Stroika/Foundation/Execution/Platform/POSIX/SignalBlock.h"
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
 #if qStroika_Platform_Windows
-#include "Platform/Windows/WaitSupport.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/WaitSupport.h"
 #endif
 
 #include "Thread.h"

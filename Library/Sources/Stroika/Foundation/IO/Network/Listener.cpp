@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 
-#include "ConnectionOrientedMasterSocket.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedMasterSocket.h"
 
 #include "Listener.h"
 

@@ -8,7 +8,7 @@
 
 #include "Stroika/Foundation/Containers/Sequence.h"
 
-#include "Message.h"
+#include "Stroika/Frameworks/WebServer/Message.h"
 
 /*
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>

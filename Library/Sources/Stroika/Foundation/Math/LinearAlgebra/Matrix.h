@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 
-#include "Vector.h"
+#include "Stroika/Foundation/Math/LinearAlgebra/Vector.h"
 
 /**
  *  \file

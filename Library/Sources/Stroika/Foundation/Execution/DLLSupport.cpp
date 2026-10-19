@@ -6,9 +6,9 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
-#include "Throw.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #if qStroika_Platform_Windows
-#include "Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
 #include "DLLSupport.h"

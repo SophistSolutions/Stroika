@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
-#include "ExternallyOwnedSpanInputStream.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 
 /**
  *  \file

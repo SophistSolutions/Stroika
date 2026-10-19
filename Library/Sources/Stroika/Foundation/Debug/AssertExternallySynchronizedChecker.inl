@@ -3,7 +3,7 @@
  */
 #include <algorithm> // for std::count/std::distance
 
-#include "Sanitizer.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 
 namespace Stroika::Foundation::Debug {
 

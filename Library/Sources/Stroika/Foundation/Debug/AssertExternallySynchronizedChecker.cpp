@@ -6,8 +6,8 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 
-#include "Sanitizer.h"
-#include "Trace.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 #include "AssertExternallySynchronizedChecker.h"
 

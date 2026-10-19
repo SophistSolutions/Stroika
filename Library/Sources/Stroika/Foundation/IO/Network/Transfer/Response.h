@@ -19,7 +19,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Status.h"
 
-#include "Request.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Request.h"
 
 /**
  *

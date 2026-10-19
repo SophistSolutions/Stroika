@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 
-#include "ETag.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ETag.h"
 
 /**
  */

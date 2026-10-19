@@ -3,9 +3,9 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Transaction.h"
+#include "Stroika/Foundation/Database/Document/Transaction.h"
 
-#include "Connection.h"
+#include "Stroika/Foundation/Database/Document/Connection.h"
 
 using namespace Stroika::Foundation;
 

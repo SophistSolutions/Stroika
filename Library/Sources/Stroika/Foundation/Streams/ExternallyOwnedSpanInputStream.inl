@@ -6,7 +6,7 @@
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
 
-#include "InternallySynchronizedInputStream.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedInputStream.h"
 
 namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
 

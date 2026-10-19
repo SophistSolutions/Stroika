@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
-#include "Instrument.h"
+#include "Stroika/Frameworks/SystemPerformance/Instrument.h"
 
 /**
  */

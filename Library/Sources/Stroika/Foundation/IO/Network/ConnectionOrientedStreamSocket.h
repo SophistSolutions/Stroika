@@ -8,7 +8,7 @@
 
 #include "Stroika/Foundation/Time/Duration.h"
 
-#include "Socket.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
 
 namespace Stroika::Foundation::Memory {
     class BLOB;

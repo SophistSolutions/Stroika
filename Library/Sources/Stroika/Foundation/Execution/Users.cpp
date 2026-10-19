@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #if qStroika_Platform_POSIX
-#include "Platform/POSIX/Users.h"
+#include "Stroika/Foundation/Execution/Platform/POSIX/Users.h"
 #endif
 
 #include "Users.h"

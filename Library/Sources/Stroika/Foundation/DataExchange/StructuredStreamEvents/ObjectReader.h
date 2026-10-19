@@ -31,8 +31,8 @@
 #include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Traversal/Range.h"
 
-#include "IConsumer.h"
-#include "Name.h"
+#include "Stroika/Foundation/DataExchange/StructuredStreamEvents/IConsumer.h"
+#include "Stroika/Foundation/DataExchange/StructuredStreamEvents/Name.h"
 
 /**
  *

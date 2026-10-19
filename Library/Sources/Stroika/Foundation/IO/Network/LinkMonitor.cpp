@@ -42,14 +42,14 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #if qStroika_Platform_Windows
-#include "Platform/Windows/WinSock.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
 #endif
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
-#include "ConnectionlessSocket.h"
+#include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 
 #include "LinkMonitor.h"
 

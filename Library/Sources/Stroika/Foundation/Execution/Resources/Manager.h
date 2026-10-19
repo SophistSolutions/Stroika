@@ -8,8 +8,8 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 
-#include "Accessor.h"
-#include "Name.h"
+#include "Stroika/Foundation/Execution/Resources/Accessor.h"
+#include "Stroika/Foundation/Execution/Resources/Name.h"
 
 namespace Stroika::Foundation::Execution::Resources {
 

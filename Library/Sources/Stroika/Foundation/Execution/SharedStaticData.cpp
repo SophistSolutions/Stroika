@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Thread.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 
 #include "SharedStaticData.h"
 

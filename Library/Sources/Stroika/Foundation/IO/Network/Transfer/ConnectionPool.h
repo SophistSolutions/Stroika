@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Connection.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 
 /**
  *

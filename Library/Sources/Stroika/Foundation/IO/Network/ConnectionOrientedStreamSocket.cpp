@@ -434,7 +434,7 @@ ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::Attach (Plat
     return Ptr{Memory::MakeSharedPtr<Rep_> (sd)};
 }
 
-#include "ConnectionOrientedMasterSocket.h" //tmphack for kLowLevelSocketPairWorks_==false
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedMasterSocket.h" //tmphack for kLowLevelSocketPairWorks_==false
 auto ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol) -> tuple<Ptr, Ptr>
 {
     constexpr bool kLowLevelSocketPairWorks_{true}; // for now only works on windows

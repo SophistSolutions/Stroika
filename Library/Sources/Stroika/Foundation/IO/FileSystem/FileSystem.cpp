@@ -30,8 +30,8 @@
 
 #include "Stroika/Foundation/IO/FileSystem/Exception.h"
 
-#include "DirectoryIterable.h"
-#include "FileUtils.h"
+#include "Stroika/Foundation/IO/FileSystem/DirectoryIterable.h"
+#include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
 
 #include "FileSystem.h"
 

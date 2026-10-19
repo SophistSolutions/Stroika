@@ -17,7 +17,7 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #if qStroika_Platform_Windows
-#include "HRESULTErrorException.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include "Stroika/Foundation/Time/Realtime.h"
 

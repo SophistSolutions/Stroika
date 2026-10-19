@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/Atom.h"
 
-#include "Instrument.h"
+#include "Stroika/Frameworks/SystemPerformance/Instrument.h"
 
 /*
  * TODO:

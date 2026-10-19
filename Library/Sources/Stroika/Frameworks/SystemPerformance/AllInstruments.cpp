@@ -3,11 +3,11 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Instruments/CPU.h"
-#include "Instruments/Filesystem.h"
-#include "Instruments/Memory.h"
-#include "Instruments/Network.h"
-#include "Instruments/Process.h"
+#include "Stroika/Frameworks/SystemPerformance/Instruments/CPU.h"
+#include "Stroika/Frameworks/SystemPerformance/Instruments/Filesystem.h"
+#include "Stroika/Frameworks/SystemPerformance/Instruments/Memory.h"
+#include "Stroika/Frameworks/SystemPerformance/Instruments/Network.h"
+#include "Stroika/Frameworks/SystemPerformance/Instruments/Process.h"
 
 #include "AllInstruments.h"
 

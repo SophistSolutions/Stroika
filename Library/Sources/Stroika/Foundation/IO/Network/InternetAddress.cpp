@@ -14,8 +14,8 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #if qStroika_Platform_Windows
-#include "Platform/Windows/WinSock.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/IO/Network/Platform/Windows/WinSock.h"
 #endif
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 

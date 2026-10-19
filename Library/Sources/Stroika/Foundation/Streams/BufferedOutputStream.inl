@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "InternallySynchronizedOutputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedOutputStream.h"
 
 namespace Stroika::Foundation::Streams::BufferedOutputStream {
 

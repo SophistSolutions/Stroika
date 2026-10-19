@@ -39,8 +39,8 @@
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include "Stroika/Foundation/Traversal/Range.h"
 
-#include "StructFieldMetaInfo.h"
-#include "VariantValue.h"
+#include "Stroika/Foundation/DataExchange/StructFieldMetaInfo.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 
 /**
  *

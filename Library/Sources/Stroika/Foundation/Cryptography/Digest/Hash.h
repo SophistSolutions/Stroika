@@ -12,10 +12,10 @@
 #include "Stroika/Foundation/DataExchange/DefaultSerializer.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
-#include "Digester.h"
-#include "HashBase.h"
+#include "Stroika/Foundation/Cryptography/Digest/Digester.h"
+#include "Stroika/Foundation/Cryptography/Digest/HashBase.h"
 
-#include "Algorithm/SuperFastHash.h" // for default algorithm
+#include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h" // for default algorithm
 
 /*
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>

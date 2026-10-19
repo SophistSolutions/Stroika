@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "DirectoryIterator.h"
+#include "Stroika/Foundation/IO/FileSystem/DirectoryIterator.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
 #include "DirectoryIterable.h"

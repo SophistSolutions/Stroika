@@ -11,8 +11,8 @@
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
-#include "Request.h"
-#include "Response.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Request.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Response.h"
 
 /**
  *

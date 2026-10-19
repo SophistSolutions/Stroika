@@ -6,7 +6,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
-#include "Socket-Private_.h"
+#include "Stroika/Foundation/IO/Network/Socket-Private_.h"
 
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedMasterSocket.h"
 

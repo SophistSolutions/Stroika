@@ -1,9 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Common.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Math/Common.h"
 
 namespace Stroika::Foundation::Math {
 

@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Exception.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 
 /**
  */

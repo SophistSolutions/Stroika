@@ -15,10 +15,10 @@
 #include "Connection.h"
 
 #if qStroika_HasComponent_libcurl
-#include "Connection_libcurl.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection_libcurl.h"
 #endif
 #if qStroika_HasComponent_WinHTTP
-#include "Connection_WinHTTP.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection_WinHTTP.h"
 #endif
 
 using namespace Stroika::Foundation;

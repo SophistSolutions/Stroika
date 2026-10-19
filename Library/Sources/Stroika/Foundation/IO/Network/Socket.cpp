@@ -8,7 +8,7 @@
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 
-#include "Socket-Private_.h"
+#include "Stroika/Foundation/IO/Network/Socket-Private_.h"
 
 #include "Socket.h"
 

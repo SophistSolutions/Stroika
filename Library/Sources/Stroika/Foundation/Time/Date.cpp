@@ -7,12 +7,12 @@
 #include <ctime>
 #include <sstream>
 
-#include "DateTime.h"
-#include "Duration.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Linguistics/MessageUtilities.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Date.h"
 

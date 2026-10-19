@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 
-#include "Binding.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Binding.h"
 
 /**
  *  \file

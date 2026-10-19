@@ -6,7 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Interceptor.h"
+#include "Stroika/Frameworks/WebServer/Interceptor.h"
 
 /*
  *

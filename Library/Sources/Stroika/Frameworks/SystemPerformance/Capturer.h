@@ -14,8 +14,8 @@
 #include "Stroika/Foundation/Execution/ThreadPool.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
-#include "CaptureSet.h"
-#include "Measurement.h"
+#include "Stroika/Frameworks/SystemPerformance/CaptureSet.h"
+#include "Stroika/Frameworks/SystemPerformance/Measurement.h"
 
 /*
  * TODO:

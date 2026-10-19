@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
-#include "HRESULTErrorException.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
 

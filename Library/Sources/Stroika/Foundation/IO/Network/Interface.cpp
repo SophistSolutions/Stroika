@@ -57,8 +57,8 @@
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 
-#include "ConnectionlessSocket.h"
-#include "Socket.h"
+#include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
 
 #include "Interface.h"
 

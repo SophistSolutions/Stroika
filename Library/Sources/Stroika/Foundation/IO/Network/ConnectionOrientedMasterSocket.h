@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "ConnectionOrientedStreamSocket.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 
 namespace Stroika::Foundation::IO::Network {
 

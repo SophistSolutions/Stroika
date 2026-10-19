@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "InternallySynchronizedInputStream.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedInputStream.h"
 
 namespace Stroika::Foundation::Streams::BinaryToText::Reader {
 

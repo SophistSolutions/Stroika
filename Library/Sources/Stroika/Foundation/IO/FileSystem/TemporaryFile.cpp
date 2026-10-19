@@ -22,7 +22,7 @@
 #include "Stroika/Foundation/Execution/Process.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 
-#include "WellKnownLocations.h"
+#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 
 #include "TemporaryFile.h"
 

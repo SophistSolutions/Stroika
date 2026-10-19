@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/Execution/ThreadPool.h"
 #include "Stroika/Foundation/IO/Network/Socket.h"
 
-#include "IModbusService.h"
+#include "Stroika/Frameworks/Modbus/IModbusService.h"
 
 /**
  *

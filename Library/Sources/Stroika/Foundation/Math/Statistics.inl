@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <ranges>
 
-#include "Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Math {

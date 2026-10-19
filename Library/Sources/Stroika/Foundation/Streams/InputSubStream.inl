@@ -1,10 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "InternallySynchronizedInputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedInputStream.h"
 
 namespace Stroika::Foundation::Streams::InputSubStream {
 

@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Time/Realtime.h"
 #include "Stroika/Foundation/Traversal/Range.h"
 
-#include "Measurement.h"
+#include "Stroika/Frameworks/SystemPerformance/Measurement.h"
 
 /*
  * TODO:

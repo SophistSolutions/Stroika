@@ -4,7 +4,7 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
-#include "Factory/SortedCollection_Factory.h"
+#include "Stroika/Foundation/Containers/Factory/SortedCollection_Factory.h"
 
 namespace Stroika::Foundation::Containers {
 

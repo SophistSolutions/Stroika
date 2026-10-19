@@ -8,7 +8,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Debugger.h"
 
-#include "TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 #include "ArchtypeClasses.h"
 

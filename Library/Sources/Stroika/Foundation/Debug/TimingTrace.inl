@@ -3,7 +3,7 @@
  */
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Trace.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 namespace Stroika::Foundation::Debug {
 

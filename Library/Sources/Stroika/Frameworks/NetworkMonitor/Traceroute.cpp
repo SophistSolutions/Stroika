@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/IO/Network/Listener.h"
 #include "Stroika/Foundation/IO/Network/Socket.h"
 
-#include "Ping.h"
+#include "Stroika/Frameworks/NetworkMonitor/Ping.h"
 
 #include "Traceroute.h"
 

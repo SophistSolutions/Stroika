@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
-#include "InputStream.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 /**
  *  \file

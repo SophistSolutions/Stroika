@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "DelegatedIterator.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Traversal/DelegatedIterator.h"
 
 namespace Stroika::Foundation::Traversal {
 

@@ -16,8 +16,8 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 
-#include "Activity.h"
-#include "Throw.h"
+#include "Stroika/Foundation/Execution/Activity.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 
 /**
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>

@@ -15,7 +15,7 @@
 
 #include "Stroika/Foundation/Memory/Common.h"
 
-#include "Trace.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 
 #include "MallocGuard.h"
 

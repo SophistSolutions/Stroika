@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 
-#include "Factory/DenseDataHyperRectangle_Factory.h"
+#include "Stroika/Foundation/Containers/Factory/DenseDataHyperRectangle_Factory.h"
 
 namespace Stroika::Foundation::Containers {
 

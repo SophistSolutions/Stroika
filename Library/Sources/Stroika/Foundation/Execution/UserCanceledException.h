@@ -6,7 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "SilentException.h"
+#include "Stroika/Foundation/Execution/SilentException.h"
 
 namespace Stroika::Foundation::Execution {
 

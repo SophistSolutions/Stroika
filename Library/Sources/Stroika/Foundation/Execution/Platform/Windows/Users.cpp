@@ -5,7 +5,7 @@
 
 #include <Windows.h>
 
-#include "Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 
 #include "Users.h"
 

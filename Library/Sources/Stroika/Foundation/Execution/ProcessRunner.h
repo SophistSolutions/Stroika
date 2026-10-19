@@ -23,7 +23,7 @@
 #include "Stroika/Foundation/Streams/OutputStream.h"
 
 // DEPRECATED - only while we have deprecated apis for use of progressmontior in this class
-#include "ProgressMonitor.h"
+#include "Stroika/Foundation/Execution/ProgressMonitor.h"
 
 /**
  *  TODO:

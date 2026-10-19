@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
-#include "ResultTypes.h"
+#include "Stroika/Foundation/Cryptography/Digest/ResultTypes.h"
 
 namespace Stroika::Foundation::Cryptography::Digest {
 

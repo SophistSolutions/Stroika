@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 
-#include "Name.h"
+#include "Stroika/Foundation/DataExchange/StructuredStreamEvents/Name.h"
 
 /**
  *  \file

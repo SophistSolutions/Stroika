@@ -5,11 +5,11 @@
 
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 
-#include "DOM.h"
-#include "SAXReader.h"
 #include "Schema.h"
+#include "Stroika/Foundation/DataExchange/XML/DOM.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 
-#include "Providers/IProvider.h"
+#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;

@@ -8,7 +8,7 @@
 
 #include <variant>
 
-#include "Socket.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
 
 namespace Stroika::Foundation::IO::Network {
 

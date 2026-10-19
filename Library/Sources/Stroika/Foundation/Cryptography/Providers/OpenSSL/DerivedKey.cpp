@@ -17,7 +17,7 @@
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
-#include "Exception.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Exception.h"
 
 #include "DerivedKey.h"
 

@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Characters/Platform/Windows/CodePage.h"
 #endif
 
-#include "UTFConvert.h"
+#include "Stroika/Foundation/Characters/UTFConvert.h"
 
 namespace Stroika::Foundation::Characters {
 

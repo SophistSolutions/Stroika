@@ -8,10 +8,10 @@
 #include "IProvider.h"
 
 #if qStroika_HasComponent_xerces
-#include "Xerces.h"
+#include "Stroika/Foundation/DataExchange/XML/Providers/Xerces.h"
 #endif
 #if qStroika_HasComponent_libxml2
-#include "LibXML2.h"
+#include "Stroika/Foundation/DataExchange/XML/Providers/LibXML2.h"
 #endif
 
 using namespace Stroika::Foundation;

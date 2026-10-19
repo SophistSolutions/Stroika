@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
-#include "SOAP.h"
+#include "Stroika/Frameworks/WebService/SOAP.h"
 
 /*
  *  The SOAP 1.1 envelope schema, embedded.

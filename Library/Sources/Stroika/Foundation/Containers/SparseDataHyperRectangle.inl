@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Factory/SparseDataHyperRectangle_Factory.h"
+#include "Stroika/Foundation/Containers/Factory/SparseDataHyperRectangle_Factory.h"
 
 namespace Stroika::Foundation::Containers {
 

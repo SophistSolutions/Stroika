@@ -31,11 +31,11 @@
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
-#include "Exceptions.h"
-#include "Finally.h"
-#include "Thread.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #if qStroika_Platform_Windows
-#include "Platform/Windows/WaitSupport.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/WaitSupport.h"
 #endif
 
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"

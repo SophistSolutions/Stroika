@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
 
-#include "Common.h"
+#include "Stroika/Foundation/IO/FileSystem/Common.h"
 
 /**
  *  \file

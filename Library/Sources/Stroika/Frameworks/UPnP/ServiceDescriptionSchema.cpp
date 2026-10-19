@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
-#include "ServiceDescription.h"
+#include "Stroika/Frameworks/UPnP/ServiceDescription.h"
 
 /*
  *  The UPnP service description (SCPD) schema, embedded - with one correction, which is most of what this file is

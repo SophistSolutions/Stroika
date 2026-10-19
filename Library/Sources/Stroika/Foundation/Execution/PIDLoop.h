@@ -13,8 +13,8 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
-#include "Synchronized.h"
-#include "Thread.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 
 /**
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>

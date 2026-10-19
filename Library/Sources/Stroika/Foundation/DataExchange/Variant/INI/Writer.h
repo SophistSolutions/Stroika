@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 
-#include "Profile.h"
+#include "Stroika/Foundation/DataExchange/Variant/INI/Profile.h"
 
 /**
  *  \file

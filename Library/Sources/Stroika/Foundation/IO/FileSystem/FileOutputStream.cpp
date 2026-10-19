@@ -25,7 +25,7 @@
 #endif
 #include "Stroika/Foundation/Streams/InternallySynchronizedOutputStream.h"
 
-#include "Exception.h"
+#include "Stroika/Foundation/IO/FileSystem/Exception.h"
 
 #include "FileOutputStream.h"
 
