@@ -56,7 +56,7 @@ wraps them - so one document can wrap two arrays differently, as UPnP's `<action
 says the same for the arrays, at and inside an element, that have no `fItems` of their own.
 
 Nothing produces a Binding but hand-written code yet. An `ObjectVariantMapper` could, since it knows a type's field names, their
-declaration order and their types - so complete, below (<https://github.com/SophistSolutions/Stroika/issues/1217>) - and so
+declaration order and their types - so complete, below (<https://github.com/SophistSolutions/Stroika/issues/1230>) - and so
 could an XSD or WSDL, where the order is normative rather than incidental.
 
 Namespaces are written as a default namespace (`xmlns=`), inherited by the elements inside - or with a prefix, where a

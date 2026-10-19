@@ -113,7 +113,7 @@ namespace {
     // and its items, sendEvents an attribute, <retval/> there or not - and what no SCPD field holds, a vendor's own elements
     // say, skipped
     //
-    // @todo derive this from Mapper_ (https://github.com/SophistSolutions/Stroika/issues/1217), or from UPnP's own schema
+    // @todo derive this from Mapper_ (https://github.com/SophistSolutions/Stroika/issues/1230), or from UPnP's own schema
     //       (ServiceDescriptionSchema), rather than spelling it out: what only XML says - item names, sendEvents an
     //       attribute, <retval/> a presence marker, the namespace, skipping - would be all that is left
     const Variant::XML::Binding& Binding_ ()

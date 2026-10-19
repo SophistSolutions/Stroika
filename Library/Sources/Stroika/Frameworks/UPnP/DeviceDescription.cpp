@@ -55,7 +55,7 @@ namespace {
     // elements' names and order, UPnP's namespace, each list and its items - and what no DeviceDescription field holds, a
     // vendor's own elements or an embedded <deviceList> say, skipped
     //
-    // @todo derive this from Mapper_ (https://github.com/SophistSolutions/Stroika/issues/1217), or from UPnP's own schema
+    // @todo derive this from Mapper_ (https://github.com/SophistSolutions/Stroika/issues/1230), or from UPnP's own schema
     //       (DeviceDescriptionSchema), rather than spelling it out: what only XML says - item names, the namespace,
     //       skipping - would be all that is left
     const Variant::XML::Binding& Binding_ ()

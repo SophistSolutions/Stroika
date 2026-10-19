@@ -56,7 +56,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  value throws BadFormatException).
      *
      *  Anything may produce a Binding: written by hand, as below; generated from an ObjectVariantMapper, which knows a type's field
-     *  names and their declaration order (https://github.com/SophistSolutions/Stroika/issues/1217); or taken from a schema of
+     *  names and their declaration order (https://github.com/SophistSolutions/Stroika/issues/1230); or taken from a schema of
      *  someone else's, an XSD or a WSDL, where the order is normative rather than incidental.
      *
      *  \par Example Usage
@@ -151,7 +151,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *  @todo An eMap OPEN to members it does not declare (XSD's xs:any, JSON Schema's additionalProperties), if a need
          *        appears. Extra members left to the default shape could never be complete - their types lost, their names free
          *        to collide. The likely need is a dictionary (a Mapping<String, T> field, which a Binding generated from an
-         *        ObjectVariantMapper will meet - https://github.com/SophistSolutions/Stroika/issues/1217): every extra member of
+         *        ObjectVariantMapper will meet - https://github.com/SophistSolutions/Stroika/issues/1230): every extra member of
          *        ONE declared Binding. That can be complete only with its keys written as data, not as element names (a key
          *        need not be an XML name) - entries, as <e key="k">v</e>.
          */
@@ -373,7 +373,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
          *  skips a vendor's own elements, while the round trip of the Binding's own values stays exact.
          *
          *  A Binding generated from a type's declaration (an ObjectVariantMapper's -
-         *  https://github.com/SophistSolutions/Stroika/issues/1217) can be complete by construction; one written by hand may
+         *  https://github.com/SophistSolutions/Stroika/issues/1230) can be complete by construction; one written by hand may
          *  instead be short, leaving the rest to the default shape. ToString () says which - and, where it is not complete, why.
          */
         nonvirtual bool IsComplete () const;

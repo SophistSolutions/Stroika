@@ -37,9 +37,6 @@ Generally will track stuff here between releases
      https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
        - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
          IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
-   - **Variant::XML has no caller yet** (#954 closed 2026-10-14) - UPnP and SOAP went to the DOM. #955 (a web service
-     answering JSON or XML from one ObjectVariantMapper), or #1217 (a Binding generated from the mapper), is what would
-     drive it against a real schema; until then Tests/32 is its only user.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
