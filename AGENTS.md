@@ -469,7 +469,9 @@ still compile". Say which one you did.
   (`empty()`, `size()`, `push_back()`, `c_str()`, ...) only when a method deliberately mirrors STL
   semantics — this is a meaningful visual cue, not inconsistency. Prefixes: `f` (field), `k`
   (constant), `e` (enumerator), `t` (thread_local), `s` (static var), `_` leading (protected),
-  `_` trailing (private), `I` (concept name), `q` (a macro naming a value - usable in `#if`, unlike a
+  `_` trailing (private - a .cpp's file-local names too, as `using VVMap_ = ...`; but not an alias that only shortens a
+  public name, keeping it, as `using Name = StructuredStreamEvents::Name;` in a class, where C++ allows no
+  `using StructuredStreamEvents::Name;`), `I` (concept name), `q` (a macro naming a value - usable in `#if`, unlike a
   `k` constant; see Design-Overview.md "'q' versus 'k'", and "Macro names" for how a macro is named - `qStroika_`
   prefix, scope, the `qStroika_Platform_*` family, rc.exe's 31-character limit). Prefer prefix `++`/`--` over postfix. Prefer `using
   T = ...` over `typedef`. `New()` static methods return smart pointers, not raw allocations.
