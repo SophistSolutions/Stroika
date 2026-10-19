@@ -71,11 +71,13 @@ Generally will track stuff here between releases
      If it recurs: keep the failing exe + pdb; `C:/Sandbox/claude/ssdp/crashstack2.exe EXE ARGS` prints the stack and
      Xerces globals, `symaddr.exe EXE SYMBOL` + `dumpbin /disasm /range:` shows the code; the failing copy is kept
      there to compare. Candidate workaround: build Xerces without `-GL` under MSVC.
-
-   - **UPnP's Options - what is left** (LGP 2026-10-13, "a bit of a morass"; the XML-reading ones settled 2026-10-18): the
-     six SSDP ones - SSDP::Client::{CachingListener, Listener, Search}::Options, SSDP::Server::{BasicServer,
-     PeriodicNotifier, SearchResponder}::Options - are probably fine, genuinely different knobs per class, but nobody has
-     checked whether they share fields that ought to be one type.
+   - **strace and tcpdump in the stroika-dev image** (LGP 2026-10-18, a suggestion) - for interactive debugging, not for any
+     test, so not in the RegressionTests images. tcpdump -v shows what went on the wire (a packet's TTL, SSDP/GENA/HTTP
+     messages); strace, the system call a hung thread is blocked in, and sendto/recvfrom addresses with their IPv6 scope id
+     (#1195, #1201). One line in Build/Docker/Stroika-Dev/Dockerfile's dev-tools install (beside iproute2 and lldb), plus
+     `setcap cap_net_raw+ep /usr/bin/tcpdump` for a non-root user (Docker grants CAP_NET_RAW by default; capture with -p, as
+     promiscuous mode needs NET_ADMIN). strace works on a process it starts; attaching to a running one needs
+     CAP_SYS_PTRACE, which these containers lack.
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.

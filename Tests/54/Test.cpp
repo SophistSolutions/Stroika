@@ -1851,8 +1851,8 @@ namespace {
     }
 
     /*
-     *  Options::fMulticastTTL: our own search finds our own device, and our own listener hears it announce itself, with the
-     *  M-SEARCH and the NOTIFYs multicast with a TTL other than the default. How far they would travel is not seen here (all in
+     *  Options::fMulticastTTL: our own search finds our own device, our own listener hears it announce itself, and our own
+     *  CachingListener caches it, with the M-SEARCHes and the NOTIFYs multicast with a TTL other than the default. How far they would travel is not seen here (all in
      *  this process); that each goes out with its TTL was checked by capturing them. As in SSDP_Loopback_Search_, anything that
      *  keeps the exchange from happening is a test issue - seen as its failing with the default TTL too.
      */
@@ -1863,8 +1863,8 @@ namespace {
         using IO::Network::InternetProtocol::IP::IPVersionSupport;
         const URI location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
 
-        // with this TTL on the M-SEARCH and the NOTIFYs: was our device found by our search, and heard by our listener
-        auto foundAndHeard = [&] (uint8_t ttl) -> pair<bool, bool> {
+        // with this TTL on the M-SEARCHes and the NOTIFYs: was our device found by our search, heard by our listener, and cached
+        auto foundAndHeard = [&] (uint8_t ttl) -> tuple<bool, bool, bool> {
             const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
             const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackMulticastTTL-{}:1"_f(deviceID);
             Device       d;
@@ -1876,6 +1876,7 @@ namespace {
             dd.fUDN          = "uuid:" + deviceID;
             Execution::WaitableEvent found;
             Execution::WaitableEvent heard;
+            Execution::WaitableEvent cached;
             // the listener first, so it hears the server's very first NOTIFYs (sent as it starts)
             SSDP::Client::Listener listener{[&] (const SSDP::Advertisement& a) {
                                                 if (a.fTarget == deviceType and a.fAlive == true) {
@@ -1886,39 +1887,50 @@ namespace {
                                             SSDP::Client::Listener::eAutoStart};
             SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
                                              SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only, .fMulticastTTL = ttl}};
-            SSDP::Client::Search search{[&] (const SSDP::Advertisement& a) {
+            SSDP::Client::Search          search{[&] (const SSDP::Advertisement& a) {
                                             if (a.fTarget == deviceType) {
                                                 found.Set ();
                                             }
-                                        },
-                                        deviceType, nullopt,
-                                        SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only, .fMulticastTTL = ttl}};
+                                                 },
+                                                 deviceType, nullopt,
+                                                 SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only, .fMulticastTTL = ttl}};
+            SSDP::Client::CachingListener cache{[&] (const SSDP::Advertisement& a) {
+                                                    if (a.fTarget == deviceType and a.fAlive == true) {
+                                                        cached.Set ();
+                                                    }
+                                                },
+                                                SSDP::Client::CachingListener::Options{.fListener = {.fIPVersion = IPVersionSupport::eIPV4Only},
+                                                                                       .fSearchFor    = deviceType,
+                                                                                       .fMulticastTTL = ttl},
+                                                SSDP::Client::CachingListener::eAutoStart};
 
-            const Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s;
-            bool                         wasFound = found.WaitUntilQuietly (giveUpAt) == Execution::WaitableEvent::WaitStatus::eTriggered;
-            bool                         wasHeard = heard.WaitUntilQuietly (giveUpAt) == Execution::WaitableEvent::WaitStatus::eTriggered;
-            return {wasFound, wasHeard};
+            const Time::TimePointSeconds giveUpAt  = Time::GetTickCount () + 10s;
+            bool                         wasFound  = found.WaitUntilQuietly (giveUpAt) == Execution::WaitableEvent::WaitStatus::eTriggered;
+            bool                         wasHeard  = heard.WaitUntilQuietly (giveUpAt) == Execution::WaitableEvent::WaitStatus::eTriggered;
+            bool                         wasCached = cached.WaitUntilQuietly (giveUpAt) == Execution::WaitableEvent::WaitStatus::eTriggered;
+            return {wasFound, wasHeard, wasCached};
         };
 
         try {
-            if (foundAndHeard (SSDP::kDefaultMulticastTTL) != pair{true, true}) {
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "SSDP_Loopback_MulticastTTL_ skipped - even with the default TTL, our own device was not found and heard within "
-                    "10 seconds (this environment probably blocks multicast, or UDP 1900)");
+            if (foundAndHeard (SSDP::kDefaultMulticastTTL) != tuple{true, true, true}) {
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_Loopback_MulticastTTL_ skipped - even with the default TTL, our own device "
+                                                          "was not found, heard and cached within "
+                                                          "10 seconds (this environment probably blocks multicast, or UDP 1900)");
                 return;
             }
         }
         catch (...) {
             Stroika::Frameworks::Test::WarnTestIssue (
-                "SSDP_Loopback_MulticastTTL_ skipped - could not run an SSDP server, listener and search here: {}"_f(current_exception ())
+                "SSDP_Loopback_MulticastTTL_ skipped - could not run an SSDP server, listener, search and cache here: {}"_f(current_exception ())
                     .AsNarrowSDKString ()
                     .c_str ());
             return;
         }
-        pair<bool, bool> withTTL3{false, false};
+        tuple<bool, bool, bool> withTTL3{false, false, false};
         EXPECT_NO_THROW (withTTL3 = foundAndHeard (3));
-        EXPECT_TRUE (withTTL3.first) << "not found by our own search, its M-SEARCH sent with TTL 3";
-        EXPECT_TRUE (withTTL3.second) << "not heard by our own listener, its NOTIFYs sent with TTL 3";
+        EXPECT_TRUE (get<0> (withTTL3)) << "not found by our own search, its M-SEARCH sent with TTL 3";
+        EXPECT_TRUE (get<1> (withTTL3)) << "not heard by our own listener, its NOTIFYs sent with TTL 3";
+        EXPECT_TRUE (get<2> (withTTL3)) << "not cached by our own CachingListener, its M-SEARCHes sent with TTL 3";
     }
 
     /*

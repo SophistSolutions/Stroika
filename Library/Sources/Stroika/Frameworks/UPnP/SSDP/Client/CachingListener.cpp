@@ -54,6 +54,7 @@ public:
         if (options.fSearchFor) {
             fSearch_.emplace ([this] (const SSDP::Advertisement& a) { Heard_ (a, true); },
                               Search::Options{.fIPVersion            = options.fListener.fIPVersion,
+                                              .fMulticastTTL         = options.fMulticastTTL,
                                               .fInterfaces           = options.fListener.fInterfaces,
                                               .fFollowNetworkChanges = options.fListener.fFollowNetworkChanges});
         }

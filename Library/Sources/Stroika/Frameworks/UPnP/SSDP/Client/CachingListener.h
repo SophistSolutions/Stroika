@@ -121,7 +121,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
         struct Options {
             /**
              *  How it listens - and searches, given fSearchFor: the same SSDP channels, network interfaces, and following of
-             *  network changes.
+             *  network changes (with its searches' TTL, fMulticastTTL).
              */
             Listener::Options fListener;
 
@@ -137,6 +137,12 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
              *  max-age keeps one that sends no NOTIFYs (some only answer searches) cached.
              */
             optional<Foundation::Time::Duration> fSearchRepeatInterval;
+
+            /**
+             *  The TTL (IPv6: hop limit) of each M-SEARCH, given fSearchFor: how many routers it may cross (@see
+             *  Search::Options::fMulticastTTL).
+             */
+            uint8_t fMulticastTTL{kDefaultMulticastTTL};
         };
         static const Options kDefaultOptions;
 
