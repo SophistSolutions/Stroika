@@ -2046,6 +2046,21 @@ namespace {
         });
     }
 
+    /*
+     *  What a document writes to a byte stream starts with its XML declaration - no UTF-8 byte order mark, with either provider.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_WriteWritesNoByteOrderMark_)
+    {
+        using namespace XML::DOM;
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, auto domFactory) {
+            const Document::Ptr              doc = domFactory (BLOB{as_bytes (span{"<root><a>x</a></root>"sv})}, nullptr);
+            Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+            doc.Write (out);
+            const string written = out.As<BLOB> ().As<string> ();
+            EXPECT_TRUE (written.starts_with ("<?xml"sv)) << written;
+        });
+    }
+
 #if qStroika_HasComponent_libxml2 and LIBXML_VERSION >= 21400
     /*
      *  libxml2 indents a pretty-printed document by SerializationOptions::fIndent, where it is given - 2 where it is not.

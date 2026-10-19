@@ -570,7 +570,8 @@ namespace {
         AutoRelease_<DOMLSSerializer> writer = GetDOMIMPL_ ().createLSSerializer ();
         DOMConfiguration*             dc     = writer->getDomConfig ();
         dc->setParameter (XMLUni::fgDOMWRTFormatPrettyPrint, options.fPrettyPrint);
-        dc->setParameter (XMLUni::fgDOMWRTBOM, true);
+        // no byte order mark: XML declares its own encoding, and one trips readers that do not expect it
+        dc->setParameter (XMLUni::fgDOMWRTBOM, false);
         class myOutputter : public XMLFormatTarget {
         public:
             Streams::OutputStream::Ptr<byte> fOut;

@@ -747,9 +747,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \brief The document as XML: to a byte stream as UTF-8, with no byte order mark - or as a String
              */
             nonvirtual void   Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options = {}) const;
-            nonvirtual String Write (const SerializationOptions& options = {}) const;
+            nonvirtual String Write (const SerializationOptions& options = {}) const; ///< \brief The document as XML
 
         public:
             /**
