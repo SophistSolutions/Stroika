@@ -246,6 +246,17 @@ namespace Stroika::Foundation::Characters {
             requires (same_as<CHAR_T, typename STD_CODECVT::intern_type>);
 
     public:
+        /**
+         *  \brief The encoding the platform takes text to be in where nothing says otherwise: on Windows, the ANSI code page
+         *         (GetACP - the system's "language for non-Unicode programs"); elsewhere, the environment's locale (LANG), or
+         *         UTF-8 where that names none ("C", "POSIX", or not set)
+         *
+         *  For text a program other than this one may have written - @see Streams::BinaryToText::ByteOrderMarkOr. Not the
+         *  program's global C++ locale (locale{}), which is "C" until something calls locale::global.
+         */
+        static CodeCvt PlatformDefault (const Options& options = Options{});
+
+    public:
         nonvirtual CodeCvt& operator= (const CodeCvt& rhs) = default;
         nonvirtual CodeCvt& operator= (CodeCvt&& rhs)      = default;
 

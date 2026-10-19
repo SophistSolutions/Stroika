@@ -343,6 +343,16 @@ size_t Characters::Private_::BuiltinSingleByteTableCodePageRep_::ComputeTargetBy
 #if qStroika_Platform_Windows
 /*
  ********************************************************************************
+ ****************** Characters::Private_::GetANSICodePage_ **********************
+ ********************************************************************************
+ */
+CodePage Characters::Private_::GetANSICodePage_ ()
+{
+    return static_cast<CodePage> (::GetACP ());
+}
+
+/*
+ ********************************************************************************
  ***************** Characters::Private_::WindowsNative_ *************************
  ********************************************************************************
  */

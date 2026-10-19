@@ -478,7 +478,7 @@ public:
     }
     virtual VariantValue Read (const InputStream::Ptr<byte>& in) const override
     {
-        return Read (BinaryToText::Reader::New (in, nullopt, SeekableFlag::eSeekable));
+        return Read (BinaryToText::Reader::New (in, SeekableFlag::eSeekable));
     }
     virtual VariantValue Read (const InputStream::Ptr<Character>& in) const override
     {

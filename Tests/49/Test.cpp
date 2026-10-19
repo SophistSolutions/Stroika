@@ -190,6 +190,60 @@ namespace {
             EXPECT_EQ (tr.ReadAll (), "Testing 1, 2, 3");
         }
     }
+
+    /*
+     *  Text read from bytes that carry no byte order mark, with no encoding named, is UTF-8 - whatever the program's global
+     *  locale; a byte order mark, where there is one, says what it is instead (@see Characters::ByteOrderMark).
+     */
+    GTEST_TEST (Foundation_Streams, TextReaderDefaultsToUTF8_)
+    {
+        using Characters::String;
+        // c a f e-acute space, and two CJK ideographs - as code points, and below as bytes, since C++ source stays ASCII
+        constexpr char32_t kCodePoints_[] = {'c', 'a', 'f', 0xE9, ' ', 0x65E5, 0x672C};
+        const String       kText_{span{kCodePoints_}};
+        // kText_ as UTF-8, with no byte order mark, and with one
+        constexpr uint8_t kUTF8_[]        = {'c', 'a', 'f', 0xC3, 0xA9, ' ', 0xE6, 0x97, 0xA5, 0xE6, 0x9C, 0xAC};
+        constexpr uint8_t kUTF8WithBOM_[] = {0xEF, 0xBB, 0xBF, 'c', 'a', 'f', 0xC3, 0xA9, ' ', 0xE6, 0x97, 0xA5, 0xE6, 0x9C, 0xAC};
+        // and as UTF-16LE, with its byte order mark
+        constexpr uint8_t kUTF16LEWithBOM_[] = {0xFF, 0xFE, 'c', 0, 'a', 0, 'f', 0, 0xE9, 0, ' ', 0, 0xE5, 0x65, 0x2C, 0x67};
+        EXPECT_EQ (BinaryToText::Convert (Memory::BLOB{as_bytes (span{kUTF8_})}), kText_);
+        EXPECT_EQ (BinaryToText::Reader::New (Memory::BLOB{as_bytes (span{kUTF8_})}).ReadAll (), kText_);
+        EXPECT_EQ (BinaryToText::Convert (Memory::BLOB{as_bytes (span{kUTF8WithBOM_})}), kText_);
+        EXPECT_EQ (BinaryToText::Convert (Memory::BLOB{as_bytes (span{kUTF16LEWithBOM_})}), kText_);
+        // a byte order mark with nothing after it is still read as one
+        constexpr uint8_t kUTF16LEBOMAlone_[] = {0xFF, 0xFE};
+        EXPECT_EQ (BinaryToText::Convert (Memory::BLOB{as_bytes (span{kUTF16LEBOMAlone_})}), String{});
+        // with ByteOrderMarkOr: a byte order mark still decides, and without one its fIfNone does
+        constexpr uint8_t                   kUTF16LE_[] = {'c', 0, 'a', 0, 'f', 0, 0xE9, 0, ' ', 0, 0xE5, 0x65, 0x2C, 0x67};
+        const BinaryToText::ByteOrderMarkOr kElseUTF16LE_{Characters::CodeCvt<>{Characters::UnicodeExternalEncodings::eUTF16_LE}};
+        EXPECT_EQ (BinaryToText::Convert (Memory::BLOB{as_bytes (span{kUTF16LE_})}, kElseUTF16LE_), kText_);
+        EXPECT_EQ (BinaryToText::Reader::New (Memory::BLOB{as_bytes (span{kUTF16LE_})}, kElseUTF16LE_).ReadAll (), kText_);
+        EXPECT_EQ (BinaryToText::Convert (Memory::BLOB{as_bytes (span{kUTF8WithBOM_})}, kElseUTF16LE_), kText_);
+    }
+
+    /*
+     *  CodeCvt<>::PlatformDefault (): on Windows the ANSI code page - so a legacy file, with no byte order mark, reads as Windows
+     *  programs read it. ASCII reads as itself everywhere.
+     */
+    GTEST_TEST (Foundation_Streams, TextReaderPlatformDefault_)
+    {
+        using Characters::String;
+        const BinaryToText::ByteOrderMarkOr kElsePlatformDefault_{Characters::CodeCvt<>::PlatformDefault ()};
+        constexpr uint8_t                   kASCII_[] = {'p', 'l', 'a', 'i', 'n'};
+        EXPECT_EQ (BinaryToText::Convert (Memory::BLOB{as_bytes (span{kASCII_})}, kElsePlatformDefault_), String{"plain"sv});
+#if qStroika_Platform_Windows
+        // c a f e-acute, in Windows-1252
+        constexpr uint8_t  kCP1252_[]     = {'c', 'a', 'f', 0xE9};
+        constexpr char32_t kCodePoints_[] = {'c', 'a', 'f', 0xE9};
+        if (::GetACP () == 1252) {
+            EXPECT_EQ (BinaryToText::Convert (Memory::BLOB{as_bytes (span{kCP1252_})}, kElsePlatformDefault_), String{span{kCodePoints_}});
+        }
+        else {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "TextReaderPlatformDefault_'s Windows-1252 check skipped: this system's ANSI code page is not 1252");
+        }
+#endif
+    }
 }
 
 namespace {
@@ -266,7 +320,7 @@ namespace {
             stringstream tmp;
             tmp << "3";
             auto inb = Streams::iostream::InputStreamFromStdIStream::New<byte> (tmp);
-            auto in  = BinaryToText::Reader::New (inb, nullopt, SeekableFlag::eSeekable);
+            auto in  = BinaryToText::Reader::New (inb, SeekableFlag::eSeekable);
             auto r   = in.ReadAll ();
             EXPECT_EQ (r.size (), 1u);
         }

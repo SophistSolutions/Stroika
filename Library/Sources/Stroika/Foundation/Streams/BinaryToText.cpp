@@ -465,40 +465,34 @@ namespace {
     }
 }
 
-auto BinaryToText::Reader::New (const InputStream::Ptr<byte>& src, const optional<AutomaticCodeCvtFlags> codeCvtFlags,
-                                optional<SeekableFlag> seekable, ReadAhead readAhead) -> InputStream::Ptr<Character>
-{
-    if (seekable == nullopt) {
-        seekable = src.IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
-    }
-    using namespace Characters;
-    CodeCvt<> codeConverter = [&] () {
+namespace {
+    // as src's byte order mark says, where src can seek and has one - leaving src past it; else ifNone
+    Characters::CodeCvt<> CodeCvtFromByteOrderMarkOr_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& ifNone)
+    {
+        using namespace Characters;
         if (src.IsSeekable ()) {
-            auto savedSeek = src.GetOffset ();
-            // read possible BOM, and then chose CodeCvt according to codeCvtFlags
-            byte                                                          bomData[Characters::kMaxBOMSize];
-            optional<tuple<Characters::UnicodeExternalEncodings, size_t>> bomInfo;
-            if (src.ReadAll (span{bomData}).size () == std::size (bomData) and (bomInfo = Characters::ReadByteOrderMark (span{bomData})).has_value ()) {
-                // adjust amount read from input stream if we over-read
-                src.Seek (savedSeek + get<size_t> (*bomInfo)); // adjust amount read from input stream if we read anything (could be a no-op seek)
+            const auto savedSeek = src.GetOffset ();
+            byte       bomData[kMaxBOMSize];
+            // whatever is there, up to the longest byte order mark: a text shorter than that may still begin with a shorter one
+            if (optional<tuple<UnicodeExternalEncodings, size_t>> bomInfo = ReadByteOrderMark (src.ReadAll (span{bomData}))) {
+                src.Seek (savedSeek + get<size_t> (*bomInfo));
                 return CodeCvt<>{get<UnicodeExternalEncodings> (*bomInfo)};
             }
-            else {
-                src.Seek (savedSeek); // adjust amount read from input stream if we read anything
-            }
+            src.Seek (savedSeek);
         }
-        // if not seekable, or no BOM, use codeCvtFlags to figure what todo for codes
-        switch (codeCvtFlags.value_or (AutomaticCodeCvtFlags::eDEFAULT)) {
-            case AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8:
-                return CodeCvt<>{UnicodeExternalEncodings::eUTF8};
-            case AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale:
-                return CodeCvt<>{locale{}};
-            default:
-                AssertNotReached ();
-                return CodeCvt<>{};
-        }
-    }();
-    return New_ (src, codeConverter, *seekable, readAhead);
+        return ifNone;
+    }
+}
+
+auto BinaryToText::Reader::New (const InputStream::Ptr<byte>& src, optional<SeekableFlag> seekable, ReadAhead readAhead) -> InputStream::Ptr<Character>
+{
+    return New (src, ByteOrderMarkOr{Characters::CodeCvt<>{Characters::UnicodeExternalEncodings::eUTF8}}, seekable, readAhead);
+}
+
+auto BinaryToText::Reader::New (const InputStream::Ptr<byte>& src, const ByteOrderMarkOr& ifNoByteOrderMark,
+                                optional<SeekableFlag> seekable, ReadAhead readAhead) -> InputStream::Ptr<Character>
+{
+    return New (src, CodeCvtFromByteOrderMarkOr_ (src, ifNoByteOrderMark.fIfNone), seekable, readAhead);
 }
 
 auto BinaryToText::Reader::New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter,
@@ -509,6 +503,23 @@ auto BinaryToText::Reader::New (const InputStream::Ptr<byte>& src, const Charact
     }
     return New_ (src, codeConverter, *seekable, readAhead);
 }
+
+DISABLE_COMPILER_MSC_WARNING_START (4996)
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+auto BinaryToText::Reader::New (const InputStream::Ptr<byte>& src, const optional<AutomaticCodeCvtFlags> codeCvtFlags,
+                                optional<SeekableFlag> seekable, ReadAhead readAhead) -> InputStream::Ptr<Character>
+{
+    using namespace Characters;
+    return New (src,
+                ByteOrderMarkOr{codeCvtFlags == AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale
+                                    ? CodeCvt<>{locale{}}
+                                    : CodeCvt<>{UnicodeExternalEncodings::eUTF8}},
+                seekable, readAhead);
+}
+DISABLE_COMPILER_MSC_WARNING_END (4996)
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 auto BinaryToText::Reader::New (const Traversal::Iterable<Character>& src) -> InputStream::Ptr<Character>
 {
@@ -522,11 +533,25 @@ auto BinaryToText::Reader::New (const Traversal::Iterable<Character>& src) -> In
  ************************* Streams::BinaryToText::Convert ***********************
  ********************************************************************************
  */
-String BinaryToText::Convert (const Memory::BLOB& src, optional<AutomaticCodeCvtFlags> codeCvtFlags)
+String BinaryToText::Convert (const Memory::BLOB& src)
 {
-    return BinaryToText::Reader::New (src, codeCvtFlags).ReadAll ();
+    return BinaryToText::Reader::New (src).ReadAll ();
+}
+String BinaryToText::Convert (const Memory::BLOB& src, const ByteOrderMarkOr& ifNoByteOrderMark)
+{
+    return BinaryToText::Reader::New (src, ifNoByteOrderMark).ReadAll ();
 }
 String BinaryToText::Convert (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter)
 {
     return BinaryToText::Reader::New (src, codeConverter).ReadAll ();
 }
+DISABLE_COMPILER_MSC_WARNING_START (4996)
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+String BinaryToText::Convert (const Memory::BLOB& src, optional<AutomaticCodeCvtFlags> codeCvtFlags)
+{
+    return BinaryToText::Reader::New (src, codeCvtFlags).ReadAll ();
+}
+DISABLE_COMPILER_MSC_WARNING_END (4996)
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");

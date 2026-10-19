@@ -30,6 +30,9 @@ namespace Stroika::Foundation::Characters {
         void ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError);
         void ThrowCodePageNotSupportedException_ (CodePage cp);
         void ThrowCharsetNotSupportedException_ (const Charset& charset);
+#if qStroika_Platform_Windows
+        CodePage GetANSICodePage_ ();
+#endif
     }
 
     /*
@@ -726,6 +729,27 @@ namespace Stroika::Foundation::Characters {
                 Private_::ThrowCodePageNotSupportedException_ (cp);
 #endif
         }
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    inline CodeCvt<CHAR_T> CodeCvt<CHAR_T>::PlatformDefault (const Options& options)
+    {
+#if qStroika_Platform_Windows
+        // the number, not CP_ACP, so a code page with a table built in uses it
+        return CodeCvt{Private_::GetANSICodePage_ (), options};
+#else
+        locale l = locale::classic ();
+        try {
+            l = locale{""};
+        }
+        catch (...) {
+            // an environment naming a locale this system lacks: as if it named none
+        }
+        const string name = l.name ();
+        if (name == "C" or name == "POSIX" or name.find ("UTF-8") != string::npos or name.find ("utf8") != string::npos) {
+            return CodeCvt{UnicodeExternalEncodings::eUTF8, options};
+        }
+        return CodeCvt{l, options};
+#endif
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>

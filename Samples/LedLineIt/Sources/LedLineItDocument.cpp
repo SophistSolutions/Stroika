@@ -402,10 +402,12 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 using Characters::String;
                 Memory::BLOB rawBytesBLOB{span{reinterpret_cast<const byte*> (rawBytes), nRawBytes}};
 
-                String x       = suggestedCodePage ? BinaryToText::Reader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
-                                                   : BinaryToText::Reader::New (rawBytesBLOB).ReadAll ();
-                x              = x.NormalizeTextToNL ();
-                Led_tString tx = x.As<Led_tString> ();
+                // as its byte order mark says, else - a text file a Windows program wrote - in the ANSI code page
+                String x = suggestedCodePage
+                               ? BinaryToText::Reader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
+                               : BinaryToText::Reader::New (rawBytesBLOB, BinaryToText::ByteOrderMarkOr{CodeCvt<>::PlatformDefault ()}).ReadAll ();
+                x                     = x.NormalizeTextToNL ();
+                Led_tString tx        = x.As<Led_tString> ();
                 size_t      charsRead = tx.length ();
                 const auto  fileData2 = span{tx};
                 {
@@ -527,7 +529,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
 
         using Characters::CodeCvt;
         CodeCvt<Led_tChar> codeCvt{useUnicodEncoding ? CodeCvt<Led_tChar>{*useUnicodEncoding}
-                                                     : (useCodePage == kAutomaticallyGuessCodePage ? CodeCvt<Led_tChar>{locale{}}
+                                                     : (useCodePage == kAutomaticallyGuessCodePage ? CodeCvt<Led_tChar>::PlatformDefault ()
                                                                                                    : CodeCvt<Led_tChar>{useCodePage})};
         StackBuffer<Led_tChar> result{Memory::eUninitialized,
                                       codeCvt.ComputeTargetCharacterBufferSize (span{reinterpret_cast<const byte*> (buf.data ()), nLen}) + 1};

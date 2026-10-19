@@ -29,15 +29,40 @@ namespace Stroika::Foundation::Streams {
 namespace Stroika::Foundation::Streams::BinaryToText {
 
     /**
+     *  \brief Decode by the text's byte order mark where it has one, and otherwise with fIfNone - as against a CodeCvt alone,
+     *         which decodes with exactly that, byte order mark or not
+     *
+     *  Given neither, Reader::New and Convert decode by the byte order mark, and otherwise as UTF-8 - as Stroika writes text
+     *  (@see Characters::ByteOrderMark).
+     *
+     *  \par Example Usage
+     *      \code
+     *          // a text file a Windows program may have written: as its byte order mark says, else in the ANSI code page
+     *          String text = BinaryToText::Reader::New (FileInputStream::New (path), ByteOrderMarkOr{CodeCvt<>::PlatformDefault ()}).ReadAll ();
+     *      \endcode
      */
-    enum class AutomaticCodeCvtFlags {
+    struct ByteOrderMarkOr {
+        Characters::CodeCvt<> fIfNone;
+    };
+
+    /**
+     *  How text was decoded with no CodeCvt named - @see ByteOrderMarkOr, and Reader::New (src) for the byte order mark, else UTF-8.
+     */
+    enum class [[deprecated ("Since Stroika v3.0d25 - use Reader::New (src) or Convert (src) - a byte order mark, else UTF-8 - or "
+                             "ByteOrderMarkOr{codeCvt}")]] AutomaticCodeCvtFlags {
         eReadBOMAndIfNotPresentUseUTF8,
         eReadBOMAndIfNotPresentUseCurrentLocale,
 
-        eDEFAULT = eReadBOMAndIfNotPresentUseCurrentLocale
+        eDEFAULT = eReadBOMAndIfNotPresentUseUTF8
     };
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     using AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
     using AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     /**
      *  \brief BinaryToText::Reader::Ptr is an InputStream::Ptr<Character>, usually constructed wrapping some binary object or binary stream
@@ -112,20 +137,30 @@ namespace Stroika::Foundation::Streams::BinaryToText {
          *      o   Seekability
          *              o   if not specified, its copied from the src binary stream.
          *              o   New (const Traversal::Iterable<Character>& src) produces a seekable stream
-         *      o   CodeCvt flags 
-         *          either as specified, or, if src.IsSeekable () - defaults to AutomaticCodeCvtFlags::eDEFAULT (which looks at the BOM)
-         *          and if not seekable and not specified, use CodeCvt<>{locale{}}.
-         * 
-         *      o   These defaults changed in Stroika v3.0d5 (mostly before 3.0d5 - defaults for seekability changed and code page sometimes defaulted to UTF8).
+         *      o   Decoding
+         *              o   given a CodeCvt, with exactly that
+         *              o   otherwise by its byte order mark, where src.IsSeekable () and it has one (a stream that cannot seek
+         *                  is not looked at for one), and failing that with ByteOrderMarkOr's fIfNone, or as UTF-8
          */
-        Ptr New (const InputStream::Ptr<byte>& src, optional<AutomaticCodeCvtFlags> codeCvtFlags = {}, optional<SeekableFlag> seekable = {},
-                 ReadAhead readAhead = eReadAheadAllowed);
+        Ptr New (const InputStream::Ptr<byte>& src, optional<SeekableFlag> seekable = {}, ReadAhead readAhead = eReadAheadAllowed);
+        Ptr New (const InputStream::Ptr<byte>& src, const ByteOrderMarkOr& ifNoByteOrderMark, optional<SeekableFlag> seekable = {},
+                 ReadAhead readAhead = eReadAheadAllowed); ///< \brief ... by its byte order mark, else with ifNoByteOrderMark.fIfNone
         Ptr New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, optional<SeekableFlag> seekable = {},
-                 ReadAhead readAhead = eReadAheadAllowed);
-        Ptr New (const InputStream::Ptr<Character>& src);
-        Ptr New (const Traversal::Iterable<Character>& src);
+                 ReadAhead readAhead = eReadAheadAllowed);   ///< \brief ... with exactly codeConverter
+        Ptr New (const InputStream::Ptr<Character>& src);    ///< \brief ... text already
+        Ptr New (const Traversal::Iterable<Character>& src); ///< \brief ... text already
         template <typename... ARGS>
-        Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args);
+        Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args); ///< \brief ... internally synchronized
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        [[deprecated ("Since Stroika v3.0d25 - use New (src, seekable, readAhead) - a byte order mark, else UTF-8 - or New (src, "
+                      "ByteOrderMarkOr{codeCvt}, ...)")]] Ptr
+        New (const InputStream::Ptr<byte>& src, optional<AutomaticCodeCvtFlags> codeCvtFlags, optional<SeekableFlag> seekable = {},
+             ReadAhead readAhead = eReadAheadAllowed);
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     }
 
@@ -134,15 +169,26 @@ namespace Stroika::Foundation::Streams::BinaryToText {
     }
 
     /**
-     *  \brief convert BLOB (using optional encoding parameter) to a String
-     * 
-     *  \note shorthand for BinaryToText::Reader::New (src, codeCvtFlags).ReadAll ())
-     * 
+     *  \brief convert BLOB to a String - decoded as Reader::New decodes: by its byte order mark, else as UTF-8 (or with
+     *         ifNoByteOrderMark's), or with exactly codeConverter
+     *
+     *  \note shorthand for BinaryToText::Reader::New (src, ...).ReadAll ())
+     *
      *  \note could have done with stream, but the API names suggest side-effect free, and that wouldn't be,
      *        since it seeks the src input stream.
      */
-    Characters::String Convert (const Memory::BLOB& src, optional<AutomaticCodeCvtFlags> codeCvtFlags = {});
-    Characters::String Convert (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
+    Characters::String Convert (const Memory::BLOB& src);
+    Characters::String Convert (const Memory::BLOB& src, const ByteOrderMarkOr& ifNoByteOrderMark);   ///< \brief convert BLOB to a String
+    Characters::String Convert (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter); ///< \brief convert BLOB to a String
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    [[deprecated ("Since Stroika v3.0d25 - use Convert (src) - a byte order mark, else UTF-8 - or Convert (src, "
+                  "ByteOrderMarkOr{codeCvt})")]] Characters::String
+    Convert (const Memory::BLOB& src, optional<AutomaticCodeCvtFlags> codeCvtFlags);
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 }
 

@@ -24,7 +24,24 @@ namespace Stroika::Foundation::Characters {
     using namespace std;
 
     /**
-     *  \flag used to indicate if ByteOrderMark should be included (in other Stroika modules).
+     *  \brief Whether text written as bytes begins with a byte order mark (BOM) - U+FEFF, encoded, saying which Unicode
+     *         encoding (and byte order) follows
+     *
+     *  Whether one helps depends on the FORMAT written, not on where the bytes go (file, memory, network) - which a writer
+     *  rarely knows anyway:
+     *      o   Harmful - JSON (RFC 8259: implementations "MUST NOT add a byte order mark" to networked JSON), XML in UTF-8 (it
+     *          declares its own encoding, UTF-8 by default), anything sent with a charset (HTTP's Content-Type), and any format
+     *          parsed by a reader that does not expect one - a small device's parser, a regular expression, a shell
+     *          script's first line. Unicode itself: for UTF-8, "neither required nor recommended".
+     *      o   Helpful - plain text that declares no encoding (.txt, CSV, INI), read by a program that otherwise assumes a
+     *          legacy code page: Excel opening a UTF-8 CSV is the common case.
+     *      o   Needed - UTF-16 and UTF-32: XML requires one there (XML 1.0, section 4.3.3), and other text has no other way to
+     *          give its byte order.
+     *
+     *  So Stroika:
+     *      o   writes none by default - each writer, TextToBinary::Writer included, takes eDontInclude unless told otherwise
+     *      o   reads one where it is present (ReadByteOrderMark, BinaryToText::Reader), and without one, and with no encoding
+     *          named, takes the text as UTF-8 (@see Streams::BinaryToText::ByteOrderMarkOr)
      */
     enum class ByteOrderMark {
         eInclude,
@@ -37,9 +54,9 @@ namespace Stroika::Foundation::Characters {
     constexpr span<const byte> GetByteOrderMark (UnicodeExternalEncodings e) noexcept;
 
     /**
-     *  Max size of span returned by GetByteOrderMark ()
+     *  Max size of span returned by GetByteOrderMark () - UTF-32's
      */
-    constexpr size_t kMaxBOMSize = 3;
+    constexpr size_t kMaxBOMSize = 4;
 
     /**
      *  returns guessed encoding, and number of bytes consumed. If 'd' doesn't contain
