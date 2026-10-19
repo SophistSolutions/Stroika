@@ -1548,6 +1548,54 @@ namespace {
     }
 
     /*
+     *  Many schemas compiled with a resolver, in one process. Before Stroika v3.0d25 libxml2's provider registered its
+     *  resolver's input callbacks - process-global - with each, never unregistering them, and libxml2's table of them holds
+     *  10 (MAX_INPUT_CALLBACK, as of libxml2 2.15): so about the tenth registration failed, AssertNotReached.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, Schema_ManyCompiledWithAResolver_)
+    {
+        constexpr string_view kXSD_ = R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"><xs:element name="a" type="xs:int"/></xs:schema>)";
+        constexpr string_view            kValid_   = "<a>3</a>"sv;
+        constexpr string_view            kInvalid_ = "<a>three</a>"sv;
+        const XML::Resource::ResolverPtr resolver  = XML::Resource::MemoryResolver::New (Sequence<XML::Resource::Definition>{});
+        auto                             blob      = [] (string_view s) { return Memory::BLOB{as_bytes (span{s.data (), s.size ()})}; };
+        DoWithEachXMLProvider_ ([&] (auto saxParser, auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            for (unsigned int i = 0; i < 20; ++i) {
+                const Schema::Ptr schema = schemaFactory (blob (kXSD_), resolver);
+                EXPECT_NO_THROW (saxParser (blob (kValid_).As<InputStream::Ptr<byte>> (), nullptr, schema)) << i;
+                EXPECT_THROW (saxParser (blob (kInvalid_).As<InputStream::Ptr<byte>> (), nullptr, schema), BadFormatException) << i;
+            }
+        });
+    }
+
+    /*
+     *  A schema whose xs:import only its resolver can supply: the imported schema's element, read through the resolver, is what
+     *  validates the document - and without the resolver, nothing does. As of Stroika v3.0d25 libxml2's provider resolves
+     *  through the compile's own loader (xmlSchemaSetResourceLoader), not process-global input callbacks.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, Schema_ResolverSuppliesAnImport_)
+    {
+        constexpr string_view kA_ = R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:b="urn:stroika-test:b">
+  <xs:import namespace="urn:stroika-test:b" schemaLocation="b.xsd"/>
+  <xs:element name="a"><xs:complexType><xs:sequence><xs:element ref="b:n"/></xs:sequence></xs:complexType></xs:element>
+</xs:schema>)";
+        constexpr string_view kB_ =
+            R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:stroika-test:b"><xs:element name="n" type="xs:int"/></xs:schema>)";
+        constexpr string_view            kValid_   = R"(<a><n xmlns="urn:stroika-test:b">3</n></a>)";
+        constexpr string_view            kInvalid_ = R"(<a><n xmlns="urn:stroika-test:b">three</n></a>)";
+        auto                             blob      = [] (string_view s) { return Memory::BLOB{as_bytes (span{s.data (), s.size ()})}; };
+        const XML::Resource::ResolverPtr resolver  = XML::Resource::MemoryResolver::New (Sequence<XML::Resource::Definition>{
+            {.fName = {.fNamespace = IO::Network::URI{"urn:stroika-test:b"sv}, .fSystemID = String{"b.xsd"sv}}, .fData = blob (kB_)}});
+        DoWithEachXMLProvider_ ([&] (auto saxParser, auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            const Schema::Ptr schema = schemaFactory (blob (kA_), resolver);
+            EXPECT_NO_THROW (saxParser (blob (kValid_).As<InputStream::Ptr<byte>> (), nullptr, schema));
+            EXPECT_THROW (saxParser (blob (kInvalid_).As<InputStream::Ptr<byte>> (), nullptr, schema), BadFormatException);
+            // without the resolver, b.xsd is nowhere to be found
+            EXPECT_ANY_THROW (saxParser (blob (kValid_).As<InputStream::Ptr<byte>> (), nullptr, schemaFactory (blob (kA_), nullptr)));
+        });
+    }
+
+    /*
      *  Text that is not XML, or XML not well formed, read into a DOM: a BadFormatException, from each provider. Before Stroika
      *  v3.0d25 libxml2's was thrown sliced, as the Execution::Exception<runtime_error> it derives from.
      */

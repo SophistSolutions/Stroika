@@ -42,6 +42,9 @@ static_assert (qStroika_HasComponent_libxml2, "Don't compile this file if qStroi
 
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qStroika_HasComponent_libxml2, qStroika_HasComponent_libxml2);
 
+// a schema compile's own resource loader (xmlSchemaSetResourceLoader) - so no process-global input callbacks - is libxml2 2.14's
+static_assert (LIBXML_VERSION >= 21400, "Stroika needs libxml2 2.14 or later - configure --libxml2 use (the default) builds one");
+
 namespace {
     // From https://www.w3.org/TR/xml-names/
     //      In a namespace declaration, the URI reference is the normalized value of the attribute, so replacement of XML
@@ -53,102 +56,33 @@ namespace {
 }
 
 namespace {
-    // I never found docs on how to do schema resolver. Closest I could find was:
-    //      http://www.xmlsoft.org/examples/io1.c
-    // But this has several serious defects - like VERY minimal reentrancy support. But hopefully I can do enough magic with thread_local to worakround
-    // the lack --LGP 2024-03-03
-    //
-    struct RegisterResolver_ final {
-        static inline thread_local RegisterResolver_* sCurrent_ = nullptr; // magic to workaround lack of 'context' / reentrancy support here in libxml2
-        const Resource::ResolverPtr fResolver_;
-
-        RegisterResolver_ (const Resource::ResolverPtr& resolver)
-            : fResolver_{resolver}
-        {
-            sCurrent_ = this;
-            if (resolver != nullptr) {
-                // @todo ALSO need GLOBAL flag  - if this ever gets called, 2x at same time, from threads, xmlRegisterInputCallbacks not safe (though maybe OK if we are only ones ever using)?
-                if (xmlRegisterInputCallbacks (ResolverMatch_, ResolverOpen_, ResolverRead_, ResolverClose_) < 0) {
-                    AssertNotReached ();
-                }
+    /*
+     *  What a schema compile loads - an xs:import's or xs:include's schemaLocation - through its Resource::ResolverPtr, as that
+     *  compile's own loader (xmlSchemaSetResourceLoader): nothing process-global, so neither another thread nor another user of
+     *  libxml2 in the process sees it. What the resolver does not have is loaded as libxml2 would, from its URL.
+     */
+    xmlParserErrors ResourceLoader_ (void* resolver, const char* url, const char* publicID, [[maybe_unused]] xmlResourceType type,
+                                     xmlParserInputFlags flags, xmlParserInput** out) noexcept
+    {
+        RequireNotNull (resolver);
+        RequireNotNull (url);
+        RequireNotNull (out);
+        try {
+            // libxml2 gives no import's namespace here, so the URL is each of the resolver's keys - but a public ID, where there is one
+            String u = String::FromUTF8 (url);
+            if (optional<Resource::Definition> r = reinterpret_cast<const Resource::ResolverPtr*> (resolver)->Lookup (
+                    Resource::Name{.fNamespace = u, .fPublicID = publicID == nullptr ? u : String::FromUTF8 (publicID), .fSystemID = u})) {
+                *out = xmlNewInputFromMemory (url, r->fData.data (), r->fData.size (), flags);
+                return *out == nullptr ? XML_ERR_NO_MEMORY : XML_ERR_OK;
             }
+            return xmlNewInputFromUrl (url, flags, out);
         }
-
-        ~RegisterResolver_ ()
-        {
-            sCurrent_ = nullptr;
-            // don't bother unregistering (xmlCleanupInputCallbacks) cuz more likely to cause re-entrancy problems than solve them...
+        catch (...) {
+            // nothing may be thrown through libxml2, a C library
+            DbgTrace ("resolving '{}' failed: {}"_f, String::FromUTF8 (url), current_exception ());
+            return XML_ERR_INTERNAL_ERROR;
         }
-
-        /*
-         * @URI: an URI to test
-         * Returns 1 if yes and 0 if another Input module should be used
-         */
-        static int ResolverMatch_ (const char* URI)
-        {
-            if (sCurrent_) {
-                // No idea if that URI argument should be systemID, publicID, or namespace???
-                optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{
-                    .fNamespace = String::FromUTF8 (URI), .fPublicID = String::FromUTF8 (URI), .fSystemID = String::FromUTF8 (URI)});
-                if (not r) {
-                    DbgTrace ("Note ResolveMatch {} failed to find an entry in resolver."_f, String::FromUTF8 (URI));
-                }
-                return r.has_value ();
-            }
-            return 0;
-        }
-
-        /**
-         * @URI: an URI to test
-         *
-         * Returns an Input context or NULL in case or error
-         */
-        static void* ResolverOpen_ (const char* URI)
-        {
-            if (sCurrent_) {
-                optional<Resource::Definition> r = sCurrent_->fResolver_.Lookup (Resource::Name{
-                    .fNamespace = String::FromUTF8 (URI), .fPublicID = String::FromUTF8 (URI), .fSystemID = String::FromUTF8 (URI)});
-                // I think we must allocate saved/returned object on the heap, and return ptr to it, and hope CLOSE function gets called
-                // I THINK that's the 'context' passed to read... That is because the API used by libxml2 appears to just be a 'plain C pointer' we need to provide
-                if (r.has_value ()) {
-                    return new InputStream::Ptr<byte> (r->fData.As<InputStream::Ptr<byte>> ());
-                }
-            }
-            return nullptr;
-        }
-
-        /**
-         * @context: the read context
-         *
-         * Close the sql: query handler
-         *
-         * Returns 0 or -1 in case of error
-         */
-        static int ResolverClose_ (void* context)
-        {
-            if (context == nullptr)
-                return -1;
-            AssertNotNull (sCurrent_); // my read of API is that this cannot happen (cuz opens will fail first and must have live resolver object)
-            delete reinterpret_cast<InputStream::Ptr<byte>*> (context);
-            return 0;
-        }
-
-        /**
-         * @context: the read context
-         * @buffer: where to store data
-         * @len: number of bytes to read
-         *
-         * Returns the number of bytes read or -1 in case of error
-         */
-        static int ResolverRead_ (void* context, char* buffer, int len)
-        {
-            AssertNotNull (sCurrent_);
-            auto       inStream = reinterpret_cast<InputStream::Ptr<byte>*> (context);
-            span<byte> r        = inStream->ReadBlocking (as_writable_bytes (span{buffer, static_cast<size_t> (len)}));
-            return static_cast<int> (r.size ());
-        }
-    };
-
+    }
 }
 
 namespace {
@@ -160,10 +94,12 @@ namespace {
             : fResolver_{resolver}
             , fSchemaData{schemaData.ReadAll ()}
         {
-            RegisterResolver_    registerResolver{resolver};
             xmlSchemaParserCtxt* schemaParseContext =
                 xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (fSchemaData.data ()), static_cast<int> (fSchemaData.size ()));
             Execution::ThrowIfNull (schemaParseContext); // this one IS an allocation, so bad_alloc is what it means
+            if (fResolver_ != nullptr) {
+                xmlSchemaSetResourceLoader (schemaParseContext, &ResourceLoader_, &fResolver_);
+            }
             /*
              *  What is WRONG with the schema comes through these callbacks and nowhere else: xmlSchemaParse answers only
              *  nullptr. Without them libxml2 prints its diagnostic to stderr, which is not a library's business, and the

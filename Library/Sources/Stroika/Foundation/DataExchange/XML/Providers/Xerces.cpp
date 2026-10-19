@@ -148,9 +148,12 @@ namespace {
             RequireNotNull (resourceIdentifier);
 
             if (fResolver_ != nullptr) {
-                if (auto o = fResolver_.Lookup (Resource::Name{.fNamespace = xercesString2String (resourceIdentifier->getNameSpace ()),
-                                                               .fPublicID  = xercesString2String (resourceIdentifier->getPublicId ()),
-                                                               .fSystemID  = xercesString2String (resourceIdentifier->getSystemId ())})) {
+                // any of them may be null - a schema's xs:import has no public ID
+                auto optionalString = [] (const XMLCh* s) { return s == nullptr ? optional<String>{} : xercesString2String (s); };
+                optional<String> ns = optionalString (resourceIdentifier->getNameSpace ());
+                if (auto o = fResolver_.Lookup (Resource::Name{.fNamespace = ns ? optional<URI>{*ns} : nullopt,
+                                                               .fPublicID  = optionalString (resourceIdentifier->getPublicId ()),
+                                                               .fSystemID  = optionalString (resourceIdentifier->getSystemId ())})) {
                     return mkMemInputSrc_ (o->fData);
                 }
             }
