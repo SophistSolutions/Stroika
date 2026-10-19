@@ -54,3 +54,4 @@
 [54]	Frameworks::UPnP
 [55]	Frameworks::WebServer
 [56]	Frameworks::WebService
+[57]	Frameworks::Led
