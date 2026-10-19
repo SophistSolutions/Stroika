@@ -2368,6 +2368,48 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Characters, CodeCvt_CodePageTables_)
+    {
+        Debug::TraceContextBumper ctx{"CodeCvt_CodePageTables_"};
+        // "caf", e acute, euro sign - in two of the code pages CodeCvt has a table for, on every platform
+        const String kText       = U"caf\u00E9\u20AC";
+        const byte   kCP1252[]   = {byte{'c'}, byte{'a'}, byte{'f'}, byte{0xE9}, byte{0x80}};
+        const byte   kMacRoman[] = {byte{'c'}, byte{'a'}, byte{'f'}, byte{0x8E}, byte{0xDB}};
+        auto         check       = [&]<typename STRING> (CodePage cp, span<const byte> bytes) {
+            using CHAR_T = typename STRING::value_type;
+            SCOPED_TRACE ("code page=" + to_string (cp) + ", sizeof (CHAR_T)=" + to_string (sizeof (CHAR_T)));
+            try {
+                CodeCvt<CHAR_T> cvt{cp};
+                STRING          s = cvt.template Bytes2String<STRING> (bytes);
+                EXPECT_EQ (String{s}, kText);
+                EXPECT_EQ ((cvt.template String2Bytes<vector<byte>> (span<const CHAR_T>{s})), (vector<byte>{bytes.begin (), bytes.end ()}));
+            }
+            catch (...) {
+                ADD_FAILURE () << Characters::ToString (current_exception ());
+            }
+        };
+        for (auto [cp, bytes] : initializer_list<pair<CodePage, span<const byte>>>{{WellKnownCodePages::kANSI, span{kCP1252}},
+                                                                                   {WellKnownCodePages::kMAC, span{kMacRoman}}}) {
+            check.template operator()<u16string> (cp, bytes);
+            check.template operator()<u32string> (cp, bytes);
+            check.template operator()<wstring> (cp, bytes);
+            SCOPED_TRACE ("code page=" + to_string (cp) + ", Character");
+            try {
+                // a buffer exactly as large as ComputeTargetCharacterBufferSize says - for a single-byte code page, at most one
+                // character per byte
+                CodeCvt<>         cvt{cp};
+                vector<Character> buf (cvt.ComputeTargetCharacterBufferSize (bytes));
+                EXPECT_LE (buf.size (), bytes.size ());
+                EXPECT_EQ (String{cvt.Bytes2Characters (bytes, span{buf})}, kText);
+            }
+            catch (...) {
+                ADD_FAILURE () << Characters::ToString (current_exception ());
+            }
+        }
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Characters, New_Format)
     {
         Debug::TraceContextBumper ctx{"New_Format"};

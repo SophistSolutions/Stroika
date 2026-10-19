@@ -222,6 +222,20 @@ namespace {
     }
 
     /*
+     *  Text in a named code page - Windows-1252, which CodeCvt has a built-in table for on every platform.
+     */
+    GTEST_TEST (Foundation_Streams, TextReaderCodePage_)
+    {
+        using Characters::String;
+        // c a f e-acute, in Windows-1252
+        constexpr uint8_t           kCP1252_[]     = {'c', 'a', 'f', 0xE9};
+        constexpr char32_t          kCodePoints_[] = {'c', 'a', 'f', 0xE9};
+        const Characters::CodeCvt<> kCP1252Cvt_{Characters::WellKnownCodePages::kANSI};
+        EXPECT_EQ (BinaryToText::Convert (Memory::BLOB{as_bytes (span{kCP1252_})}, kCP1252Cvt_), String{span{kCodePoints_}});
+        EXPECT_EQ (BinaryToText::Reader::New (Memory::BLOB{as_bytes (span{kCP1252_})}, kCP1252Cvt_).ReadAll (), String{span{kCodePoints_}});
+    }
+
+    /*
      *  CodeCvt<>::PlatformDefault (): on Windows the ANSI code page - so a legacy file, with no byte order mark, reads as Windows
      *  programs read it. ASCII reads as itself everywhere.
      */

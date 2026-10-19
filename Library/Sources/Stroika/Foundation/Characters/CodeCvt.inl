@@ -365,7 +365,7 @@ namespace Stroika::Foundation::Characters {
                 return intermediateCharCntMax;
             }
             else {
-                return fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (intermediateCharCntMax);
+                return fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<CHAR_T, INTERMEDIATE_CHAR_T> (intermediateCharCntMax);
             }
         }
         virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const override

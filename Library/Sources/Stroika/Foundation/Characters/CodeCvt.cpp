@@ -295,7 +295,7 @@ span<char16_t> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Bytes2C
         *oi++ = fMap_[(int)i];
     }
     *from = span<const byte>{}; // always consume all bytes - no partial characters
-    return to.subspan (oi - to.data ());
+    return to.subspan (0, oi - to.data ());
 }
 
 span<byte> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Characters2Bytes (span<const char16_t> from, span<byte> to) const
@@ -317,7 +317,7 @@ span<byte> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Characters2
             }
         }
     }
-    return to.subspan (oi - to.data ());
+    return to.subspan (0, oi - to.data ());
 }
 
 size_t Characters::Private_::BuiltinSingleByteTableCodePageRep_::ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const
