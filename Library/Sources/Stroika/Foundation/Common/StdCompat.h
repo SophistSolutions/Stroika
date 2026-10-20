@@ -196,8 +196,10 @@ namespace Stroika::Foundation::Common::StdCompat {
             _Phony_fmt_iter_for& operator++ ();
             _Phony_fmt_iter_for  operator++ (int);
         };
-        // _Formatter = typename _Context needed for clang++-15 (compiler bug but no BWA declaration for now...BWA in middle of BWA ;-))
-        template <class _Ty, class _Context, class _Formatter = typename _Context::template formatter_type<remove_const_t<_Ty>>>
+        // _Formatter a defaulted template parameter, not named in the requires: needed for clang++-15 (compiler bug but no BWA declaration
+        // for now...BWA in middle of BWA ;-)). And formatter<T, char_type> - which a context's formatter_type<T> is by definition - as
+        // fmtlib's context (as of fmtlib 11) has no formatter_type.
+        template <class _Ty, class _Context, class _Formatter = qStroika_Foundation_Characters_FMT_PREFIX_::formatter<remove_const_t<_Ty>, typename _Context::char_type>>
         concept _Formattable_with = semiregular<_Formatter> && requires (_Formatter& __f, const _Formatter& __cf, _Ty&& __t, _Context __fc,
                                                                          basic_format_parse_context<typename _Context::char_type> __pc) {
             { __f.parse (__pc) } -> same_as<typename decltype (__pc)::iterator>;

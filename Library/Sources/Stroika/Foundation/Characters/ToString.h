@@ -41,18 +41,6 @@
  *      @todo   ToString(tuple) should use variadic templates and support multiple (past 4) args
  */
 
-#if qStroika_HasComponent_fmtlib && (FMT_VERSION >= 110000)
-namespace Stroika::Foundation::Common {
-    struct GUID;
-}
-namespace Stroika::Foundation::DataExchange {
-    class VariantValue;
-}
-namespace Stroika::Foundation::Memory {
-    class BLOB;
-}
-#endif
-
 namespace Stroika::Foundation::Characters {
 
     /**
@@ -229,6 +217,17 @@ namespace std {
         requires (same_as<R, remove_cvref_t<R>> and Stroika::Foundation::Characters::Private_::IUseToStringFormatterForFormatter_<R>)
     constexpr range_format format_kind<R> = range_format::disabled;
 }
+#endif
+#if qStroika_HasComponent_fmtlib and FMT_VERSION >= 110000
+/**
+ *  Where Stroika formats with fmtlib (no usable <format>), fmtlib formats no range itself - as before fmtlib 11, whose fmt/xchar.h
+ *  includes fmt/ranges.h. Its range formatter would match Stroika's ranges too, and takes any range with a mapped_type for a map,
+ *  needing elements that are tuples. A range is formatted as its Characters::ToString, as everywhere without range formatting (C++20).
+ *  Strings aside: fmtlib's own headers have used this for theirs already, and it is disabled for a string anyway.
+ */
+template <typename R, typename CHAR_T>
+    requires (not std::convertible_to<R, fmt::basic_string_view<CHAR_T>>)
+struct fmt::range_format_kind<R, CHAR_T, void> : std::integral_constant<fmt::range_format, fmt::range_format::disabled> {};
 #endif
 
 /*

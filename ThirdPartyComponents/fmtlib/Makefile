@@ -15,11 +15,11 @@ endif
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
 .NOTPARALLEL:
 
-# STICK TO 10.2.1 - old fmt lib - cuz newer one ranges support matches too much - its a problem - matches String - for example...
+# Used only where the compiler has no usable <format> (configure's NeedsFmtLib_). As of fmtlib 11, fmt/xchar.h includes
+# fmt/ranges.h, whose range formatter matches String and Stroika's containers too: Characters/ToString.h turns it off.
 # https://github.com/fmtlib/fmt/releases
-#VERSION:=11.0.2
-#VERSION:=11.0.1
-VERSION:=10.2.1
+VERSION:=12.2.0
+# VERSION:=10.2.1
 
 ZIPPEDFILE:=../Origs-Cache/fmtlib-$(VERSION).zip
 
