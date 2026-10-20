@@ -1,5 +1,11 @@
-#!/usr/bin/env perl
-
+#!/bin/sh
+# (sh, then Python: python3 runs this file by a path it can open. A native Windows python3.exe cannot open a /c/... path -
+# under MSYS2's make, which exports MSYS2_ARG_CONV_EXCL=*, it arrives unconverted - so it gets cygpath's C:/... form.
+# Cygwin's and MSYS2's own python3 (in /usr/bin) are POSIX programs, and take the path as it is)
+''':'
+case "$0" in /*) case "$(command -v python3)" in /usr/bin/* | /bin/*) ;; *) if command -v cygpath > /dev/null 2>&1; then exec python3 "$(cygpath -m "$0")" "$@"; fi ;; esac ;; esac
+exec python3 "$0" "$@"
+'''
 #
 # e.g.
 #		RunArgumentsWithCommonBuildVars Debug-U-32 make -k foo
@@ -9,77 +15,60 @@
 #	On windows (Visual Studio), this creates a .bat file, runs vcvarsall.bat (right arch), and then puts the arguments
 #	to this script into that .bat file, and runs the full .bat file
 #
+import os
+import subprocess
+import sys
+import tempfile
 
-use File::Temp qw(tempfile);
+sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the import below
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Lib", "Python"))
+import ConfigurationReader  # noqa: E402
 
-BEGIN{ @INC = ( "./", @INC ); }
 
-sub	GetThisScriptDir {
-	use File::Basename;
-	use Cwd 'abs_path';
-	my $p = __FILE__;
-	my $A = abs_path ($p);
-	my $dirname = dirname($A);
-	return $dirname;
-}
-my	$thisScriptDir	=	GetThisScriptDir ();
+def Die(msg):
+    sys.stderr.write(msg + "\n")
+    sys.exit(255)  # as Perl's die did
 
-my $activeConfig = $ARGV[0];
-my $l = @ARGV-1;
-my $cmd = (join " ", @ARGV[1..$l]);
 
-require "$thisScriptDir/../Lib/Perl/ConfigurationReader.pl";	## @todo for GetConfigurationParameter - could replace with GetConfigurationParameter script
-
+activeConfig = sys.argv[1] if len(sys.argv) > 1 else ""
+cmd = " ".join(sys.argv[2:])
 
 
 ### SEE https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2019 for docs on calling vcvarsall.bat
-
-sub GetString2InsertIntoBatchFileToInitCompiles_
-{
-	local $ARCH = GetConfigurationParameter($activeConfig, "ARCH");
-	local $VSDIR = GetConfigurationParameter($activeConfig, "BuildToolsRoot");
-	local $arg = undef;
-	if ($ARCH eq "x86") {
-		$arg ="x64_x86";
-	}
-	elsif ($ARCH eq "x86_64") {
-		$arg ="x64";
-	}
-	else {
-		die ("hardwired/to fix logic about mapping config names to 32/64")
-	}
-	local $VSDIR_VC = "$VSDIR\\VC";
-	local $result = "";
-	## pushd/popd: vcvarsall.bat cd's to %VSCMD_START_DIR% if that is set, and older Visual Studios to %USERPROFILE%\Source
-	$result 	.=	"pushd %TEMP%\r\n";
-	$result 	.=	"call \"";
-	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$result 	.=	"\" $arg > nul;\r\n";
-	$result 	.=	"popd\r\n";
-	return $result;
-}
+def GetString2InsertIntoBatchFileToInitCompiles_():
+    arch = ConfigurationReader.GetConfigurationParameter(activeConfig, "ARCH")
+    vsDir = ConfigurationReader.GetConfigurationParameter(activeConfig, "BuildToolsRoot")
+    if arch == "x86":
+        arg = "x64_x86"
+    elif arch == "x86_64":
+        arg = "x64"
+    else:
+        Die("hardwired/to fix logic about mapping config names to 32/64")
+    ## pushd/popd: vcvarsall.bat cd's to %VSCMD_START_DIR% if that is set, and older Visual Studios to %USERPROFILE%\Source
+    result = "pushd %TEMP%\r\n"
+    result += 'call "' + vsDir + "\\VC\\Auxiliary\\Build\\vcvarsall.bat" + '" ' + arg + " > nul;\r\n"
+    result += "popd\r\n"
+    return result
 
 
-sub RunSystemWithVCVarsSetInEnvironment_
-{
-	local $cmd2Run = $_[0];
-	local $tmpFileName = "";
-	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
-	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
-	print $fh '@echo off' . "\r\n";
-	local $result = GetString2InsertIntoBatchFileToInitCompiles_();
-	print $fh $result;
-	print $fh $cmd2Run . "\r\n";
-	close $fh;
-	# https://github.com/SophistSolutions/Stroika/issues/1073 /E:ON needed for this ticket
-	# cmd finds the .bat by its bare name, in the current directory - which NoDefaultCurrentDirectoryInExePath turns off
-	delete local $ENV{NoDefaultCurrentDirectoryInExePath};
-	local $result = system ("cmd /E:ON/C $tmpFileName");
-	unlink ($tmpFileName);
-	return $result;
-}
+def RunSystemWithVCVarsSetInEnvironment_(cmd2Run):
+    # in the current directory, as the .bat is run by its bare name (below)
+    fd, tmpPath = tempfile.mkstemp(prefix="runCmdInVCVarsContext_", suffix=".bat", dir=".")
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(("@echo off\r\n" + GetString2InsertIntoBatchFileToInitCompiles_() + cmd2Run + "\r\n").encode(ConfigurationReader.ENCODING))
+        # https://github.com/SophistSolutions/Stroika/issues/1073 /E:ON needed for this ticket
+        # cmd finds the .bat by its bare name, in the current directory - which NoDefaultCurrentDirectoryInExePath turns off
+        env = dict(os.environ)
+        env.pop("NoDefaultCurrentDirectoryInExePath", None)
+        try:
+            return subprocess.call(["cmd", "/E:ON/C", os.path.basename(tmpPath)], env=env)
+        except OSError:
+            return -1  # could not run the command at all
+    finally:
+        os.unlink(tmpPath)
 
-my $result = RunSystemWithVCVarsSetInEnvironment_ ($cmd);
-# system () returns the wait status: the exit code is its high byte; a signal, or -1 (could not run the command at all),
-# leaves that byte 0 - so fall back to 1 rather than report success
-exit ($result == 0 ? 0 : (($result >> 8) & 0xff) || 1);
+
+result = RunSystemWithVCVarsSetInEnvironment_(cmd)
+# a failure's exit status: its low byte - or 1 if that is 0 (a signal, or the command could not run at all), never success
+sys.exit(0 if result == 0 else ((result & 0xFF) or 1))

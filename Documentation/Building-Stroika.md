@@ -430,6 +430,7 @@ includes it, or reads it as data.
 | [Build/Scripts/](../Build/Scripts/) | Standalone programs, invoked directly by the Makefiles and by `configure` |
 | [Build/Lib/Make/](../Build/Lib/Make/) | `.mk` fragments, `include`d by other makefiles |
 | [Build/Lib/Perl/](../Build/Lib/Perl/) | `.pl` files, `require`d by `configure` and by the scripts |
+| [Build/Lib/Python/](../Build/Lib/Python/) | `.py` modules, `import`ed by the Python scripts |
 | [Build/Shared/](../Build/Shared/) | Data read at build time, rather than code |
 | [Build/Tools/Src/](../Build/Tools/Src/) | Source for host utilities needed *before* Stroika can be built |
 | [Build/Docker/](../Build/Docker/) | Build-VM and dev container definitions |

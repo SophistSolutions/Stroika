@@ -1,26 +1,35 @@
-#!/usr/bin/perl 
+#!/bin/sh
+# (sh, then Python: python3 runs this file by a path it can open. A native Windows python3.exe cannot open a /c/... path -
+# under MSYS2's make, which exports MSYS2_ARG_CONV_EXCL=*, it arrives unconverted - so it gets cygpath's C:/... form.
+# Cygwin's and MSYS2's own python3 (in /usr/bin) are POSIX programs, and take the path as it is)
+''':'
+case "$0" in /*) case "$(command -v python3)" in /usr/bin/* | /bin/*) ;; *) if command -v cygpath > /dev/null 2>&1; then exec python3 "$(cygpath -m "$0")" "$@"; fi ;; esac ;; esac
+exec python3 "$0" "$@"
+'''
+#
+#   GetConfigurationParameter CONFIGURATION PARAMETER
+#
+#   Prints PARAMETER's value in ConfigurationFiles/CONFIGURATION.xml (no newline added); ExtraMakeDefines prints its
+#   values run together. See Build/Lib/Python/ConfigurationReader.py.
+#
+import os
+import sys
 
-BEGIN{ @INC = ( "./", @INC ); }
+sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the import below
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Lib", "Python"))
+import ConfigurationReader  # noqa: E402
 
-sub	GetThisScriptDir {
-	use File::Basename;
-	use Cwd 'abs_path';
-	my $p = __FILE__;
-	my $A = abs_path ($p);
-	my $dirname = dirname($A);
-	return $dirname;
-}
-my	$thisScriptDir	=	GetThisScriptDir ();
 
-require "$thisScriptDir/../Lib/Perl/ConfigurationReader.pl";
+def Die(msg):
+    sys.stderr.write(msg + "\n")
+    sys.exit(255)  # as Perl's die did
 
-my $configuratioName=$ARGV[0];
-my $envVarName=$ARGV[1];
-if ($#ARGV < 1) {
-	die "Missing configuration name argument"; 
-}
-if ("$envVarName" eq "" ) {
-	die "Missing configuration parameter name argument"; 
-}
 
-print GetConfigurationParameter($configuratioName, $envVarName);
+if len(sys.argv) < 3:
+    Die("Missing configuration name argument")
+if sys.argv[2] == "":
+    Die("Missing configuration parameter name argument")
+
+value = ConfigurationReader.GetConfigurationParameter(sys.argv[1], sys.argv[2])
+out = "".join(value) if isinstance(value, list) else value
+sys.stdout.buffer.write(out.encode(ConfigurationReader.ENCODING))

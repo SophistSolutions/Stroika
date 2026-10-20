@@ -430,7 +430,7 @@ still compile". Say which one you did.
   - `Build/Lib/` — libraries pulled *into* other build files and never executed: `Make/` holds the
     `.mk` fragments (`SharedMakeVariables-Default.mk` for variables, then
     `SharedBuildRules-Default.mk` for rules — that include order is required), `Perl/` holds the
-    `.pl` files `require`d by `configure` and the scripts.
+    `.pl` files `require`d by `configure` and the scripts, `Python/` the modules the Python scripts import.
   - `Build/Shared/` — data read at build time rather than code: `Skel-Templates/`, the app skeletons
     `Skel` copies and substitutes into.
   - `Build/Tools/Src/` — source for host utilities the build needs *before* Stroika exists, and which
