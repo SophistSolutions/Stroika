@@ -11,11 +11,6 @@ Generally will track stuff here between releases
 - Consider rewrite of remaining perl stuff - mostly configure - to use python?
   (test speed of existing make defualt-configs and applyconfigs - that may justify the rewrite).
 
-- MakeBuildRoot / out-of-source builds: moved to
-  https://github.com/SophistSolutions/Stroika/issues/1170 - too big for this list. The Windows
-  symbolic-link background it came out of is consolidated in
-  https://github.com/SophistSolutions/Stroika/issues/1075.
-
 - **plato: finish its Remote-SSH client setup, as `lewis`** (2026-09-19; the `stroika-dev` account it was to log in as
   was deleted 2026-10-20). Its key and shared ssh files are prepared; what is left - test from plato - is in the shared
   notes' ssh-cleanup checklist. protagoras is already done.
