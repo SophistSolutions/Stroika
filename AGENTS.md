@@ -316,7 +316,9 @@ which carry hand-copied forks of pieces of the build - goes in the commit messag
 `UPGRADE NOTE:` heading. At release time (v3-Dev merges back to v3-Release, roughly monthly) these
 are gathered and combined into that release’s `#### Upgrade Notes (X to Y)` section in
 `Release-Notes.md`. Writing them at commit time is the only thing that makes this work: a month
-later nobody can reconstruct which of ~100 commits had downstream impact.
+later nobody can reconstruct which of ~100 commits had downstream impact. A commit that changes what an earlier,
+unreleased commit's note says (restores what it removed, moves it again) says so in its own note. Building the release
+notes - and checking each note against the final tree - is in `Documentation/Release-Process.md`.
 
 **One commit at a time.** `.claude/COMMIT_MSG.txt` holds exactly ONE message, and the index holds
 exactly the files that message describes - so the whole thing is just:

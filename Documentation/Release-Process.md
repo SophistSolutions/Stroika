@@ -4,13 +4,28 @@ Rough steps I go through do do each release (rough draft)
 
 ## Release notes
 
-Prepare them by doing
+Built purely from the commits since the last release (its tag - the same as `v3-Release...HEAD` while v3-Release is that release):
 
 ```bash
-git log --reverse v3-Release...HEAD > a
+git log --reverse --date=short --format='=== %h %ad %s%n%b' 3.0d24..HEAD > a
 ```
 
-Then summarize them into Release-Notes.md
+Then summarize them into Release-Notes.md, laid out as the previous release's section is:
+
+- The header says `### 3.0dNNx {DATEx} {[diff](../../compare/3.0dMM...3.0dNN)}` - the x's stay until the release is tagged.
+- **Upgrade Notes** come from the commits' `UPGRADE NOTE:` blocks (`UpgradeNotes:` in older ones) - grep them out of `a`, group
+  them by area, and merge duplicates. Then check each against the FINAL tree, not the commit: a later commit can restore, move or
+  rename what an earlier note says is gone (in 3.0d25: sanitizer macros removed, then restored as deprecated; lock helpers moved
+  to another header; "writing needs an XML provider", undone a week later).
+- Then look for upgrade impact that no note mentions:
+    - removed or renamed headers - `git diff --name-status 3.0d24 HEAD -- Library/Sources | grep '^[DR]'`
+    - the `qCompilerAndStdLib_*_Buggy` defines in `Common/Private/CompilerAndStdLib_.h` at the tag against now
+    - changed serialized names (an ObjectVariantMapper's `{"Name"sv, &T::fField}`) - data saved by the old version reads differently
+    - a field added in the MIDDLE of a struct (positional initialization shifts; one added at the end breaks nothing)
+- **TLDR** and **Change Details** come from the commit subjects, grouped by area. Skip todo/cosmetic commits, and a fix
+  plus its follow-up fixes is one line.
+- **Release-Validation** comes from `Documentation/SupportedPlatformsAndCompilers.md`, the docker images' Visual Studio versions,
+  and - once they finish - the regression runs (its known issues).
 
 ## Update STROIKA\-VERSION file
 
