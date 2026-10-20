@@ -1622,12 +1622,18 @@ namespace {
   <xs:element name="a"><xs:complexType><xs:sequence><xs:element name="n" type="xs:int" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element>
 </xs:schema>)";
         constexpr u8string_view kInvalid_ = u8"<a>\n<n>dr\u00e9i</n>\n<n>four</n>\n</a>"; // fails on line 2, and again on line 3
-        auto                    blob      = [] (auto s) { return Memory::BLOB{as_bytes (span{s.data (), s.size ()})}; };
+        const Memory::BLOB      xsd{as_bytes (span{kXSD_.data (), kXSD_.size ()})};
+        const Memory::BLOB      invalid{as_bytes (span{kInvalid_.data (), kInvalid_.size ()})};
         DoWithEachXMLProvider_ ([&] (auto saxParser, auto schemaFactory, auto domFactory) {
-            const Schema::Ptr schema    = schemaFactory (blob (kXSD_), nullptr);
-            auto              checkRead = [] (const function<void ()>& read) {
+            const Schema::Ptr schema = schemaFactory (xsd, nullptr);
+            for (bool viaDOM : {true, false}) {
                 try {
-                    read ();
+                    if (viaDOM) {
+                        domFactory (invalid.As<InputStream::Ptr<byte>> (), schema);
+                    }
+                    else {
+                        saxParser (invalid.As<InputStream::Ptr<byte>> (), nullptr, schema);
+                    }
                     ADD_FAILURE () << "should have thrown";
                 }
                 catch (const BadFormatException& e) {
@@ -1636,9 +1642,7 @@ namespace {
                     EXPECT_EQ (line, 2u);
                     EXPECT_NE (e.GetDetails ().Find (String{u8"dr\u00e9i"}), nullopt) << e.GetDetails ().AsUTF8<string> ();
                 }
-            };
-            checkRead ([&] () { domFactory (blob (kInvalid_).As<InputStream::Ptr<byte>> (), schema); });
-            checkRead ([&] () { saxParser (blob (kInvalid_).As<InputStream::Ptr<byte>> (), nullptr, schema); });
+            }
         });
     }
 
