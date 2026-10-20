@@ -124,16 +124,18 @@ public:
     {
         uint32_t seq = s->fNextSEQ;
         s->fNextSEQ  = seq == numeric_limits<uint32_t>::max () ? 1 : seq + 1; // 0 only ever the first (section 4.3.2)
-        fSender_.AddTask ([sid, callbacks = s->fCallbacks, seq, variables, currentState = fCurrentState_] () {
-            Deliver_ (sid, callbacks, seq, PropertySet_ (variables ? *variables : currentState ()));
+        fSender_.AddTask ([sid, callbacks = s->fCallbacks, seq, variables, currentState = fCurrentState_,
+                           connectionFactory = fOptions_.fConnectionFactory] () {
+            Deliver_ (connectionFactory, sid, callbacks, seq, PropertySet_ (variables ? *variables : currentState ()));
         });
     }
     // on fSender_'s thread: a NOTIFY to the first of the callback URLs that takes it
-    static void Deliver_ (const String& sid, const Sequence<URI>& callbacks, uint32_t seq, const string& body)
+    static void Deliver_ (const function<Transfer::Connection::Ptr (const URI&)>& connectionFactory, const String& sid,
+                          const Sequence<URI>& callbacks, uint32_t seq, const string& body)
     {
         for (const URI& u : callbacks) {
             try {
-                Transfer::Connection::Ptr c = Transfer::Connection::New ();
+                Transfer::Connection::Ptr c = connectionFactory (u);
                 c.SetSchemeAndAuthority (u.GetSchemeAndAuthority ());
                 Transfer::Request r;
                 r.fMethod               = "NOTIFY"sv;

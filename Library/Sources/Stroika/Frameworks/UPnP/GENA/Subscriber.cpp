@@ -156,7 +156,7 @@ public:
     // a SUBSCRIBE or UNSUBSCRIBE at the event URL
     Transfer::Response Send_ (const String& method, const Mapping<String, String>& headers) const
     {
-        Transfer::Connection::Ptr c = Transfer::Connection::New ();
+        Transfer::Connection::Ptr c = fOptions_.fConnectionFactory (fEventSubURL_);
         c.SetSchemeAndAuthority (fEventSubURL_.GetSchemeAndAuthority ());
         Transfer::Request r;
         r.fMethod               = method;

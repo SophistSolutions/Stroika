@@ -11,6 +11,8 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "Stroika/Frameworks/WebServer/Message.h"
@@ -25,6 +27,7 @@ namespace Stroika::Frameworks::UPnP::GENA {
 
     using Foundation::Characters::String;
     using Foundation::Containers::Mapping;
+    using Foundation::IO::Network::URI;
 
     /**
      *  \brief The eventing of one UPnP service (UPnP Device Architecture 1.1, section 4): control points SUBSCRIBE at the service's
@@ -74,6 +77,22 @@ namespace Stroika::Frameworks::UPnP::GENA {
              *  Architecture says SHOULD be at least 1800 seconds.
              */
             Foundation::Time::DurationSeconds fTimeout{1800.0};
+
+            /**
+             *  \brief How each NOTIFY gets its connection, given the callback URL it goes to - by default a new one, with the
+             *         defaults
+             *
+             *  For a timeout, or certificate checking, or connections leased from a Transfer::ConnectionPool - whose New takes the
+             *  URL, so one already open to that subscriber is used again. Called on the publisher's own thread.
+             *
+             *  \par Example Usage
+             *      \code
+             *          Transfer::ConnectionPool pool; // outliving the Publisher
+             *          GENA::Publisher          events{currentState, {.fConnectionFactory = [&pool] (const URI& to) { return pool.New (to); }}};
+             *      \endcode
+             */
+            function<Foundation::IO::Network::Transfer::Connection::Ptr (const URI& to)> fConnectionFactory{
+                [] (const URI&) { return Foundation::IO::Network::Transfer::Connection::New (); }};
         };
         static const Options kDefaultOptions;
 

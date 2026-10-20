@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/XML/Options.h"
 #include "Stroika/Foundation/IO/Network/Port.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -91,6 +92,16 @@ namespace Stroika::Frameworks::UPnP::GENA {
              *         XML::Options)
              */
             Foundation::DataExchange::XML::Options fXMLOptions;
+
+            /**
+             *  \brief How each SUBSCRIBE, renewal and UNSUBSCRIBE gets its connection, given the event URL it goes to - by default
+             *         a new one, with the defaults
+             *
+             *  For a timeout, or certificate checking, or connections leased from a Transfer::ConnectionPool (@see
+             *  Publisher::Options::fConnectionFactory). Called on Start's and Stop's callers' threads, and on the renewals'.
+             */
+            function<Foundation::IO::Network::Transfer::Connection::Ptr (const URI& to)> fConnectionFactory{
+                [] (const URI&) { return Foundation::IO::Network::Transfer::Connection::New (); }};
         };
         static const Options kDefaultOptions;
 

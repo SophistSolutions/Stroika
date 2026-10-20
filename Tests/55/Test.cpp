@@ -3305,7 +3305,8 @@ namespace {
     /*
      *  GENA's other side: a Subscriber, its callback URL at this machine's address facing the service (here, loopback), is told
      *  each event in SEQ order - the first with every variable - renews in time (a 2 second TIMEOUT here, so renewed each second:
-     *  still told after 3), and is told nothing more once stopped, which unsubscribes.
+     *  still told after 3), and is told nothing more once stopped, which unsubscribes. Both sides' connections are had from
+     *  their Options' fConnectionFactory, each for where its request goes.
      */
     GTEST_TEST (Frameworks_UPnP, GENA_Subscriber_)
     {
@@ -3315,8 +3316,20 @@ namespace {
 #endif
         Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by Subscriber, to renew
         using namespace Stroika::Frameworks::WebServer;
-        atomic<int>     status{0};
-        GENA::Publisher events{[&] () { return Containers::Mapping<String, String>{{"Status"sv, "{}"_f(status.load ())}}; }};
+        atomic<int> status{0};
+        // each connection asked for, and where it goes
+        Execution::Synchronized<Containers::Sequence<URI>> publisherConnectedTo;
+        Execution::Synchronized<Containers::Sequence<URI>> subscriberConnectedTo;
+        auto                                               noting = [] (Execution::Synchronized<Containers::Sequence<URI>>& connectedTo) {
+            return [&connectedTo] (const URI& to) {
+                connectedTo.rwget ()->Append (to);
+                IO::Network::Transfer::Connection::Ptr c = IO::Network::Transfer::Connection::New ();
+                c.SetTimeout (30s);
+                return c;
+            };
+        };
+        GENA::Publisher events{[&] () { return Containers::Mapping<String, String>{{"Status"sv, "{}"_f(status.load ())}}; },
+                               GENA::Publisher::Options{.fConnectionFactory = noting (publisherConnectedTo)}};
         Execution::Synchronized<Containers::Sequence<GENA::Subscriber::Event>> told;
         auto                                                                   toldSize  = [&] () { return told.cget ()->size (); };
         auto                                                                   waitUntil = [] (const function<bool ()>& done) {
@@ -3342,7 +3355,7 @@ namespace {
         }
         EXPECT_EQ (callbackURL->GetAuthority ()->GetHost ()->AsInternetAddress (), V4::kLocalhost) << "not the address facing it";
         GENA::Subscriber subscriber{eventURL, *callbackURL, [&] (const GENA::Subscriber::Event& e) { told.rwget ()->Append (e); },
-                                    GENA::Subscriber::Options{.fTimeout = 2s}};
+                                    GENA::Subscriber::Options{.fTimeout = 2s, .fConnectionFactory = noting (subscriberConnectedTo)}};
         optional<ConnectionManager> control;
         try {
             control.emplace (
@@ -3374,6 +3387,16 @@ namespace {
         events.Notify ({{"Status"sv, "1"sv}});
         Execution::Sleep (1s);
         EXPECT_EQ (toldSize (), 3u) << "told after Stop";
+        // a connection from the factories for each request: the subscriber's SUBSCRIBE, renewals and UNSUBSCRIBE to the event URL,
+        // the publisher's NOTIFYs to the callback URL
+        EXPECT_GE (subscriberConnectedTo.cget ()->size (), 3u);
+        for (const URI& to : subscriberConnectedTo.load ()) {
+            EXPECT_EQ (to, eventURL);
+        }
+        EXPECT_GE (publisherConnectedTo.cget ()->size (), 3u);
+        for (const URI& to : publisherConnectedTo.load ()) {
+            EXPECT_EQ (to, *callbackURL);
+        }
     }
 #endif
 }
