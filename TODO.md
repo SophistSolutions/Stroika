@@ -26,11 +26,9 @@ Generally will track stuff here between releases
   symbolic-link background it came out of is consolidated in
   https://github.com/SophistSolutions/Stroika/issues/1075.
 
-- **plato: finish the `stroika-dev` Remote-SSH client setup** (2026-09-19, not started). Needs the
-  `Host medusa-windows-dev` / `User stroika-dev` entry in `~/.ssh/config`, and a check that plato's
-  own SSH key is in `stroika-dev`'s `authorized_keys` on medusa-windows-dev - that file was a static
-  copy taken at setup time, not synced. Appending to it must be done as `lewis`, elevated: its ACL
-  allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
+- **plato: finish its Remote-SSH client setup, as `lewis`** (2026-09-19; the `stroika-dev` account it was to log in as
+  was deleted 2026-10-20). Its key and shared ssh files are prepared; what is left - test from plato - is in the shared
+  notes' ssh-cleanup checklist. protagoras is already done.
 
 - v3.0d25
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
