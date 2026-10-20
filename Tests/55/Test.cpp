@@ -2264,7 +2264,7 @@ namespace {
         };
         Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
         // BWA: told read under its lock - cget () - not through a copy (load ()) while the callback may still append: ThreadSanitizer
-        // reports a copy's reads as racing copy-on-write's later write in place (Memory::SharedByValue's use_count () check - TODO.md,
+        // reports a copy's reads as racing copy-on-write's later write in place (Memory::SharedByValue's use_count () check -
         // #1205). Restore load () - the reproducer - when that is fixed
         auto waitForChanges = [&] (size_t n) {
             for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; told.cget ()->size () < n and Time::GetTickCount () < giveUpAt;) {
