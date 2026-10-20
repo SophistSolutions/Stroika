@@ -1611,6 +1611,38 @@ namespace {
     }
 
     /*
+     *  A document that fails validation twice: the BadFormatException is about the FIRST failure - what it says, and where -
+     *  with its non-ASCII text intact. Before Stroika v3.0d25 libxml2's provider gave the first error's message with the line
+     *  of the LAST diagnostic libxml2 reported, and read the message in the narrow SDK character set - on Windows the ANSI code
+     *  page, elsewhere the locale's (by default "C", with no non-ASCII at all) - though libxml2 writes UTF-8.
+     */
+    GTEST_TEST (Foundation_DataExchange_XML, Schema_InvalidDocumentReportsItsFirstError_)
+    {
+        constexpr string_view   kXSD_     = R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="a"><xs:complexType><xs:sequence><xs:element name="n" type="xs:int" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element>
+</xs:schema>)";
+        constexpr u8string_view kInvalid_ = u8"<a>\n<n>dr\u00e9i</n>\n<n>four</n>\n</a>"; // fails on line 2, and again on line 3
+        auto                    blob      = [] (auto s) { return Memory::BLOB{as_bytes (span{s.data (), s.size ()})}; };
+        DoWithEachXMLProvider_ ([&] (auto saxParser, auto schemaFactory, auto domFactory) {
+            const Schema::Ptr schema    = schemaFactory (blob (kXSD_), nullptr);
+            auto              checkRead = [] (const function<void ()>& read) {
+                try {
+                    read ();
+                    ADD_FAILURE () << "should have thrown";
+                }
+                catch (const BadFormatException& e) {
+                    optional<unsigned int> line;
+                    e.GetPositionInfo (&line, nullptr, nullptr);
+                    EXPECT_EQ (line, 2u);
+                    EXPECT_NE (e.GetDetails ().Find (String{u8"dr\u00e9i"}), nullopt) << e.GetDetails ().AsUTF8<string> ();
+                }
+            };
+            checkRead ([&] () { domFactory (blob (kInvalid_).As<InputStream::Ptr<byte>> (), schema); });
+            checkRead ([&] () { saxParser (blob (kInvalid_).As<InputStream::Ptr<byte>> (), nullptr, schema); });
+        });
+    }
+
+    /*
      *  Many schemas compiled with a resolver, in one process. Before Stroika v3.0d25 libxml2's provider registered its
      *  resolver's input callbacks - process-global - with each, never unregistering them, and libxml2's table of them holds
      *  10 (MAX_INPUT_CALLBACK, as of libxml2 2.15): so about the tenth registration failed, AssertNotReached.

@@ -8,7 +8,6 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
-#include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -86,6 +85,50 @@ namespace {
 }
 
 namespace {
+    /*
+     *  What libxml2 reports to a schema compile or validation, as its structured error handler (xmlSchemaSetParserStructuredErrors,
+     *  xmlSchemaSetValidStructuredErrors): the first error - what it says, and where - for the BadFormatException that follows;
+     *  warnings are only traced. Given no handler, libxml2 prints its diagnostics to stderr, which is not a library's business.
+     *  Not the generic pair of callbacks (xmlSchemaSetParserErrors, xmlSchemaSetValidErrors - deprecated as of libxml2 2.15):
+     *  libxml2 passes only a structured handler on to the parser of each document an xs:import or xs:include loads
+     *  (xmlSchemaAddSchemaDoc), so with the pair, what that parser reports - a schemaLocation that would not load - goes to
+     *  stderr; and an xmlError's message is UTF-8, where the pair's printf-style arguments say nothing of their character set.
+     */
+    struct SchemaErrors_ {
+        String                 fWhatFailed; // the start of the exception's message
+        String                 fFirstError;
+        optional<unsigned int> fLine;
+        optional<unsigned int> fColumn;
+
+        static void Handler (void* userData, const xmlError* error) noexcept
+        {
+            auto useThis = reinterpret_cast<SchemaErrors_*> (userData);
+            try {
+                if (error->level == XML_ERR_WARNING) {
+                    DbgTrace ("libxml2 warning ignored: {}"_f, String::FromUTF8 (error->message).Trim ());
+                }
+                else if (useThis->fFirstError.empty ()) {
+                    useThis->fFirstError = String::FromUTF8 (error->message).Trim ();
+                    if (error->line > 0) {
+                        useThis->fLine = static_cast<unsigned int> (error->line);
+                    }
+                    if (error->int2 > 0) {
+                        useThis->fColumn = static_cast<unsigned int> (error->int2);
+                    }
+                }
+            }
+            catch (...) {
+                // nothing may be thrown through libxml2, a C library
+            }
+        }
+        BadFormatException AsException () const
+        {
+            return BadFormatException{fFirstError.empty () ? fWhatFailed : fWhatFailed + ": "_k + fFirstError, fLine, fColumn, nullopt};
+        }
+    };
+}
+
+namespace {
     struct SchemaRep_ final : ILibXML2SchemaRep {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
@@ -102,47 +145,15 @@ namespace {
                 xmlSchemaSetResourceLoader (schemaParseContext, &ResourceLoader_, &fResolver_);
             }
             /*
-             *  What is WRONG with the schema comes through this handler and nowhere else: xmlSchemaParse answers only nullptr.
-             *  Without it libxml2 prints its diagnostic to stderr, which is not a library's business, and the caller is left
-             *  with nothing to go on - as it was before Stroika v3.0d25, when the nullptr went to Execution::ThrowIfNull and so
-             *  came out as std::bad_alloc. A structured handler, not xmlSchemaSetParserErrors' generic pair: libxml2 passes
-             *  only a structured one on to the parser of each document an xs:import or xs:include loads (xmlSchemaAddSchemaDoc),
-             *  so with the pair, what that parser reports - a schemaLocation that would not load - goes to stderr.
+             *  What is WRONG with the schema comes only through the handler: xmlSchemaParse answers just nullptr - which before
+             *  Stroika v3.0d25 went to Execution::ThrowIfNull, and so came out as std::bad_alloc.
              */
-            struct ParseCB_ {
-                static void Handler (void* userData, const xmlError* error) noexcept
-                {
-                    auto useCtx = reinterpret_cast<ParseCB_*> (userData);
-                    try {
-                        if (error->level == XML_ERR_WARNING) {
-                            DbgTrace ("schema compile warning ignored: {}"_f, String::FromUTF8 (error->message).Trim ());
-                        }
-                        else if (useCtx->fMessage.empty ()) {
-                            // keep the first error - what it says, and where
-                            useCtx->fMessage = "Failed to compile schema: "_k + String::FromUTF8 (error->message).Trim ();
-                            if (error->line > 0) {
-                                useCtx->fLine = static_cast<unsigned int> (error->line);
-                            }
-                            if (error->int2 > 0) {
-                                useCtx->fColumn = static_cast<unsigned int> (error->int2);
-                            }
-                        }
-                    }
-                    catch (...) {
-                        // nothing may be thrown through libxml2, a C library
-                    }
-                }
-                String                 fMessage;
-                optional<unsigned int> fLine;
-                optional<unsigned int> fColumn;
-            };
-            ParseCB_ parseCB;
-            xmlSchemaSetParserStructuredErrors (schemaParseContext, &ParseCB_::Handler, &parseCB);
+            SchemaErrors_ errors{.fWhatFailed = "Failed to compile schema"_k};
+            xmlSchemaSetParserStructuredErrors (schemaParseContext, &SchemaErrors_::Handler, &errors);
             fCompiledSchema = xmlSchemaParse (schemaParseContext);
             xmlSchemaFreeParserCtxt (schemaParseContext);
             if (fCompiledSchema == nullptr) [[unlikely]] {
-                Execution::Throw (BadFormatException{parseCB.fMessage.empty () ? "Failed to compile schema"_k : parseCB.fMessage,
-                                                     parseCB.fLine, parseCB.fColumn, nullopt});
+                Execution::Throw (errors.AsException ());
             }
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
@@ -1041,41 +1052,11 @@ namespace {
             RequireNotNull (libxml2Schema);
             xmlSchemaValidCtxtPtr   validateCtx = xmlSchemaNewValidCtxt (libxml2Schema);
             [[maybe_unused]] auto&& cleanup     = Execution::Finally ([&] () noexcept { xmlSchemaFreeValidCtxt (validateCtx); });
-            struct ValCB_ {
-                static void warnFun ([[maybe_unused]] void* ctx, [[maybe_unused]] const char* msg, ...)
-                {
-                    // ignored for now
-                    DbgTrace ("validate warn function ignored"_f);
-                }
-                static void errFun (void* ctx, const char* msg, ...)
-                {
-                    // Keep first error - and guess NarrowSDK2Wide does right charset mapping
-                    auto useCtx = reinterpret_cast<ValCB_*> (ctx);
-                    if (useCtx->msg.empty ()) {
-                        va_list argsList;
-                        va_start (argsList, msg);
-                        auto b = Characters::CString::FormatV (msg, argsList);
-                        va_end (argsList);
-                        useCtx->msg = String{"Failed schema validation: "_k + NarrowSDK2Wide (b, Characters::eIgnoreErrors)}.Trim ();
-                    }
-                }
-                String msg;
-            };
-            ValCB_ validationCB;
-            xmlSchemaSetValidErrors (validateCtx, &ValCB_::errFun, &ValCB_::warnFun, &validationCB);
-            int r = xmlSchemaValidateDoc (validateCtx, fLibRep_);
-            if (r != 0) {
-                Assert (not validationCB.msg.empty ()); // guessing we only get validation error if error callback called?
-                optional<unsigned int> lineNumber;
-                optional<unsigned int> columnNumber;
-                optional<uint64_t>     fileOffset;
-                if (const xmlError* err = xmlGetLastError ()) {
-                    lineNumber = static_cast<unsigned int> (err->line);
-                    if (static_cast<unsigned int> (err->int2) != 0) {
-                        columnNumber = static_cast<unsigned int> (err->int2);
-                    }
-                }
-                Execution::Throw (BadFormatException{validationCB.msg, lineNumber, columnNumber, fileOffset});
+            SchemaErrors_           errors{.fWhatFailed = "Failed schema validation"_k};
+            xmlSchemaSetValidStructuredErrors (validateCtx, &SchemaErrors_::Handler, &errors);
+            if (xmlSchemaValidateDoc (validateCtx, fLibRep_) != 0) {
+                Assert (not errors.fFirstError.empty ()); // guessing we only get validation error if error callback called?
+                Execution::Throw (errors.AsException ());
             }
         }
         shared_ptr<const void> fLibrary_; // first, so destroyed last: libxml2 lasts while anything of it does
