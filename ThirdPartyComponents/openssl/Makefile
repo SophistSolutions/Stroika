@@ -22,7 +22,8 @@ QUICK_BUILD ?= 1
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
 
-VERSION:=4.0.1
+VERSION:=4.0.3
+# VERSION:=4.0.1
 # VERSION:=4.0.0
 # 4.x incompatible with mongo-cxx-driver r4.3.1, but seems OK with r4.4.0
 # VERSION:=3.6.2
