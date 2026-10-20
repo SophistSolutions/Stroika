@@ -12,7 +12,13 @@ RUN apt-get update
 RUN apt-get install -y openssh-server && rm -f /etc/ssh/ssh_host_*
 
 # handy dev tools to debug, etc...
-RUN apt-get install -y clang-format curl vim apt-file nodejs iproute2 lldb
+# strace: the system call a hung thread is blocked in, and the addresses sendto/recvfrom used (with an IPv6 scope id). It
+# traces a process it starts; attaching to a running one needs CAP_SYS_PTRACE, which these containers do not have.
+# tcpdump -v: what actually went on the wire (a packet's TTL, SSDP/GENA/HTTP messages).
+RUN apt-get install -y clang-format curl vim apt-file nodejs iproute2 lldb strace tcpdump
+
+# So a non-root user can run tcpdump: CAP_NET_RAW is all it needs, and Docker grants a container that by default.
+RUN apt-get install -y libcap2-bin && setcap cap_net_raw+ep "$(command -v tcpdump)"
 
 EXPOSE 22
 
