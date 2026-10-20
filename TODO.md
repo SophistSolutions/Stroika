@@ -33,10 +33,6 @@ Generally will track stuff here between releases
   allows only `stroika-dev`/`SYSTEM`/`Administrators`. protagoras is already done.
 
 - v3.0d25
-   - **SSDP - every remaining item, as one list** (2026-10-05), in the order to do them (2026-10-08). The planned
-     https://github.com/SophistSolutions/Stroika/issues/1194 work is all done.
-       - (mention SSDP, but not SSDP work) #1195 thread interruption (incl. ConnectionlessSocket ReceiveFrom), #1201 an
-         IPv6 scope id in InternetAddress, #1059 threads -> IntervalTimer, #795 mDNS.
    - **dynamic-analysis coverage - what is left.** Valgrind itself was settled 2026-09-29 (#1177): kept, memcheck
      only, Release builds, on 24.04 and 26.04 - see Documentation/Debugging.md. The audit's sanitizer and valgrind
      retests are in https://github.com/SophistSolutions/Stroika/issues/1185. Still open:
