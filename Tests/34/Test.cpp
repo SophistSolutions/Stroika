@@ -4,8 +4,16 @@
 //  TEST    Foundation::DataExchangeFormat::XML
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <cstdio>
+#include <fcntl.h>
+#include <fstream>
 #include <iostream>
 #include <sstream>
+#if qStroika_Platform_POSIX
+#include <unistd.h>
+#elif qStroika_Platform_Windows
+#include <io.h>
+#endif
 
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -19,6 +27,9 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/IO/FileSystem/TemporaryFile.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -135,6 +146,45 @@ namespace {
                   return XML::DOM::Document::New (XML::Providers::Xerces::kDefaultProvider, in, schemaToValidateAgainstWhileReading);
               });
 #endif
+    }
+
+    /*
+     *  What f writes to stderr - to file descriptor 2, so from whatever writes there, a C library's fprintf (stderr, ...) too
+     */
+    string WrittenToStderr_ (const function<void ()>& f)
+    {
+        using Execution::ThrowPOSIXErrNoIfNegative;
+        IO::FileSystem::ScopedTmpFile captured{"stderr.txt"};
+        fflush (stderr);
+#if qStroika_Platform_POSIX
+        int savedStderr = ThrowPOSIXErrNoIfNegative (::dup (2));
+        int fd          = ThrowPOSIXErrNoIfNegative (::open (filesystem::path{captured}.c_str (), O_WRONLY));
+        ThrowPOSIXErrNoIfNegative (::dup2 (fd, 2));
+        ::close (fd);
+#elif qStroika_Platform_Windows
+        int savedStderr = ThrowPOSIXErrNoIfNegative (::_dup (2));
+        int fd{-1};
+        if (errno_t e = ::_wsopen_s (&fd, filesystem::path{captured}.c_str (), _O_WRONLY, _SH_DENYNO, 0); e != 0) {
+            Execution::ThrowPOSIXErrNo (e);
+        }
+        ThrowPOSIXErrNoIfNegative (::_dup2 (fd, 2));
+        ::_close (fd);
+#endif
+        {
+            [[maybe_unused]] auto&& restore = Execution::Finally ([&] () noexcept {
+                fflush (stderr);
+#if qStroika_Platform_POSIX
+                ::dup2 (savedStderr, 2);
+                ::close (savedStderr);
+#elif qStroika_Platform_Windows
+                ::_dup2 (savedStderr, 2);
+                ::_close (savedStderr);
+#endif
+            });
+            f ();
+        }
+        ifstream in{filesystem::path{captured}};
+        return string{istreambuf_iterator<char>{in}, istreambuf_iterator<char>{}};
     }
 }
 #endif
@@ -1583,8 +1633,9 @@ namespace {
 
     /*
      *  A schema whose xs:import only its resolver can supply: the imported schema's element, read through the resolver, is what
-     *  validates the document - and without the resolver, nothing does. As of Stroika v3.0d25 libxml2's provider resolves
-     *  through the compile's own loader (xmlSchemaSetResourceLoader), not process-global input callbacks.
+     *  validates the document - and without the resolver, nothing does, which the caller hears of and stderr does not. As of
+     *  Stroika v3.0d25 libxml2's provider resolves through the compile's own loader (xmlSchemaSetResourceLoader), not
+     *  process-global input callbacks.
      */
     GTEST_TEST (Foundation_DataExchange_XML, Schema_ResolverSuppliesAnImport_)
     {
@@ -1599,12 +1650,16 @@ namespace {
         auto                             blob      = [] (string_view s) { return Memory::BLOB{as_bytes (span{s.data (), s.size ()})}; };
         const XML::Resource::ResolverPtr resolver  = XML::Resource::MemoryResolver::New (Sequence<XML::Resource::Definition>{
             {.fName = {.fNamespace = IO::Network::URI{"urn:stroika-test:b"sv}, .fSystemID = String{"b.xsd"sv}}, .fData = blob (kB_)}});
+        EXPECT_EQ (WrittenToStderr_ ([] () { fputs ("seen", stderr); }), "seen"); // so an empty capture below means nothing was written
         DoWithEachXMLProvider_ ([&] (auto saxParser, auto schemaFactory, [[maybe_unused]] auto domFactory) {
             const Schema::Ptr schema = schemaFactory (blob (kA_), resolver);
             EXPECT_NO_THROW (saxParser (blob (kValid_).As<InputStream::Ptr<byte>> (), nullptr, schema));
             EXPECT_THROW (saxParser (blob (kInvalid_).As<InputStream::Ptr<byte>> (), nullptr, schema), BadFormatException);
             // without the resolver, b.xsd is nowhere to be found
-            EXPECT_ANY_THROW (saxParser (blob (kValid_).As<InputStream::Ptr<byte>> (), nullptr, schemaFactory (blob (kA_), nullptr)));
+            const string writtenToStderr = WrittenToStderr_ ([&] () {
+                EXPECT_ANY_THROW (saxParser (blob (kValid_).As<InputStream::Ptr<byte>> (), nullptr, schemaFactory (blob (kA_), nullptr)));
+            });
+            EXPECT_EQ (writtenToStderr, "");
         });
     }
 
