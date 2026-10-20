@@ -561,6 +561,8 @@ namespace {
 }
 ```
 
+**Destruction order.** Statics are destroyed in the reverse order of their construction ([basic.start.term]), so a static is safe to use from another's destructor if it was constructed first. Make sure of that by having the holder use it while constructing, or by defining it as an `inline` variable in a header the holder's file includes first - C++17's replacement for ModuleInit\<> (Debug/Trace.inl does this, as does each XML provider's `kDefaultProvider`). That fails when the holder reaches its dependency indirectly - through an interface, a choice made at run time, or an object its caller supplies - and takes hold of it only later: then nothing orders the two. For that, what is held must keep alive what it needs (shared ownership), as XML schemas and documents do with their provider since Stroika v3.0d25 - or do not keep it in a static.
+
 ### class/method Final
 
 - It does very little good (helps optimization sometimes but also can needlessly limit programmer options later)

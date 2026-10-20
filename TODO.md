@@ -8,13 +8,9 @@ Generally will track stuff here between releases
 
 ## Open
 
-- **ModuleInit's deprecation text does not cover the case that actually bites** (2026-10-12). "Use call_once or
-  static inline" is right for construction order, and for destruction where the dependency is formed AT
-  construction. It is not right for a global that LATER acquires a reference to another module's object - the
-  reverse-destruction guarantee of [basic.start.term] does not reach that. A cached XML Schema::Ptr was exactly that
-  case, until each schema and document came to share its XML library's lifetime with the provider (3.0d25): the answer
-  is that - what is held keeps alive what it needs - or not to hold one. Worth a sentence in the deprecation note so the
-  next person does not re-derive it.
+- **WATCH: the release regression results - check once or twice a day** (LGP 2026-10-20) for new failures, and raise
+  each with its run's GIT COMMIT (it may be fixed already). Where they are, the one-command scan, and the known-benign
+  warnings: the shared notes' regression-results-share note.
 
 - config var name ObjDir_ToolsSafe funny name - probably lose the Safe!! part and DOCUMENT what it means!
 
@@ -68,10 +64,3 @@ Generally will track stuff here between releases
      windows-vs2k26-msys-x86_64-Release; 26 fixing it rests on one report that 26.5 did not reproduce it. If it recurs on
      26, retry `npm run build` once at that Makefile line. Drop this entry if CI stays clean to the 3.0d26 release. Once
      26 is LTS (expected late 2026-10), Windows-Cygwin's Dockerfile goes back to its commented-out nodejs-lts line.
-
-
-  - DO PLANNING for CMAKE change
-    - discuss staging
-    - Maybe first step is the MACRO for the build root(discuss if that is done in a way to mirror fit with cmake)
-    - MAYBE get all MY THIRDPARTYCOMPUNTENTS built using a single cmake build line. That seems doable, and a big step towards being able to USE conan (or similar).
-    - then later can think about remaining stroika usage steps (using it internally to build/specify, and GENERATING making consumable from cmake, and skel/examples using it)
