@@ -8,9 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- Consider rewrite of remaining perl stuff - mostly configure - to use python?
-  (test speed of existing make defualt-configs and applyconfigs - that may justify the rewrite).
-
 - **plato: finish its Remote-SSH client setup, as `lewis`** (2026-09-19; the `stroika-dev` account it was to log in as
   was deleted 2026-10-20). Its key and shared ssh files are prepared; what is left - test from plato - is in the shared
   notes' ssh-cleanup checklist. protagoras is already done.
