@@ -36,6 +36,7 @@
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
+#include "Stroika/Foundation/IO/Network/Transfer/ConnectionPool.h"
 
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -451,7 +452,8 @@ namespace {
 
     /*
      *  SOAP end to end, over loopback: a client's Invoke, and a server's HandleRequest answering it - with its handler's Response,
-     *  or the Fault it throws; and a Client fault for a body that is not a SOAP call.
+     *  or the Fault it throws; and a Client fault for a body that is not a SOAP call. Invoke over a connection of its own, of the
+     *  caller's, and leased from a pool.
      */
     GTEST_TEST (Frameworks_WebService, SOAP_InvokeAndHandleRequest_)
     {
@@ -462,6 +464,9 @@ namespace {
         constexpr IO::Network::PortType kPort_ = 8084; // on loopback only
         const IO::Network::URI          url{"http://127.0.0.1:{}/stock"_f(kPort_)};
         const SOAP::Fault kBusy_{.fFaultCode = "Server.Busy"sv, .fFaultString = "try later"sv, .fDetail = "<x:Why xmlns:x=\"urn:example:why\">because</x:Why>"sv};
+        const SOAP::Request kGetPrice_{.fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Symbol"sv, "IBM"sv}}};
+        const SOAP::Response kPrice_{.fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Price"sv, "34.5"sv}}};
+        const SOAP::Request  kBuy_{.fNamespace = "urn:example:stock"sv, .fMethod = "Buy"sv};
         optional<ConnectionManager> server;
         try {
             server.emplace (IO::Network::SocketAddress{IO::Network::V4::kLocalhost, kPort_},
@@ -482,16 +487,26 @@ namespace {
             return;
         }
         // answered
-        EXPECT_EQ (SOAP::Invoke (url, "\"urn:example:stock#GetPrice\""sv,
-                                 SOAP::Request{.fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Symbol"sv, "IBM"sv}}}),
-                   (SOAP::Response{.fNamespace = "urn:example:stock"sv, .fMethod = "GetPrice"sv, .fArguments = {{"Price"sv, "34.5"sv}}}));
+        EXPECT_EQ (SOAP::Invoke (url, "\"urn:example:stock#GetPrice\""sv, kGetPrice_), kPrice_);
         // faulted
         try {
-            SOAP::Invoke (url, "\"urn:example:stock#Buy\""sv, SOAP::Request{.fNamespace = "urn:example:stock"sv, .fMethod = "Buy"sv});
+            SOAP::Invoke (url, "\"urn:example:stock#Buy\""sv, kBuy_);
             ADD_FAILURE () << "Buy was not refused";
         }
         catch (const SOAP::FaultException& e) {
             EXPECT_EQ (e.GetFault (), kBusy_) << e.GetFault ().ToString ().AsNarrowSDKString ();
+        }
+        // over the caller's connection: one kept for several calls, set up as it wants - and still good after a fault's answer -
+        // and connections leased from a pool
+        IO::Network::Transfer::Connection::Ptr mine = IO::Network::Transfer::Connection::New ();
+        mine.SetTimeout (30s);
+        for (int i = 0; i < 2; ++i) {
+            EXPECT_EQ (SOAP::Invoke (mine, url, "\"urn:example:stock#GetPrice\""sv, kGetPrice_), kPrice_) << i;
+            EXPECT_THROW (SOAP::Invoke (mine, url, "\"urn:example:stock#Buy\""sv, kBuy_), SOAP::FaultException) << i;
+        }
+        IO::Network::Transfer::ConnectionPool pool{IO::Network::Transfer::ConnectionPool::Options{2}};
+        for (int i = 0; i < 3; ++i) {
+            EXPECT_EQ (SOAP::Invoke (pool.New (url), url, "\"urn:example:stock#GetPrice\""sv, kGetPrice_), kPrice_) << i;
         }
         // not a SOAP call
         IO::Network::Transfer::Connection::Ptr c = IO::Network::Transfer::Connection::New ();

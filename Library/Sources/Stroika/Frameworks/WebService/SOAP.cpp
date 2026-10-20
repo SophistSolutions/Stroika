@@ -382,7 +382,11 @@ void SOAP::DeSerialize ([[maybe_unused]] const Memory::BLOB& b, Fault* fault, [[
  */
 SOAP::Response SOAP::Invoke (const URI& url, const String& soapAction, const Request& request, const Options& options)
 {
-    Transfer::Connection::Ptr c = Transfer::Connection::New ();
+    return Invoke (Transfer::Connection::New (), url, soapAction, request, options);
+}
+
+SOAP::Response SOAP::Invoke (Transfer::Connection::Ptr c, const URI& url, const String& soapAction, const Request& request, const Options& options)
+{
     c.SetSchemeAndAuthority (url.GetSchemeAndAuthority ());
     Transfer::Request r;
     r.fMethod               = HTTP::Methods::kPost;

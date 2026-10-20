@@ -255,8 +255,14 @@ namespace Stroika::Frameworks::UPnP::SOAP {
     /**
      *  \brief Ask the service at controlURL to do request's action - and return its answer. Throws ActionException if the service
      *         answers with a UPnPError; otherwise as WebService::SOAP::Invoke.
+     *
+     *  Sent over connection, where one is given - the caller's, as WebService::SOAP::Invoke's: a control point asking one
+     *  device many things can keep one, or lease them from a Transfer::ConnectionPool. Else over a new connection, with the
+     *  defaults.
      */
     ActionResponse Invoke (const URI& controlURL, const ActionRequest& request, const WebService::SOAP::Options& options = {});
+    ActionResponse Invoke (Foundation::IO::Network::Transfer::Connection::Ptr connection, const URI& controlURL, const ActionRequest& request,
+                           const WebService::SOAP::Options& options = {}); ///< \brief Ask the service at controlURL to do request's action, over the caller's connection
 
     /**
      *  \brief Throws the ActionException a service answers request with if its description - its actions, their arguments, and

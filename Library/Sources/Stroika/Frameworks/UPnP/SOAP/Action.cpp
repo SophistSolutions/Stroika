@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
 #include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
 #include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
 #include "Stroika/Foundation/DataExchange/XML/DOM.h"
 #endif
@@ -270,9 +271,15 @@ void SOAP::DeSerialize (const Memory::BLOB& b, ActionError* error, const Generic
  */
 ActionResponse SOAP::Invoke (const URI& controlURL, const ActionRequest& request, const GenericSOAP_::Options& options)
 {
+    return Invoke (IO::Network::Transfer::Connection::New (), controlURL, request, options);
+}
+
+ActionResponse SOAP::Invoke (IO::Network::Transfer::Connection::Ptr connection, const URI& controlURL, const ActionRequest& request,
+                             const GenericSOAP_::Options& options)
+{
     try {
         GenericSOAP_::Response r = GenericSOAP_::Invoke (
-            controlURL, request.GetSOAPAction (),
+            connection, controlURL, request.GetSOAPAction (),
             GenericSOAP_::Request{.fNamespace = request.fServiceType, .fMethod = request.fAction, .fArguments = ToGeneric_ (request.fArguments)},
             UPnPWriting_ (options));
         return ActionResponse{.fServiceType = r.fNamespace, .fAction = r.fMethod, .fArguments = FromGeneric_ (r.fArguments)};

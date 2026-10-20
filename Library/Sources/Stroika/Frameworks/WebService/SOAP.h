@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
@@ -315,8 +316,22 @@ namespace Stroika::Frameworks::WebService::SOAP {
      *  \brief Call a method: POST request to url, with soapAction (in quotes, as SOAPAction headers are: section 6.1.1) - and
      *         return its answer. Throws FaultException if answered with a fault; another failed HTTP response as
      *         IO::Network::Transfer::Exception; an answer that is not SOAP as DataExchange::BadFormatException.
+     *
+     *  Sent over connection, where one is given: the caller's - set up as it wants (a timeout, certificate checking), kept
+     *  to reuse across calls, or leased from a Transfer::ConnectionPool. Else over a new connection, with the defaults.
+     *
+     *  \par Example Usage
+     *      \code
+     *          // calls to one server, over a connection of the caller's: answered within 5 seconds, or a timeout thrown
+     *          IO::Network::Transfer::Connection::Ptr c = IO::Network::Transfer::Connection::New ();
+     *          c.SetTimeout (5s);
+     *          SOAP::Response price  = SOAP::Invoke (c, url, "\"urn:example:stock#GetPrice\""sv, getPriceRequest);
+     *          SOAP::Response volume = SOAP::Invoke (c, url, "\"urn:example:stock#GetVolume\""sv, getVolumeRequest);
+     *      \endcode
      */
     Response Invoke (const URI& url, const String& soapAction, const Request& request, const Options& options = {});
+    Response Invoke (IO::Network::Transfer::Connection::Ptr connection, const URI& url, const String& soapAction, const Request& request,
+                     const Options& options = {}); ///< \brief Call a method, over the caller's connection
 
     /**
      *  \brief Answer a call, at its URL's route: 415 (Unsupported Media Type) if its body is not text/xml; else its Request read

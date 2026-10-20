@@ -1025,6 +1025,13 @@ namespace {
                    (SOAP::ActionError{.fErrorCode = SOAP::ActionError::kInvalidArgs, .fErrorDescription = "Invalid Args"sv}));
         SOAP::Invoke (tableControlURL, {.fServiceType = kServiceType_, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, true}}});
         EXPECT_EQ (SOAP::Invoke (tableControlURL, {.fServiceType = kServiceType_, .fAction = "GetStatus"sv}).LookupArgument<bool> ("ResultStatus"sv), true);
+        // a control point keeping one connection for a device's actions, set up as it wants - still good after an error's answer
+        IO::Network::Transfer::Connection::Ptr kept = IO::Network::Transfer::Connection::New ();
+        kept.SetTimeout (30s);
+        SOAP::Invoke (kept, tableControlURL, {.fServiceType = kServiceType_, .fAction = "SetTarget"sv, .fArguments = {{"newTargetValue"sv, false}}});
+        EXPECT_THROW (SOAP::Invoke (kept, controlURL, {.fServiceType = kServiceType_, .fAction = "Refuse"sv}), SOAP::ActionException);
+        EXPECT_EQ (SOAP::Invoke (kept, tableControlURL, {.fServiceType = kServiceType_, .fAction = "GetStatus"sv}).LookupArgument<bool> ("ResultStatus"sv),
+                   false);
         // not text/xml: refused
         IO::Network::Transfer::Connection::Ptr c = IO::Network::Transfer::Connection::New ();
         c.SetSchemeAndAuthority (controlURL.GetSchemeAndAuthority ());
