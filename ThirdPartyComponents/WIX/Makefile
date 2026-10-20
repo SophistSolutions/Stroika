@@ -8,9 +8,10 @@ include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 ### https://wixtoolset.org/docs/releasenotes/
 ### We are way behind here - but some work to update -  up to WIX v5 --LGP 2024-07-18
 
-VERSION=311
-FOLDERNAMEVER=wix$(VERSION)2rtm
-#FOLDERNAMEVER=wix$(VERSION)1rtm
+VERSION=314
+FOLDERNAMEVER=wix$(VERSION)1rtm
+# VERSION=311
+# FOLDERNAMEVER=wix$(VERSION)2rtm
 FILEVERNAME=wix$(VERSION)-binaries
 
 ZIPPEDFILE=../Origs-Cache/$(FILEVERNAME).zip
