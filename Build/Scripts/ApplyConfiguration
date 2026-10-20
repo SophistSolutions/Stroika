@@ -1,9 +1,16 @@
 #!/bin/sh
 # (sh, then Python: python3 runs this file by a path it can open. A native Windows python3.exe cannot open a /c/... path -
-# under MSYS2's make, which exports MSYS2_ARG_CONV_EXCL=*, it arrives unconverted - so it gets cygpath's C:/... form.
-# Cygwin's and MSYS2's own python3 (in /usr/bin) are POSIX programs, and take the path as it is)
+# under MSYS2's make, which exports MSYS2_ARG_CONV_EXCL=*, it arrives unconverted - so it gets the C:/... form. Cygwin's and
+# MSYS2's own python3 (in /usr/bin) are POSIX programs, and take the path as it is. With no fork but the exec: this runs
+# often. The bash-only expansions are in eval, so the sh of Linux (dash) never parses them)
 ''':'
-case "$0" in /*) case "$(command -v python3)" in /usr/bin/* | /bin/*) ;; *) if command -v cygpath > /dev/null 2>&1; then exec python3 "$(cygpath -m "$0")" "$@"; fi ;; esac ;; esac
+case "$0:$OSTYPE" in /*:msys* | /*:cygwin*)
+	hash python3 2> /dev/null; eval 'p=${BASH_CMDS[python3]}'
+	case "$p" in /usr/bin/* | /bin/* | "") ;; *)
+		case "$0" in /[A-Za-z]/*) eval 'd=${0:1:1}; exec python3 "${d^^}:${0:2}" "$@"' ;; esac
+		exec python3 "$(cygpath -m "$0")" "$@" ;;
+	esac ;;
+esac
 exec python3 "$0" "$@"
 '''
 #
@@ -70,13 +77,9 @@ def Backtick(args, env=None):
 
 
 def PerlOS():
-    """What Perl's $^O says on this host"""
-    if sys.platform.startswith("cygwin"):
+    """What Perl's $^O says on this host: on Windows "cygwin" - MSYS2's perl says so too, not "msys" """
+    if sys.platform in ("win32", "msys") or sys.platform.startswith("cygwin"):
         return "cygwin"
-    if sys.platform == "msys":
-        return "msys"
-    if sys.platform == "win32":  # a native (MINGW) Python, run from an MSYS2 or Cygwin shell
-        return "cygwin" if Trim(Backtick(["uname", "-s"])[0]).startswith("CYGWIN") else "msys"
     return sys.platform  # 'linux', 'darwin', ...
 
 

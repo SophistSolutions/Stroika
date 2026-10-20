@@ -1,0 +1,3494 @@
+#!/usr/bin/env perl
+
+#
+# TODO
+#
+#		@todo	Consider adding output variables CFLAGS_ADDITIONS, CXXFLAGS_ADDITIONS, CFLAGS_REMOVEALS, CXXFLAGS_REMOVEALS
+#		@todo	Consider adding support for ASFLAGS (like CFLAGS)
+#
+
+use strict;
+use warnings;
+no if $] >= 5.017011, warnings => 'experimental::smartmatch';
+
+BEGIN{ @INC = ( "./", @INC ); }
+
+use constant false => 0;
+use constant true  => 1;
+use constant DEFAULT_BOOL_OPTIONS => -1;
+
+my $configurationFiles	=	"ConfigurationFiles/";
+
+my $configurationName	=	undef;
+
+my $MAKE_INDENT_LEVEL = $ENV{'MAKE_INDENT_LEVEL'};
+if (!defined $MAKE_INDENT_LEVEL) {
+	$MAKE_INDENT_LEVEL = 0;
+}
+
+
+sub	GetThisScriptDir {
+	use File::Basename;
+	use Cwd 'abs_path';
+	my $p = __FILE__;
+	my $A = abs_path ($p);
+	my $dirname = dirname($A);
+	return $dirname;
+}
+my	$thisScriptDir	=	GetThisScriptDir ();
+
+sub trim($)
+{
+	my $string = shift;
+	if (not defined($string)) {
+		return $string;
+	}
+	$string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+	return $string;
+}
+
+sub indexOf
+{
+	my @arr = shift;
+	my $v = shift;
+	for (my $ii = 0; $ii < $#arr; $ii++) {
+	   if ($arr[$ii] eq $v) {
+			return $ii;
+	   }
+	}
+	return -1;
+}
+
+
+my $PATH_SEPERATOR=":";
+if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+	$PATH_SEPERATOR=";";
+}
+
+
+my @EXTRA_ARGS = ();
+
+
+########### CONFIG_Variables ###############
+my $ARCH='';
+my $BuildToolsRoot=undef;
+my $BuildPlatform='';
+my $TargetPlatforms='';
+
+# Various Visaul Studio defines sometimes (maybe) helpful - somewhat speculative
+my $VSVARS_VSINSTALLDIR=undef;
+my $VSVARS_WindowsSdkDir=undef;
+my $VSVARS_MSVC_RUNTIME_LIBRARY=undef;		# https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html
+my $VSVARS_WindowsSDKVersion=undef;
+my $VSVARS_VCToolsInstallDir=undef;
+
+
+my @useExtraCDefines;
+my @useExtraMakeDefines;
+my @foundationPackageCfgNames;
+
+my @Platform_CPPFLAGS_B4Includes = qw ();		# anything called --append CPPFLAGS here! - not including STK_INCLUDES
+# my @CPPFLAGS = qw ();
+my @CPPFLAGS2Remove = qw ();
+my $CPPFLAGS_Overridden = false;
+my @StroikaFoundation_CPPFLAGS_B4Includes = qw ();
+
+my @CFLAGS = qw ();
+my @CFLAGS2Remove = qw ();
+my $CFLAGS_Overridden = false;
+my @CXXFLAGS = qw ();
+my @CXXFLAGS2Append = qw ();
+my @CXXFLAGS2Remove = qw ();
+my $CXXFLAGS_Overridden = false;
+
+
+#
+# BUILD iff LIBFEATUREFLAG_BuildOnly OR LIBFEATUREFLAG_UseStaticTPP
+# HAS_FEATURE iff LIBFEATUREFLAG_UseStaticTPP OR LIBFEATUREFLAG_UseSystem
+#
+my $LIBFEATUREFLAG_BuildOnly = "build-only";
+my $LIBFEATUREFLAG_UseStaticTPP = "use";
+my $LIBFEATUREFLAG_UseSystem = "use-system";
+my $LIBFEATUREFLAG_No = "no";
+
+
+my $ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
+my $ENABLE_LTO_SetExplicitly = false;		# --lto given on the command line, so the sanitizer reconciliation below must not override it
+my $gLTODefaultedOffForNoLLD = false;		# the release defaults turned LTO off because this clang has no lld - NOTEd in PostProcessOptions_
+my $gUbuntu2404OptimizedNoLTOHazard = false;	# set by ApplyCompilerBugWorkarounds_; see there. Read again at config-generation time
+my $gAssertionsEnabled = DEFAULT_BOOL_OPTIONS;
+my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
+my $MACOSX_DEPLOYMENT_TARGET = undef;
+my $CPPSTD_VERSION_FLAG = '';
+my $CXXWARNING_FLAGS = undef;
+
+# gcc visibility flag - -fvisibility=hidden  (see https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html for explanation)
+my $SharedSymbolVisibility = undef;
+
+my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
+my $sanitizerFlagsIsDefined = false;		#sadly perl arrays cannot be 'undefined'
+my $sanitizerFlagsNoneSet = false;
+my @sanitizerFlags = ();
+my @noSanitizerFlags = ();
+my $autoIncludeTSAN_OPTIONSIfAppropriate = true;
+
+
+my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
+my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
+
+
+### @todo finish review of what warnings we still want - disable a few more... --LGP 2019-08-29
+### FOR COMMON ONES - SEE IF THEY SHOULD REALLY BE GCC SPECIFIC
+my $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ = '-Wall ';
+$DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-switch ';				# This warning needed because of pattern with eEnd being injected into enums but not looked for in switch
+$DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-sign-compare ';		# someday tackle this, but I'm not sure its helpful
+$DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-function ';		# we have many of these - review if makes sense warning?
+$DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-psabi ';				# never want to see "note: parameter passing for argument" cuz we statically link
+
+my $DEFAULT_CXXWARNING_FLAGS_GCC		= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_;
+
+my $DEFAULT_CXXWARNING_FLAGS_CLANG	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_;
+
+
+my $Config_Tag = undef;   #see 	https://github.com/SophistSolutions/Stroika/issues/802 to support plural
+
+my $BuildByDefault = "always";	# for now default to always...
+
+my $FEATUREFLAG_boost = undef;
+my $FEATUREFLAG_LIBCURL = undef;
+my $FEATUREFLAG_fmtlib = undef;
+my $FEATUREFLAG_OpenSSL = undef;
+my $FEATUREFLAG_OpenSSLExtraArgs = "";
+my $FEATUREFLAG_ATLMFC = undef;
+my $FEATUREFLAG_Xerces = undef;
+my $FEATUREFLAG_GoogleTest = undef;
+my $FEATUREFLAG_LZMA = undef;
+my $FEATUREFLAG_mongocxxdriver = undef;
+my $FEATUREFLAG_sqlite = undef;
+my $FEATUREFLAG_StrawberryPerl = undef;
+my $FEATUREFLAG_librt = undef;
+my $FEATUREFLAG_WinHTTP = undef;
+my $FEATUREFLAG_WIX = undef;
+my $FEATUREFLAG_libxml2 = undef;
+my $FEATUREFLAG_ZLib = undef;
+my $FEATUREFLAG_zstd = undef;
+my $TargettingValgrind = undef;
+my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
+my $qCompiler_HasNoMisleadingIndentation_Flag = undef;
+my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
+my $INCLUDE_SYMBOLS_LIB = true;
+my $INCLUDE_SYMBOLS_EXE = DEFAULT_BOOL_OPTIONS;
+my $MALLOC_GUARD = DEFAULT_BOOL_OPTIONS;
+my $COPTIMIZE_FLAGS = "";
+my $STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS;
+my $STATIC_LINK_SANITIZERS = DEFAULT_BOOL_OPTIONS;
+my $COMPILER_DRIVER = "";
+my $COMPILER_DRIVER_C = "";				# @todo allow cmdline option to set _C or _CPlusPlus version
+my $COMPILER_DRIVER_CPlusPlus = "";
+my $AS = undef;
+my $AR = undef;
+my $CMAKE = undef;
+my $LIBTOOL = undef; # Windows format LIB tool
+my $RANLIB = undef;
+my $LINKER = undef;
+my $MIDL = undef;
+my $RC = undef;
+my $STRIP = undef;
+my $LinkerArgs_ExtraPrefix = "";
+my $LinkerArgs_ExtraSuffix = "";
+my $RunPrefix = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
+my $CrossCompiling = "false";
+my $onlyGenerateIfCompilerExists = false;		## Looks for BOTH compiler and assocaited stdlib if std=libc++
+my @VC_PLATFORM_INCLUDES_PATH = qw();
+my @PLATFORM_INCLUDES_PATH = qw();
+my @FOUNDATION_INCLUDES_PATH = qw();
+my $INCLUDES_PATH_SET = false;
+my @INCLUDES_PATH_ADD  = qw();
+my @LinkerArgs_LibPath = qw();
+my $LinkerArgs_LibPath_SET = false;
+my @LinkerArgs_LibPath_ADD  = qw();
+my @LinkTime_CopyFilesToEXEDir = qw();
+my $LinkerArgs_LibDependencies  = undef;	# space separated list
+my @LinkerArgs_LibDependencies_ADD  = qw();
+my $STDCXXLIB = undef;
+my $TOOLS_PATH_ADDITIONS = undef;
+my $lsb_release = trim (`lsb_release -rs 2>/dev/null`);
+
+
+
+my $DoSetThirdPartyComponentsParameterFromCommandLine = 'fill-in-defaults';
+
+
+#
+#	Whether mongo-cxx-driver defaults ON - only where it will build successfully. An explicit --mongo-cxx-driver on
+#	the command line always wins (the flag is already defined, so this is never consulted).
+#
+my $sMongoArmhfAsanNoted_ = false;
+sub	MongoCXXDriverDefaultsOn_
+{
+	#	- NOT armhf + address sanitizer: the armhf gcc cross compilers crash - "internal compiler error: Segmentation
+	#	  fault" - compiling mongo-c-driver under -fsanitize=address (e.g. in libbson/src/bson/bson-clock.c). Measured
+	#	  2026-09-24: gcc 13.3/14.2 (Ubuntu 24.04) and 13.4/15.2 (26.04) crash at -O2 AND -O0; 26.04's 14.3 built it in
+	#	  one container and crashed in the regression-test image - which file crashes shifts with the exact headers, so a
+	#	  passing combination is luck. The other third-party components built fine under asan, so these configurations
+	#	  just go without mongo (it is still tested on armhf by the release and ubsan configurations).
+	#	  TO RETEST on a newer mongo-cxx-driver or compiler: configure the armhf asan configuration WITH
+	#	  --mongo-cxx-driver use, then build only 'make -C ThirdPartyComponents CONFIGURATION=<it> mongo-cxx-driver' (a
+	#	  few minutes - no Pi needed). Re-enabled and still broken looks like that ICE in that component's BUILD-OUT.txt,
+	#	  and the whole configuration failing to build. If it builds, delete this case.
+	#	  https://github.com/SophistSolutions/Stroika/issues/1174
+	if ($ARCH eq "armhf" and IsTargettingSanitizer_ ('address')) {
+		if (!$sMongoArmhfAsanNoted_) {
+			print ("NOTE: mongo-cxx-driver defaults OFF for armhf + address sanitizer (armhf gcc crashes compiling it - see #1174); --mongo-cxx-driver use to force it\n");
+			$sMongoArmhfAsanNoted_ = true;
+		}
+		return false;
+	}
+	return true;
+}
+
+#
+# DoSetThirdPartyComponents_ ('all-available')
+# DoSetThirdPartyComponents_ ('default')
+# DoSetThirdPartyComponents_ ('fill-in-defaults')
+# DoSetThirdPartyComponents_ ('none')
+#
+sub	DoSetThirdPartyComponents_
+{
+	my $x = shift(@_);
+	if ($x eq "all-available") {
+		## Basically the same as fill-in-defaults, except for those that default off (maybe more soon)
+		## and except fmtlib which is basically a pollyfill
+		my $xercesAlreadySet = defined($FEATUREFLAG_Xerces);
+		my $mongoAlreadySet = defined($FEATUREFLAG_mongocxxdriver);
+
+		DoSetThirdPartyComponents_('fill-in-defaults');
+		if (!$xercesAlreadySet) {
+			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!$mongoAlreadySet and MongoCXXDriverDefaultsOn_ ()) {
+			## if not explicitly listed on command-line, only default-on if will build successfully
+			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+	}
+	elsif ($x eq "default") {
+		$FEATUREFLAG_ATLMFC = undef;
+		$FEATUREFLAG_boost = undef;
+		$FEATUREFLAG_LIBCURL = undef;
+		$FEATUREFLAG_fmtlib = undef;
+		$FEATUREFLAG_GoogleTest = undef;
+		$FEATUREFLAG_LZMA = undef;
+		$FEATUREFLAG_mongocxxdriver = undef;
+		$FEATUREFLAG_OpenSSL = undef;
+		$FEATUREFLAG_sqlite = undef;
+		$FEATUREFLAG_WinHTTP = undef;
+		$FEATUREFLAG_libxml2 = undef;
+		$FEATUREFLAG_Xerces = undef;
+	}
+	elsif ($x eq "fill-in-defaults") {
+		# Called late enuf that other variables have been filled in...
+		if (!defined $FEATUREFLAG_ATLMFC) {
+			if (($BuildPlatform eq "VisualStudio.Net-2022") or ($BuildPlatform eq "VisualStudio.Net-2026")) {
+				# in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
+				if (-e "$VSVARS_VCToolsInstallDir/atlmfc/include/afxext.h") {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+				}
+			}
+			if (!defined $FEATUREFLAG_ATLMFC) {
+				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+			}
+		}
+		if (!defined $FEATUREFLAG_boost) {
+			$FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_LIBCURL) {
+			if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+				$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
+			}
+			else {
+				$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
+			}
+		}
+		if (!defined $FEATUREFLAG_libxml2) {
+			$FEATUREFLAG_libxml2 = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_Xerces) {
+			# if we have libxml2 being used, then DEFAULT to not including xerces (takes a long time to build and libxml2 better(?))
+			if ($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_No) {
+				$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
+			}
+			else {
+				$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
+			}
+		}
+		if (!defined $FEATUREFLAG_LZMA) {
+			$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_fmtlib) {
+			if (NeedsFmtLib_ ()) {
+				$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_UseStaticTPP;
+			}
+			else {
+				$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_No;
+			}
+		}
+		if (!defined $FEATUREFLAG_OpenSSL) {
+			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_sqlite) {
+			$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_mongocxxdriver) {
+			## if not explicitly listed on command-line, only default-on if will build successfully
+			$FEATUREFLAG_mongocxxdriver = MongoCXXDriverDefaultsOn_ () ? $LIBFEATUREFLAG_UseStaticTPP : $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_WinHTTP) {
+			if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+				$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
+			}
+			else {
+				$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
+			}
+		}
+		if (!defined $FEATUREFLAG_ZLib) {
+			$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_zstd) {
+			$FEATUREFLAG_zstd = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_GoogleTest) {
+			$FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+	}
+	elsif ($x eq "none") {
+		if (!defined $FEATUREFLAG_ATLMFC) {
+			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_boost) {
+			$FEATUREFLAG_boost = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_LIBCURL) {
+			$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_libxml2) {
+			$FEATUREFLAG_libxml2 = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_Xerces) {
+			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_LZMA) {
+			$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_fmtlib) {
+			$FEATUREFLAG_fmtlib = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_OpenSSL) {
+			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_sqlite) {
+			$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_mongocxxdriver) {
+			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_WinHTTP) {
+			$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_ZLib) {
+			$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_zstd) {
+			$FEATUREFLAG_zstd = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_GoogleTest) {
+			$FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_No;	}
+		}
+	else {
+		die ("Bad argument to DoSetThirdPartyComponents_")
+	}
+}
+
+
+#
+# Workaround MSYS compatabilty issues with microsoft visual C++ tools.
+#		Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
+#
+if ("$^O" eq "msys") {
+	$ENV{'MSYS2_ARG_CONV_EXCL'} = '*';
+}
+
+
+
+# More standard to have false, true is the value used in VS2k project files (through 2.1a2)
+# for a while in Stroika based apps /EHa versus /EHsc - https://docs.microsoft.com/en-us/cpp/build/reference/eh-exception-handling-model?view=vs-2019
+# So in Stroika 2.1a2 switch default to more standard (and recommended by MSFT docs above) no structured exceptions
+my $Windows_Exceptions_SupportStructuredExceptions = false;
+
+sub	ValidateUseArg_
+{
+	my $var = shift(@_);
+	my $forName = shift(@_);
+	if ($var ne 'build-only' && $var ne 'use' && $var ne 'use-system' && $var ne 'no') {
+		print ("$forName ARG: $var\n");
+		DoHelp_ (1);
+	}
+}
+
+sub	DoHelp_
+{
+	my $x = shift(@_);
+	print("Usage:\n");
+		print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
+		print("	    --arch {ARCH}                                    /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
+		print("	    [--config-tag {TAG-NAME}]*                       /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
+		print("	    --build-by-default never|always|{uname}          /* Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT */\n");
+		print("	    --build-platform {PLATFORM}                      /* Specifies the BuildPlatform (currently supported: Unix (even on macos), VisualStudio.Net-2022, VisualStudio.Net-2026) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1) */\n");
+		print("	    --target-platforms {TargetPlatforms}             /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
+		print("	    --build-tools-root {BuildToolsRoot}              /* Specifies the BuildToolsRoot (makefile variable) - initially just for visual studio - usually auto-detected */\n");
+		print("	    --assertions { enable|disable|default }          /* Enables/disable assertion feature (setting qStroika_Foundation_Debug_AssertionsChecked) */\n");
+		print("	    --block-allocation { enable|disable|default }    /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
+		print("	    --valgrind { enable|disable|default }            /* Enables/disable valgrind-specific runtime code */\n");
+		print("	    --GLIBCXX_DEBUG { enable|disable|default }       /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
+		print("	    --MACOSX_DEPLOYMENT_TARGET { #|default|none }    /* set MACOSX_DEPLOYMENT_TARGET (mac os min version) (macosx target specific) */\n");
+		print("	    --cppstd-version {FLAG}                          /* Sets can be c++20, c++2a, c++2b, c++23 */\n");
+		print("	    --stdlib {LIB}                                   /* libc++ (clang lib), libstdc++ (gcc and often clang) */\n");
+		print("	    --ATLMFC {use-system|no}                         /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
+		print("	    --boost {build-only|use|use-system|no}           /* Enables/disables use of boost for this configuration [default use] */\n");
+		print("	    --LibCurl {build-only|use|use-system|no}         /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
+		print("	    --OpenSSL {build-only|use|use-system|no}         /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
+		print("	    --OpenSSL-ExtraArgs { purify? }                  /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
+		print("	    --lzma {build-only|use|use-system|no}            /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
+		print("	    --mongo-cxx-driver {build-only|use|use-system|no}/* Enables/disables use of MongoCXX for this configuration [default use] */\n");
+		print("	    --googletest {build-only|use|use-system|no}      /* Enables/disables use of google test framework for this configuration [default use] */\n");
+		print("	    --sqlite {build-only|use|use-system|no}          /* Enables/disables use of sqlite for this configuration [default use] */\n");
+		print("	    --StrawberryPerl {use|no}                        /* Enables/disables use of StrawberryPerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
+		print("	    --WIX {use|use-system|no}                        /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
+		print("	    --WinHTTP {use-system|no}                        /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
+		print("	    --Xerces {build-only|use|use-system|no}          /* Enables/disables use of Xerces for this configuration [default use] */\n");
+		print("	    --libxml2 {build-only|use|use-system|no}         /* Enables/disables use of libxml2 for this configuration [default use] */\n");
+		print("	    --ZLib {build-only|use|use-system|no}            /* Enables/disables use of ZLib for this configuration [default use] */\n");
+		print("	    --zstd {build-only|use|use-system|no}            /* Enables/disables use of zstd for this configuration [default use] */\n");
+		print("	    --all-available-third-party-components           /* equivilent to --Xerces (etc) use - for all that are available on this platform (except polyfill components like fmtlib) */\n");
+		print("	    --default-third-party-components                 /* reset third party settings to their default value (maybe less than all-available-third-party-components) */\n");
+		print("	    --no-third-party-components           			 /* equivilent to --StrawberryPerl no --LibCurl no ...  */\n");
+		print("	    --trace2file { enable|disable|default }          /* Enables/disable trace2file feature */\n");
+		print("	    --static-link-gccruntime { enable|disable }      /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
+		print("	    --make-define {ARG}                              /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
+		print("	    --compiler-driver {ARG}                          /* default is gcc */\n");
+		print("	    --ar {ARG}                                       /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
+		print("	    --as {ARG}                                       /* default is 'as' on unix, and retrieved from visual studio on visual studio */\n");
+		print("	    --ranlib {ARG}                                   /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
+		print("	    --strip {ARG}                                    /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */\n");
+		print("	    --append-CFLAGS {ARG}                            /* Appends ARG to CFLAGS */\n");
+		print("	    --remove-CFLAGS {ARG}                            /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */\n");
+		print("	    --replace-all-CFLAGS {ARG}                       /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */\n");
+		print("	    --append-CPPFLAGS {ARG}                          /* Appends ARG to CPPFLAGS; effectively defines for CFLAGS and CXXFLAGS, elg --append-CPPFLAGS -DA=B */\n");
+		print("	    --remove-CPPFLAGS {ARG}                          /* Remove ARG from CPPFLAGS (including default added args; processed after all adds applied) */\n");
+		print("	    --replace-all-CPPFLAGS {ARG}                     /* OVERRIDES DEFAULTS- and sets CPPFLAGS to just these values */\n");
+		print("	    --append-CXXFLAGS {ARG}                          /* Appends ARG to CXXFLAGS */\n");
+		print("	    --remove-CXXFLAGS {ARG}                          /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */\n");
+		print("	    --replace-all-CXXFLAGS {ARG}                     /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */\n");
+		print("	    --SharedSymbolVisibility {ARG}                   /* alias for append-CFLAGS AND append-CXXFLAGS with -fvisibility=XXX (defaults to hidden on gcc/clang/unix compilers) */\n");
+		print("	    --append-extra-prefix-linker-args {ARG}          /* Appends ARG to 'extra prefix linker args */\n");
+		print("	    --append-extra-suffix-linker-args {ARG}          /* Appends ARG to 'extra suffix linker args */\n");
+		print("	    --append-extra-compiler-and-linker-args {ARG}    /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
+		print("	    --includes-path {ARG}                            /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces, ; separated on windows hosts) */\n");
+		print("	    --append-includes-path {ARG}                     /* Appends ARG to 'INCLUDES_PATH */\n");
+		print("	    --libs-path {ARG}                                /* Sets LinkerArgs_LibPath variable (':' separated, since unix standard and allows spaces; separated on windows hosts) */\n");
+		print("	    --append-libs-path {ARG}                         /* Appends ARG to 'LinkerArgs_LibPath */\n");
+		print("	    --lib-dependencies {ARG}                         /* Sets LinkerArgs_LibDependencies variable (space separated) */\n");
+		print("	    --append-lib-dependencies {ARG}                  /* Appends ARG to 'LinkerArgs_LibDependencies */\n");
+		print("	    --linktime-copy-files-2-EXEDir {ARG}             /* Sets LinkTime_CopyFilesToEXEDir variable (' ' separated) */\n");
+		print("	    --append-linktime-copy-files-2-EXEDir {ARG}      /* Appends ARG to 'LinkTime_CopyFilesToEXEDir */\n");
+		print("	    --run-prefix {ARG}                               /* Sets variable RunPrefix with stuff injected before run for built executables,\n");
+		print("	                                                        such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
+		print("	    --append-run-prefix {ARG}                        /* Appends ARG RunPrefix: with stuff injected before run for built executables */\n");
+		print("	    --include-default-TSAN_OPTIONS {true/false}      /* if true, and tsan enabled, add TSAN_OPTIONS= guess to RunPrefix */\n");
+		print("	    --pg {ARG}                                       /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
+		print("	    --lto { enable|disable }                         /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
+		print("	    --cross-compiling {true|false}                   /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n");
+		print("	    --apply-default-debug-flags                      /*  */\n");
+		print("	    --apply-default-release-flags                    /*  */\n");
+		print("	    --only-if-has-compiler                           /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
+		print("	    --debug-symbols {true|false}                     /* --debug-symbols-lib AND --debug-symbols-exe at the same time */\n");
+		print("	    --debug-symbols-lib {true|false}                 /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+		print("	    --debug-symbols-exe {true|false}                 /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+		print("	    --malloc-guard {true|false}                      /* defaults to false (for now experimental and only works with GCC) */\n");
+		print("	    --runtime-stack-check {true|false}               /* gcc -fstack-protector-all */\n");
+		print("	    --msvc-runtime-library {MultiThreaded|...} 		 /* MSVC_RUNTIME_LIBRARY windows value - defaults to no-DLL and debug based on assertion flag - https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html */\n");
+		print("	    --sanitize {none|thread|address|undefined|leak}  /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -\n");
+		print("	                                                        any arg you can pass to -fsanitize=XXXX */\n");
+		print("	                                                     /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */\n");
+		print("	    --no-sanitize {thread|vptr|etc...}               /* any from --sanitize or all; option maybe used to remove a sub-category of tests (like vptr) from larger category like address */\n");
+		print("\n");
+		print("Configure's behavior is also influenced by the following environment variables:\n");
+		print("	    CC, CXX, BuildPlatform, TargetPlatforms, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n");
+		print("	    EXTRA_CONFIGURE_ARGS= a space separated list of arguments added to the beginning of the configure command\n");
+		
+	exit ($x);
+}
+
+
+
+
+
+sub     ToBool_
+{
+	my $x = shift(@_);
+	if ($x eq "true") {
+		return true;
+	}
+	if ($x eq "false") {
+		return false;
+	}
+	die ("expected bool argument to be true/false");
+}
+
+
+sub     IsGCCOrGPlusPlus_
+{
+	my $x = shift(@_);
+	return ($x =~ /gcc[!\/]*/) || (($x =~ /g\+\+[!\/]*/) && !($x =~ /clang\+\+/));
+}
+
+sub     IsClangOrClangPlusPlus_
+{
+	my $x = shift(@_);
+	return ($x =~ /clang[!\/]*/);
+}
+
+sub     IsClangPlusPlus_
+{
+	my $x = shift(@_);
+	return ($x =~ /clang\+\+[!\/]*/);
+}
+
+#return number
+sub     GetGCCVersion_
+{
+	# no warnings;	#@todo sometimes gives warning about use of  uninitialized variable - not sure why - debug later
+	my $x = shift(@_);
+	my $fullString = trim(shift(@_));
+	if (defined $fullString) {
+		my $v = trim (`./Build/Scripts/GetGCCVersion $x`);
+		return $v;
+	}
+	else {
+		my $v = trim (`./Build/Scripts/GetGCCVersion $x -i`);
+		if ($v eq '') {
+			return 0;
+		}
+		return $v * 1;	# times one to convert to number
+	}
+}
+
+
+#return number
+sub     GetClangVersion_
+{
+	my $x = trim(shift(@_));
+	my $fullString = trim(shift(@_));
+	if (defined $fullString) {
+		my $v = trim (`./Build/Scripts/GetClangVersion $x`);
+		return $v;
+	}
+	else {
+		my $v = trim (`./Build/Scripts/GetClangVersion $x -i`);
+		if ($v eq '') {
+			return -1;
+		}
+		return $v * 1;	# times one to convert to number
+	}
+}
+
+sub     HasStdLib_
+{
+	my $compilerDriver = trim(shift(@_));
+	my $stdLib = trim(shift(@_));
+	return system("printf \"#include <ciso646>\nint main () {}\" | $compilerDriver -E -stdlib=$stdLib -x c++ -dM - 2>/dev/null > /dev/null") == 0;
+}
+
+#	libc++ names the oldest clang it supports in a #warning in its own headers (libc++ 22 wants clang
+#	20 or later). That matters because a distro ships ONE unversioned libc++ while keeping several clang
+#	versions installed, so an older clang silently picks up a libc++ that disowns it - ubuntu 26.04 pairs
+#	clang++-19 with libc++ 22, and ubuntu 24.04 paired clang++-15 with libc++ 18. Ask the library which
+#	compilers it supports rather than keeping those pairs in a table here: a table has to be revisited
+#	whenever either side ships a release, and says nothing about a machine whose libc++ came from
+#	somewhere else. MacOS needs no special case - Apple's libc++ always matches Apple's clang.
+sub     StdLibSupportsCompiler_
+{
+	my $compilerDriver = trim(shift(@_));
+	my $stdLib = trim(shift(@_));
+	return system("printf \"#include <version>\nint main () {}\" | $compilerDriver -stdlib=$stdLib -fsyntax-only '-Werror=#warnings' -x c++ - 2>/dev/null > /dev/null") == 0;
+}
+
+#	The lld this clang would link with given -fuse-ld=lld, or undef if it has none. Asks the compiler rather than
+#	looking for ld.lld-NN, so the answer is the lld the link will really get: clang looks in its own bin directory,
+#	then on PATH, and -print-prog-name echoes back the bare name when it finds nothing.
+sub     GetClangLLD_
+{
+	my $compilerDriver = trim(shift(@_));
+	my $lld = trim (`$compilerDriver -print-prog-name=ld.lld 2>/dev/null`);
+	return ($lld =~ /^\// and -x $lld) ? $lld : undef;
+}
+
+#	The library a std::stacktrace program must link with this compiler, C++ version and libstdc++: "" if none (including
+#	when std::stacktrace is not there to use at that C++ version), undef if no candidate links. libstdc++ keeps it out of
+#	libstdc++ proper - libstdc++exp from gcc 14 (and 13.3), libstdc++_libbacktrace in 12 and 13. Asks the compiler by
+#	linking one, rather than going by version, since the distribution decides what is built and shipped.
+sub     GetLibStdCXXStacktraceLib_
+{
+	my $compilerDriver = trim(shift(@_));
+	my $flags = trim(shift(@_));
+	my $src = "#include <version>\n#if __cpp_lib_stacktrace\n#include <stacktrace>\nint main () { return std::stacktrace::current ().empty (); }\n#else\nint main () {}\n#endif\n";
+	foreach my $lib ("", "-lstdc++exp", "-lstdc++_libbacktrace") {
+		if (system ("printf '$src' | $compilerDriver $flags -x c++ - $lib -o /dev/null 2>/dev/null >/dev/null") == 0) {
+			return $lib;
+		}
+	}
+	return undef;
+}
+
+#	Whether this compiler is installed. Probes that ask the compiler something report "found nothing" when it is missing,
+#	so check this first: otherwise every configuration --only-if-has-compiler goes on to skip prints that noise, and
+#	RegressionTests counts it as a warning (25 of the 40 in a 3.0d25 WSL run, on a box with one g++).
+sub     HasCompiler_
+{
+	my $compilerDriver = trim(shift(@_));
+	return trim (`./Build/Scripts/HasCompiler $compilerDriver`) ne "0";
+}
+
+
+sub     IsMSVCCompiler_
+{
+	my $x = shift(@_);
+	return ($x =~ /.*cl.exe.*/);
+}
+
+sub     Get_MSVC_CL_Version_
+{
+	my $x = trim(shift(@_));
+	my $firstLine = trim (`('$x' 2>&1) | head -1`);
+	if (not defined($firstLine)) {
+		return 0;
+	}
+	no warnings 'numeric';
+	my $ver = trim(`echo "$firstLine" | awk '{print \$7}' | sed 's/\\.//g'`);
+	$ver = $ver * 1;
+	return $ver;
+}
+
+sub getUbuntuVersion
+{
+	my $a =  trim (`(. /etc/os-release ; echo \"\$VERSION_ID\") 2>/dev/null`) ;
+	if ($a eq "") {
+		return 0;
+	}
+	else {
+		return $a * 1;
+	}
+}
+
+sub getMacOSVersion_
+{
+	return trim (`/usr/bin/sw_vers | grep ProductVersion | awk 'END {print \$2}'`);
+}
+
+sub getXCodeVersion_
+{
+	# Version of the SELECTED developer directory (xcode-select -p), which need not match the CommandLineTools package.
+	# xcodebuild fails when the CommandLineTools themselves are selected, so fall back to their package version.
+	my $a =  trim (`xcodebuild -version 2>/dev/null | head -1 | grep -E -o '[0-9]+\.[0-9]+' | head -1`) ;
+	if ($a eq "") {
+		$a =  trim (`pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version: | awk 'END {print \$2}' | grep -E -o '[0-9]+\.[0-9]+' | head -1`) ;
+	}
+	if ($a eq "") {
+		return 0;
+	}
+	return $a;	# only ever printed; as a number, 26.10 would come out as 26.1
+}
+
+sub getXCodeSelect_
+{
+	return trim (`xcode-select -p`) ;
+}
+
+sub     IsTargettingSanitizer_
+{
+	my $x = shift(@_);
+	my %already = map { $_ => 1 } @sanitizerFlags;
+	if(exists($already{$x})) {
+		return true;
+	}
+	return false;
+}
+
+sub     NeedsFmtLib_
+{
+	if (IsClangPlusPlus_($COMPILER_DRIVER)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER);
+		if ("$^O" eq "darwin") {
+			# Every supported XCode (Apple clang 17 - XCode 16.3 and later) has a usable <format>
+			return false;
+		}
+		else {
+			# For <format> support - in clang++15 - appears good enuf (if you enable --experimental...) - but that is sometimes unvailable, so dont count on it
+			if ($itsVersion < 16.0) {
+				return true;
+			}
+		}
+	}
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER);
+		# Builtin supports works for gcc as of gcc 13
+		if ($itsVersion < 13.0) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+
+sub     FillDefaultIncludesPathIfNeeded_
+{
+	#IF we set include path  explicitly, then suppress adding include path automatically (based on features etc) - just explicitly added ones from the commandline
+	my $includeAutomaticDependencies = not $INCLUDES_PATH_SET;
+	if ($includeAutomaticDependencies) {
+		{
+			# @todo unclear if we want to add this to platform includes path - probably yes (alternative is FOUNDATION_INCLUDES_PATH below)
+			push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/include/`) . "/";
+		}
+		@PLATFORM_INCLUDES_PATH = qw ();
+		push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
+		# for now include this (for Stroika/Current-Version.h) but later package all these up in BUilds/$CONF/includes/Stroika
+		# push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
+
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			@VC_PLATFORM_INCLUDES_PATH = qw ();
+			my $x = GetMSVCVarName_ ("INCLUDE");
+			for my $i (split /;/, $x) {
+				push @VC_PLATFORM_INCLUDES_PATH, $i;
+			}
+			@PLATFORM_INCLUDES_PATH = @VC_PLATFORM_INCLUDES_PATH;
+		}
+	}
+	my $var;
+	foreach $var (@INCLUDES_PATH_ADD) {
+		push @PLATFORM_INCLUDES_PATH, $var;
+	}
+}
+sub     FillDefaultLibsPathIfNeeded_
+{
+	my $includeAutomaticDependencies = not $LinkerArgs_LibPath_SET;
+	if ($includeAutomaticDependencies) {
+		@LinkerArgs_LibPath = qw ();
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			# Add the list of library search paths to Platform_LinkerArgs_LibPath (which makes it into stroika-platform.pc as -L lines)
+			my $x = GetMSVCVarName_ ("LIB");
+			for my $i (split /;/, $x) {
+				push @LinkerArgs_LibPath, $i;
+			}
+		}
+	}
+	my $var;
+	foreach $var (@LinkerArgs_LibPath_ADD) {
+		push @LinkerArgs_LibPath, $var;
+	}
+}
+sub     FillDefaultLibDependencies_
+{
+	#IF we set lib dependencies explicitly, then suppress adding libs automatically (based on features etc) - just explicitly added ones from the commandline
+	my $includeAutomaticLibDependencies = !defined ($LinkerArgs_LibDependencies);
+	if (!defined ($LinkerArgs_LibDependencies)) {
+		$LinkerArgs_LibDependencies = "";
+	}
+
+	my $mustAppendDefaults = false;
+
+	if ($LinkerArgs_LibDependencies eq "") {
+		$mustAppendDefaults = true;
+	}
+
+	my $var;
+	foreach $var (@LinkerArgs_LibDependencies_ADD) {
+		$LinkerArgs_LibDependencies .= $var . " ";
+	}
+
+	if ($includeAutomaticLibDependencies) {
+		if ($FEATUREFLAG_Xerces ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "xerces-c");
+ 		}
+		if ($FEATUREFLAG_libxml2 ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "libxml-2.0");
+		}
+		if ($FEATUREFLAG_mongocxxdriver ne $LIBFEATUREFLAG_No) {
+			# Since mongovcxx version 4.4.0
+			push (@foundationPackageCfgNames, "libmongocxx1-static");
+			# push (@foundationPackageCfgNames, "libmongocxx-static");
+		}
+		if ($FEATUREFLAG_OpenSSL ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "openssl");
+		}
+		if ($FEATUREFLAG_LIBCURL ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "libcurl");
+		}
+		if ($FEATUREFLAG_fmtlib ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "fmt");
+		}
+		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "lzma");
+		}
+		if ($FEATUREFLAG_sqlite ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "sqlite");
+		}
+		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "zlib");
+		}
+		if ($FEATUREFLAG_zstd ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "libzstd");
+		}
+		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "gtest_main");
+		}
+		if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
+			push (@foundationPackageCfgNames, "boost");
+		}
+	}
+
+	if ($mustAppendDefaults == true) {
+		if (index ($TargetPlatforms, "Windows") != -1) {
+			$LinkerArgs_LibDependencies .= "urlmon.lib ";
+			$LinkerArgs_LibDependencies .= "rpcrt4.lib ";
+			$LinkerArgs_LibDependencies .= "kernel32.lib ";
+			$LinkerArgs_LibDependencies .= "user32.lib ";
+			$LinkerArgs_LibDependencies .= "gdi32.lib ";
+			$LinkerArgs_LibDependencies .= "winspool.lib ";
+			$LinkerArgs_LibDependencies .= "comdlg32.lib ";
+			$LinkerArgs_LibDependencies .= "advapi32.lib ";
+			$LinkerArgs_LibDependencies .= "shell32.lib ";
+			$LinkerArgs_LibDependencies .= "ole32.lib ";
+			$LinkerArgs_LibDependencies .= "oleaut32.lib ";
+			$LinkerArgs_LibDependencies .= "uuid.lib ";
+			$LinkerArgs_LibDependencies .= "odbc32.lib ";
+			$LinkerArgs_LibDependencies .= "odbccp32.lib ";
+		}
+		if (index ($TargetPlatforms, "POSIX") != -1) {
+			$LinkerArgs_LibDependencies .= "-lpthread ";
+			$LinkerArgs_LibDependencies .= "-lm ";
+			if ($FEATUREFLAG_librt eq $LIBFEATUREFLAG_UseSystem) {
+				$LinkerArgs_LibDependencies .= "-lrt ";
+			}
+		}
+	}
+}
+sub     FillInToolsPathAdditionsIfNeeded_
+{
+	my $includeAutomaticDependencies = !defined ($TOOLS_PATH_ADDITIONS);
+	if ($includeAutomaticDependencies) {
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			my $x = GetMSVCVarName_ ("TOOLS_PATH_ADDITIONS");
+			$TOOLS_PATH_ADDITIONS =  trim (`cygpath --mixed --path \"$x\"`);
+			$VSVARS_VSINSTALLDIR = GetMSVCVarName_('VSINSTALLDIR');
+			$VSVARS_WindowsSdkDir = GetMSVCVarName_('WindowsSdkDir');
+			if ($VSVARS_WindowsSdkDir eq "") {
+				print STDERR "WARNING: VSVARS_WindowsSdkDir empty\n";
+			}
+			$VSVARS_WindowsSDKVersion = GetMSVCVarName_('WindowsSDKVersion');
+			if (substr ($VSVARS_WindowsSDKVersion,length($VSVARS_WindowsSDKVersion)-1, 1) eq '\\') {
+				$VSVARS_WindowsSDKVersion = substr ($VSVARS_WindowsSDKVersion,0, length($VSVARS_WindowsSDKVersion)-1);
+			}
+			$VSVARS_VCToolsInstallDir = GetMSVCVarName_('VCToolsInstallDir');
+		}
+	}
+}
+
+
+
+
+### Initial defaults before looking at command-line arguments
+sub	SetInitialDefaults_
+{
+	if ($TargetPlatforms eq "") {
+		if ("$^O" eq "linux") {
+			$TargetPlatforms = 'Linux POSIX';
+		}
+		elsif ("$^O" eq "darwin") {
+			$TargetPlatforms = 'MacOS POSIX';
+		}
+		elsif ("$^O" eq "cygwin" or "$^O" eq "msys") {
+			$TargetPlatforms = 'Windows';
+		}
+	}
+	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+		$BuildPlatform = 'Unix';
+	}
+	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		# Try vs2k26
+		if ($BuildPlatform eq "") {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/18/*/VC'");
+			if (scalar(@files) != 0) {
+				$BuildPlatform = 'VisualStudio.Net-2026';
+			}
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/18/*/VC'");
+			if (scalar(@files) != 0) {
+				$BuildPlatform = 'VisualStudio.Net-2026';
+			}
+		}
+		# Fallback/Try VS2k 2022
+		if ($BuildPlatform eq "") {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
+				$BuildPlatform = 'VisualStudio.Net-2022';
+			}
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
+				$BuildPlatform = 'VisualStudio.Net-2022';
+			}
+		}
+	}
+
+	if ("$^O" eq "darwin") {
+		# hacks so can do initial port/compile
+		$FEATUREFLAG_librt = $LIBFEATUREFLAG_No;
+		$STATIC_LINK_GCCRUNTIME = 0;
+		$COMPILER_DRIVER = "clang";
+		$COMPILER_DRIVER_C = "clang";
+		$COMPILER_DRIVER_CPlusPlus = "clang++";
+		$AR = "ar";
+		$AS = "as";
+		$RANLIB = "ranlib";
+	}
+}
+
+
+
+sub     ReplaceLast_
+{
+	my $srcString = shift(@_);
+	my $replaceThis = shift(@_);
+	my $withThis = shift(@_);
+
+	#@todo find a better way to safely substitute
+	my $rreplaceThis = trim (`echo $replaceThis | rev`);
+	my $rwithThis = trim (`echo $withThis | rev`);
+	return trim (`echo $srcString | rev | sed 's/$rreplaceThis/$rwithThis/' | rev`);
+}
+
+
+sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
+{
+	ComputeARCHFlag_();
+
+	if ($COMPILER_DRIVER eq "") {
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			$COMPILER_DRIVER = GetMSVCVarName_ ("CC");
+		}
+	}
+
+	if ($COMPILER_DRIVER eq "") {
+		die ("must set COMPILER_DRIVER before SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_");
+	}
+
+	my $isVisualStudio = 		($BuildPlatform =~ /^VisualStudio.Net/);
+	if ($isVisualStudio eq 1) {
+		$isVisualStudio = true;
+	}
+	else {
+		$isVisualStudio = false;
+	}
+
+	if ($isVisualStudio) {
+		if (!(defined $AS)) {
+			$AS = GetMSVCVarName_ ("AS");
+		}
+		if (!(defined $CMAKE)) {
+			$CMAKE = GetMSVCVarName_('VSINSTALLDIR') . '/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe';
+		}
+		
+		if (($COMPILER_DRIVER_C eq "") ) {
+			$COMPILER_DRIVER_C = GetMSVCVarName_ ("CC");
+		}
+		if (($COMPILER_DRIVER_CPlusPlus eq "")) {
+			$COMPILER_DRIVER_CPlusPlus = GetMSVCVarName_ ("CC");	# not cxx for msvc
+		}
+
+		#autodetect ATLMFC (Express verison missing it)
+		if (!defined $FEATUREFLAG_ATLMFC) {
+			if (($BuildPlatform eq "VisualStudio.Net-2022") or ($BuildPlatform eq "VisualStudio.Net-2026")) {
+				if (!defined $VSVARS_VCToolsInstallDir) {
+					$VSVARS_VCToolsInstallDir = GetMSVCVarName_('VCToolsInstallDir');
+				}
+				# in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
+				if (-e "$VSVARS_VCToolsInstallDir/atlmfc/include/afxext.h") {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+				}
+				else  {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+				}
+			}
+		}
+	}
+
+	# I've found almost no docs about this. However, when I first ported to new imac with m1 chip,
+	# and rebuilt stroika, I found XERCES automatically did something like this to force this
+	# setting. But rest of my code didn't and I got compiler warnings. So try to find the best
+	# setting to force to, and allow external settings to override.
+	# This appears to only be needed when running on m1 hardware, but no easy way I can find to
+	# tell that so always do this by default
+	if (!defined $MACOSX_DEPLOYMENT_TARGET && "$^O" eq "darwin") {
+		my $osVersion = getMacOSVersion_();
+		($osVersion =~ /^((\d+)\.(\d+))/gm);	# force convert to 2-digit form as I've seen in examples but not sure makes much sense
+		$MACOSX_DEPLOYMENT_TARGET = $1;
+	}
+
+	no warnings;	#@todo fix - not sure why we get warning on use of $CPPSTD_VERSION_FLAG
+	if ($CPPSTD_VERSION_FLAG eq '') {
+		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+			$CPPSTD_VERSION_FLAG="--std=c++20"
+		}
+		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
+			$CPPSTD_VERSION_FLAG="--std=c++20"
+		}
+		elsif ($BuildPlatform =~ /^VisualStudio.Net/) {
+			$CPPSTD_VERSION_FLAG="-std:c++latest"
+		}
+	}
+	if ($BuildPlatform eq 'Unix') {
+		if ($STATIC_LINK_GCCRUNTIME == DEFAULT_BOOL_OPTIONS) {
+			$STATIC_LINK_GCCRUNTIME = 1;
+		}
+	}
+
+	if ($COMPILER_DRIVER_C eq "") {
+		$COMPILER_DRIVER_C = $COMPILER_DRIVER;
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+			$COMPILER_DRIVER_C = ReplaceLast_ ($COMPILER_DRIVER, 'g++', 'gcc');
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
+			$COMPILER_DRIVER_C = ReplaceLast_ ($COMPILER_DRIVER, 'clang++', 'clang');
+		}
+	}
+	if ($COMPILER_DRIVER_CPlusPlus eq "") {
+		$COMPILER_DRIVER_CPlusPlus = $COMPILER_DRIVER;
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+			$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER, 'gcc', 'g++');
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			if (!IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+				$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'clang', 'clang++');
+			}
+		}
+	}
+	if (! defined $CXXWARNING_FLAGS) {
+		$CXXWARNING_FLAGS = '';
+		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_GCC;
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
+			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_CLANG;
+		}
+	}
+
+	if ($AS eq "") {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			$AS = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'g++', 'as');
+			$AS =~ s/-as-.*$/-as/;
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			if (!IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+				$AS = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'clang++', 'as');
+				$AS =~ s/-as-.*$/-as/;
+			}
+		}
+	}
+	if (! defined $STDCXXLIB) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			$STDCXXLIB = "libstdc++";
+		}
+		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			#	clang's own libc++ is the better default, but only where the installed libc++ supports this
+			#	clang - otherwise every compile carries 'Libc++ only supports Clang NN and later'. libstdc++ is
+			#	a working toolchain and a libc++ that disowns the compiler is not, so default to the one that
+			#	builds. Only the DEFAULT bends: an explicit --stdlib is honored as given (and refused, for a
+			#	configuration marked --only-if-has-compiler).
+			$STDCXXLIB = "libc++";
+			if (!StdLibSupportsCompiler_ ($COMPILER_DRIVER_CPlusPlus, "libc++") and HasStdLib_ ($COMPILER_DRIVER_CPlusPlus, "libstdc++")) {
+				$STDCXXLIB = "libstdc++";
+			}
+		}
+	}
+	if ($ApplyDebugFlags == true) {
+		if ($gAssertionsEnabled == DEFAULT_BOOL_OPTIONS) {
+			$gAssertionsEnabled = 1;
+		}
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
+				$ENABLE_GLIBCXX_DEBUG = 1;
+			}
+			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS) {
+				$runtimeStackProtectorFlag = true;
+			}
+
+			my $skipSanCuzBroken = false;
+			my $skipASANSanCuzBroken = false;
+			# Sanitizers crash with gcc 11 and ubuntu 22.04 (not worth debugging right now...) -
+			# failure running some regtests - crash in leak sanitizer at end of run... --LGP 2024-05-01
+			# NOTE - now disabling BOTH ASAN and UBSAN, but maybe only ASAN broken--LGP 2024-08-21
+			if (getUbuntuVersion() == 22.04) {
+				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+					$skipSanCuzBroken = true;
+				}
+				# with asan and ununtu 22.04, about 1/2 the tests fail (somewhat randomly, not always). --LGP 2024-05-01
+				if (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
+					$skipSanCuzBroken = true;
+				}
+			}
+			if ("$^O" eq "darwin") {
+				# From MacOS 15, and XCode 16:
+				#	#clang++ -rdynamic -mmacosx-version-min=15.0 -fsanitize=address,undefined -static-libsan -stdlib=libc++ --std=c++20 -g -arch arm64 -Wl,-no_warn_duplicate_libraries -o 7zDec 7zMain.o lzma.a -lstdc++ -lc
+				#	clang++: error: static AddressSanitizer runtime is not supported on darwin
+				$skipASANSanCuzBroken = true;
+			}
+			if (!$skipSanCuzBroken and !$sanitizerFlagsNoneSet) {
+				if (!IsTargettingSanitizer_ ('address') && !$skipASANSanCuzBroken) {
+					push @sanitizerFlags, 'address';
+				}
+				if (!IsTargettingSanitizer_ ('undefined')) {
+					push @sanitizerFlags, 'undefined';
+				}
+				$sanitizerFlagsIsDefined = true;
+			}
+		}
+
+		if (IsMSVCCompiler_($COMPILER_DRIVER)) {
+			if (!$sanitizerFlagsNoneSet) {
+				if (!IsTargettingSanitizer_ ('address')) {
+					push @sanitizerFlags, 'address';
+				}
+				# note ubsan not yet supported --LGP 2022-01-04
+				# if(!exists($already{'undefined'})) {
+				# 	push @sanitizerFlags, 'undefined';
+				# }
+			}
+			$sanitizerFlagsIsDefined = true;
+		}
+
+		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_TRACE2FILE = 1;
+		}
+		if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
+			$INCLUDE_SYMBOLS_EXE = true;
+		}
+
+		#helpful to print stack traces in log (not critical, and has performance overhead)
+		#see Debug::BackTrace ()
+		if ($BuildPlatform eq 'Unix') {
+			if (not ($LinkerArgs_ExtraPrefix eq "")) {
+				$LinkerArgs_ExtraPrefix .= " ";
+			}
+			$LinkerArgs_ExtraPrefix .= "-rdynamic";
+		}
+
+	}
+	elsif ($ApplyReleaseFlags == true) {
+		if ($gAssertionsEnabled == DEFAULT_BOOL_OPTIONS) {
+			$gAssertionsEnabled = 0;
+		}
+		# clang LTO on Linux needs lld. GNU ld (ld.bfd, reading the bitcode through the LLVMgold plugin) mis-links Stroika:
+		# undefined references to symbols that ARE in the archive, e.g. on clang++-20
+		#	ld-temp.o:(.text.startup+0x2a66): undefined reference to `Stroika::Foundation::DataExchange::ObjectVariantMapper::ObjectVariantMapper()'
+		# and to boost::json::detail::error_code_category (clang++-16 through 22), 'DWARF error: invalid or unhandled FORM
+		# value: 0x23' (clang++-15), or no LLVMgold.so installed at all (clang++-18). lld reads the bitcode itself, and links
+		# the identical objects correctly. So default to LTO only when this clang has an lld - PostProcessOptions_ adds the
+		# -fuse-ld=lld. Without one, the build still works, just without LTO. macOS needs none of this: its linker is
+		# Apple's own, reading the bitcode through Apple's libLTO.
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && "$^O" ne "darwin" && not defined (GetClangLLD_ ($COMPILER_DRIVER))) {
+			$ENABLE_LTO = false;
+			$gLTODefaultedOffForNoLLD = true;
+		}
+
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
+			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) ) {
+				$ENABLE_LTO = true;
+			}
+			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
+				$ENABLE_LTO = true;
+			}
+			if ($isVisualStudio) {
+				$ENABLE_LTO = true;
+			}
+		}
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
+			if ($COPTIMIZE_FLAGS eq "") {
+				$COPTIMIZE_FLAGS = "-O3";
+			}
+			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
+				$ENABLE_GLIBCXX_DEBUG = 0;
+			}
+		}
+		if (IsMSVCCompiler_ ($COMPILER_DRIVER)) {
+			$COPTIMIZE_FLAGS = "-O2 -Oi -Oy";
+		}
+		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_TRACE2FILE = 0;
+		}
+
+		if ($isVisualStudio) {
+			if (not ($LinkerArgs_ExtraPrefix eq "")) {
+				$LinkerArgs_ExtraPrefix .= " ";
+			}
+			#	/OPT:REF eliminates functions and or data that are never referenced
+			#	/OPT:ICF[=iterations] to perform identical COMDAT folding
+			$LinkerArgs_ExtraPrefix .= "-OPT:REF";
+			$LinkerArgs_ExtraPrefix .= " -OPT:ICF";
+		}
+	}
+
+	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+		if ($ENABLE_LTO == true) {
+			my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER);
+
+			# In function 'copy',
+			# inlined from '__ct ' at /usr/include/c++/13/bits/basic_string.h:683:23,
+			# inlined from 'operator+' at /usr/include/c++/13/bits/basic_string.h:3676:46,
+			# inlined from 'OnTestProgramEnd' at /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/ThirdPartyComponents/GoogleTest/CURRENT/googletest/src/gtest-internal-inl.h:1156:43:
+			# /usr/include/c++/13/bits/char_traits.h:435:56: warning: '__builtin_memcpy' writing 30 bytes into a region of size 16 overflows the destination [-Wstringop-overflow=]
+			# 435 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+			# |                                                        ^
+			# /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/ThirdPartyComponents/GoogleTest/CURRENT/googletest/src/gtest-internal-inl.h: In member function 'OnTestProgramEnd':
+			# /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/ThirdPartyComponents/GoogleTest/CURRENT/googletest/src/gtest-internal-inl.h:1156:74: note: at offset 16 into destination object '<anonymous>' of size 32
+			# 1156 |     SendLn("event=TestProgramEnd&passed=" + FormatBool(unit_test.Passed()));
+			# |                                                                          ^
+			#	NOTE - happens on g++-15 on Ubuntuy 25.04 as well
+			if ($itsVersion < 16.0) {
+				$LinkerArgs_ExtraPrefix		.= ' -Wno-stringop-overflow';
+			}
+
+			# In member function 'deallocate',
+			# inlined from 'deallocate' at /usr/arm-linux-gnueabihf/include/c++/12/bits/allocator.h:200:35,
+			# inlined from 'deallocate' at /usr/arm-linux-gnueabihf/include/c++/12/bits/alloc_traits.h:496:23,
+			# inlined from '_M_deallocate' at /usr/arm-linux-gnueabihf/include/c++/12/bits/stl_vector.h:387:19,
+			# inlined from '__dt_base ' at /usr/arm-linux-gnueabihf/include/c++/12/bits/stl_vector.h:366:15,
+			# inlined from '__dt_comp ' at /usr/arm-linux-gnueabihf/include/c++/12/bits/stl_vector.h:733:7,
+			# inlined from 'KeepSignificantBits' at ../../Library/Sources/Stroika/Foundation/IO/Network/InternetAddress.cpp:383:1,
+			# inlined from '__ct ' at ../../Library/Sources/Stroika/Foundation/IO/Network/CIDR.cpp:25:57,
+			# inlined from 'read_' at ../../Library/Sources/Stroika/Foundation/IO/Network/CIDR.cpp:46:34,
+			# inlined from '__ct ' at ../../Library/Sources/Stroika/Foundation/IO/Network/CIDR.cpp:54:18,
+			# inlined from 'TestBody' at Test.cpp:1961:51:
+			# /usr/arm-linux-gnueabihf/include/c++/12/bits/new_allocator.h:158:33: warning: 'operator delete' called on pointer '_1397' with nonzero offset [1, 2147483647] [-Wfree-nonheap-object]
+			# 158 |         _GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n));
+			#
+			#
+			# NOTE - happens on g++-15 on Ubuntu 25.04 as well (with no armhf) - and cannot suppress with direct DISABLE_COMPILER_GCC_WARNING_START on g++15 and ubuntu 25.04
+			#
+			# NOTE - happens on g++-16 on Ubuntu 26.04 as well (g++-16-release++23), now out of std::function instead of
+			# vector - inlining _M_manager/_M_destroy, gcc cannot prove the small-object-optimized branch is the one taken,
+			# so it reports the heap branch deleting the union's pointer value - which for a [&]-capture-one-local closure
+			# is the address of that local. e.g. Tests/03 (Foundation::Common):
+			# In function '_M_destroy',
+			#	inlined from '_M_manager' at /usr/include/c++/16/bits/std_function.h:208:18,
+			#	inlined from '__dt_base ' at /usr/include/c++/16/bits/std_function.h:324:11,
+			#	inlined from 'TestBody' at Test.cpp:172:72:
+			# /usr/include/c++/16/bits/std_function.h:180:11: warning: 'operator delete' called on unallocated object 'firstEventHandlerCalled' [-Wfree-nonheap-object]
+			# 180 |           delete __victim._M_access<_Functor*>();
+			# Same as g++-15: DISABLE_COMPILER_GCC_WARNING_START at the call site does not suppress it - the diagnostic
+			# comes out of LTRANS at link time, and its location is inside std_function.h, not our source.
+			if ($itsVersion < 17.0 ) {
+				$LinkerArgs_ExtraPrefix		.=  ' -Wno-free-nonheap-object';
+			}
+
+		}
+	}
+
+	if ($isVisualStudio) {
+		# Avoid this - not sure what the reason/need for this is.
+		# 	Creating library C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\Test13.lib and object C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\Test13.exp
+		#	--LGP 2025-07-05
+		if (not ($LinkerArgs_ExtraPrefix eq "")) {
+			$LinkerArgs_ExtraPrefix .= " ";
+		}
+		$LinkerArgs_ExtraPrefix .= "-noexp -noimplib";
+	}
+
+	if (!(defined $AR)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+			my $ccLessArgs = $COMPILER_DRIVER_C;
+			$ccLessArgs  =~ s/\ .*//;
+			$AR = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ar');
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
+			my $ccLessArgs = $COMPILER_DRIVER_C;
+			$ccLessArgs  =~ s/\ .*//;
+			$AR = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ar');
+		}
+	}
+	if (!(defined $AS) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
+		$AS = "as";
+	}
+	if (!(defined $AR) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
+		$AR = "ar";
+	}
+	if (!(defined $RANLIB)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+			my $ccLessArgs = $COMPILER_DRIVER_C;
+			$ccLessArgs  =~ s/\ .*//;
+			$RANLIB = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ranlib');
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
+			my $ccLessArgs = $COMPILER_DRIVER_C;
+			$ccLessArgs  =~ s/\ .*//;
+			$RANLIB = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ranlib');
+		}
+		elsif (!("$^O" eq "cygwin" or "$^O" eq "msys")) {
+			$RANLIB = "ranlib";
+		}
+	}
+	if (!(defined $STRIP) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER))) {
+		my $ccLessArgs = $COMPILER_DRIVER_C;
+		$ccLessArgs  =~ s/\ .*//;
+		my $ma = trim (`$ccLessArgs -print-multiarch`);
+		if ($ma eq '') {
+			$STRIP = "strip";
+		}
+		else {
+			$STRIP = $ma . "-strip";
+		}
+	}
+
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+		# Needed for sqlite build warning
+		$qCompiler_HasNoMisleadingIndentation_Flag = true;
+	}
+
+	if ($onlyGenerateIfCompilerExists == false) {
+		if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER)) {
+			if (GetClangVersion_ ($COMPILER_DRIVER) < 17) {
+				print "CONFIGURATION-WARNING: Stroika v3 requires Apple clang 17 (XCode 16.3) or later (compiler-driver: $COMPILER_DRIVER).\n";
+			}
+		}
+		if (IsClangPlusPlus_($COMPILER_DRIVER)) {
+			my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER);
+			if (0 < $itsVersion and $itsVersion < 15) {
+				print "CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later needed (compiler-driver: $COMPILER_DRIVER, version: $itsVersion).\n";
+			}
+		}
+	}
+
+	if ($lsb_release == "22.04") {
+		# https://github.com/SophistSolutions/Stroika/issues/851 - first seen on 20.10; 22.04 is the last supported release it affects
+
+		#### VERIFIED STILL BROKEN TSAN DEBUG on Ubuntu 22.04 g++-debug-sanitize_thread
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and GetGCCVersion_ ($COMPILER_DRIVER) < 14.0) {
+			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
+		}
+	}
+
+	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
+		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
+	}
+	if (!(defined $FEATUREFLAG_librt)) {
+		$FEATUREFLAG_librt = $LIBFEATUREFLAG_No;
+	}
+	if (!(defined $STRIP) and  $BuildPlatform eq 'Unix') {
+		$STRIP = "strip";
+	}
+
+	if (!(defined $LIBTOOL)) {
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			my $x = GetMSVCVarName_ ("AR");
+			$LIBTOOL = trim ($x);
+		}
+	}
+	if (!(defined $LINKER)) {
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			my $x = GetMSVCVarName_ ("LD");
+			$LINKER = trim ($x);
+		}
+		else {
+			$LINKER = $COMPILER_DRIVER_CPlusPlus;
+		}
+	}
+
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
+		$MIDL = GetMSVCVarName_ ("MIDL");
+		$RC = GetMSVCVarName_ ("RC");
+	}
+
+	if ($MACOSX_DEPLOYMENT_TARGET ne "") {
+		$LinkerArgs_ExtraPrefix .= " -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET";
+	}
+
+	if (("$^O" eq "darwin") && not ($ARCH eq "")) {
+		# check if given ARCH can be executed and conditionally set CrossCompile flag
+		if (system ("arch -arch $ARCH uname 2> /dev/null > /dev/null")) {
+			 $CrossCompiling = "true";
+		}
+	}
+}
+
+
+# These depend on compiler driver, OS, ARCH, etc...
+sub ComputeARCHFlag_
+{
+	my @args = GetAppArgs_ ();
+
+	for (my $i = 1; $i <= $#args; $i++) {
+		my $var = $args[$i];
+		if (lc ($var) eq "-arch" or lc ($var) eq "--arch") {
+			$i++;
+			$var = $args[$i];
+			$ARCH = $var;
+		}
+	}
+
+	if ($ARCH eq "") {
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			if ($configurationName =~ /64$/) {
+				$ARCH = "x86_64";
+				print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
+			}
+			if ($configurationName =~ /32/) {
+				$ARCH = "x86";
+				print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
+			}
+		}
+	}
+
+	if ($ARCH eq "") {
+		$ARCH = trim (`./Build/Scripts/GetCompilerArch $COMPILER_DRIVER`);
+	}
+	
+	# Patch some old/bad names
+	if ($ARCH eq "32" or $ARCH eq "WIN32") {
+		print STDERR "WARNING: replacing ARCH $ARCH with x86\n";
+		$ARCH = "x86";
+	}
+	if ($ARCH eq "64" or $ARCH eq "WIN64") {
+		print STDERR "WARNING: replacing ARCH $ARCH with x86_64\n";
+		$ARCH = "x86_64";
+	}
+
+	if ($ARCH eq "") {
+		die ("Failed to compute ARCH - specify with --arch flag")
+	}
+}
+
+
+sub	SetDefaultsWhichDependOnPlatform_
+{
+	if ($BuildPlatform eq 'Unix' && $COMPILER_DRIVER eq '') {
+		$COMPILER_DRIVER = "gcc";
+	}
+}
+
+
+sub	ParseEnvVarsToSetupInfluencedVariables_
+{
+	if (defined ($ENV{'ARCH'})) {
+		push @EXTRA_ARGS, "--arch";
+		push @EXTRA_ARGS, $ENV{'ARCH'};
+	}
+	if (defined ($ENV{'PLATFORM'})) {
+		push @EXTRA_ARGS, "--build-platform";
+		push @EXTRA_ARGS, $ENV{'PLATFORM'};
+	}
+	if (defined ($ENV{'CC'})) {
+		push @EXTRA_ARGS, "--compiler-driver";
+		push @EXTRA_ARGS, $ENV{'CC'};
+		$COMPILER_DRIVER_C = $ENV{'CC'};
+	}
+	if (defined ($ENV{'CXX'})) {
+		push @EXTRA_ARGS, "--compiler-driver";
+		push @EXTRA_ARGS, $ENV{'CXX'};
+		$COMPILER_DRIVER_CPlusPlus = $ENV{'CXX'};
+	}
+	if (defined ($ENV{'AR'})) {
+		push @EXTRA_ARGS, "--ar";
+		push @EXTRA_ARGS, $ENV{'AR'};
+	}
+	if (defined ($ENV{'AS'})) {
+		push @EXTRA_ARGS, "--as";
+		push @EXTRA_ARGS, $ENV{'AS'};
+	}
+	if (defined ($ENV{'RANLIB'})) {
+		push @EXTRA_ARGS, "--ranlib";
+		push @EXTRA_ARGS, $ENV{'RANLIB'};
+	}
+	if (defined ($ENV{'STRIP'})) {
+		push @EXTRA_ARGS, "--strip";
+		push @EXTRA_ARGS, $ENV{'STRIP'};
+	}
+
+	if (defined ($ENV{'EXTRA_CONFIGURE_ARGS'})) {
+		for my $i (split / /, $ENV{'EXTRA_CONFIGURE_ARGS'}) {
+			push @EXTRA_ARGS, "$i";
+		}
+	}
+}
+
+
+# merge 'extra' args (from environment variables) with those specified on the commandline
+sub GetAppArgs_ ()
+{
+	my @args = @ARGV;
+	splice(@args, 1, 0, @EXTRA_ARGS);
+	return @args;
+}
+
+
+### Do initial pass, just looking for platform
+sub	ParseCommandLine_Platform_
+{
+	my @args = GetAppArgs_ ();
+	for (my $i = 0; $i <= $#args; $i++) {
+		my $var = $args[$i];
+		if ((lc ($var) eq "-build-platform") or (lc ($var) eq "--build-platform")) {
+			$i++;
+			$var = $args[$i];
+			$BuildPlatform = $var;
+			SetDefaultsWhichDependOnPlatform_ ();
+		}
+	}
+}
+
+### Do initial pass, just looking for compiler-driver and apply-default-xxx flags
+sub	ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_
+{
+	my @args = GetAppArgs_ ();
+	for (my $i = 0; $i <= $#args; $i++) {
+		my $var = $args[$i];
+		if (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
+			$i++;
+			$var = $args[$i];
+			$COMPILER_DRIVER = $var;
+			$COMPILER_DRIVER_C = "";		#reset so computed later
+			$COMPILER_DRIVER_CPlusPlus = "";
+		}
+		elsif ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
+			$ApplyDebugFlags = true;
+		}
+		elsif ((lc ($var) eq "-apply-default-release-flags") or (lc ($var) eq "--apply-default-release-flags")) {
+			$ApplyReleaseFlags = true;
+		}
+	}
+}
+
+sub	ParseCommandLine_Remaining_
+{
+	my @args = GetAppArgs_ ();
+	for (my $i = 1; $i <= $#args; $i++) {
+		my $var = $args[$i];
+		if (lc ($var) eq "-make-define" or lc ($var) eq "--make-define") {
+			$i++;
+			$var = $args[$i];
+			push (@useExtraMakeDefines, $var);
+		}
+		elsif (lc ($var) eq "-build-platform" or lc ($var) eq "--build-platform") {
+			$i++;
+			$var = $args[$i];
+			$BuildPlatform = $var;
+		}
+		elsif (lc ($var) eq "-target-platforms" or lc ($var) eq "--target-platforms") {
+			$i++;
+			$var = $args[$i];
+			$TargetPlatforms = $var;
+		}
+		elsif (lc ($var) eq "-build-tools-root" or lc ($var) eq "--build-tools-root") {
+			$i++;
+			$var = $args[$i];
+			$BuildToolsRoot = $var;
+		}
+		elsif ((lc ($var) eq "-assertions") or (lc ($var) eq "--assertions")) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "enable") {
+				$gAssertionsEnabled = 1;
+			}
+			elsif ($var eq "disable") {
+				$gAssertionsEnabled = 0;
+			}
+			elsif ($var eq "default") {
+				$gAssertionsEnabled = DEFAULT_BOOL_OPTIONS;
+			}
+			else  {
+				print ("UNRECOGNIZED assertions ARG: $var\n");
+				DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq "-shared-symbol-visibility") or (lc ($var) eq "--shared-symbol-visibility")) {
+			$i++;
+			$var = $args[$i];
+			$SharedSymbolVisibility = $args[$i];
+		}
+		elsif ((lc ($var) eq "-block-allocation") or (lc ($var) eq "--block-allocation")) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "enable") {
+				push (@useExtraCDefines, '#define qStroika_Foundation_Memory_PreferBlockAllocation 1');
+			}
+			elsif ($var eq "disable") {
+				push (@useExtraCDefines, '#define qStroika_Foundation_Memory_PreferBlockAllocation 0');
+			}
+			elsif ($var eq "default") {
+			}
+			else  {
+				print ("UNRECOGNIZED block-allocation ARG: $var\n");
+				DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq "-valgrind") or (lc ($var) eq "--valgrind")) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "enable") {
+				push (@useExtraCDefines, '#define qStroika_FeatureSupported_Valgrind 1');
+				$TargettingValgrind = true;
+			}
+			elsif ($var eq "disable") {
+				push (@useExtraCDefines, '#define qStroika_FeatureSupported_Valgrind 0');
+			}
+			elsif ($var eq "default") {
+			}
+			else  {
+				print ("UNRECOGNIZED block-allocation ARG: $var\n");
+				DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq "-glibcxx_debug") or (lc ($var) eq "--glibcxx_debug")) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "enable") {
+				$ENABLE_GLIBCXX_DEBUG = 1;
+			}
+			elsif ($var eq "disable") {
+				$ENABLE_GLIBCXX_DEBUG = 0;
+			}
+			elsif ($var eq "default") {
+				$ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
+			}
+			else  {
+				print ("UNRECOGNIZED$ENABLE_GLIBCXX_DEBUG ARG: $var\n");
+				DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq lc("-MACOSX_DEPLOYMENT_TARGET")) or (lc ($var) eq lc("--MACOSX_DEPLOYMENT_TARGET"))) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "none") {
+				$MACOSX_DEPLOYMENT_TARGET = "";	# "" means not set, undefined means do default
+			}
+			elsif ($var eq "default") {
+				$MACOSX_DEPLOYMENT_TARGET = undef;
+			}
+			else  {
+				$MACOSX_DEPLOYMENT_TARGET = $var;
+			}
+		}
+		elsif ((lc ($var) eq "-stdlib") or (lc ($var) eq "--stdlib")) {
+			$i++;
+			$var = $args[$i];
+			$STDCXXLIB = $var;
+		}
+		elsif ((lc ($var) eq "-cppstd-version") or (lc ($var) eq "--cppstd-version")) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "c++14" ) {
+				print "Warning: c++14 not supported by Stroika v2.1 or later\n";
+			}
+			if ($var eq "c++17" ) {
+				print "Warning: c++17 not supported by Stroika v3 or later\n";
+			}
+			if ($var ne "c++2a" && $var ne "c++20" && $var ne "c++2b" && $var ne "c++23") {
+				print "Warning: unrecognized arg to --cppstd-version\n";
+			}
+			if ($var eq "") {
+				print ("UNRECOGNIZED cppstd-version ARG: $var\n");
+				DoHelp_ (1);
+			}
+			$CPPSTD_VERSION_FLAG = "--std=" . $var;
+		}
+		elsif ((lc ($var) eq "-strawberryperl") or (lc ($var) eq "--strawberryperl")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_StrawberryPerl = $var;
+		}
+		elsif ((lc ($var) eq "-wix") or (lc ($var) eq "--wix")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_WIX = $var;
+		}
+		elsif ((lc ($var) eq "-config-tag") or (lc ($var) eq "--config-tag")) {
+			$i++;
+			$var = $args[$i];
+			if ($var=~/[\s+.]+/)  {
+				die "No spaces allowed in config-tag" 
+			}
+			if (! defined $Config_Tag) {
+				$Config_Tag = "";
+			}
+			else {
+				$Config_Tag .= " ";
+			}
+			$Config_Tag .= $var;
+		}
+		elsif ((lc ($var) eq "-build-by-default") or (lc ($var) eq "--build-by-default")) {
+			$i++;
+			$var = $args[$i];
+			$BuildByDefault = $var;
+		}
+		elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--libcurl');
+			$FEATUREFLAG_LIBCURL = $var;
+		}
+		elsif ((lc ($var) eq "-boost") or (lc ($var) eq "--boost")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--boost');
+			$FEATUREFLAG_boost = $var;
+		}
+		elsif ((lc ($var) eq "-openssl") or (lc ($var) eq "--openssl")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--openssl');
+			$FEATUREFLAG_OpenSSL = $var;
+		}
+		elsif ((lc ($var) eq "-openssl-extraargs") or (lc ($var) eq "--openssl-extraargs")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_OpenSSLExtraArgs = $var;
+		}
+		elsif ((lc ($var) eq "-winhttp") or (lc ($var) eq "--winhttp")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_WinHTTP = $var;
+		}
+		elsif ((lc ($var) eq "-atlmfc") or (lc ($var) eq "--atlmfc")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_ATLMFC = $var;
+		}
+		elsif ((lc ($var) eq "-xerces") or (lc ($var) eq "--xerces")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--xerces');
+			$FEATUREFLAG_Xerces = $var;
+		}
+		elsif ((lc ($var) eq "-libxml2") or (lc ($var) eq "--libxml2")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--libxml2');
+			$FEATUREFLAG_libxml2 = $var;
+		}
+		elsif ((lc ($var) eq "-zlib") or (lc ($var) eq "--zlib")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--zlib');
+			$FEATUREFLAG_ZLib = $var;
+		}
+		elsif ((lc ($var) eq "-zstd") or (lc ($var) eq "--zstd")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--zstd');
+			$FEATUREFLAG_zstd = $var;
+		}
+		elsif ((lc ($var) eq "-googletest") or (lc ($var) eq "--googletest")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--googletest');
+			$FEATUREFLAG_GoogleTest = $var;
+		}
+		elsif ((lc ($var) eq "-mongo-cxx-driver") or (lc ($var) eq "--mongo-cxx-driver")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--mongo-cxx-driver');
+			$FEATUREFLAG_mongocxxdriver = $var;
+		}
+		elsif ((lc ($var) eq "-sqlite") or (lc ($var) eq "--sqlite")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--sqlite');
+			$FEATUREFLAG_sqlite = $var;
+		}
+		elsif ((lc ($var) eq "-lzma") or (lc ($var) eq "--lzma")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--lzma');
+			$FEATUREFLAG_LZMA = $var;
+		}
+		elsif ((lc ($var) eq "-fmtlib") or (lc ($var) eq "--fmtlib")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_fmtlib = $var;
+		}
+		elsif ((lc ($var) eq "-default-third-party-components") or (lc ($var) eq "--default-third-party-components")) {
+			$DoSetThirdPartyComponentsParameterFromCommandLine = 'default';
+		}
+		elsif ((lc ($var) eq "-all-available-third-party-components") or (lc ($var) eq "--all-available-third-party-components")) {
+			$DoSetThirdPartyComponentsParameterFromCommandLine = 'all-available';
+		}
+		elsif ((lc ($var) eq "-no-third-party-components") or (lc ($var) eq "--no-third-party-components")) {
+			$DoSetThirdPartyComponentsParameterFromCommandLine = 'none';
+		}
+		elsif ((lc ($var) eq "-trace2file") or (lc ($var) eq "--trace2file")) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "enable") {
+				$ENABLE_TRACE2FILE = 1;
+			}
+			elsif ($var eq "disable") {
+				$ENABLE_TRACE2FILE = 0;
+			}
+			elsif ($var eq "default") {
+				$ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
+			}
+			else  {
+				print ("UNRECOGNIZED ENABLE_TRACE2FILEG ARG: $var\n");
+				DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq "-static-link-gccruntime") or (lc ($var) eq "--static-link-gccruntime")) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "enable") {
+				$STATIC_LINK_GCCRUNTIME = 1;
+			}
+			elsif ($var eq "disable") {
+				$STATIC_LINK_GCCRUNTIME = 0;
+			}
+			else {
+				print ("UNRECOGNIZED static-link-gccruntime ARG: $var\n");
+				DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq "-ar") or (lc ($var) eq "--ar")) {
+			$i++;
+			$var = $args[$i];
+			$AR = $var;
+		}
+		elsif ((lc ($var) eq "-as") or (lc ($var) eq "--as")) {
+			$i++;
+			$var = $args[$i];
+			$AS = $var;
+		}
+		elsif ((lc ($var) eq "-ranlib") or (lc ($var) eq "--ranlib")) {
+			$i++;
+			$var = $args[$i];
+			$RANLIB = $var;
+		}
+		elsif ((lc ($var) eq "-strip") or (lc ($var) eq "--strip")) {
+			$i++;
+			$var = $args[$i];
+			$STRIP = $var;
+		}
+		elsif ((lc ($var) eq "-extra-prefix-linker-args") or (lc ($var) eq "--extra-prefix-linker-args")) {
+			$i++;
+			$var = $args[$i];
+			$LinkerArgs_ExtraPrefix = $var;
+		}
+		elsif ((lc ($var) eq "-append-extra-prefix-linker-args") or (lc ($var) eq "--append-extra-prefix-linker-args")) {
+			$i++;
+			$var = $args[$i];
+			if (not ($LinkerArgs_ExtraPrefix eq "")) {
+				$LinkerArgs_ExtraPrefix .= " ";
+			}
+			$LinkerArgs_ExtraPrefix .= $var;
+		}
+		elsif ((lc ($var) eq "-extra-suffix-linker-args") or (lc ($var) eq "--extra-suffix-linker-args")) {
+			$i++;
+			$var = $args[$i];
+			$LinkerArgs_ExtraSuffix = $var;
+		}
+		elsif ((lc ($var) eq "-append-extra-suffix-linker-args") or (lc ($var) eq "--append-extra-suffix-linker-args")) {
+			$i++;
+			$var = $args[$i];
+			if (not ($LinkerArgs_ExtraSuffix eq "")) {
+				$LinkerArgs_ExtraSuffix .= " ";
+			}
+			$LinkerArgs_ExtraSuffix .= $var;
+		}
+		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-CPPFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			push @Platform_CPPFLAGS_B4Includes, $var;
+		}
+		elsif ((lc ($var) eq "-remove-CPPFLAGS") or (lc ($var) eq "--remove-CPPFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			push @CPPFLAGS2Remove, $var;
+		}
+		elsif ((lc ($var) eq "-replace-all -CPPFLAGS") or (lc ($var) eq "--replace-all-CPPFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			for my $i (split / /, $var) {
+				push @Platform_CPPFLAGS_B4Includes, "$i";
+			}
+			$CPPFLAGS_Overridden = true;
+		}
+		elsif ((lc ($var) eq "-append-CFLAGS") or (lc ($var) eq "--append-cflags")) {
+			$i++;
+			$var = $args[$i];
+			push @CFLAGS, $var;
+		}
+		elsif ((lc ($var) eq "-remove-CFLAGS") or (lc ($var) eq "--remove-cflags")) {
+			$i++;
+			$var = $args[$i];
+			push @CFLAGS2Remove, $var;
+		}
+		elsif ((lc ($var) eq "-replace-all -CFLAGS") or (lc ($var) eq "--replace-all-cflags")) {
+			$i++;
+			$var = $args[$i];
+			for my $i (split / /, $var) {
+				push @CFLAGS, "$i";
+			}
+			$CFLAGS_Overridden = true;
+		}
+		elsif ((lc ($var) eq "-append-CXXFLAGS") or (lc ($var) eq "--append-cxxflags")) {
+			$i++;
+			$var = $args[$i];
+			push @CXXFLAGS2Append, $var;
+		}
+		elsif ((lc ($var) eq "-remove-CXXFLAGS") or (lc ($var) eq "--remove-cxxflags")) {
+			$i++;
+			$var = $args[$i];
+			push @CXXFLAGS2Remove, $var;
+		}
+		elsif ((lc ($var) eq "-replace-all -CXXFLAGS") or (lc ($var) eq "--replace-all-cxxflags")) {
+			$i++;
+			$var = $args[$i];
+			for my $i (split / /, $var) {
+				push @CXXFLAGS, "$i";
+			}
+			$CXXFLAGS_Overridden = true;
+		}
+		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-cppflags")) {
+			$i++;
+			$var = $args[$i];
+			push @Platform_CPPFLAGS_B4Includes, $var;
+		}
+		elsif ((lc ($var) eq "-includes-path") or (lc ($var) eq "--includes-path")) {
+			$i++;
+			$var = $args[$i];
+			@PLATFORM_INCLUDES_PATH = qw ();
+			for my $i (split /$PATH_SEPERATOR/, $var) {
+				push @PLATFORM_INCLUDES_PATH, $i;
+			}
+			$INCLUDES_PATH_SET = true;
+		}
+		elsif ((lc ($var) eq "-append-includes-path") or (lc ($var) eq "--append-includes-path")) {
+			$i++;
+			$var = $args[$i];
+			push @INCLUDES_PATH_ADD, $var;
+		}
+		elsif ((lc ($var) eq "-libs-path") or (lc ($var) eq "--libs-path")) {
+			$i++;
+			$var = $args[$i];
+			@LinkerArgs_LibPath = qw ();
+			for my $i (split /$PATH_SEPERATOR/, $var) {
+				push @LinkerArgs_LibPath, $i;
+			}
+			$LinkerArgs_LibPath_SET = true;
+		}
+		elsif ((lc ($var) eq "-append-libs-path") or (lc ($var) eq "--append-libs-path")) {
+			$i++;
+			$var = $args[$i];
+			push @LinkerArgs_LibPath_ADD, $var;
+		}
+		elsif ((lc ($var) eq "-linktime-copy-files-2-EXEDir") or (lc ($var) eq "--linktime-copy-files-2-EXEDir")) {
+			$i++;
+			$var = $args[$i];
+			@LinkTime_CopyFilesToEXEDir = qw ();
+			for my $i (split / /, $var) {
+				push @LinkTime_CopyFilesToEXEDir, $i;
+			}
+		}
+		elsif ((lc ($var) eq "-append-linktime-copy-files-2-EXEDir") or (lc ($var) eq "--append-linktime-copy-files-2-EXEDir")) {
+			$i++;
+			$var = $args[$i];
+			push @LinkTime_CopyFilesToEXEDir, $var;
+		}
+		elsif ((lc ($var) eq "-lib-dependencies") or (lc ($var) eq "--lib-dependencies")) {
+			$i++;
+			$var = $args[$i];
+			$LinkerArgs_LibDependencies = $var;
+		}
+		elsif ((lc ($var) eq "-append-lib-dependencies") or (lc ($var) eq "--append-lib-dependencies")) {
+			$i++;
+			$var = $args[$i];
+			push @LinkerArgs_LibDependencies_ADD, $var;
+		}
+		elsif ((lc ($var) eq "-run-prefix") or (lc ($var) eq "--run-prefix")) {
+			$i++;
+			$var = $args[$i];
+			$RunPrefix = $var;
+		}
+		elsif ((lc ($var) eq "-append-run-prefix") or (lc ($var) eq "--append-run-prefix")) {
+			$i++;
+			$var = $args[$i];
+			if (not ($RunPrefix eq "")) {
+				$RunPrefix .= " ";
+			}
+			$RunPrefix .= $var;
+		}
+		elsif ((lc ($var) eq "-include-default-TSAN_OPTIONS") or (lc ($var) eq "--include-default-TSAN_OPTIONS")) {
+			$i++;
+			$var = $args[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --include-default-TSAN_OPTIONS");
+			}
+			$autoIncludeTSAN_OPTIONSIfAppropriate = $var;
+		}
+		elsif ((lc ($var) eq "-append-extra-compiler-and-linker-args") or (lc ($var) eq "--append-extra-compiler-and-linker-args")) {
+			$i++;
+			$var = $args[$i];
+
+			push @CFLAGS, $var;
+			push @CXXFLAGS, $var;
+
+			if (not ($LinkerArgs_ExtraPrefix eq "")) {
+				$LinkerArgs_ExtraPrefix .= " ";
+			}
+			$LinkerArgs_ExtraPrefix .= $var;
+			if (not ($LinkerArgs_ExtraSuffix eq "")) {
+				$LinkerArgs_ExtraSuffix .= " ";
+			}
+			$LinkerArgs_ExtraSuffix .= $var;
+		}
+		elsif ((lc ($var) eq "-lto") or (lc ($var) eq "--lto")) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "enable") {
+				$ENABLE_LTO = true;
+				$ENABLE_LTO_SetExplicitly = true;
+			}
+			elsif ($var eq "disable") {
+				$ENABLE_LTO = false;
+				$ENABLE_LTO_SetExplicitly = true;
+			}
+			elsif ($var eq "default") {
+				$ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
+				$ENABLE_LTO_SetExplicitly = false;
+			}
+			else  {
+				print ("UNRECOGNIZED assertions ARG: $var\n");
+				DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq "-cross-compiling") or (lc ($var) eq "--cross-compiling")) {
+			$i++;
+			$var = $args[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --cross-compiling");
+			}
+			$CrossCompiling = $var;
+		}
+		elsif ((lc ($var) eq "-debug-symbols") or (lc ($var) eq "--debug-symbols")) {
+			$i++;
+			$var = $args[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --debug-symbols");
+			}
+			$INCLUDE_SYMBOLS_LIB = ToBool_ ($var);
+			$INCLUDE_SYMBOLS_EXE = ToBool_ ($var);
+		}
+		elsif ((lc ($var) eq "-debug-symbols-lib") or (lc ($var) eq "--debug-symbols-lib")) {
+			$i++;
+			$var = $args[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --debug-symbols-lib");
+			}
+			$INCLUDE_SYMBOLS_LIB = ToBool_ ($var);
+		}
+		elsif ((lc ($var) eq "-debug-symbols-exe") or (lc ($var) eq "--debug-symbols-exe")) {
+			$i++;
+			$var = $args[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --debug-symbols");
+			}
+			$INCLUDE_SYMBOLS_EXE = ToBool_ ($var);
+		}
+		elsif ((lc ($var) eq "-malloc-guard") or (lc ($var) eq "--malloc-guard")) {
+			$i++;
+			$MALLOC_GUARD = ToBool_ ($args[$i]);
+			### DISABLE LTO BY DEFAULT IF MALLOC_GAURD TURNED ON BECAUSE FOR NOW THEY DON'T WORK TOGETHER
+			### -- LGP 2016-07-14
+			if ($MALLOC_GUARD == true) {
+				$ENABLE_LTO = false;
+			}
+		}
+		elsif ((lc ($var) eq "-runtime-stack-check") or (lc ($var) eq "--runtime-stack-check")) {
+			$i++;
+			$var = $args[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --runtime-stack-check");
+			}
+			$runtimeStackProtectorFlag = $var;
+		}
+		elsif ((lc ($var) eq "-msvc-runtime-library") or (lc ($var) eq "--msvc-runtime-library")) {
+			$i++;
+			$var = $args[$i];
+			$VSVARS_MSVC_RUNTIME_LIBRARY = $var;
+		}
+		elsif ((lc ($var) eq "-sanitize") or (lc ($var) eq "--sanitize")) {
+			$i++;
+			$var = $args[$i];
+			my @splitSanFlags = split(/,/, $var);
+			foreach my $ii (0 .. $#splitSanFlags) {
+				my $flag = $splitSanFlags[$ii];
+				if ($flag eq "none") {
+					@sanitizerFlags = ();
+					$sanitizerFlagsNoneSet = true;
+				}
+				else {
+					if (!IsTargettingSanitizer_ ($flag)) {
+						push @sanitizerFlags, $flag;
+					}
+				}
+				$sanitizerFlagsIsDefined = true;
+			}
+		}
+		elsif ((lc ($var) eq "-no-sanitize") or (lc ($var) eq "--no-sanitize")) {
+			$i++;
+			$var = $args[$i];
+			my @splitSanFlags = split(/,/, $var);
+			foreach my $ii (0 .. $#splitSanFlags) {
+				my $flag = $splitSanFlags[$ii];
+				if ($flag eq "none") {
+					@noSanitizerFlags = ();
+				}
+				else {
+					my %already = map { $_ => 1 } @noSanitizerFlags;
+					if(!exists($already{$flag})) {
+						push @noSanitizerFlags, $flag;
+					}
+				}
+			}
+		}
+		elsif ((lc ($var) eq "-only-if-has-compiler") or (lc ($var) eq "--only-if-has-compiler")) {
+			$onlyGenerateIfCompilerExists = true;
+		}
+		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
+			push @CFLAGS, "-pg";
+			push @CXXFLAGS, "-pg";
+			$LinkerArgs_ExtraPrefix .= " -pg";
+		}
+		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
+			DoHelp_ (0);
+		}
+		else {
+			#HANDLED EARLIER
+			if ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
+				#HANDLED EARLIER
+			}
+			elsif ((lc ($var) eq "-apply-default-release-flags") or (lc ($var) eq "--apply-default-release-flags")) {
+			}
+			elsif ((lc ($var) eq "-build-platform") or (lc ($var) eq "--build-platform")) {
+				$i++;
+			}
+			elsif ((lc ($var) eq "-arch") or (lc ($var) eq "--arch")) {
+				$i++;
+			}
+			elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
+				$i++;
+			}
+			else {
+				print ("UNRECOGNIZED ARG: $var\n");
+				DoHelp_ (1);
+			}
+		}
+	}
+}
+
+sub ZERO_OR_1_
+{
+	my $x = shift(@_);
+	if ($x eq "") {
+		return 0;
+	}
+	if ($x == 1) {
+		return 1;
+	}
+	return 0;
+}
+
+sub     CHECK_FEATURE_OPTION
+{
+	my $x = shift(@_);
+	if (!($x eq $LIBFEATUREFLAG_BuildOnly) && !($x eq $LIBFEATUREFLAG_UseStaticTPP) && !($x eq $LIBFEATUREFLAG_UseSystem) && !($x eq $LIBFEATUREFLAG_No)) {
+			die ("Cannot identify feature argument (expected build-only, use-static, use-system, or no and got $x)");
+	}
+}
+
+sub	CHECK_OPTIONS_
+{
+	if ($BuildPlatform eq "") {
+		die ("Cannot identify BuildPlatform! Either explicitly supply the --build-platform argument (configure --help); or make sure you have Visual Studio.net installed");
+	}
+	if ($BuildPlatform eq "VisualStudio.Net-2012") {
+		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2012");
+	}
+	if ($BuildPlatform eq "VisualStudio.Net-2015") {
+		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2015");
+	}
+	if ($BuildPlatform eq "VisualStudio.Net-2017") {
+		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2017");
+	}
+	if ($BuildPlatform eq "VisualStudio.Net-2019") {
+		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2019");
+	}
+	my @validProjectPlatfromSubDirs = ("Unix", "VisualStudio.Net-2022", "VisualStudio.Net-2026");
+	my %params = map { $_ => 1 } @validProjectPlatfromSubDirs;
+	if (not exists ($params{$BuildPlatform})) {
+		die ("Unrecognized --build-platform argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
+	}
+	if ($TargetPlatforms eq "") {
+		die ("Cannot identify TargetPlatforms");
+	}
+	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
+}
+
+#	Turn OFF LTO for the gcc sanitizer builds it is known to break. MUST run after
+#	ParseCommandLine_Remaining_ (), since that is where --sanitize is parsed - doing this in
+#	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_ (where it used to live) meant
+#	@sanitizerFlags was still empty and the test never fired.
+sub	ApplyCompilerBugWorkarounds_
+{
+	#	NB: deliberately does NOT bail out when --lto was given explicitly - an explicit '--lto disable'
+	#	is the main way to walk into the 24.04 hazard below, so that case must still be caught (and is
+	#	overridden, loudly).
+	return if ($ApplyReleaseFlags != true);
+	return if (not IsGCCOrGPlusPlus_ ($COMPILER_DRIVER));
+
+	#	NB: deliberately NOT disabling LTO for the address sanitizer.
+	#	https://github.com/SophistSolutions/Stroika/issues/1128 asked for that (an asan
+	#	allocation-size-too-big report from Tests/02, gcc 13.2), but that test never actually ran - it sat in a sub called before --sanitize was parsed - so asan
+	#	release builds have had LTO on for years and are fine with it. Turning it on for real (tried
+	#	2026-08-29, gcc < 14 only) made things WORSE, not better:
+	#		WITH -flto (as shipped for years): 24.04/g++-13.3 asan run is clean
+	#		WITHOUT -flto (the workaround):    19 NEW failures on g++-13.3, all in
+	#		                                   g++-release-sanitize_address_undefined_leak - wrong VALUES
+	#		                                   (not asan reports) in Containers::Sequence, Traversal, and
+	#		                                   DataExchange, including the new *_ContiguousFastPath_ tests
+	#	So the workaround is not merely unnecessary, it is harmful on the one compiler it targeted. Left
+	#	out entirely rather than re-scoped; if issue 1128 ever recurs, reproduce it first - it was last
+	#	seen on gcc 13.2 and has not been reproducible since.
+
+	#	The THREAD sanitizer is the opposite case - there, LTO is what breaks things. The Ubuntu 24.04
+	#	gcc toolchain generates wrong code for
+	#	Math::Optimization::DownhillSimplexMinimization with '-O3 -flto -fsanitize=thread'. Showed up in
+	#	3.0d24 as Tests/47 Test9_Optimization_DownhillSimplexMinimization_ failing under
+	#	g++-release-sanitize_thread ONLY - the minimizer stops after 12 iterations instead of 72 and
+	#	returns a point nowhere near the minimum. Not a Stroika logic bug, and not FP tolerance: the
+	#	same source passes in every other configuration, an equivalent plain-std::vector transcription
+	#	is bit-identical under -O0/-O1/-O2/-O3/-Ofast/LTO/asan/tsan, ubsan reports nothing, and a single
+	#	printf (or asm memory barrier) anywhere in the iteration loop makes the code correct again.
+	#	Flag bisection on the failing configuration:
+	#			-O3 -flto -fsanitize=thread	FAILS  (as configured)
+	#			-O1 -flto -fsanitize=thread	FAILS
+	#			-O2 -flto -fsanitize=thread	passes
+	#			-O3       -fsanitize=thread	passes  (ie -fno-lto fixes it)
+	#			-O3 -flto                  	passes
+	#			-O0                        	passes
+	#	so LTO is the necessary ingredient.
+	#	Compiler/platform matrix actually measured (2026-08-29, same source, same probe):
+	#			24.04	g++-13 (13.3.0-6ubuntu2~24.04.1)	FAILS
+	#			24.04	g++-14 (14.2.0-4ubuntu2~24.04.1)	FAILS
+	#			25.04	g++-14 (14.2.0-19ubuntu2)       	passes
+	#			25.04	g++-15 (15-20250404)            	passes
+	#			26.04	g++-14 (14.3.0-14ubuntu1)       	passes
+	#			26.04	g++-15 (15.2.0-16ubuntu1)       	passes
+	#			26.04	g++-16 (16-20260322)            	passes
+	#	ie it tracks the 24.04 TOOLCHAIN, not the gcc version - the same upstream 14.2.0 fails as
+	#	packaged on 24.04 and passes as packaged on 25.04. Kept unconditional rather than keyed to
+	#	$lsb_release: an lsb-version test would rot, and LTO buys little in a sanitizer build anyway.
+	#	THE BIGGER 24.04 PROBLEM, which has nothing to do with sanitizers: gcc 13 and gcc 14 AS PACKAGED
+	#	ON UBUNTU 24.04 miscompile Containers::Sequence / Traversal / DataExchange whenever the build
+	#	optimizes WITHOUT LTO. Measured 2026-08-30, same tree, Tests/21 + Tests/51, -O3 and no -flto:
+	#			g++-13.3 (24.04)  14 failures        g++-12    (24.04)   0 failures
+	#			g++-14.2 (24.04)  14 failures        clang++-18 + libstdc++  0 failures
+	#		also fails at -O1 (7) and -O2 (17), so it is not an -O3-only problem; and it is NOT
+	#		strict-aliasing (-fno-strict-aliasing changes nothing) and NOT an ODR violation (rebuilt
+	#		with -Wodr/-Wlto-type-mismatch re-enabled: zero diagnostics). clang on the SAME libstdc++
+	#		is clean, so it is the compiler, not the library and not Stroika.
+	#	Every config Stroika ships uses LTO for optimized builds, which is why this went unnoticed for
+	#	so long - LTO happens to mask it. But anyone building a Stroika-based app on 24.04 LTS with
+	#	optimization and without LTO gets silently wrong container behavior.
+	#	POLICY: an explicit request is honored. If the caller asked for '--lto disable' they get it -
+	#	they may have a workaround, it may not matter for their app, or they may be working on this very
+	#	bug - but WARN, loudly, because it is silently-wrong-answers rather than a crash. Only OPTIONAL
+	#	configurations (--only-if-has-compiler, ie "generate this if the toolchain can do it") are
+	#	skipped outright - see where $gUbuntu2404OptimizedNoLTOHazard is read below.
+	if ($lsb_release == "24.04" and IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)
+			and 13.0 <= GetGCCVersion_ ($COMPILER_DRIVER) and GetGCCVersion_ ($COMPILER_DRIVER) < 15.0
+			and $ENABLE_LTO != true) {
+		$gUbuntu2404OptimizedNoLTOHazard = true;
+		print ("WARNING: gcc " . GetGCCVersion_ ($COMPILER_DRIVER) . " on Ubuntu 24.04 miscompiles Stroika containers when optimizing without LTO\n");
+		print ("         (Containers::Sequence, Traversal, DataExchange give WRONG ANSWERS - not crashes - at -O1/-O2/-O3).\n");
+		if ($ENABLE_LTO_SetExplicitly == true) {
+			print ("         Honoring your explicit '--lto disable' anyway - but be aware the failures are wrong ANSWERS, not crashes.\n");
+		}
+		print ("         g++-12, clang++, or a newer Ubuntu can build optimized without LTO on this platform.\n");
+	}
+
+	#	WHAT WE ACTUALLY DO ON 24.04: keep LTO, and drop -O3 to -O2 for sanitizer builds. Measured on
+	#	24.04/g++-13.3, same tree, same box, only -O differing:
+	#		-O3 -flto -fsanitize=thread   Tests/47 Test9_Optimization_DownhillSimplexMinimization_ FAILS
+	#		-O2 -flto -fsanitize=thread   Tests/47 passes, and Tests/21+51 (the containers that break
+	#		                              without LTO) stay clean
+	#	26.04/g++-15.2 is clean in every combination, so this is scoped to 24.04 rather than applied
+	#	everywhere - no reason to give up -O3 on toolchains that are not broken.
+	if ($lsb_release == "24.04" and ($#sanitizerFlags != -1)) {
+		$COPTIMIZE_FLAGS = "-O2";
+	}
+
+	#	Dropping LTO for tsan instead is NOT a cure: on the 3.0d24 Ubuntu 24.04 release run (g++ 13.3) it took
+	#	g++-release-sanitize_thread from 1 failure (Tests/47) to TWENTY - wrong VALUES in Containers::Sequence,
+	#	Traversal and DataExchange, the same set the address sanitizer gave without LTO (above).
+
+	#	armhf gcc (the Ubuntu cross compilers) crashes - "internal compiler error: Segmentation fault" -
+	#	compiling mongo-c-driver (e.g. bson_get_monotonic_time () in libbson/src/bson/bson-clock.c) under
+	#	-fsanitize=address. Dropping to -O2 is what lets 26.04's gcc 14.3 build it (it crashes at -O3).
+	#	That is the ONLY armhf compiler it helps: in real builds (2026-09-24) 26.04's gcc 13.4 and 15.2 and
+	#	24.04's gcc 13.3 and 14.2 crash at -O2 and at -O0 alike - and which files crash shifts with the exact
+	#	preprocessed source, so -O2 working for 14.3 is luck, not a fix - even 14.3 crashed in the regression
+	#	image. So mongo now defaults OFF for armhf asan (see MongoCXXDriverDefaultsOn_); -O2 stays for when it is
+	#	forced on to retest, and because armhf asan has only been validated at -O2.
+	#	https://github.com/SophistSolutions/Stroika/issues/1174
+	#	(Makefile-CMake-Common.mk makes sure the configuration's -O is what reaches the cmake-built components.)
+	if ($ARCH eq "armhf" and IsTargettingSanitizer_ ('address')) {
+		$COPTIMIZE_FLAGS = "-O2";
+	}
+}
+
+sub	ParseCommandLine_
+{
+	if (false) {
+		# Helpful to debug scripts...
+		print "Entering configure (";
+		for (my $i = 0; $i <= $#ARGV; $i++) {
+			my $var = $ARGV[$i];
+			print ("\"$var\"");
+			print (" ");
+		}
+		print ")\n";
+	}
+
+	SetInitialDefaults_ ();
+	
+	if ($#ARGV >= 0) {
+		$configurationName  = $ARGV[0];
+	}
+	else {
+		print ("Expected configuration name as first argument\n");
+		DoHelp_ (1);
+	}
+	if ((lc ($configurationName) eq "-h") || (lc ($configurationName) eq "--h") || (lc ($configurationName) eq "-help")  || (lc ($configurationName) eq "--help")) { 
+		DoHelp_ (0);
+	}
+	elsif ($configurationName =~ /^\-/) { 
+		print ("Expected configuration name (got $configurationName) as first argument\n");
+		DoHelp_ (1);
+	}
+
+	ParseEnvVarsToSetupInfluencedVariables_();
+	ParseCommandLine_Platform_ ();
+	SetDefaultsWhichDependOnPlatform_ ();
+
+	ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_ ();
+	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_();
+
+	ParseCommandLine_Remaining_ ();
+
+	ApplyCompilerBugWorkarounds_ ();
+
+	DoSetThirdPartyComponents_ ($DoSetThirdPartyComponentsParameterFromCommandLine);
+
+	CHECK_OPTIONS_ ();
+}
+
+
+
+ParseCommandLine_ ();
+
+
+my @GetDefaultCZZFLAGS_flags_flags;
+my @GetDefaultCZZFLAGS_flags_flagValues2Remove;
+sub GetDefaultCZZFLAGS_flags_
+{
+	my @flags  = ();
+	my @flagValues2Remove  = @GetDefaultCZZFLAGS_flags_flagValues2Remove;
+	my $doCFLAGS = shift(@_);
+	my $doPlatform = shift(@_);
+	my $doFoundation = shift(@_);
+	# print "entering GetDefaultCZZFLAGS_flags_: with flags=", join("\n", @flags), ", flagValues2Remove=", join("\n", @flagValues2Remove), " and doCFLags=$doCFLAGS\n";
+
+	my $isVisualStudio = 		($BuildPlatform =~ /^VisualStudio.Net/);
+	if ($isVisualStudio eq 1) {
+		$isVisualStudio = true;
+	}
+	else {
+		$isVisualStudio = false;
+	}
+
+	# Unitl Stroika v2.1d18 these were written to Stroika-Config.h, but now all just provided to C++ compiler via -D
+	# Doing this way means the defines appear in compiles of third-party-components, but they should not interfere, and if they ever
+	# did we could add a new separate flag to extract/remove/keep them out (e.g STROIKA_CPP_DEFINE_ARGS, and just -filter-out all those from the CXXFLAGS)
+	#
+	# Doing ALL the flags through the command line is somewhat clear than having MOST done through the Stroika-Configs.h file but a few done through the commandline.
+	#
+	# It has ONE possible disadvantage, which is confusing some tools that preparse the the (like visual studio code) but we must just find some way
+	# to get them to also know about these defines (TBD)
+	#		--LGP 2019-02-10
+	my $dashFlag="-D";
+
+	if ($doPlatform) {
+		if ($doCFLAGS eq 2) {
+			# C++ only flags
+			if (not ($CPPSTD_VERSION_FLAG eq "")) {
+				push @flags, $CPPSTD_VERSION_FLAG;
+			}
+		}
+
+		if ($doCFLAGS eq 2) {
+			if (not ($CXXWARNING_FLAGS eq "")) {
+				### @todo - need separate flags for C and CXX
+				for my $i (split / /, $CXXWARNING_FLAGS) {
+					push @flags, "$i";
+				}
+			}
+		}
+
+		if (not ($doCFLAGS eq 0)) {
+			if (not ($COPTIMIZE_FLAGS eq "")) {
+				push @flags, $COPTIMIZE_FLAGS;
+			}
+
+			if (defined $SharedSymbolVisibility) {
+				push @flags, "-fvisibility=$SharedSymbolVisibility";
+			}
+			
+			if ($INCLUDE_SYMBOLS_LIB) {
+				if ($isVisualStudio) {
+					####? push @flags, "-Z7";
+				}
+				else {
+					push @flags, "-g";
+				}
+			}
+			if ( $isVisualStudio ) {
+				if ($Windows_Exceptions_SupportStructuredExceptions == true) {
+					push @flags, "-EHa";
+				}
+				else {
+					push @flags, "-EHsc";
+				}
+				push @flags, "-nologo";
+				push @flags, "-GR";			#  Enable Run-Time Type Information
+				push @flags, "-Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
+				push @flags, "-W4";			#  Warning Level (most less than WALL)
+				#push @flags, "-WX-";		#  (Dont) treat warnings as errors
+				#push @flags, "-JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
+				push @flags, "-Zc:inline";	#  Remove unreferenced code and data
+				push @flags, "-FC";			#  Use full paths in diagnostic messages
+				push @flags, "-bigobj";		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
+
+		#		push @flags, "-errorReport:prompt";	users can add this if desired
+
+				###push @flags, "-experimental:module";
+				
+				if ($ApplyDebugFlags == true) {
+					push @flags, "-RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
+					push @flags, "-GS";			#	Enable Security Check
+					push @flags, "-Oy-";		#	(Dont) omit frame pointers
+					push @flags, "-Od";			#	Disable Optimization
+				}
+				if ($ApplyReleaseFlags == true) {
+					push @flags, "-GS-";		#	Disable Security Check
+					push @flags, "-Gy";			#	Enable Function Level Linking
+					push @flags, "-Oy";			#	Omit frame pointers
+					push @flags, "-O2";			#	Maximum Optimization (Favor Speed)
+					push @flags, "-GL";			#	Whole Program Optimization
+					push @flags, "-Oi";			#	Enable Intrinsic Functions
+					push @flags, "-GF";			#	Enable String Pooling
+				}
+				##push @flags, "-fp:precise";	#vs2k sample projects define this, but maybe can use default?
+			
+				if ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreaded") {
+					push @flags, "-MT";			#	Multithreaded (not debug not dll)
+				}
+				elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDebug") {
+					push @flags, "-MTd";		#	Multithreaded (Debug; but not dll)
+				}
+				elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDLL") {
+					push @flags, "-MD";			#	NOT SURE REALLY SUPPORTED
+				}
+				elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDebugDLL") {
+					push @flags, "-MDd";		#	NOT SURE REALLY SUPPORTED
+				}
+				else {
+					print ("WARNING: Unrecognized MSVC_RUNTIME_LIBRARY: $VSVARS_MSVC_RUNTIME_LIBRARY\n");
+				}
+
+				if ($INCLUDE_SYMBOLS_LIB) {
+					#	Use intra-obj file debug info format, rather than -Zi (a separate .pdb).
+					#	Reasons we do NOT use -Zi (tried, and abandoned):
+					#		o	With a static library, a separate .pdb must be shipped next to the .lib, or
+					#			every later link of it warns LNK4099 and silently drops the debug info for
+					#			those objects.
+					#		o	All the directories making up one library share a single .pdb, and parallel
+					#			builds (make -jN - which this project requires) got errors writing it, even
+					#			with -FS (Force Synchronous PDB Writes).
+					#	-Z7 costs some disk space in the .obj/.lib files, and that is the tradeoff taken.
+					#	See Build/Lib/Make/Makefile-CMake-Common.mk, which makes the cmake-built
+					#	third-party components match this choice.
+					push @flags, "-Z7";
+				}
+			}
+
+		}
+		if ($doCFLAGS eq 0) {
+			if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
+				push @flags, "-D_GLIBCXX_DEBUG";
+			}
+			if ( $isVisualStudio ) {
+				push @flags, "-D_UNICODE";
+				push @flags, "-DUNICODE";
+				push @flags, "-D_WINDOWS";	# just because visual studio .net sample projects defined this
+				
+				if ($ApplyDebugFlags == true) {
+					push @flags, "-D_DEBUG";
+				}
+				if ($ApplyReleaseFlags == true) {
+					push @flags, "-DNDEBUG";
+				}
+			}
+			{
+				foreach my $var (@useExtraCDefines)
+				{
+					my ($define, $name, $value) = split(/ /, $var);
+					if (!($define eq '#define')) {
+						die ("NYI: mapping extraCDEFINE: $var");
+					}
+					if ($value eq "") {
+						$value = 0;
+					}
+					push @flags, $dashFlag . "$name=" . $value;
+				}
+			}
+		}
+	}
+	if ($doFoundation ) {
+		if ($doCFLAGS eq 0) {
+			push @flags, $dashFlag . "qStroika_Foundation_Debug_AssertionsChecked=" . ZERO_OR_1_ ($gAssertionsEnabled);
+			if (defined $FEATUREFLAG_ATLMFC) {
+				push @flags, $dashFlag . "qStroika_HasComponent_ATLMFC=" . ZERO_OR_1_ ($FEATUREFLAG_ATLMFC eq $LIBFEATUREFLAG_UseSystem);
+			}
+			push @flags, $dashFlag . "qStroika_HasComponent_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_libcurl=" . ZERO_OR_1_ (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_fmtlib=" . ZERO_OR_1_ (($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_googletest=" . ZERO_OR_1_ (($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_mongocxxdriver=" . ZERO_OR_1_ (($FEATUREFLAG_mongocxxdriver eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_mongocxxdriver eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_WinHTTP=" . ZERO_OR_1_ ($FEATUREFLAG_WinHTTP eq $LIBFEATUREFLAG_UseSystem);
+			push @flags, $dashFlag . "qStroika_HasComponent_xerces=" . ZERO_OR_1_ (($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_libxml2=" . ZERO_OR_1_ (($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_zlib=" . ZERO_OR_1_ (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_zstd=" . ZERO_OR_1_ (($FEATUREFLAG_zstd eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_zstd eq $LIBFEATUREFLAG_UseSystem));
+			if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
+				push @flags, $dashFlag . "qStroika_Foundation_Debug_TraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
+				#override the default (true iff qStroika_Foundation_Debug_AssertionsChecked) - if set the trace2file option set 
+				if ($ENABLE_TRACE2FILE == 1) {
+					push @flags, $dashFlag . "qStroika_Foundation_Debug_DefaultTracingOn=1";
+				}
+			}
+		}
+	}
+	
+	for my $r (@GetDefaultCZZFLAGS_flags_flags) {
+		my $i = indexOf (@flags, $r);
+		if ($i != -1) {
+			splice (@flags, $i, 1);
+		}
+		else {
+			push @flags, $r;
+		}
+	}
+	for my $r (@flagValues2Remove) {
+		my $i = indexOf (@flags, $r);
+		if ($i != -1) {
+			splice (@flags, $i, 1);
+		}
+	}
+
+	# print " GetDefaultCZZFLAGS_flags_: returning flags=", join("\n", @flags),"\n";
+	return @flags;
+}
+
+sub PostProcessOptions_ ()
+{
+	my $isVisualStudio = 		($BuildPlatform =~ /^VisualStudio.Net/);
+	if ($isVisualStudio eq 1) {
+		$isVisualStudio = true;
+	}
+	else {
+		$isVisualStudio = false;
+	}
+
+	if ($isVisualStudio) {
+		if (! defined $BuildToolsRoot) {
+			$BuildToolsRoot = GetDefaultToolsBuildDir($BuildPlatform);
+		}
+	}
+
+	# Here, not where it is decided, because --lto enable is parsed only after the release defaults are applied
+	if ($gLTODefaultedOffForNoLLD and $ENABLE_LTO != true and HasCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
+		print ("NOTE: LTO defaults OFF for $COMPILER_DRIVER here - it has no lld, and GNU ld mis-links clang LTO; install lld to get LTO\n");
+	}
+	if ($ENABLE_LTO == true) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			push @CFLAGS, "-flto";
+			push @CXXFLAGS, "-flto";
+			# -flto=auto runs the LTRANS jobs under make's jobserver, so they share the -j budget. It used to spin up too
+			# many processes (2023-10-26, when -flto=2 was chosen instead): with make before 4.4 a plain recipe line gets no
+			# jobserver, so gcc starts one job per CPU. DEFAULT_LINK_LINE now marks LTO links '+' there, which fixes that.
+			# (-flto=0, 1 or missing produce warnings: lto-wrapper: warning: using serial compilation of 13 LTRANS jobs)
+			$LinkerArgs_ExtraPrefix .= " -flto=auto";
+		}
+		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			push @CFLAGS, "-flto";
+			push @CXXFLAGS, "-flto";
+			$LinkerArgs_ExtraPrefix .= " -flto";
+			# GNU ld mis-links clang LTO - see where the release flags default $ENABLE_LTO. An explicit -fuse-ld wins, but
+			# is warned about unless it is lld.
+			if ("$^O" ne "darwin" and $LinkerArgs_ExtraPrefix =~ /-fuse-ld=(\S+)/) {
+				my $explicitLD = $1;
+				if (not ($explicitLD =~ /lld/)) {
+					print "CONFIGURATION-WARNING: LTO with $COMPILER_DRIVER_CPlusPlus and -fuse-ld=$explicitLD - only lld is known to link clang LTO correctly (GNU ld mis-links it).\n";
+				}
+			}
+			elsif ("$^O" ne "darwin") {
+				if (defined (GetClangLLD_ ($COMPILER_DRIVER_CPlusPlus))) {
+					$LinkerArgs_ExtraPrefix .= " -fuse-ld=lld";
+				}
+				else {
+					print "CONFIGURATION-WARNING: LTO with $COMPILER_DRIVER_CPlusPlus but no lld, so linking with GNU ld, which mis-links clang LTO (install lld, or --lto disable).\n";
+				}
+			}
+		}
+		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
+			push @CFLAGS, "-GL";			#	Whole Program Optimization
+			push @CXXFLAGS, "-GL";			#	Whole Program Optimization
+			$LinkerArgs_ExtraPrefix .= " -LTCG";
+		}
+
+		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+			# avoid release (FTO) warnings like this:
+			#/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2004_x86_64/IntermediateFiles/g++-12-release++2b/ThirdPartyComponents/Xerces/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
+			# Seen on Ubuntu 2204, 2404, and 2604 with Test Builds/g++-12-release/Tests/Test48 (Foundation::Memory) ... 
+			# 	/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2604_x86_64/ThirdPartyComponents/Xerces/CURRENT/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp: In member function 'substringData':
+			# 	/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2604_x86_64/ThirdPartyComponents/Xerces/CURRENT/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
+			# 	319 |     return retString;
+			# Bogus: getPooledString () returns a string-pool entry (or 0), never its argument, so retString cannot point at
+			# the local temp[]. g++-11 needs it too (seen 2026-09-24, 22.04 g++-11-release++2b and raspberrypi-g++-11-release);
+			# g++-13 and later are quiet.
+			my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+			if ($itsVersion < 13) {
+				$LinkerArgs_ExtraPrefix = $LinkerArgs_ExtraPrefix  . " -Wno-return-local-addr";
+			}
+		}
+	}
+
+	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if (12.0 <= $itsVersion && $itsVersion < 14 && not ($COPTIMIZE_FLAGS eq "")) {
+			# With gcc 12/13 - release builds - we get lots of spurrious uninitialized warnings, raspi and direct x86
+			#EG:
+			#	In member function 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::length() const [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]',
+			#		inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator=(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/13/bits/basic_string.h:887:15,
+			#		inlined from 'Stroika::Foundation::Time::Duration& Stroika::Foundation::Time::Duration::operator=(Stroika::Foundation::Time::Duration&&)' at ../Time/Duration.inl:157:56,
+			#		inlined from 'void Stroika::Foundation::Execution::Sleep(const Stroika::Foundation::Time::Duration&, Stroika::Foundation::Time::Duration*)' at Sleep.cpp:38:49:
+			#	/usr/include/c++/13/bits/basic_string.h:1067:16: warning: '<unnamed>.Stroika::Foundation::Time::Duration::<unnamed>.Stroika::Foundation::Time::Duration::._anon_544::fStringRep_.std::__cxx11::basic_string<char>::_M_string_length' may be used uninitialized [-Wmaybe-uninitialized]
+			#	1067 |       { return _M_string_length; }
+			#		|                ^~~~~~~~~~~~~~~~
+			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . ' -Wno-maybe-uninitialized';
+		}
+		if ($itsVersion < 12) {
+			# With gcc 11 cannot seem to suppress with pragma warning
+			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . ' -Wno-stringop-overflow';
+		}
+	}
+
+	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
+	}
+
+	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
+		{
+			my %inNoSanitizeList = map { $_ => 1 } @noSanitizerFlags;
+			my $crap2Add2CZZFlags = "";
+			$crap2Add2CZZFlags .= "-fsanitize=";
+			my @effectiveSanitizerFlags = ();
+			foreach my $i (0 .. $#sanitizerFlags) {
+				if(!exists($inNoSanitizeList{$sanitizerFlags[$i]})) {
+					$crap2Add2CZZFlags .= $sanitizerFlags[$i];
+					if ($i < $#sanitizerFlags) {
+						$crap2Add2CZZFlags .= ",";
+					}
+					push @effectiveSanitizerFlags, $sanitizerFlags[$i];
+				}
+			}
+			@sanitizerFlags = @effectiveSanitizerFlags;	# subtract out no-sanitize entries
+			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) or IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
+				$LinkerArgs_ExtraPrefix .= " " . $crap2Add2CZZFlags;
+			}
+			if ($isVisualStudio) {
+				# asan executables need the asan runtime DLL beside them (https://github.com/SophistSolutions/Stroika/issues/1116)
+				if (IsTargettingSanitizer_ ('address')) {
+					FillInToolsPathAdditionsIfNeeded_();
+					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");
+					# ls -l /c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/
+					if ($ARCH eq "x86") {
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --mixed "$dir2Add/clang_rt.asan_dynamic-i386.dll"`);
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --mixed "$dir2Add/clang_rt.asan_dynamic-i386.pdb"`);
+					}
+					elsif ($ARCH eq "x86_64") {
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --mixed "$dir2Add/clang_rt.asan_dynamic-x86_64.dll"`);
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --mixed "$dir2Add/clang_rt.asan_dynamic-x86_64.pdb"`);
+					}
+				}
+			}
+			push @CFLAGS, $crap2Add2CZZFlags;
+			push @CXXFLAGS, $crap2Add2CZZFlags;
+		}
+
+		if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1) and ($STATIC_LINK_SANITIZERS != 0)) {
+			if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+				foreach my $i (0 .. $#sanitizerFlags) {
+					if ($sanitizerFlags[$i] eq "address") {
+						$LinkerArgs_ExtraPrefix .= " -static-libasan";
+					}
+					elsif ($sanitizerFlags[$i] eq "undefined") {
+						$LinkerArgs_ExtraPrefix .= " -static-libubsan";
+					}
+					elsif ($sanitizerFlags[$i] eq "thread") {
+						$LinkerArgs_ExtraPrefix .= " -static-libtsan";
+					}
+					elsif ($sanitizerFlags[$i] eq "leak") {
+						$LinkerArgs_ExtraPrefix .= " -static-liblsan";
+					}
+				}
+			}
+			elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
+				if ($#sanitizerFlags != 0) {
+					$LinkerArgs_ExtraPrefix .= " -static-libsan";
+				}
+			}
+		}
+	}
+	if ($#noSanitizerFlags >= 0) {
+		my $s = "";
+		foreach my $i (0 .. $#noSanitizerFlags) {
+			if (not ($s eq "")) {
+				$s .= ", ";
+			}
+			$s .= $noSanitizerFlags[$i];
+		}
+		push @CFLAGS, " -fno-sanitize=" . $s;
+		push @CXXFLAGS, " -fno-sanitize=" . $s;
+	}
+
+	if ($autoIncludeTSAN_OPTIONSIfAppropriate) {
+		if (IsTargettingSanitizer_ ('thread')) {
+			# prepend, so stuff already there takes precedence
+			if (not ($RunPrefix eq "")) {
+				$RunPrefix = " " . $RunPrefix;
+			}
+			$RunPrefix = "TSAN_OPTIONS=suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" . $RunPrefix;
+		}
+	}
+
+	if ($FEATUREFLAG_OpenSSL eq "") {
+		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+	}
+
+	if ($isVisualStudio) {
+		# Default to true for visual studio, because debug symbols go in separate file, and don't balloon the exe size (.pdb)
+		if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
+			$INCLUDE_SYMBOLS_EXE = true;
+		}
+	}
+
+	if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
+		$INCLUDE_SYMBOLS_EXE = false;
+	}
+
+	if ($MALLOC_GUARD eq true) {
+		push (@useExtraCDefines, '#define qStroika_Foundation_Debug_MallocGuard 1');
+	}
+
+	
+	if (! defined $FEATUREFLAG_StrawberryPerl) {
+		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin" or "$^O" eq "msys")) {
+			$FEATUREFLAG_StrawberryPerl = "use";
+		}
+		else {
+			$FEATUREFLAG_StrawberryPerl = $LIBFEATUREFLAG_No;
+		}
+	}
+	if (! defined $FEATUREFLAG_WIX) {
+		if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+			# No need to install, because its checked into ThirdPartyComponents/WiX
+			$FEATUREFLAG_WIX = "use";
+		}
+		else {
+			$FEATUREFLAG_WIX = $LIBFEATUREFLAG_No;
+		}
+	}
+
+	if (defined $STDCXXLIB) {
+		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			$LinkerArgs_ExtraPrefix .= " -stdlib=" . $STDCXXLIB;
+			push @CXXFLAGS, " -stdlib=" . $STDCXXLIB;
+		}
+	}
+
+	if ($BuildPlatform eq 'Unix') {
+		# Ahead of the libstdc++ entries below, since it uses libstdc++
+		if (defined $STDCXXLIB and $STDCXXLIB eq "libstdc++" and HasCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
+			my $stdlibFlag = IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) ? "-stdlib=libstdc++" : "";
+			my $stacktraceLib = GetLibStdCXXStacktraceLib_ ($COMPILER_DRIVER_CPlusPlus, "$CPPSTD_VERSION_FLAG $stdlibFlag");
+			if (not defined $stacktraceLib) {
+				print "Warning: found no library that makes std::stacktrace link with $COMPILER_DRIVER_CPlusPlus $CPPSTD_VERSION_FLAG - if Debug/BackTrace fails to link, that is why\n";
+			}
+			elsif ($stacktraceLib ne "") {
+				push @LinkerArgs_LibDependencies_ADD, $stacktraceLib;
+			}
+		}
+		if ($STATIC_LINK_GCCRUNTIME == 1) {
+			# tried $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=0 in Ubuntu 1804, and g++-7, and failed (still left .so file in ldd)
+			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
+			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
+				my $lib2FindStatic = $STDCXXLIB . ".a";
+				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=$lib2FindStatic 2>/dev/null`);
+				if (defined $lib) {
+					if ($lib ne $lib2FindStatic) {
+						push @LinkerArgs_LibDependencies_ADD, "$lib";
+					}
+					else {
+						# consider using apt-get install glibc-static libstdc++-static
+						my $dashLName = trim (`echo $STDCXXLIB | sed s/lib//`);
+						push @LinkerArgs_LibDependencies_ADD, "-l$dashLName";
+					}
+				}
+			}
+			else {
+				push @LinkerArgs_LibDependencies_ADD, "-lstdc++";
+				$LinkerArgs_ExtraPrefix .= " -static-libstdc++";
+			}
+		}
+
+		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if (!$STATIC_LINK_GCCRUNTIME) {
+				push @LinkerArgs_LibDependencies_ADD, "-lstdc++";
+			}
+			if ($STATIC_LINK_GCCRUNTIME == 1) {
+				# https://github.com/SophistSolutions/Stroika/issues/811 (-static causes some apps crash; and there is no option to JUST staticly link libc - eg no -static-libc)
+				# https://stackoverflow.com/questions/26304531/compiling-with-static-libgcc-static-libstdc-still-results-in-dynamic-depende
+				$LinkerArgs_ExtraPrefix .= " -static-libstdc++";
+				$LinkerArgs_ExtraPrefix .= " -static-libgcc";
+				#$LinkerArgs_ExtraPrefix .= " -static-libc";		# Wish this existed as option!
+			}
+		}
+		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if ($STDCXXLIB eq "libc++") {
+				push @LinkerArgs_LibDependencies_ADD, "-lc++";
+			}
+		}
+	}
+
+	FillDefaultIncludesPathIfNeeded_();
+	FillDefaultLibsPathIfNeeded_();
+	FillDefaultLibDependencies_();
+	FillInToolsPathAdditionsIfNeeded_ ();
+
+
+	if ($isVisualStudio) {
+		$LinkerArgs_ExtraPrefix .= " -nologo";
+		my $WIN_LIBCOMPATIBLE_ARCH = $ARCH;
+		if ($WIN_LIBCOMPATIBLE_ARCH eq "x86_64") {
+			$WIN_LIBCOMPATIBLE_ARCH = "x64";
+		}
+		$LinkerArgs_ExtraPrefix .= " -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
+
+		if (! defined $VSVARS_MSVC_RUNTIME_LIBRARY ) {
+			if ($gAssertionsEnabled) {
+				$VSVARS_MSVC_RUNTIME_LIBRARY = "MultiThreadedDebug";
+			}
+			else {
+				$VSVARS_MSVC_RUNTIME_LIBRARY = "MultiThreaded";
+			}
+		}
+	}
+
+	if ($CPPFLAGS_Overridden eq false) {
+		@GetDefaultCZZFLAGS_flags_flags = @Platform_CPPFLAGS_B4Includes;
+		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CPPFLAGS2Remove;
+		@Platform_CPPFLAGS_B4Includes = GetDefaultCZZFLAGS_flags_ (0, true, false);
+		@GetDefaultCZZFLAGS_flags_flags = qw();
+		@GetDefaultCZZFLAGS_flags_flagValues2Remove = qw();
+		@StroikaFoundation_CPPFLAGS_B4Includes = GetDefaultCZZFLAGS_flags_ (0, false, true);
+	}
+	if ($CFLAGS_Overridden eq false) {
+		@GetDefaultCZZFLAGS_flags_flags = @CFLAGS;
+		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CFLAGS2Remove;
+		@CFLAGS = GetDefaultCZZFLAGS_flags_ (1, true, true);
+	}
+	if ($CXXFLAGS_Overridden eq false) {
+		@GetDefaultCZZFLAGS_flags_flags = @CXXFLAGS;
+		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CXXFLAGS2Remove;
+		@CXXFLAGS = GetDefaultCZZFLAGS_flags_ (2, true, true);
+	}
+
+	# Append these last so they can be used to override earlier options
+	# 
+	for my $r (@CXXFLAGS2Append) {
+		push @CXXFLAGS, $r;
+	}
+
+	if ($BuildPlatform eq 'Unix' && not ($CPPSTD_VERSION_FLAG eq '')) {
+		$LinkerArgs_ExtraPrefix .= " $CPPSTD_VERSION_FLAG";
+	}
+
+	if ($INCLUDE_SYMBOLS_EXE) {
+		if ($isVisualStudio) {
+			# PREPEND this option, because it effects the default for other options like -OPT and resets them
+			$LinkerArgs_ExtraPrefix = "-DEBUG:FULL " . $LinkerArgs_ExtraPrefix;
+		}
+		elsif ($BuildPlatform eq 'Unix') {
+			$LinkerArgs_ExtraPrefix .= " -g";
+		}
+	}
+
+	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and not ($ARCH eq "")) {
+		push @CFLAGS, " -arch $ARCH";
+		push @CXXFLAGS, " -arch $ARCH";
+		$LinkerArgs_ExtraPrefix .= " -arch $ARCH";
+		# Since XCode 15, we've been getting these warnings, and no simple way to avoid them.
+		#https://stackoverflow.com/questions/77164140/ld-warning-ignoring-duplicate-libraries-lgcc-after-the-recent-update-of-xc
+		#Tried combingin the pkg-config lines into one call (would have been easy to fix configure todo this) - but that didnt help.
+		#Tried awk script:
+		#lewis@lewis-mac2 StroikaDev % (PKG_CONFIG_PATH=/Users/lewis/Sandbox/StroikaDev/Builds/Debug/ThirdPartyComponents/lib/pkgconfig pkg-config --static --libs zlib libcurl openssl ) | awk '{for (i=1;i<=NF;i++) if ($i =="-framework"||!a[$i]++) printf("%s%s",$i,FS)}{printf("\n")}'
+		# comes close, but no cigar ) the -framework stuff pITA. Looked at docs, and no alternative syntax for -framework ARG.
+		# COULD combine them all, and harwire runing the awk scrit to remove dups a -lz and each of these
+		# libraries: '-lbrotlidec', '-lcrypto', '-lidn2', '-lssl', '-lz'
+		# Seems least bad of a bad bunch of options:
+		$LinkerArgs_ExtraSuffix .= " -Wl,-no_warn_duplicate_libraries";
+	}
+
+	# Under LTO, gcc generates the code - and so emits every middle/back-end diagnostic - at LINK time, and
+	# LTRANS honours only the link command's -W flags: compile-time warning options are not carried in the
+	# LTO objects (checked 2026-09-23 with a two-file repro), and '#pragma GCC diagnostic' does not survive
+	# into LTRANS either. So the compile warning policy must be repeated on the link line, or whatever it
+	# suppresses comes back at link - e.g. hundreds of armhf "parameter passing for argument of type 'struct
+	# wformat_args' changed in GCC 9.1" notes despite -Wno-psabi. Done HERE, after the last change to
+	# $CXXWARNING_FLAGS above (-Wno-maybe-uninitialized is exactly the kind of late warning that fires at an
+	# LTO link) and after ApplyCompilerBugWorkarounds_ () has settled $ENABLE_LTO. Prepended, so the link-only
+	# suppressions already in $LinkerArgs_ExtraPrefix (-Wno-free-nonheap-object etc) still come after it and win.
+	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER) && $ENABLE_LTO == true) {
+		$LinkerArgs_ExtraPrefix = $CXXWARNING_FLAGS . ' ' . $LinkerArgs_ExtraPrefix;
+	}
+}
+
+
+
+
+PostProcessOptions_ ();
+
+
+
+sub ValidateConfigurationAndEmitNeededWarnings_
+{
+	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '15.0') {
+		print "CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+	}
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER) < 11) {
+		print "CONFIGURATION-WARNING: Stroika 3 requires gcc 11 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+	}
+}
+
+
+my %GetMSVCVarName_e_;	### cache map of var 2 values since $ARCH and $BuildToolsRoot shouldn't change once we start calling this
+my $GetMSVCVarName_filled_ = false;
+sub GetMSVCVarName_
+{
+	my $envVarName= shift;
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
+		require "$thisScriptDir/Build/Lib/Perl/Configure-VisualStudio-Support.pl";
+	}
+	if ($ARCH eq "") {
+		die ("reorg code so this set first");
+	}
+	if (!$GetMSVCVarName_filled_) {
+		# Visual Studio targets only x86 and x86_64. Any other ARCH (e.g. UNKNOWN, for a compiler that is not installed) gets
+		# no Visual Studio environment, so configure gets far enough for --only-if-has-compiler to skip the configuration.
+		if ($ARCH eq "x86" or $ARCH eq "x86_64") {
+			if (! defined $BuildToolsRoot) {
+				$BuildToolsRoot = GetDefaultToolsBuildDir($BuildPlatform);
+			}
+			%GetMSVCVarName_e_ = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, $BuildToolsRoot);
+		}
+		$GetMSVCVarName_filled_ = true;
+	}
+	return "$GetMSVCVarName_e_{$envVarName}"
+}
+
+
+# Eventually  -make this more central - put all configs here, and then
+# build C++/dirs etc from this!
+sub	WriteConfigFile_
+{
+	# probably belongs elsewhere
+	if ($BuildPlatform =~ /^VisualStudio.Net/) {
+		for my $i (0 .. $#VC_PLATFORM_INCLUDES_PATH)
+		{
+			$VC_PLATFORM_INCLUDES_PATH[$i] = trim (`cygpath --mixed "$VC_PLATFORM_INCLUDES_PATH[$i]"`);
+		}
+		for my $i (0 .. $#PLATFORM_INCLUDES_PATH)
+		{
+			$PLATFORM_INCLUDES_PATH[$i] = trim (`cygpath --mixed "$PLATFORM_INCLUDES_PATH[$i]"`);
+		}
+		for my $i (0 .. $#FOUNDATION_INCLUDES_PATH)
+		{
+			$FOUNDATION_INCLUDES_PATH[$i] = trim (`cygpath --mixed "$FOUNDATION_INCLUDES_PATH[$i]"`);
+		}
+		for my $i (0 .. $#LinkerArgs_LibPath)
+		{
+			$LinkerArgs_LibPath[$i] = trim (`cygpath --mixed "$LinkerArgs_LibPath[$i]"`);
+		}
+	}
+	# FIXUP LinkerArgs_LibPath
+	my $LinkerArgs_LibPathString="";
+	for my $i (0 .. $#LinkerArgs_LibPath) {
+		my $l = $LinkerArgs_LibPath[$i];
+		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			my $len = length ($l);
+			if (length ($l) > 0 && substr ($l, -1) eq "\\") {
+				$l .= "\"";
+			}
+			$LinkerArgs_LibPathString .= "-LIBPATH:\"$l\" ";
+		}
+		else {
+			$LinkerArgs_LibPathString .= "-L$l ";
+		}
+	}
+
+	my @appArgs = GetAppArgs_ ();
+	my $configFileName = shift(@_);
+
+	if (!open(OUT,">$configFileName")) {
+		print("\n");  # flush
+		die("\nFAILED: Cannot open $configFileName\n")
+	}
+	print (OUT "<!--This file autogenerated by the configure command: see ConfigureCommandLine, modify it, and re-run-->\n\n");
+	print (OUT "<Configuration>\n");
+
+	print (OUT "    <!--Overall-->\n");
+	print (OUT "    <ConfigureCommandLine>");
+	print (OUT "configure ");
+	foreach my $argnum (0 .. $#appArgs) {
+		if ($argnum != 0) {
+			print OUT (" ");
+		}
+	   print (OUT "$appArgs[$argnum]");
+	}
+	print (OUT "</ConfigureCommandLine>\n");
+	print (OUT "    <BuildPlatform>$BuildPlatform</BuildPlatform>\n");
+	if (defined $BuildToolsRoot) {
+		print (OUT "    <BuildToolsRoot>$BuildToolsRoot</BuildToolsRoot>\n");
+	}
+	print (OUT "    <TargetPlatforms>$TargetPlatforms</TargetPlatforms>\n");
+	print (OUT "    <ARCH>$ARCH</ARCH>\n");
+	if (defined $Config_Tag) {
+		print (OUT "    <ConfigTags>$Config_Tag</ConfigTags>\n");
+	}
+	else {
+		print (OUT "    <ConfigTags></ConfigTags>\n");
+	}
+	print (OUT "    <BuildByDefault>$BuildByDefault</BuildByDefault>\n");
+
+	print (OUT "\n    <!--Tools-->\n");
+	if (defined $AR) {
+		print (OUT "    <AR>$AR</AR>\n");
+	}
+	print (OUT "    <AS>$AS</AS>\n");
+	print (OUT "    <CC>$COMPILER_DRIVER_C</CC>\n");
+	print (OUT "    <CXX>$COMPILER_DRIVER_CPlusPlus</CXX>\n");
+	if (defined $CMAKE) {
+		print (OUT "    <CMAKE>$CMAKE</CMAKE>\n");
+	}
+	else {
+		print (OUT "    <CMAKE>cmake</CMAKE>\n");
+	}
+	if (defined $LIBTOOL) {
+		print (OUT "    <LIBTOOL>$LIBTOOL</LIBTOOL>\n");
+	}
+	print (OUT "    <LINKER>$LINKER</LINKER>\n");
+	if (defined $MIDL) {
+		print (OUT "    <MIDL>$MIDL</MIDL>\n");
+	}
+	if (defined $RANLIB) {
+		print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
+	}
+	if (defined $RC) {
+		print (OUT "    <RC>$RC</RC>\n");
+	}
+	if (defined $STRIP) {
+		print (OUT "    <STRIP>$STRIP</STRIP>\n");
+	}
+
+	print (OUT "\n    <!--Features Enabled-->\n");
+	if (defined $FEATUREFLAG_ATLMFC) {
+		print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
+	}
+	print (OUT "    <qFeatureFlag_boost>$FEATUREFLAG_boost</qFeatureFlag_boost>\n");
+	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
+	print (OUT "    <qFeatureFlag_fmtlib>$FEATUREFLAG_fmtlib</qFeatureFlag_fmtlib>\n");
+	print (OUT "    <qFeatureFlag_GoogleTest>$FEATUREFLAG_GoogleTest</qFeatureFlag_GoogleTest>\n");
+	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
+	print (OUT "    <qFeatureFlag_mongocxxdriver>$FEATUREFLAG_mongocxxdriver</qFeatureFlag_mongocxxdriver>\n");
+	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
+	if (not ($FEATUREFLAG_OpenSSLExtraArgs eq "")) {
+		if ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) {
+			print (OUT "    <qFeatureFlag_OpenSSL_ExtraArgs>$FEATUREFLAG_OpenSSLExtraArgs</qFeatureFlag_OpenSSL_ExtraArgs>\n");
+		}
+		else {
+			die ("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use");
+		}
+	}
+	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
+	print (OUT "    <qFeatureFlag_StrawberryPerl>$FEATUREFLAG_StrawberryPerl</qFeatureFlag_StrawberryPerl>\n");
+	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
+	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");
+	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
+	print (OUT "    <qFeatureFlag_libxml2>$FEATUREFLAG_libxml2</qFeatureFlag_libxml2>\n");
+	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
+	print (OUT "    <qFeatureFlag_zstd>$FEATUREFLAG_zstd</qFeatureFlag_zstd>\n");
+	if ($gAssertionsEnabled != DEFAULT_BOOL_OPTIONS) {
+		print (OUT "    <AssertionsEnabled>$gAssertionsEnabled</AssertionsEnabled>\n");
+	}
+	print (OUT "    <SanitizerFlags>");
+		foreach my $var (@sanitizerFlags) {
+			print (OUT "$var ");
+		}
+	print (OUT "</SanitizerFlags>\n");
+
+	print (OUT "\n    <!--MISC-->\n");
+	print (OUT "    <CrossCompiling>$CrossCompiling</CrossCompiling>\n");
+	print (OUT "    <ExtraMakeDefines>\n");
+		foreach my $var (@useExtraMakeDefines) {
+			print (OUT "       <MakeDefine>$var</MakeDefine>\n");
+		}
+	print (OUT "    </ExtraMakeDefines>\n");
+
+	print (OUT "    <Foundation_PkgConfigNames>");
+	{
+		my $firstTime = true;
+		foreach my $var (@foundationPackageCfgNames) {
+			if (!$firstTime) {
+				print (OUT " ");
+			}
+			$firstTime = false;
+			print (OUT "$var");
+		}
+	}
+	print (OUT "</Foundation_PkgConfigNames>\n");
+
+	
+	print (OUT "\n    <!--Platform Settings-->\n");
+	if (defined $VSVARS_WindowsSdkDir) {
+		print (OUT "    <VSVARS_WindowsSdkDir>$VSVARS_WindowsSdkDir</VSVARS_WindowsSdkDir>\n");
+	}
+	if (defined $VSVARS_WindowsSDKVersion) {
+		print (OUT "    <VSVARS_WindowsSDKVersion>$VSVARS_WindowsSDKVersion</VSVARS_WindowsSDKVersion>\n");
+	}
+	if (defined $VSVARS_VSINSTALLDIR) {
+		print (OUT "    <VSVARS_VSINSTALLDIR>$VSVARS_VSINSTALLDIR</VSVARS_VSINSTALLDIR>\n");
+	}
+	if (defined $VSVARS_VCToolsInstallDir) {
+		print (OUT "    <VSVARS_VCToolsInstallDir>$VSVARS_VCToolsInstallDir</VSVARS_VCToolsInstallDir>\n");
+	}
+	if (defined $VSVARS_MSVC_RUNTIME_LIBRARY) {
+		print (OUT "    <VSVARS_MSVC_RUNTIME_LIBRARY>$VSVARS_MSVC_RUNTIME_LIBRARY</VSVARS_MSVC_RUNTIME_LIBRARY>\n");
+	}
+	if (defined $MACOSX_DEPLOYMENT_TARGET && $MACOSX_DEPLOYMENT_TARGET ne "") {
+		print (OUT "    <MACOSX_DEPLOYMENT_TARGET>$MACOSX_DEPLOYMENT_TARGET</MACOSX_DEPLOYMENT_TARGET>\n");
+	}
+	if (defined $TOOLS_PATH_ADDITIONS) {
+		print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
+	}
+	if (@VC_PLATFORM_INCLUDES_PATH != 0) {
+		my $platformIncludesPathStr = join ($PATH_SEPERATOR, @VC_PLATFORM_INCLUDES_PATH);
+		print (OUT "    <VSVARS_PLATFORM_INCLUDES_PATH>$platformIncludesPathStr</VSVARS_PLATFORM_INCLUDES_PATH>\n");
+	}
+
+	print (OUT "\n    <!--Compiling-->\n");
+	
+ 	my $firstTime = true;
+	print (OUT "    <PLATFORM_CPPFLAGS_NOTINCLUDES>");
+		foreach my $var (@Platform_CPPFLAGS_B4Includes) {
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</PLATFORM_CPPFLAGS_NOTINCLUDES>\n");
+
+	my $includesPathStr = join ($PATH_SEPERATOR, @PLATFORM_INCLUDES_PATH);
+	print (OUT "    <PLATFORM_INCLUDES_PATH>$includesPathStr</PLATFORM_INCLUDES_PATH>\n");
+
+	$firstTime = true;
+	print (OUT "    <PLATFORM_CFLAGS>");
+		foreach my $var (@CFLAGS) {
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</PLATFORM_CFLAGS>\n");
+
+	$firstTime = true;
+	print (OUT "    <PLATFORM_CXXFLAGS>");
+		foreach my $var (@CXXFLAGS) {
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</PLATFORM_CXXFLAGS>\n");
+
+	$firstTime = true;
+	print (OUT "    <FOUNDATION_CPPFLAGS_NOTINCLUDES>");
+		foreach my $var (@StroikaFoundation_CPPFLAGS_B4Includes) {
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</FOUNDATION_CPPFLAGS_NOTINCLUDES>\n");
+
+	$includesPathStr = join ($PATH_SEPERATOR, @FOUNDATION_INCLUDES_PATH);
+	print (OUT "    <FOUNDATION_INCLUDES_PATH>$includesPathStr</FOUNDATION_INCLUDES_PATH>\n");
+	
+	
+	
+	print (OUT "\n    <!--Linking-->\n");
+	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
+	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
+	print (OUT "    <Platform_LinkerArgs_LibPath>$LinkerArgs_LibPathString</Platform_LinkerArgs_LibPath>\n");
+	print (OUT "    <Platform_LinkerArgs_LibDependencies>$LinkerArgs_LibDependencies</Platform_LinkerArgs_LibDependencies>\n");
+	print (OUT "    <Platform_LinkerArgs_ExtraPrefix>$LinkerArgs_ExtraPrefix</Platform_LinkerArgs_ExtraPrefix>\n");
+	print (OUT "    <Platform_LinkerArgs_ExtraSuffix>$LinkerArgs_ExtraSuffix</Platform_LinkerArgs_ExtraSuffix>\n");
+
+	### todo fix/wrong - only works for case of zero or one file
+	# ';' separated list of files to be copied into same directory as we link to, as part of linking operations.
+	# ORIGINAL inspiration was ASAN&&&& WPRLARPIMD - but this basic mechnaism could also be used on unix for example, for dlls with linker flags to use bin relative DLLS/so file etc
+	print (OUT "    <LinkTime_CopyFilesToEXEDir>");
+		$firstTime = true;
+		foreach my $var (@LinkTime_CopyFilesToEXEDir)
+		{
+			if (!$firstTime) {
+				print (OUT " ");
+			}
+			$firstTime = false;
+			print (OUT "\"$var\"");
+		}
+	print (OUT "</LinkTime_CopyFilesToEXEDir>\n");
+
+	print (OUT "\n    <!--Runtime/Testing-->\n");
+	print (OUT "    <RunPrefix>$RunPrefix</RunPrefix>\n");
+
+	print (OUT "\n    <!--Compiler/Tool Bug Workarounds/Defines-->\n");
+	if (defined ($qCompiler_HasNoMisleadingIndentation_Flag)) {
+		print (OUT "    <qCompiler_HasNoMisleadingIndentation_Flag>$qCompiler_HasNoMisleadingIndentation_Flag</qCompiler_HasNoMisleadingIndentation_Flag>\n");
+	}
+
+	print (OUT "\n    <!--VERSIONS-->\n");
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus, true);
+		print (OUT "        <!--g++ version: $itsVersion-->\n");
+	}
+	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus, true);
+		print (OUT "        <!--clang++ version: $itsVersion-->\n");
+	}
+	if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
+		print (OUT "        <!--MSVC++ version: $itsVersion-->\n");
+	}
+
+	my $ubuntuVersion = getUbuntuVersion();
+	if ($ubuntuVersion != 0) {
+		print (OUT "        <!--Ubuntu: $ubuntuVersion-->\n");
+	}
+	if ("$^O" eq "darwin") {
+		my $osVersion = getMacOSVersion_();
+		print (OUT "        <!--MacOS: $osVersion-->\n");
+
+		my $xcodeVersion = getXCodeVersion_();
+		my $xcodeselect = getXCodeSelect_();
+		print (OUT "        <!--XCode: $xcodeVersion ; selected: $xcodeselect-->\n");
+	}
+
+	print (OUT "</Configuration>\n");
+	close(OUT);
+}
+
+#print ("OS: $^O\n");
+
+mkdir ($configurationFiles);
+
+my $generate = true;
+my $generateBecause = '';
+if ($onlyGenerateIfCompilerExists) {
+	if (not HasCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
+		$generate = false;
+		$generateBecause = "compiler $COMPILER_DRIVER_CPlusPlus not present";
+	}
+
+	# Really should do similar for anything we say == system and $onlyGenerateIfCompilerExists
+	if ($generate && $FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem) {
+		 if (system("pkg-config --libs zlib 2>/dev/null >/dev/null")) {
+			$generate = false;
+			$generateBecause = "zlib is not installed";
+		 }
+	}
+	#	--valgrind enable compiles in memcheck's client requests, so every compile needs <valgrind/memcheck.h> (on
+	#	Ubuntu, from the valgrind package itself). Ask the compiler rather than look for the file, so the answer is
+	#	the include path the build will really search.
+	if ($generate && $TargettingValgrind) {
+		if (system("printf \"#include <valgrind/memcheck.h>\n\" | $COMPILER_DRIVER_CPlusPlus -fsyntax-only -x c++ - 2>/dev/null > /dev/null") != 0) {
+			$generate = false;
+			$generateBecause = "valgrind is not installed (no <valgrind/memcheck.h>)";
+		}
+	}
+
+	if ($generate && IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if ($itsVersion < 11.0) {
+			$generate = false;
+			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") v=" . $itsVersion . " is older than Stroika's minimum, gcc 11";
+		}
+	}
+	if (defined $FEATUREFLAG_fmtlib && $FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_No && NeedsFmtLib_ ()) {
+		$generate = false;
+		$generateBecause = "This compiler requires fmtlib, and configure arguments disabled fmtlib use.";
+	}
+	my $ubuntuVersion = getUbuntuVersion();
+	# if flag to use libc++ - check if right version is available (but not on XCode)
+	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if ($itsVersion < 15.0) {
+			$generate = false;
+			$generateBecause = "$COMPILER_DRIVER_CPlusPlus v=" . $itsVersion . " is older than Stroika's minimum, clang 15";
+		}
+		if ($generate && $ubuntuVersion == 24.04 && $itsVersion < 16.0 && $STDCXXLIB eq "libstdc++") {
+			# clang++-15-release-libstdc++ fails building google test
+			$generate = false;
+			$generateBecause = "$COMPILER_DRIVER_CPlusPlus with libstdc++ doesn't work with this version of libstdc++";
+		}
+		if ($generate && 16.0 <= $itsVersion && $itsVersion < 18.0 && $STDCXXLIB eq "libstdc++" && ($CPPSTD_VERSION_FLAG eq "--std=c++2b" || $CPPSTD_VERSION_FLAG eq "--std=c++23")) {
+			# PERHAPS should fine tune this check to make sure we are looking at g++ lib 13
+			$generate = false;
+			$generateBecause = "clang++-16/17 with libstdc++ doesn't support c++23 mode";
+		}
+		if ($generate && $STDCXXLIB eq "libc++" && !StdLibSupportsCompiler_ ($COMPILER_DRIVER_CPlusPlus, "libc++")) {
+			#	only reached when libc++ was asked for explicitly - the default would already have fallen back
+			$generate = false;
+			$generateBecause = "the installed libc++ says it does not support $COMPILER_DRIVER_CPlusPlus";
+		}
+		if ($generate && !HasStdLib_ ($COMPILER_DRIVER_CPlusPlus, $STDCXXLIB)) {
+			$generate = false;
+			$generateBecause = "$STDCXXLIB not available for $COMPILER_DRIVER_CPlusPlus";
+		}
+	}
+	if ($generate && $ubuntuVersion != 0) {
+		# needed for example of HOST OS is Ubuntu 24.04 (not necessarily OS in container)
+		if(IsTargettingSanitizer_ ('thread')) {
+			my $randBits = `sudo -S cat /proc/sys/vm/mmap_rnd_bits < /dev/null 2>/dev/null`;
+			if ($randBits eq '') {
+				$generate = false;
+				$generateBecause = "Cannot read mmap_rnd_bits and https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels";
+			}
+			elsif ($randBits > 28) {
+				$generate = false;
+				$generateBecause = "sudo sysctl vm.mmap_rnd_bits=28 to allow tsan: https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels";
+			}
+		}
+	}
+	if ($generate && $ubuntuVersion == 24.04 && $gUbuntu2404OptimizedNoLTOHazard) {
+		#	gcc 13/14 as packaged on Ubuntu 24.04 give WRONG ANSWERS in Containers::Sequence/Traversal/
+		#	DataExchange when optimizing without LTO - see ApplyCompilerBugWorkarounds_ for the
+		#	measurements. That sub already forces LTO back on so the bad flags are never emitted; for an
+		#	OPTIONAL configuration, do not generate it at all rather than quietly building something the
+		#	caller did not ask for.
+		$generate = false;
+		$generateBecause = "gcc 13/14 on Ubuntu 24.04 miscompile Stroika containers when optimizing without LTO (see ApplyCompilerBugWorkarounds_ in configure)";
+	}
+	if ($generate && $ubuntuVersion == 22.04) {
+		# needed for [34] Foundation::DataExchange::XML - scp ../Builds/raspberrypi-g++-12-release-sanitize_address/Tests/Test34...; ssh lewis@192.168.244.32   /tmp/Test34 --gtest_brief
+		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0 && $ARCH eq "armhf") {
+				# maybe only needed for release builds - but fine tune tests later in the cycle, and also not checking if arm only issue
+				if (IsTargettingSanitizer_ ('address')) {
+					$generate = false;
+					$generateBecause = "bogus failure on raspberrypi-g++-12-release-sanitize_address/Tests/Test34 - so skipping asan by default - for this target";
+				}
+			}
+		}
+	}
+	if ($generate && defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
+		foreach my $i (0 .. $#sanitizerFlags) {
+			if ($sanitizerFlags[$i] eq "thread") {
+				$generate = false;
+				$generateBecause = "qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - see https://github.com/SophistSolutions/Stroika/issues/851 AND https://gcc.gnu.org/bugzilla//show_bug.cgi?id=101978 ";
+			}
+		}
+	}
+}
+
+#	While configure moves to Python (https://github.com/SophistSolutions/Stroika/issues/1240), the Python configure runs
+#	this one as a check, with STROIKA_CONFIGURE_PERL_CHECK_OUTPUT naming the file to write instead - and leaving the
+#	rest of the tree alone
+my $perlCheckOutput = $ENV{'STROIKA_CONFIGURE_PERL_CHECK_OUTPUT'};
+if ($generate) {
+	ValidateConfigurationAndEmitNeededWarnings_ ();
+	my $masterXMLConfigFile	=	"$configurationFiles" . "$configurationName.xml";
+	print(`Build/Scripts/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\" ... ");
+	WriteConfigFile_ (defined ($perlCheckOutput) ? $perlCheckOutput : $masterXMLConfigFile);
+	if (not defined ($perlCheckOutput)) {
+		system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");
+	}
+	print("done\n");
+}
+else {
+	print(`Build/Scripts/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because $generateBecause and configuration invoked with --only-if-has-compiler\n");
+}
