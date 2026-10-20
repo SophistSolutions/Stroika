@@ -100,7 +100,10 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
         ;
         template <typename AS_T>
         nonvirtual AS_T As (const Providers::ISchemaProvider& p)
-            requires (same_as<AS_T, XML::Schema::Ptr>);
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (same_as<AS_T, XML::Schema::Ptr>)
+#endif
+        ;
         template <typename AS_T>
         nonvirtual AS_T As (const Providers::IDOMProvider& p)
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
