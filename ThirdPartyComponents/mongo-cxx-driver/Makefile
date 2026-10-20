@@ -33,7 +33,8 @@ SHELL=/bin/bash
 #
 #		(NOTE WHEN CHANGING THIS - REVIEW THE PATCHES/BWAs THAT DEPEND ON THIS VERSION BELOW)
 #
-MONGOCXXDRIRVER_VERSION_=r4.5.0
+MONGOCXXDRIRVER_VERSION_=r4.6.1
+# MONGOCXXDRIRVER_VERSION_=r4.5.0
 # MONGOCXXDRIRVER_VERSION_=r4.4.0
 # MONGOCXXDRIRVER_VERSION_=r4.3.1
 # MONGOCXXDRIRVER_VERSION_=r4.3.0
@@ -290,11 +291,11 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 		${SED} -i "s/Requires: .*/&, libzstd/" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
 	fi
 endif
-else ifneq (,$(filter r4.4.0 r4.5.0,${MONGOCXXDRIRVER_VERSION_}))
+else ifneq (,$(filter r4.4.0 r4.5.0 r4.6.1,${MONGOCXXDRIRVER_VERSION_}))
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@# Safe to leave enabled for a version that may not need it: the grep below tests for the defect
 	@# and the sed only runs if it is actually present, so this is a no-op once upstream fixes it.
-	@# Whether r4.5.0 still needs it is UNVERIFIED - only reachable on a VisualStudio build.
+	@# As of r4.6.1 (mongo-c-driver 2.5.6) still needed: its mongoc2-static.pc's Libs gives zstd.lib as -l<path> (2026-10-20).
 	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
 	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
 		${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
