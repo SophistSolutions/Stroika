@@ -99,6 +99,13 @@ SHELL?=/bin/bash
 ifndef ObjDir
 	ObjDir		:=	./
 endif
+#
+#	ObjDir_ToolsSafe: ObjDir in a form safe to pass to the build TOOLS (the compiler) - for ObjDir on a compile line, such
+#	as -I${ObjDir_ToolsSafe} for headers generated beside the objects (.embed files). With Visual Studio, make runs under
+#	MSYS2 or Cygwin, so ObjDir is a POSIX path (/c/... or /cygdrive/c/...) that cl.exe, a native Windows program, does not
+#	understand; cygpath --mixed gives C:/... (drive letter, forward slashes), which cl.exe and the shell both accept - the
+#	same conversion as StroikaRoot_MIXED, above. Elsewhere it is just ObjDir.
+#
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ObjDir_ToolsSafe	=	$(shell cygpath --mixed ${ObjDir})
 else

@@ -8,12 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- **WATCH: the release regression results - check once or twice a day** (LGP 2026-10-20) for new failures, and raise
-  each with its run's GIT COMMIT (it may be fixed already). Where they are, the one-command scan, and the known-benign
-  warnings: the shared notes' regression-results-share note.
-
-- config var name ObjDir_ToolsSafe funny name - probably lose the Safe!! part and DOCUMENT what it means!
-
 - Consider rewrite of remaining perl stuff - mostly configure - to use python?
   (test speed of existing make defualt-configs and applyconfigs - that may justify the rewrite).
 
@@ -48,19 +42,29 @@ Generally will track stuff here between releases
        - optional: one memcheck run of the suite on the Pi (aarch64; valgrind 3.24 is installed there). Its unsigned
          `char` and 128-bit software `long double` differ from x86_64 in ways memcheck can see. The 2019 attempts that
          gave up on it (#837) were 32-bit armhf on Debian 10.
+   - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
+     been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
+     the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.
    - **With #1205's copy-on-write race fixed, restore Tests/55's reproducer**: its SSDP_CachingListener_ and
      SSDP_CachingListener_Search_ read told under its lock (a BWA, so 3.0d25's ThreadSanitizer runs are quiet) - put their
      told.load () back.
-   - **Replace Ubuntu 25.04 with 26.10** ("Stonking Stingray", released 2026-10-15) as the latest non-LTS. 25.04 has
-     been unsupported since 2026-01, and so has 25.10. CI still has 25.04 entries in build-N-test-Matrix.json, plus
-     the Build/Docker/Ubuntu2504-* images. Regenerate Documentation/SupportedPlatformsAndCompilers.md afterwards.
-   - **WATCH: does Node 26 stop Windows CI's HTMLUI failures?** Every build image moved to Node 26 on 2026-10-20 for
-     them: "Error 127" at Samples/HTMLUI/QuasarBasedHTMLApp/Makefile:60, its Build.txt ending in "Build succeeded" then
-     libuv's "Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)" - Node aborting on exit
-     (https://github.com/nodejs/node/issues/56645). Seen on Node 24 2026-10-05, 10-09 and 10-20, always
-     windows-vs2k26-msys-x86_64-Release; 26 fixing it rests on one report that 26.5 did not reproduce it. If it recurs on
-     26, retry `npm run build` once at that Makefile line. Drop this entry if CI stays clean to the 3.0d26 release. Once
-     26 is LTS (expected late 2026-10), Windows-Cygwin's Dockerfile goes back to its commented-out nodejs-lts line.
+
+## Watching
+
+Not work items: checks Claude runs (how often, in each) and raises with LGP only when one finds something - so they
+never appear in a list of what to do next.
+
+- **WATCH: the release regression results - check once or twice a day** (LGP 2026-10-20) for new failures, and raise
+  each with its run's GIT COMMIT (it may be fixed already). Where they are, the one-command scan, and the known-benign
+  warnings: the shared notes' regression-results-share note.
+
+- **WATCH: does Node 26 stop Windows CI's HTMLUI failures?** Every build image moved to Node 26 on 2026-10-20 for
+  them: "Error 127" at Samples/HTMLUI/QuasarBasedHTMLApp/Makefile:60, its Build.txt ending in "Build succeeded" then
+  libuv's "Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)" - Node aborting on exit
+  (https://github.com/nodejs/node/issues/56645). Seen on Node 24 2026-10-05, 10-09 and 10-20, always
+  windows-vs2k26-msys-x86_64-Release; 26 fixing it rests on one report that 26.5 did not reproduce it. If it recurs on
+  26, retry `npm run build` once at that Makefile line. Drop this entry if CI stays clean to the 3.0d26 release. Once
+  26 is LTS (expected late 2026-10), Windows-Cygwin's Dockerfile goes back to its commented-out nodejs-lts line.
