@@ -43,7 +43,10 @@ COPY Windows-Cygwin/.bash_profile ./tools/cygwin/home
 
 ARG INSTALL_QUASAR=0
 SHELL ["cmd", "/S", "/C"]
-RUN IF %INSTALL_QUASAR%==1 ( choco install -y --force nodejs-lts )
+# Node 26, the same as Windows-MSYS's - see why there. Pinned only because nodejs-lts is still 24: once 26 is LTS
+# (expected late 2026-10), go back to the nodejs-lts line.
+# RUN IF %INSTALL_QUASAR%==1 ( choco install -y --force nodejs-lts )
+RUN IF %INSTALL_QUASAR%==1 ( choco install -y --force nodejs --version=26.12.0 )
 RUN IF %INSTALL_QUASAR%==1 ( npm i -g npm @quasar/cli )
 
 # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 

@@ -15,7 +15,11 @@ ARG JFLAG=-j8
 WORKDIR /tmp/build
 COPY . .
 
-RUN apt-get install -y nodejs; apt-get install -y  npm; npm i -g npm @quasar/cli
+# NodeSource's nodejs (it includes npm): Ubuntu 24.04's own (18) is too old, and the html part would be skipped
+ARG NODE_MAJOR=26
+RUN apt-get update && apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - && \
+    apt-get install -y nodejs && npm i -g npm @quasar/cli
 
 RUN make CONFIGURATION= distclean && \
     make CONFIGURATION=${CONFIGURATION} libraries ${JFLAG} && \

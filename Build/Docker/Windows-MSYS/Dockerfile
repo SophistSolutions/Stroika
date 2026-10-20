@@ -113,8 +113,9 @@ SHELL ["powershell"]
 # It appears this installed nodejs 23.5 - which appears incompatible with quasar-vite 2.0 (recent)  - so
 # try installing nodejs 20 - from nodesource
 #ARG MSYS_NODEJSURI='https://nodejs.org/dist/v20.9.0/node-v20.9.0-x64.msi'
-# try more recent nodejs as node 20 not working with current build... --LGP 2026-01-02
-ARG MSYS_NODEJSURI='https://nodejs.org/dist/v24.12.0/node-v24.12.0-x64.msi'
+# Node 26: on Windows, Node 24 now and then aborts as it exits (libuv's "Assertion failed: !(handle->flags &
+# UV_HANDLE_CLOSING)", https://github.com/nodejs/node/issues/56645), failing the HTMLUI build after it succeeded.
+ARG MSYS_NODEJSURI='https://nodejs.org/dist/v26.12.0/node-v26.12.0-x64.msi'
 RUN IF ($env:INSTALL_QUASAR -eq 1) { \
         Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_NODEJSURI" -OutFile node.msi; \
         Start-Process msiexec.exe -Wait -ArgumentList '/i "node.msi" /L*V ".\node.msi.log" /quiet /norestart'; \
@@ -122,7 +123,6 @@ RUN IF ($env:INSTALL_QUASAR -eq 1) { \
         [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine); \
         Remove-Item node.msi ;\
         Remove-Item node.msi.log ;\
-        npm install -g npm@10.9;\
         npm i -g npm @quasar/cli ;\
     }
 

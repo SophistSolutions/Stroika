@@ -35,7 +35,13 @@ RUN apt-get -qq install -y valgrind; \
 RUN apt-get -qq install -y g++-14-arm-linux-gnueabihf iputils-ping; \
     apt-get -qq clean -y;
 
-# Used for Samples/HTMLUI (not needed - autodetected)
-RUN apt-get update; apt-get install -y nodejs npm; npm i -g npm @quasar/cli; \
+## Because the nodejs that comes with 25.04 (20) is too old for Samples/HTMLUI, which then skips its html
+ARG NODE_MAJOR=26
+RUN apt-get install -y curl; \
+    apt-get -qq clean -y;
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo -E bash -
+
+# Used for Samples/HTMLUI (not needed - autodetected - but good to test)
+RUN apt-get update; apt-get install -y nodejs ;apt-get install -y  npm ; npm i -g npm @quasar/cli; \
     apt-get -qq clean -y;
 
