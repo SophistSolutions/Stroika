@@ -162,6 +162,7 @@ namespace {
             DeclareActivity active2{&kOtherActivity};
             DeclareActivity active3{&otherActivity};
             DeclareActivity active4{&lazyEvalActivity};
+            static_assert (not is_copy_assignable_v<decltype (active1)>); // assigning one would corrupt the thread's activity stack
 
             try {
                 // something that will throw

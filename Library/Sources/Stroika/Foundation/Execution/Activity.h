@@ -171,6 +171,9 @@ namespace Stroika::Foundation::Execution {
         DeclareActivity (const ACTIVITY* activity) noexcept;
         ~DeclareActivity ();
 
+    public:
+        nonvirtual DeclareActivity& operator= (const DeclareActivity&) = delete;
+
     private:
         Private_::Activities_::StackElt_ fNewTopOfStackElt_;
     };
