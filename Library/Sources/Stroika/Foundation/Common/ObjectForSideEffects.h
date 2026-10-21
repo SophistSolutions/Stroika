@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Common {
     class EmptyObjectForSideEffects {
     public:
         /**
-         *  \brief Sometimes you want to sequence some code around mem-initializers. SOMETIMES - if those mem-initializers take paraemters, you can
+         *  \brief Sometimes you want to sequence some code around mem-initializers. SOMETIMES - if those mem-initializers take parameters, you can
          *         squeeze this in with (fake-value-for-side-effect,real-value) arguments.
          *         But other times that doesn't work out, and this trick solves the same problem, perhaps more cleanly.
          *
@@ -27,8 +27,8 @@ namespace Stroika::Foundation::Common {
          *      \code
          *          struct foo { ...
          *              // Mark the activity 'constructing WSAPI webserver' as surrounding the construction of the ConnectionManager object
-         *              static constexpr Activity                            kContructing_WSAPI_WebServer_{L"constructing WSAPI webserver"sv};
-         *              optional<DeclareActivity<Activity<wstring_view>>>    fEstablishActivity1_{&kContructing_WSAPI_WebServer_};
+         *              static constexpr Activity                            kConstructing_WSAPI_WebServer_{L"constructing WSAPI webserver"sv};
+         *              optional<DeclareActivity<Activity<wstring_view>>>    fEstablishActivity1_{&kConstructing_WSAPI_WebServer_};
          *              ConnectionManager                                    fWSConnectionMgr_;
          *              Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS EmptyObjectForSideEffects fIgnore1_{[this]() { fEstablishActivity1_.reset (); }};
          *              ...
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Common {
     class ObjectForSideEffects {
     public:
         /**
-         *  \brief Sometimes you want to sequence some code around mem-initializers. SOMETIMES - if those mem-initializers take paraemters, you can
+         *  \brief Sometimes you want to sequence some code around mem-initializers. SOMETIMES - if those mem-initializers take parameters, you can
          *         squeeze this in with (fake-value-for-side-effect,real-value) arguments.
          *         But other times that doesn't work out, and this trick solves the same problem, perhaps more cleanly.
          *
@@ -52,8 +52,8 @@ namespace Stroika::Foundation::Common {
          *      \code
          *          struct foo { ...
          *              // Mark the activity 'constructing WSAPI webserver' as surrounding the construction of the ConnectionManager object
-         *              static constexpr Activity                           kContructing_WSAPI_WebServer_{L"constructing WSAPI webserver"sv};
-         *              optional<DeclareActivity<Activity<wstring_view>>>   fEstablishActivity1_{&kContructing_WSAPI_WebServer_};
+         *              static constexpr Activity                           kConstructing_WSAPI_WebServer_{L"constructing WSAPI webserver"sv};
+         *              optional<DeclareActivity<Activity<wstring_view>>>   fEstablishActivity1_{&kConstructing_WSAPI_WebServer_};
          *              ObjectForSideEffects                                fIgnore1_{[this]() { DbgTrace ("this far in construction mem-initializers"); }, []() { DbgTrace(L"destroying this far in mem initializers"); }};
          *              ConnectionManager                                   fWSConnectionMgr_;
          *              ...
