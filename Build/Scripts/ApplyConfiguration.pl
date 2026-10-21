@@ -842,7 +842,7 @@ sub WriteVSCodeCPPExtensionConfigFile
 		}
 		if (trim (`jq ".env.myDefaultIncludePath" < $vsCodeCppExtensionCng`) eq "null") {
 			# myDefaultIncludePath is missing, so add default value
-			local $r = `jq ".env.myDefaultIncludePath=[\\"\\\${workspaceFolder}\\"]" < $vsCodeCppExtensionCng`;
+			local $r = `jq ".env.myDefaultIncludePath=[]" < $vsCodeCppExtensionCng`;
 			open(FH, '>', $vsCodeCppExtensionCng) or die $!;
 			print FH $r;
 			close(FH);

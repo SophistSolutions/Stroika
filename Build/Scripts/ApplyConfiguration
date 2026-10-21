@@ -457,12 +457,14 @@ def VSCodeText(c, existingText):
             raise ValueError
     except ValueError:
         doc = json.loads(EMPTY)
-    # myDefaultIncludePath, if missing (an .env that is not an object makes jq fail, and the Perl then left it)
+    # myDefaultIncludePath, if missing (an .env that is not an object makes jq fail, and the Perl then left it). Empty: the
+    # project's own include directories, for it to add. NOT ${workspaceFolder}: IntelliSense searches includePath for <...>
+    # includes too, so it would take a Skel app's root VERSION file for <version> (case-insensitive on Windows)
     env = doc.get("env") if isinstance(doc, dict) else None
     if isinstance(doc, dict) and (env is None or (isinstance(env, dict) and env.get("myDefaultIncludePath") is None)):
         if env is None:
             doc["env"] = {}
-        doc["env"]["myDefaultIncludePath"] = ["${workspaceFolder}"]
+        doc["env"]["myDefaultIncludePath"] = []
     configs = doc.get("configurations") if isinstance(doc, dict) else None
     if configs is not None and not isinstance(configs, list):
         raise CannotMatchPerl(".configurations is not an array")

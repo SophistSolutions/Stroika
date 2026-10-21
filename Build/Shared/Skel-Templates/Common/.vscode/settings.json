@@ -39,6 +39,11 @@
     "ostream": "cpp",
     "cassert": "cpp"
   },
+  "C_Cpp.files.exclude": {
+    "**/node_modules/**": true,
+    "**/IntermediateFiles/**": true,
+    "ThirdPartyComponents/Stroika/StroikaRoot/Archive/**": true
+  },
   "files.watcherExclude": {
     "Builds/**": true,
     "IntermediateFiles/**": true,
