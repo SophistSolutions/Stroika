@@ -15,6 +15,9 @@ Generally will track stuff here between releases
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.
+   - **Early: a flaky test - `Frameworks_UPnP.SSDP_CachingListener_StaleSearchAnswer_`** (LGP 2026-10-21) - FAILED once,
+     MacOS_XCode26_m1-3.0d25x (commit d7a28b1ea3, 10/20, line 3325 of its result file); passed in the 3.0d25 run
+     (10b4202af3, 10/21). CachingListener is new in 3.0d25; timing-sensitive on macOS? Not yet looked at.
    - **Early: remove the Perl cross-check of configure and ApplyConfiguration** (#1240, closed; LGP 2026-10-21) - once the
      3.0d25 release runs and CI show no `PYTHON/PERL CONFIGURATION MISMATCH` or `... NOT CHECKED`: delete configure.pl,
      Build/Scripts/ApplyConfiguration.pl, Build/Lib/Python/PerlCheck.py, the code that runs them, and the Build/Lib/Perl
