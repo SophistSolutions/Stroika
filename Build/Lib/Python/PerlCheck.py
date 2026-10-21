@@ -28,6 +28,29 @@ def PerlCheckWanted():
     return True
 
 
+_perlIsPOSIX = None
+
+
+def PerlPath(path):
+    """
+    path, in the form the perl on PATH opens: the POSIX one (/c/...) for MSYS2's or Cygwin's perl, given a Windows path
+    (C:/...), as a native Windows Python (MSYS2's mingw64 one) has. Whether a POSIX perl takes a drive-letter path as
+    absolute varies: MSYS2's in the Windows-MSYS docker image takes it as relative, so configure.pl looked for its own
+    Perl libraries under /c/Stroika/c:/Stroika/.
+    """
+    global _perlIsPOSIX
+    if sys.platform != "win32":
+        return path
+    if _perlIsPOSIX is None:
+        p = subprocess.run(["perl", "-e", "print $^O"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        _perlIsPOSIX = p.stdout.decode("latin-1") in ("msys", "cygwin")
+    if not _perlIsPOSIX:
+        return path
+    p = subprocess.run(["cygpath", "--unix", path], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    converted = p.stdout.decode("latin-1").strip()
+    return converted if p.returncode == 0 and converted else path
+
+
 def RunPerlInScratch(perlScript, args, seedFiles):
     """
     Runs perl perlScript args with a scratch directory as its current directory, after copying each of seedFiles
@@ -40,7 +63,8 @@ def RunPerlInScratch(perlScript, args, seedFiles):
             dst = os.path.join(scratch, rel)
             os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
             shutil.copyfile(rel, dst)
-    p = subprocess.run(["perl", perlScript] + list(args), cwd=scratch, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p = subprocess.run(["perl", PerlPath(perlScript)] + list(args), cwd=scratch, stdout=subprocess.PIPE,
+                       stderr=subprocess.STDOUT)
     return scratch, p.returncode, p.stdout.decode("latin-1")
 
 

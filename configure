@@ -2486,7 +2486,8 @@ def Main(argv):
         try:
             env = ChildEnv()
             env[PERL_CHECK_OUTPUT_ENV] = perlOut
-            p = subprocess.run(["perl", os.path.join(THIS_DIR, "configure.pl")] + list(argv), stdout=subprocess.PIPE,
+            perlScript = PerlCheck.PerlPath(os.path.join(THIS_DIR, "configure.pl"))
+            p = subprocess.run(["perl", perlScript] + list(argv), stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, env=env)
             fileBytes = None
             if os.path.exists(perlOut):
