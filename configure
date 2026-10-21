@@ -2500,6 +2500,10 @@ def Main(argv):
         finally:
             if os.path.exists(perlOut):
                 os.unlink(perlOut)
+        why = PerlCheck.PerlCouldNotRun(perl[0], perl[2].decode("latin-1"))
+        if why is not None and py is not None:
+            PerlCheck.NotChecked("configure", argv[0] if argv else "", why)
+            perl = None
         if py is None:
             PerlCheck.Decline("configure", argv[0] if argv else "", pyFailure)
 

@@ -3,20 +3,28 @@ While Stroika's configure and ApplyConfiguration move from Perl to Python
 (https://github.com/SophistSolutions/Stroika/issues/1240), each Python script computes its own result, then runs the old
 Perl one (kept beside it as NAME.pl) into a scratch directory and compares every file the two write. When they differ, the
 PERL result is the one used - with a loud warning, and the diff kept under IntermediateFiles/configure-mismatch/ - so a
-Python mistake can never change a build. When every release run and CI job agrees, the Perl goes, and this with it.
+Python mistake can never change a build. But a Perl that could not run at all (perl could not open the script, or load a
+file it requires) checks nothing: the Python result is used then, with a loud warning of its own - so the check cannot fail
+a build the Python got right. When every release run and CI job agrees, the Perl goes, and this with it.
 
 STROIKA_SKIP_PERL_CHECK=1 skips the Perl run (for speed); with no perl on PATH it is skipped too, and the run says so.
 """
 
 import difflib
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 
 MISMATCH_TAG = "PYTHON/PERL CONFIGURATION MISMATCH"  # what the regression-results scan looks for
+NOT_CHECKED_TAG = "PYTHON/PERL CONFIGURATION NOT CHECKED"  # ... and this
 MISMATCH_DIR = "IntermediateFiles/configure-mismatch"
+
+# perl's own messages when it cannot load the script, or a file the script requires - never one of Stroika's diagnostics
+_PERL_COULD_NOT_RUN = re.compile(r"^.*?(Can't open perl script .*|Can't locate \S+\.p[lm] .*|BEGIN failed--compilation aborted.*|"
+                                 r"Compilation failed in require.*|Execution of .* aborted due to compilation errors.*)$", re.M)
 
 
 def PerlCheckWanted():
@@ -87,6 +95,25 @@ def Choose(scriptName, what, label, pythonBytes, perlBytes, same=None):
     sys.stderr.write("         Please report it (https://github.com/SophistSolutions/Stroika/issues/1240).\n")
     sys.stderr.write("*" * 120 + "\n\n")
     return perlBytes
+
+
+def PerlCouldNotRun(status, output):
+    """
+    Why the Perl could not run as a check at all - perl could not open the script, or load a file it requires - or None,
+    when it ran (whatever it then reported). Such a failure is the environment's, and says nothing about the Python result.
+    """
+    if status == 0:
+        return None
+    m = _PERL_COULD_NOT_RUN.search(output)
+    return m.group(1) if m else None
+
+
+def NotChecked(scriptName, label, why):
+    """When the Perl could not run as a check: say so, loudly - the caller then uses the Python result, unchecked"""
+    sys.stderr.write("\n" + "*" * 120 + "\n")
+    sys.stderr.write("WARNING: %s: %s %s: the Perl could not run (%s) - USING THE PYTHON RESULT, unchecked.\n" % (NOT_CHECKED_TAG, scriptName, label, why))
+    sys.stderr.write("         Please report it (https://github.com/SophistSolutions/Stroika/issues/1240).\n")
+    sys.stderr.write("*" * 120 + "\n\n")
 
 
 def Decline(scriptName, label, why):

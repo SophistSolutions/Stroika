@@ -579,13 +579,17 @@ def Main(argv):
         scratch, rc, output = PerlCheck.RunPerlInScratch(os.path.join(THIS_DIR, "ApplyConfiguration.pl"), args,
                                                           [VS_INTELLISENSE_FILE, VSCODE_CPP_FILE])
         try:
-            if rc != 0:
-                sys.stderr.write(output)
-                Die("ApplyConfiguration.pl %s failed (status %d)\n" % (activeConfiguration, rc), rc & 0xFF or 1)
-            perl = {}
-            for f in ([configMk] if genConfigMake else []) + ([VS_INTELLISENSE_FILE] if genVSIntellisense else []) + ([VSCODE_CPP_FILE] if genVSCode and jqInstalled else []):
-                with open(os.path.join(scratch, f), "rb") as h:
-                    perl[f] = h.read()
+            why = PerlCheck.PerlCouldNotRun(rc, output) if py is not None else None
+            if why is not None:
+                PerlCheck.NotChecked("ApplyConfiguration", activeConfiguration, why)
+            else:
+                if rc != 0:
+                    sys.stderr.write(output)
+                    Die("ApplyConfiguration.pl %s failed (status %d)\n" % (activeConfiguration, rc), rc & 0xFF or 1)
+                perl = {}
+                for f in ([configMk] if genConfigMake else []) + ([VS_INTELLISENSE_FILE] if genVSIntellisense else []) + ([VSCODE_CPP_FILE] if genVSCode and jqInstalled else []):
+                    with open(os.path.join(scratch, f), "rb") as h:
+                        perl[f] = h.read()
         finally:
             shutil.rmtree(scratch, ignore_errors=True)
     if py is None:

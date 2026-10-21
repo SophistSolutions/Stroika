@@ -15,6 +15,10 @@ Generally will track stuff here between releases
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.
+   - **Early: remove the Perl cross-check of configure and ApplyConfiguration** (#1240, closed; LGP 2026-10-21) - once the
+     3.0d25 release runs and CI show no `PYTHON/PERL CONFIGURATION MISMATCH` or `... NOT CHECKED`: delete configure.pl,
+     Build/Scripts/ApplyConfiguration.pl, Build/Lib/Python/PerlCheck.py, the code that runs them, and the Build/Lib/Perl
+     files only they require. It caught no Python mistake, and failed builds twice on 10/20-21 (perl handed a C:/ path).
 
 ## Watching
 
