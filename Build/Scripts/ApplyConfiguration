@@ -31,6 +31,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the imports below
@@ -404,6 +405,28 @@ def ToFullPathEXE(exe):
     return exe if rc != 0 else Trim(out)
 
 
+def MSVCLatestCppStandard(compiler):
+    """
+    The IntelliSense cppStandard for MSVC's -std:c++latest - a newer draft with each MSVC - asked of the compiler itself: the
+    latest finished standard at or below the _MSVC_LANG it reports, never a draft. Without an answer (the compiler is not on
+    this machine, say), c++23: what both supported MSVCs come to (19.44 and 19.51 report 202400L), and what the Perl says.
+    """
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            with open(os.path.join(d, "probe.cpp"), "w") as f:
+                f.write("_MSVC_LANG\n")
+            p = subprocess.run([compiler, "/nologo", "/std:c++latest", "/EP", "probe.cpp"], cwd=d, stdout=subprocess.PIPE,
+                               stderr=subprocess.DEVNULL, timeout=60)
+        m = re.search(r"\b(\d{6})L\b", p.stdout.decode(ENC, errors="replace"))
+        if p.returncode == 0 and m:
+            for value, name in ((202302, "c++23"), (202002, "c++20")):
+                if int(m.group(1)) >= value:
+                    return name
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return "c++23"
+
+
 def IntelliSenseModeFor(c, compilerDriver):
     """
     (compiler, ARCH, host) as the VS Code C/C++ extension's intelliSenseMode: <os>-<toolset>-<arch>, os windows|linux|macos,
@@ -484,8 +507,10 @@ def VSCodeText(c, existingText):
         std = c.CXXFLAGS[l + 5:]
     if " " in std:
         std = std[:std.find(" ")]
-    if std in ("c++2a", "c++latest"):
+    if std == "c++2a":
         std = "c++20"
+    elif std == "c++latest":
+        std = MSVCLatestCppStandard(c.COMPILER_DRIVER_CPlusPlus)
 
     # the Perl built a jq object literal as a string, and tested 'already listed?' against that string: so does this
     literal = ' name: \\"' + c.name + '\\" ,cppStandard: \\"' + std + '\\" ,includePath: [\\"\\${myDefaultIncludePath}\\"'

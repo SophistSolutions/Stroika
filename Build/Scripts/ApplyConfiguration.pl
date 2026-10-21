@@ -883,7 +883,8 @@ sub WriteVSCodeCPPExtensionConfigFile
 			$std = "c++20";
 		}
 		if ($std eq "c++latest") {
-			$std = "c++20";
+			# the Python asks the compiler; both supported MSVCs come to c++23
+			$std = "c++23";
 		}
 		$newCfgObj .= " ,cppStandard: \\\"$std\\\"";
 	}
