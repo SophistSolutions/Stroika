@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Execution {
      *          message, even if the system default code page (locale) does not allow representing those characters.
      *
      *      o   It integrates neatly with the Stroika 'Activity' mechanism, whereby you declare current 'activities' on the stack
-     *          and these are automatically integrated into exceptions to provide clearer messages (e.g. instead of
+     *          and these are automatically integrated into exceptions thrown with Execution::Throw (), to provide clearer messages (e.g. instead of
      *          getting the error message 
      *              o   "(errno: 13)" OR 
      *              o   "Permission denied"
@@ -193,11 +193,11 @@ namespace Stroika::Foundation::Execution {
      *          static constexpr Activity   kBuildingThingy_ {"building thingy"sv };
      *          try {
      *              DeclareActivity declareActivity { &kBuildingThingy_ };
-     *              doBuildThing  ();   // throw any exception (that inherits from Exception<>)
+     *              doBuildThing  ();   // Execution::Throw () any Exception<>
      *          }
      *          catch (...) {
      *              String exceptionMsg = Characters::ToString (current_exception ());
-     *              Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());       // exception e while building thingy...
+     *              Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ()));       // exception e while building thingy...
      *          }
      *      \endcode
      *

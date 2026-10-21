@@ -42,21 +42,14 @@ namespace Stroika::Foundation::Execution {
      *      \code
      *          static constexpr Activity  kBuildingThingy_{ "building thingy"sv };
      *          static const auto kOtherActivity = Activity<String>{  "abc" };
-     *                                                                          // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
+     *                                                                          // automatic variable activity OK as long as its lifetime longer than reference in DeclareActivity
      *          auto otherActivity = Activity<String> { "abc" + argument };    // activities can be stack based, but these cost more to define
      *          auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + "x"; });
      *          // then for how to use activity object - see DeclareActivity
      *      \endcode
      *
      *  \note the intended purpose of this is to provide better 'context' for default exception messages, when exceptions are
-     *        created/thrown. @see CaptureCurrentActivities
-     * 
-     *  \note   for now, constexpr Activity<wstring_view> kActivity;    // FAILS
-     *          This is because AsStringObj_ has a virtual destructor (necessary for other types). That's crazy
-     *          because constexpr objects are never destroyed, so its crazy to care that they have a virtual DTOR.
-     *          Still, g++ and msvc both agree on this; I think this MAYBE fixed in C++20 (not yet tested) - because
-     *          there they at least allow virtual constexpr methods. That might impact (indirectly) whether an object
-     *          can be constexpr (having a virtual dtor).
+     *        thrown (by Execution::Throw ()). @see CaptureCurrentActivities
      */
     template <convertible_to<Characters::String> STRINGISH_T = Characters::String>
     class Activity final : public Private_::Activities_::AsStringObj_ {
@@ -116,54 +109,65 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief Returns a copyable preservable version of the current activities stack.
      *
-     *  'render' each current activity on the current threads activity stack as a Activity<> (so String based), and return the full
+     *  'render' each current activity on the current thread's activity stack as an Activity<> (so String based), and return the full
      *  list as a copyable stack of activities.
-     * 
+     *
      *  \note the intended purpose of this is to provide better 'context' for default exception messages, when exceptions are
-     *        created/thrown.
-     * 
-     *  \note the TOP of the static is the most specific activity, and the bottom of the stack is the initial, outermost task.
+     *        thrown (by Execution::Throw ()).
+     *
+     *  \note the TOP of the stack is the most specific activity, and the bottom of the stack is the initial, outermost task.
      */
     Containers::Stack<Activity<>> CaptureCurrentActivities ();
 
     /**
      *  Push the argument Activity onto the current thread's Activity stack in the constructor, and pop it off in the destructor.
      *
+     *  An exception captures the activities in force when it is THROWN with Execution::Throw (), not those in force when
+     *  it was constructed. So an exception built in one context (a static const, say) and thrown in another reports the
+     *  context of the throw. Throw () fills in only an exception that specified no activities of its own (any Stroika
+     *  Exception<>), and a bare `throw X{}` gets none. For a third-party exception, wrap it in a NestedException and
+     *  Throw () that.
+     *
+     *  Each activity's AsString () runs at that Throw (), while its DeclareActivity is still in scope - so a
+     *  LazyEvalActivity's lambda may capture by reference.
+     *
      *  \par Example Usage
      *      \code
      *          static constexpr Activity   kBuildingThingy_ {"building thingy"sv };
      *          try {
      *              DeclareActivity declareActivity { &kBuildingThingy_ };
-     *              doBuildThing  ();   // throw any exception (that inherits from Exception<>)
+     *              doBuildThing  ();   // Execution::Throw () any Exception<>
      *          }
      *          catch (...) {
      *              String exceptionMsg = Characters::ToString (current_exception ());
-     *              Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());       // exception e while building thingy...
+     *              Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ()));       // exception e while building thingy...
      *          }
      *      \endcode
-     * 
-     *  \note these activities are captured via CaptureCurrentActivities() - when an ExceptionStringHelper subclass (any of the Stroika Exception classes)
-     *        is constructed. For 3rd-party exceptions, consider wrapping with NestedException.
+     *
+     *  \note   DeclareActivity objects must be destroyed in the reverse order of their construction, on the thread that
+     *          constructed them (Asserted in the destructor) - so in practice automatic variables, and never one that lives
+     *          across a co_await, which breaks that order even on one thread. The stack is per-thread: work handed to
+     *          another thread (a thread pool task, say) does not see it.
      */
     template <typename ACTIVITY>
     class DeclareActivity {
     public:
+        DeclareActivity ()                       = delete;
+        DeclareActivity (const DeclareActivity&) = delete;
         /**
-         *  The caller must always declare an Activity object whose address can be taken, 
-         *  and whose lifetime exceeds that of the DeclareActivity object.
+         *  The caller must always declare an activity object (an Activity<> or LazyEvalActivity<>) whose address can be
+         *  taken, and whose lifetime exceeds that of the DeclareActivity object.
          *
-         *  \note   the Activity* argument MAY be nullptr, in which case this does nothing.
+         *  \note   the activity argument MAY be nullptr, in which case this does nothing.
          *
          *          This is allowed to facilitate examples like:
          *              \code
-         *                  DeclareActivity declareActivity { flag? &kSomeActivity_? nullptr }; // so we only conditionally declare the activity
+         *                  DeclareActivity declareActivity { flag ? &kSomeActivity_ : nullptr }; // so we only conditionally declare the activity
          *              \endcode
          *
          *          I considered using optional<ACTIVITY> - but tricky since we pass in pointer - and really not much point. This has practically zero
          *          overhead, and is easy enough to understand and use.
          */
-        DeclareActivity ()                       = delete;
-        DeclareActivity (const DeclareActivity&) = delete;
         DeclareActivity (const ACTIVITY* activity) noexcept;
         ~DeclareActivity ();
 
