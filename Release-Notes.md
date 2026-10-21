@@ -177,6 +177,7 @@ especially those they need to be aware of when upgrading.
   - valgrind: fewer iterations rather than skips; several timing-sensitive tests made robust on slow hosts (Raspberry Pi Debug) and on machines with two interfaces on one network
 - Samples
   - SSDPServer is a UPnP light (BinaryLight / SwitchPower, eventing its Status, a page at /light); SSDPClient a control point that lists devices and services and switches lights (`--watch` prints events)
+  - HTMLUI: Quasar 2.35.2, @quasar/app-vite 3.10.3, Vue 3.5.44, pretty-bytes 7, and the rest current (TypeScript stays 6.0 - typescript-eslint does not yet take 7); `npm audit` clean (it reported 12, 8 of them high); the four packages listed only to force a fixed version of a dependency's dependency (form-data, glob, node-forge, qs) dropped - nothing needs them now
   - ActiveLedIt removed; installer builds log by letting make echo them
 
 #### Release-Validation
