@@ -1,15 +1,16 @@
 #!/bin/sh
 # (sh, then Python: python3 runs this file by a path it can open. A native Windows python3.exe cannot open a /c/... path -
 # under MSYS2's make, which exports MSYS2_ARG_CONV_EXCL=*, it arrives unconverted - so it gets the C:/... form. Cygwin's and
-# MSYS2's own python3 (in /usr/bin) are POSIX programs, and take the path as it is. With no fork but the exec: this runs
-# often. The bash-only expansions are in eval, so the sh of Linux (dash) never parses them)
+# MSYS2's own python3 are POSIX programs, and take the path as it is: that is /usr/bin/python3, however PATH spells it
+# (-ef: /cygdrive/c/cygwin/bin/python3 is the same file, and a POSIX python takes a C:/... path as relative). With no fork
+# but the exec: this runs often. The bash-only expansions are in eval, so the sh of Linux (dash) never parses them)
 ''':'
 case "$0:$OSTYPE" in /*:msys* | /*:cygwin*)
 	hash python3 2> /dev/null; eval 'p=${BASH_CMDS[python3]}'
-	case "$p" in /usr/bin/* | /bin/* | "") ;; *)
+	if [ -n "$p" ] && ! [ "$p" -ef /usr/bin/python3 ]; then
 		case "$0" in /[A-Za-z]/*) eval 'd=${0:1:1}; exec python3 "${d^^}:${0:2}" "$@"' ;; esac
-		exec python3 "$(cygpath -m "$0")" "$@" ;;
-	esac ;;
+		exec python3 "$(cygpath -m "$0")" "$@"
+	fi ;;
 esac
 exec python3 "$0" "$@"
 '''
