@@ -12,6 +12,12 @@ Generally will track stuff here between releases
   was deleted 2026-10-20). Its key and shared ssh files are prepared; what is left - test from plato - is in the shared
   notes' ssh-cleanup checklist. protagoras is already done.
 
+- **3.0d25 release - TONIGHT, before the release builds** (LGP 2026-10-20): bring the sample HTML app up to date -
+  `Samples/HTMLUI/QuasarBasedHTMLApp` (the only npm project in Stroika): `npm update`/upgrade to the latest Quasar
+  (quasar, @quasar/app-vite, @quasar/extras) and current npm (the build images now carry Node 26), and fix what
+  `npm audit` reports. A major-version bump can break silently at run time (3.0d24's app-vite 3 move did), so run the
+  app, not just build it.
+
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.
