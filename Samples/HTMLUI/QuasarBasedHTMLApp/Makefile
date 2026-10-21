@@ -33,14 +33,14 @@ endif
 clean clobber:
 ifeq ($(CONFIGURATION),)
 	@rm -rf ../IntermediateFiles/*/Samples-HTMLUI/html
-	@if [ "$@"=="clobber" ] ; then \
+	@if [ "$@" = "clobber" ] ; then \
 		rm -rf ../Builds/*/Samples-HTMLUI/html;\
 	fi
 endif
 ifneq ($(CONFIGURATION),)
 	@#rm -f src/*.js
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
-	@if [ "$@"=="clobber" ] ; then \
+	@if [ "$@" = "clobber" ] ; then \
 		rm -rf $(PER_CONFIGURATION_BUILDS_DIR_);\
 	fi
 endif
