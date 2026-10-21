@@ -26,6 +26,7 @@ especially those they need to be aware of when upgrading.
 #### Upgrade Notes (3.0d24 to 3.0d25)
 
 - Build system
+  - **`make distclean` before building with 3.0d25** (in a Skel app, from the app's root), and rebuild your configurations from scratch: an incremental build keeps linking the 3.0d24 libraries (Upgrading.md, "Rebuild from scratch")
   - **`configure` is now Python 3** (issue 1240), as is `ApplyConfiguration`. Each still runs the Perl it replaced (`configure.pl`, `ApplyConfiguration.pl`) as a check: if they disagree you get a loud `PYTHON/PERL CONFIGURATION MISMATCH` warning, the Perl's result is used, and the diffs are in `IntermediateFiles/configure-mismatch/` - please report one
   - Skel apps: add `Microsoft.Cpp.stroika.ConfigurationBased.props` and `Microsoft.Cpp.stroika.user.props` to `Workspaces/.gitignore`, and untrack them once (`git rm --cached Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.*.props` - your app's spelling of that directory); `make project-files` remakes them (issue 1075)
   - `Build/Scripts/MakeSymbolicLink` is DEPRECATED: use `MakeFileLink` or `MakeDirectoryLink` (same arguments). On Windows a file alias is now a hard link, so after anything that replaces a file rather than writing it (git checkout, an editor's save) re-run the link - `make project-files` does, for the Stroika `.props` files

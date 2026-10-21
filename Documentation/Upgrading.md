@@ -1,6 +1,6 @@
 # Upgrading Stroika Versions {#Upgrading-Stroika-Versions}
 
-Stroika makes lots of changes in its APIs over time. This the only way to improve. This is imposes a cost on developers using Stroika, but also provides significant benefits (better deisgn, better features)
+Stroika makes lots of changes in its APIs over time. This is the only way to improve. This imposes a cost on developers using Stroika, but also provides significant benefits (better design, better features)
 
 To mitigate the downsides, Stroika generally follows this pattern:
 
@@ -11,19 +11,32 @@ To mitigate the downsides, Stroika generally follows this pattern:
 
 ## Recommended upgrade process
 
-Thus the obvious upgrade process from using one verison of Stroika to another would be:
+Thus the obvious upgrade process from using one version of Stroika to another would be:
 
 - For each major-minor-stage version of Stroika between the one you currently use, and the target version (you wish to upgrade to)
 
-  - Upgrade to the last version of that stage
+  - Upgrade to the last version of that stage, and rebuild from scratch (see below)
   - Address any warnings about use of deprecated features
   - IF NEEDED, review release notes for that range of releases (hopefully such review will be rare)
 
-- Upgrading within a major-minor-stage (typically about a year of development) should be relatively simple, just following instructions in deprecation warnings (with occasional bigger challenges when APIs change alot or something subtle slips through the cracks)
+- Upgrading within a major-minor-stage (typically about a year of development) should be relatively simple, just following instructions in deprecation warnings (with occasional bigger challenges when APIs change a lot or something subtle slips through the cracks)
+
+### Rebuild from scratch
+
+After each move to a new Stroika - a pull, or moving an app's `ThirdPartyComponents/Stroika/StroikaRoot` submodule - run
+`make distclean` (in an app made with Skel, from the app's root), and rebuild your configurations from scratch:
+
+- an incremental build keeps linking the OLD Stroika libraries: by default (`QUICK_BUILD=1`) `make` does not rebuild them once
+  they exist, and the build tracks no header dependencies, so nothing compiled against the old headers - your own code included -
+  is rebuilt
+- configure's defaults change between versions, so a configuration an older Stroika made is not what the new one would make
+
+`make distclean` deletes the configurations too. A Skel app's `make all` makes its default ones again; for any other, copy its
+configure command line - the first element of its `ConfigurationFiles/NAME.xml` - before the `distclean`.
 
 ### Example
 
-So for exmaple, if upgrading from use of 2.0b23 to v2.1 (final release)
+So for example, if upgrading from use of 2.0b23 to v2.1 (final release)
 
 - Upgrade to v2.0b7
 - Upgrade to v2.1d27

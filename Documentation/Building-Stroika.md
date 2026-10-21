@@ -234,13 +234,16 @@ Targets:
     check:                       -    Checks everything was built properly
     clean:
     clobber:
+    clobber-stroika:                       -    clean + destroy Stroika targets (libs etc) - so all of stroika will be rebuilt next make (but doesnt destroy third-party-components)
+    distclean:
     reconfigure:                 -    Rebuild configuration files from the command-lines that built them before
     libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)
+    library-clobber:             -    Clobber library and things that depend on it (i.e. all but configurations and third-party-components)
     project-files:               -    Alias for project-files-visual-studio project-files-vs-code
-    project-files-visual-studio: -    Builds project files for visual studio.net
     project-files-vs-code:       -    Builds project files for visual studio code
+    project-files-visual-studio: -    Builds project files for visual studio.net
     tests:
-    format-code:                 -    Run astyle on source code, and update it to conform to Stroika code formatting standards
+    format-code:                 -    Run Scripts/FormatCode (clang-format) on source code, and update it to conform to Stroika code formatting standards
     samples:
     documentation:
     third-party-components:
@@ -252,7 +255,7 @@ Targets:
                                       folder (not needed, automatic)
     default-configurations:      -    Creates the default configurations in Configurations folder; see ./configure -help for environment variables
                                       e.g. EXTRA_CONFIGURE_ARGS='--openssl-extraargs purify --block-allocation disable' make default-configurations
-                                      OR EXTRA_CONFIGURE_ARGS='--platform VisualStudio.Net-2019' make default-configurations
+                                      OR EXTRA_CONFIGURE_ARGS='--build-platform VisualStudio.Net-2022' make default-configurations
                                       OR PLATFORM='VisualStudio.Net-2022' make default-configurations
     list-configurations:         -    prints all available configurations (each can be used as arg to CONFIGURATION= make lines)
     list-configuration-tags:     -    prints a list of all configurtion tags (configuration tags impute groups of configurations)
@@ -264,9 +267,10 @@ Special Variables:               -    Extra params you can pass to the make line
     ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging
     WRITE_PREPROCESSOR_OUTPUT=1  -    Write next to each object file a corresponding .i (preprocessor output) file; useful to reproduce and narrow compiler bugs (for report especially)
     MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make
-    QUICK_BUILD=1                -    Defaults=0, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; used for some CI testing)
+    QUICK_BUILD=1                -    Defaults=1, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; may skip detecting changes in libraries etc; used for some CI testing)
     TEST_FAILURES_CAUSE_FAILED_MAKE=0
                                       only applies to make run-tests, and prevents test failures from stopping make (like make -k on run-tests)
+    EXTRA_CONFIGURE_ARGS=        -    really proceeded by configure (only when its invoked); but handy to override values (eg --all-available-third-party-components --boost no)
 ```
 
 ### Amending a configuration
