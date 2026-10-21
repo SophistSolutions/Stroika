@@ -117,6 +117,10 @@ namespace {
 // Don't print when they differ on other platforms.
 // This is only intended to alert me when something changes GROSSLY.
 //
+// So each threshold sits about 1.3x above the highest score the MSVC x64 release runs show - clear of run-to-run noise. As
+// scores drift, raise a threshold rather than learn to skim past its warning: the scores themselves are kept, per release
+// and platform, in Tests/HistoricalPerformanceRegressionTestResults, and reviewed there.
+//
 //  WHY THE WARNINGS ARE WINDOWS-ONLY, and why extending them to Linux/macOS was looked at and dropped
 //  (2026-08-21). This costs something real - the four Linux CI jobs run the whole perf suite and throw
 //  the verdict away - so it is a deliberate choice, not an oversight:
@@ -2693,19 +2697,19 @@ namespace {
             DISABLE_COMPILER_MSC_WARNING_END (4127)
         }
         Tester ("Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, "wstring",
-                Test_StructWithStringsFillingAndCopying<String>, "Characters::String", 65000, 0.6, &failedTests);
+                Test_StructWithStringsFillingAndCopying<String>, "Characters::String", 65000, 0.74, &failedTests);
         Tester ("Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, "wstring",
-                Test_StructWithStringsFillingAndCopying2<String>, "Characters::String", 66000, 0.76, &failedTests);
+                Test_StructWithStringsFillingAndCopying2<String>, "Characters::String", 66000, 0.96, &failedTests);
         Tester ("Simple String append test (+='string object') 10x", Test_SimpleStringAppends1_<wstring>, "wstring",
-                Test_SimpleStringAppends1_<String>, "Characters::String", 1350000, 2.08, &failedTests);
+                Test_SimpleStringAppends1_<String>, "Characters::String", 1350000, 2.5, &failedTests);
         Tester ("Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, "wstring",
                 Test_SimpleStringAppends2_<String>, "Characters::String", 1500000, 5.86, &failedTests);
         Tester ("Simple String append test (+=wchar_t[]) 100x", Test_SimpleStringAppends3_<wstring>, "wstring",
                 Test_SimpleStringAppends3_<String>, "Characters::String", 360000, 10, &failedTests);
-        Tester ("String a + b", Test_SimpleStringConCat1_<wstring>, "wstring", Test_SimpleStringConCat1_<String>, "String", 2200000, 2.05, &failedTests);
+        Tester ("String a + b", Test_SimpleStringConCat1_<wstring>, "wstring", Test_SimpleStringConCat1_<String>, "String", 2200000, 2.6, &failedTests);
         Tester ("wstringstream << test", Test_OperatorINSERT_ostream_<wstring>, "wstring", Test_OperatorINSERT_ostream_<String>,
-                "Characters::String", 6000, 1.58, &failedTests);
-        Tester ("String::substr()", Test_StringSubStr_<wstring>, "wstring", Test_StringSubStr_<String>, "Characters::String", 2700000, 2.47, &failedTests);
+                "Characters::String", 6000, 1.7, &failedTests);
+        Tester ("String::substr()", Test_StringSubStr_<wstring>, "wstring", Test_StringSubStr_<String>, "Characters::String", 2700000, 3.0, &failedTests);
         struct MemStreamOfChars_ : public MemoryStream::Ptr<Characters::Character> {
             MemStreamOfChars_ ()
                 : Ptr{MemoryStream::New<Characters::Character> ()}
@@ -2718,7 +2722,7 @@ namespace {
             [] () {
                 Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([] (const MemStreamOfChars_& w) { return w.As<String> (); });
             },
-            "MemoryStream<Characters::Character>", 210000, 1.57, &failedTests);
+            "MemoryStream<Characters::Character>", 210000, 1.7, &failedTests);
         Tester (
             "wstringstream versus StringBuilder",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, "wstringstream",
@@ -2727,7 +2731,7 @@ namespace {
             },
             "StringBuilder", 220000, 0.53, &failedTests);
         Tester ("Sequence<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, "vector<int>",
-                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, "Sequence<int>", 125000, 1.44, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, "Sequence<int>", 125000, 1.9, &failedTests);
         /*
          *  Sequence<T> vs vector<T>, one operation per entry - see the note on namespace ContainerVsStd_.
          *  NEW NAMES on purpose: the archive keys its 30-release history on the test name, so re-pointing an
@@ -2755,7 +2759,7 @@ namespace {
         Tester ("Sequence<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, "vector<int>",
                 ContainerVsStd_::AddOneAtATime_<Sequence<int>>, "Sequence<int>", 40000, 4.9, &failedTests);
         Tester ("Sequence<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>, "vector<String>",
-                ContainerVsStd_::AddOneAtATime_<Sequence<String>>, "Sequence<String>", 20000, 3.7, &failedTests);
+                ContainerVsStd_::AddOneAtATime_<Sequence<String>>, "Sequence<String>", 20000, 4.4, &failedTests);
         Tester ("Sequence<int> vs vector<int>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<int>>, "vector<int>",
                 ContainerVsStd_::AddManyAtOnce_<Sequence<int>>, "Sequence<int>", 200000, 2.8, &failedTests);
         Tester ("Sequence<String> vs vector<String>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<String>>, "vector<String>",
@@ -2777,16 +2781,16 @@ namespace {
          *  say which half of the workload it came from.
          */
         Tester ("Sequence_Array<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, "vector<int>",
-                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Sequence_Array<int>>, "Sequence_Array<int>", 40000, 2.7, &failedTests);
+                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Sequence_Array<int>>, "Sequence_Array<int>", 40000, 3.2, &failedTests);
         Tester ("Sequence_Array<int> vs vector<int>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<int>>, "vector<int>",
-                ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Sequence_Array<int>>, "Sequence_Array<int>", 200000, 2.3, &failedTests);
+                ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Sequence_Array<int>>, "Sequence_Array<int>", 200000, 2.6, &failedTests);
         Tester ("Sequence_stdvector<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, "vector<int>",
-                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Sequence_stdvector<int>>, "Sequence_stdvector<int>", 40000, 3.6, &failedTests);
+                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Sequence_stdvector<int>>, "Sequence_stdvector<int>", 40000, 4.3, &failedTests);
         Tester ("Sequence_stdvector<int> vs vector<int>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<int>>, "vector<int>",
                 ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Sequence_stdvector<int>>, "Sequence_stdvector<int>", 200000, 2.5, &failedTests);
         Tester ("Sequence_DoublyLinkedList<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>,
                 "vector<String>", ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Sequence_DoublyLinkedList<String>>,
-                "Sequence_DoublyLinkedList<String>", 10000, 3.0, &failedTests);
+                "Sequence_DoublyLinkedList<String>", 10000, 3.2, &failedTests);
         Tester ("Sequence_DoublyLinkedList<String> vs vector<String>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<String>>,
                 "vector<String>", ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Sequence_DoublyLinkedList<String>>,
                 "Sequence_DoublyLinkedList<String>", 10000, 6.1, &failedTests);
@@ -2806,23 +2810,23 @@ namespace {
          *  a second workload.
          */
         Tester ("Collection<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, "vector<int>",
-                ContainerVsStd_::AddOneAtATime_<Collection<int>>, "Collection<int>", 10000, 20, &failedTests);
+                ContainerVsStd_::AddOneAtATime_<Collection<int>>, "Collection<int>", 10000, 24, &failedTests);
         Tester ("Collection<int> vs vector<int>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<int>>, "vector<int>",
                 ContainerVsStd_::AddManyAtOnce_<Collection<int>>, "Collection<int>", 20000, 725, &failedTests);
         Tester ("Collection<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>,
-                "vector<String>", ContainerVsStd_::AddOneAtATime_<Collection<String>>, "Collection<String>", 5000, 13, &failedTests);
+                "vector<String>", ContainerVsStd_::AddOneAtATime_<Collection<String>>, "Collection<String>", 5000, 24, &failedTests);
         Tester ("Collection<String> vs vector<String>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<String>>, "vector<String>",
-                ContainerVsStd_::AddManyAtOnce_<Collection<String>>, "Collection<String>", 5000, 35, &failedTests);
+                ContainerVsStd_::AddManyAtOnce_<Collection<String>>, "Collection<String>", 5000, 39, &failedTests);
         Tester ("Collection<String> vs vector<String>: copy (COW)", ContainerVsStd_::CopyOnly_<vector<String>>, "vector<String>",
                 ContainerVsStd_::CopyOnly_<Collection<String>>, "Collection<String>", 100000, 0.005, &failedTests);
         Tester ("Collection<String> vs vector<String>: copy then write (COW pays up)", ContainerVsStd_::CopyThenWrite_<vector<String>>,
                 "vector<String>", ContainerVsStd_::CopyThenWrite_<Collection<String>>, "Collection<String>", 10000, 3.9, &failedTests);
         Tester ("Collection_LinkedList<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>,
                 "vector<String>", ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_LinkedList<String>>,
-                "Collection_LinkedList<String>", 10000, 2.3, &failedTests);
+                "Collection_LinkedList<String>", 10000, 2.6, &failedTests);
         Tester ("Collection_stdforward_list<String> vs vector<String>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<String>>,
                 "vector<String>", ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_stdforward_list<String>>,
-                "Collection_stdforward_list<String>", 10000, 2.3, &failedTests);
+                "Collection_stdforward_list<String>", 10000, 2.6, &failedTests);
         Tester ("Collection_LinkedList<String> vs vector<String>: add many at once", ContainerVsStd_::AddManyAtOnce_<vector<String>>,
                 "vector<String>", ContainerVsStd_::AddManyAtOnce_<Containers::Concrete::Collection_LinkedList<String>>,
                 "Collection_LinkedList<String>", 10000, 4.6, &failedTests);
@@ -2873,7 +2877,7 @@ namespace {
                       ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_LinkedList<String>>, "Collection_LinkedList<String>",
                       10000, 1000.0 /* probe - answers a design question, not a gate */);
         Tester ("Collection_Array<int> vs vector<int>: add one at a time", ContainerVsStd_::AddOneAtATime_<vector<int>>, "vector<int>",
-                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_Array<int>>, "Collection_Array<int>", 40000, 3.3, &failedTests);
+                ContainerVsStd_::AddOneAtATime_<Containers::Concrete::Collection_Array<int>>, "Collection_Array<int>", 40000, 4.1, &failedTests);
         /*
          *  What the span-taking _IRep::Add () actually bought. Baseline is a std::list source, which
          *  takes AddAll ()'s per-element branch - the pre-change code path exactly - and comparison is
@@ -3011,15 +3015,15 @@ namespace {
                 Test_AppendRange_Sequence_, "Sequence<int>::append_range ()", 500000, 1000.0 /* probe, not a gate - see note */, &failedTests);
 #endif
         Tester ("Sequence<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, "vector<string>",
-                Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, "Sequence<string>", 9900, 0.31, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, "Sequence<string>", 9900, 0.35, &failedTests);
         Tester ("Sequence_DoublyLinkedList<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, "vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>,
                 "Sequence_DoublyLinkedList<int>", 120000, 11, &failedTests);
         Tester ("Sequence_Array<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, "vector<int>",
-                Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, "Sequence_Array<int>", 120000, 1.42, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, "Sequence_Array<int>", 120000, 1.8, &failedTests);
         Tester ("Sequence_stdvector<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, "vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, "Sequence_stdvector<int>", 120000,
-                1.97, &failedTests);
+                2.4, &failedTests);
         Tester ("Sequence_DoublyLinkedList<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, "vector<string>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>,
                 "Sequence_DoublyLinkedList<string>", 9900, 0.84, &failedTests);
@@ -3095,15 +3099,15 @@ namespace {
                     Test_CollectionVectorAdditionsAndCopies_<SortedCollection_stdmultiset<string>> (
                         [] (SortedCollection_stdmultiset<string>* c) { c->Add (kRandomStrings_[rand () % kRandomStrings_.size ()]); });
                 },
-                "SortedCollection_stdmultiset<string>", 9600, 1.8, &failedTests);
+                "SortedCollection_stdmultiset<string>", 9600, 2.1, &failedTests);
         }
         Tester ("std::set<int> vs Set<int>", Test_SetvsSet_<set<int>>, "set<int>", Test_SetvsSet_<Set<int>>, "Set<int>", 13000, 0.31, &failedTests);
         Tester ("String Characters::Format ()", Test_String_Format_<wstring>, "sprintf", Test_String_Format_<String>,
-                "String Characters::Format", 2100000, 4.25, &failedTests);
+                "String Characters::Format", 2100000, 4.8, &failedTests);
         Tester ("BLOB versus vector<byte>", Test_BLOB_Versus_Vector_Byte<vector<byte>>, "vector<byte>",
-                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, "BLOB", 13000, 1.26, &failedTests);
+                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, "BLOB", 13000, 1.6, &failedTests);
         Tester ("BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, "vector<byte>",
-                Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, "BLOB", 5000, 1.17, &failedTests);
+                Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, "BLOB", 5000, 1.4, &failedTests);
         Tester ("Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, "Test_JSONReadWriteFile",
                 Debug::IsRunningUnderValgrind () ? 2 : 640, 0.48, &failedTests);
         Tester ("Test_Optional_", Test_Optional_::DoRunPerfTest, "Test_Optional_", 4875, 0.46, &failedTests);
@@ -3123,7 +3127,7 @@ namespace {
                 "Sequence<int>::OrderBy () vs std::stable_sort",
                 [] () { Test_IterableAlgorithms_::Baseline_StdStableSort_<int> (Test_IterableAlgorithms_::SourceInts_ ()); },
                 "std::stable_sort (vector<int>)", [] () { Test_IterableAlgorithms_::Real_SequenceOrderByDefault_<int> (kSeqInts_); },
-                "Sequence<int>::OrderBy ()", 140000, 1.5, &failedTests);
+                "Sequence<int>::OrderBy ()", 140000, 2.6, &failedTests);
             // Separate entry because these are different reps, not because they are different operations
             // (the APIs match now). Both deliberately exercise the DEFAULT path rather than naming a
             // policy, so they keep guarding whatever the default actually is - Iterable's already moved
