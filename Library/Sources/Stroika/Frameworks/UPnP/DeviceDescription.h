@@ -42,8 +42,8 @@ namespace Stroika::Frameworks::UPnP {
     struct DeviceDescription {
         /**
          *  The description's <URLBase>, if it has one: what its relative URLs - each service's, the icons', fPresentationURL -
-         *  are relative to. Without one, they are relative to the URL the description was read from. So a control point
-         *  resolves one as fURLBase.value_or (descriptionURL).Combine (url).
+         *  are relative to. Without one, they are relative to the URL the description was read from. So each resolves as
+         *  fURLBase.value_or (descriptionURL).Combine (url) - @see Resolve, which does that for every one.
          *
          *  An older (UPnP 1.0) device may send one, and a control point must then apply it; UPnP 1.1 forbids a device to send
          *  one (section 2.3), so a device built on Stroika leaves it unset. Read, an empty one - or one that is not a URL - is
@@ -96,7 +96,7 @@ namespace Stroika::Frameworks::UPnP {
         /**
          *  One of the device's services: what it is, and where its description, its actions and its events are - each URL
          *  relative to the device description's own (UPnP Device Architecture 1.1, section 2.3; an older device's may be
-         *  absolute, or relative to its fURLBase), so a control point resolves it with fURLBase.value_or (descriptionURL).Combine ().
+         *  absolute, or relative to its fURLBase) - @see DeviceDescription::Resolve, which makes them absolute.
          */
         struct Service {
             String fServiceType; // e.g. urn:schemas-upnp-org:service:serviceType:v
@@ -164,6 +164,23 @@ namespace Stroika::Frameworks::UPnP {
         };
 
         DeviceDescription () = default;
+
+        /**
+         *  \brief This description with every URL absolute - each relative one resolved against fURLBase, or else descriptionURL
+         *         (the URL it was read from); fURLBase is cleared, as nothing is relative to it any more
+         *
+         *  Its URLs are fPresentationURL, fManufacturingURL, fModelURL, each icon's fURL, and each service's fSCPDURL,
+         *  fControlURL and fEventSubURL. An empty one - the fEventSubURL of a service with no events - stays empty, where
+         *  URI::Combine would make it the base itself (RFC 3986, section 5.2.2).
+         *
+         *  Throws as URI::Combine does - for a base with no scheme.
+         *
+         *  \par Example Usage
+         *      \code
+         *          DeviceDescription dd = UPnP::DeSerialize (Connection::New ().GET (location).GetData ()).Resolve (location);
+         *      \endcode
+         */
+        nonvirtual DeviceDescription Resolve (const URI& descriptionURL) const;
 
         /**
          *  Mapper to facilitate serialization

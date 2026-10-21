@@ -303,6 +303,54 @@ namespace {
     }
 
     /*
+     *  Resolve makes each of a description's URLs absolute - against its fURLBase if it has one, else where it was read from -
+     *  leaving one already absolute as it is, and an empty one (a service with no events) empty; and clears fURLBase.
+     */
+    GTEST_TEST (Frameworks_UPnP, DeviceDescription_Resolve_)
+    {
+        Debug::TraceContextBumper ctx{"DeviceDescription_Resolve_"};
+        const URI                 location{"http://192.168.1.5:5000/dev/description.xml"sv}; // where it was read from
+        DeviceDescription         dd;
+        dd.fPresentationURL  = URI{"/presentation"sv};
+        dd.fManufacturingURL = URI{"http://www.example.com/"sv}; // absolute already
+        dd.fModelURL         = URI{"model.html"sv};
+        dd.fIcons            = Containers::Collection<DeviceDescription::Icon>{DeviceDescription::Icon{.fURL = URI{"icons/48.png"sv}}};
+        dd.fServices         = Containers::Collection<DeviceDescription::Service>{
+            DeviceDescription::Service{.fServiceID   = "urn:upnp-org:serviceId:SwitchPower"sv,
+                                       .fSCPDURL     = URI{"SwitchPower.xml"sv},
+                                       .fControlURL  = URI{"/upnp/control"sv},
+                                       .fEventSubURL = URI{"/upnp/event"sv}},
+            // and one with no events: its fEventSubURL empty
+            DeviceDescription::Service{.fServiceID = "urn:upnp-org:serviceId:Silent"sv, .fSCPDURL = URI{"Silent.xml"sv}, .fControlURL = URI{"/upnp/silent"sv}}};
+        auto service = [] (const DeviceDescription& d, const String& id) {
+            return *d.fServices->First ([&] (const DeviceDescription::Service& s) { return s.fServiceID == id; });
+        };
+        // without a URLBase: relative to where it was read from
+        {
+            const DeviceDescription r = dd.Resolve (location);
+            EXPECT_EQ (r.fURLBase, nullopt);
+            EXPECT_EQ (r.fPresentationURL, URI{"http://192.168.1.5:5000/presentation"sv});
+            EXPECT_EQ (r.fManufacturingURL, URI{"http://www.example.com/"sv});
+            EXPECT_EQ (r.fModelURL, URI{"http://192.168.1.5:5000/dev/model.html"sv});
+            EXPECT_EQ (r.fIcons->First ()->fURL, URI{"http://192.168.1.5:5000/dev/icons/48.png"sv});
+            const DeviceDescription::Service switchPower = service (r, "urn:upnp-org:serviceId:SwitchPower"sv);
+            EXPECT_EQ (switchPower.fSCPDURL, URI{"http://192.168.1.5:5000/dev/SwitchPower.xml"sv});
+            EXPECT_EQ (switchPower.fControlURL, URI{"http://192.168.1.5:5000/upnp/control"sv});
+            EXPECT_EQ (switchPower.fEventSubURL, URI{"http://192.168.1.5:5000/upnp/event"sv});
+            EXPECT_EQ (service (r, "urn:upnp-org:serviceId:Silent"sv).fEventSubURL, URI{}); // not the base, as Combine would make it
+            EXPECT_EQ (r.Resolve (URI{"http://10.0.0.1/"sv}).fModelURL, r.fModelURL);       // once absolute, it stays so
+        }
+        // with one: relative to it instead
+        {
+            dd.fURLBase               = URI{"http://192.168.1.5:49152/"sv};
+            const DeviceDescription r = dd.Resolve (location);
+            EXPECT_EQ (r.fURLBase, nullopt);
+            EXPECT_EQ (r.fModelURL, URI{"http://192.168.1.5:49152/model.html"sv});
+            EXPECT_EQ (service (r, "urn:upnp-org:serviceId:SwitchPower"sv).fControlURL, URI{"http://192.168.1.5:49152/upnp/control"sv});
+        }
+    }
+
+    /*
      *  A device as another stack writes one: its elements in another order, a vendor's (DLNA's) elements - one inside a list -
      *  and an embedded <deviceList>, which DeviceDescription has no field for, with mixed content in it. What it knows is read,
      *  the rest skipped. And a URL that is not one, an icon size that is not a number, an element given twice (the last read)

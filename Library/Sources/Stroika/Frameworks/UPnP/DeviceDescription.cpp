@@ -192,6 +192,34 @@ String DeviceDescription::ToString () const
     return sb;
 }
 
+DeviceDescription DeviceDescription::Resolve (const URI& descriptionURL) const
+{
+    const URI         base    = fURLBase.value_or (descriptionURL);
+    auto              resolve = [&] (const URI& u) { return u ? base.Combine (u) : u; }; // an empty one stays empty: Combine gives the base
+    DeviceDescription result  = *this;
+    result.fURLBase           = nullopt; // nothing is relative to it now
+    for (optional<URI>* u : {&result.fPresentationURL, &result.fManufacturingURL, &result.fModelURL}) {
+        if (*u) {
+            **u = resolve (**u);
+        }
+    }
+    if (fIcons) {
+        result.fIcons = fIcons->Map<Collection<Icon>> ([&] (Icon i) {
+            i.fURL = resolve (i.fURL);
+            return i;
+        });
+    }
+    if (fServices) {
+        result.fServices = fServices->Map<Collection<Service>> ([&] (Service s) {
+            s.fSCPDURL     = resolve (s.fSCPDURL);
+            s.fControlURL  = resolve (s.fControlURL);
+            s.fEventSubURL = resolve (s.fEventSubURL);
+            return s;
+        });
+    }
+    return result;
+}
+
 ObjectVariantMapper DeviceDescription::mkMapper_ ()
 {
     ObjectVariantMapper mapper;
