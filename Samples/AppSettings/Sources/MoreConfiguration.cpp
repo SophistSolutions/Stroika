@@ -24,7 +24,6 @@ using namespace StroikaSample::AppSettings;
 
 namespace {
     WaitableEvent sWaitableEvent_; // some thread could be waiting on this, and perform some reactive task when the module settings change
-
 }
 
 /*
@@ -35,20 +34,20 @@ namespace {
 
 AppSettings::Private_::MoreOptionsData_Storage_IMPL_::MoreOptionsData_Storage_IMPL_ ()
     : fOptionsFile_{/*
-                   * Any module name will do. This will map (by default) to a MyModule.json file in XXX.
-                   * If you require a single configuration file 'Main" might be a better module name.
-                   * But if you have multiple modules with configuration data, pick a name that matches that module,
-                   * and they will all be stored under a folder for all your apps configuration.
-                   */
+                     * Any module name will do. This will map (by default) to a MyModule.json file in XXX.
+                     * If you require a single configuration file 'Main" might be a better module name.
+                     * But if you have multiple modules with configuration data, pick a name that matches that module,
+                     * and they will all be stored under a folder for all your apps configuration.
+                     */
                     "MyModule"sv,
 
                     /*
-                   * C++ doesn't have intrinsically enough metadata to effectively serialize deserialize data, but its close.
-                   * You have to give it class mappings, and other non-builtin types mappings, so that it can serialize.
-                   *
-                   * Note - this serializing logic is VERY widely useful outside of configuration - for example it can be used
-                   * to provide WebService/REST interfaces, or for debugging/logging output.
-                   */
+                     * C++ doesn't have intrinsically enough metadata to effectively serialize deserialize data, but its close.
+                     * You have to give it class mappings, and other non-builtin types mappings, so that it can serialize.
+                     *
+                     * Note - this serializing logic is VERY widely useful outside of configuration - for example it can be used
+                     * to provide WebService/REST interfaces, or for debugging/logging output.
+                     */
                     [] () -> ObjectVariantMapper {
                         ObjectVariantMapper mapper;
                         mapper.AddClass<MoreOptionsData_> ({
@@ -59,29 +58,29 @@ AppSettings::Private_::MoreOptionsData_Storage_IMPL_::MoreOptionsData_Storage_IM
                     }(),
 
                     /*
-                   * Hooks for versioning, to manage as your application evolves and the configuration data changes
-                   */
+                     * Hooks for versioning, to manage as your application evolves and the configuration data changes
+                     */
                     OptionsFile::kDefaultUpgrader,
 
                     /*
-                   * Hook to decide the folder (and filename pattern) where the configuration data will be stored.
-                   *
-                   * This defaults to 
-                   *       FileSystem::WellKnownLocations::GetApplicationData () + appName + String{IO::FileSystem::kPathComponentSeperator} + moduleName + suffix
-                   * or folder:
-                   *      "/var/opt/Put-Your-App-Name-Here" or "C:\ProgramData\Put-Your-App-Name-Here"
-                   *  and this module configuration file would be:
-                   *      "/var/opt/Put-Your-App-Name-Here/MyModule.json" OR
-                   *      "C:/ProgramData/Put-Your-App-Name-Here/MyModule.json" OR
-                   *
-                   *    \note - this function does NOT create the 'Put-Your-App-Name-Here' folder first, and will NOT persist
-                   *            files if this folder does not exist.
-                   *
-                   *            Callers can easily replace the default function provided in OptionsFile::mkFilenameMapper - just
-                   *            don't call that and provide your own lambda - to create the folder.
-                   *
-                   *            But a better pattern is to create the folder in your application installer, typically.
-                   */
+                     * Hook to decide the folder (and filename pattern) where the configuration data will be stored.
+                     *
+                     * This defaults to 
+                     *       FileSystem::WellKnownLocations::GetApplicationData () + appName + String{IO::FileSystem::kPathComponentSeperator} + moduleName + suffix
+                     * or folder:
+                     *      "/var/opt/Put-Your-App-Name-Here" or "C:\ProgramData\Put-Your-App-Name-Here"
+                     *  and this module configuration file would be:
+                     *      "/var/opt/Put-Your-App-Name-Here/MyModule.json" OR
+                     *      "C:/ProgramData/Put-Your-App-Name-Here/MyModule.json" OR
+                     *
+                     *    \note - this function does NOT create the 'Put-Your-App-Name-Here' folder first, and will NOT persist
+                     *            files if this folder does not exist.
+                     *
+                     *            Callers can easily replace the default function provided in OptionsFile::mkFilenameMapper - just
+                     *            don't call that and provide your own lambda - to create the folder.
+                     *
+                     *            But a better pattern is to create the folder in your application installer, typically.
+                     */
                     OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here"sv)}
     , fActualCurrentConfigData_{fOptionsFile_.Read<MoreOptionsData_> (MoreOptionsData_{})}
 {

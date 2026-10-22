@@ -100,7 +100,7 @@ namespace {
         Assert (c.SequentialEquals (aVector) or not c.SequentialEquals (aVector));
 
         vector<int> v2 = c.As<vector<int>> ();
-        // V will contain all the same elements as aVector, but maybe not in the same order.
+        // v2 will contain all the same elements as aVector, but maybe not in the same order.
         // it will be in the order the 'c' collection happened to produce
     }
 }
@@ -198,7 +198,7 @@ namespace {
             // Note how Stroika iterators have a type that depends on the type of thing you are iterating over, but
             // UNLIKE STL containers, their type does NOT depend on the type of the underlying container you are iterating over.
             // This is a great simplication of APIs (passing iterators to functions no longer requires templates), but
-            // comes at a slight cost (operator++ involves a virtual function call to get the next item).
+            // comes at a cost (operator++ involves a virtual function call to get the next item).
             Iterator<String> i = fruits.Find ([] (String i) { return i == "apple"; });
             Assert (i != fruits.end ());
             Assert (fruits.size () == 4);
