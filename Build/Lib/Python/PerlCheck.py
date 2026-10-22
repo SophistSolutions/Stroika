@@ -22,6 +22,11 @@ MISMATCH_TAG = "PYTHON/PERL CONFIGURATION MISMATCH"  # what the regression-resul
 NOT_CHECKED_TAG = "PYTHON/PERL CONFIGURATION NOT CHECKED"  # ... and this
 MISMATCH_DIR = "IntermediateFiles/configure-mismatch"
 
+# for each Perl run: a LANG or LC_* naming a locale that is not installed (common in a container reached over ssh) makes
+# perl itself warn "Setting locale failed" on stderr at startup - which no Python run says, so every check would
+# report a mismatch. This hides only that warning: perl still falls back to the "C" locale
+PERL_QUIET_LOCALE_ENV = {"PERL_BADLANG": "0"}
+
 # perl's own messages when it cannot load the script, or a file the script requires - never one of Stroika's diagnostics
 _PERL_COULD_NOT_RUN = re.compile(r"^.*?(Can't open perl script .*|Can't locate \S+\.p[lm] .*|BEGIN failed--compilation aborted.*|"
                                  r"Compilation failed in require.*|Execution of .* aborted due to compilation errors.*)$", re.M)
@@ -71,8 +76,18 @@ def RunPerlInScratch(perlScript, args, seedFiles):
             dst = os.path.join(scratch, rel)
             os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
             shutil.copyfile(rel, dst)
-    p = subprocess.run(["perl", PerlPath(perlScript)] + list(args), cwd=scratch, stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT)
+    # set in this process's environment, which perl inherits - not env=, which on Windows would upper-case every name
+    saved = {k: os.environ.get(k) for k in PERL_QUIET_LOCALE_ENV}
+    os.environ.update(PERL_QUIET_LOCALE_ENV)
+    try:
+        p = subprocess.run(["perl", PerlPath(perlScript)] + list(args), cwd=scratch, stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT)
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
     return scratch, p.returncode, p.stdout.decode("latin-1")
 
 
