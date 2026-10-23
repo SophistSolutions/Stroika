@@ -19,6 +19,18 @@ Generally will track stuff here between releases
      3.0d25 release runs and CI show no `PYTHON/PERL CONFIGURATION MISMATCH` or `... NOT CHECKED`: delete configure.pl,
      Build/Scripts/ApplyConfiguration.pl, Build/Lib/Python/PerlCheck.py, the code that runs them, and the Build/Lib/Perl
      files only they require. It caught no Python mistake, and failed builds twice on 10/20-21 (perl handed a C:/ path).
+   - **Windows In-Docker regression runs: test against mongo** (LGP 2026-10-23) - Tests/36's 3 mongo tests skip there
+     (12 SKIPPED per run in 3.0d25): Build/Scripts/RunLocalWindowsDockerRegressionTests passes only USE_TEST_BASENAME into
+     the container, though Regression-Tests.md's command line sets MONGO_CONNECTION_STRING - pass it as
+     RunRemoteRegressionTests does. Check the container resolves medusa.lan: that script's comment has Docker's DNS set to
+     8.8.8.8 (#876).
+   - **VS Code IntelliSense: `#include "AppVersion.h"` not found** (LGP 2026-10-23) in Samples/Service, and likely
+     WebServer, WebService, HTMLUI/Backend and Skel's Basic app - each Makefile generates it into
+     IntermediateFiles/$(CONFIGURATION)/<app>/ and adds that to the compiler's include path, which c_cpp_properties.json
+     lacks. Since f4caa91a7a ApplyConfiguration's default myDefaultIncludePath is [] (not ${workspaceFolder}, which took
+     a Skel app's root VERSION file for <version>), and nothing gives IntelliSense that directory instead. Only a
+     c_cpp_properties.json with no myDefaultIncludePath gets the new default. IntelliSense only: every 3.0d25 release run
+     built the samples.
 
 ## Watching
 

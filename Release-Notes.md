@@ -8,7 +8,7 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-### 3.0d25x {2026-10-20x} {[diff](../../compare/3.0d24...3.0d25)}  -- DRAFT
+### 3.0d25 {2026-10-23} {[diff](../../compare/3.0d24...3.0d25)}
 
 #### TLDR
 
@@ -186,7 +186,7 @@ especially those they need to be aware of when upgrading.
 - Compilers Tested/Supported
   - g++ { 11, 12, 13, 14, 15, 16 }
   - Clang++ { unix: 15, 16, 17, 18, 19, 20, 21, 22; XCode: 16.4, 26.3 }
-  - MSVC: { 17.14.42 (VS2k22 docker), (VS2k22 native: TBD), 18.11.0 (VS2k26 docker), (VS2k26 native: TBD) }
+  - MSVC: { 17.14.42 (VS2k22, native and docker), 18.11.0 (VS2k26, native and docker) }
 - OS/Platforms Tested/Supported
   - Windows
     - Windows 11 version 24H2 (build 26100) - medusa-windows-dev VM
@@ -210,7 +210,13 @@ especially those they need to be aware of when upgrading.
   - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
   - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
 - Known (minor) issues with regression test output
-  - TBD - from this release's regression runs
+  - badssl.com unreachable (an external site, reported as a warning): libcurl error 35 (SSL connect error) on Ubuntu 22.04 (Raspberry Pi), 25.04, 26.04 and WSL; a WinHTTP timeout in one Windows docker run
+  - Under valgrind, Infinity round trips are not checked (`qCompilerAndStdLib_isinf_Valgrind_Buggy`: valgrind holds a `long double` in 64 bits)
+  - Native Windows skips `SSDP_Loopback_UnicastSearch_` (`Tests/55`): Windows' own SSDP Discovery service (SSDPSRV) binds port 1900 on every address. The Windows docker runs, which have no SSDPSRV, do run it
+  - `SSDP_CachingListener_` (`Tests/55`) skipped once - its own NOTIFY not heard within 10 seconds - in one of Ubuntu 24.04's 24 configurations (`clang++-16-release-libstdc++`); seen in no other run
+  - `Tests/52` timing warnings in the two native VS2k22 runs (`Sequence_Array<int> basics`, `Simple Struct With Strings Filling And Copying2`) - before 27 MSVC thresholds were raised to about 1.3x the highest 3.0d25 score; none was a regression
+  - The Windows docker runs skip `Tests/36`'s mongo tests (no `MONGO_CONNECTION_STRING` passed into the container), so mongo on Windows is tested only by the native runs
+  - WSL skips its ThreadSanitizer configurations (`vm.mmap_rnd_bits` cannot be read there); one 7z extract of lzma retried (Ubuntu 26.04)
 
 ----------------------------
 
