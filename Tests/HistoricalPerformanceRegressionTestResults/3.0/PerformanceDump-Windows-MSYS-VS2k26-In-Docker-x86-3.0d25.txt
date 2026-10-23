@@ -1,0 +1,451 @@
+Performance score 1.0 means both sides equal (ratio), and tests setup so lower is generally better
+
+[[[Started testing at: Fri Oct 23 9:29:16 2026]]]
+
+Using TIME MULTIPLIER: 15
+
+Pinned to logical CPU core: 0
+
+Test Test of simple locking strategies (mutex v shared_ptr copy) (mutex vs shared_ptr<> copy)
+	PERFORMANCE_SCORE	0.52
+	DETAILS:         	[baseline test 7.14324 secs, and comparison 3.74968 sec, and warnIfPerfScore > 1.7, and perfScore=0.524926]
+	                 	shared_ptr<> copy is FASTER
+
+Test Test of simple locking strategies (mutex v SpinLock) (mutex vs SpinLock)
+	PERFORMANCE_SCORE	0.35
+	DETAILS:         	[baseline test 7.19336 secs, and comparison 2.50616 sec, and warnIfPerfScore > 0.83, and perfScore=0.348399]
+	                 	SpinLock is FASTER
+
+Test Simple Struct With Strings Filling And Copying (wstring vs Characters::String)
+	PERFORMANCE_SCORE	0.34
+	DETAILS:         	[baseline test 5.87085 secs, and comparison 2.00185 sec, and warnIfPerfScore > 0.74, and perfScore=0.340981]
+	                 	Characters::String is FASTER
+
+Test Simple Struct With Strings Filling And Copying2 (wstring vs Characters::String)
+	PERFORMANCE_SCORE	0.44
+	DETAILS:         	[baseline test 5.84118 secs, and comparison 2.57363 sec, and warnIfPerfScore > 0.96, and perfScore=0.4406]
+	                 	Characters::String is FASTER
+
+Test Simple String append test (+='string object') 10x (wstring vs Characters::String)
+	PERFORMANCE_SCORE	1
+	DETAILS:         	[baseline test 9.38203 secs, and comparison 9.84943 sec, and warnIfPerfScore > 2.5, and perfScore=1.04982]
+	                 	Characters::String is ***SLOWER***
+
+Test Simple String append test (+=wchar_t[]) 10x (wstring vs Characters::String)
+	PERFORMANCE_SCORE	3.1
+	DETAILS:         	[baseline test 9.84841 secs, and comparison 30.0583 sec, and warnIfPerfScore > 5.86, and perfScore=3.05209]
+	                 	Characters::String is ***SLOWER***
+
+Test Simple String append test (+=wchar_t[]) 100x (wstring vs Characters::String)
+	PERFORMANCE_SCORE	3.4
+	DETAILS:         	[baseline test 96.1727 secs, and comparison 328.507 sec, and warnIfPerfScore > 10, and perfScore=3.4158]
+	                 	Characters::String is ***SLOWER***
+
+Test String a + b (wstring vs String)
+	PERFORMANCE_SCORE	1
+	DETAILS:         	[baseline test 5.33263 secs, and comparison 5.44656 sec, and warnIfPerfScore > 2.6, and perfScore=1.02137]
+	                 	String is ***SLOWER***
+
+Test wstringstream << test (wstring vs Characters::String)
+	PERFORMANCE_SCORE	1.4
+	DETAILS:         	[baseline test 5.85148 secs, and comparison 8.39678 sec, and warnIfPerfScore > 1.7, and perfScore=1.43498]
+	                 	Characters::String is ***SLOWER***
+
+Test String::substr() (wstring vs Characters::String)
+	PERFORMANCE_SCORE	0.25
+	DETAILS:         	[baseline test 23.5722 secs, and comparison 5.88456 sec, and warnIfPerfScore > 3, and perfScore=0.24964]
+	                 	Characters::String is FASTER
+
+Test wstringstream versus BasicTextOutputStream (wstringstream vs MemoryStream<Characters::Character>)
+	PERFORMANCE_SCORE	1
+	DETAILS:         	[baseline test 6.0666 secs, and comparison 6.2892 sec, and warnIfPerfScore > 1.7, and perfScore=1.03669]
+	                 	MemoryStream<Characters::Character> is ***SLOWER***
+
+Test wstringstream versus StringBuilder (wstringstream vs StringBuilder)
+	PERFORMANCE_SCORE	0.44
+	DETAILS:         	[baseline test 6.43276 secs, and comparison 2.81509 sec, and warnIfPerfScore > 0.53, and perfScore=0.437617]
+	                 	StringBuilder is FASTER
+
+Test Sequence<int> basics (vector<int> vs Sequence<int>)
+	PERFORMANCE_SCORE	1.4
+	DETAILS:         	[baseline test 4.97539 secs, and comparison 7.00702 sec, and warnIfPerfScore > 1.9, and perfScore=1.40834]
+	                 	Sequence<int> is ***SLOWER***
+
+Test Sequence<int> vs vector<int>: add one at a time (vector<int> vs Sequence<int>)
+	PERFORMANCE_SCORE	2.4
+	DETAILS:         	[baseline test 0.903173 secs, and comparison 2.1432 sec, and warnIfPerfScore > 4.9, and perfScore=2.37296]
+	                 	Sequence<int> is ***SLOWER***
+
+Test Sequence<String> vs vector<String>: add one at a time (vector<String> vs Sequence<String>)
+	PERFORMANCE_SCORE	3.5
+	DETAILS:         	[baseline test 1.95453 secs, and comparison 6.85659 sec, and warnIfPerfScore > 4.4, and perfScore=3.50806]
+	                 	Sequence<String> is ***SLOWER***
+
+Test Sequence<int> vs vector<int>: add many at once (vector<int> vs Sequence<int>)
+	PERFORMANCE_SCORE	1.7
+	DETAILS:         	[baseline test 0.183387 secs, and comparison 0.307988 sec, and warnIfPerfScore > 2.8, and perfScore=1.67944]
+	                 	Sequence<int> is ***SLOWER***
+
+Test Sequence<String> vs vector<String>: add many at once (vector<String> vs Sequence<String>)
+	PERFORMANCE_SCORE	1
+	DETAILS:         	[baseline test 1.32851 secs, and comparison 1.33372 sec, and warnIfPerfScore > 1.5, and perfScore=1.00392]
+	                 	Sequence<String> is ***SLOWER***
+
+Test Sequence<int> vs vector<int>: copy (COW) (vector<int> vs Sequence<int>)
+	PERFORMANCE_SCORE	0.22
+	DETAILS:         	[baseline test 0.30115 secs, and comparison 0.065763 sec, and warnIfPerfScore > 0.47, and perfScore=0.218373]
+	                 	Sequence<int> is FASTER
+
+Test Sequence<String> vs vector<String>: copy (COW) (vector<String> vs Sequence<String>)
+	PERFORMANCE_SCORE	0.0025
+	DETAILS:         	[baseline test 6.58996 secs, and comparison 0.0168025 sec, and warnIfPerfScore > 0.005, and perfScore=0.00254971]
+	                 	Sequence<String> is FASTER
+
+Test Sequence<String> vs vector<String>: copy then write (COW pays up) (vector<String> vs Sequence<String>)
+	PERFORMANCE_SCORE	1.8
+	DETAILS:         	[baseline test 1.47289 secs, and comparison 2.69834 sec, and warnIfPerfScore > 2.4, and perfScore=1.83201]
+	                 	Sequence<String> is ***SLOWER***
+
+Test Sequence<int> vs vector<int>: copy then write (COW pays up) (vector<int> vs Sequence<int>)
+	PERFORMANCE_SCORE	2.6
+	DETAILS:         	[baseline test 0.484142 secs, and comparison 1.24016 sec, and warnIfPerfScore > 4.5, and perfScore=2.56156]
+	                 	Sequence<int> is ***SLOWER***
+
+Test Sequence_Array<int> vs vector<int>: add one at a time (vector<int> vs Sequence_Array<int>)
+	PERFORMANCE_SCORE	2.3
+	DETAILS:         	[baseline test 0.926333 secs, and comparison 2.10944 sec, and warnIfPerfScore > 3.2, and perfScore=2.27719]
+	                 	Sequence_Array<int> is ***SLOWER***
+
+Test Sequence_Array<int> vs vector<int>: add many at once (vector<int> vs Sequence_Array<int>)
+	PERFORMANCE_SCORE	1.5
+	DETAILS:         	[baseline test 0.187545 secs, and comparison 0.279406 sec, and warnIfPerfScore > 2.6, and perfScore=1.48981]
+	                 	Sequence_Array<int> is ***SLOWER***
+
+Test Sequence_stdvector<int> vs vector<int>: add one at a time (vector<int> vs Sequence_stdvector<int>)
+	PERFORMANCE_SCORE	2.5
+	DETAILS:         	[baseline test 0.903615 secs, and comparison 2.27828 sec, and warnIfPerfScore > 4.3, and perfScore=2.5213]
+	                 	Sequence_stdvector<int> is ***SLOWER***
+
+Test Sequence_stdvector<int> vs vector<int>: add many at once (vector<int> vs Sequence_stdvector<int>)
+	PERFORMANCE_SCORE	1.6
+	DETAILS:         	[baseline test 0.187389 secs, and comparison 0.292669 sec, and warnIfPerfScore > 2.5, and perfScore=1.56183]
+	                 	Sequence_stdvector<int> is ***SLOWER***
+
+Test Sequence_DoublyLinkedList<String> vs vector<String>: add one at a time (vector<String> vs Sequence_DoublyLinkedList<String>)
+	PERFORMANCE_SCORE	2.9
+	DETAILS:         	[baseline test 0.958062 secs, and comparison 2.81297 sec, and warnIfPerfScore > 3.2, and perfScore=2.9361]
+	                 	Sequence_DoublyLinkedList<String> is ***SLOWER***
+
+Test Sequence_DoublyLinkedList<String> vs vector<String>: add many at once (vector<String> vs Sequence_DoublyLinkedList<String>)
+	PERFORMANCE_SCORE	4
+	DETAILS:         	[baseline test 0.654419 secs, and comparison 2.5864 sec, and warnIfPerfScore > 6.1, and perfScore=3.95221]
+	                 	Sequence_DoublyLinkedList<String> is ***SLOWER***
+
+Test Sequence_DoublyLinkedList<String> vs vector<String>: copy then write (COW pays up) (vector<String> vs Sequence_DoublyLinkedList<String>)
+	PERFORMANCE_SCORE	2.6
+	DETAILS:         	[baseline test 0.754747 secs, and comparison 1.96295 sec, and warnIfPerfScore > 3.4, and perfScore=2.60081]
+	                 	Sequence_DoublyLinkedList<String> is ***SLOWER***
+
+Test Collection<int> vs vector<int>: add one at a time (vector<int> vs Collection<int>)
+	PERFORMANCE_SCORE	12
+	DETAILS:         	[baseline test 0.227157 secs, and comparison 2.83359 sec, and warnIfPerfScore > 24, and perfScore=12.4741]
+	                 	Collection<int> is ***SLOWER***
+
+Test Collection<int> vs vector<int>: add many at once (vector<int> vs Collection<int>)
+	PERFORMANCE_SCORE	2.6e+02
+	DETAILS:         	[baseline test 0.0185435 secs, and comparison 4.85871 sec, and warnIfPerfScore > 725, and perfScore=262.017]
+	                 	Collection<int> is ***SLOWER***
+
+Test Collection<String> vs vector<String>: add one at a time (vector<String> vs Collection<String>)
+	PERFORMANCE_SCORE	13
+	DETAILS:         	[baseline test 0.479742 secs, and comparison 6.40261 sec, and warnIfPerfScore > 24, and perfScore=13.3459]
+	                 	Collection<String> is ***SLOWER***
+
+Test Collection<String> vs vector<String>: add many at once (vector<String> vs Collection<String>)
+	PERFORMANCE_SCORE	20
+	DETAILS:         	[baseline test 0.320245 secs, and comparison 6.26138 sec, and warnIfPerfScore > 39, and perfScore=19.5519]
+	                 	Collection<String> is ***SLOWER***
+
+Test Collection<String> vs vector<String>: copy (COW) (vector<String> vs Collection<String>)
+	PERFORMANCE_SCORE	0.0025
+	DETAILS:         	[baseline test 6.63735 secs, and comparison 0.0168725 sec, and warnIfPerfScore > 0.005, and perfScore=0.00254205]
+	                 	Collection<String> is FASTER
+
+Test Collection<String> vs vector<String>: copy then write (COW pays up) (vector<String> vs Collection<String>)
+	PERFORMANCE_SCORE	3.1
+	DETAILS:         	[baseline test 0.764287 secs, and comparison 2.36486 sec, and warnIfPerfScore > 3.9, and perfScore=3.09421]
+	                 	Collection<String> is ***SLOWER***
+
+Test Collection_LinkedList<String> vs vector<String>: add one at a time (vector<String> vs Collection_LinkedList<String>)
+	PERFORMANCE_SCORE	2.2
+	DETAILS:         	[baseline test 0.978712 secs, and comparison 2.13903 sec, and warnIfPerfScore > 2.6, and perfScore=2.18556]
+	                 	Collection_LinkedList<String> is ***SLOWER***
+
+Test Collection_stdforward_list<String> vs vector<String>: add one at a time (vector<String> vs Collection_stdforward_list<String>)
+	PERFORMANCE_SCORE	2.3
+	DETAILS:         	[baseline test 0.97488 secs, and comparison 2.25507 sec, and warnIfPerfScore > 2.6, and perfScore=2.31318]
+	                 	Collection_stdforward_list<String> is ***SLOWER***
+
+Test Collection_LinkedList<String> vs vector<String>: add many at once (vector<String> vs Collection_LinkedList<String>)
+	PERFORMANCE_SCORE	3
+	DETAILS:         	[baseline test 0.667638 secs, and comparison 1.98167 sec, and warnIfPerfScore > 4.6, and perfScore=2.96818]
+	                 	Collection_LinkedList<String> is ***SLOWER***
+
+Test Collection_stdforward_list<String> vs vector<String>: add many at once (vector<String> vs Collection_stdforward_list<String>)
+	PERFORMANCE_SCORE	3.1
+	DETAILS:         	[baseline test 0.667002 secs, and comparison 2.07803 sec, and warnIfPerfScore > 4.7, and perfScore=3.11548]
+	                 	Collection_stdforward_list<String> is ***SLOWER***
+
+Test Contains () each PRESENT, Collection_Array<int> vs sorted default (Collection_Array<int> vs Collection<int> (sorted))
+	PERFORMANCE_SCORE	0.076
+	DETAILS:         	[baseline test 0.355286 secs, and comparison 0.0268705 sec, and warnIfPerfScore > 1000, and perfScore=0.0756305]
+	                 	Collection<int> (sorted) is FASTER
+
+Test Contains () each ABSENT, Collection_Array<int> vs sorted default (Collection_Array<int> vs Collection<int> (sorted))
+	PERFORMANCE_SCORE	0.047
+	DETAILS:         	[baseline test 0.562265 secs, and comparison 0.026649 sec, and warnIfPerfScore > 1000, and perfScore=0.0473958]
+	                 	Collection<int> (sorted) is FASTER
+
+Test Contains () each PRESENT, Collection_Array<String> vs sorted default (Collection_Array<String> vs Collection<String> (sorted))
+	PERFORMANCE_SCORE	0.08
+	DETAILS:         	[baseline test 0.263856 secs, and comparison 0.0210805 sec, and warnIfPerfScore > 1000, and perfScore=0.079894]
+	                 	Collection<String> (sorted) is FASTER
+
+Test Contains () each ABSENT, Collection_Array<String> vs sorted default (Collection_Array<String> vs Collection<String> (sorted))
+	PERFORMANCE_SCORE	0.031
+	DETAILS:         	[baseline test 0.348887 secs, and comparison 0.0109385 sec, and warnIfPerfScore > 1000, and perfScore=0.0313526]
+	                 	Collection<String> (sorted) is FASTER
+
+Test add many at once, Collection_Array<String> vs Collection_LinkedList<String> (Collection_Array<String> vs Collection_LinkedList<String>)
+	PERFORMANCE_SCORE	3
+	DETAILS:         	[baseline test 0.043273 secs, and comparison 0.131623 sec, and warnIfPerfScore > 1000, and perfScore=3.04169]
+	                 	Collection_LinkedList<String> is ***SLOWER***
+
+Test add one at a time, Collection_Array<String> vs Collection_LinkedList<String> (Collection_Array<String> vs Collection_LinkedList<String>)
+	PERFORMANCE_SCORE	0.63
+	DETAILS:         	[baseline test 0.235724 secs, and comparison 0.14754 sec, and warnIfPerfScore > 1000, and perfScore=0.625901]
+	                 	Collection_LinkedList<String> is FASTER
+
+Test Collection_Array<int> vs vector<int>: add one at a time (vector<int> vs Collection_Array<int>)
+	PERFORMANCE_SCORE	2.7
+	DETAILS:         	[baseline test 0.912741 secs, and comparison 2.43405 sec, and warnIfPerfScore > 4.1, and perfScore=2.66674]
+	                 	Collection_Array<int> is ***SLOWER***
+
+Test Collection_Array<int>: AddAll from vector vs from list (batching win) (from list (per-element) vs from vector (span))
+	PERFORMANCE_SCORE	0.16
+	DETAILS:         	[baseline test 0.0571365 secs, and comparison 0.0089075 sec, and warnIfPerfScore > 1000, and perfScore=0.155899]
+	                 	from vector (span) is FASTER
+
+Test Collection<int>: AddAll from vector vs from list (batching win) (from list (per-element) vs from vector (span))
+	PERFORMANCE_SCORE	0.98
+	DETAILS:         	[baseline test 0.344294 secs, and comparison 0.33778 sec, and warnIfPerfScore > 1000, and perfScore=0.981079]
+	                 	from vector (span) is FASTER
+
+Test Collection_Array<int> vs vector<int>: add many at once (vector<int> vs Collection_Array<int>)
+	PERFORMANCE_SCORE	1.5
+	DETAILS:         	[baseline test 0.188694 secs, and comparison 0.285534 sec, and warnIfPerfScore > 3.8, and perfScore=1.51322]
+	                 	Collection_Array<int> is ***SLOWER***
+
+Test Build Sequence<int> from vector<int> vs vector<int> copy CTOR (vector<int> copy CTOR vs Sequence<int>{vector<int>})
+	PERFORMANCE_SCORE	1.9
+	DETAILS:         	[baseline test 0.870363 secs, and comparison 1.68112 sec, and warnIfPerfScore > 3.3, and perfScore=1.93152]
+	                 	Sequence<int>{vector<int>} is ***SLOWER***
+
+Test Sequence<int>::AppendAll (): Stroika source vs vector source (from vector<int> (span path) vs from Sequence<int> (per-element))
+	PERFORMANCE_SCORE	1
+	DETAILS:         	[baseline test 0.0051255 secs, and comparison 0.0052255 sec, and warnIfPerfScore > 1000, and perfScore=1.01951]
+	                 	from Sequence<int> (per-element) is ***SLOWER***
+
+Test Sequence<String>::AppendAll (): Stroika source vs vector source (from vector<String> (span path) vs from Sequence<String> (per-element))
+	PERFORMANCE_SCORE	1
+	DETAILS:         	[baseline test 0.173584 secs, and comparison 0.174826 sec, and warnIfPerfScore > 1000, and perfScore=1.00716]
+	                 	from Sequence<String> (per-element) is ***SLOWER***
+
+Test Sequence<int>: PrependAll () vs AppendAll (), onto a NON-EMPTY target (AppendAll (batched) vs PrependAll (O (m*n)))
+	PERFORMANCE_SCORE	0.89
+	DETAILS:         	[baseline test 0.000841 secs, and comparison 0.0007495 sec, and warnIfPerfScore > 1000, and perfScore=0.891201]
+	                 	PrependAll (O (m*n)) is FASTER
+
+Test Sequence<String>: PrependAll () vs AppendAll (), onto a NON-EMPTY target (AppendAll (batched) vs PrependAll (O (m*n)))
+	PERFORMANCE_SCORE	1.1
+	DETAILS:         	[baseline test 0.004754 secs, and comparison 0.005426 sec, and warnIfPerfScore > 1000, and perfScore=1.14135]
+	                 	PrependAll (O (m*n)) is ***SLOWER***
+
+Test Sequence<int>::AppendAll (): vector source vs LIST source (from vector<int> (span path) vs from list<int> (per-element))
+	PERFORMANCE_SCORE	11
+	DETAILS:         	[baseline test 0.00518 secs, and comparison 0.058919 sec, and warnIfPerfScore > 1000, and perfScore=11.3743]
+	                 	from list<int> (per-element) is ***SLOWER***
+
+Test Sequence<String>::AppendAll (): vector source vs LIST source (from vector<String> (span path) vs from list<String> (per-element))
+	PERFORMANCE_SCORE	3.9
+	DETAILS:         	[baseline test 0.17636 secs, and comparison 0.684014 sec, and warnIfPerfScore > 1000, and perfScore=3.87851]
+	                 	from list<String> (per-element) is ***SLOWER***
+
+Test Sequence<int>::InsertAll (middle): vector source vs LIST source (from vector<int> (one span insert) vs from list<int> (still O (m*n)))
+	PERFORMANCE_SCORE	4.4
+	DETAILS:         	[baseline test 0.0007645 secs, and comparison 0.0033705 sec, and warnIfPerfScore > 1000, and perfScore=4.40876]
+	                 	from list<int> (still O (m*n)) is ***SLOWER***
+
+Test Set<int>::AddAll (): vector source vs STROIKA source (source-side dispatch) (from vector<int> vs from Sequence<int>)
+	PERFORMANCE_SCORE	0.96
+	DETAILS:         	[baseline test 0.166478 secs, and comparison 0.15906 sec, and warnIfPerfScore > 1000, and perfScore=0.955442]
+	                 	from Sequence<int> is FASTER
+
+Test MultiSet<int>::AddAll (): vector source vs STROIKA source (source-side dispatch) (from vector<int> vs from Sequence<int>)
+	PERFORMANCE_SCORE	1.2
+	DETAILS:         	[baseline test 0.264153 secs, and comparison 0.324049 sec, and warnIfPerfScore > 1000, and perfScore=1.22675]
+	                 	from Sequence<int> is ***SLOWER***
+
+Test KeyedCollection<int,int>::AddAll (): vector source vs STROIKA source (source-side dispatch) (from vector<pair<int,int>> vs from Sequence<pair<int,int>>)
+	PERFORMANCE_SCORE	1
+	DETAILS:         	[baseline test 0.243126 secs, and comparison 0.242383 sec, and warnIfPerfScore > 1000, and perfScore=0.996944]
+	                 	from Sequence<pair<int,int>> is FASTER
+
+Test Sequence<int>::append_range () vs vector<int>::append_range () (vector<int>::append_range () vs Sequence<int>::append_range ())
+	PERFORMANCE_SCORE	1.4
+	DETAILS:         	[baseline test 0.876702 secs, and comparison 1.26893 sec, and warnIfPerfScore > 1000, and perfScore=1.44739]
+	                 	Sequence<int>::append_range () is ***SLOWER***
+
+Test Sequence<string> basics (vector<string> vs Sequence<string>)
+	PERFORMANCE_SCORE	0.34
+	DETAILS:         	[baseline test 4.10544 secs, and comparison 1.40806 sec, and warnIfPerfScore > 0.35, and perfScore=0.342973]
+	                 	Sequence<string> is FASTER
+
+Test Sequence_DoublyLinkedList<int> basics (vector<int> vs Sequence_DoublyLinkedList<int>)
+	PERFORMANCE_SCORE	3.8
+	DETAILS:         	[baseline test 4.77953 secs, and comparison 18.378 sec, and warnIfPerfScore > 11, and perfScore=3.84515]
+	                 	Sequence_DoublyLinkedList<int> is ***SLOWER***
+
+Test Sequence_Array<int> basics (vector<int> vs Sequence_Array<int>)
+	PERFORMANCE_SCORE	1.4
+	DETAILS:         	[baseline test 4.88377 secs, and comparison 6.7455 sec, and warnIfPerfScore > 1.8, and perfScore=1.38121]
+	                 	Sequence_Array<int> is ***SLOWER***
+
+Test Sequence_stdvector<int> basics (vector<int> vs Sequence_stdvector<int>)
+	PERFORMANCE_SCORE	1.5
+	DETAILS:         	[baseline test 4.78258 secs, and comparison 7.36442 sec, and warnIfPerfScore > 2.4, and perfScore=1.53984]
+	                 	Sequence_stdvector<int> is ***SLOWER***
+
+Test Sequence_DoublyLinkedList<string> basics (vector<string> vs Sequence_DoublyLinkedList<string>)
+	PERFORMANCE_SCORE	0.45
+	DETAILS:         	[baseline test 3.97785 secs, and comparison 1.80727 sec, and warnIfPerfScore > 0.84, and perfScore=0.454334]
+	                 	Sequence_DoublyLinkedList<string> is FASTER
+
+Test Collection<int> basics (vector<int> vs Collection<int>)
+	PERFORMANCE_SCORE	5.1
+	DETAILS:         	[baseline test 6.70532 secs, and comparison 33.921 sec, and warnIfPerfScore > 12, and perfScore=5.05882]
+	                 	Collection<int> is ***SLOWER***
+
+Test Collection<string> basics (vector<string> vs Collection<string>)
+	PERFORMANCE_SCORE	0.85
+	DETAILS:         	[baseline test 4.02366 secs, and comparison 3.42982 sec, and warnIfPerfScore > 1.38, and perfScore=0.852412]
+	                 	Collection<string> is FASTER
+
+Test Collection_LinkedList<string> basics (vector<string> vs Collection_LinkedList<string>)
+	PERFORMANCE_SCORE	0.42
+	DETAILS:         	[baseline test 4.08252 secs, and comparison 1.71989 sec, and warnIfPerfScore > 0.86, and perfScore=0.421281]
+	                 	Collection_LinkedList<string> is FASTER
+
+Test Collection_stdforward_list<string> basics (vector<string> vs Collection_stdforward_list<string>)
+	PERFORMANCE_SCORE	0.76
+	DETAILS:         	[baseline test 4.03573 secs, and comparison 3.05779 sec, and warnIfPerfScore > 0.92, and perfScore=0.757679]
+	                 	Collection_stdforward_list<string> is FASTER
+
+Test SortedCollection_stdmultiset<string> basics (vector<string> vs SortedCollection_stdmultiset<string>)
+	PERFORMANCE_SCORE	0.85
+	DETAILS:         	[baseline test 3.99652 secs, and comparison 3.38824 sec, and warnIfPerfScore > 1.38, and perfScore=0.847797]
+	                 	SortedCollection_stdmultiset<string> is FASTER
+
+Test SortedCollection_stdmultiset<string> basics with rnd strings (vector<string> vs SortedCollection_stdmultiset<string>)
+	PERFORMANCE_SCORE	1.7
+	DETAILS:         	[baseline test 4.43951 secs, and comparison 7.71845 sec, and warnIfPerfScore > 2.1, and perfScore=1.73858]
+	                 	SortedCollection_stdmultiset<string> is ***SLOWER***
+
+Test std::set<int> vs Set<int> (set<int> vs Set<int>)
+	PERFORMANCE_SCORE	0.14
+	DETAILS:         	[baseline test 29.4069 secs, and comparison 4.21904 sec, and warnIfPerfScore > 0.31, and perfScore=0.143471]
+	                 	Set<int> is FASTER
+
+Test String Characters::Format () (sprintf vs String Characters::Format)
+	PERFORMANCE_SCORE	2.1
+	DETAILS:         	[baseline test 5.58201 secs, and comparison 11.6269 sec, and warnIfPerfScore > 4.8, and perfScore=2.08292]
+	                 	String Characters::Format is ***SLOWER***
+
+Test BLOB versus vector<byte> (vector<byte> vs BLOB)
+	PERFORMANCE_SCORE	0.95
+	DETAILS:         	[baseline test 4.97945 secs, and comparison 4.73904 sec, and warnIfPerfScore > 1.6, and perfScore=0.951721]
+	                 	BLOB is FASTER
+
+Test BLOB versus vector<byte> ver#2 (vector<byte> vs BLOB)
+	PERFORMANCE_SCORE	0.84
+	DETAILS:         	[baseline test 7.24964 secs, and comparison 6.09581 sec, and warnIfPerfScore > 1.4, and perfScore=0.840844]
+	                 	BLOB is FASTER
+
+Test Test_JSONReadWriteFile (15 seconds vs Test_JSONReadWriteFile)
+	PERFORMANCE_SCORE	0.27
+	DETAILS:         	[baseline test 15 secs, and comparison 4.08857 sec, and warnIfPerfScore > 0.48, and perfScore=0.272572]
+	                 	Test_JSONReadWriteFile is FASTER
+
+Test Test_Optional_ (15 seconds vs Test_Optional_)
+	PERFORMANCE_SCORE	0.14
+	DETAILS:         	[baseline test 15 secs, and comparison 2.04986 sec, and warnIfPerfScore > 0.46, and perfScore=0.136658]
+	                 	Test_Optional_ is FASTER
+
+Test Sequence<int>::OrderBy () vs std::stable_sort (std::stable_sort (vector<int>) vs Sequence<int>::OrderBy ())
+	PERFORMANCE_SCORE	1
+	DETAILS:         	[baseline test 9.56008 secs, and comparison 9.66907 sec, and warnIfPerfScore > 2.6, and perfScore=1.0114]
+	                 	Sequence<int>::OrderBy () is ***SLOWER***
+
+Test Iterable<int>::OrderBy () vs std::stable_sort (std::stable_sort (vector<int>) vs Iterable<int>::OrderBy () [default policy])
+	PERFORMANCE_SCORE	3.8
+	DETAILS:         	[baseline test 9.87721 secs, and comparison 37.9131 sec, and warnIfPerfScore > 5, and perfScore=3.83844]
+	                 	Iterable<int>::OrderBy () [default policy] is ***SLOWER***
+
+Test Sequence_Array<int>::As<vector<int>> () vs plain vector copy (vector<int> copy CTOR vs Sequence_Array<int>::As<vector<int>> ())
+	PERFORMANCE_SCORE	1.4
+	DETAILS:         	[baseline test 0.169692 secs, and comparison 0.238384 sec, and warnIfPerfScore > 10, and perfScore=1.40481]
+	                 	Sequence_Array<int>::As<vector<int>> () is ***SLOWER***
+
+Test Sequence_Array<int>::SequentialEquals () vs lockstep Stroika iterators (lockstep Iterator<int> vs Sequence_Array<int>::SequentialEquals ())
+	PERFORMANCE_SCORE	0.031
+	DETAILS:         	[baseline test 7.98662 secs, and comparison 0.248743 sec, and warnIfPerfScore > 0.1, and perfScore=0.031145]
+	                 	Sequence_Array<int>::SequentialEquals () is FASTER
+
+stroika-json-native-parser: ".\\Tests\\52\\JSONTestData\\small-dict.json"
+	DETAILS			0.337346 seconds
+
+stroika-json-native-parser: ".\\Tests\\52\\JSONTestData\\medium-dict.json"
+	DETAILS			4.38532 seconds
+
+stroika-json-native-parser: ".\\Tests\\52\\JSONTestData\\large-dict.json"
+	DETAILS			14.2301 seconds
+
+stroika-json-parser: ".\\Tests\\52\\JSONTestData\\small-dict.json"
+	DETAILS			0.0939616 seconds
+
+stroika-json-parser: ".\\Tests\\52\\JSONTestData\\medium-dict.json"
+	DETAILS			2.28341 seconds
+
+stroika-json-parser: ".\\Tests\\52\\JSONTestData\\large-dict.json"
+	DETAILS			7.43177 seconds
+
+boost_json-parser: ".\\Tests\\52\\JSONTestData\\small-dict.json"
+	DETAILS			0.0291851 seconds
+
+boost_json-parser: ".\\Tests\\52\\JSONTestData\\medium-dict.json"
+	DETAILS			0.431313 seconds
+
+boost_json-parser: ".\\Tests\\52\\JSONTestData\\large-dict.json"
+	DETAILS			1.6909 seconds
+
+boost_json-vv-parser: ".\\Tests\\52\\JSONTestData\\small-dict.json"
+	DETAILS			0.135723 seconds
+
+boost_json-vv-parser: ".\\Tests\\52\\JSONTestData\\medium-dict.json"
+	DETAILS			2.94356 seconds
+
+boost_json-vv-parser: ".\\Tests\\52\\JSONTestData\\large-dict.json"
+	DETAILS			9.38814 seconds
+
+[[[Tests took: 17 minutes, 31 seconds]]]
+
