@@ -12,7 +12,7 @@ especially those they need to be aware of when upgrading.
 
 #### TLDR
 
-- **UPnP/SSDP reworked** (issue 1194): works on every network interface, following networks as they come and go, and much closer to the UPnP spec; new SSDP `CachingListener`, UPnP control (SOAP actions) and GENA eventing. **NOT BACKWARD COMPATIBLE** - `BasicServer` needs a `LocationProvider`, and the SSDP classes take `Options`
+- **UPnP/SSDP reworked** ([issue 1194](https://github.com/SophistSolutions/Stroika/issues/1194)): works on every network interface, following networks as they come and go, and much closer to the UPnP spec; new SSDP `CachingListener`, UPnP control (SOAP actions) and GENA eventing. **NOT BACKWARD COMPATIBLE** - `BasicServer` needs a `LocationProvider`, and the SSDP classes take `Options`
 - New `WebService::SOAP` (SOAP 1.1, beside JSON-RPC), and `Variant::XML` - a `VariantValue` read and written as XML, as it already was as JSON
 - `"..."_f` format strings are checked against their arguments at compile time, as `std::format`'s are
 - `Execution::IsA (e, errc::X)` - one portable test of what an error means, for POSIX, Win32 and libcurl errors alike; `TimeOutException` deprecated
@@ -27,8 +27,10 @@ especially those they need to be aware of when upgrading.
 
 - Build system
   - **`make distclean` before building with 3.0d25** (in a Skel app, from the app's root), and rebuild your configurations from scratch: an incremental build keeps linking the 3.0d24 libraries (Upgrading.md, "Rebuild from scratch")
-  - **`configure` is now Python 3** (issue 1240), as is `ApplyConfiguration`. Each still runs the Perl it replaced (`configure.pl`, `ApplyConfiguration.pl`) as a check: if they disagree you get a loud `PYTHON/PERL CONFIGURATION MISMATCH` warning, the Perl's result is used, and the diffs are in `IntermediateFiles/configure-mismatch/` - please report one
-  - Skel apps: add `Microsoft.Cpp.stroika.ConfigurationBased.props` and `Microsoft.Cpp.stroika.user.props` to `Workspaces/.gitignore`, and untrack them once (`git rm --cached Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.*.props` - your app's spelling of that directory); `make project-files` remakes them (issue 1075)
+  - **`configure` is now Python 3** ([issue 1240](https://github.com/SophistSolutions/Stroika/issues/1240)), as is `ApplyConfiguration`. Each still runs the Perl it replaced (`configure.pl`, `ApplyConfiguration.pl`) as a check: if they disagree you get a loud `PYTHON/PERL CONFIGURATION MISMATCH` warning, the Perl's result is used, and the diffs are in `IntermediateFiles/configure-mismatch/` - please report one
+  - Skel apps: add `Microsoft.Cpp.stroika.ConfigurationBased.props` and `Microsoft.Cpp.stroika.user.props` to `Workspaces/.gitignore`, and untrack them once (`git rm --cached Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.*.props` - your app's spelling of that directory); `make project-files` remakes them ([issue 1075](https://github.com/SophistSolutions/Stroika/issues/1075))
+  - Skel apps: `make clean` deleted `Builds/` too, as `make clobber` does - in the app's top-level `Makefile` (and an HTMLUI app's `html/Makefile`) change `[ "$@"=="clobber" ]` to `[ "$@" = "clobber" ]`
+  - Skel apps' VS Code IntelliSense took the app's root `VERSION` file for `<version>`: in `.vscode/c_cpp_properties.json` set `env.myDefaultIncludePath` to `[]` (or to the app's own include directories), and add `"C_Cpp.files.exclude": { "**/node_modules/**": true, "**/IntermediateFiles/**": true, "ThirdPartyComponents/Stroika/StroikaRoot/Archive/**": true }` to `.vscode/settings.json`
   - `Build/Scripts/MakeSymbolicLink` is DEPRECATED: use `MakeFileLink` or `MakeDirectoryLink` (same arguments). On Windows a file alias is now a hard link, so after anything that replaces a file rather than writing it (git checkout, an editor's save) re-run the link - `make project-files` does, for the Stroika `.props` files
   - Apps with their own `Installers/Makefile`: `$(StroikaRoot)Build/Scripts/RunWIXLight` in place of `light.exe` lets a non-administrator account build the installer (it failed with LGHT0217)
   - **clang Release builds on Linux get LTO only if lld is installed** (eg `apt install lld-22`); without it they build without LTO
@@ -37,7 +39,7 @@ especially those they need to be aware of when upgrading.
   - On UNIX, a Debug configuration now builds mongo-cxx-driver, zlib and zstd unoptimized and with their asserts on, so they run slower
 - Compilers
   - Visual Studio 2022 older than 17.14 (the final, free update), and Apple clang older than 17 (XCode 16.3), now warn
-  - 36 `qCompilerAndStdLib_*_Buggy` defines are gone (issue 1177) - an app testing one sees it undefined (0), as it already was on every supported compiler. `git diff 3.0d24 3.0d25 -- Library/Sources/Stroika/Foundation/Common/Private/CompilerAndStdLib_.h` lists them
+  - 36 `qCompilerAndStdLib_*_Buggy` defines are gone ([issue 1177](https://github.com/SophistSolutions/Stroika/issues/1177)) - an app testing one sees it undefined (0), as it already was on every supported compiler. `git diff 3.0d24 3.0d25 -- Library/Sources/Stroika/Foundation/Common/Private/CompilerAndStdLib_.h` lists them
   - Code that used `qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy` (a nested Options struct as its class's `= {}` default argument) tests `qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy` instead, the same way (Design-Overview.md, "Options structs")
 - Macro renames - the old names stay as DEPRECATED aliases until v3.0a1 (a macro cannot warn, so search for them)
   - `qStroika_Foundation_Common_Platform_{Windows,Win32,Win64,POSIX,Linux,MacOS}` -> `qStroika_Platform_{...}`
@@ -84,7 +86,7 @@ especially those they need to be aware of when upgrading.
   - `DeviceDescription` has a new FIRST field, `fURLBase` - positional initialization shifts. A description's relative URLs resolve against `dd.fURLBase.value_or (descriptionURL)`: `dd.Resolve (descriptionURL)` makes them all absolute
   - `UPnP::Serialize` of a description throws `BadFormatException` where it breaks UPnP's schema (eg a device with no services); `Options{.fValidateWrite = false}` writes it anyway
 - Frameworks::Led
-  - Led's options are now `qStroika_Frameworks_Led_*` (eg `qStroika_Frameworks_Led_UseOffscreenBitmapsToReduceFlicker`), with no aliases - an old name does nothing. Its bidirectional-text options (`qUseFriBidi`, `qUseICUBidi`, ...) are gone: issue 1182
+  - Led's options are now `qStroika_Frameworks_Led_*` (eg `qStroika_Frameworks_Led_UseOffscreenBitmapsToReduceFlicker`), with no aliases - an old name does nothing. Its bidirectional-text options (`qUseFriBidi`, `qUseICUBidi`, ...) are gone: [issue 1182](https://github.com/SophistSolutions/Stroika/issues/1182)
   - Led's version macros (`qLed_Version_*`, ...) are gone - use `qStroika_Version_*` (`Stroika/Foundation/Common/StroikaVersion.h`, which `Led/Config.h` no longer includes)
 
 #### Change Details
@@ -95,16 +97,16 @@ especially those they need to be aware of when upgrading.
   - Design-Overview.md: the 'q' prefix and macro naming convention, "Options structs", rules for writing concepts (each from a bug this release), "Destruction order" of magic statics; DataExchange's ReadMe: why VariantValue
   - A trailing `///<` documents each overload, so hover text works on every one
   - UPnP: why Stroika implements the Device Architecture 1.0, not 1.1; what SSDP needs through a firewall; Variant/XML/ReadMe.md
-  - Math/LinearAlgebra marked weak, pending revision or removal (issue 1168); deprecated headers no longer listed in module ReadMes
+  - Math/LinearAlgebra marked weak, pending revision or removal ([issue 1168](https://github.com/SophistSolutions/Stroika/issues/1168)); deprecated headers no longer listed in module ReadMes
 - Build System and Scripts
-  - `configure`, `ApplyConfiguration`, `GetConfigurationParameter` and `RunArgumentsWithCommonBuildVars` rewritten in Python (issue 1240), each checked against the Perl version on every run; the Python scripts start without forking
+  - `configure`, `ApplyConfiguration`, `GetConfigurationParameter` and `RunArgumentsWithCommonBuildVars` rewritten in Python ([issue 1240](https://github.com/SophistSolutions/Stroika/issues/1240)), each checked against the Perl version on every run; the Python scripts start without forking
   - Windows: links an MSYS/Cygwin build makes are checked to work for NATIVE tools (an untrusted symlink - made without the "Create symbolic links" right - is not traversed by them), falling back to a hard link; `MakeFileLink`/`MakeDirectoryLink` replace `MakeSymbolicLink`
   - `configure`: clang's default stdlib asks libc++ whether it supports the compiler; clang LTO links with lld, and is on by default only when lld is installed; `std::stacktrace` library probed and linked; `-flto=auto` under make's jobserver; warning flags repeated on gcc LTO links; a valgrind configuration is skipped where `<valgrind/memcheck.h>` is missing; no stacktrace/LTO warnings for a compiler that is not installed; `--append-linktime-copy-files-2-EXEDir` and `--msvc-runtime-library` (which never worked) fixed, and RANLIB read from the environment; vcvars runs where `NoDefaultCurrentDirectoryInExePath` is set; Ubuntu 20.04/23.10 branches and other version gates below the supported minimums dropped
   - `TOOLS_PATH_ADDITIONS` prepended once, not once per nested make, and its last entry no longer corrupted; MINGW shells recognized as MSYS
   - check-prerequisite-tools is `Build/Scripts/CheckPrerequisiteTools`; it requires GNU realpath, and on Windows warns about the msys2-runtime 3.6.10 hang and Developer Mode only where they can apply
   - `Build/Scripts/RunWIXLight`: WiX falls back to `-sval` when ICE validation cannot reach the Windows Installer service
   - Skel: `--stroikaGitRemote`; the regression runs' skel test builds the commit under test, not GitHub's tip; a Skel app's `Workspaces/.gitignore` ignores the two `.props` links
-  - Third-party builds: cmake builds honor the configuration's `-O` (`CMAKE_BUILD_TYPE=None`, `-DNDEBUG` iff assertions are off); boost follows make's `-j`; openssl tests and docs opt-in; mongo-c-driver static only; mongo-cxx-driver `MLIB_DISABLE_INLINING_ASSERTIONS`, `-O1` under g++ TSAN (GCC bug 59922), off for armhf + ASan (issue 1174); openssl's linux-aarch64 target; a cross-compiled (Raspberry Pi) libcurl verified no certificate - fixed
+  - Third-party builds: cmake builds honor the configuration's `-O` (`CMAKE_BUILD_TYPE=None`, `-DNDEBUG` iff assertions are off); boost follows make's `-j`; openssl tests and docs opt-in; mongo-c-driver static only; mongo-cxx-driver `MLIB_DISABLE_INLINING_ASSERTIONS`, `-O1` under g++ TSAN ([GCC bug 59922](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59922)), off for armhf + ASan ([issue 1174](https://github.com/SophistSolutions/Stroika/issues/1174)); openssl's linux-aarch64 target; a cross-compiled (Raspberry Pi) libcurl verified no certificate - fixed
   - Third-party component versions: openssl 4.0.3, curl 8.23.0, libxml2 2.15.4, sqlite 3.54.1, mongo-cxx-driver r4.6.1 (mongo-c-driver 2.5.6), WiX 3.14.1 (the last WiX v3), fmtlib 12.2.0 (range formatting off)
   - Deleted: the FixupDashIs script, the Code::Blocks projects, the helgrind-era valgrind leftovers; the 135 valgrind suppressions (none matched anything any more)
   - Regression runs
@@ -116,7 +118,7 @@ especially those they need to be aware of when upgrading.
   - CI (GitHub Actions): consolidated onto the LTS Ubuntus, clang++-19 gap closed; job wall-clock bounded at 240 minutes; `"never"` means never on macOS and Windows too; a UBSan finding now fails the test (`halt_on_error=1`)
   - Docker: aarch64 cross compilers and armhf g++-15; Node 26 in every image; VS Build Tools 18.11.0 (vs2k26) and 17.14.42 (vs2k22); Stroika-Dev containers make their own sshd host keys and keep them when recreated, mount `~/.ssh` read-only, reap their zombie sshds (`--init`), and add strace and tcpdump; the MSYS and Cygwin images fail on a failed package install
   - VS Code: IntelliSense mode written by ApplyConfiguration, `MSYS=winsymlinks:nativestrict` for the Windows shell tasks, Archive/ and node_modules kept out of IntelliSense
-- Compiler Bug Defines (issue 1177's audit)
+- Compiler Bug Defines ([issue 1177](https://github.com/SophistSolutions/Stroika/issues/1177)'s audit)
   - 36 removed (see Upgrade Notes) - most were not compiler bugs, or were for compilers no longer supported, and each removal was checked against the oldest toolchain its history names
   - added: `CTADIgnoresConstructorRequiresClause`, `ISpanMisevaluatedInContext`, `arm_isConstantEvaluatedInCtor_UnusedValueWarning`, `default_member_initializer_needed_within_enclosing_class`, `format_check_StaticArray`, `format_dynamic_spec`, `formatter_narrowStringIntoWide`, `formatter_parse_closingBraceAsFill`, `from_chars_reads_past_end` (every libstdc++ 11-16)
   - gates fixed that caught compilers never shown to need them (`__GNUC__` is 4 on clang; `__clang_major__` is 0 on g++); `NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE` is an MSVC ABI decision, not version-gated
@@ -125,7 +127,7 @@ especially those they need to be aware of when upgrading.
   - Foundation
     - Characters
       - `"..."_f` checked at compile time, and a narrow one widened at compile time rather than into a new buffer each use; `L"..."_f` -> `"..."_f` across the tree
-      - std::formatter registered only for Stroika's own types (issue 1216); narrow formatting of a String fixed - it ignored its format-spec, swallowed the text after its field, and with libc++ 16-20 formatted a narrow string as a range of char; `FormatString<char>` copy assignment read the source's buffer
+      - std::formatter registered only for Stroika's own types ([issue 1216](https://github.com/SophistSolutions/Stroika/issues/1216)); narrow formatting of a String fixed - it ignored its format-spec, swallowed the text after its field, and with libc++ 16-20 formatted a narrow string as a range of char; `FormatString<char>` copy assignment read the source's buffer
       - ToString: a variant's int printed as "true", a 4-element tuple did not compile, a pointer printed as a bool; `IToString<T>` true of everything
       - String's string_view constructors share characters only in the program's read-only image (new `Execution::IsAddressReadOnlyAppLifetime`); a wide literal with a surrogate pair is copied
       - SDK and narrow-string conversions cache their codecvt per thread: 3.1-3.9 us -> 0.05-0.10 us per call (Release, C.UTF-8)
@@ -146,16 +148,17 @@ especially those they need to be aware of when upgrading.
     - Execution
       - `IsA ()`, `ThrowError ()`, `Win32_error_category` (incl. the WinINet/WinHTTP range, and `ERROR_PORT_UNREACHABLE` as connection_refused); libcurl's category maps 18 more codes
       - `Exception<BASE>` works for bases that need a what_arg; activities captured at the throw
+      - `DeclareActivity` can no longer be assigned: the implicit copy assignment corrupted the thread's activity stack
       - `CallbackRegistry` - added and removed by ID, called holding no lock; once Remove returns the callback is not running
       - `Thread::Abort ()` of a thread finishing at that moment no longer fails an assertion (the sporadic Test40 failure on every platform since 2024)
-      - `WaitForIOReady`: abort can no longer be lost while a wait is set up (issue 1165); `EventFD` uses eventfd on Linux, a pipe elsewhere on POSIX, one UDP socket on Windows, and its Set/Clear race is fixed (issue 1175); `UpdatableWaitForIOReady::WaitQuietly (Duration)` no longer recurses forever
+      - `WaitForIOReady`: abort can no longer be lost while a wait is set up ([issue 1165](https://github.com/SophistSolutions/Stroika/issues/1165)); `EventFD` uses eventfd on Linux, a pipe elsewhere on POSIX, one UDP socket on Windows, and its Set/Clear race is fixed ([issue 1175](https://github.com/SophistSolutions/Stroika/issues/1175)); `UpdatableWaitForIOReady::WaitQuietly (Duration)` no longer recurses forever
       - `IntervalTimer`: a timer removed while its callback ran was re-registered (a use-after-free); a callback adding or removing a timer as another thread removed the last one deadlocked
       - `SpinLock`: redundant fences dropped (`sizeof` 8 -> 1, constant-initialized); `kSpinLock_IsFasterThan_mutex` keyed to the measured standard library (false with libstdc++)
       - `ProcessRunner`: `BackgroundProcess::Terminate ()` on POSIX did nothing (`kill ()`'s arguments were swapped)
     - IO/Network
       - interfaces via `getifaddrs ()` on POSIX; macOS default gateways from the routing table (1.7 ms per listing, not 145); `Interface::fIndex`; `GetLocalAddressToReach (peer)`; Linux `struct ifreq` ODR violation fixed
       - `LinkMonitor`: one shared backend; IPv6 and removals reported; macOS implementation (routing socket); on Windows a Wi-Fi network returning within its DHCP lease is noticed
-      - `ConnectionlessSocket`: multicast on a given interface; packet info on receive (`IP_PKTINFO`, issue 1202); IPv6 multicast TTL/loop take an int (issue 714); `GetAddressFamily ()` threw on macOS
+      - `ConnectionlessSocket`: multicast on a given interface; packet info on receive (`IP_PKTINFO`, [issue 1202](https://github.com/SophistSolutions/Stroika/issues/1202)); IPv6 multicast TTL/loop take an int ([issue 714](https://github.com/SophistSolutions/Stroika/issues/714)); `GetAddressFamily ()` threw on macOS
       - `Transfer`: ConnectionPool limit and iterator fixed; libcurl sends the body of any method, a body-less PUT as a PUT, and an exception from its callback no longer terminates the process; the HTTP cache's If-Modified-Since was quoted, so never answered 304
       - HTTP: `Set-Cookie` headers were empty; `Cookie::AddAttribute` recursed forever on a bare name; dates by `kHTTPDateFormat`
     - Math: `Abs ()` constexpr-evaluable, and unsigned values are their own absolute value
