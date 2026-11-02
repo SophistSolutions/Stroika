@@ -32,71 +32,62 @@ import subprocess
 import sys
 import tempfile
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+THIS_DIR_ = os.path.dirname(os.path.abspath(__file__))
 sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the imports below
-sys.path.insert(0, os.path.join(THIS_DIR, "..", "Lib", "Python"))
+sys.path.insert(0, os.path.join(THIS_DIR_, "..", "Lib", "Python"))
 import ConfigurationReader  # noqa: E402
 
-ENC = ConfigurationReader.ENCODING
-DEFAULT_BOOL_OPTIONS = -1
-INTERMEDIATE_FILES = "IntermediateFiles/"
-VS_INTELLISENSE_FILE = "Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props"
-VSCODE_CPP_FILE = ".vscode/c_cpp_properties.json"
+ENC_ = ConfigurationReader.ENCODING
+DEFAULT_BOOL_OPTIONS_ = -1
+INTERMEDIATE_FILES_ = "IntermediateFiles/"
+VS_INTELLISENSE_FILE_ = "Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props"
+VSCODE_CPP_FILE_ = ".vscode/c_cpp_properties.json"
 
 
-def Die(msg, status=255):
+def Die_(msg, status=255):
     sys.stderr.write(msg)
     sys.exit(status)
 
 
-def Trim(s):
-    return s.strip(" \t\n\r\f\v")  # Perl's \s - not str.strip ()'s wider whitespace
+def SplitList_(s, sep):
+    """s, a sep-separated list, as a list - its empty items dropped"""
+    return [i for i in s.split(sep) if i != ""]
 
 
-def PerlSplit(sep, s):
-    """Perl's split /SEP/ on a one-character literal separator: empty input gives nothing; trailing empty fields go"""
-    if s == "":
-        return []
-    parts = s.split(sep)
-    while parts and parts[-1] == "":
-        parts.pop()
-    return parts
-
-
-def Backtick(args, env=None):
-    """Perl's `...`: the command's stdout (stderr discarded), and its exit status - 127 if it could not be run"""
+def Backtick_(args, env=None):
+    """The command's stdout (stderr discarded), and its exit status - 127 if it could not be run"""
     try:
         p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=env)
     except OSError:
         return "", 127
-    return p.stdout.decode(ENC), p.returncode
+    return p.stdout.decode(ENC_), p.returncode
 
 
-IS_WINDOWS_HOST = sys.platform in ("win32", "msys") or sys.platform.startswith("cygwin")  # under MSYS2 or Cygwin
-IS_MACOS_HOST = sys.platform == "darwin"
-PATH_SEPERATOR = ";" if IS_WINDOWS_HOST else ":"
+IS_WINDOWS_HOST_ = sys.platform in ("win32", "msys") or sys.platform.startswith("cygwin")  # under MSYS2 or Cygwin
+IS_MACOS_HOST_ = sys.platform == "darwin"
+PATH_SEPERATOR_ = ";" if IS_WINDOWS_HOST_ else ":"
 # MSYS2 rather than Cygwin. A MINGW64/MINGW32/UCRT64 shell (which is what MSYSTEM=MINGW64 gives you, and what VSCode terminal
 # profiles commonly set) says "MINGW64_NT-..." - still MSYS2. Build/Scripts/DetectedHostOS maps MINGW -> MSYS for exactly
 # this reason; keep the two in agreement or they disagree about what host this is.
-IS_MSYS_HOST = IS_WINDOWS_HOST and re.match(r"MSYS|MINGW", Trim(Backtick(["uname", "-s"])[0])) is not None
+IS_MSYS_HOST_ = IS_WINDOWS_HOST_ and re.match(r"MSYS|MINGW", Backtick_(["uname", "-s"])[0].strip()) is not None
 
 
-def PosixPathExists(p):
-    """Perl's -e: for a native Windows Python, a POSIX path (/usr/bin) is first mapped through cygpath"""
+def PosixPathExists_(p):
+    """Whether p exists: for a native Windows Python, a POSIX path (/usr/bin) is first mapped through cygpath"""
     if sys.platform == "win32" and p.startswith("/"):
-        p = Trim(Backtick(["cygpath", "--windows", p])[0])
+        p = Backtick_(["cygpath", "--windows", p])[0].strip()
     return os.path.exists(p)
 
 
-def ConfigParam2BoolInt(v):
-    return {"0": 0, "false": 0, "1": 1, "true": 1}.get(v, DEFAULT_BOOL_OPTIONS)
+def ConfigParam2BoolInt_(v):
+    return {"0": 0, "false": 0, "1": 1, "true": 1}.get(v, DEFAULT_BOOL_OPTIONS_)
 
 
-def IsVisualStudio(buildPlatform):
+def IsVisualStudio_(buildPlatform):
     return re.match(r"VisualStudio.Net", buildPlatform) is not None
 
 
-class Config:
+class Config_:
     def __init__(self, name):
         self.name = name
         G = lambda p: ConfigurationReader.GetConfigurationParameter(name, p)  # noqa: E731
@@ -111,7 +102,7 @@ class Config:
         self.CXXFLAGS = G("PLATFORM_CXXFLAGS")
         self.Platform_LinkerArgs_ExtraPrefix = G("Platform_LinkerArgs_ExtraPrefix")
         self.Platform_LinkerArgs_ExtraSuffix = G("Platform_LinkerArgs_ExtraSuffix")
-        self.gAssertionsEnabled = ConfigParam2BoolInt(G("AssertionsEnabled"))
+        self.gAssertionsEnabled = ConfigParam2BoolInt_(G("AssertionsEnabled"))
         self.PLATFORM_INCLUDES_PATH = G("PLATFORM_INCLUDES_PATH")
         self.FOUNDATION_INCLUDES_PATH = G("FOUNDATION_INCLUDES_PATH")
         self.Platform_LinkerArgs_LibPath = G("Platform_LinkerArgs_LibPath")
@@ -121,17 +112,17 @@ class Config:
         self.useExtraMakeDefines = G("ExtraMakeDefines")
 
         includes = []
-        for p in PerlSplit(PATH_SEPERATOR, self.PLATFORM_INCLUDES_PATH):
-            if IsVisualStudio(self.BuildPlatform):
+        for p in SplitList_(self.PLATFORM_INCLUDES_PATH, PATH_SEPERATOR_):
+            if IsVisualStudio_(self.BuildPlatform):
                 # cl takes / or \ in a filename, and a name holding spaces only in double quotes - so C:/foo, in double quotes
                 # (https://learn.microsoft.com/en-us/cpp/build/reference/cl-filename-syntax?view=msvc-170)
-                includes.append('-I"' + Trim(Backtick(["cygpath", "--mixed", p])[0]) + '"')
+                includes.append('-I"' + Backtick_(["cygpath", "--mixed", p])[0].strip() + '"')
             else:
                 includes.append("-I" + p)
         self.PLATFORM_CPPFLAGS_INCLUDES = " ".join(includes)
 
 
-def ConfigurationMkText(c):
+def ConfigurationMkText_(c):
     out = []
     w = out.append
 
@@ -201,7 +192,7 @@ def ConfigurationMkText(c):
     w("\n\n")
     w("#Script to map filenames to native format (for windows)\n")
     w('##\tEG USE AS:   CPPFLAGS += -I"$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${StroikaRoot})/Builds..."\n')
-    if IsVisualStudio(c.BuildPlatform):
+    if IsVisualStudio_(c.BuildPlatform):
         w("FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=$(shell cygpath --ignore --mixed $1)\n")
         w("FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=$(shell cygpath --ignore --mixed $1)\n")
     else:
@@ -223,7 +214,7 @@ def ConfigurationMkText(c):
         CachedLineItem(vn)
     w("\n")
     w("\n")
-    if IsVisualStudio(c.BuildPlatform):
+    if IsVisualStudio_(c.BuildPlatform):
         w("\n")
         w("##\n")
         w("##\n")
@@ -243,90 +234,90 @@ def ConfigurationMkText(c):
             w("WIN_USE_PROGRAM_DATABASE=1\n")
         w("\n")
         w("\n")
-    w("OUT_ARG_PREFIX_NATIVE := -OUT:\n" if IsVisualStudio(c.BuildPlatform) else "OUT_ARG_PREFIX_NATIVE := -o \n")
+    w("OUT_ARG_PREFIX_NATIVE := -OUT:\n" if IsVisualStudio_(c.BuildPlatform) else "OUT_ARG_PREFIX_NATIVE := -o \n")
     w("\n")
     return "".join(out)
 
 
-def PkgConfigWords(c, which):
+def PkgConfigWords_(c, which):
     """
     The words of pkg-config WHICH (--cflags-only-I / --cflags-only-other) for the configuration's Foundation packages - those
     the configuration built itself, in Builds/CONFIGURATION/lib/pkgconfig, or else the system's; nothing if any is missing.
     So nothing before the third-party components are built: make re-applies the .vscode entry as that directory changes.
     """
-    if Trim(c.Foundation_PkgConfigNames) == "":
+    if c.Foundation_PkgConfigNames.strip() == "":
         return []
-    pcDir = os.path.normpath(os.path.join(THIS_DIR, "..", "..", "Builds", c.name, "lib", "pkgconfig"))
+    pcDir = os.path.normpath(os.path.join(THIS_DIR_, "..", "..", "Builds", c.name, "lib", "pkgconfig"))
     if sys.platform == "win32":  # pkg-config is MSYS2's or Cygwin's, which splits PKG_CONFIG_PATH on ':'
-        pcDir = Trim(Backtick(["cygpath", "--unix", pcDir])[0])
-    out, _ = Backtick(["pkg-config", which] + c.Foundation_PkgConfigNames.split(), env=dict(os.environ, PKG_CONFIG_PATH=pcDir))
+        pcDir = Backtick_(["cygpath", "--unix", pcDir])[0].strip()
+    out, _ = Backtick_(["pkg-config", which] + c.Foundation_PkgConfigNames.split(), env=dict(os.environ, PKG_CONFIG_PATH=pcDir))
     return out.split()
 
 
-def AppendPkgConfigIncludes(c, paths):
+def AppendPkgConfigIncludes_(c, paths):
     """paths, with each -I directory pkg-config gives for the configuration's packages that paths does not already name"""
-    dirs = [e[2:] for e in PkgConfigWords(c, "--cflags-only-I") if e.startswith("-I") and len(e) > 2]
-    if IS_WINDOWS_HOST and dirs:
-        dirs = Backtick(["cygpath", "--mixed"] + dirs)[0].splitlines()  # (which also folds a .pc's ${pcfiledir}/../..)
-    elif not IS_WINDOWS_HOST:
+    dirs = [e[2:] for e in PkgConfigWords_(c, "--cflags-only-I") if e.startswith("-I") and len(e) > 2]
+    if IS_WINDOWS_HOST_ and dirs:
+        dirs = Backtick_(["cygpath", "--mixed"] + dirs)[0].splitlines()  # (which also folds a .pc's ${pcfiledir}/../..)
+    elif not IS_WINDOWS_HOST_:
         dirs = [os.path.normpath(d) for d in dirs]
-    Key = lambda p: p.rstrip("/\\").lower() if IS_WINDOWS_HOST else p.rstrip("/")  # noqa: E731
+    Key = lambda p: p.rstrip("/\\").lower() if IS_WINDOWS_HOST_ else p.rstrip("/")  # noqa: E731
     seen = {Key(p) for p in paths}
     for d in dirs:
-        if Trim(d) != "" and Key(d) not in seen:
+        if d.strip() != "" and Key(d) not in seen:
             seen.add(Key(d))
             paths.append(d)
     return paths
 
 
-def MapArraysOfFiles2Path(conditionalPaths, backupPaths):
+def MapArraysOfFiles2Path_(conditionalPaths, backupPaths):
     """The Windows form of each of conditionalPaths that exists (or, if none does, of each of backupPaths), each once"""
     result = []
-    for f in [f for f in conditionalPaths if PosixPathExists(f)] or backupPaths:
-        w = Trim(Backtick(["cygpath", "--windows", f])[0])
+    for f in [f for f in conditionalPaths if PosixPathExists_(f)] or backupPaths:
+        w = Backtick_(["cygpath", "--windows", f])[0].strip()
         if w.lower() not in (r.lower() for r in result):
             result.append(w)
     return ";".join(result)
 
 
-def GetMSYSPathVar2Add():
+def GetMSYSPathVar2Add_():
     # GUESS directory for MSYS - the running one's first
     backup = ["c:/tools/msys64/usr/bin", "c:/tools/msys32/usr/bin", "c:/tools/msys64/mingw64/bin", "c:/msys/usr/bin", "c:/msys64/usr/bin",
               "c:/msys64/mingw64/bin"]
-    return MapArraysOfFiles2Path((["/usr/bin"] if IS_MSYS_HOST else []) + backup, backup)
+    return MapArraysOfFiles2Path_((["/usr/bin"] if IS_MSYS_HOST_ else []) + backup, backup)
 
 
-def GetCygwinPathVar2Add():
+def GetCygwinPathVar2Add_():
     backup = ["c:/tools/cygwin/bin", "c:/cygwin/bin", "c:/cygwin64/bin", "c:/cygwin32/bin"]
-    return MapArraysOfFiles2Path((["/usr/bin"] if IS_WINDOWS_HOST and not IS_MSYS_HOST else []) + backup, backup)
+    return MapArraysOfFiles2Path_((["/usr/bin"] if IS_WINDOWS_HOST_ and not IS_MSYS_HOST_ else []) + backup, backup)
 
 
-PROPS_START = "<PropertyGroup Condition="
-PROPS_KEY_PREFIX = "  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='"
+PROPS_START_ = "<PropertyGroup Condition="
+PROPS_KEY_PREFIX_ = "  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='"
 
 
-def ReadPropsEntries(text):
+def ReadPropsEntries_(text):
     """The .props file's per-configuration PropertyGroups: {configuration: its lines}, in file order"""
     entries = {}
     extracting = ""
     for line in re.split(r"(?<=\n)", text):
         if line == "":
             continue
-        if PROPS_START not in line:
+        if PROPS_START_ not in line:
             if extracting != "":
                 entries[extracting] += line
             if "</PropertyGroup>" in line:
                 extracting = ""
         else:
-            k = line[len(PROPS_KEY_PREFIX):]
-            k = k[:k.find("|")] if "|" in k else k[:-1]  # (as Perl's substr with -1: all but the last character)
+            k = line[len(PROPS_KEY_PREFIX_):]
+            k = k[:k.find("|")] if "|" in k else k[:-1]  # (with no |, all but its last character)
             extracting = k
             entries[k] = line
     return entries
 
 
-def VSIntellisenseText(c, existingText):
-    entries = ReadPropsEntries(existingText)
+def VSIntellisenseText_(c, existingText):
+    entries = ReadPropsEntries_(existingText)
     out = []
     w = out.append
     w("<!--\n")
@@ -338,23 +329,23 @@ def VSIntellisenseText(c, existingText):
     w("\n")
     w("\n")
     w('<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" TreatAsLocalProperty="Platform">\n')
-    # the other configurations' entries, sorted (the Perl wrote them in its hash order - a different one each run)
+    # the other configurations' entries, sorted - so the file is the same from run to run
     for k in sorted(entries):
         if k != c.name:
             w(entries[k])
     w("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='" + c.name + "|Win32'\">\n")
     defs = [e[2:] for e in c.CPPFLAGS_NOTINCLUDES.split(" ") if e.startswith("-D")]
-    defs += [Trim(e[2:]) for e in PkgConfigWords(c, "--cflags-only-other") if e.startswith("-D")]
+    defs += [e[2:].strip() for e in PkgConfigWords_(c, "--cflags-only-other") if e.startswith("-D")]
     w("    <NMakePreprocessorDefinitions>" + ";".join(defs) + "</NMakePreprocessorDefinitions>\n")
-    paths = AppendPkgConfigIncludes(
-        c, PerlSplit(PATH_SEPERATOR, c.FOUNDATION_INCLUDES_PATH + PATH_SEPERATOR + c.PLATFORM_INCLUDES_PATH))
+    paths = AppendPkgConfigIncludes_(
+        c, SplitList_(c.FOUNDATION_INCLUDES_PATH + PATH_SEPERATOR_ + c.PLATFORM_INCLUDES_PATH, PATH_SEPERATOR_))
     w("    <NMakeIncludeSearchPath>" + ";".join(paths) + "</NMakeIncludeSearchPath>\n")
     w("  </PropertyGroup>\n")
     # configuration variables, so Visual Studio can run the MSYS or Cygwin make without the user adding it to a path - the
     # one this runs under first. StroikaBuildToolsExtraPath augments ExecutablePath in the .vcproj files, so the make uses
     # the right path
-    hostStkBuildPath, otherStkBuildPath = GetMSYSPathVar2Add(), GetCygwinPathVar2Add()
-    if not IS_MSYS_HOST:
+    hostStkBuildPath, otherStkBuildPath = GetMSYSPathVar2Add_(), GetCygwinPathVar2Add_()
+    if not IS_MSYS_HOST_:
         hostStkBuildPath, otherStkBuildPath = otherStkBuildPath, hostStkBuildPath
     w("\n")
     w('  <PropertyGroup Label="UserMacros">\n')
@@ -377,12 +368,12 @@ def VSIntellisenseText(c, existingText):
     return "".join(out)
 
 
-def ToFullPathEXE(exe):
-    out, rc = Backtick(["which", exe])
-    return exe if rc != 0 else Trim(out)
+def ToFullPathEXE_(exe):
+    out, rc = Backtick_(["which", exe])
+    return exe if rc != 0 else out.strip()
 
 
-def MSVCLatestCppStandard(compiler):
+def MSVCLatestCppStandard_(compiler):
     """
     The IntelliSense cppStandard for MSVC's -std:c++latest - a newer draft with each MSVC - asked of the compiler itself: the
     latest finished standard at or below the _MSVC_LANG it reports, never a draft. Without an answer (the compiler is not on
@@ -394,7 +385,7 @@ def MSVCLatestCppStandard(compiler):
                 f.write("_MSVC_LANG\n")
             p = subprocess.run([compiler, "/nologo", "/std:c++latest", "/EP", "probe.cpp"], cwd=d, stdout=subprocess.PIPE,
                                stderr=subprocess.DEVNULL, timeout=60)
-        m = re.search(r"\b(\d{6})L\b", p.stdout.decode(ENC, errors="replace"))
+        m = re.search(r"\b(\d{6})L\b", p.stdout.decode(ENC_, errors="replace"))
         if p.returncode == 0 and m:
             for value, name in ((202302, "c++23"), (202002, "c++20")):
                 if int(m.group(1)) >= value:
@@ -404,16 +395,16 @@ def MSVCLatestCppStandard(compiler):
     return "c++23"
 
 
-def IntelliSenseModeFor(c, compilerDriver):
+def IntelliSenseModeFor_(c, compilerDriver):
     """
     (compiler, ARCH, host) as the VS Code C/C++ extension's intelliSenseMode: <os>-<toolset>-<arch>, os windows|linux|macos,
     toolset msvc|gcc|clang, arch x86|x64|arm|arm64 (not Stroika's x86_64). Without a VALID one the extension configures no
     IntelliSense at all, silently - left to itself it wrote "None", which is not one (found 2026-09-22).
     """
-    os_ = "macos" if IS_MACOS_HOST else ("windows" if IS_WINDOWS_HOST else "linux")
+    os_ = "macos" if IS_MACOS_HOST_ else ("windows" if IS_WINDOWS_HOST_ else "linux")
     lc = compilerDriver.lower()
     toolSet = "msvc" if "cl.exe" in lc else ("clang" if "clang" in lc else "gcc")
-    arch = Trim(c.G("ARCH"))
+    arch = c.G("ARCH").strip()
     if arch == "" or arch == "x86_64":
         arch = "x64"
     elif arch == "aarch64":
@@ -423,19 +414,19 @@ def IntelliSenseModeFor(c, compilerDriver):
     return os_ + "-" + toolSet + "-" + arch
 
 
-_jqNewline = None
+jqNewline_ = None
 
 
-def JQPretty(doc):
+def JQPretty_(doc):
     """What jq prints for doc - with the line ending of the jq on PATH: CRLF from a native Windows one (MINGW's jq.exe)"""
-    global _jqNewline
-    if _jqNewline is None:
-        _jqNewline = "\r\n" if "\r\n" in Backtick(["jq", "-n", "[1]"])[0] else "\n"
-    return (json.dumps(doc, indent=2, ensure_ascii=False) + "\n").replace("\n", _jqNewline)
+    global jqNewline_
+    if jqNewline_ is None:
+        jqNewline_ = "\r\n" if "\r\n" in Backtick_(["jq", "-n", "[1]"])[0] else "\n"
+    return (json.dumps(doc, indent=2, ensure_ascii=False) + "\n").replace("\n", jqNewline_)
 
 
-def VSCodeText(c, existingText):
-    """The new .vscode/c_cpp_properties.json, given the old (None if there is none) - as the Perl's jq edits made it"""
+def VSCodeText_(c, existingText):
+    """The new .vscode/c_cpp_properties.json, given the old (None if there is none)"""
     EMPTY = '{"configurations":[]}\n'
     text = EMPTY if existingText is None else existingText
     try:
@@ -444,7 +435,7 @@ def VSCodeText(c, existingText):
             raise ValueError
     except ValueError:
         doc = json.loads(EMPTY)
-    # myDefaultIncludePath, if missing (an .env that is not an object makes jq fail, and the Perl then left it). Empty: the
+    # myDefaultIncludePath, if missing (an .env that is not an object is left as it is). Empty: the
     # project's own include directories, for it to add. NOT ${workspaceFolder}: IntelliSense searches includePath for <...>
     # includes too, so it would take a Skel app's root VERSION file for <version> (case-insensitive on Windows)
     env = doc.get("env") if isinstance(doc, dict) else None
@@ -459,7 +450,7 @@ def VSCodeText(c, existingText):
         if isinstance(e, dict) and e.get("name") == c.name:
             index = i
 
-    # cppStandard: from the flags, as the Perl read them
+    # cppStandard: from the flags' --std= or -std: (the last word, if one holds more)
     std = "c++17"
     l = c.CXXFLAGS.find("--std=")
     if l != -1:
@@ -472,19 +463,19 @@ def VSCodeText(c, existingText):
     if std == "c++2a":
         std = "c++20"
     elif std == "c++latest":
-        std = MSVCLatestCppStandard(c.COMPILER_DRIVER_CPlusPlus)
+        std = MSVCLatestCppStandard_(c.COMPILER_DRIVER_CPlusPlus)
 
-    includes = AppendPkgConfigIncludes(
-        c, ["${myDefaultIncludePath}"] + PerlSplit(PATH_SEPERATOR, c.FOUNDATION_INCLUDES_PATH + PATH_SEPERATOR + c.PLATFORM_INCLUDES_PATH))
+    includes = AppendPkgConfigIncludes_(
+        c, ["${myDefaultIncludePath}"] + SplitList_(c.FOUNDATION_INCLUDES_PATH + PATH_SEPERATOR_ + c.PLATFORM_INCLUDES_PATH, PATH_SEPERATOR_))
     defines = [e[2:] for e in c.CPPFLAGS_NOTINCLUDES.split(" ") if e.startswith("-D")]
-    defines += [Trim(e[2:]) for e in PkgConfigWords(c, "--cflags-only-other") if e.startswith("-D")]
+    defines += [e[2:].strip() for e in PkgConfigWords_(c, "--cflags-only-other") if e.startswith("-D")]
     newCfg = {
         "name": c.name,
         "cppStandard": std,
         "includePath": includes,
         "defines": defines,
-        "compilerPath": ToFullPathEXE(c.COMPILER_DRIVER_CPlusPlus),
-        "intelliSenseMode": IntelliSenseModeFor(c, c.COMPILER_DRIVER_CPlusPlus),
+        "compilerPath": ToFullPathEXE_(c.COMPILER_DRIVER_CPlusPlus),
+        "intelliSenseMode": IntelliSenseModeFor_(c, c.COMPILER_DRIVER_CPlusPlus),
     }
     if index == len(configs):
         configs.append(newCfg)
@@ -496,10 +487,10 @@ def VSCodeText(c, existingText):
         name = e.get("name") if isinstance(e, dict) else None
         return name.translate(str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")) if isinstance(name, str) else ""
     doc["configurations"] = sorted(configs, key=SortKey)
-    return JQPretty(doc)
+    return JQPretty_(doc)
 
 
-def ReadText(path, encoding):
+def ReadText_(path, encoding):
     try:
         with open(path, "rb") as f:
             return f.read().decode(encoding)
@@ -507,13 +498,13 @@ def ReadText(path, encoding):
         return None
 
 
-def WriteBytes(path, data):
+def WriteBytes_(path, data):
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path, "wb") as f:
         f.write(data)
 
 
-def Main(argv):
+def Main_(argv):
     genVSCode = genConfigMake = genVSIntellisense = True
     activeConfiguration = None
     for var in argv:
@@ -529,40 +520,40 @@ def Main(argv):
         else:
             activeConfiguration = var
     if activeConfiguration is None:
-        Die("Missing argument configuration\n")
+        Die_("Missing argument configuration\n")
 
     leader = "   " * (int(os.environ.get("MAKE_INDENT_LEVEL", "0") or "0") + 1)  # Build/Scripts/PrintLevelLeader's output
-    configMk = INTERMEDIATE_FILES + activeConfiguration + "/Configuration.mk"
-    c = Config(activeConfiguration)
-    genVSIntellisense = genVSIntellisense and IsVisualStudio(c.BuildPlatform)
-    jqInstalled = Trim(Backtick(["which", "jq"])[0]) != ""  # (the Perl used jq to edit the .vscode file, and skipped it without)
+    configMk = INTERMEDIATE_FILES_ + activeConfiguration + "/Configuration.mk"
+    c = Config_(activeConfiguration)
+    genVSIntellisense = genVSIntellisense and IsVisualStudio_(c.BuildPlatform)
+    jqInstalled = Backtick_(["which", "jq"])[0].strip() != ""  # (without jq, the .vscode file is left alone)
 
     if genConfigMake:
         if os.path.exists(configMk):
             os.remove(configMk)
-        os.makedirs(INTERMEDIATE_FILES + activeConfiguration + "/Library", exist_ok=True)
+        os.makedirs(INTERMEDIATE_FILES_ + activeConfiguration + "/Library", exist_ok=True)
         sys.stdout.write(leader + 'Writing "' + configMk + '" ... ')
         sys.stdout.flush()
-        WriteBytes(configMk, ConfigurationMkText(c).encode(ENC))
+        WriteBytes_(configMk, ConfigurationMkText_(c).encode(ENC_))
         sys.stdout.write("done\n")
         sys.stdout.write(leader)
         sys.stdout.flush()
-        # THIS_DIR is in the path form sys.executable takes (a POSIX python3 takes a C:/... path as relative)
-        rc = subprocess.call([sys.executable, os.path.join(THIS_DIR, "CreatePackageConfigFiles"), "--configuration", activeConfiguration])
+        # THIS_DIR_ is in the path form sys.executable takes (a POSIX python3 takes a C:/... path as relative)
+        rc = subprocess.call([sys.executable, os.path.join(THIS_DIR_, "CreatePackageConfigFiles"), "--configuration", activeConfiguration])
         if rc != 0:
-            Die("Error running CreatePackageConfigFiles --configuration " + activeConfiguration + " - exiting\n", rc & 0xFF or 255)
+            Die_("Error running CreatePackageConfigFiles --configuration " + activeConfiguration + " - exiting\n", rc & 0xFF or 255)
     if genVSIntellisense:
-        sys.stdout.write(leader + 'Updating "' + VS_INTELLISENSE_FILE + '" ... ')
-        WriteBytes(VS_INTELLISENSE_FILE, VSIntellisenseText(c, ReadText(VS_INTELLISENSE_FILE, "utf-8") or "").encode("utf-8"))
+        sys.stdout.write(leader + 'Updating "' + VS_INTELLISENSE_FILE_ + '" ... ')
+        WriteBytes_(VS_INTELLISENSE_FILE_, VSIntellisenseText_(c, ReadText_(VS_INTELLISENSE_FILE_, "utf-8") or "").encode("utf-8"))
         sys.stdout.write("done\n")
     if genVSCode:
-        sys.stdout.write(leader + "Updating configuration " + activeConfiguration + ' in "' + VSCODE_CPP_FILE + '" ... ')
+        sys.stdout.write(leader + "Updating configuration " + activeConfiguration + ' in "' + VSCODE_CPP_FILE_ + '" ... ')
         if jqInstalled:
-            WriteBytes(VSCODE_CPP_FILE, VSCodeText(c, ReadText(VSCODE_CPP_FILE, "utf-8")).encode("utf-8"))
+            WriteBytes_(VSCODE_CPP_FILE_, VSCodeText_(c, ReadText_(VSCODE_CPP_FILE_, "utf-8")).encode("utf-8"))
         else:
             sys.stdout.write("SKIPPED SINCE jq not installed ... ")
         sys.stdout.write("done\n")
     sys.stdout.flush()
 
 
-Main(sys.argv[1:])
+Main_(sys.argv[1:])

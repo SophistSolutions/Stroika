@@ -33,112 +33,78 @@ import subprocess
 import sys
 import tempfile
 
-ENC = "latin-1"  # bytes in, the same bytes out - as the Perl reads and writes them
-
-# Perl's true and false, as they print - 1 and 0
-true = 1
-false = 0
-DEFAULT_BOOL_OPTIONS = -1
+# Text in and out is UTF-8, and a byte that is not stays as it is: what was given (on the command line, or by a tool run here)
+# reaches the configuration file unchanged
+ENCODING_ = "utf-8"
+ENCODING_ERRORS_ = "surrogateescape"
 
 #
-# BUILD iff LIBFEATUREFLAG_BuildOnly OR LIBFEATUREFLAG_UseStaticTPP
-# HAS_FEATURE iff LIBFEATUREFLAG_UseStaticTPP OR LIBFEATUREFLAG_UseSystem
+# BUILD iff LIBFEATUREFLAG_BuildOnly_ OR LIBFEATUREFLAG_UseStaticTPP_
+# HAS_FEATURE iff LIBFEATUREFLAG_UseStaticTPP_ OR LIBFEATUREFLAG_UseSystem_
 #
-LIBFEATUREFLAG_BuildOnly = "build-only"
-LIBFEATUREFLAG_UseStaticTPP = "use"
-LIBFEATUREFLAG_UseSystem = "use-system"
-LIBFEATUREFLAG_No = "no"
+LIBFEATUREFLAG_BuildOnly_ = "build-only"
+LIBFEATUREFLAG_UseStaticTPP_ = "use"
+LIBFEATUREFLAG_UseSystem_ = "use-system"
+LIBFEATUREFLAG_No_ = "no"
+
+IS_WINDOWS_HOST_ = sys.platform in ("win32", "msys") or sys.platform.startswith("cygwin")  # a native Windows, MSYS2 or Cygwin python
+IS_LINUX_HOST_ = sys.platform.startswith("linux")
+IS_MACOS_HOST_ = sys.platform == "darwin"
 
 
-class PerlDie(Exception):
-    """Perl's die: the message goes to stderr, and the exit status is 255"""
+class ConfigureError_(Exception):
+    """configure fails: the message goes to stderr, and the exit status is 1"""
 
 
-class PerlExit(Exception):
+class Exit_(Exception):
+    """configure stops, with this exit status - after --help, say"""
+
     def __init__(self, status):
         Exception.__init__(self, status)
         self.status = status
 
 
-def Die(msg):
-    raise PerlDie(msg)
+def Die_(msg):
+    raise ConfigureError_(msg)
 
 
-def S(v):
-    """A value in a Perl string context: undef is ""; a number prints as Perl prints it"""
-    if v is None:
-        return ""
-    if isinstance(v, bool):
-        return "1" if v else ""
-    if isinstance(v, float):
-        return str(int(v)) if v.is_integer() and abs(v) < 1e15 else "%.15g" % v
-    return str(v)
+def Decode_(b):
+    return b.decode(ENCODING_, ENCODING_ERRORS_)
 
 
-def XMLText(v):
-    """v (as S () gives it), escaped as an XML element's text"""
-    return S(v).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+def XMLText_(v):
+    """v as the configuration file writes it - None as nothing, a bool as 1 or 0 - escaped as an XML element's text"""
+    s = "" if v is None else ("1" if v else "0") if isinstance(v, bool) else str(v)
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def XMLComment(v):
-    """v (as S () gives it), as the text of an XML comment - which cannot hold '--', nor end with '-'"""
-    s = S(v).replace("--", "- -")
+def XMLComment_(s):
+    """s as the text of an XML comment - which cannot hold '--', nor end with '-'"""
+    s = s.replace("--", "- -")
     return s + " " if s.endswith("-") else s
 
 
-_NUM_RE = re.compile(r"[ \t\n\r\f\v]*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)")
+def Bit_(b):
+    """b - True, False or None (unset, so off) - as a define's 1 or 0"""
+    return "1" if b else "0"
 
 
-def N(v):
-    """A value in a Perl numeric context: a string's leading number, else 0"""
-    if v is None:
-        return 0
-    if isinstance(v, (bool, int, float)):
-        return v
-    m = _NUM_RE.match(v)
-    if not m:
-        return 0
-    t = m.group(1)
-    return float(t) if any(c in t for c in ".eE") else int(t)
+def SplitList_(s, sep):
+    """s, a sep-separated list, as a list - its empty items dropped"""
+    return [i for i in s.split(sep) if i != ""]
 
 
-def Trim(s):
-    if s is None:
-        return None
-    return s.strip(" \t\n\r\f\v")  # Perl's \s - not str.strip ()'s wider whitespace
-
-
-def PerlSplit(sep, s):
-    """Perl's split /SEP/ on a one-character literal separator: empty input gives nothing; trailing empty fields go"""
-    if s is None or s == "":
-        return []
-    parts = s.split(sep)
-    while parts and parts[-1] == "":
-        parts.pop()
-    return parts
-
-
-def PerlOS():
-    """What Perl's $^O says on this host: on Windows "cygwin" - MSYS2's perl says so too, not "msys" """
-    if sys.platform in ("win32", "msys") or sys.platform.startswith("cygwin"):
-        return "cygwin"
-    return sys.platform  # 'linux', 'darwin', ...
-
-
-PERL_OS = PerlOS()
-IS_WINDOWS_HOST = PERL_OS in ("cygwin", "msys")
-
-
-def Env(name):
-    """$ENV{name}: case-sensitive, as Perl's is - a native Windows Python's os.environ upper-cases every name"""
+def Env_(name):
+    """The environment variable name, or None: case-sensitive - a native Windows Python's os.environ upper-cases every name, so
+    would take Visual Studio's Platform for PLATFORM, say"""
     if sys.platform == "win32":
         import nt
         return nt.environ.get(name)
     return os.environ.get(name)
 
 
-def ChildEnv(drop=()):
-    """The environment, with its names' case kept (see Env), less the names in drop, for a child process"""
+def ChildEnv_(drop=()):
+    """The environment, with its names' case kept (see Env_), less the names in drop, for a child process"""
     if sys.platform == "win32":
         import nt
         env = dict(nt.environ)
@@ -152,23 +118,22 @@ def ChildEnv(drop=()):
     return env
 
 
-def ToPosixPathForTest(p):
+def ToPosixPathForTest_(p):
     """A POSIX path (/c/..., /usr/...), as a native Windows Python must spell it to look at the file"""
     if sys.platform == "win32" and p.startswith("/"):
         r = subprocess.run(["cygpath", "--mixed", p], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        return Trim(r.stdout.decode(ENC))
+        return Decode_(r.stdout).strip()
     return p
 
 
-def PerlExists(p):
-    """Perl's -e"""
-    return p is not None and p != "" and os.path.exists(ToPosixPathForTest(p))
+def PathExists_(p):
+    return p is not None and p != "" and os.path.exists(ToPosixPathForTest_(p))
 
 
-def PerlGlob(pattern):
+def Glob_(pattern):
     """
-    Perl's glob/bsd_glob of a POSIX path pattern: the matches, in GLOB_ALPHASORT order (case folded first), each spelled
-    as the pattern spells its directories. A native Windows Python globs the C:/ form of the pattern, and gives back that.
+    The matches of a POSIX path pattern, sorted case-insensitively, each spelled as the pattern spells its directories. A
+    native Windows Python globs the C:/ form of the pattern, and gives back that.
     """
     native = pattern
     if sys.platform == "win32":
@@ -176,24 +141,24 @@ def PerlGlob(pattern):
         parts = pattern.split("/")
         k = next((i for i, p in enumerate(parts) if any(ch in p for ch in "*?[")), len(parts))
         rest = "/".join(parts[k:])
-        native = ToPosixPathForTest("/".join(parts[:k]) or "/").rstrip("/") + ("/" + rest if rest else "")
+        native = ToPosixPathForTest_("/".join(parts[:k]) or "/").rstrip("/") + ("/" + rest if rest else "")
     results = glob.glob(native)
     if sys.platform == "win32":
         results = [r.replace("\\", "/") for r in results]
     return sorted(results, key=lambda r: (r.lower(), r))
 
 
-class Configure:
+class Configure_:
     def __init__(self, argv):
         self.ARGV = list(argv)
         self.cache_ = {}
         self.configurationFiles = "ConfigurationFiles/"
         self.configurationName = None
-        self.MAKE_INDENT_LEVEL = Env("MAKE_INDENT_LEVEL")
-        if self.MAKE_INDENT_LEVEL is None:
-            self.MAKE_INDENT_LEVEL = 0
-        self.PATH_SEPERATOR = ";" if IS_WINDOWS_HOST else ":"
+        indentLevel = Env_("MAKE_INDENT_LEVEL") or ""
+        self.MAKE_INDENT_LEVEL = int(indentLevel) if indentLevel.isdigit() else 0
+        self.PATH_SEPERATOR = ";" if IS_WINDOWS_HOST_ else ":"
         self.EXTRA_ARGS = []
+        self.options_ = []  # the command line's options, as [(Option_, value)]
 
         self.ARCH = ""
         self.BuildToolsRoot = None
@@ -210,35 +175,37 @@ class Configure:
         self.foundationPackageCfgNames = []
         self.Platform_CPPFLAGS_B4Includes = []  # anything called --append CPPFLAGS here! - not including STK_INCLUDES
         self.CPPFLAGS2Remove = []
-        self.CPPFLAGS_Overridden = false
+        self.CPPFLAGS_Overridden = False
         self.StroikaFoundation_CPPFLAGS_B4Includes = []
         self.CFLAGS = []
         self.CFLAGS2Remove = []
-        self.CFLAGS_Overridden = false
+        self.CFLAGS_Overridden = False
         self.CXXFLAGS = []
         self.CXXFLAGS2Append = []
         self.CXXFLAGS2Remove = []
-        self.CXXFLAGS_Overridden = false
+        self.CXXFLAGS_Overridden = False
 
-        self.ENABLE_LTO = DEFAULT_BOOL_OPTIONS
-        self.ENABLE_LTO_SetExplicitly = false  # --lto given on the command line, so the sanitizer reconciliation must not override it
-        self.gLTODefaultedOffForNoLLD = false  # the release defaults turned LTO off because this clang has no lld - NOTEd in PostProcessOptions_
-        self.gUbuntu2404OptimizedNoLTOHazard = false  # set by ApplyCompilerBugWorkarounds_; see there. Read again at config-generation time
-        self.gAssertionsEnabled = DEFAULT_BOOL_OPTIONS
-        self.ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS
+        # The tri-state settings - ENABLE_LTO, gAssertionsEnabled, and the others set to None here - are True, False, or None:
+        # not given, so the configuration's default (which may depend on the compiler, or the debug or release flags)
+        self.ENABLE_LTO = None
+        self.ENABLE_LTO_SetExplicitly = False  # --lto given on the command line, so the sanitizer reconciliation must not override it
+        self.gLTODefaultedOffForNoLLD = False  # the release defaults turned LTO off because this clang has no lld - NOTEd in PostProcessOptions_
+        self.gUbuntu2404OptimizedNoLTOHazard = False  # set by ApplyCompilerBugWorkarounds_; see there. Read again at config-generation time
+        self.gAssertionsEnabled = None
+        self.ENABLE_GLIBCXX_DEBUG = None
         self.MACOSX_DEPLOYMENT_TARGET = None
         self.CPPSTD_VERSION_FLAG = ""
         self.CXXWARNING_FLAGS = None
         # gcc visibility flag - -fvisibility=hidden (see https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html for explanation)
         self.SharedSymbolVisibility = None
-        self.runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS
-        self.sanitizerFlagsIsDefined = false
-        self.sanitizerFlagsNoneSet = false
+        self.runtimeStackProtectorFlag = None
+        self.sanitizerFlagsIsDefined = False
+        self.sanitizerFlagsNoneSet = False
         self.sanitizerFlags = []
         self.noSanitizerFlags = []
-        self.autoIncludeTSAN_OPTIONSIfAppropriate = true
-        self.ApplyDebugFlags = DEFAULT_BOOL_OPTIONS
-        self.ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS
+        self.autoIncludeTSAN_OPTIONSIfAppropriate = True
+        self.ApplyDebugFlags = False
+        self.ApplyReleaseFlags = False
 
         # @todo finish review of what warnings we still want - disable a few more... --LGP 2019-08-29
         # FOR COMMON ONES - SEE IF THEY SHOULD REALLY BE GCC SPECIFIC
@@ -270,16 +237,15 @@ class Configure:
         self.FEATUREFLAG_libxml2 = None
         self.FEATUREFLAG_ZLib = None
         self.FEATUREFLAG_zstd = None
-        self.TargettingValgrind = None
-        self.qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = None
+        self.TargettingValgrind = False
+        self.qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = False
         self.qCompiler_HasNoMisleadingIndentation_Flag = None
-        self.ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS
-        self.INCLUDE_SYMBOLS_LIB = true
-        self.INCLUDE_SYMBOLS_EXE = DEFAULT_BOOL_OPTIONS
-        self.MALLOC_GUARD = DEFAULT_BOOL_OPTIONS
+        self.ENABLE_TRACE2FILE = None
+        self.INCLUDE_SYMBOLS_LIB = True
+        self.INCLUDE_SYMBOLS_EXE = None
+        self.MALLOC_GUARD = None
         self.COPTIMIZE_FLAGS = ""
-        self.STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS
-        self.STATIC_LINK_SANITIZERS = DEFAULT_BOOL_OPTIONS
+        self.STATIC_LINK_GCCRUNTIME = None
         self.COMPILER_DRIVER = ""
         self.COMPILER_DRIVER_C = ""  # @todo allow cmdline option to set _C or _CPlusPlus version
         self.COMPILER_DRIVER_CPlusPlus = ""
@@ -296,40 +262,40 @@ class Configure:
         self.LinkerArgs_ExtraSuffix = ""
         self.RunPrefix = ""  # for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
         self.CrossCompiling = "false"
-        self.onlyGenerateIfCompilerExists = false  # Looks for BOTH compiler and assocaited stdlib if std=libc++
+        self.onlyGenerateIfCompilerExists = False  # Looks for BOTH compiler and assocaited stdlib if std=libc++
         self.VC_PLATFORM_INCLUDES_PATH = []
         self.PLATFORM_INCLUDES_PATH = []
         self.FOUNDATION_INCLUDES_PATH = []
-        self.INCLUDES_PATH_SET = false
+        self.INCLUDES_PATH_SET = False
         self.INCLUDES_PATH_ADD = []
         self.LinkerArgs_LibPath = []
-        self.LinkerArgs_LibPath_SET = false
+        self.LinkerArgs_LibPath_SET = False
         self.LinkerArgs_LibPath_ADD = []
         self.LinkTime_CopyFilesToEXEDir = []
         self.LinkerArgs_LibDependencies = None  # space separated list
         self.LinkerArgs_LibDependencies_ADD = []
         self.STDCXXLIB = None
         self.TOOLS_PATH_ADDITIONS = None
-        self.lsb_release = Trim(self.Backtick("lsb_release -rs 2>/dev/null"))
+        self.lsb_release = self.Backtick("lsb_release -rs 2>/dev/null").strip()
         self.DoSetThirdPartyComponentsParameterFromCommandLine = "fill-in-defaults"
-        self.sMongoArmhfAsanNoted_ = false
+        self.sMongoArmhfAsanNoted_ = False
 
         # More standard to have false, true is the value used in VS2k project files (through 2.1a2)
         # for a while in Stroika based apps /EHa versus /EHsc - https://docs.microsoft.com/en-us/cpp/build/reference/eh-exception-handling-model?view=vs-2019
         # So in Stroika 2.1a2 switch default to more standard (and recommended by MSFT docs above) no structured exceptions
-        self.Windows_Exceptions_SupportStructuredExceptions = false
+        self.Windows_Exceptions_SupportStructuredExceptions = False
 
         self.GetDefaultCZZFLAGS_flags_flags = []
         self.GetDefaultCZZFLAGS_flags_flagValues2Remove = []
         self.GetMSVCVarName_e_ = {}
-        self.GetMSVCVarName_filled_ = false
+        self.GetMSVCVarName_filled_ = False
 
-    # ---------------------------------------------------------------- running things, as Perl's `` and system () do
+    # ---------------------------------------------------------------- running things
 
     @staticmethod
     def Print(s, stream=None):
         stream = stream or sys.stdout
-        stream.buffer.write(s.encode(ENC))
+        stream.buffer.write(s.encode(ENCODING_, ENCODING_ERRORS_))
         stream.flush()
 
     def PrintErr(self, s):
@@ -337,24 +303,9 @@ class Configure:
             self.Print(s, sys.stderr)
 
     @staticmethod
-    def PerlCommandLine_(cmd):
-        """
-        How Perl runs a command given as one string (`cmd`, system (cmd)): through sh -c if it has a shell metacharacter, or
-        starts VAR= or 'exec ' or '. '; otherwise split on white space, and run directly - when no such program is found,
-        that prints nothing, where sh would say "command not found".
-        """
-        words = re.split(r"[ \t\n\r\f]+", cmd.strip(" \t\n\r\f"))
-        if (any(c in "$&*(){}[]'\";\\|?<>~`\n" for c in cmd) or re.match(r"[A-Za-z]*=", cmd.lstrip(" \t\n\r\f"))
-                or re.match(r"(exec|\.)[ \t\n\r\f]", cmd.lstrip(" \t\n\r\f")) or words == [""]):
-            return ["sh", "-c", cmd]
-        # through sh all the same - a native Windows Python cannot run a #! script itself - but silent when not found
-        return ["sh", "-c", 'command -v "$1" > /dev/null 2>&1 || exit 127; exec "$@"', "sh"] + words
-
-    def Backtick(self, cmd):
-        """Perl's `cmd`: its stdout; its stderr goes where the Perl's would (kept, here, with what this prints)"""
-        p = subprocess.run(self.PerlCommandLine_(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        self.PrintErr(p.stderr.decode(ENC))
-        return p.stdout.decode(ENC)
+    def Backtick(cmd):
+        """The stdout of the shell command cmd (sh -c cmd: a native Windows Python cannot run a #! script itself)"""
+        return Decode_(subprocess.run(["sh", "-c", cmd], stdout=subprocess.PIPE).stdout)
 
     def CachedBacktick(self, cmd):
         """Backtick, for a query whose answer cannot change during one run (a compiler's version, say)"""
@@ -362,37 +313,29 @@ class Configure:
             self.cache_[cmd] = self.Backtick(cmd)
         return self.cache_[cmd]
 
-    def System(self, cmd):
-        """Perl's system (cmd): its exit status, 0 meaning success"""
-        p = subprocess.run(self.PerlCommandLine_(cmd), stderr=subprocess.PIPE)
-        self.PrintErr(p.stderr.decode(ENC))
-        return p.returncode
+    @staticmethod
+    def System(cmd):
+        """The exit status of the shell command cmd, 0 meaning success"""
+        return subprocess.run(["sh", "-c", cmd]).returncode
 
-    def Cygpath(self, flags, paths, emptyGivesEmpty=False):
-        """
-        trim (`cygpath FLAGS "PATH"`) for each of paths, in one cygpath run. An empty path, which cygpath refuses, is given to
-        it alone, so it complains as the Perl's does - or, with emptyGivesEmpty, becomes "", as the Perl's toCygPath_ does.
-        If that one run fails, each path is given to cygpath alone, so the one it refuses complains.
-        """
-        if emptyGivesEmpty:
-            paths = [p if S(p) != "" else "" for p in paths]
-        results = ["" if (emptyGivesEmpty and p == "") else None for p in paths]
-        todo = [i for i, p in enumerate(paths) if results[i] is None and S(p) != ""]
+    @staticmethod
+    def Cygpath(flags, paths):
+        """cygpath FLAGS of each of paths, in one cygpath run; an empty path stays empty"""
+        todo = [p for p in paths if p != ""]
+        converted = []
         if todo:
-            p = subprocess.run(["cygpath"] + flags + [paths[i] for i in todo], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            lines = p.stdout.decode(ENC).split("\n")
-            if p.returncode == 0 and len(lines) >= len(todo) and not p.stderr:
-                for n, i in enumerate(todo):
-                    results[i] = Trim(lines[n])
-        for i, p in enumerate(paths):
-            if results[i] is None:
-                results[i] = Trim(self.Backtick('cygpath ' + " ".join(flags) + ' "' + S(p) + '"'))
-        return results
+            p = subprocess.run(["cygpath"] + flags + todo, stdout=subprocess.PIPE)
+            converted = Decode_(p.stdout).splitlines()
+            if p.returncode != 0 or len(converted) != len(todo):  # each alone, so one it refuses cannot shift the others
+                converted = [Decode_(subprocess.run(["cygpath"] + flags + [t], stdout=subprocess.PIPE).stdout) for t in todo]
+        results = iter(c.strip() for c in converted)
+        return [next(results) if p != "" else "" for p in paths]
 
-    def PrintLevelLeader(self, level):
-        return "   " * int(N(level))
+    @staticmethod
+    def PrintLevelLeader(level):
+        return "   " * level
 
-    # ---------------------------------------------------------------- the Perl's subs, in its order
+    # ---------------------------------------------------------------- working out the configuration
 
     def MongoCXXDriverDefaultsOn_(self):
         # Whether mongo-cxx-driver defaults ON - only where it will build successfully. An explicit --mongo-cxx-driver on
@@ -411,9 +354,9 @@ class Configure:
         if self.ARCH == "armhf" and self.IsTargettingSanitizer_("address"):
             if not self.sMongoArmhfAsanNoted_:
                 self.Print("NOTE: mongo-cxx-driver defaults OFF for armhf + address sanitizer (armhf gcc crashes compiling it - see #1174); --mongo-cxx-driver use to force it\n")
-                self.sMongoArmhfAsanNoted_ = true
-            return false
-        return true
+                self.sMongoArmhfAsanNoted_ = True
+            return False
+        return True
 
     def DoSetThirdPartyComponents_(self, x):
         """x is "all-available", "default", "fill-in-defaults" or "none" """
@@ -424,10 +367,10 @@ class Configure:
             mongoAlreadySet = self.FEATUREFLAG_mongocxxdriver is not None
             self.DoSetThirdPartyComponents_("fill-in-defaults")
             if not xercesAlreadySet:
-                self.FEATUREFLAG_Xerces = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_Xerces = LIBFEATUREFLAG_UseStaticTPP_
             if not mongoAlreadySet and self.MongoCXXDriverDefaultsOn_():
                 # if not explicitly listed on command-line, only default-on if will build successfully
-                self.FEATUREFLAG_mongocxxdriver = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_mongocxxdriver = LIBFEATUREFLAG_UseStaticTPP_
         elif x == "default":
             self.FEATUREFLAG_ATLMFC = None
             self.FEATUREFLAG_boost = None
@@ -446,97 +389,80 @@ class Configure:
             if self.FEATUREFLAG_ATLMFC is None:
                 if self.BuildPlatform in ("VisualStudio.Net-2022", "VisualStudio.Net-2026"):
                     # in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
-                    if PerlExists(S(self.VSVARS_VCToolsInstallDir) + "/atlmfc/include/afxext.h"):
-                        self.FEATUREFLAG_ATLMFC = LIBFEATUREFLAG_UseSystem
+                    if PathExists_((self.VSVARS_VCToolsInstallDir or "") + "/atlmfc/include/afxext.h"):
+                        self.FEATUREFLAG_ATLMFC = LIBFEATUREFLAG_UseSystem_
                 if self.FEATUREFLAG_ATLMFC is None:
-                    self.FEATUREFLAG_ATLMFC = LIBFEATUREFLAG_No
+                    self.FEATUREFLAG_ATLMFC = LIBFEATUREFLAG_No_
             if self.FEATUREFLAG_boost is None:
-                self.FEATUREFLAG_boost = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_boost = LIBFEATUREFLAG_UseStaticTPP_
             if self.FEATUREFLAG_LIBCURL is None:
-                self.FEATUREFLAG_LIBCURL = LIBFEATUREFLAG_UseStaticTPP if PERL_OS in ("linux", "darwin") else LIBFEATUREFLAG_No
+                self.FEATUREFLAG_LIBCURL = LIBFEATUREFLAG_UseStaticTPP_ if IS_LINUX_HOST_ or IS_MACOS_HOST_ else LIBFEATUREFLAG_No_
             if self.FEATUREFLAG_libxml2 is None:
-                self.FEATUREFLAG_libxml2 = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_libxml2 = LIBFEATUREFLAG_UseStaticTPP_
             if self.FEATUREFLAG_Xerces is None:
                 # if we have libxml2 being used, then DEFAULT to not including xerces (takes a long time to build and libxml2 better(?))
-                self.FEATUREFLAG_Xerces = LIBFEATUREFLAG_UseStaticTPP if self.FEATUREFLAG_libxml2 == LIBFEATUREFLAG_No else LIBFEATUREFLAG_No
+                self.FEATUREFLAG_Xerces = LIBFEATUREFLAG_UseStaticTPP_ if self.FEATUREFLAG_libxml2 == LIBFEATUREFLAG_No_ else LIBFEATUREFLAG_No_
             if self.FEATUREFLAG_LZMA is None:
-                self.FEATUREFLAG_LZMA = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_LZMA = LIBFEATUREFLAG_UseStaticTPP_
             if self.FEATUREFLAG_fmtlib is None:
-                self.FEATUREFLAG_fmtlib = LIBFEATUREFLAG_UseStaticTPP if self.NeedsFmtLib_() else LIBFEATUREFLAG_No
+                self.FEATUREFLAG_fmtlib = LIBFEATUREFLAG_UseStaticTPP_ if self.NeedsFmtLib_() else LIBFEATUREFLAG_No_
             if self.FEATUREFLAG_OpenSSL is None:
-                self.FEATUREFLAG_OpenSSL = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_OpenSSL = LIBFEATUREFLAG_UseStaticTPP_
             if self.FEATUREFLAG_sqlite is None:
-                self.FEATUREFLAG_sqlite = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_sqlite = LIBFEATUREFLAG_UseStaticTPP_
             if self.FEATUREFLAG_mongocxxdriver is None:
                 # if not explicitly listed on command-line, only default-on if will build successfully
-                self.FEATUREFLAG_mongocxxdriver = LIBFEATUREFLAG_UseStaticTPP if self.MongoCXXDriverDefaultsOn_() else LIBFEATUREFLAG_No
+                self.FEATUREFLAG_mongocxxdriver = LIBFEATUREFLAG_UseStaticTPP_ if self.MongoCXXDriverDefaultsOn_() else LIBFEATUREFLAG_No_
             if self.FEATUREFLAG_WinHTTP is None:
-                self.FEATUREFLAG_WinHTTP = LIBFEATUREFLAG_UseSystem if IS_WINDOWS_HOST else LIBFEATUREFLAG_No
+                self.FEATUREFLAG_WinHTTP = LIBFEATUREFLAG_UseSystem_ if IS_WINDOWS_HOST_ else LIBFEATUREFLAG_No_
             if self.FEATUREFLAG_ZLib is None:
-                self.FEATUREFLAG_ZLib = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_ZLib = LIBFEATUREFLAG_UseStaticTPP_
             if self.FEATUREFLAG_zstd is None:
-                self.FEATUREFLAG_zstd = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_zstd = LIBFEATUREFLAG_UseStaticTPP_
             if self.FEATUREFLAG_GoogleTest is None:
-                self.FEATUREFLAG_GoogleTest = LIBFEATUREFLAG_UseStaticTPP
+                self.FEATUREFLAG_GoogleTest = LIBFEATUREFLAG_UseStaticTPP_
         elif x == "none":
             for f in ("ATLMFC", "boost", "LIBCURL", "libxml2", "Xerces", "LZMA", "fmtlib", "OpenSSL", "sqlite", "mongocxxdriver",
                       "WinHTTP", "ZLib", "zstd", "GoogleTest"):
                 if getattr(self, "FEATUREFLAG_" + f) is None:
-                    setattr(self, "FEATUREFLAG_" + f, LIBFEATUREFLAG_No)
+                    setattr(self, "FEATUREFLAG_" + f, LIBFEATUREFLAG_No_)
         else:
-            Die("Bad argument to DoSetThirdPartyComponents_")
+            Die_("Bad argument to DoSetThirdPartyComponents_")
 
-    def ValidateUseArg_(self, var, forName):
-        if var not in ("build-only", "use", "use-system", "no"):
-            self.Print(forName + " ARG: " + S(var) + "\n")
-            self.DoHelp_(1)
-
-    def DoHelp_(self, x):
-        self.Print("".join(HELP_TEXT_))
-        raise PerlExit(x)
-
-    def ToBool_(self, x):
-        if x == "true":
-            return true
-        if x == "false":
-            return false
-        Die("expected bool argument to be true/false")
+    def DoHelp_(self, status):
+        self.Print(HelpText_())
+        raise Exit_(status)
 
     @staticmethod
     def IsGCCOrGPlusPlus_(x):
-        x = S(x)
         return "gcc" in x or ("g++" in x and "clang++" not in x)
 
     @staticmethod
     def IsClangOrClangPlusPlus_(x):
-        return "clang" in S(x)
+        return "clang" in x
 
     @staticmethod
     def IsClangPlusPlus_(x):
-        return "clang++" in S(x)
+        return "clang++" in x
 
-    def GetGCCVersion_(self, x, fullString=None):
-        """A number - or, given fullString, the version string"""
-        if fullString is not None:
-            return Trim(self.CachedBacktick("./Build/Scripts/GetGCCVersion " + S(x)))
-        v = Trim(self.CachedBacktick("./Build/Scripts/GetGCCVersion " + S(x) + " -i"))
-        if v == "":
-            return 0
-        return N(v)
+    def GetGCCVersion_(self, x, fullString=False):
+        """Its major version, 0 if it is not a gcc - or, given fullString, the version string"""
+        if fullString:
+            return self.CachedBacktick("./Build/Scripts/GetGCCVersion " + x).strip()
+        v = self.CachedBacktick("./Build/Scripts/GetGCCVersion " + x + " -i").strip()
+        return int(v) if v.isdigit() else 0
 
-    def GetClangVersion_(self, x, fullString=None):
-        """A number - or, given fullString, the version string"""
-        x = Trim(S(x))
-        if fullString is not None:
-            return Trim(self.CachedBacktick("./Build/Scripts/GetClangVersion " + x))
-        v = Trim(self.CachedBacktick("./Build/Scripts/GetClangVersion " + x + " -i"))
-        if v == "":
-            return -1
-        return N(v)
+    def GetClangVersion_(self, x, fullString=False):
+        """Its major version, -1 if it is not a clang - or, given fullString, the version string"""
+        x = x.strip()
+        if fullString:
+            return self.CachedBacktick("./Build/Scripts/GetClangVersion " + x).strip()
+        v = self.CachedBacktick("./Build/Scripts/GetClangVersion " + x + " -i").strip()
+        return int(v) if v.isdigit() else -1
 
     def HasStdLib_(self, compilerDriver, stdLib):
-        compilerDriver = Trim(S(compilerDriver))
-        stdLib = Trim(S(stdLib))
+        compilerDriver = compilerDriver.strip()
+        stdLib = stdLib.strip()
         return self.System('printf "#include <ciso646>\nint main () {}" | ' + compilerDriver + " -E -stdlib=" + stdLib + " -x c++ -dM - 2>/dev/null > /dev/null") == 0
 
     def StdLibSupportsCompiler_(self, compilerDriver, stdLib):
@@ -547,8 +473,8 @@ class Configure:
         # compilers it supports rather than keeping those pairs in a table here: a table has to be revisited
         # whenever either side ships a release, and says nothing about a machine whose libc++ came from
         # somewhere else. MacOS needs no special case - Apple's libc++ always matches Apple's clang.
-        compilerDriver = Trim(S(compilerDriver))
-        stdLib = Trim(S(stdLib))
+        compilerDriver = compilerDriver.strip()
+        stdLib = stdLib.strip()
         return self.System('printf "#include <version>\nint main () {}" | ' + compilerDriver + " -stdlib=" + stdLib + " -fsyntax-only '-Werror=#warnings' -x c++ - 2>/dev/null > /dev/null") == 0
 
     def GetClangLLD_(self, compilerDriver):
@@ -557,9 +483,9 @@ class Configure:
         looking for ld.lld-NN, so the answer is the lld the link will really get: clang looks in its own bin directory,
         then on PATH, and -print-prog-name echoes back the bare name when it finds nothing.
         """
-        compilerDriver = Trim(S(compilerDriver))
-        lld = Trim(self.CachedBacktick(compilerDriver + " -print-prog-name=ld.lld 2>/dev/null"))
-        return lld if (lld.startswith("/") and os.access(ToPosixPathForTest(lld), os.X_OK)) else None
+        compilerDriver = compilerDriver.strip()
+        lld = self.CachedBacktick(compilerDriver + " -print-prog-name=ld.lld 2>/dev/null").strip()
+        return lld if (lld.startswith("/") and os.access(ToPosixPathForTest_(lld), os.X_OK)) else None
 
     def GetLibStdCXXStacktraceLib_(self, compilerDriver, flags):
         """
@@ -568,8 +494,8 @@ class Configure:
         libstdc++ proper - libstdc++exp from gcc 14 (and 13.3), libstdc++_libbacktrace in 12 and 13. Asks the compiler by
         linking one, rather than going by version, since the distribution decides what is built and shipped.
         """
-        compilerDriver = Trim(S(compilerDriver))
-        flags = Trim(S(flags))
+        compilerDriver = compilerDriver.strip()
+        flags = flags.strip()
         src = "#include <version>\n#if __cpp_lib_stacktrace\n#include <stacktrace>\nint main () { return std::stacktrace::current ().empty (); }\n#else\nint main () {}\n#endif\n"
         for lib in ("", "-lstdc++exp", "-lstdc++_libbacktrace"):
             if self.System("printf '" + src + "' | " + compilerDriver + " " + flags + " -x c++ - " + lib + " -o /dev/null 2>/dev/null >/dev/null") == 0:
@@ -582,38 +508,36 @@ class Configure:
         so check this first: otherwise every configuration --only-if-has-compiler goes on to skip prints that noise, and
         RegressionTests counts it as a warning (25 of the 40 in a 3.0d25 WSL run, on a box with one g++).
         """
-        compilerDriver = Trim(S(compilerDriver))
-        return Trim(self.CachedBacktick("./Build/Scripts/HasCompiler " + compilerDriver)) != "0"
+        compilerDriver = compilerDriver.strip()
+        return self.CachedBacktick("./Build/Scripts/HasCompiler " + compilerDriver).strip() != "0"
 
     @staticmethod
     def IsMSVCCompiler_(x):
-        return re.search(r"cl.exe", S(x)) is not None
+        return re.search(r"cl.exe", x) is not None
 
     def Get_MSVC_CL_Version_(self, x):
-        x = Trim(S(x))
-        firstLine = Trim(self.Backtick("('" + x + "' 2>&1) | head -1"))
-        fields = firstLine.split()  # echo "$firstLine" | awk '{print $7}' | sed 's/\.//g'
-        return N(fields[6].replace(".", "") if len(fields) > 6 else "")
+        """Its version's digits - 194435217 for 19.44.35217 - from the first line cl prints; 0 if none"""
+        firstLine = self.Backtick("('" + x.strip() + "' 2>&1) | head -1")
+        m = re.search(r"\d+(?:\.\d+)+", firstLine)
+        return m.group(0).replace(".", "") if m else "0"
 
     def getUbuntuVersion(self):
-        a = Trim(self.CachedBacktick('(. /etc/os-release ; echo "$VERSION_ID") 2>/dev/null'))
-        return 0 if a == "" else N(a)
+        """/etc/os-release's VERSION_ID - 24.04, say - or "" if none"""
+        return self.CachedBacktick('(. /etc/os-release ; echo "$VERSION_ID") 2>/dev/null').strip()
 
     def getMacOSVersion_(self):
-        return Trim(self.CachedBacktick("/usr/bin/sw_vers | grep ProductVersion | awk 'END {print $2}'"))
+        return self.CachedBacktick("/usr/bin/sw_vers | grep ProductVersion | awk 'END {print $2}'").strip()
 
     def getXCodeVersion_(self):
         # Version of the SELECTED developer directory (xcode-select -p), which need not match the CommandLineTools package.
         # xcodebuild fails when the CommandLineTools themselves are selected, so fall back to their package version.
-        a = Trim(self.Backtick("xcodebuild -version 2>/dev/null | head -1 | grep -E -o '[0-9]+\\.[0-9]+' | head -1"))
+        a = self.Backtick("xcodebuild -version 2>/dev/null | head -1 | grep -E -o '[0-9]+\\.[0-9]+' | head -1").strip()
         if a == "":
-            a = Trim(self.Backtick("pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version: | awk 'END {print $2}' | grep -E -o '[0-9]+\\.[0-9]+' | head -1"))
-        if a == "":
-            return 0
-        return a  # only ever printed; as a number, 26.10 would come out as 26.1
+            a = self.Backtick("pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version: | awk 'END {print $2}' | grep -E -o '[0-9]+\\.[0-9]+' | head -1").strip()
+        return a if a != "" else "0"
 
     def getXCodeSelect_(self):
-        return Trim(self.Backtick("xcode-select -p"))
+        return self.Backtick("xcode-select -p").strip()
 
     def IsTargettingSanitizer_(self, x):
         return x in self.sanitizerFlags
@@ -621,31 +545,31 @@ class Configure:
     def NeedsFmtLib_(self):
         if self.IsClangPlusPlus_(self.COMPILER_DRIVER):
             itsVersion = self.GetClangVersion_(self.COMPILER_DRIVER)
-            if PERL_OS == "darwin":
+            if IS_MACOS_HOST_:
                 # Every supported XCode (Apple clang 17 - XCode 16.3 and later) has a usable <format>
-                return false
+                return False
             # For <format> support - in clang++15 - appears good enuf (if you enable --experimental...) - but that is sometimes unvailable, so dont count on it
-            if itsVersion < 16.0:
-                return true
+            if itsVersion < 16:
+                return True
         if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
             itsVersion = self.GetGCCVersion_(self.COMPILER_DRIVER)
             # Builtin supports works for gcc as of gcc 13
-            if itsVersion < 13.0:
-                return true
-        return false
+            if itsVersion < 13:
+                return True
+        return False
 
     def FillDefaultIncludesPathIfNeeded_(self):
         # IF we set include path explicitly, then suppress adding include path automatically (based on features etc) - just explicitly added ones from the commandline
         includeAutomaticDependencies = not self.INCLUDES_PATH_SET
         if includeAutomaticDependencies:
             # @todo unclear if we want to add this to platform includes path - probably yes (alternative is FOUNDATION_INCLUDES_PATH below)
-            self.INCLUDES_PATH_ADD.append(Trim(self.Backtick("realpath --canonicalize-missing Builds/" + S(self.configurationName) + "/include/")) + "/")
+            self.INCLUDES_PATH_ADD.append(self.Backtick("realpath --canonicalize-missing Builds/" + self.configurationName + "/include/").strip() + "/")
             self.PLATFORM_INCLUDES_PATH = []
-            self.FOUNDATION_INCLUDES_PATH.append(Trim(self.Backtick("realpath --canonicalize-missing Library/Sources/")) + "/")
+            self.FOUNDATION_INCLUDES_PATH.append(self.Backtick("realpath --canonicalize-missing Library/Sources/").strip() + "/")
             # for now include this (for Stroika/Current-Version.h) but later package all these up in Builds/$CONF/includes/Stroika
-            #   self.FOUNDATION_INCLUDES_PATH.append(Trim(self.Backtick("realpath --canonicalize-missing IntermediateFiles/" + S(self.configurationName))) + "/")
+            #   self.FOUNDATION_INCLUDES_PATH.append(self.Backtick("realpath --canonicalize-missing IntermediateFiles/" + self.configurationName).strip() + "/")
             if re.match(r"VisualStudio.Net", self.BuildPlatform):
-                self.VC_PLATFORM_INCLUDES_PATH = PerlSplit(";", self.GetMSVCVarName_("INCLUDE"))
+                self.VC_PLATFORM_INCLUDES_PATH = SplitList_(self.GetMSVCVarName_("INCLUDE"), ";")
                 self.PLATFORM_INCLUDES_PATH = list(self.VC_PLATFORM_INCLUDES_PATH)
         for var in self.INCLUDES_PATH_ADD:
             self.PLATFORM_INCLUDES_PATH.append(var)
@@ -656,7 +580,7 @@ class Configure:
             self.LinkerArgs_LibPath = []
             if re.match(r"VisualStudio.Net", self.BuildPlatform):
                 # Add the list of library search paths to Platform_LinkerArgs_LibPath (which makes it into stroika-platform.pc as -L lines)
-                self.LinkerArgs_LibPath = PerlSplit(";", self.GetMSVCVarName_("LIB"))
+                self.LinkerArgs_LibPath = SplitList_(self.GetMSVCVarName_("LIB"), ";")
         for var in self.LinkerArgs_LibPath_ADD:
             self.LinkerArgs_LibPath.append(var)
 
@@ -667,14 +591,14 @@ class Configure:
             self.LinkerArgs_LibDependencies = ""
         mustAppendDefaults = self.LinkerArgs_LibDependencies == ""
         for var in self.LinkerArgs_LibDependencies_ADD:
-            self.LinkerArgs_LibDependencies += S(var) + " "
+            self.LinkerArgs_LibDependencies += var + " "
         if includeAutomaticLibDependencies:
             for flag, name in (("Xerces", "xerces-c"), ("libxml2", "libxml-2.0"),
                                ("mongocxxdriver", "libmongocxx1-static"),  # Since mongovcxx version 4.4.0
                                ("OpenSSL", "openssl"), ("LIBCURL", "libcurl"), ("fmtlib", "fmt"), ("LZMA", "lzma"),
                                ("sqlite", "sqlite"), ("ZLib", "zlib"), ("zstd", "libzstd"), ("GoogleTest", "gtest_main"),
                                ("boost", "boost")):
-                if S(getattr(self, "FEATUREFLAG_" + flag)) != LIBFEATUREFLAG_No:
+                if getattr(self, "FEATUREFLAG_" + flag) != LIBFEATUREFLAG_No_:
                     self.foundationPackageCfgNames.append(name)
         if mustAppendDefaults:
             if "Windows" in self.TargetPlatforms:
@@ -684,7 +608,7 @@ class Configure:
             if "POSIX" in self.TargetPlatforms:
                 self.LinkerArgs_LibDependencies += "-lpthread "
                 self.LinkerArgs_LibDependencies += "-lm "
-                if self.FEATUREFLAG_librt == LIBFEATUREFLAG_UseSystem:
+                if self.FEATUREFLAG_librt == LIBFEATUREFLAG_UseSystem_:
                     self.LinkerArgs_LibDependencies += "-lrt "
 
     def FillInToolsPathAdditionsIfNeeded_(self):
@@ -692,7 +616,7 @@ class Configure:
         if includeAutomaticDependencies:
             if re.match(r"VisualStudio.Net", self.BuildPlatform):
                 x = self.GetMSVCVarName_("TOOLS_PATH_ADDITIONS")
-                self.TOOLS_PATH_ADDITIONS = Trim(self.Backtick('cygpath --mixed --path "' + x + '"'))
+                self.TOOLS_PATH_ADDITIONS = self.Cygpath(["--mixed", "--path"], [x])[0]
                 self.VSVARS_VSINSTALLDIR = self.GetMSVCVarName_("VSINSTALLDIR")
                 self.VSVARS_WindowsSdkDir = self.GetMSVCVarName_("WindowsSdkDir")
                 if self.VSVARS_WindowsSdkDir == "":
@@ -707,33 +631,32 @@ class Configure:
     def SetInitialDefaults_(self):
         """Initial defaults before looking at command-line arguments"""
         if self.TargetPlatforms == "":
-            if PERL_OS == "linux":
+            if IS_LINUX_HOST_:
                 self.TargetPlatforms = "Linux POSIX"
-            elif PERL_OS == "darwin":
+            elif IS_MACOS_HOST_:
                 self.TargetPlatforms = "MacOS POSIX"
-            elif IS_WINDOWS_HOST:
+            elif IS_WINDOWS_HOST_:
                 self.TargetPlatforms = "Windows"
-        if PERL_OS in ("linux", "darwin"):
+        if IS_LINUX_HOST_ or IS_MACOS_HOST_:
             self.BuildPlatform = "Unix"
-        if IS_WINDOWS_HOST:
-            PROGRAMFILESDIR = Trim(self.Backtick('cygpath "' + S(Env("PROGRAMFILES")) + '"'))
-            PROGRAMFILESDIR2 = Trim(self.Backtick('cygpath "' + S(Env("ProgramFiles(x86)")) + '"'))
+        if IS_WINDOWS_HOST_:
+            PROGRAMFILESDIR, PROGRAMFILESDIR2 = self.Cygpath([], [Env_("PROGRAMFILES") or "", Env_("ProgramFiles(x86)") or ""])
             # Try vs2k26
             if self.BuildPlatform == "":
-                if PerlGlob(PROGRAMFILESDIR + "/Microsoft Visual Studio/18/*/VC"):
+                if Glob_(PROGRAMFILESDIR + "/Microsoft Visual Studio/18/*/VC"):
                     self.BuildPlatform = "VisualStudio.Net-2026"
-                if PerlGlob(PROGRAMFILESDIR2 + "/Microsoft Visual Studio/18/*/VC"):
+                if Glob_(PROGRAMFILESDIR2 + "/Microsoft Visual Studio/18/*/VC"):
                     self.BuildPlatform = "VisualStudio.Net-2026"
             # Fallback/Try VS2k 2022
             if self.BuildPlatform == "":
-                if PerlGlob(PROGRAMFILESDIR + "/Microsoft Visual Studio/2022/*/VC"):
+                if Glob_(PROGRAMFILESDIR + "/Microsoft Visual Studio/2022/*/VC"):
                     self.BuildPlatform = "VisualStudio.Net-2022"
-                if PerlGlob(PROGRAMFILESDIR2 + "/Microsoft Visual Studio/2022/*/VC"):
+                if Glob_(PROGRAMFILESDIR2 + "/Microsoft Visual Studio/2022/*/VC"):
                     self.BuildPlatform = "VisualStudio.Net-2022"
-        if PERL_OS == "darwin":
+        if IS_MACOS_HOST_:
             # hacks so can do initial port/compile
-            self.FEATUREFLAG_librt = LIBFEATUREFLAG_No
-            self.STATIC_LINK_GCCRUNTIME = 0
+            self.FEATUREFLAG_librt = LIBFEATUREFLAG_No_
+            self.STATIC_LINK_GCCRUNTIME = False
             self.COMPILER_DRIVER = "clang"
             self.COMPILER_DRIVER_C = "clang"
             self.COMPILER_DRIVER_CPlusPlus = "clang++"
@@ -743,21 +666,21 @@ class Configure:
 
     @staticmethod
     def ReplaceLast_(srcString, replaceThis, withThis):
-        """The last replaceThis in srcString, made withThis (the Perl reverses all three with rev, and lets sed do the first)"""
-        s = " ".join(S(srcString).split())  # echo $srcString: its words, one space apart
+        """srcString, its last replaceThis made withThis"""
+        s = srcString.strip()
         i = s.rfind(replaceThis)
         if i >= 0:
             s = s[:i] + withThis + s[i + len(replaceThis):]
-        return Trim(s)
+        return s
 
     def SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_(self):
         self.ComputeARCHFlag_()
 
-        if S(self.COMPILER_DRIVER) == "":
+        if self.COMPILER_DRIVER == "":
             if re.match(r"VisualStudio.Net", self.BuildPlatform):
                 self.COMPILER_DRIVER = self.GetMSVCVarName_("CC")
-        if S(self.COMPILER_DRIVER) == "":
-            Die("must set COMPILER_DRIVER before SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_")
+        if self.COMPILER_DRIVER == "":
+            Die_("must set COMPILER_DRIVER before SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_")
 
         isVisualStudio = re.match(r"VisualStudio.Net", self.BuildPlatform) is not None
 
@@ -777,10 +700,10 @@ class Configure:
                     if self.VSVARS_VCToolsInstallDir is None:
                         self.VSVARS_VCToolsInstallDir = self.GetMSVCVarName_("VCToolsInstallDir")
                     # in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
-                    if PerlExists(S(self.VSVARS_VCToolsInstallDir) + "/atlmfc/include/afxext.h"):
-                        self.FEATUREFLAG_ATLMFC = LIBFEATUREFLAG_UseSystem
+                    if PathExists_(self.VSVARS_VCToolsInstallDir + "/atlmfc/include/afxext.h"):
+                        self.FEATUREFLAG_ATLMFC = LIBFEATUREFLAG_UseSystem_
                     else:
-                        self.FEATUREFLAG_ATLMFC = LIBFEATUREFLAG_No
+                        self.FEATUREFLAG_ATLMFC = LIBFEATUREFLAG_No_
 
         # I've found almost no docs about this. However, when I first ported to new imac with m1 chip,
         # and rebuilt stroika, I found XERCES automatically did something like this to force this
@@ -788,7 +711,7 @@ class Configure:
         # setting to force to, and allow external settings to override.
         # This appears to only be needed when running on m1 hardware, but no easy way I can find to
         # tell that so always do this by default
-        if self.MACOSX_DEPLOYMENT_TARGET is None and PERL_OS == "darwin":
+        if self.MACOSX_DEPLOYMENT_TARGET is None and IS_MACOS_HOST_:
             osVersion = self.getMacOSVersion_()
             # force convert to 2-digit form as I've seen in examples but not sure makes much sense
             m = re.match(r"(\d+)(?:\.(\d+))?", osVersion)
@@ -803,8 +726,8 @@ class Configure:
             elif re.match(r"VisualStudio.Net", self.BuildPlatform):
                 self.CPPSTD_VERSION_FLAG = "-std:c++latest"
         if self.BuildPlatform == "Unix":
-            if self.STATIC_LINK_GCCRUNTIME == DEFAULT_BOOL_OPTIONS:
-                self.STATIC_LINK_GCCRUNTIME = 1
+            if self.STATIC_LINK_GCCRUNTIME is None:
+                self.STATIC_LINK_GCCRUNTIME = True
 
         if self.COMPILER_DRIVER_C == "":
             self.COMPILER_DRIVER_C = self.COMPILER_DRIVER
@@ -826,7 +749,7 @@ class Configure:
             elif self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER):
                 self.CXXWARNING_FLAGS += self.DEFAULT_CXXWARNING_FLAGS_CLANG
 
-        if S(self.AS) == "":
+        if not self.AS:
             if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
                 self.AS = re.sub(r"-as-.*$", "-as", self.ReplaceLast_(self.COMPILER_DRIVER_CPlusPlus, "g++", "as"), count=1)
             elif self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
@@ -842,37 +765,37 @@ class Configure:
                 self.STDCXXLIB = "libc++"
                 if not self.StdLibSupportsCompiler_(self.COMPILER_DRIVER_CPlusPlus, "libc++") and self.HasStdLib_(self.COMPILER_DRIVER_CPlusPlus, "libstdc++"):
                     self.STDCXXLIB = "libstdc++"
-        if self.ApplyDebugFlags == true:
-            if self.gAssertionsEnabled == DEFAULT_BOOL_OPTIONS:
-                self.gAssertionsEnabled = 1
+        if self.ApplyDebugFlags:
+            if self.gAssertionsEnabled is None:
+                self.gAssertionsEnabled = True
             if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER_CPlusPlus) or self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
-                if self.ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS:
-                    self.ENABLE_GLIBCXX_DEBUG = 1
-                if self.runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS:
-                    self.runtimeStackProtectorFlag = true
+                if self.ENABLE_GLIBCXX_DEBUG is None:
+                    self.ENABLE_GLIBCXX_DEBUG = True
+                if self.runtimeStackProtectorFlag is None:
+                    self.runtimeStackProtectorFlag = True
 
-                skipSanCuzBroken = false
-                skipASANSanCuzBroken = false
+                skipSanCuzBroken = False
+                skipASANSanCuzBroken = False
                 # Sanitizers crash with gcc 11 and ubuntu 22.04 (not worth debugging right now...) -
                 # failure running some regtests - crash in leak sanitizer at end of run... --LGP 2024-05-01
                 # NOTE - now disabling BOTH ASAN and UBSAN, but maybe only ASAN broken--LGP 2024-08-21
-                if self.getUbuntuVersion() == 22.04:
+                if self.getUbuntuVersion() == "22.04":
                     if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
-                        skipSanCuzBroken = true
+                        skipSanCuzBroken = True
                     # with asan and ununtu 22.04, about 1/2 the tests fail (somewhat randomly, not always). --LGP 2024-05-01
                     if self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER):
-                        skipSanCuzBroken = true
-                if PERL_OS == "darwin":
+                        skipSanCuzBroken = True
+                if IS_MACOS_HOST_:
                     # From MacOS 15, and XCode 16:
                     #   clang++ -rdynamic -mmacosx-version-min=15.0 -fsanitize=address,undefined -static-libsan -stdlib=libc++ --std=c++20 -g -arch arm64 -Wl,-no_warn_duplicate_libraries -o 7zDec 7zMain.o lzma.a -lstdc++ -lc
                     #   clang++: error: static AddressSanitizer runtime is not supported on darwin
-                    skipASANSanCuzBroken = true
+                    skipASANSanCuzBroken = True
                 if not skipSanCuzBroken and not self.sanitizerFlagsNoneSet:
                     if not self.IsTargettingSanitizer_("address") and not skipASANSanCuzBroken:
                         self.sanitizerFlags.append("address")
                     if not self.IsTargettingSanitizer_("undefined"):
                         self.sanitizerFlags.append("undefined")
-                    self.sanitizerFlagsIsDefined = true
+                    self.sanitizerFlagsIsDefined = True
 
             if self.IsMSVCCompiler_(self.COMPILER_DRIVER):
                 if not self.sanitizerFlagsNoneSet:
@@ -881,21 +804,21 @@ class Configure:
                     # note ubsan not yet supported --LGP 2022-01-04
                     #   if not self.IsTargettingSanitizer_("undefined"):
                     #       self.sanitizerFlags.append("undefined")
-                self.sanitizerFlagsIsDefined = true
+                self.sanitizerFlagsIsDefined = True
 
-            if self.ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS:
-                self.ENABLE_TRACE2FILE = 1
-            if self.INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS:
-                self.INCLUDE_SYMBOLS_EXE = true
+            if self.ENABLE_TRACE2FILE is None:
+                self.ENABLE_TRACE2FILE = True
+            if self.INCLUDE_SYMBOLS_EXE is None:
+                self.INCLUDE_SYMBOLS_EXE = True
 
             # helpful to print stack traces in log (not critical, and has performance overhead) - see Debug::BackTrace ()
             if self.BuildPlatform == "Unix":
                 if self.LinkerArgs_ExtraPrefix != "":
                     self.LinkerArgs_ExtraPrefix += " "
                 self.LinkerArgs_ExtraPrefix += "-rdynamic"
-        elif self.ApplyReleaseFlags == true:
-            if self.gAssertionsEnabled == DEFAULT_BOOL_OPTIONS:
-                self.gAssertionsEnabled = 0
+        elif self.ApplyReleaseFlags:
+            if self.gAssertionsEnabled is None:
+                self.gAssertionsEnabled = False
             # clang LTO on Linux needs lld. GNU ld (ld.bfd, reading the bitcode through the LLVMgold plugin) mis-links Stroika:
             # undefined references to symbols that ARE in the archive, e.g. on clang++-20
             #   ld-temp.o:(.text.startup+0x2a66): undefined reference to `Stroika::Foundation::DataExchange::ObjectVariantMapper::ObjectVariantMapper()'
@@ -904,27 +827,27 @@ class Configure:
             # the identical objects correctly. So default to LTO only when this clang has an lld - PostProcessOptions_ adds the
             # -fuse-ld=lld. Without one, the build still works, just without LTO. macOS needs none of this: its linker is
             # Apple's own, reading the bitcode through Apple's libLTO.
-            if (self.ENABLE_LTO == DEFAULT_BOOL_OPTIONS and self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER) and PERL_OS != "darwin"
+            if (self.ENABLE_LTO is None and self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER) and not IS_MACOS_HOST_
                     and self.GetClangLLD_(self.COMPILER_DRIVER) is None):
-                self.ENABLE_LTO = false
-                self.gLTODefaultedOffForNoLLD = true
+                self.ENABLE_LTO = False
+                self.gLTODefaultedOffForNoLLD = True
 
-            if self.ENABLE_LTO == DEFAULT_BOOL_OPTIONS:
+            if self.ENABLE_LTO is None:
                 if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
-                    self.ENABLE_LTO = true
+                    self.ENABLE_LTO = True
                 if self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER):
-                    self.ENABLE_LTO = true
+                    self.ENABLE_LTO = True
                 if isVisualStudio:
-                    self.ENABLE_LTO = true
+                    self.ENABLE_LTO = True
             if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER) or self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER):
                 if self.COPTIMIZE_FLAGS == "":
                     self.COPTIMIZE_FLAGS = "-O3"
-                if self.ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS:
-                    self.ENABLE_GLIBCXX_DEBUG = 0
+                if self.ENABLE_GLIBCXX_DEBUG is None:
+                    self.ENABLE_GLIBCXX_DEBUG = False
             if self.IsMSVCCompiler_(self.COMPILER_DRIVER):
                 self.COPTIMIZE_FLAGS = "-O2 -Oi -Oy"
-            if self.ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS:
-                self.ENABLE_TRACE2FILE = 0
+            if self.ENABLE_TRACE2FILE is None:
+                self.ENABLE_TRACE2FILE = False
 
             if isVisualStudio:
                 if self.LinkerArgs_ExtraPrefix != "":
@@ -935,7 +858,7 @@ class Configure:
                 self.LinkerArgs_ExtraPrefix += " -OPT:ICF"
 
         if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
-            if self.ENABLE_LTO == true:
+            if self.ENABLE_LTO:
                 itsVersion = self.GetGCCVersion_(self.COMPILER_DRIVER)
                 # In function 'copy',
                 # inlined from '__ct ' at /usr/include/c++/13/bits/basic_string.h:683:23,
@@ -991,63 +914,59 @@ class Configure:
                 self.LinkerArgs_ExtraPrefix += " "
             self.LinkerArgs_ExtraPrefix += "-noexp -noimplib"
 
+        ccLessArgs = re.sub(r" .*", "", self.COMPILER_DRIVER_C, count=1)
         if self.AR is None:
             if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
-                ccLessArgs = re.sub(r" .*", "", S(self.COMPILER_DRIVER_C), count=1)
                 self.AR = self.ReplaceLast_(ccLessArgs, "gcc", "gcc-ar")
             elif self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER):
-                ccLessArgs = re.sub(r" .*", "", S(self.COMPILER_DRIVER_C), count=1)
                 self.AR = self.ReplaceLast_(ccLessArgs, "clang", "llvm-ar")
-        if self.AS is None and not IS_WINDOWS_HOST:
+        if self.AS is None and not IS_WINDOWS_HOST_:
             self.AS = "as"
-        if self.AR is None and not IS_WINDOWS_HOST:
+        if self.AR is None and not IS_WINDOWS_HOST_:
             self.AR = "ar"
         if self.RANLIB is None:
             if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
-                ccLessArgs = re.sub(r" .*", "", S(self.COMPILER_DRIVER_C), count=1)
                 self.RANLIB = self.ReplaceLast_(ccLessArgs, "gcc", "gcc-ranlib")
             elif self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER):
-                ccLessArgs = re.sub(r" .*", "", S(self.COMPILER_DRIVER_C), count=1)
                 self.RANLIB = self.ReplaceLast_(ccLessArgs, "clang", "llvm-ranlib")
-            elif not IS_WINDOWS_HOST:
+            elif not IS_WINDOWS_HOST_:
                 self.RANLIB = "ranlib"
         if self.STRIP is None and self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
-            ccLessArgs = re.sub(r" .*", "", S(self.COMPILER_DRIVER_C), count=1)
-            ma = Trim(self.Backtick(ccLessArgs + " -print-multiarch"))
+            ma = self.Backtick(ccLessArgs + " -print-multiarch 2>/dev/null").strip()  # (the compiler may not be installed)
             self.STRIP = "strip" if ma == "" else ma + "-strip"
 
         if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
             # Needed for sqlite build warning
-            self.qCompiler_HasNoMisleadingIndentation_Flag = true
+            self.qCompiler_HasNoMisleadingIndentation_Flag = True
 
-        if self.onlyGenerateIfCompilerExists == false:
-            if PERL_OS == "darwin" and self.IsClangPlusPlus_(self.COMPILER_DRIVER):
+        if not self.onlyGenerateIfCompilerExists:
+            if IS_MACOS_HOST_ and self.IsClangPlusPlus_(self.COMPILER_DRIVER):
                 if self.GetClangVersion_(self.COMPILER_DRIVER) < 17:
-                    self.Print("CONFIGURATION-WARNING: Stroika v3 requires Apple clang 17 (XCode 16.3) or later (compiler-driver: " + S(self.COMPILER_DRIVER) + ").\n")
+                    self.Print("CONFIGURATION-WARNING: Stroika v3 requires Apple clang 17 (XCode 16.3) or later (compiler-driver: " + self.COMPILER_DRIVER + ").\n")
             if self.IsClangPlusPlus_(self.COMPILER_DRIVER):
                 itsVersion = self.GetClangVersion_(self.COMPILER_DRIVER)
                 if 0 < itsVersion < 15:
-                    self.Print("CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later needed (compiler-driver: " + S(self.COMPILER_DRIVER) + ", version: " + S(itsVersion) + ").\n")
+                    self.Print("CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later needed (compiler-driver: " + self.COMPILER_DRIVER + ", version: " + str(itsVersion) + ").\n")
 
-        if N(self.lsb_release) == 22.04:
+        if self.lsb_release == "22.04":
             # https://github.com/SophistSolutions/Stroika/issues/851 - first seen on 20.10; 22.04 is the last supported release it affects
             # VERIFIED STILL BROKEN TSAN DEBUG on Ubuntu 22.04 g++-debug-sanitize_thread
-            if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER) and self.GetGCCVersion_(self.COMPILER_DRIVER) < 14.0:
-                self.qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true
+            if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER) and self.GetGCCVersion_(self.COMPILER_DRIVER) < 14:
+                self.qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = True
 
-        if self.FEATUREFLAG_librt is None and not IS_WINDOWS_HOST:
-            self.FEATUREFLAG_librt = LIBFEATUREFLAG_UseSystem
+        if self.FEATUREFLAG_librt is None and not IS_WINDOWS_HOST_:
+            self.FEATUREFLAG_librt = LIBFEATUREFLAG_UseSystem_
         if self.FEATUREFLAG_librt is None:
-            self.FEATUREFLAG_librt = LIBFEATUREFLAG_No
+            self.FEATUREFLAG_librt = LIBFEATUREFLAG_No_
         if self.STRIP is None and self.BuildPlatform == "Unix":
             self.STRIP = "strip"
 
         if self.LIBTOOL is None:
             if re.match(r"VisualStudio.Net", self.BuildPlatform):
-                self.LIBTOOL = Trim(self.GetMSVCVarName_("AR"))
+                self.LIBTOOL = self.GetMSVCVarName_("AR").strip()
         if self.LINKER is None:
             if re.match(r"VisualStudio.Net", self.BuildPlatform):
-                self.LINKER = Trim(self.GetMSVCVarName_("LD"))
+                self.LINKER = self.GetMSVCVarName_("LD").strip()
             else:
                 self.LINKER = self.COMPILER_DRIVER_CPlusPlus
 
@@ -1055,26 +974,19 @@ class Configure:
             self.MIDL = self.GetMSVCVarName_("MIDL")
             self.RC = self.GetMSVCVarName_("RC")
 
-        if S(self.MACOSX_DEPLOYMENT_TARGET) != "":
-            self.LinkerArgs_ExtraPrefix += " -mmacosx-version-min=" + S(self.MACOSX_DEPLOYMENT_TARGET)
+        if self.MACOSX_DEPLOYMENT_TARGET:
+            self.LinkerArgs_ExtraPrefix += " -mmacosx-version-min=" + self.MACOSX_DEPLOYMENT_TARGET
 
-        if PERL_OS == "darwin" and S(self.ARCH) != "":
+        if IS_MACOS_HOST_ and self.ARCH != "":
             # check if given ARCH can be executed and conditionally set CrossCompile flag
-            if self.System("arch -arch " + S(self.ARCH) + " uname 2> /dev/null > /dev/null") != 0:
+            if self.System("arch -arch " + self.ARCH + " uname 2> /dev/null > /dev/null") != 0:
                 self.CrossCompiling = "true"
 
     def ComputeARCHFlag_(self):
         """These depend on compiler driver, OS, ARCH, etc..."""
-        args = self.GetAppArgs_()
-        i = 1
-        while i < len(args):
-            var = args[i]
-            if var.lower() in ("-arch", "--arch"):
-                i += 1
-                self.ARCH = args[i] if i < len(args) else None
-            i += 1
+        self.ApplyOptions_(WITH_ARCH_)
 
-        if S(self.ARCH) == "":
+        if self.ARCH == "":
             if re.match(r"VisualStudio.Net", self.BuildPlatform):
                 if re.search(r"64$", self.configurationName):
                     self.ARCH = "x86_64"
@@ -1083,8 +995,8 @@ class Configure:
                     self.ARCH = "x86"
                     self.PrintErr("WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n")
 
-        if S(self.ARCH) == "":
-            self.ARCH = Trim(self.Backtick("./Build/Scripts/GetCompilerArch " + S(self.COMPILER_DRIVER)))
+        if self.ARCH == "":
+            self.ARCH = self.Backtick("./Build/Scripts/GetCompilerArch " + self.COMPILER_DRIVER).strip()
 
         # Patch some old/bad names
         if self.ARCH in ("32", "WIN32"):
@@ -1094,35 +1006,34 @@ class Configure:
             self.PrintErr("WARNING: replacing ARCH " + self.ARCH + " with x86_64\n")
             self.ARCH = "x86_64"
 
-        if S(self.ARCH) == "":
-            Die("Failed to compute ARCH - specify with --arch flag")
+        if self.ARCH == "":
+            Die_("Failed to compute ARCH - specify with --arch flag")
 
     def SetDefaultsWhichDependOnPlatform_(self):
-        if self.BuildPlatform == "Unix" and S(self.COMPILER_DRIVER) == "":
+        if self.BuildPlatform == "Unix" and self.COMPILER_DRIVER == "":
             self.COMPILER_DRIVER = "gcc"
 
     def ParseEnvVarsToSetupInfluencedVariables_(self):
-        if Env("ARCH") is not None:
-            self.EXTRA_ARGS += ["--arch", Env("ARCH")]
-        if Env("PLATFORM") is not None:
-            self.EXTRA_ARGS += ["--build-platform", Env("PLATFORM")]
-        if Env("CC") is not None:
-            self.EXTRA_ARGS += ["--compiler-driver", Env("CC")]
-            self.COMPILER_DRIVER_C = Env("CC")
-        if Env("CXX") is not None:
-            self.EXTRA_ARGS += ["--compiler-driver", Env("CXX")]
-            self.COMPILER_DRIVER_CPlusPlus = Env("CXX")
-        if Env("AR") is not None:
-            self.EXTRA_ARGS += ["--ar", Env("AR")]
-        if Env("AS") is not None:
-            self.EXTRA_ARGS += ["--as", Env("AS")]
-        if Env("RANLIB") is not None:
-            self.EXTRA_ARGS += ["--ranlib", Env("RANLIB")]
-        if Env("STRIP") is not None:
-            self.EXTRA_ARGS += ["--strip", Env("STRIP")]
-        if Env("EXTRA_CONFIGURE_ARGS") is not None:
-            for i in PerlSplit(" ", Env("EXTRA_CONFIGURE_ARGS")):
-                self.EXTRA_ARGS.append(i)
+        if Env_("ARCH") is not None:
+            self.EXTRA_ARGS += ["--arch", Env_("ARCH")]
+        if Env_("PLATFORM") is not None:
+            self.EXTRA_ARGS += ["--build-platform", Env_("PLATFORM")]
+        if Env_("CC") is not None:
+            self.EXTRA_ARGS += ["--compiler-driver", Env_("CC")]
+            self.COMPILER_DRIVER_C = Env_("CC")
+        if Env_("CXX") is not None:
+            self.EXTRA_ARGS += ["--compiler-driver", Env_("CXX")]
+            self.COMPILER_DRIVER_CPlusPlus = Env_("CXX")
+        if Env_("AR") is not None:
+            self.EXTRA_ARGS += ["--ar", Env_("AR")]
+        if Env_("AS") is not None:
+            self.EXTRA_ARGS += ["--as", Env_("AS")]
+        if Env_("RANLIB") is not None:
+            self.EXTRA_ARGS += ["--ranlib", Env_("RANLIB")]
+        if Env_("STRIP") is not None:
+            self.EXTRA_ARGS += ["--strip", Env_("STRIP")]
+        if Env_("EXTRA_CONFIGURE_ARGS") is not None:
+            self.EXTRA_ARGS += Env_("EXTRA_CONFIGURE_ARGS").split()
 
     def GetAppArgs_(self):
         """merge 'extra' args (from environment variables) with those specified on the commandline"""
@@ -1130,486 +1041,144 @@ class Configure:
         args[1:1] = self.EXTRA_ARGS
         return args
 
-    def ParseCommandLine_Platform_(self):
-        """Do initial pass, just looking for platform"""
-        args = self.GetAppArgs_()
+    def ParseOptions_(self, args):
+        """
+        The options in args - the command line, less the configuration name - as [(Option_, value)], each value as its
+        option's apply takes it. Fails on an option configure does not have, or one without a value it takes; --help stops
+        configure there.
+        """
+        result = []
         i = 0
         while i < len(args):
-            var = args[i]
-            if var.lower() in ("-build-platform", "--build-platform"):
-                i += 1
-                self.BuildPlatform = args[i] if i < len(args) else None
-                self.SetDefaultsWhichDependOnPlatform_()
-            i += 1
-
-    def ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_(self):
-        """Do initial pass, just looking for compiler-driver and apply-default-xxx flags"""
-        args = self.GetAppArgs_()
-        i = 0
-        while i < len(args):
-            var = args[i]
-            lv = var.lower()
-            if lv in ("-compiler-driver", "--compiler-driver"):
-                i += 1
-                self.COMPILER_DRIVER = args[i] if i < len(args) else None
-                self.COMPILER_DRIVER_C = ""  # reset so computed later
-                self.COMPILER_DRIVER_CPlusPlus = ""
-            elif lv in ("-apply-default-debug-flags", "--apply-default-debug-flags"):
-                self.ApplyDebugFlags = true
-            elif lv in ("-apply-default-release-flags", "--apply-default-release-flags"):
-                self.ApplyReleaseFlags = true
-            i += 1
-
-    def ParseCommandLine_Remaining_(self):
-        args = self.GetAppArgs_()
-        n = len(args)
-        i = 1
-
-        def Next():
-            return args[i] if i < n else None
-
-        while i < n:
-            var = args[i]
-            lv = var.lower()
-
-            def Is(*names):
-                """Option names match in any case: --append-CXXFLAGS or --append-cxxflags"""
-                return lv in (n.lower() for n in names)
-
-            if Is("-make-define", "--make-define"):
-                i += 1
-                self.useExtraMakeDefines.append(Next())
-            elif Is("-build-platform", "--build-platform"):
-                i += 1
-                self.BuildPlatform = Next()
-            elif Is("-target-platforms", "--target-platforms"):
-                i += 1
-                self.TargetPlatforms = Next()
-            elif Is("-build-tools-root", "--build-tools-root"):
-                i += 1
-                self.BuildToolsRoot = Next()
-            elif Is("-assertions", "--assertions"):
-                i += 1
-                v = Next()
-                if v == "enable":
-                    self.gAssertionsEnabled = 1
-                elif v == "disable":
-                    self.gAssertionsEnabled = 0
-                elif v == "default":
-                    self.gAssertionsEnabled = DEFAULT_BOOL_OPTIONS
-                else:
-                    self.Print("UNRECOGNIZED assertions ARG: " + S(v) + "\n")
-                    self.DoHelp_(1)
-            elif Is("-shared-symbol-visibility", "--shared-symbol-visibility"):
-                i += 1
-                self.SharedSymbolVisibility = Next()
-            elif Is("-block-allocation", "--block-allocation"):
-                i += 1
-                v = Next()
-                if v == "enable":
-                    self.useExtraCDefines.append("#define qStroika_Foundation_Memory_PreferBlockAllocation 1")
-                elif v == "disable":
-                    self.useExtraCDefines.append("#define qStroika_Foundation_Memory_PreferBlockAllocation 0")
-                elif v == "default":
-                    pass
-                else:
-                    self.Print("UNRECOGNIZED block-allocation ARG: " + S(v) + "\n")
-                    self.DoHelp_(1)
-            elif Is("-valgrind", "--valgrind"):
-                i += 1
-                v = Next()
-                if v == "enable":
-                    self.useExtraCDefines.append("#define qStroika_FeatureSupported_Valgrind 1")
-                    self.TargettingValgrind = true
-                elif v == "disable":
-                    self.useExtraCDefines.append("#define qStroika_FeatureSupported_Valgrind 0")
-                elif v == "default":
-                    pass
-                else:
-                    self.Print("UNRECOGNIZED block-allocation ARG: " + S(v) + "\n")
-                    self.DoHelp_(1)
-            elif Is("-glibcxx_debug", "--glibcxx_debug"):
-                i += 1
-                v = Next()
-                if v == "enable":
-                    self.ENABLE_GLIBCXX_DEBUG = 1
-                elif v == "disable":
-                    self.ENABLE_GLIBCXX_DEBUG = 0
-                elif v == "default":
-                    self.ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS
-                else:
-                    self.Print("UNRECOGNIZED" + S(self.ENABLE_GLIBCXX_DEBUG) + " ARG: " + S(v) + "\n")
-                    self.DoHelp_(1)
-            elif Is("-macosx_deployment_target", "--macosx_deployment_target"):
-                i += 1
-                v = Next()
-                if v == "none":
-                    self.MACOSX_DEPLOYMENT_TARGET = ""  # "" means not set, undefined means do default
-                elif v == "default":
-                    self.MACOSX_DEPLOYMENT_TARGET = None
-                else:
-                    self.MACOSX_DEPLOYMENT_TARGET = v
-            elif Is("-stdlib", "--stdlib"):
-                i += 1
-                self.STDCXXLIB = Next()
-            elif Is("-cppstd-version", "--cppstd-version"):
-                i += 1
-                v = Next()
-                if v == "c++14":
-                    self.Print("Warning: c++14 not supported by Stroika v2.1 or later\n")
-                if v == "c++17":
-                    self.Print("Warning: c++17 not supported by Stroika v3 or later\n")
-                if v not in ("c++2a", "c++20", "c++2b", "c++23"):
-                    self.Print("Warning: unrecognized arg to --cppstd-version\n")
-                if S(v) == "":
-                    self.Print("UNRECOGNIZED cppstd-version ARG: " + S(v) + "\n")
-                    self.DoHelp_(1)
-                self.CPPSTD_VERSION_FLAG = "--std=" + S(v)
-            elif Is("-strawberryperl", "--strawberryperl"):
-                i += 1
-                self.FEATUREFLAG_StrawberryPerl = Next()
-            elif Is("-wix", "--wix"):
-                i += 1
-                self.FEATUREFLAG_WIX = Next()
-            elif Is("-config-tag", "--config-tag"):
-                i += 1
-                v = Next()
-                if re.search(r"[\s+.]+", S(v)):
-                    Die("No spaces allowed in config-tag")
-                if self.Config_Tag is None:
-                    self.Config_Tag = ""
-                else:
-                    self.Config_Tag += " "
-                self.Config_Tag += S(v)
-            elif Is("-build-by-default", "--build-by-default"):
-                i += 1
-                self.BuildByDefault = Next()
-            elif Is("-libcurl", "--libcurl"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--libcurl")
-                self.FEATUREFLAG_LIBCURL = Next()
-            elif Is("-boost", "--boost"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--boost")
-                self.FEATUREFLAG_boost = Next()
-            elif Is("-openssl", "--openssl"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--openssl")
-                self.FEATUREFLAG_OpenSSL = Next()
-            elif Is("-openssl-extraargs", "--openssl-extraargs"):
-                i += 1
-                self.FEATUREFLAG_OpenSSLExtraArgs = Next()
-            elif Is("-winhttp", "--winhttp"):
-                i += 1
-                self.FEATUREFLAG_WinHTTP = Next()
-            elif Is("-atlmfc", "--atlmfc"):
-                i += 1
-                self.FEATUREFLAG_ATLMFC = Next()
-            elif Is("-xerces", "--xerces"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--xerces")
-                self.FEATUREFLAG_Xerces = Next()
-            elif Is("-libxml2", "--libxml2"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--libxml2")
-                self.FEATUREFLAG_libxml2 = Next()
-            elif Is("-zlib", "--zlib"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--zlib")
-                self.FEATUREFLAG_ZLib = Next()
-            elif Is("-zstd", "--zstd"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--zstd")
-                self.FEATUREFLAG_zstd = Next()
-            elif Is("-googletest", "--googletest"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--googletest")
-                self.FEATUREFLAG_GoogleTest = Next()
-            elif Is("-mongo-cxx-driver", "--mongo-cxx-driver"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--mongo-cxx-driver")
-                self.FEATUREFLAG_mongocxxdriver = Next()
-            elif Is("-sqlite", "--sqlite"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--sqlite")
-                self.FEATUREFLAG_sqlite = Next()
-            elif Is("-lzma", "--lzma"):
-                i += 1
-                self.ValidateUseArg_(Next(), "--lzma")
-                self.FEATUREFLAG_LZMA = Next()
-            elif Is("-fmtlib", "--fmtlib"):
-                i += 1
-                self.FEATUREFLAG_fmtlib = Next()
-            elif Is("-default-third-party-components", "--default-third-party-components"):
-                self.DoSetThirdPartyComponentsParameterFromCommandLine = "default"
-            elif Is("-all-available-third-party-components", "--all-available-third-party-components"):
-                self.DoSetThirdPartyComponentsParameterFromCommandLine = "all-available"
-            elif Is("-no-third-party-components", "--no-third-party-components"):
-                self.DoSetThirdPartyComponentsParameterFromCommandLine = "none"
-            elif Is("-trace2file", "--trace2file"):
-                i += 1
-                v = Next()
-                if v == "enable":
-                    self.ENABLE_TRACE2FILE = 1
-                elif v == "disable":
-                    self.ENABLE_TRACE2FILE = 0
-                elif v == "default":
-                    self.ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS
-                else:
-                    self.Print("UNRECOGNIZED ENABLE_TRACE2FILEG ARG: " + S(v) + "\n")
-                    self.DoHelp_(1)
-            elif Is("-static-link-gccruntime", "--static-link-gccruntime"):
-                i += 1
-                v = Next()
-                if v == "enable":
-                    self.STATIC_LINK_GCCRUNTIME = 1
-                elif v == "disable":
-                    self.STATIC_LINK_GCCRUNTIME = 0
-                else:
-                    self.Print("UNRECOGNIZED static-link-gccruntime ARG: " + S(v) + "\n")
-                    self.DoHelp_(1)
-            elif Is("-ar", "--ar"):
-                i += 1
-                self.AR = Next()
-            elif Is("-as", "--as"):
-                i += 1
-                self.AS = Next()
-            elif Is("-ranlib", "--ranlib"):
-                i += 1
-                self.RANLIB = Next()
-            elif Is("-strip", "--strip"):
-                i += 1
-                self.STRIP = Next()
-            elif Is("-extra-prefix-linker-args", "--extra-prefix-linker-args"):
-                i += 1
-                self.LinkerArgs_ExtraPrefix = Next()
-            elif Is("-append-extra-prefix-linker-args", "--append-extra-prefix-linker-args"):
-                i += 1
-                if S(self.LinkerArgs_ExtraPrefix) != "":
-                    self.LinkerArgs_ExtraPrefix += " "
-                self.LinkerArgs_ExtraPrefix = S(self.LinkerArgs_ExtraPrefix) + S(Next())
-            elif Is("-extra-suffix-linker-args", "--extra-suffix-linker-args"):
-                i += 1
-                self.LinkerArgs_ExtraSuffix = Next()
-            elif Is("-append-extra-suffix-linker-args", "--append-extra-suffix-linker-args"):
-                i += 1
-                if S(self.LinkerArgs_ExtraSuffix) != "":
-                    self.LinkerArgs_ExtraSuffix += " "
-                self.LinkerArgs_ExtraSuffix = S(self.LinkerArgs_ExtraSuffix) + S(Next())
-            elif Is("-append-CPPFLAGS", "--append-CPPFLAGS"):
-                i += 1
-                self.Platform_CPPFLAGS_B4Includes.append(Next())
-            elif Is("-remove-CPPFLAGS", "--remove-CPPFLAGS"):
-                i += 1
-                self.CPPFLAGS2Remove.append(Next())
-            elif Is("-replace-all-CPPFLAGS", "--replace-all-CPPFLAGS"):
-                i += 1
-                for x in PerlSplit(" ", S(Next())):
-                    self.Platform_CPPFLAGS_B4Includes.append(x)
-                self.CPPFLAGS_Overridden = true
-            elif Is("-append-CFLAGS", "--append-CFLAGS"):
-                i += 1
-                self.CFLAGS.append(Next())
-            elif Is("-remove-CFLAGS", "--remove-CFLAGS"):
-                i += 1
-                self.CFLAGS2Remove.append(Next())
-            elif Is("-replace-all-CFLAGS", "--replace-all-CFLAGS"):
-                i += 1
-                for x in PerlSplit(" ", S(Next())):
-                    self.CFLAGS.append(x)
-                self.CFLAGS_Overridden = true
-            elif Is("-append-CXXFLAGS", "--append-CXXFLAGS"):
-                i += 1
-                self.CXXFLAGS2Append.append(Next())
-            elif Is("-remove-CXXFLAGS", "--remove-CXXFLAGS"):
-                i += 1
-                self.CXXFLAGS2Remove.append(Next())
-            elif Is("-replace-all-CXXFLAGS", "--replace-all-CXXFLAGS"):
-                i += 1
-                for x in PerlSplit(" ", S(Next())):
-                    self.CXXFLAGS.append(x)
-                self.CXXFLAGS_Overridden = true
-            elif Is("-includes-path", "--includes-path"):
-                i += 1
-                self.PLATFORM_INCLUDES_PATH = PerlSplit(self.PATH_SEPERATOR, S(Next()))
-                self.INCLUDES_PATH_SET = true
-            elif Is("-append-includes-path", "--append-includes-path"):
-                i += 1
-                self.INCLUDES_PATH_ADD.append(Next())
-            elif Is("-libs-path", "--libs-path"):
-                i += 1
-                self.LinkerArgs_LibPath = PerlSplit(self.PATH_SEPERATOR, S(Next()))
-                self.LinkerArgs_LibPath_SET = true
-            elif Is("-append-libs-path", "--append-libs-path"):
-                i += 1
-                self.LinkerArgs_LibPath_ADD.append(Next())
-            elif Is("-linktime-copy-files-2-EXEDir", "--linktime-copy-files-2-EXEDir"):
-                i += 1
-                self.LinkTime_CopyFilesToEXEDir = PerlSplit(" ", S(Next()))
-            elif Is("-append-linktime-copy-files-2-EXEDir", "--append-linktime-copy-files-2-EXEDir"):
-                i += 1
-                self.LinkTime_CopyFilesToEXEDir.append(Next())
-            elif Is("-lib-dependencies", "--lib-dependencies"):
-                i += 1
-                self.LinkerArgs_LibDependencies = Next()
-            elif Is("-append-lib-dependencies", "--append-lib-dependencies"):
-                i += 1
-                self.LinkerArgs_LibDependencies_ADD.append(Next())
-            elif Is("-run-prefix", "--run-prefix"):
-                i += 1
-                self.RunPrefix = Next()
-            elif Is("-append-run-prefix", "--append-run-prefix"):
-                i += 1
-                if S(self.RunPrefix) != "":
-                    self.RunPrefix += " "
-                self.RunPrefix = S(self.RunPrefix) + S(Next())
-            elif Is("-include-default-TSAN_OPTIONS", "--include-default-TSAN_OPTIONS"):
-                i += 1
-                v = Next()
-                if v not in ("true", "false"):
-                    Die("Invalid argument to --include-default-TSAN_OPTIONS")
-                self.autoIncludeTSAN_OPTIONSIfAppropriate = true if v == "true" else false
-            elif Is("-append-extra-compiler-and-linker-args", "--append-extra-compiler-and-linker-args"):
-                i += 1
-                v = Next()
-                self.CFLAGS.append(v)
-                self.CXXFLAGS.append(v)
-                if S(self.LinkerArgs_ExtraPrefix) != "":
-                    self.LinkerArgs_ExtraPrefix += " "
-                self.LinkerArgs_ExtraPrefix = S(self.LinkerArgs_ExtraPrefix) + S(v)
-                if S(self.LinkerArgs_ExtraSuffix) != "":
-                    self.LinkerArgs_ExtraSuffix += " "
-                self.LinkerArgs_ExtraSuffix = S(self.LinkerArgs_ExtraSuffix) + S(v)
-            elif Is("-lto", "--lto"):
-                i += 1
-                v = Next()
-                if v == "enable":
-                    self.ENABLE_LTO = true
-                    self.ENABLE_LTO_SetExplicitly = true
-                elif v == "disable":
-                    self.ENABLE_LTO = false
-                    self.ENABLE_LTO_SetExplicitly = true
-                elif v == "default":
-                    self.ENABLE_LTO = DEFAULT_BOOL_OPTIONS
-                    self.ENABLE_LTO_SetExplicitly = false
-                else:
-                    self.Print("UNRECOGNIZED assertions ARG: " + S(v) + "\n")
-                    self.DoHelp_(1)
-            elif Is("-cross-compiling", "--cross-compiling"):
-                i += 1
-                v = Next()
-                if v not in ("true", "false"):
-                    Die("Invalid argument to --cross-compiling")
-                self.CrossCompiling = v
-            elif Is("-debug-symbols", "--debug-symbols"):
-                i += 1
-                v = Next()
-                if v not in ("true", "false"):
-                    Die("Invalid argument to --debug-symbols")
-                self.INCLUDE_SYMBOLS_LIB = self.ToBool_(v)
-                self.INCLUDE_SYMBOLS_EXE = self.ToBool_(v)
-            elif Is("-debug-symbols-lib", "--debug-symbols-lib"):
-                i += 1
-                v = Next()
-                if v not in ("true", "false"):
-                    Die("Invalid argument to --debug-symbols-lib")
-                self.INCLUDE_SYMBOLS_LIB = self.ToBool_(v)
-            elif Is("-debug-symbols-exe", "--debug-symbols-exe"):
-                i += 1
-                v = Next()
-                if v not in ("true", "false"):
-                    Die("Invalid argument to --debug-symbols")
-                self.INCLUDE_SYMBOLS_EXE = self.ToBool_(v)
-            elif Is("-malloc-guard", "--malloc-guard"):
-                i += 1
-                self.MALLOC_GUARD = self.ToBool_(Next())
-                # DISABLE LTO BY DEFAULT IF MALLOC_GAURD TURNED ON BECAUSE FOR NOW THEY DON'T WORK TOGETHER -- LGP 2016-07-14
-                if self.MALLOC_GUARD == true:
-                    self.ENABLE_LTO = false
-            elif Is("-runtime-stack-check", "--runtime-stack-check"):
-                i += 1
-                v = Next()
-                if v not in ("true", "false"):
-                    Die("Invalid argument to --runtime-stack-check")
-                self.runtimeStackProtectorFlag = v
-            elif Is("-msvc-runtime-library", "--msvc-runtime-library"):
-                i += 1
-                self.VSVARS_MSVC_RUNTIME_LIBRARY = Next()
-            elif Is("-sanitize", "--sanitize"):
-                i += 1
-                for flag in PerlSplit(",", S(Next())):
-                    if flag == "none":
-                        self.sanitizerFlags = []
-                        self.sanitizerFlagsNoneSet = true
-                    else:
-                        if not self.IsTargettingSanitizer_(flag):
-                            self.sanitizerFlags.append(flag)
-                    self.sanitizerFlagsIsDefined = true
-            elif Is("-no-sanitize", "--no-sanitize"):
-                i += 1
-                for flag in PerlSplit(",", S(Next())):
-                    if flag == "none":
-                        self.noSanitizerFlags = []
-                    elif flag not in self.noSanitizerFlags:
-                        self.noSanitizerFlags.append(flag)
-            elif Is("-only-if-has-compiler", "--only-if-has-compiler"):
-                self.onlyGenerateIfCompilerExists = true
-            elif Is("-pg", "--pg"):
-                self.CFLAGS.append("-pg")
-                self.CXXFLAGS.append("-pg")
-                self.LinkerArgs_ExtraPrefix = S(self.LinkerArgs_ExtraPrefix) + " -pg"
-            elif Is("-help", "--help", "-?"):
+            o = FindOption_(args[i])
+            if o is None:
+                Die_("Unrecognized option: " + args[i] + " (configure --help lists the options)")
+            value = None
+            if o.arg is not None:
+                i += 1
+                if i == len(args):
+                    Die_(args[i - 1] + " needs a value (configure --help lists the options)")
+                value = args[i]
+                if isinstance(o.arg, dict):
+                    if value not in o.arg:
+                        Die_(args[i - 1] + " takes " + "|".join(o.arg) + ", not '" + value + "'")
+                    value = o.arg[value]
+            if o is HELP_OPTION_:
                 self.DoHelp_(0)
-            else:
-                # HANDLED EARLIER
-                if Is("-apply-default-debug-flags", "--apply-default-debug-flags"):
-                    pass
-                elif Is("-apply-default-release-flags", "--apply-default-release-flags"):
-                    pass
-                elif Is("-build-platform", "--build-platform"):
-                    i += 1
-                elif Is("-arch", "--arch"):
-                    i += 1
-                elif Is("-compiler-driver", "--compiler-driver"):
-                    i += 1
-                else:
-                    self.Print("UNRECOGNIZED ARG: " + var + "\n")
-                    self.DoHelp_(1)
+            result.append((o, value))
             i += 1
+        return result
 
-    @staticmethod
-    def ZERO_OR_1_(x):
-        if x is None or x == "" or x is False:
-            return 0
-        return 1 if N(x) == 1 else 0
+    def ApplyOptions_(self, when):
+        """Applies the command line's options taking effect at when, in command-line order"""
+        for o, value in self.options_:
+            if o.when == when:
+                o.apply(self, value)
+
+    # ---------------------------------------------------------------- the options that do more than set one thing
+
+    def OptionCompilerDriver_(self, v):
+        self.COMPILER_DRIVER = v
+        self.COMPILER_DRIVER_C = ""  # reset so computed later
+        self.COMPILER_DRIVER_CPlusPlus = ""
+
+    def OptionBlockAllocation_(self, v):
+        if v is not None:
+            self.useExtraCDefines.append("#define qStroika_Foundation_Memory_PreferBlockAllocation " + v)
+
+    def OptionValgrind_(self, v):
+        if v is not None:
+            self.useExtraCDefines.append("#define qStroika_FeatureSupported_Valgrind " + v)
+        if v == "1":
+            self.TargettingValgrind = True
+
+    def OptionMacOSXDeploymentTarget_(self, v):
+        self.MACOSX_DEPLOYMENT_TARGET = {"none": "", "default": None}.get(v, v)  # "" means not set; None, the default
+
+    def OptionCppStdVersion_(self, v):
+        if v == "c++14":
+            self.Print("Warning: c++14 not supported by Stroika v2.1 or later\n")
+        if v == "c++17":
+            self.Print("Warning: c++17 not supported by Stroika v3 or later\n")
+        if v not in ("c++2a", "c++20", "c++2b", "c++23"):
+            self.Print("Warning: unrecognized arg to --cppstd-version\n")
+        if v == "":
+            Die_("--cppstd-version needs a value (configure --help lists the options)")
+        self.CPPSTD_VERSION_FLAG = "--std=" + v
+
+    def OptionConfigTag_(self, v):
+        if re.search(r"[\s+.]", v):
+            Die_("--config-tag " + v + ": a tag holds no space, + or .")
+        self.Config_Tag = v if self.Config_Tag is None else self.Config_Tag + " " + v
+
+    def OptionAppendExtraCompilerAndLinkerArgs_(self, v):
+        self.CFLAGS.append(v)
+        self.CXXFLAGS.append(v)
+        self.LinkerArgs_ExtraPrefix = AddWord_(self.LinkerArgs_ExtraPrefix, v)
+        self.LinkerArgs_ExtraSuffix = AddWord_(self.LinkerArgs_ExtraSuffix, v)
+
+    def OptionLTO_(self, v):
+        self.ENABLE_LTO = v
+        self.ENABLE_LTO_SetExplicitly = v is not None
+
+    def OptionDebugSymbols_(self, v):
+        self.INCLUDE_SYMBOLS_LIB = v
+        self.INCLUDE_SYMBOLS_EXE = v
+
+    def OptionMallocGuard_(self, v):
+        self.MALLOC_GUARD = v
+        # DISABLE LTO BY DEFAULT IF MALLOC_GAURD TURNED ON BECAUSE FOR NOW THEY DON'T WORK TOGETHER -- LGP 2016-07-14
+        if v:
+            self.ENABLE_LTO = False
+
+    def OptionSanitize_(self, v):
+        for flag in SplitList_(v, ","):
+            if flag == "none":
+                self.sanitizerFlags = []
+                self.sanitizerFlagsNoneSet = True
+            elif not self.IsTargettingSanitizer_(flag):
+                self.sanitizerFlags.append(flag)
+            self.sanitizerFlagsIsDefined = True
+
+    def OptionNoSanitize_(self, v):
+        for flag in SplitList_(v, ","):
+            if flag == "none":
+                self.noSanitizerFlags = []
+            elif flag not in self.noSanitizerFlags:
+                self.noSanitizerFlags.append(flag)
+
+    def OptionPg_(self, v):
+        self.CFLAGS.append("-pg")
+        self.CXXFLAGS.append("-pg")
+        self.LinkerArgs_ExtraPrefix += " -pg"
 
     def CHECK_FEATURE_OPTION(self, x):
-        if x not in (LIBFEATUREFLAG_BuildOnly, LIBFEATUREFLAG_UseStaticTPP, LIBFEATUREFLAG_UseSystem, LIBFEATUREFLAG_No):
-            Die("Cannot identify feature argument (expected build-only, use-static, use-system, or no and got " + S(x) + ")")
+        if x not in (LIBFEATUREFLAG_BuildOnly_, LIBFEATUREFLAG_UseStaticTPP_, LIBFEATUREFLAG_UseSystem_, LIBFEATUREFLAG_No_):
+            Die_("Cannot identify feature argument (expected build-only, use, use-system or no, and got " + (x or "") + ")")
 
     def CHECK_OPTIONS_(self):
-        if S(self.BuildPlatform) == "":
-            Die("Cannot identify BuildPlatform! Either explicitly supply the --build-platform argument (configure --help); or make sure you have Visual Studio.net installed")
+        if self.BuildPlatform == "":
+            Die_("Cannot identify BuildPlatform! Either explicitly supply the --build-platform argument (configure --help); or make sure you have Visual Studio.net installed")
         for old in ("2012", "2015", "2017", "2019"):
             if self.BuildPlatform == "VisualStudio.Net-" + old:
-                Die("WE NO LONGER SUPPORT VISUAL STUDIO.Net " + old)
+                Die_("WE NO LONGER SUPPORT VISUAL STUDIO.Net " + old)
         validProjectPlatfromSubDirs = ("Unix", "VisualStudio.Net-2022", "VisualStudio.Net-2026")
         if self.BuildPlatform not in validProjectPlatfromSubDirs:
-            Die("Unrecognized --build-platform argument: valid ones include: " + ",".join(validProjectPlatfromSubDirs))
-        if S(self.TargetPlatforms) == "":
-            Die("Cannot identify TargetPlatforms")
+            Die_("Unrecognized --build-platform argument: valid ones include: " + ",".join(validProjectPlatfromSubDirs))
+        if self.TargetPlatforms == "":
+            Die_("Cannot identify TargetPlatforms")
         self.CHECK_FEATURE_OPTION(self.FEATUREFLAG_LIBCURL)
 
     def ApplyCompilerBugWorkarounds_(self):
         """
-        Turn OFF LTO for the gcc sanitizer builds it is known to break. MUST run after ParseCommandLine_Remaining_ (), since
-        that is where --sanitize is parsed - doing this in SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
+        Turn OFF LTO for the gcc sanitizer builds it is known to break. MUST run after the AFTER_DEFAULTS_ options are
+        applied, since --sanitize is one of them - doing this in SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
         (where it used to live) meant sanitizerFlags was still empty and the test never fired.
         """
         # NB: deliberately does NOT bail out when --lto was given explicitly - an explicit '--lto disable'
         # is the main way to walk into the 24.04 hazard below, so that case must still be caught (and is
         # overridden, loudly).
-        if self.ApplyReleaseFlags != true:
+        if not self.ApplyReleaseFlags:
             return
         if not self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
             return
@@ -1673,13 +1242,13 @@ class Configure:
         # bug - but WARN, loudly, because it is silently-wrong-answers rather than a crash. Only OPTIONAL
         # configurations (--only-if-has-compiler, ie "generate this if the toolchain can do it") are
         # skipped outright - see where gUbuntu2404OptimizedNoLTOHazard is read, in Run.
-        if (N(self.lsb_release) == 24.04 and self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER)
-                and 13.0 <= self.GetGCCVersion_(self.COMPILER_DRIVER) and self.GetGCCVersion_(self.COMPILER_DRIVER) < 15.0
-                and self.ENABLE_LTO != true):
-            self.gUbuntu2404OptimizedNoLTOHazard = true
-            self.Print("WARNING: gcc " + S(self.GetGCCVersion_(self.COMPILER_DRIVER)) + " on Ubuntu 24.04 miscompiles Stroika containers when optimizing without LTO\n")
+        if (self.lsb_release == "24.04" and self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER)
+                and 13 <= self.GetGCCVersion_(self.COMPILER_DRIVER) < 15
+                and not self.ENABLE_LTO):
+            self.gUbuntu2404OptimizedNoLTOHazard = True
+            self.Print("WARNING: gcc " + str(self.GetGCCVersion_(self.COMPILER_DRIVER)) + " on Ubuntu 24.04 miscompiles Stroika containers when optimizing without LTO\n")
             self.Print("         (Containers::Sequence, Traversal, DataExchange give WRONG ANSWERS - not crashes - at -O1/-O2/-O3).\n")
-            if self.ENABLE_LTO_SetExplicitly == true:
+            if self.ENABLE_LTO_SetExplicitly:
                 self.Print("         Honoring your explicit '--lto disable' anyway - but be aware the failures are wrong ANSWERS, not crashes.\n")
             self.Print("         g++-12, clang++, or a newer Ubuntu can build optimized without LTO on this platform.\n")
 
@@ -1690,7 +1259,7 @@ class Configure:
         #                                   without LTO) stay clean
         # 26.04/g++-15.2 is clean in every combination, so this is scoped to 24.04 rather than applied
         # everywhere - no reason to give up -O3 on toolchains that are not broken.
-        if N(self.lsb_release) == 24.04 and len(self.sanitizerFlags) != 0:
+        if self.lsb_release == "24.04" and len(self.sanitizerFlags) != 0:
             self.COPTIMIZE_FLAGS = "-O2"
 
         # Dropping LTO for tsan instead is NOT a cure: on the 3.0d24 Ubuntu 24.04 release run (g++ 13.3) it took
@@ -1711,27 +1280,23 @@ class Configure:
             self.COPTIMIZE_FLAGS = "-O2"
 
     def ParseCommandLine_(self):
+        if len(self.ARGV) == 0 or self.ARGV[0].startswith("-"):
+            if len(self.ARGV) != 0 and FindOption_(self.ARGV[0]) is HELP_OPTION_:
+                self.DoHelp_(0)
+            Die_("Expected the configuration name as the first argument (configure --help lists the options)")
+        self.configurationName = self.ARGV[0]
+
         self.SetInitialDefaults_()
-
-        if len(self.ARGV) >= 1:
-            self.configurationName = self.ARGV[0]
-        else:
-            self.Print("Expected configuration name as first argument\n")
-            self.DoHelp_(1)
-        if self.configurationName.lower() in ("-h", "--h", "-help", "--help"):
-            self.DoHelp_(0)
-        elif self.configurationName.startswith("-"):
-            self.Print("Expected configuration name (got " + self.configurationName + ") as first argument\n")
-            self.DoHelp_(1)
-
         self.ParseEnvVarsToSetupInfluencedVariables_()
-        self.ParseCommandLine_Platform_()
+        self.options_ = self.ParseOptions_(self.GetAppArgs_()[1:])
+
+        self.ApplyOptions_(WITH_PLATFORM_)
         self.SetDefaultsWhichDependOnPlatform_()
 
-        self.ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_()
-        self.SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_()
+        self.ApplyOptions_(WITH_COMPILER_)
+        self.SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_()  # (which applies the WITH_ARCH_ options)
 
-        self.ParseCommandLine_Remaining_()
+        self.ApplyOptions_(AFTER_DEFAULTS_)
 
         self.ApplyCompilerBugWorkarounds_()
 
@@ -1761,21 +1326,19 @@ class Configure:
                 if self.CPPSTD_VERSION_FLAG != "":
                     flags.append(self.CPPSTD_VERSION_FLAG)
             if doCFLAGS == 2:
-                if S(self.CXXWARNING_FLAGS) != "":
-                    # @todo - need separate flags for C and CXX
-                    for x in PerlSplit(" ", self.CXXWARNING_FLAGS):
-                        flags.append(x)
+                # @todo - need separate flags for C and CXX
+                flags += self.CXXWARNING_FLAGS.split()
 
             if doCFLAGS != 0:
                 if self.COPTIMIZE_FLAGS != "":
                     flags.append(self.COPTIMIZE_FLAGS)
                 if self.SharedSymbolVisibility is not None:
-                    flags.append("-fvisibility=" + S(self.SharedSymbolVisibility))
+                    flags.append("-fvisibility=" + self.SharedSymbolVisibility)
                 if self.INCLUDE_SYMBOLS_LIB:
                     if not isVisualStudio:
                         flags.append("-g")
                 if isVisualStudio:
-                    flags.append("-EHa" if self.Windows_Exceptions_SupportStructuredExceptions == true else "-EHsc")
+                    flags.append("-EHa" if self.Windows_Exceptions_SupportStructuredExceptions else "-EHsc")
                     flags.append("-nologo")
                     flags.append("-GR")  # Enable Run-Time Type Information
                     flags.append("-Gd")  # Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
@@ -1787,12 +1350,12 @@ class Configure:
                     flags.append("-bigobj")  # Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
                     # flags.append("-errorReport:prompt")  # users can add this if desired
                     # flags.append("-experimental:module")
-                    if self.ApplyDebugFlags == true:
+                    if self.ApplyDebugFlags:
                         flags.append("-RTCsu")  # Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
                         flags.append("-GS")  # Enable Security Check
                         flags.append("-Oy-")  # (Dont) omit frame pointers
                         flags.append("-Od")  # Disable Optimization
-                    if self.ApplyReleaseFlags == true:
+                    if self.ApplyReleaseFlags:
                         flags.append("-GS-")  # Disable Security Check
                         flags.append("-Gy")  # Enable Function Level Linking
                         flags.append("-Oy")  # Omit frame pointers
@@ -1811,7 +1374,7 @@ class Configure:
                     elif rtl == "MultiThreadedDebugDLL":
                         flags.append("-MDd")  # NOT SURE REALLY SUPPORTED
                     else:
-                        self.Print("WARNING: Unrecognized MSVC_RUNTIME_LIBRARY: " + S(rtl) + "\n")
+                        self.Print("WARNING: Unrecognized MSVC_RUNTIME_LIBRARY: " + (rtl or "") + "\n")
                     if self.INCLUDE_SYMBOLS_LIB:
                         # Use intra-obj file debug info format, rather than -Zi (a separate .pdb).
                         # Reasons we do NOT use -Zi (tried, and abandoned):
@@ -1826,51 +1389,47 @@ class Configure:
                         # third-party components match this choice.
                         flags.append("-Z7")
             if doCFLAGS == 0:
-                if not isVisualStudio and self.ENABLE_GLIBCXX_DEBUG == 1:
+                if not isVisualStudio and self.ENABLE_GLIBCXX_DEBUG:
                     flags.append("-D_GLIBCXX_DEBUG")
                 if isVisualStudio:
                     flags.append("-D_UNICODE")
                     flags.append("-DUNICODE")
                     flags.append("-D_WINDOWS")  # just because visual studio .net sample projects defined this
-                    if self.ApplyDebugFlags == true:
+                    if self.ApplyDebugFlags:
                         flags.append("-D_DEBUG")
-                    if self.ApplyReleaseFlags == true:
+                    if self.ApplyReleaseFlags:
                         flags.append("-DNDEBUG")
                 for var in self.useExtraCDefines:
-                    parts = PerlSplit(" ", var) + [None, None, None]
-                    define, name, value = parts[0], parts[1], parts[2]
+                    define, name, value = (var.split() + ["", "", ""])[:3]
                     if define != "#define":
-                        Die("NYI: mapping extraCDEFINE: " + var)
-                    if S(value) == "":
-                        value = 0
-                    flags.append(dashFlag + S(name) + "=" + S(value))
+                        Die_("NYI: mapping extraCDEFINE: " + var)
+                    flags.append(dashFlag + name + "=" + (value or "0"))
         if doFoundation:
             if doCFLAGS == 0:
-                Z = self.ZERO_OR_1_
 
                 def Has(f):
-                    return f in (LIBFEATUREFLAG_UseStaticTPP, LIBFEATUREFLAG_UseSystem)
+                    return f in (LIBFEATUREFLAG_UseStaticTPP_, LIBFEATUREFLAG_UseSystem_)
 
-                flags.append(dashFlag + "qStroika_Foundation_Debug_AssertionsChecked=" + S(Z(self.gAssertionsEnabled)))
+                flags.append(dashFlag + "qStroika_Foundation_Debug_AssertionsChecked=" + Bit_(self.gAssertionsEnabled))
                 if self.FEATUREFLAG_ATLMFC is not None:
-                    flags.append(dashFlag + "qStroika_HasComponent_ATLMFC=" + S(Z(self.FEATUREFLAG_ATLMFC == LIBFEATUREFLAG_UseSystem)))
-                flags.append(dashFlag + "qStroika_HasComponent_boost=" + S(Z(Has(self.FEATUREFLAG_boost))))
-                flags.append(dashFlag + "qStroika_HasComponent_libcurl=" + S(Z(Has(self.FEATUREFLAG_LIBCURL))))
-                flags.append(dashFlag + "qStroika_HasComponent_fmtlib=" + S(Z(Has(self.FEATUREFLAG_fmtlib))))
-                flags.append(dashFlag + "qStroika_HasComponent_googletest=" + S(Z(Has(self.FEATUREFLAG_GoogleTest))))
-                flags.append(dashFlag + "qStroika_HasComponent_LZMA=" + S(Z(Has(self.FEATUREFLAG_LZMA))))
-                flags.append(dashFlag + "qStroika_HasComponent_OpenSSL=" + S(Z(Has(self.FEATUREFLAG_OpenSSL))))
-                flags.append(dashFlag + "qStroika_HasComponent_sqlite=" + S(Z(Has(self.FEATUREFLAG_sqlite))))
-                flags.append(dashFlag + "qStroika_HasComponent_mongocxxdriver=" + S(Z(Has(self.FEATUREFLAG_mongocxxdriver))))
-                flags.append(dashFlag + "qStroika_HasComponent_WinHTTP=" + S(Z(self.FEATUREFLAG_WinHTTP == LIBFEATUREFLAG_UseSystem)))
-                flags.append(dashFlag + "qStroika_HasComponent_xerces=" + S(Z(Has(self.FEATUREFLAG_Xerces))))
-                flags.append(dashFlag + "qStroika_HasComponent_libxml2=" + S(Z(Has(self.FEATUREFLAG_libxml2))))
-                flags.append(dashFlag + "qStroika_HasComponent_zlib=" + S(Z(Has(self.FEATUREFLAG_ZLib))))
-                flags.append(dashFlag + "qStroika_HasComponent_zstd=" + S(Z(Has(self.FEATUREFLAG_zstd))))
-                if self.ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS:
-                    flags.append(dashFlag + "qStroika_Foundation_Debug_TraceToFile=" + S(Z(self.ENABLE_TRACE2FILE)))
+                    flags.append(dashFlag + "qStroika_HasComponent_ATLMFC=" + Bit_(self.FEATUREFLAG_ATLMFC == LIBFEATUREFLAG_UseSystem_))
+                flags.append(dashFlag + "qStroika_HasComponent_boost=" + Bit_(Has(self.FEATUREFLAG_boost)))
+                flags.append(dashFlag + "qStroika_HasComponent_libcurl=" + Bit_(Has(self.FEATUREFLAG_LIBCURL)))
+                flags.append(dashFlag + "qStroika_HasComponent_fmtlib=" + Bit_(Has(self.FEATUREFLAG_fmtlib)))
+                flags.append(dashFlag + "qStroika_HasComponent_googletest=" + Bit_(Has(self.FEATUREFLAG_GoogleTest)))
+                flags.append(dashFlag + "qStroika_HasComponent_LZMA=" + Bit_(Has(self.FEATUREFLAG_LZMA)))
+                flags.append(dashFlag + "qStroika_HasComponent_OpenSSL=" + Bit_(Has(self.FEATUREFLAG_OpenSSL)))
+                flags.append(dashFlag + "qStroika_HasComponent_sqlite=" + Bit_(Has(self.FEATUREFLAG_sqlite)))
+                flags.append(dashFlag + "qStroika_HasComponent_mongocxxdriver=" + Bit_(Has(self.FEATUREFLAG_mongocxxdriver)))
+                flags.append(dashFlag + "qStroika_HasComponent_WinHTTP=" + Bit_(self.FEATUREFLAG_WinHTTP == LIBFEATUREFLAG_UseSystem_))
+                flags.append(dashFlag + "qStroika_HasComponent_xerces=" + Bit_(Has(self.FEATUREFLAG_Xerces)))
+                flags.append(dashFlag + "qStroika_HasComponent_libxml2=" + Bit_(Has(self.FEATUREFLAG_libxml2)))
+                flags.append(dashFlag + "qStroika_HasComponent_zlib=" + Bit_(Has(self.FEATUREFLAG_ZLib)))
+                flags.append(dashFlag + "qStroika_HasComponent_zstd=" + Bit_(Has(self.FEATUREFLAG_zstd)))
+                if self.ENABLE_TRACE2FILE is not None:
+                    flags.append(dashFlag + "qStroika_Foundation_Debug_TraceToFile=" + Bit_(self.ENABLE_TRACE2FILE))
                     # override the default (true iff qStroika_Foundation_Debug_AssertionsChecked) - if set the trace2file option set
-                    if self.ENABLE_TRACE2FILE == 1:
+                    if self.ENABLE_TRACE2FILE:
                         flags.append(dashFlag + "qStroika_Foundation_Debug_DefaultTracingOn=1")
 
         for r in self.GetDefaultCZZFLAGS_flags_flags:
@@ -1878,10 +1437,10 @@ class Configure:
         # each --remove-XXXFLAGS value goes, a default or an added flag (but --append-CXXFLAGS values are added after this, so
         # they can override); one that names no flag is a mistake worth seeing
         for r in flagValues2Remove:
-            kept = [f for f in flags if Trim(S(f)) != Trim(S(r))]
+            kept = [f for f in flags if f.strip() != r.strip()]
             if len(kept) == len(flags):
                 flagsName = ("CPPFLAGS", "CFLAGS", "CXXFLAGS")[doCFLAGS]
-                self.Print(self.PrintLevelLeader(N(self.MAKE_INDENT_LEVEL) + 2) + "Configure Warning: --remove-" + flagsName + " " + S(r) + ": no such flag\n")
+                self.Print(self.PrintLevelLeader(self.MAKE_INDENT_LEVEL + 2) + "Configure Warning: --remove-" + flagsName + " " + r + ": no such flag\n")
             flags = kept
         return flags
 
@@ -1893,9 +1452,9 @@ class Configure:
                 self.BuildToolsRoot = self.GetDefaultToolsBuildDir(self.BuildPlatform)
 
         # Here, not where it is decided, because --lto enable is parsed only after the release defaults are applied
-        if self.gLTODefaultedOffForNoLLD and self.ENABLE_LTO != true and self.HasCompiler_(self.COMPILER_DRIVER_CPlusPlus):
-            self.Print("NOTE: LTO defaults OFF for " + S(self.COMPILER_DRIVER) + " here - it has no lld, and GNU ld mis-links clang LTO; install lld to get LTO\n")
-        if self.ENABLE_LTO == true:
+        if self.gLTODefaultedOffForNoLLD and not self.ENABLE_LTO and self.HasCompiler_(self.COMPILER_DRIVER_CPlusPlus):
+            self.Print("NOTE: LTO defaults OFF for " + self.COMPILER_DRIVER + " here - it has no lld, and GNU ld mis-links clang LTO; install lld to get LTO\n")
+        if self.ENABLE_LTO:
             if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
                 self.CFLAGS.append("-flto")
                 self.CXXFLAGS.append("-flto")
@@ -1910,16 +1469,16 @@ class Configure:
                 self.LinkerArgs_ExtraPrefix += " -flto"
                 # GNU ld mis-links clang LTO - see where the release flags default ENABLE_LTO. An explicit -fuse-ld wins, but
                 # is warned about unless it is lld.
-                m = re.search(r"-fuse-ld=(\S+)", self.LinkerArgs_ExtraPrefix) if PERL_OS != "darwin" else None
+                m = re.search(r"-fuse-ld=(\S+)", self.LinkerArgs_ExtraPrefix) if not IS_MACOS_HOST_ else None
                 if m:
                     explicitLD = m.group(1)
                     if "lld" not in explicitLD:
-                        self.Print("CONFIGURATION-WARNING: LTO with " + S(self.COMPILER_DRIVER_CPlusPlus) + " and -fuse-ld=" + explicitLD + " - only lld is known to link clang LTO correctly (GNU ld mis-links it).\n")
-                elif PERL_OS != "darwin":
+                        self.Print("CONFIGURATION-WARNING: LTO with " + self.COMPILER_DRIVER_CPlusPlus + " and -fuse-ld=" + explicitLD + " - only lld is known to link clang LTO correctly (GNU ld mis-links it).\n")
+                elif not IS_MACOS_HOST_:
                     if self.GetClangLLD_(self.COMPILER_DRIVER_CPlusPlus) is not None:
                         self.LinkerArgs_ExtraPrefix += " -fuse-ld=lld"
                     else:
-                        self.Print("CONFIGURATION-WARNING: LTO with " + S(self.COMPILER_DRIVER_CPlusPlus) + " but no lld, so linking with GNU ld, which mis-links clang LTO (install lld, or --lto disable).\n")
+                        self.Print("CONFIGURATION-WARNING: LTO with " + self.COMPILER_DRIVER_CPlusPlus + " but no lld, so linking with GNU ld, which mis-links clang LTO (install lld, or --lto disable).\n")
             if self.IsMSVCCompiler_(self.COMPILER_DRIVER_CPlusPlus):
                 self.CFLAGS.append("-GL")  # Whole Program Optimization
                 self.CXXFLAGS.append("-GL")  # Whole Program Optimization
@@ -1941,7 +1500,7 @@ class Configure:
 
         if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
             itsVersion = self.GetGCCVersion_(self.COMPILER_DRIVER_CPlusPlus)
-            if 12.0 <= itsVersion < 14 and self.COPTIMIZE_FLAGS != "":
+            if 12 <= itsVersion < 14 and self.COPTIMIZE_FLAGS != "":
                 # With gcc 12/13 - release builds - we get lots of spurious uninitialized warnings, raspi and direct x86
                 # EG:
                 #   In member function 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::length() const [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]',
@@ -1951,13 +1510,13 @@ class Configure:
                 #   /usr/include/c++/13/bits/basic_string.h:1067:16: warning: '<unnamed>.Stroika::Foundation::Time::Duration::<unnamed>.Stroika::Foundation::Time::Duration::._anon_544::fStringRep_.std::__cxx11::basic_string<char>::_M_string_length' may be used uninitialized [-Wmaybe-uninitialized]
                 #   1067 |       { return _M_string_length; }
                 #       |                ^~~~~~~~~~~~~~~~
-                self.CXXWARNING_FLAGS = S(self.CXXWARNING_FLAGS) + " -Wno-maybe-uninitialized"
+                self.CXXWARNING_FLAGS = self.CXXWARNING_FLAGS + " -Wno-maybe-uninitialized"
             if itsVersion < 12:
                 # With gcc 11 cannot seem to suppress with pragma warning
-                self.CXXWARNING_FLAGS = S(self.CXXWARNING_FLAGS) + " -Wno-stringop-overflow"
+                self.CXXWARNING_FLAGS = self.CXXWARNING_FLAGS + " -Wno-stringop-overflow"
 
         if self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
-            self.CXXWARNING_FLAGS = S(self.CXXWARNING_FLAGS) + "-Wno-unqualified-std-cast-call "
+            self.CXXWARNING_FLAGS = self.CXXWARNING_FLAGS + "-Wno-unqualified-std-cast-call "
 
         if self.sanitizerFlagsIsDefined and len(self.sanitizerFlags) != 0:
             inNoSanitizeList = set(self.noSanitizerFlags)
@@ -1986,7 +1545,7 @@ class Configure:
             self.CFLAGS.append(crap2Add2CZZFlags)
             self.CXXFLAGS.append(crap2Add2CZZFlags)
 
-            if self.sanitizerFlagsIsDefined and len(self.sanitizerFlags) != 0 and self.STATIC_LINK_SANITIZERS != 0:
+            if len(self.sanitizerFlags) != 0:  # (what --no-sanitize left)
                 if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER):
                     for f in self.sanitizerFlags:
                         if f == "address":
@@ -2008,28 +1567,28 @@ class Configure:
         if self.autoIncludeTSAN_OPTIONSIfAppropriate:
             if self.IsTargettingSanitizer_("thread"):
                 # prepend, so stuff already there takes precedence
-                if S(self.RunPrefix) != "":
-                    self.RunPrefix = " " + S(self.RunPrefix)
-                self.RunPrefix = "TSAN_OPTIONS=suppressions=${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" + S(self.RunPrefix)
+                if self.RunPrefix != "":
+                    self.RunPrefix = " " + self.RunPrefix
+                self.RunPrefix = "TSAN_OPTIONS=suppressions=${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" + self.RunPrefix
 
-        if S(self.FEATUREFLAG_OpenSSL) == "":
-            self.FEATUREFLAG_OpenSSL = LIBFEATUREFLAG_UseStaticTPP
+        if not self.FEATUREFLAG_OpenSSL:
+            self.FEATUREFLAG_OpenSSL = LIBFEATUREFLAG_UseStaticTPP_
 
         if isVisualStudio:
             # Default to true for visual studio, because debug symbols go in separate file, and don't balloon the exe size (.pdb)
-            if self.INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS:
-                self.INCLUDE_SYMBOLS_EXE = true
-        if self.INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS:
-            self.INCLUDE_SYMBOLS_EXE = false
+            if self.INCLUDE_SYMBOLS_EXE is None:
+                self.INCLUDE_SYMBOLS_EXE = True
+        if self.INCLUDE_SYMBOLS_EXE is None:
+            self.INCLUDE_SYMBOLS_EXE = False
 
-        if self.MALLOC_GUARD == true:
+        if self.MALLOC_GUARD:
             self.useExtraCDefines.append("#define qStroika_Foundation_Debug_MallocGuard 1")
 
         if self.FEATUREFLAG_StrawberryPerl is None:
-            self.FEATUREFLAG_StrawberryPerl = "use" if (self.FEATUREFLAG_OpenSSL == "use" and IS_WINDOWS_HOST) else LIBFEATUREFLAG_No
+            self.FEATUREFLAG_StrawberryPerl = "use" if (self.FEATUREFLAG_OpenSSL == "use" and IS_WINDOWS_HOST_) else LIBFEATUREFLAG_No_
         if self.FEATUREFLAG_WIX is None:
             # No need to install, because its checked into ThirdPartyComponents/WiX
-            self.FEATUREFLAG_WIX = "use" if IS_WINDOWS_HOST else LIBFEATUREFLAG_No
+            self.FEATUREFLAG_WIX = "use" if IS_WINDOWS_HOST_ else LIBFEATUREFLAG_No_
 
         if self.STDCXXLIB is not None:
             if self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
@@ -2042,24 +1601,24 @@ class Configure:
                 stdlibFlag = "-stdlib=libstdc++" if self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus) else ""
                 stacktraceLib = self.GetLibStdCXXStacktraceLib_(self.COMPILER_DRIVER_CPlusPlus, self.CPPSTD_VERSION_FLAG + " " + stdlibFlag)
                 if stacktraceLib is None:
-                    self.Print("Warning: found no library that makes std::stacktrace link with " + S(self.COMPILER_DRIVER_CPlusPlus) + " " + self.CPPSTD_VERSION_FLAG + " - if Debug/BackTrace fails to link, that is why\n")
+                    self.Print("Warning: found no library that makes std::stacktrace link with " + self.COMPILER_DRIVER_CPlusPlus + " " + self.CPPSTD_VERSION_FLAG + " - if Debug/BackTrace fails to link, that is why\n")
                 elif stacktraceLib != "":
                     self.LinkerArgs_LibDependencies_ADD.append(stacktraceLib)
-            if self.STATIC_LINK_GCCRUNTIME == 1:
+            if self.STATIC_LINK_GCCRUNTIME:
                 # tried $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=0 in Ubuntu 1804, and g++-7, and failed (still left .so file in ldd)
-                lib2FindStatic = S(self.STDCXXLIB) + ".a"
-                lib = Trim(self.Backtick(S(self.COMPILER_DRIVER_CPlusPlus) + " -print-file-name=" + lib2FindStatic + " 2>/dev/null"))
+                lib2FindStatic = (self.STDCXXLIB or "") + ".a"
+                lib = self.Backtick(self.COMPILER_DRIVER_CPlusPlus + " -print-file-name=" + lib2FindStatic + " 2>/dev/null").strip()
                 if lib != lib2FindStatic:
                     self.LinkerArgs_LibDependencies_ADD.append(lib)
                 else:
                     # consider using apt-get install glibc-static libstdc++-static
-                    dashLName = Trim(self.Backtick("echo " + S(self.STDCXXLIB) + " | sed s/lib//"))
+                    dashLName = (self.STDCXXLIB or "").replace("lib", "", 1)
                     self.LinkerArgs_LibDependencies_ADD.append("-l" + dashLName)
 
             if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
                 if not self.STATIC_LINK_GCCRUNTIME:
                     self.LinkerArgs_LibDependencies_ADD.append("-lstdc++")
-                if self.STATIC_LINK_GCCRUNTIME == 1:
+                if self.STATIC_LINK_GCCRUNTIME:
                     # https://github.com/SophistSolutions/Stroika/issues/811 (-static causes some apps crash; and there is no option to JUST staticly link libc - eg no -static-libc)
                     self.LinkerArgs_ExtraPrefix += " -static-libstdc++"
                     self.LinkerArgs_ExtraPrefix += " -static-libgcc"
@@ -2075,28 +1634,28 @@ class Configure:
 
         if isVisualStudio:
             self.LinkerArgs_ExtraPrefix += " -nologo"
-            WIN_LIBCOMPATIBLE_ARCH = "x64" if self.ARCH == "x86_64" else S(self.ARCH)
+            WIN_LIBCOMPATIBLE_ARCH = "x64" if self.ARCH == "x86_64" else self.ARCH
             self.LinkerArgs_ExtraPrefix += " -MACHINE:" + WIN_LIBCOMPATIBLE_ARCH
             if self.VSVARS_MSVC_RUNTIME_LIBRARY is None:
                 self.VSVARS_MSVC_RUNTIME_LIBRARY = "MultiThreadedDebug" if self.gAssertionsEnabled else "MultiThreaded"
 
-        if self.CPPFLAGS_Overridden == false:
+        if not self.CPPFLAGS_Overridden:
             self.GetDefaultCZZFLAGS_flags_flags = list(self.Platform_CPPFLAGS_B4Includes)
             self.GetDefaultCZZFLAGS_flags_flagValues2Remove = list(self.CPPFLAGS2Remove)
-            self.Platform_CPPFLAGS_B4Includes = self.GetDefaultCZZFLAGS_flags_(0, true, false)
+            self.Platform_CPPFLAGS_B4Includes = self.GetDefaultCZZFLAGS_flags_(0, True, False)
         # Stroika's own defines (its components, assertions, tracing) come from their own options, so --replace-all-CPPFLAGS
         # and --remove-CPPFLAGS leave them be
         self.GetDefaultCZZFLAGS_flags_flags = []
         self.GetDefaultCZZFLAGS_flags_flagValues2Remove = []
-        self.StroikaFoundation_CPPFLAGS_B4Includes = self.GetDefaultCZZFLAGS_flags_(0, false, true)
-        if self.CFLAGS_Overridden == false:
+        self.StroikaFoundation_CPPFLAGS_B4Includes = self.GetDefaultCZZFLAGS_flags_(0, False, True)
+        if not self.CFLAGS_Overridden:
             self.GetDefaultCZZFLAGS_flags_flags = list(self.CFLAGS)
             self.GetDefaultCZZFLAGS_flags_flagValues2Remove = list(self.CFLAGS2Remove)
-            self.CFLAGS = self.GetDefaultCZZFLAGS_flags_(1, true, true)
-        if self.CXXFLAGS_Overridden == false:
+            self.CFLAGS = self.GetDefaultCZZFLAGS_flags_(1, True, True)
+        if not self.CXXFLAGS_Overridden:
             self.GetDefaultCZZFLAGS_flags_flags = list(self.CXXFLAGS)
             self.GetDefaultCZZFLAGS_flags_flagValues2Remove = list(self.CXXFLAGS2Remove)
-            self.CXXFLAGS = self.GetDefaultCZZFLAGS_flags_(2, true, true)
+            self.CXXFLAGS = self.GetDefaultCZZFLAGS_flags_(2, True, True)
 
         # Append these last so they can be used to override earlier options
         for r in self.CXXFLAGS2Append:
@@ -2112,7 +1671,7 @@ class Configure:
             elif self.BuildPlatform == "Unix":
                 self.LinkerArgs_ExtraPrefix += " -g"
 
-        if PERL_OS == "darwin" and self.IsClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus) and S(self.ARCH) != "":
+        if IS_MACOS_HOST_ and self.IsClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus) and self.ARCH != "":
             self.CFLAGS.append(" -arch " + self.ARCH)
             self.CXXFLAGS.append(" -arch " + self.ARCH)
             self.LinkerArgs_ExtraPrefix += " -arch " + self.ARCH
@@ -2136,22 +1695,22 @@ class Configure:
         # CXXWARNING_FLAGS above (-Wno-maybe-uninitialized is exactly the kind of late warning that fires at an
         # LTO link) and after ApplyCompilerBugWorkarounds_ () has settled ENABLE_LTO. Prepended, so the link-only
         # suppressions already in LinkerArgs_ExtraPrefix (-Wno-free-nonheap-object etc) still come after it and win.
-        if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER) and self.ENABLE_LTO == true:
-            self.LinkerArgs_ExtraPrefix = S(self.CXXWARNING_FLAGS) + " " + self.LinkerArgs_ExtraPrefix
+        if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER) and self.ENABLE_LTO:
+            self.LinkerArgs_ExtraPrefix = self.CXXWARNING_FLAGS + " " + self.LinkerArgs_ExtraPrefix
 
     def ValidateConfigurationAndEmitNeededWarnings_(self):
-        if self.IsClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus) and self.GetClangVersion_(self.COMPILER_DRIVER_CPlusPlus) < 15.0:
-            self.Print("CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later (compiler-driver: " + S(self.COMPILER_DRIVER_CPlusPlus) + ").\n")
+        if self.IsClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus) and self.GetClangVersion_(self.COMPILER_DRIVER_CPlusPlus) < 15:
+            self.Print("CONFIGURATION-WARNING: Stroika v3 requires clang 15 or later (compiler-driver: " + self.COMPILER_DRIVER_CPlusPlus + ").\n")
         if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER_CPlusPlus) and self.GetGCCVersion_(self.COMPILER_DRIVER) < 11:
-            self.Print("CONFIGURATION-WARNING: Stroika 3 requires gcc 11 or later (compiler-driver: " + S(self.COMPILER_DRIVER_CPlusPlus) + ").\n")
+            self.Print("CONFIGURATION-WARNING: Stroika 3 requires gcc 11 or later (compiler-driver: " + self.COMPILER_DRIVER_CPlusPlus + ").\n")
 
     def GetMSVCVarName_(self, envVarName):
         """
         The Visual Studio environment (vcvarsall.bat's) for this ARCH and BuildToolsRoot - computed once, since ARCH and
         BuildToolsRoot shouldn't change once we start calling this
         """
-        if S(self.ARCH) == "":
-            Die("reorg code so this set first")
+        if self.ARCH == "":
+            Die_("reorg code so this set first")
         if not self.GetMSVCVarName_filled_:
             # Visual Studio targets only x86 and x86_64. Any other ARCH (e.g. UNKNOWN, for a compiler that is not installed) gets
             # no Visual Studio environment, so configure gets far enough for --only-if-has-compiler to skip the configuration.
@@ -2159,8 +1718,8 @@ class Configure:
                 if self.BuildToolsRoot is None:
                     self.BuildToolsRoot = self.GetDefaultToolsBuildDir(self.BuildPlatform)
                 self.GetMSVCVarName_e_ = self.GetAugmentedEnvironmentVariablesForConfiguration(self.ARCH, self.BuildToolsRoot)
-            self.GetMSVCVarName_filled_ = true
-        return S(self.GetMSVCVarName_e_.get(envVarName))
+            self.GetMSVCVarName_filled_ = True
+        return self.GetMSVCVarName_e_.get(envVarName, "")
 
     # ---------------------------------------------------------------- Visual Studio support
 
@@ -2174,7 +1733,7 @@ class Configure:
         return self.Cygpath(["--unix"], [arg])[0]
 
     def fromCygPath_(self, arg):
-        if S(arg) == "":
+        if not arg:
             return ""
         return self.Cygpath(["--mixed"], [arg])[0]
 
@@ -2188,8 +1747,8 @@ class Configure:
             GetDefaultToolsBuildDir ("VisualStudio.Net-2022")
             GetDefaultToolsBuildDir ("VisualStudio.Net")
         """
-        PROGRAMFILESDIR = S(Env("PROGRAMFILES"))
-        PROGRAMFILESDIR86 = S(Env("ProgramFiles(x86)"))
+        PROGRAMFILESDIR = Env_("PROGRAMFILES") or ""
+        PROGRAMFILESDIR86 = Env_("ProgramFiles(x86)") or ""
         names = ["18"]  # default to vs2k2026
         if PLATFORM == "VisualStudio.Net-2022":
             names = ["2022"]
@@ -2198,23 +1757,23 @@ class Configure:
         elif PLATFORM == "VisualStudio.Net":
             pass  # keep default
         else:
-            Die("PLATFORM unreconfigued in configure")
+            Die_("PLATFORM unreconfigued in configure")
         VSDIR = None
         for n in names:
             VSDIR = PROGRAMFILESDIR86 + "\\Microsoft Visual Studio\\" + n
-            if not PerlExists(self.toCygPath_(VSDIR)):
+            if not PathExists_(self.toCygPath_(VSDIR)):
                 VSDIR = PROGRAMFILESDIR + "\\Microsoft Visual Studio\\" + n
-            if not PerlExists(self.toCygPath_(VSDIR)):
+            if not PathExists_(self.toCygPath_(VSDIR)):
                 break
         # @todo consider somehow redoing this logic with use of vswhere, but not 100% sure how to fetch efficiently to use
-        VSDIRs = PerlGlob(self.toCygPath_(VSDIR + "\\*"))
+        VSDIRs = Glob_(self.toCygPath_(VSDIR + "\\*"))
         if len(VSDIRs) == 0:
-            Die("No 'VSDIR' found automatically")
+            Die_("No 'VSDIR' found automatically")
         VSDIR = self.fromCygPath_(VSDIRs[0])
         if len(VSDIRs) > 1:
             self.Print("Configure Warning: Multiple VSDirs found: using " + VSDIR + "\n")
-        if not PerlExists(self.toCygPath_(VSDIR)):
-            Die("directory '" + VSDIR + "' doesn't exist")
+        if not PathExists_(self.toCygPath_(VSDIR)):
+            Die_("directory '" + VSDIR + "' doesn't exist")
         return VSDIR
 
     def GetString2InsertIntoBatchFileToInitCompiles_(self, ARCH, VSDIR):
@@ -2224,10 +1783,10 @@ class Configure:
         elif ARCH == "x86_64":
             arg = "x64"
         else:
-            Die("hardwired/to fix logic about mapping config names to 32/64")
-        VSDIR_VC = S(VSDIR) + "\\VC"
-        if not PerlExists(self.toCygPath_(VSDIR_VC)):
-            Die("Couldn't find " + VSDIR_VC + ": did you install visual studio desktop C++ support?")
+            Die_("hardwired/to fix logic about mapping config names to 32/64")
+        VSDIR_VC = VSDIR + "\\VC"
+        if not PathExists_(self.toCygPath_(VSDIR_VC)):
+            Die_("Couldn't find " + VSDIR_VC + ": did you install visual studio desktop C++ support?")
         # pushd/popd: vcvarsall.bat cd's to %VSCMD_START_DIR% if that is set, and older Visual Studios to %USERPROFILE%\Source
         result = "pushd %TEMP%\r\n"
         result += 'call "' + VSDIR_VC + "\\Auxiliary\\Build\\vcvarsall.bat" + '" ' + arg + " > nul;\r\n"
@@ -2238,13 +1797,12 @@ class Configure:
         fd, tmpPath = tempfile.mkstemp(prefix="runCmdInVCVarsContext_", suffix=".bat", dir=".")
         try:
             with os.fdopen(fd, "wb") as f:
-                f.write(("@echo off\r\n" + self.GetString2InsertIntoBatchFileToInitCompiles_(ARCH, VSDIR) + cmd2Run + "\r\n").encode(ENC))
+                f.write(("@echo off\r\n" + self.GetString2InsertIntoBatchFileToInitCompiles_(ARCH, VSDIR) + cmd2Run + "\r\n").encode(ENCODING_, ENCODING_ERRORS_))
             # https://github.com/SophistSolutions/Stroika/issues/1073 /E:ON needed for this ticket
             # cmd finds the .bat by its bare name, in the current directory - which NoDefaultCurrentDirectoryInExePath turns off
-            p = subprocess.run(["cmd", "/E:ON/C", os.path.basename(tmpPath)], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                               env=ChildEnv(drop=["NoDefaultCurrentDirectoryInExePath"]))
-            self.PrintErr(p.stderr.decode(ENC))
-            return p.stdout.decode(ENC)
+            p = subprocess.run(["cmd", "/E:ON/C", os.path.basename(tmpPath)], stdout=subprocess.PIPE,
+                               env=ChildEnv_(drop=["NoDefaultCurrentDirectoryInExePath"]))
+            return Decode_(p.stdout)
         finally:
             os.unlink(tmpPath)
 
@@ -2262,31 +1820,29 @@ class Configure:
         cwVSDIR = self.toCygPath_(VSDIR)
         HOSTSTR = "HostX64"  # I doubt anyone develops on 32bit anymore, but if they do we can easily detect and fix this
         if ARCH not in ("x86", "x86_64"):
-            Die("unrecongized ARCH")
+            Die_("unrecongized ARCH")
         target, asName = ("x86", "ml") if ARCH == "x86" else ("x64", "ml64")
-        exeDirs = PerlGlob(cwVSDIR + "/VC/Tools/MSVC/*/bin/" + HOSTSTR + "/" + target)
+        exeDirs = Glob_(cwVSDIR + "/VC/Tools/MSVC/*/bin/" + HOSTSTR + "/" + target)
         exeDir = self.fromCygPath_(exeDirs[-1] if exeDirs else None)
         if len(exeDirs) > 1:
-            self.Print(self.PrintLevelLeader(N(self.MAKE_INDENT_LEVEL) + 2) + "Configure Warning: Multiple Compiler directories found: using " + exeDir + "\n")
+            self.Print(self.PrintLevelLeader(self.MAKE_INDENT_LEVEL + 2) + "Configure Warning: Multiple Compiler directories found: using " + exeDir + "\n")
         sdkPath = self.toCygPath_(resEnv.get("WindowsSdkVerBinPath"))
         exeDir2 = sdkPath + "/x64/"
         names = ["AS", "CC", "LD", "AR", "ASAN_DLL_DIR", "MIDL", "RC", "WindowsSdkVerBinPath"]  # 'AR' is what unix uses to create libraries
         values = self.Cygpath(["--mixed"], [exeDir + "\\" + asName, exeDir + "\\cl", exeDir + "\\link", exeDir + "\\lib", exeDir,
-                                            exeDir2 + "midl", exeDir2 + "rc", sdkPath], emptyGivesEmpty=True)
+                                            exeDir2 + "midl", exeDir2 + "rc", sdkPath])
         for n, v in zip(names, values):
             resEnv[n] = v
 
-        myOrigFullPath = S(Env("PATH"))
-        if sys.platform == "win32":  # what an MSYS2/Cygwin Perl's $ENV{PATH} says
-            myOrigFullPath = self.Backtick('cygpath --unix --path "' + myOrigFullPath + '"')
-            if myOrigFullPath.endswith("\n"):
-                myOrigFullPath = myOrigFullPath[:-1]
-        newFullPath = Trim(self.Backtick('cygpath --unix --path "' + S(resEnv.get("PATH")) + '"'))
-        myOrigFullPathHash = set(PerlSplit(":", myOrigFullPath))
-        newFullPathHash = set(PerlSplit(":", newFullPath)) - myOrigFullPathHash
+        myOrigFullPath = Env_("PATH") or ""
+        if sys.platform == "win32":  # a native Windows Python's PATH is in Windows form
+            myOrigFullPath = self.Cygpath(["--unix", "--path"], [myOrigFullPath])[0]
+        newFullPath = self.Cygpath(["--unix", "--path"], [resEnv.get("PATH", "")])[0]
+        myOrigFullPathHash = set(SplitList_(myOrigFullPath, ":"))
+        newFullPathHash = set(SplitList_(newFullPath, ":")) - myOrigFullPathHash
         # Sorting is not desirable, but has doesn't preserve order anyhow, so best the output is regular (the same across runs)
         # todo must do similar but be careful about how to treat colon in paths.
-        resEnv["TOOLS_PATH_ADDITIONS"] = ":".join(Trim(ip) for ip in sorted(newFullPathHash))
+        resEnv["TOOLS_PATH_ADDITIONS"] = ":".join(ip.strip() for ip in sorted(newFullPathHash))
 
         for n in ("VCToolsInstallDir", "VSINSTALLDIR", "WindowsSdkDir"):
             resEnv[n] = self.toExternallyUsedPath_(self.toCygPath_(resEnv.get(n)))
@@ -2302,7 +1858,7 @@ class Configure:
         """
 
         def Element(name, value):
-            return "    <" + name + ">" + XMLText(value) + "</" + name + ">\n"
+            return "    <" + name + ">" + XMLText_(value) + "</" + name + ">\n"
 
         isVS = re.match(r"VisualStudio.Net", self.BuildPlatform) is not None
         # probably belongs elsewhere
@@ -2314,7 +1870,6 @@ class Configure:
         # FIXUP LinkerArgs_LibPath
         LinkerArgs_LibPathString = ""
         for l in self.LinkerArgs_LibPath:
-            l = S(l)
             if isVS:
                 if len(l) > 0 and l.endswith("\\"):
                     l += '"'
@@ -2331,7 +1886,7 @@ class Configure:
         w("    <!--Overall-->\n")
         w("    <ConfigureCommandLine>")
         w("configure ")
-        w(XMLText(shlex.join(appArgs)))  # quoted as a shell reads it: make reconfigure evals it
+        w(XMLText_(shlex.join(appArgs)))  # quoted as a shell reads it: make reconfigure evals it
         w("</ConfigureCommandLine>\n")
         w(Element("BuildPlatform", self.BuildPlatform))
         if self.BuildToolsRoot is not None:
@@ -2365,11 +1920,11 @@ class Configure:
         w(Element("qFeatureFlag_LZMA", self.FEATUREFLAG_LZMA))
         w(Element("qFeatureFlag_mongocxxdriver", self.FEATUREFLAG_mongocxxdriver))
         w(Element("qFeatureFlag_OpenSSL", self.FEATUREFLAG_OpenSSL))
-        if S(self.FEATUREFLAG_OpenSSLExtraArgs) != "":
-            if self.FEATUREFLAG_OpenSSL == LIBFEATUREFLAG_UseStaticTPP:
+        if self.FEATUREFLAG_OpenSSLExtraArgs != "":
+            if self.FEATUREFLAG_OpenSSL == LIBFEATUREFLAG_UseStaticTPP_:
                 w(Element("qFeatureFlag_OpenSSL_ExtraArgs", self.FEATUREFLAG_OpenSSLExtraArgs))
             else:
-                Die("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use")
+                Die_("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use")
         w(Element("qFeatureFlag_sqlite", self.FEATUREFLAG_sqlite))
         w(Element("qFeatureFlag_StrawberryPerl", self.FEATUREFLAG_StrawberryPerl))
         w(Element("qFeatureFlag_WinHTTP", self.FEATUREFLAG_WinHTTP))
@@ -2378,15 +1933,15 @@ class Configure:
         w(Element("qFeatureFlag_libxml2", self.FEATUREFLAG_libxml2))
         w(Element("qFeatureFlag_ZLib", self.FEATUREFLAG_ZLib))
         w(Element("qFeatureFlag_zstd", self.FEATUREFLAG_zstd))
-        if self.gAssertionsEnabled != DEFAULT_BOOL_OPTIONS:
+        if self.gAssertionsEnabled is not None:
             w(Element("AssertionsEnabled", self.gAssertionsEnabled))
-        w(Element("SanitizerFlags", "".join(S(v) + " " for v in self.sanitizerFlags)))
+        w(Element("SanitizerFlags", "".join(v + " " for v in self.sanitizerFlags)))
 
         w("\n    <!--MISC-->\n")
         w(Element("CrossCompiling", self.CrossCompiling))
         w("    <ExtraMakeDefines>\n")
         for var in self.useExtraMakeDefines:
-            w("       <MakeDefine>" + XMLText(var) + "</MakeDefine>\n")
+            w("       <MakeDefine>" + XMLText_(var) + "</MakeDefine>\n")
         w("    </ExtraMakeDefines>\n")
         w(Element("Foundation_PkgConfigNames", " ".join(self.foundationPackageCfgNames)))
 
@@ -2395,20 +1950,20 @@ class Configure:
                      "VSVARS_MSVC_RUNTIME_LIBRARY"):
             if getattr(self, name) is not None:
                 w(Element(name, getattr(self, name)))
-        if S(self.MACOSX_DEPLOYMENT_TARGET) != "":
+        if self.MACOSX_DEPLOYMENT_TARGET:
             w(Element("MACOSX_DEPLOYMENT_TARGET", self.MACOSX_DEPLOYMENT_TARGET))
         if self.TOOLS_PATH_ADDITIONS is not None:
             w(Element("TOOLS_PATH_ADDITIONS", self.TOOLS_PATH_ADDITIONS))
         if len(self.VC_PLATFORM_INCLUDES_PATH) != 0:
-            w(Element("VSVARS_PLATFORM_INCLUDES_PATH", self.PATH_SEPERATOR.join(S(p) for p in self.VC_PLATFORM_INCLUDES_PATH)))
+            w(Element("VSVARS_PLATFORM_INCLUDES_PATH", self.PATH_SEPERATOR.join(self.VC_PLATFORM_INCLUDES_PATH)))
 
         w("\n    <!--Compiling-->\n")
-        w(Element("PLATFORM_CPPFLAGS_NOTINCLUDES", " ".join(S(v) for v in self.Platform_CPPFLAGS_B4Includes)))
-        w(Element("PLATFORM_INCLUDES_PATH", self.PATH_SEPERATOR.join(S(p) for p in self.PLATFORM_INCLUDES_PATH)))
-        w(Element("PLATFORM_CFLAGS", " ".join(S(v) for v in self.CFLAGS)))
-        w(Element("PLATFORM_CXXFLAGS", " ".join(S(v) for v in self.CXXFLAGS)))
-        w(Element("FOUNDATION_CPPFLAGS_NOTINCLUDES", " ".join(S(v) for v in self.StroikaFoundation_CPPFLAGS_B4Includes)))
-        w(Element("FOUNDATION_INCLUDES_PATH", self.PATH_SEPERATOR.join(S(p) for p in self.FOUNDATION_INCLUDES_PATH)))
+        w(Element("PLATFORM_CPPFLAGS_NOTINCLUDES", " ".join(self.Platform_CPPFLAGS_B4Includes)))
+        w(Element("PLATFORM_INCLUDES_PATH", self.PATH_SEPERATOR.join(self.PLATFORM_INCLUDES_PATH)))
+        w(Element("PLATFORM_CFLAGS", " ".join(self.CFLAGS)))
+        w(Element("PLATFORM_CXXFLAGS", " ".join(self.CXXFLAGS)))
+        w(Element("FOUNDATION_CPPFLAGS_NOTINCLUDES", " ".join(self.StroikaFoundation_CPPFLAGS_B4Includes)))
+        w(Element("FOUNDATION_INCLUDES_PATH", self.PATH_SEPERATOR.join(self.FOUNDATION_INCLUDES_PATH)))
 
         w("\n    <!--Linking-->\n")
         w(Element("IncludeDebugSymbolsInLibraries", self.INCLUDE_SYMBOLS_LIB))
@@ -2421,7 +1976,7 @@ class Configure:
         # todo fix/wrong - only works for case of zero or one file
         # ';' separated list of files to be copied into same directory as we link to, as part of linking operations.
         # ORIGINAL inspiration was ASAN on Windows - but this basic mechanism could also be used on unix for example, for dlls with linker flags to use bin relative DLLS/so file etc
-        w(Element("LinkTime_CopyFilesToEXEDir", " ".join('"' + S(v) + '"' for v in self.LinkTime_CopyFilesToEXEDir)))
+        w(Element("LinkTime_CopyFilesToEXEDir", " ".join('"' + v + '"' for v in self.LinkTime_CopyFilesToEXEDir)))
 
         w("\n    <!--Runtime/Testing-->\n")
         w(Element("RunPrefix", self.RunPrefix))
@@ -2432,17 +1987,17 @@ class Configure:
 
         w("\n    <!--VERSIONS-->\n")
         if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
-            w("        <!--" + XMLComment("g++ version: " + S(self.GetGCCVersion_(self.COMPILER_DRIVER_CPlusPlus, true))) + "-->\n")
+            w("        <!--" + XMLComment_("g++ version: " + self.GetGCCVersion_(self.COMPILER_DRIVER_CPlusPlus, fullString=True)) + "-->\n")
         if self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
-            w("        <!--" + XMLComment("clang++ version: " + S(self.GetClangVersion_(self.COMPILER_DRIVER_CPlusPlus, true))) + "-->\n")
+            w("        <!--" + XMLComment_("clang++ version: " + self.GetClangVersion_(self.COMPILER_DRIVER_CPlusPlus, fullString=True)) + "-->\n")
         if self.IsMSVCCompiler_(self.COMPILER_DRIVER_CPlusPlus):
-            w("        <!--" + XMLComment("MSVC++ version: " + S(self.Get_MSVC_CL_Version_(self.COMPILER_DRIVER_CPlusPlus))) + "-->\n")
+            w("        <!--" + XMLComment_("MSVC++ version: " + self.Get_MSVC_CL_Version_(self.COMPILER_DRIVER_CPlusPlus)) + "-->\n")
         ubuntuVersion = self.getUbuntuVersion()
-        if ubuntuVersion != 0:
-            w("        <!--" + XMLComment("Ubuntu: " + S(ubuntuVersion)) + "-->\n")
-        if PERL_OS == "darwin":
-            w("        <!--" + XMLComment("MacOS: " + self.getMacOSVersion_()) + "-->\n")
-            w("        <!--" + XMLComment("XCode: " + S(self.getXCodeVersion_()) + " ; selected: " + self.getXCodeSelect_()) + "-->\n")
+        if ubuntuVersion != "":
+            w("        <!--" + XMLComment_("Ubuntu: " + ubuntuVersion) + "-->\n")
+        if IS_MACOS_HOST_:
+            w("        <!--" + XMLComment_("MacOS: " + self.getMacOSVersion_()) + "-->\n")
+            w("        <!--" + XMLComment_("XCode: " + self.getXCodeVersion_() + " ; selected: " + self.getXCodeSelect_()) + "-->\n")
 
         w("</Configuration>\n")
         return "".join(o)
@@ -2454,7 +2009,7 @@ class Configure:
         # Workaround MSYS compatibility issues with Microsoft Visual C++ tools - as make exports it (SharedMakeVariables-Default.mk),
         # so configure run by hand finds what it finds under make. A MINGW64/UCRT64 shell is MSYS2 too (as Build/Scripts/DetectedHostOS).
         #   Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
-        if IS_WINDOWS_HOST and re.match(r"MSYS|MINGW", self.Backtick("uname -s")):
+        if IS_WINDOWS_HOST_ and re.match(r"MSYS|MINGW", self.Backtick("uname -s")):
             os.environ["MSYS2_ARG_CONV_EXCL"] = "*"
         self.ParseCommandLine_()
         self.PostProcessOptions_()
@@ -2464,86 +2019,86 @@ class Configure:
         except OSError:
             pass
 
-        generate = true
+        generate = True
         generateBecause = ""
         CXX = self.COMPILER_DRIVER_CPlusPlus
         if self.onlyGenerateIfCompilerExists:
             if not self.HasCompiler_(CXX):
-                generate = false
-                generateBecause = "compiler " + S(CXX) + " not present"
+                generate = False
+                generateBecause = "compiler " + CXX + " not present"
 
             # Really should do similar for anything we say == system and $onlyGenerateIfCompilerExists
-            if generate and self.FEATUREFLAG_ZLib == LIBFEATUREFLAG_UseSystem:
+            if generate and self.FEATUREFLAG_ZLib == LIBFEATUREFLAG_UseSystem_:
                 if self.System("pkg-config --libs zlib 2>/dev/null >/dev/null") != 0:
-                    generate = false
+                    generate = False
                     generateBecause = "zlib is not installed"
             # --valgrind enable compiles in memcheck's client requests, so every compile needs <valgrind/memcheck.h>: ask the
             # compiler rather than look for the file, so the answer is the include path the build will really search.
             if generate and self.TargettingValgrind:
-                if self.System('printf "#include <valgrind/memcheck.h>\n" | ' + S(CXX) + " -fsyntax-only -x c++ - 2>/dev/null > /dev/null") != 0:
-                    generate = false
+                if self.System('printf "#include <valgrind/memcheck.h>\n" | ' + CXX + " -fsyntax-only -x c++ - 2>/dev/null > /dev/null") != 0:
+                    generate = False
                     generateBecause = "valgrind is not installed (no <valgrind/memcheck.h>)"
 
             if generate and self.IsGCCOrGPlusPlus_(CXX):
                 itsVersion = self.GetGCCVersion_(CXX)
-                if itsVersion < 11.0:
-                    generate = false
-                    generateBecause = "GCC (" + S(CXX) + ") v=" + S(itsVersion) + " is older than Stroika's minimum, gcc 11"
-            if self.FEATUREFLAG_fmtlib is not None and self.FEATUREFLAG_fmtlib == LIBFEATUREFLAG_No and self.NeedsFmtLib_():
-                generate = false
+                if itsVersion < 11:
+                    generate = False
+                    generateBecause = "GCC (" + CXX + ") v=" + str(itsVersion) + " is older than Stroika's minimum, gcc 11"
+            if self.FEATUREFLAG_fmtlib is not None and self.FEATUREFLAG_fmtlib == LIBFEATUREFLAG_No_ and self.NeedsFmtLib_():
+                generate = False
                 generateBecause = "This compiler requires fmtlib, and configure arguments disabled fmtlib use."
             ubuntuVersion = self.getUbuntuVersion()
             # if flag to use libc++ - check if right version is available (but not on XCode)
             if generate and self.IsClangOrClangPlusPlus_(CXX):
                 itsVersion = self.GetClangVersion_(CXX)
-                if itsVersion < 15.0:
-                    generate = false
-                    generateBecause = S(CXX) + " v=" + S(itsVersion) + " is older than Stroika's minimum, clang 15"
-                if generate and ubuntuVersion == 24.04 and itsVersion < 16.0 and self.STDCXXLIB == "libstdc++":
+                if itsVersion < 15:
+                    generate = False
+                    generateBecause = CXX + " v=" + str(itsVersion) + " is older than Stroika's minimum, clang 15"
+                if generate and ubuntuVersion == "24.04" and itsVersion < 16 and self.STDCXXLIB == "libstdc++":
                     # clang++-15-release-libstdc++ fails building google test
-                    generate = false
-                    generateBecause = S(CXX) + " with libstdc++ doesn't work with this version of libstdc++"
-                if (generate and 16.0 <= itsVersion < 18.0 and self.STDCXXLIB == "libstdc++"
+                    generate = False
+                    generateBecause = CXX + " with libstdc++ doesn't work with this version of libstdc++"
+                if (generate and 16 <= itsVersion < 18 and self.STDCXXLIB == "libstdc++"
                         and self.CPPSTD_VERSION_FLAG in ("--std=c++2b", "--std=c++23")):
                     # PERHAPS should fine tune this check to make sure we are looking at g++ lib 13
-                    generate = false
+                    generate = False
                     generateBecause = "clang++-16/17 with libstdc++ doesn't support c++23 mode"
                 if generate and self.STDCXXLIB == "libc++" and not self.StdLibSupportsCompiler_(CXX, "libc++"):
                     # only reached when libc++ was asked for explicitly - the default would already have fallen back
-                    generate = false
-                    generateBecause = "the installed libc++ says it does not support " + S(CXX)
+                    generate = False
+                    generateBecause = "the installed libc++ says it does not support " + CXX
                 if generate and not self.HasStdLib_(CXX, self.STDCXXLIB):
-                    generate = false
-                    generateBecause = S(self.STDCXXLIB) + " not available for " + S(CXX)
-            if generate and ubuntuVersion != 0:
+                    generate = False
+                    generateBecause = (self.STDCXXLIB or "") + " not available for " + CXX
+            if generate and ubuntuVersion != "":
                 # needed for example of HOST OS is Ubuntu 24.04 (not necessarily OS in container)
                 if self.IsTargettingSanitizer_("thread"):
                     randBits = self.Backtick("sudo -S cat /proc/sys/vm/mmap_rnd_bits < /dev/null 2>/dev/null")
                     if randBits == "":
-                        generate = false
+                        generate = False
                         generateBecause = "Cannot read mmap_rnd_bits and https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels"
-                    elif N(randBits) > 28:
-                        generate = false
+                    elif randBits.strip().isdigit() and int(randBits) > 28:
+                        generate = False
                         generateBecause = "sudo sysctl vm.mmap_rnd_bits=28 to allow tsan: https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels"
-            if generate and ubuntuVersion == 24.04 and self.gUbuntu2404OptimizedNoLTOHazard:
+            if generate and ubuntuVersion == "24.04" and self.gUbuntu2404OptimizedNoLTOHazard:
                 # gcc 13/14 as packaged on Ubuntu 24.04 give WRONG ANSWERS in Containers::Sequence/Traversal/
                 # DataExchange when optimizing without LTO - see ApplyCompilerBugWorkarounds_ for the
                 # measurements. That sub already forces LTO back on so the bad flags are never emitted; for an
                 # OPTIONAL configuration, do not generate it at all rather than quietly building something the
                 # caller did not ask for.
-                generate = false
+                generate = False
                 generateBecause = "gcc 13/14 on Ubuntu 24.04 miscompile Stroika containers when optimizing without LTO (see ApplyCompilerBugWorkarounds_ in configure)"
-            if generate and ubuntuVersion == 22.04:
+            if generate and ubuntuVersion == "22.04":
                 # needed for [34] Foundation::DataExchange::XML - raspberrypi-g++-12-release-sanitize_address/Tests/Test34
                 if self.IsGCCOrGPlusPlus_(CXX):
-                    if self.GetGCCVersion_(CXX) < 13.0 and self.ARCH == "armhf":
+                    if self.GetGCCVersion_(CXX) < 13 and self.ARCH == "armhf":
                         # maybe only needed for release builds - but fine tune tests later in the cycle, and also not checking if arm only issue
                         if self.IsTargettingSanitizer_("address"):
-                            generate = false
+                            generate = False
                             generateBecause = "bogus failure on raspberrypi-g++-12-release-sanitize_address/Tests/Test34 - so skipping asan by default - for this target"
             if generate and self.qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy:
                 if "thread" in self.sanitizerFlags:
-                    generate = false
+                    generate = False
                     generateBecause = "qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - see https://github.com/SophistSolutions/Stroika/issues/851 AND https://gcc.gnu.org/bugzilla//show_bug.cgi?id=101978 "
 
         if generate:
@@ -2558,109 +2113,295 @@ class Configure:
         return None, None
 
 
-HELP_TEXT_ = (
-    'Usage:\n'
-    '  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n'
-    '\t    --arch {ARCH}                                    /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n'
-    '\t    [--config-tag {TAG-NAME}]*                       /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n'
-    '\t    --build-by-default never|always|{uname}          /* Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT */\n'
-    '\t    --build-platform {PLATFORM}                      /* Specifies the BuildPlatform (currently supported: Unix (even on macos), VisualStudio.Net-2022, VisualStudio.Net-2026) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1) */\n'
-    '\t    --target-platforms {TargetPlatforms}             /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n'
-    '\t    --build-tools-root {BuildToolsRoot}              /* Specifies the BuildToolsRoot (makefile variable) - initially just for visual studio - usually auto-detected */\n'
-    '\t    --assertions { enable|disable|default }          /* Enables/disable assertion feature (setting qStroika_Foundation_Debug_AssertionsChecked) */\n'
-    '\t    --block-allocation { enable|disable|default }    /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n'
-    '\t    --valgrind { enable|disable|default }            /* Enables/disable valgrind-specific runtime code */\n'
-    '\t    --GLIBCXX_DEBUG { enable|disable|default }       /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n'
-    '\t    --MACOSX_DEPLOYMENT_TARGET { #|default|none }    /* set MACOSX_DEPLOYMENT_TARGET (mac os min version) (macosx target specific) */\n'
-    '\t    --cppstd-version {FLAG}                          /* Sets can be c++20, c++2a, c++2b, c++23 */\n'
-    '\t    --stdlib {LIB}                                   /* libc++ (clang lib), libstdc++ (gcc and often clang) */\n'
-    '\t    --ATLMFC {use-system|no}                         /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n'
-    '\t    --boost {build-only|use|use-system|no}           /* Enables/disables use of boost for this configuration [default use] */\n'
-    '\t    --LibCurl {build-only|use|use-system|no}         /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n'
-    '\t    --OpenSSL {build-only|use|use-system|no}         /* Enables/disables use of OpenSSL for this configuration [default use] */\n'
-    '\t    --OpenSSL-ExtraArgs { purify? }                  /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n'
-    '\t    --lzma {build-only|use|use-system|no}            /* Enables/disables use of LZMA SDK for this configuration [default use] */\n'
-    '\t    --mongo-cxx-driver {build-only|use|use-system|no}/* Enables/disables use of MongoCXX for this configuration [default use] */\n'
-    '\t    --googletest {build-only|use|use-system|no}      /* Enables/disables use of google test framework for this configuration [default use] */\n'
-    '\t    --sqlite {build-only|use|use-system|no}          /* Enables/disables use of sqlite for this configuration [default use] */\n'
-    '\t    --StrawberryPerl {use|no}                        /* Enables/disables use of StrawberryPerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n'
-    '\t    --WIX {use|use-system|no}                        /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n'
-    '\t    --WinHTTP {use-system|no}                        /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n'
-    '\t    --Xerces {build-only|use|use-system|no}          /* Enables/disables use of Xerces for this configuration [default use] */\n'
-    '\t    --libxml2 {build-only|use|use-system|no}         /* Enables/disables use of libxml2 for this configuration [default use] */\n'
-    '\t    --ZLib {build-only|use|use-system|no}            /* Enables/disables use of ZLib for this configuration [default use] */\n'
-    '\t    --zstd {build-only|use|use-system|no}            /* Enables/disables use of zstd for this configuration [default use] */\n'
-    '\t    --all-available-third-party-components           /* equivilent to --Xerces (etc) use - for all that are available on this platform (except polyfill components like fmtlib) */\n'
-    '\t    --default-third-party-components                 /* reset third party settings to their default value (maybe less than all-available-third-party-components) */\n'
-    '\t    --no-third-party-components           \t\t\t /* equivilent to --StrawberryPerl no --LibCurl no ...  */\n'
-    '\t    --trace2file { enable|disable|default }          /* Enables/disable trace2file feature */\n'
-    '\t    --static-link-gccruntime { enable|disable }      /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n'
-    '\t    --make-define {ARG}                              /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n'
-    '\t    --compiler-driver {ARG}                          /* default is gcc */\n'
-    '\t    --ar {ARG}                                       /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n'
-    "\t    --as {ARG}                                       /* default is 'as' on unix, and retrieved from visual studio on visual studio */\n"
-    '\t    --ranlib {ARG}                                   /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n'
-    '\t    --strip {ARG}                                    /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */\n'
-    '\t    --append-CFLAGS {ARG}                            /* Appends ARG to CFLAGS */\n'
-    '\t    --remove-CFLAGS {ARG}                            /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */\n'
-    '\t    --replace-all-CFLAGS {ARG}                       /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */\n'
-    '\t    --append-CPPFLAGS {ARG}                          /* Appends ARG to CPPFLAGS; effectively defines for CFLAGS and CXXFLAGS, elg --append-CPPFLAGS -DA=B */\n'
-    '\t    --remove-CPPFLAGS {ARG}                          /* Remove ARG from CPPFLAGS (including default added args; processed after all adds applied) */\n'
-    '\t    --replace-all-CPPFLAGS {ARG}                     /* OVERRIDES DEFAULTS- and sets CPPFLAGS to just these values (the qStroika_ defines are kept) */\n'
-    '\t    --append-CXXFLAGS {ARG}                          /* Appends ARG to CXXFLAGS */\n'
-    '\t    --remove-CXXFLAGS {ARG}                          /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */\n'
-    '\t    --replace-all-CXXFLAGS {ARG}                     /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */\n'
-    '\t    --shared-symbol-visibility {ARG}                 /* alias for append-CFLAGS AND append-CXXFLAGS with -fvisibility=XXX (defaults to hidden on gcc/clang/unix compilers) */\n'
-    "\t    --append-extra-prefix-linker-args {ARG}          /* Appends ARG to 'extra prefix linker args */\n"
-    "\t    --append-extra-suffix-linker-args {ARG}          /* Appends ARG to 'extra suffix linker args */\n"
-    "\t    --append-extra-compiler-and-linker-args {ARG}    /* Appends ARG to 'extra compiler' and 'extra linker' args */\n"
-    '\t    --includes-path {ARG}                            /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces, ; separated on windows hosts) */\n'
-    "\t    --append-includes-path {ARG}                     /* Appends ARG to 'INCLUDES_PATH */\n"
-    "\t    --libs-path {ARG}                                /* Sets LinkerArgs_LibPath variable (':' separated, since unix standard and allows spaces; separated on windows hosts) */\n"
-    "\t    --append-libs-path {ARG}                         /* Appends ARG to 'LinkerArgs_LibPath */\n"
-    '\t    --lib-dependencies {ARG}                         /* Sets LinkerArgs_LibDependencies variable (space separated) */\n'
-    "\t    --append-lib-dependencies {ARG}                  /* Appends ARG to 'LinkerArgs_LibDependencies */\n"
-    "\t    --linktime-copy-files-2-EXEDir {ARG}             /* Sets LinkTime_CopyFilesToEXEDir variable (' ' separated) */\n"
-    "\t    --append-linktime-copy-files-2-EXEDir {ARG}      /* Appends ARG to 'LinkTime_CopyFilesToEXEDir */\n"
-    '\t    --run-prefix {ARG}                               /* Sets variable RunPrefix with stuff injected before run for built executables,\n'
-    '\t                                                        such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n'
-    '\t    --append-run-prefix {ARG}                        /* Appends ARG RunPrefix: with stuff injected before run for built executables */\n'
-    '\t    --include-default-TSAN_OPTIONS {true/false}      /* if true, and tsan enabled, add TSAN_OPTIONS= guess to RunPrefix */\n'
-    '\t    --pg {ARG}                                       /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n'
-    '\t    --lto { enable|disable }                         /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n'
-    '\t    --cross-compiling {true|false}                   /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n'
-    '\t    --apply-default-debug-flags                      /*  */\n'
-    '\t    --apply-default-release-flags                    /*  */\n'
-    '\t    --only-if-has-compiler                           /* Only generate this configuration if the compiler appears to exist (test run)*/\n'
-    '\t    --debug-symbols {true|false}                     /* --debug-symbols-lib AND --debug-symbols-exe at the same time */\n'
-    '\t    --debug-symbols-lib {true|false}                 /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n'
-    '\t    --debug-symbols-exe {true|false}                 /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n'
-    '\t    --malloc-guard {true|false}                      /* defaults to false (for now experimental and only works with GCC) */\n'
-    '\t    --runtime-stack-check {true|false}               /* gcc -fstack-protector-all */\n'
-    '\t    --msvc-runtime-library {MultiThreaded|...} \t\t /* MSVC_RUNTIME_LIBRARY windows value - defaults to no-DLL and debug based on assertion flag - https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html */\n'
-    '\t    --sanitize {none|thread|address|undefined|leak}  /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -\n'
-    '\t                                                        any arg you can pass to -fsanitize=XXXX */\n'
-    '\t                                                     /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */\n'
-    '\t    --no-sanitize {thread|vptr|etc...}               /* any from --sanitize or all; option maybe used to remove a sub-category of tests (like vptr) from larger category like address */\n'
-    '\n'
-    "Configure's behavior is also influenced by the following environment variables:\n"
-    '\t    CC, CXX, BuildPlatform, TargetPlatforms, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n'
-    '\t    EXTRA_CONFIGURE_ARGS= a space separated list of arguments added to the beginning of the configure command\n'
-)
+
+# ---------------------------------------------------------------- the options
+
+# When an option takes effect: those that decide the defaults first - the build platform, then the compiler and the debug
+# or release defaults (ARCH with them, when it is worked out) - and the rest after those defaults are set, so they can
+# override them. Within each, in command-line order.
+WITH_PLATFORM_ = "platform"
+WITH_COMPILER_ = "compiler"
+WITH_ARCH_ = "arch"
+AFTER_DEFAULTS_ = "after-defaults"
 
 
-def Main(argv):
-    c = Configure(argv)
+class Option_:
+    """
+    A configure option, --NAME (or -NAME, the name in any case). arg is None if it takes no value; else its value as --help
+    spells it, or a dict of the values it takes, each to what apply is given instead. apply (configure, value) does what the
+    option says, when its turn comes (when).
+    """
+
+    def __init__(self, name, arg, help, apply, when=AFTER_DEFAULTS_, aliases=()):
+        self.name = name
+        self.arg = arg
+        self.help = help
+        self.apply = apply
+        self.when = when
+        self.aliases = aliases
+
+
+def Set_(attr, transform=None):
+    """An apply: attr is the option's value (transformed)"""
+    return lambda c, v: setattr(c, attr, transform(v) if transform else v)
+
+
+def SetTo_(attr, value):
+    """An apply, for an option taking no value: attr is value"""
+    return lambda c, v: setattr(c, attr, value)
+
+
+def Append_(attr):
+    """An apply: the option's value is added to attr, a list"""
+    return lambda c, v: getattr(c, attr).append(v)
+
+
+def AddWord_(s, w):
+    """s, a string of words one space apart, with w added"""
+    return s + " " + w if s != "" else w
+
+
+def AppendWord_(attr):
+    """An apply: the option's value is added to attr, a string of words one space apart"""
+    return lambda c, v: setattr(c, attr, AddWord_(getattr(c, attr), v))
+
+
+def ReplaceAll_(attr, overriddenAttr):
+    """An apply: the option's value's words are added to attr, a list, which replaces the defaults"""
+
+    def Apply(c, v):
+        getattr(c, attr).extend(v.split())
+        setattr(c, overriddenAttr, True)
+    return Apply
+
+
+def SetPathList_(attr, setAttr):
+    """An apply: attr is the option's value, a PATH_SEPERATOR-separated list, which replaces the defaults"""
+
+    def Apply(c, v):
+        setattr(c, attr, SplitList_(v, c.PATH_SEPERATOR))
+        setattr(c, setAttr, True)
+    return Apply
+
+
+def Values_(*values):
+    return {v: v for v in values}
+
+
+COMPONENT_ = Values_(LIBFEATUREFLAG_BuildOnly_, LIBFEATUREFLAG_UseStaticTPP_, LIBFEATUREFLAG_UseSystem_, LIBFEATUREFLAG_No_)
+ENABLE_DISABLE_DEFAULT_ = {"enable": True, "disable": False, "default": None}
+TRUE_FALSE_ = {"true": True, "false": False}
+
+# In the order --help lists them
+OPTIONS_ = [
+    Option_("arch", "{ARCH}", "for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected",
+            Set_("ARCH"), when=WITH_ARCH_),
+    Option_("config-tag", "{TAG-NAME}", "Add TAG-NAME to the list of tags associated with this configuration. May be repeated",
+            Configure_.OptionConfigTag_),
+    Option_("build-by-default", "never|always|{uname}", "Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT",
+            Set_("BuildByDefault")),
+    Option_("build-platform", "{PLATFORM}", "Specifies the BuildPlatform (currently supported: Unix (even on macos), VisualStudio.Net-2022, VisualStudio.Net-2026) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1)",
+            Set_("BuildPlatform"), when=WITH_PLATFORM_),
+    Option_("target-platforms", "{TargetPlatforms}", "Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected",
+            Set_("TargetPlatforms")),
+    Option_("build-tools-root", "{BuildToolsRoot}", "Specifies the BuildToolsRoot (makefile variable) - initially just for visual studio - usually auto-detected",
+            Set_("BuildToolsRoot")),
+    Option_("assertions", ENABLE_DISABLE_DEFAULT_, "Enables/disable assertion feature (setting qStroika_Foundation_Debug_AssertionsChecked)",
+            Set_("gAssertionsEnabled")),
+    Option_("block-allocation", {"enable": "1", "disable": "0", "default": None}, "Enables/disable block-allocation (a feature that improves performance, but messes up valgrind)",
+            Configure_.OptionBlockAllocation_),
+    Option_("valgrind", {"enable": "1", "disable": "0", "default": None}, "Enables/disable valgrind-specific runtime code",
+            Configure_.OptionValgrind_),
+    Option_("GLIBCXX_DEBUG", ENABLE_DISABLE_DEFAULT_, "Enables/Disables GLIBCXX_DEBUG (G++-specific)",
+            Set_("ENABLE_GLIBCXX_DEBUG")),
+    Option_("MACOSX_DEPLOYMENT_TARGET", "{#|default|none}", "set MACOSX_DEPLOYMENT_TARGET (mac os min version) (macosx target specific)",
+            Configure_.OptionMacOSXDeploymentTarget_),
+    Option_("cppstd-version", "{FLAG}", "Sets can be c++20, c++2a, c++2b, c++23",
+            Configure_.OptionCppStdVersion_),
+    Option_("stdlib", "{LIB}", "libc++ (clang lib), libstdc++ (gcc and often clang)",
+            Set_("STDCXXLIB")),
+    Option_("ATLMFC", Values_(LIBFEATUREFLAG_UseSystem_, LIBFEATUREFLAG_No_), "Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise]",
+            Set_("FEATUREFLAG_ATLMFC")),
+    Option_("boost", COMPONENT_, "Enables/disables use of boost for this configuration [default use]",
+            Set_("FEATUREFLAG_boost")),
+    Option_("LibCurl", COMPONENT_, "Enables/disables use of LibCurl for this configuration [default use on Linux and MacOS, no on Windows]",
+            Set_("FEATUREFLAG_LIBCURL")),
+    Option_("OpenSSL", COMPONENT_, "Enables/disables use of OpenSSL for this configuration [default use]",
+            Set_("FEATUREFLAG_OpenSSL")),
+    Option_("OpenSSL-ExtraArgs", "{purify?}", "Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile)",
+            Set_("FEATUREFLAG_OpenSSLExtraArgs")),
+    Option_("fmtlib", COMPONENT_, "Enables/disables use of fmtlib (for std::format) for this configuration [default use only if the compiler's <format> is not good enough]",
+            Set_("FEATUREFLAG_fmtlib")),
+    Option_("lzma", COMPONENT_, "Enables/disables use of LZMA SDK for this configuration [default use]",
+            Set_("FEATUREFLAG_LZMA")),
+    Option_("mongo-cxx-driver", COMPONENT_, "Enables/disables use of MongoCXX for this configuration [default use]",
+            Set_("FEATUREFLAG_mongocxxdriver")),
+    Option_("googletest", COMPONENT_, "Enables/disables use of google test framework for this configuration [default use]",
+            Set_("FEATUREFLAG_GoogleTest")),
+    Option_("sqlite", COMPONENT_, "Enables/disables use of sqlite for this configuration [default use]",
+            Set_("FEATUREFLAG_sqlite")),
+    Option_("StrawberryPerl", Values_(LIBFEATUREFLAG_UseStaticTPP_, LIBFEATUREFLAG_No_), "Enables/disables use of StrawberryPerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows",
+            Set_("FEATUREFLAG_StrawberryPerl")),
+    Option_("WIX", Values_(LIBFEATUREFLAG_UseStaticTPP_, LIBFEATUREFLAG_UseSystem_, LIBFEATUREFLAG_No_), "Enables/disables use of WIX (Windows Only) - to build windows installers",
+            Set_("FEATUREFLAG_WIX")),
+    Option_("WinHTTP", Values_(LIBFEATUREFLAG_UseSystem_, LIBFEATUREFLAG_No_), "Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise]",
+            Set_("FEATUREFLAG_WinHTTP")),
+    Option_("Xerces", COMPONENT_, "Enables/disables use of Xerces for this configuration [default use]",
+            Set_("FEATUREFLAG_Xerces")),
+    Option_("libxml2", COMPONENT_, "Enables/disables use of libxml2 for this configuration [default use]",
+            Set_("FEATUREFLAG_libxml2")),
+    Option_("ZLib", COMPONENT_, "Enables/disables use of ZLib for this configuration [default use]",
+            Set_("FEATUREFLAG_ZLib")),
+    Option_("zstd", COMPONENT_, "Enables/disables use of zstd for this configuration [default use]",
+            Set_("FEATUREFLAG_zstd")),
+    Option_("all-available-third-party-components", None, "equivilent to --Xerces (etc) use - for all that are available on this platform (except polyfill components like fmtlib)",
+            SetTo_("DoSetThirdPartyComponentsParameterFromCommandLine", "all-available")),
+    Option_("default-third-party-components", None, "reset third party settings to their default value (maybe less than all-available-third-party-components)",
+            SetTo_("DoSetThirdPartyComponentsParameterFromCommandLine", "default")),
+    Option_("no-third-party-components", None, "equivilent to --StrawberryPerl no --LibCurl no ...",
+            SetTo_("DoSetThirdPartyComponentsParameterFromCommandLine", "none")),
+    Option_("trace2file", ENABLE_DISABLE_DEFAULT_, "Enables/disable trace2file feature",
+            Set_("ENABLE_TRACE2FILE")),
+    Option_("static-link-gccruntime", {"enable": True, "disable": False}, "Enables/disable gcc runtime static link (only applies if gcc family compiler)",
+            Set_("STATIC_LINK_GCCRUNTIME")),
+    Option_("make-define", "{ARG}", "Define makefile define for the given configuration: text of arg appears as line in Configuration.mk",
+            Append_("useExtraMakeDefines")),
+    Option_("compiler-driver", "{ARG}", "default is gcc",
+            Configure_.OptionCompilerDriver_, when=WITH_COMPILER_),
+    Option_("ar", "{ARG}", "default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar",
+            Set_("AR")),
+    Option_("as", "{ARG}", "default is 'as' on unix, and retrieved from visual studio on visual studio",
+            Set_("AS")),
+    Option_("ranlib", "{ARG}", "default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib",
+            Set_("RANLIB")),
+    Option_("strip", "{ARG}", "sets program to do stripping; default is undefined, but for POSIX, defaults to strip",
+            Set_("STRIP")),
+    Option_("append-CFLAGS", "{ARG}", "Appends ARG to CFLAGS",
+            Append_("CFLAGS")),
+    Option_("remove-CFLAGS", "{ARG}", "Remove ARG from CFLAGS (including default added args; processed after all adds applied)",
+            Append_("CFLAGS2Remove")),
+    Option_("replace-all-CFLAGS", "{ARG}", "OVERRIDES DEFAULTS- and sets CFLAGS to just these values",
+            ReplaceAll_("CFLAGS", "CFLAGS_Overridden")),
+    Option_("append-CPPFLAGS", "{ARG}", "Appends ARG to CPPFLAGS; effectively defines for CFLAGS and CXXFLAGS, elg --append-CPPFLAGS -DA=B",
+            Append_("Platform_CPPFLAGS_B4Includes")),
+    Option_("remove-CPPFLAGS", "{ARG}", "Remove ARG from CPPFLAGS (including default added args; processed after all adds applied)",
+            Append_("CPPFLAGS2Remove")),
+    Option_("replace-all-CPPFLAGS", "{ARG}", "OVERRIDES DEFAULTS- and sets CPPFLAGS to just these values (the qStroika_ defines are kept)",
+            ReplaceAll_("Platform_CPPFLAGS_B4Includes", "CPPFLAGS_Overridden")),
+    Option_("append-CXXFLAGS", "{ARG}", "Appends ARG to CXXFLAGS",
+            Append_("CXXFLAGS2Append")),
+    Option_("remove-CXXFLAGS", "{ARG}", "Remove ARG from CXXFLAGS (including default added args; processed after all adds applied)",
+            Append_("CXXFLAGS2Remove")),
+    Option_("replace-all-CXXFLAGS", "{ARG}", "OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values",
+            ReplaceAll_("CXXFLAGS", "CXXFLAGS_Overridden")),
+    Option_("shared-symbol-visibility", "{ARG}", "adds -fvisibility=ARG to CFLAGS and CXXFLAGS (none by default)",
+            Set_("SharedSymbolVisibility")),
+    Option_("extra-prefix-linker-args", "{ARG}", "Sets 'extra prefix linker args' to ARG, replacing what came before",
+            Set_("LinkerArgs_ExtraPrefix")),
+    Option_("append-extra-prefix-linker-args", "{ARG}", "Appends ARG to 'extra prefix linker args'",
+            AppendWord_("LinkerArgs_ExtraPrefix")),
+    Option_("extra-suffix-linker-args", "{ARG}", "Sets 'extra suffix linker args' to ARG, replacing what came before",
+            Set_("LinkerArgs_ExtraSuffix")),
+    Option_("append-extra-suffix-linker-args", "{ARG}", "Appends ARG to 'extra suffix linker args'",
+            AppendWord_("LinkerArgs_ExtraSuffix")),
+    Option_("append-extra-compiler-and-linker-args", "{ARG}", "Appends ARG to 'extra compiler' and 'extra linker' args",
+            Configure_.OptionAppendExtraCompilerAndLinkerArgs_),
+    Option_("includes-path", "{ARG}", "Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces, ; separated on windows hosts)",
+            SetPathList_("PLATFORM_INCLUDES_PATH", "INCLUDES_PATH_SET")),
+    Option_("append-includes-path", "{ARG}", "Appends ARG to 'INCLUDES_PATH",
+            Append_("INCLUDES_PATH_ADD")),
+    Option_("libs-path", "{ARG}", "Sets LinkerArgs_LibPath variable (':' separated, since unix standard and allows spaces; separated on windows hosts)",
+            SetPathList_("LinkerArgs_LibPath", "LinkerArgs_LibPath_SET")),
+    Option_("append-libs-path", "{ARG}", "Appends ARG to 'LinkerArgs_LibPath",
+            Append_("LinkerArgs_LibPath_ADD")),
+    Option_("lib-dependencies", "{ARG}", "Sets LinkerArgs_LibDependencies variable (space separated)",
+            Set_("LinkerArgs_LibDependencies")),
+    Option_("append-lib-dependencies", "{ARG}", "Appends ARG to 'LinkerArgs_LibDependencies",
+            Append_("LinkerArgs_LibDependencies_ADD")),
+    Option_("linktime-copy-files-2-EXEDir", "{ARG}", "Sets LinkTime_CopyFilesToEXEDir variable (' ' separated)",
+            Set_("LinkTime_CopyFilesToEXEDir", str.split)),
+    Option_("append-linktime-copy-files-2-EXEDir", "{ARG}", "Appends ARG to 'LinkTime_CopyFilesToEXEDir",
+            Append_("LinkTime_CopyFilesToEXEDir")),
+    Option_("run-prefix", "{ARG}", "Sets variable RunPrefix with stuff injected before run for built executables,\nsuch as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3",
+            Set_("RunPrefix")),
+    Option_("append-run-prefix", "{ARG}", "Appends ARG RunPrefix: with stuff injected before run for built executables",
+            AppendWord_("RunPrefix")),
+    Option_("include-default-TSAN_OPTIONS", TRUE_FALSE_, "if true, and tsan enabled, add TSAN_OPTIONS= guess to RunPrefix",
+            Set_("autoIncludeTSAN_OPTIONSIfAppropriate")),
+    Option_("pg", None, "Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler",
+            Configure_.OptionPg_),
+    Option_("lto", ENABLE_DISABLE_DEFAULT_, "Turn on link time code gen on linker/compiler (for now only gcc/unix stack)",
+            Configure_.OptionLTO_),
+    Option_("cross-compiling", Values_("true", "false"), "Defaults generally to false, but set explicitly to control if certain tests will be run",
+            Set_("CrossCompiling")),
+    Option_("apply-default-debug-flags", None, "the defaults for a debug build: assertions, sanitizers, no optimizing",
+            SetTo_("ApplyDebugFlags", True), when=WITH_COMPILER_),
+    Option_("apply-default-release-flags", None, "the defaults for a release build: optimizing, LTO, no assertions",
+            SetTo_("ApplyReleaseFlags", True), when=WITH_COMPILER_),
+    Option_("only-if-has-compiler", None, "Only generate this configuration if the compiler appears to exist (test run)",
+            SetTo_("onlyGenerateIfCompilerExists", True)),
+    Option_("debug-symbols", TRUE_FALSE_, "--debug-symbols-lib AND --debug-symbols-exe at the same time",
+            Configure_.OptionDebugSymbols_),
+    Option_("debug-symbols-lib", TRUE_FALSE_, "defaults to true, but can be disabled if makes compile/link/etc too big/slow",
+            Set_("INCLUDE_SYMBOLS_LIB")),
+    Option_("debug-symbols-exe", TRUE_FALSE_, "defaults to true, but can be disabled if makes compile/link/etc too big/slow",
+            Set_("INCLUDE_SYMBOLS_EXE")),
+    Option_("malloc-guard", TRUE_FALSE_, "defaults to false (for now experimental and only works with GCC)",
+            Configure_.OptionMallocGuard_),
+    Option_("runtime-stack-check", TRUE_FALSE_, "gcc -fstack-protector-all",
+            Set_("runtimeStackProtectorFlag")),
+    Option_("msvc-runtime-library", Values_("MultiThreaded", "MultiThreadedDebug", "MultiThreadedDLL", "MultiThreadedDebugDLL"),
+            "MSVC_RUNTIME_LIBRARY windows value - defaults to no-DLL and debug based on assertion flag - https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html",
+            Set_("VSVARS_MSVC_RUNTIME_LIBRARY")),
+    Option_("sanitize", "{none|thread|address|undefined|leak}", "if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -\nany arg you can pass to -fsanitize=XXXX - see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf\n(search -fsanitize=); eg. --sanitize address,undefined",
+            Configure_.OptionSanitize_),
+    Option_("no-sanitize", "{thread|vptr|etc...}", "any from --sanitize or all; option maybe used to remove a sub-category of tests (like vptr) from larger category like address",
+            Configure_.OptionNoSanitize_),
+    Option_("help", None, "Print this help, and exit", None, aliases=("h", "?")),
+]
+OPTIONS_BY_NAME_ = {n.lower(): o for o in OPTIONS_ for n in (o.name,) + o.aliases}
+HELP_OPTION_ = OPTIONS_BY_NAME_["help"]
+
+
+def FindOption_(arg):
+    """The option arg names - -NAME or --NAME, the name in any case - or None"""
+    m = re.fullmatch(r"--?([^-].*)", arg)
+    return OPTIONS_BY_NAME_.get(m.group(1).lower()) if m else None
+
+
+def HelpText_():
+    lines = ["Usage:", "  configure CONFIGURATION-NAME [OPTIONS]* where options can be:"]
+    for o in OPTIONS_:
+        usage = "--" + o.name
+        if isinstance(o.arg, dict):
+            usage += " {" + "|".join(o.arg) + "}"
+        elif o.arg is not None:
+            usage += " " + o.arg
+        text = o.help.split("\n")
+        text[-1] += " */"
+        lines.append("\t    " + usage.ljust(48) + " /* " + text[0])
+        lines += ["\t" + " " * 56 + t for t in text[1:]]
+    lines += [
+        "",
+        "Configure's behavior is also influenced by the following environment variables:",
+        "\t    CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP; each just simulates adding the obvious associated argument to configure",
+        "\t    EXTRA_CONFIGURE_ARGS= a space separated list of arguments added to the beginning of the configure command",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def Main_(argv):
+    c = Configure_(argv)
     try:
         fileName, text = c.Run()
-    except PerlExit as e:
+    except Exit_ as e:
         return e.status
-    except PerlDie as e:
+    except ConfigureError_ as e:
         c.PrintErr(str(e) + ("" if str(e).endswith("\n") else "\n"))
-        return 255
+        return 1
     if fileName is not None:
         with open(fileName, "wb") as f:
-            f.write(text.encode(ENC))
+            f.write(text.encode(ENCODING_, ENCODING_ERRORS_))
         try:
             os.remove("IntermediateFiles/APPLIED_CONFIGURATIONS")
         except OSError:
@@ -2669,4 +2410,4 @@ def Main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(Main(sys.argv[1:]))
+    sys.exit(Main_(sys.argv[1:]))
