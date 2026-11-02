@@ -422,7 +422,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Reconfiguring $(CONFIGURATION):"
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && PATH=.:$$PATH && `./Build/Scripts/GetConfigurationParameter $(CONFIGURATION) ConfigureCommandLine`
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && PATH=.:$$PATH && eval "$$(./Build/Scripts/GetConfigurationParameter $(CONFIGURATION) ConfigureCommandLine)"
 endif
 
 #
