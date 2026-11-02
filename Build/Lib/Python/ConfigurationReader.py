@@ -1,9 +1,9 @@
 """
-Reads a configuration - ConfigurationFiles/<name>.xml, as configure writes it - the way Build/Lib/Perl/ConfigurationReader.pl
-does, byte for byte: by matching tags in each line, not by parsing XML.
+Reads a configuration - ConfigurationFiles/<name>.xml, as configure writes it - the way ConfigurationReader.pl did (through
+Stroika v3.0d25), byte for byte: by matching tags in each line, not by parsing XML.
 
-That is deliberate, and the quirks are kept (@see https://github.com/SophistSolutions/Stroika/issues/1240, which keeps the
-Perl as a check until the two always agree):
+That is deliberate, and the quirks are kept (https://github.com/SophistSolutions/Stroika/issues/1241 is to read it with an
+XML parser instead):
     - a value runs from its tag to the next '<' on that line - or, with none, to the end of the line, newline included;
     - a tag is found anywhere in a line (a substring match), and when it appears on several lines the last one wins;
     - nothing is unescaped (&lt; stays &lt;);
@@ -17,10 +17,9 @@ import re
 import sys
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-# (the one difference from the Perl: its "Unable to open" message names a path relative to itself, so it cannot match)
 _CONFIGURATION_FILES = os.path.normpath(os.path.join(_THIS_DIR, "..", "..", "..", "ConfigurationFiles"))
 
-# The tags ConfigurationReader.pl reads, each stored under its own name
+# The tags read, each stored under its own name
 _TAGS = [
     "ConfigureCommandLine", "BuildPlatform", "TargetPlatforms", "BuildByDefault", "BuildToolsRoot", "TOOLS_PATH_ADDITIONS",
     "ARCH", "CMAKE", "ConfigTags", "SanitizerFlags", "LINKER", "AS", "CXX", "CC", "qCompiler_HasNoMisleadingIndentation_Flag",

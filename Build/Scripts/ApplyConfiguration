@@ -21,9 +21,10 @@ exec python3 "$0" "$@"
 #   CreatePackageConfigFiles), and updates that configuration's entries in Workspaces/VisualStudio.Net's IntelliSense .props
 #   (Visual Studio configurations only) and .vscode/c_cpp_properties.json.
 #
-#   The Python rewrite of ApplyConfiguration.pl (https://github.com/SophistSolutions/Stroika/issues/1240), which - until the
-#   two always agree - it also runs, as a check: see Build/Lib/Python/PerlCheck.py. So its output matches the Perl's byte for
-#   byte, quirks included; each one kept on purpose says so ("as the Perl"), to be fixed once the Perl is gone.
+#   A port of ApplyConfiguration.pl (through Stroika v3.0d25), which writes what it wrote byte for byte, quirks included -
+#   each one kept on purpose says so ("as the Perl"): https://github.com/SophistSolutions/Stroika/issues/1241 fixes them.
+#
+#   @todo write to temporary file and only update if actually changed
 #
 import json
 import os
@@ -37,17 +38,12 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the imports below
 sys.path.insert(0, os.path.join(THIS_DIR, "..", "Lib", "Python"))
 import ConfigurationReader  # noqa: E402
-import PerlCheck  # noqa: E402
 
 ENC = ConfigurationReader.ENCODING
 DEFAULT_BOOL_OPTIONS = -1
 INTERMEDIATE_FILES = "IntermediateFiles/"
 VS_INTELLISENSE_FILE = "Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props"
 VSCODE_CPP_FILE = ".vscode/c_cpp_properties.json"
-
-
-class CannotMatchPerl(Exception):
-    """An input this script does not reproduce the Perl's handling of exactly - its caller then uses the Perl result"""
 
 
 def Die(msg, status=255):
@@ -93,6 +89,9 @@ def IsHostMSYS():
     if PERL_OS == "msys":
         return True
     if PERL_OS == "cygwin":
+        # A MINGW64/MINGW32/UCRT64 shell (which is what MSYSTEM=MINGW64 gives you, and what VSCode terminal profiles commonly
+        # set) says "MINGW64_NT-..." - still MSYS2. Build/Scripts/DetectedHostOS maps MINGW -> MSYS for exactly this reason;
+        # keep the two in agreement or they disagree about what host this is.
         u = Trim(Backtick(["uname", "-s"])[0])
         return u[:4] == "MSYS" or u[:5] == "MINGW"
     return False
@@ -141,6 +140,7 @@ class Config:
         for p in PerlSplit(PATH_SEPERATOR, self.PLATFORM_INCLUDES_PATH):
             if IsVisualStudio(self.BuildPlatform):
                 # cl takes / or \ in a filename, and a name holding spaces only in double quotes - so C:/foo, in double quotes
+                # (https://learn.microsoft.com/en-us/cpp/build/reference/cl-filename-syntax?view=msvc-170)
                 includes.append('-I"' + Trim(Backtick(["cygpath", "--mixed", p])[0]) + '"')
             else:
                 includes.append("-I" + p)
@@ -252,7 +252,9 @@ def ConfigurationMkText(c):
         w("CMAKE=" + c.G("CMAKE") + "\n")
         arch = c.G("ARCH")
         w("WIN_LIBCOMPATIBLE_ARCH=" + ("x64" if arch == "x86_64" else arch) + "\n")  # lib.exe (and probably link) want x64
-        # Not a great way to test, but adequate: it is not critical that it is always right (we tend to use -Z7 anyway)
+        # Not a great way to test, but adequate: it is not critical that it is always right. And we tend to use -Z7 - so
+        # this really doesn't get used much - may not be needed anymore. Not sure why we would use this 'feature' of the
+        # linker system on MSVC -- LGP 2025-06-11
         if "-Zi" in c.CXXFLAGS or "-Zl" in c.CXXFLAGS:
             w("WIN_USE_PROGRAM_DATABASE=1\n")
         w("\n")
@@ -295,6 +297,7 @@ def PerlBinDir():
 
 
 def GetMSYSPathVar2Add():
+    # GUESS directory for MSYS
     backup = ["c:/tools/msys64/usr/bin", "c:/tools/msys32/usr/bin", "c:/tools/msys64/mingw64/bin", "c:/msys/usr/bin", "c:/msys64/usr/bin",
               "c:/msys64/mingw64/bin"]
     # the Perl's test for being on msys (an "==" between strings) is always true, so its perl's directory is always tried first
@@ -361,7 +364,8 @@ def VSIntellisenseText(c, existingText):
                 paths.append(v)
     w("    <NMakeIncludeSearchPath>" + ";".join(paths) + "</NMakeIncludeSearchPath>\n")
     w("  </PropertyGroup>\n")
-    # configuration variables, so Visual Studio can run the MSYS or Cygwin make without the user adding it to a path
+    # configuration variables, so Visual Studio can run the MSYS or Cygwin make without the user adding it to a path.
+    # StroikaBuildToolsExtraPath augments ExecutablePath in the .vcproj files, so the make uses the right path
     defCygwinStkBuildPath = GetCygwinPathVar2Add()
     msysStkBuildPath = GetMSYSPathVar2Add()
     w("\n")
@@ -384,20 +388,6 @@ def VSIntellisenseText(c, existingText):
     w("</Project>\n")
     w("\n")
     return "".join(out)
-
-
-def SamePropsIgnoringEntryOrder(a, b):
-    """The .props as the Perl writes it puts the other configurations' entries in a random order: compare them as a set"""
-    def Parts(text):
-        lines = re.split(r"(?<=\n)", text.decode("utf-8", "replace"))
-        projectAt = next((i for i, l in enumerate(lines) if l.startswith("<Project ")), None)
-        if projectAt is None:
-            return text
-        head, rest = "".join(lines[:projectAt + 1]), "".join(lines[projectAt + 1:])
-        entries = ReadPropsEntries(rest)
-        ownStart = rest.rfind(PROPS_KEY_PREFIX)
-        return head, sorted(entries.items()), rest[ownStart:] if ownStart != -1 else rest
-    return Parts(a) == Parts(b)
 
 
 def ToFullPathEXE(exe):
@@ -457,19 +447,6 @@ def JQPretty(doc):
     return (json.dumps(doc, indent=2, ensure_ascii=False) + "\n").replace("\n", _jqNewline)
 
 
-def JQStringLiteral(v):
-    """
-    The string jq makes of "v" in the filter the Perl built - after the shell's double quotes, then jq's escapes. Anything
-    those would change other than as json.loads does (a $, `, " or jq's \\( interpolation) is not reproduced: CannotMatchPerl.
-    """
-    if any(ch in v for ch in '$`"') or "\\(" in v:
-        raise CannotMatchPerl("a $, `, \" or \\( in a .vscode value: %r" % v)
-    try:
-        return json.loads('"' + v + '"')
-    except ValueError:
-        raise CannotMatchPerl("a value jq would reject: %r" % v)
-
-
 def VSCodeText(c, existingText):
     """The new .vscode/c_cpp_properties.json, given the old (None if there is none) - as the Perl's jq edits made it"""
     EMPTY = '{"configurations":[]}\n'
@@ -489,9 +466,7 @@ def VSCodeText(c, existingText):
             doc["env"] = {}
         doc["env"]["myDefaultIncludePath"] = []
     configs = doc.get("configurations") if isinstance(doc, dict) else None
-    if configs is not None and not isinstance(configs, list):
-        raise CannotMatchPerl(".configurations is not an array")
-    configs = configs if configs is not None else []
+    configs = configs if isinstance(configs, list) else []
     index = len(configs)
     for i, e in enumerate(configs):
         if isinstance(e, dict) and e.get("name") == c.name:
@@ -517,7 +492,7 @@ def VSCodeText(c, existingText):
     includes = ["${myDefaultIncludePath}"]
     for e in PerlSplit(PATH_SEPERATOR, c.FOUNDATION_INCLUDES_PATH + PATH_SEPERATOR + c.PLATFORM_INCLUDES_PATH):
         literal += ' , \\"' + e + '\\"'
-        includes.append(JQStringLiteral(e))
+        includes.append(e)
     for e in PkgConfigWords(c, "--cflags-only-I"):
         if e.startswith("-I"):
             v = Trim(e[2:])
@@ -525,15 +500,15 @@ def VSCodeText(c, existingText):
                 v = Trim(Backtick(["cygpath", "--mixed", v])[0])
             if v not in literal:
                 literal += ' , \\"' + v + '\\"'
-                includes.append(JQStringLiteral(v))
-    defines = [JQStringLiteral(e[2:]) for e in c.CPPFLAGS_NOTINCLUDES.split(" ") if e.startswith("-D")]
-    defines += [JQStringLiteral(Trim(e[2:])) for e in PkgConfigWords(c, "--cflags-only-other") if e.startswith("-D")]
+                includes.append(v)
+    defines = [e[2:] for e in c.CPPFLAGS_NOTINCLUDES.split(" ") if e.startswith("-D")]
+    defines += [Trim(e[2:]) for e in PkgConfigWords(c, "--cflags-only-other") if e.startswith("-D")]
     newCfg = {
-        "name": JQStringLiteral(c.name),
-        "cppStandard": JQStringLiteral(std),
+        "name": c.name,
+        "cppStandard": std,
         "includePath": includes,
         "defines": defines,
-        "compilerPath": JQStringLiteral(ToFullPathEXE(c.COMPILER_DRIVER_CPlusPlus)),
+        "compilerPath": ToFullPathEXE(c.COMPILER_DRIVER_CPlusPlus),
         "intelliSenseMode": IntelliSenseModeFor(c, c.COMPILER_DRIVER_CPlusPlus),
     }
     if index == len(configs):
@@ -541,10 +516,11 @@ def VSCodeText(c, existingText):
     else:
         configs[index] = newCfg
     doc["configurations"] = configs
-    # sorted by name, ignoring ASCII case (jq's sort_by (.name|ascii_downcase), which fails on an entry with no name)
-    if any(not isinstance(e, dict) or not isinstance(e.get("name"), str) for e in configs):
-        raise CannotMatchPerl("a .vscode configuration with no name")
-    doc["configurations"] = sorted(configs, key=lambda e: e["name"].translate(str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")))
+    # sorted by name, ignoring ASCII case (jq's sort_by (.name|ascii_downcase)); an entry with no name first
+    def SortKey(e):
+        name = e.get("name") if isinstance(e, dict) else None
+        return name.translate(str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")) if isinstance(name, str) else ""
+    doc["configurations"] = sorted(configs, key=SortKey)
     return JQPretty(doc)
 
 
@@ -586,53 +562,13 @@ def Main(argv):
     genVSIntellisense = genVSIntellisense and IsVisualStudio(c.BuildPlatform)
     jqInstalled = Trim(Backtick(["which", "jq"])[0]) != ""  # (the Perl used jq to edit the .vscode file, and skipped it without)
 
-    # what Python makes: None where it declines (CannotMatchPerl) - the Perl result is then used, whatever the check says
-    py = {}
-    try:
-        if genConfigMake:
-            py[configMk] = ConfigurationMkText(c).encode(ENC)
-        if genVSIntellisense:
-            py[VS_INTELLISENSE_FILE] = VSIntellisenseText(c, ReadText(VS_INTELLISENSE_FILE, "utf-8") or "").encode("utf-8")
-        if genVSCode and jqInstalled:
-            py[VSCODE_CPP_FILE] = VSCodeText(c, ReadText(VSCODE_CPP_FILE, "utf-8")).encode("utf-8")
-    except CannotMatchPerl as e:
-        PerlCheck.Decline("ApplyConfiguration", activeConfiguration, str(e))
-        py = None
-
-    # the check: the Perl, run in a scratch directory holding copies of the files it edits
-    perl = None
-    if py is None or PerlCheck.PerlCheckWanted():
-        args = [a for a in argv] + ["--no-create-package-config-files"]
-        scratch, rc, output = PerlCheck.RunPerlInScratch(os.path.join(THIS_DIR, "ApplyConfiguration.pl"), args,
-                                                          [VS_INTELLISENSE_FILE, VSCODE_CPP_FILE])
-        try:
-            why = PerlCheck.PerlCouldNotRun(rc, output) if py is not None else None
-            if why is not None:
-                PerlCheck.NotChecked("ApplyConfiguration", activeConfiguration, why)
-            else:
-                if rc != 0:
-                    sys.stderr.write(output)
-                    Die("ApplyConfiguration.pl %s failed (status %d)\n" % (activeConfiguration, rc), rc & 0xFF or 1)
-                perl = {}
-                for f in ([configMk] if genConfigMake else []) + ([VS_INTELLISENSE_FILE] if genVSIntellisense else []) + ([VSCODE_CPP_FILE] if genVSCode and jqInstalled else []):
-                    with open(os.path.join(scratch, f), "rb") as h:
-                        perl[f] = h.read()
-        finally:
-            shutil.rmtree(scratch, ignore_errors=True)
-    if py is None:
-        py = perl
-
-    def Final(f):
-        return PerlCheck.Choose("ApplyConfiguration", f, activeConfiguration, py[f], None if perl is None else perl[f],
-                                SamePropsIgnoringEntryOrder if f == VS_INTELLISENSE_FILE else None)
-
     if genConfigMake:
         if os.path.exists(configMk):
             os.remove(configMk)
         os.makedirs(INTERMEDIATE_FILES + activeConfiguration + "/Library", exist_ok=True)
         sys.stdout.write(leader + 'Writing "' + configMk + '" ... ')
         sys.stdout.flush()
-        WriteBytes(configMk, Final(configMk))
+        WriteBytes(configMk, ConfigurationMkText(c).encode(ENC))
         sys.stdout.write("done\n")
         sys.stdout.write(leader)
         sys.stdout.flush()
@@ -645,12 +581,12 @@ def Main(argv):
             Die("Error running CreatePackageConfigFiles --configuration " + activeConfiguration + " - exiting\n", rc & 0xFF or 255)
     if genVSIntellisense:
         sys.stdout.write(leader + 'Updating "' + VS_INTELLISENSE_FILE + '" ... ')
-        WriteBytes(VS_INTELLISENSE_FILE, Final(VS_INTELLISENSE_FILE))
+        WriteBytes(VS_INTELLISENSE_FILE, VSIntellisenseText(c, ReadText(VS_INTELLISENSE_FILE, "utf-8") or "").encode("utf-8"))
         sys.stdout.write("done\n")
     if genVSCode:
         sys.stdout.write(leader + "Updating configuration " + activeConfiguration + ' in "' + VSCODE_CPP_FILE + '" ... ')
         if jqInstalled:
-            WriteBytes(VSCODE_CPP_FILE, Final(VSCODE_CPP_FILE))
+            WriteBytes(VSCODE_CPP_FILE, VSCodeText(c, ReadText(VSCODE_CPP_FILE, "utf-8")).encode("utf-8"))
         else:
             sys.stdout.write("SKIPPED SINCE jq not installed ... ")
         sys.stdout.write("done\n")
