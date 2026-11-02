@@ -21,15 +21,13 @@ exec python3 "$0" "$@"
 #   CreatePackageConfigFiles), and updates that configuration's entries in Workspaces/VisualStudio.Net's IntelliSense .props
 #   (Visual Studio configurations only) and .vscode/c_cpp_properties.json.
 #
-#   A port of ApplyConfiguration.pl (through Stroika v3.0d25), which writes what it wrote byte for byte, quirks included -
-#   each one kept on purpose says so ("as the Perl"): https://github.com/SophistSolutions/Stroika/issues/1241 fixes them.
+#   A port of ApplyConfiguration.pl (through Stroika v3.0d25).
 #
 #   @todo write to temporary file and only update if actually changed
 #
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -74,27 +72,13 @@ def Backtick(args, env=None):
     return p.stdout.decode(ENC), p.returncode
 
 
-def PerlOS():
-    """What Perl's $^O says on this host: on Windows "cygwin" - MSYS2's perl says so too, not "msys" """
-    if sys.platform in ("win32", "msys") or sys.platform.startswith("cygwin"):
-        return "cygwin"
-    return sys.platform  # 'linux', 'darwin', ...
-
-
-PERL_OS = PerlOS()
-PATH_SEPERATOR = ";" if PERL_OS in ("cygwin", "msys") else ":"
-
-
-def IsHostMSYS():
-    if PERL_OS == "msys":
-        return True
-    if PERL_OS == "cygwin":
-        # A MINGW64/MINGW32/UCRT64 shell (which is what MSYSTEM=MINGW64 gives you, and what VSCode terminal profiles commonly
-        # set) says "MINGW64_NT-..." - still MSYS2. Build/Scripts/DetectedHostOS maps MINGW -> MSYS for exactly this reason;
-        # keep the two in agreement or they disagree about what host this is.
-        u = Trim(Backtick(["uname", "-s"])[0])
-        return u[:4] == "MSYS" or u[:5] == "MINGW"
-    return False
+IS_WINDOWS_HOST = sys.platform in ("win32", "msys") or sys.platform.startswith("cygwin")  # under MSYS2 or Cygwin
+IS_MACOS_HOST = sys.platform == "darwin"
+PATH_SEPERATOR = ";" if IS_WINDOWS_HOST else ":"
+# MSYS2 rather than Cygwin. A MINGW64/MINGW32/UCRT64 shell (which is what MSYSTEM=MINGW64 gives you, and what VSCode terminal
+# profiles commonly set) says "MINGW64_NT-..." - still MSYS2. Build/Scripts/DetectedHostOS maps MINGW -> MSYS for exactly
+# this reason; keep the two in agreement or they disagree about what host this is.
+IS_MSYS_HOST = IS_WINDOWS_HOST and re.match(r"MSYS|MINGW", Trim(Backtick(["uname", "-s"])[0])) is not None
 
 
 def PosixPathExists(p):
@@ -234,7 +218,7 @@ def ConfigurationMkText(c):
     w("IncludeDebugSymbolsInLibraries :=\t" + c.IncludeDebugSymbolsInLibraries + "\n")
     w("#Linker-Driver\n")
     CachedLineItem("LINKER")
-    w("\n\n#File Suffixes")  # no newline - as the Perl: its first #CACHED line follows on the same line
+    w("\n\n#File Suffixes\n")
     for vn in ("LIB_SUFFIX", "OBJ_SUFFIX", "EXE_SUFFIX"):
         CachedLineItem(vn)
     w("\n")
@@ -266,47 +250,55 @@ def ConfigurationMkText(c):
 
 def PkgConfigWords(c, which):
     """
-    The words of pkg-config WHICH (--cflags-only-I / --cflags-only-other) for the configuration's Foundation packages, split
-    on single spaces as the Perl did. As the Perl, PKG_CONFIG_PATH names Build/Builds/... - which does not exist (it was
-    right before the scripts moved into Build/Scripts), so only packages installed on the system are found.
+    The words of pkg-config WHICH (--cflags-only-I / --cflags-only-other) for the configuration's Foundation packages - those
+    the configuration built itself, in Builds/CONFIGURATION/lib/pkgconfig, or else the system's; nothing if any is missing.
+    So nothing before the third-party components are built: make re-applies the .vscode entry as that directory changes.
     """
     if Trim(c.Foundation_PkgConfigNames) == "":
         return []
-    env = dict(os.environ)
-    env["PKG_CONFIG_PATH"] = THIS_DIR + "/../Builds/" + c.name + "/lib/pkgconfig"
-    out, _ = Backtick(["pkg-config", which] + c.Foundation_PkgConfigNames.split(), env=env)
-    return out.split(" ")
+    pcDir = os.path.normpath(os.path.join(THIS_DIR, "..", "..", "Builds", c.name, "lib", "pkgconfig"))
+    if sys.platform == "win32":  # pkg-config is MSYS2's or Cygwin's, which splits PKG_CONFIG_PATH on ':'
+        pcDir = Trim(Backtick(["cygpath", "--unix", pcDir])[0])
+    out, _ = Backtick(["pkg-config", which] + c.Foundation_PkgConfigNames.split(), env=dict(os.environ, PKG_CONFIG_PATH=pcDir))
+    return out.split()
+
+
+def AppendPkgConfigIncludes(c, paths):
+    """paths, with each -I directory pkg-config gives for the configuration's packages that paths does not already name"""
+    dirs = [e[2:] for e in PkgConfigWords(c, "--cflags-only-I") if e.startswith("-I") and len(e) > 2]
+    if IS_WINDOWS_HOST and dirs:
+        dirs = Backtick(["cygpath", "--mixed"] + dirs)[0].splitlines()  # (which also folds a .pc's ${pcfiledir}/../..)
+    elif not IS_WINDOWS_HOST:
+        dirs = [os.path.normpath(d) for d in dirs]
+    Key = lambda p: p.rstrip("/\\").lower() if IS_WINDOWS_HOST else p.rstrip("/")  # noqa: E731
+    seen = {Key(p) for p in paths}
+    for d in dirs:
+        if Trim(d) != "" and Key(d) not in seen:
+            seen.add(Key(d))
+            paths.append(d)
+    return paths
 
 
 def MapArraysOfFiles2Path(conditionalPaths, backupPaths):
-    result = [Trim(Backtick(["cygpath", "--windows", f])[0]) for f in conditionalPaths if PosixPathExists(f)]
-    if not result:
-        result = [Trim(Backtick(["cygpath", "--windows", f])[0]) for f in backupPaths]
+    """The Windows form of each of conditionalPaths that exists (or, if none does, of each of backupPaths), each once"""
+    result = []
+    for f in [f for f in conditionalPaths if PosixPathExists(f)] or backupPaths:
+        w = Trim(Backtick(["cygpath", "--windows", f])[0])
+        if w.lower() not in (r.lower() for r in result):
+            result.append(w)
     return ";".join(result)
 
 
-def PerlBinDir():
-    """dirname ($Config{perlpath}), as a POSIX path: the bin directory of the MSYS2 or Cygwin running the build"""
-    perl = shutil.which("perl")
-    if perl is None:
-        return "/usr/bin"
-    d = os.path.dirname(perl)
-    if sys.platform == "win32":
-        d = Trim(Backtick(["cygpath", "--unix", d])[0])
-    return d
-
-
 def GetMSYSPathVar2Add():
-    # GUESS directory for MSYS
+    # GUESS directory for MSYS - the running one's first
     backup = ["c:/tools/msys64/usr/bin", "c:/tools/msys32/usr/bin", "c:/tools/msys64/mingw64/bin", "c:/msys/usr/bin", "c:/msys64/usr/bin",
               "c:/msys64/mingw64/bin"]
-    # the Perl's test for being on msys (an "==" between strings) is always true, so its perl's directory is always tried first
-    return MapArraysOfFiles2Path([PerlBinDir()] + backup, backup)
+    return MapArraysOfFiles2Path((["/usr/bin"] if IS_MSYS_HOST else []) + backup, backup)
 
 
 def GetCygwinPathVar2Add():
     backup = ["c:/tools/cygwin/bin", "c:/cygwin/bin", "c:/cygwin64/bin", "c:/cygwin32/bin"]
-    return MapArraysOfFiles2Path([PerlBinDir()] + backup, backup)  # (as the Perl: the same always-true test)
+    return MapArraysOfFiles2Path((["/usr/bin"] if IS_WINDOWS_HOST and not IS_MSYS_HOST else []) + backup, backup)
 
 
 PROPS_START = "<PropertyGroup Condition="
@@ -354,28 +346,23 @@ def VSIntellisenseText(c, existingText):
     defs = [e[2:] for e in c.CPPFLAGS_NOTINCLUDES.split(" ") if e.startswith("-D")]
     defs += [Trim(e[2:]) for e in PkgConfigWords(c, "--cflags-only-other") if e.startswith("-D")]
     w("    <NMakePreprocessorDefinitions>" + ";".join(defs) + "</NMakePreprocessorDefinitions>\n")
-    paths = [e for e in PerlSplit(PATH_SEPERATOR, c.FOUNDATION_INCLUDES_PATH + PATH_SEPERATOR + c.PLATFORM_INCLUDES_PATH)]
-    for e in PkgConfigWords(c, "--cflags-only-I"):
-        if e.startswith("-I"):
-            v = Trim(e[2:])
-            if PERL_OS in ("cygwin", "msys"):
-                v = Trim(Backtick(["cygpath", "--mixed", v])[0])
-            if v != "":  # (as the Perl, whose 'already there' test looked in an empty string)
-                paths.append(v)
+    paths = AppendPkgConfigIncludes(
+        c, PerlSplit(PATH_SEPERATOR, c.FOUNDATION_INCLUDES_PATH + PATH_SEPERATOR + c.PLATFORM_INCLUDES_PATH))
     w("    <NMakeIncludeSearchPath>" + ";".join(paths) + "</NMakeIncludeSearchPath>\n")
     w("  </PropertyGroup>\n")
-    # configuration variables, so Visual Studio can run the MSYS or Cygwin make without the user adding it to a path.
-    # StroikaBuildToolsExtraPath augments ExecutablePath in the .vcproj files, so the make uses the right path
-    defCygwinStkBuildPath = GetCygwinPathVar2Add()
-    msysStkBuildPath = GetMSYSPathVar2Add()
+    # configuration variables, so Visual Studio can run the MSYS or Cygwin make without the user adding it to a path - the
+    # one this runs under first. StroikaBuildToolsExtraPath augments ExecutablePath in the .vcproj files, so the make uses
+    # the right path
+    hostStkBuildPath, otherStkBuildPath = GetMSYSPathVar2Add(), GetCygwinPathVar2Add()
+    if not IS_MSYS_HOST:
+        hostStkBuildPath, otherStkBuildPath = otherStkBuildPath, hostStkBuildPath
     w("\n")
     w('  <PropertyGroup Label="UserMacros">\n')
-    w("    <StroikaBuildToolsExtraPath>" + msysStkBuildPath + ";" + defCygwinStkBuildPath + "</StroikaBuildToolsExtraPath>\n")
+    w("    <StroikaBuildToolsExtraPath>" + hostStkBuildPath + ";" + otherStkBuildPath + "</StroikaBuildToolsExtraPath>\n")
     w("    <JOBS_FLAG>-j 5</JOBS_FLAG>\n")
     w("  </PropertyGroup>\n")
-    # as the Perl, whose msys-or-cygwin test (an "==" between strings) is always true: the MSYS paths, even on Cygwin
     w("  <PropertyGroup Label=\"UserMacros\" Condition=\"'$(Configuration)|$(Platform)'=='" + c.name + "|Win32'\">\n")
-    w("    <StroikaBuildToolsExtraPath>" + msysStkBuildPath + "</StroikaBuildToolsExtraPath>\n")
+    w("    <StroikaBuildToolsExtraPath>" + hostStkBuildPath + "</StroikaBuildToolsExtraPath>\n")
     w("  </PropertyGroup>\n")
     w("  <ItemGroup>\n")
     w('  <BuildMacro Include="StroikaBuildToolsExtraPath">\n')
@@ -399,7 +386,7 @@ def MSVCLatestCppStandard(compiler):
     """
     The IntelliSense cppStandard for MSVC's -std:c++latest - a newer draft with each MSVC - asked of the compiler itself: the
     latest finished standard at or below the _MSVC_LANG it reports, never a draft. Without an answer (the compiler is not on
-    this machine, say), c++23: what both supported MSVCs come to (19.44 and 19.51 report 202400L), and what the Perl says.
+    this machine, say), c++23: what both supported MSVCs come to (19.44 and 19.51 report 202400L).
     """
     try:
         with tempfile.TemporaryDirectory() as d:
@@ -423,7 +410,7 @@ def IntelliSenseModeFor(c, compilerDriver):
     toolset msvc|gcc|clang, arch x86|x64|arm|arm64 (not Stroika's x86_64). Without a VALID one the extension configures no
     IntelliSense at all, silently - left to itself it wrote "None", which is not one (found 2026-09-22).
     """
-    os_ = "macos" if PERL_OS == "darwin" else ("windows" if (IsHostMSYS() or PERL_OS in ("cygwin", "msys")) else "linux")
+    os_ = "macos" if IS_MACOS_HOST else ("windows" if IS_WINDOWS_HOST else "linux")
     lc = compilerDriver.lower()
     toolSet = "msvc" if "cl.exe" in lc else ("clang" if "clang" in lc else "gcc")
     arch = Trim(c.G("ARCH"))
@@ -487,20 +474,8 @@ def VSCodeText(c, existingText):
     elif std == "c++latest":
         std = MSVCLatestCppStandard(c.COMPILER_DRIVER_CPlusPlus)
 
-    # the Perl built a jq object literal as a string, and tested 'already listed?' against that string: so does this
-    literal = ' name: \\"' + c.name + '\\" ,cppStandard: \\"' + std + '\\" ,includePath: [\\"\\${myDefaultIncludePath}\\"'
-    includes = ["${myDefaultIncludePath}"]
-    for e in PerlSplit(PATH_SEPERATOR, c.FOUNDATION_INCLUDES_PATH + PATH_SEPERATOR + c.PLATFORM_INCLUDES_PATH):
-        literal += ' , \\"' + e + '\\"'
-        includes.append(e)
-    for e in PkgConfigWords(c, "--cflags-only-I"):
-        if e.startswith("-I"):
-            v = Trim(e[2:])
-            if PERL_OS in ("cygwin", "msys"):
-                v = Trim(Backtick(["cygpath", "--mixed", v])[0])
-            if v not in literal:
-                literal += ' , \\"' + v + '\\"'
-                includes.append(v)
+    includes = AppendPkgConfigIncludes(
+        c, ["${myDefaultIncludePath}"] + PerlSplit(PATH_SEPERATOR, c.FOUNDATION_INCLUDES_PATH + PATH_SEPERATOR + c.PLATFORM_INCLUDES_PATH))
     defines = [e[2:] for e in c.CPPFLAGS_NOTINCLUDES.split(" ") if e.startswith("-D")]
     defines += [Trim(e[2:]) for e in PkgConfigWords(c, "--cflags-only-other") if e.startswith("-D")]
     newCfg = {
@@ -572,11 +547,8 @@ def Main(argv):
         sys.stdout.write("done\n")
         sys.stdout.write(leader)
         sys.stdout.flush()
-        # the Perl ran it by a mixed (C:/...) path on MSYS, to work around MSYS issues with the Visual C++ tools
-        script = os.path.join(THIS_DIR, "CreatePackageConfigFiles")
-        if IsHostMSYS():
-            script = Trim(Backtick(["cygpath", "-m", THIS_DIR])[0]) + "/CreatePackageConfigFiles"
-        rc = subprocess.call([sys.executable, script, "--configuration", activeConfiguration])
+        # THIS_DIR is in the path form sys.executable takes (a POSIX python3 takes a C:/... path as relative)
+        rc = subprocess.call([sys.executable, os.path.join(THIS_DIR, "CreatePackageConfigFiles"), "--configuration", activeConfiguration])
         if rc != 0:
             Die("Error running CreatePackageConfigFiles --configuration " + activeConfiguration + " - exiting\n", rc & 0xFF or 255)
     if genVSIntellisense:

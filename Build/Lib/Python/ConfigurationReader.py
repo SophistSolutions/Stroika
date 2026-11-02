@@ -2,9 +2,6 @@
 Reads a configuration - ConfigurationFiles/<name>.xml, as configure writes it: each element of <Configuration> is a
 parameter, its text the value (unescaped, as for any XML), and <ExtraMakeDefines> the list of its <MakeDefine>s.
 
-The FIRST lookup in a configuration whose file cannot be opened returns "" - only a later lookup reports the error (a PERL
-QUIRK: https://github.com/SophistSolutions/Stroika/issues/1241).
-
 Python 3.9 or later (the oldest a supported build host has).
 """
 
@@ -23,7 +20,6 @@ ENCODING = "latin-1"
 
 class _State:
     lastReadConfig = None
-    fileErr = ""
     configuration = {}
     extraMakeDefines = []
 
@@ -33,8 +29,8 @@ def _ReadConfigFile(path):
         with open(path, "rb") as f:
             data = f.read().decode(ENCODING)
     except OSError:
-        _State.fileErr = "Unable to open " + path
-        return
+        sys.stderr.write("Cannot GetConfigurationParameter: Unable to open " + path + "\n")
+        sys.exit(1)
     try:
         root = ET.fromstring(data)
     except ET.ParseError as e:
@@ -50,14 +46,9 @@ def _ReadConfigFile(path):
 def GetConfigurationParameter(configName, paramName):
     """
     The value of paramName in configuration configName, as a str ("" if unset) - or, for "ExtraMakeDefines", a list of
-    them. Exits the process (status 1, after printing why) if an EARLIER lookup could not open that configuration's file,
-    or if it is not well-formed XML.
+    them. Exits the process (status 1, after printing why to stderr) if that configuration's file cannot be opened, or is not
+    well-formed XML.
     """
-    if _State.fileErr != "":
-        sys.stdout.write("Cannot GetConfigurationParameter: " + _State.fileErr)
-        sys.stdout.flush()
-        sys.exit(1)
-
     if _State.lastReadConfig != configName:
         _State.extraMakeDefines = []
         _State.configuration = {}

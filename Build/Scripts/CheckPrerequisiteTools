@@ -85,8 +85,7 @@ WarnIfAffectedMSYS2Runtime_ ()
 {
 	#	DetectedHostOS folds MSYS_NT-* and MINGW*_NT-* together into "MSYS" and reports CYGWIN_NT-* as
 	#	"Cygwin" - the distinction that matters, since cygwin is a separate runtime and is UNMEASURED
-	#	for this bug. (uname -s is the test; MSYS2's own perl reports $^O as "cygwin", so the obvious
-	#	test is dead code - see isHostMSYS_ () in ApplyConfiguration, which documents the same trap.)
+	#	for this bug. (uname -s is the test, as for ApplyConfiguration's IS_MSYS_HOST.)
 	if [ "$DETECTED_HOST_OS_" != "MSYS" ] ; then
 		return 0
 	fi
