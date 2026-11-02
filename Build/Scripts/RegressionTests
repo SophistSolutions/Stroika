@@ -666,7 +666,9 @@ fi
 ### CompilerAndStdLib_.h, configure's ApplyCompilerBugWorkarounds_). Done here, not in configure, because a configure
 ### message would reach every Stroika user, and only Stroika maintainers run this script.
 CompilerInventory_ () {
-	sed -n 's/.*<CXX>\([^<]*\)<\/CXX>.*/\1/p' ConfigurationFiles/*.xml 2>/dev/null | sort -u | while IFS= read -r CXX_; do
+	for f in ConfigurationFiles/*.xml; do
+		[ -e "$f" ] && Build/Scripts/GetConfigurationParameter "$(basename "$f" .xml)" CXX && echo
+	done 2>/dev/null | grep -v '^$' | sort -u | while IFS= read -r CXX_; do
 		echo "$CXX_ => $("$CXX_" --version 2>&1 | head -1 | tr -d '\r')"
 	done
 }

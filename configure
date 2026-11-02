@@ -75,6 +75,17 @@ def S(v):
     return str(v)
 
 
+def XMLText(v):
+    """v (as S () gives it), escaped as an XML element's text"""
+    return S(v).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def XMLComment(v):
+    """v (as S () gives it), as the text of an XML comment - which cannot hold '--', nor end with '-'"""
+    s = S(v).replace("--", "- -")
+    return s + " " if s.endswith("-") else s
+
+
 _NUM_RE = re.compile(r"[ \t\n\r\f\v]*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)")
 
 
@@ -2286,11 +2297,14 @@ class Configure:
 
     def ConfigFileText_(self):
         """
-        The configuration file's text. A PartialWrite carries the text up to where it dies part way: written, as the
-        Perl wrote the file as it went (a PERL QUIRK).
+        The configuration file's text: each value escaped, so the file is well-formed XML whatever the values hold.
 
         Eventually - make this more central - put all configs here, and then build C++/dirs etc from this!
         """
+
+        def Element(name, value):
+            return "    <" + name + ">" + XMLText(value) + "</" + name + ">\n"
+
         isVS = re.match(r"VisualStudio.Net", self.BuildPlatform) is not None
         # probably belongs elsewhere
         if isVS:
@@ -2318,118 +2332,118 @@ class Configure:
         w("    <!--Overall-->\n")
         w("    <ConfigureCommandLine>")
         w("configure ")
-        w(" ".join(appArgs))
+        w(XMLText(" ".join(appArgs)))
         w("</ConfigureCommandLine>\n")
-        w("    <BuildPlatform>" + S(self.BuildPlatform) + "</BuildPlatform>\n")
+        w(Element("BuildPlatform", self.BuildPlatform))
         if self.BuildToolsRoot is not None:
-            w("    <BuildToolsRoot>" + self.BuildToolsRoot + "</BuildToolsRoot>\n")
-        w("    <TargetPlatforms>" + S(self.TargetPlatforms) + "</TargetPlatforms>\n")
-        w("    <ARCH>" + S(self.ARCH) + "</ARCH>\n")
-        w("    <ConfigTags>" + S(self.Config_Tag) + "</ConfigTags>\n")
-        w("    <BuildByDefault>" + S(self.BuildByDefault) + "</BuildByDefault>\n")
+            w(Element("BuildToolsRoot", self.BuildToolsRoot))
+        w(Element("TargetPlatforms", self.TargetPlatforms))
+        w(Element("ARCH", self.ARCH))
+        w(Element("ConfigTags", self.Config_Tag))
+        w(Element("BuildByDefault", self.BuildByDefault))
 
         w("\n    <!--Tools-->\n")
         if self.AR is not None:
-            w("    <AR>" + self.AR + "</AR>\n")
-        w("    <AS>" + S(self.AS) + "</AS>\n")
-        w("    <CC>" + S(self.COMPILER_DRIVER_C) + "</CC>\n")
-        w("    <CXX>" + S(self.COMPILER_DRIVER_CPlusPlus) + "</CXX>\n")
-        w("    <CMAKE>" + (self.CMAKE if self.CMAKE is not None else "cmake") + "</CMAKE>\n")
+            w(Element("AR", self.AR))
+        w(Element("AS", self.AS))
+        w(Element("CC", self.COMPILER_DRIVER_C))
+        w(Element("CXX", self.COMPILER_DRIVER_CPlusPlus))
+        w(Element("CMAKE", self.CMAKE if self.CMAKE is not None else "cmake"))
         if self.LIBTOOL is not None:
-            w("    <LIBTOOL>" + self.LIBTOOL + "</LIBTOOL>\n")
-        w("    <LINKER>" + S(self.LINKER) + "</LINKER>\n")
+            w(Element("LIBTOOL", self.LIBTOOL))
+        w(Element("LINKER", self.LINKER))
         for name in ("MIDL", "RANLIB", "RC", "STRIP"):
             if getattr(self, name) is not None:
-                w("    <" + name + ">" + getattr(self, name) + "</" + name + ">\n")
+                w(Element(name, getattr(self, name)))
 
         w("\n    <!--Features Enabled-->\n")
         if self.FEATUREFLAG_ATLMFC is not None:
-            w("    <qFeatureFlag_ATLMFC>" + self.FEATUREFLAG_ATLMFC + "</qFeatureFlag_ATLMFC>\n")
-        w("    <qFeatureFlag_boost>" + S(self.FEATUREFLAG_boost) + "</qFeatureFlag_boost>\n")
-        w("    <qFeatureFlag_LibCurl>" + S(self.FEATUREFLAG_LIBCURL) + "</qFeatureFlag_LibCurl>\n")
-        w("    <qFeatureFlag_fmtlib>" + S(self.FEATUREFLAG_fmtlib) + "</qFeatureFlag_fmtlib>\n")
-        w("    <qFeatureFlag_GoogleTest>" + S(self.FEATUREFLAG_GoogleTest) + "</qFeatureFlag_GoogleTest>\n")
-        w("    <qFeatureFlag_LZMA>" + S(self.FEATUREFLAG_LZMA) + "</qFeatureFlag_LZMA>\n")
-        w("    <qFeatureFlag_mongocxxdriver>" + S(self.FEATUREFLAG_mongocxxdriver) + "</qFeatureFlag_mongocxxdriver>\n")
-        w("    <qFeatureFlag_OpenSSL>" + S(self.FEATUREFLAG_OpenSSL) + "</qFeatureFlag_OpenSSL>\n")
+            w(Element("qFeatureFlag_ATLMFC", self.FEATUREFLAG_ATLMFC))
+        w(Element("qFeatureFlag_boost", self.FEATUREFLAG_boost))
+        w(Element("qFeatureFlag_LibCurl", self.FEATUREFLAG_LIBCURL))
+        w(Element("qFeatureFlag_fmtlib", self.FEATUREFLAG_fmtlib))
+        w(Element("qFeatureFlag_GoogleTest", self.FEATUREFLAG_GoogleTest))
+        w(Element("qFeatureFlag_LZMA", self.FEATUREFLAG_LZMA))
+        w(Element("qFeatureFlag_mongocxxdriver", self.FEATUREFLAG_mongocxxdriver))
+        w(Element("qFeatureFlag_OpenSSL", self.FEATUREFLAG_OpenSSL))
         if S(self.FEATUREFLAG_OpenSSLExtraArgs) != "":
             if self.FEATUREFLAG_OpenSSL == LIBFEATUREFLAG_UseStaticTPP:
-                w("    <qFeatureFlag_OpenSSL_ExtraArgs>" + self.FEATUREFLAG_OpenSSLExtraArgs + "</qFeatureFlag_OpenSSL_ExtraArgs>\n")
+                w(Element("qFeatureFlag_OpenSSL_ExtraArgs", self.FEATUREFLAG_OpenSSLExtraArgs))
             else:
-                raise PartialWrite("".join(o), "Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use")
-        w("    <qFeatureFlag_sqlite>" + S(self.FEATUREFLAG_sqlite) + "</qFeatureFlag_sqlite>\n")
-        w("    <qFeatureFlag_StrawberryPerl>" + S(self.FEATUREFLAG_StrawberryPerl) + "</qFeatureFlag_StrawberryPerl>\n")
-        w("    <qFeatureFlag_WinHTTP>" + S(self.FEATUREFLAG_WinHTTP) + "</qFeatureFlag_WinHTTP>\n")
-        w("    <qFeatureFlag_WIX>" + S(self.FEATUREFLAG_WIX) + "</qFeatureFlag_WIX>\n")
-        w("    <qFeatureFlag_Xerces>" + S(self.FEATUREFLAG_Xerces) + "</qFeatureFlag_Xerces>\n")
-        w("    <qFeatureFlag_libxml2>" + S(self.FEATUREFLAG_libxml2) + "</qFeatureFlag_libxml2>\n")
-        w("    <qFeatureFlag_ZLib>" + S(self.FEATUREFLAG_ZLib) + "</qFeatureFlag_ZLib>\n")
-        w("    <qFeatureFlag_zstd>" + S(self.FEATUREFLAG_zstd) + "</qFeatureFlag_zstd>\n")
+                Die("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use")
+        w(Element("qFeatureFlag_sqlite", self.FEATUREFLAG_sqlite))
+        w(Element("qFeatureFlag_StrawberryPerl", self.FEATUREFLAG_StrawberryPerl))
+        w(Element("qFeatureFlag_WinHTTP", self.FEATUREFLAG_WinHTTP))
+        w(Element("qFeatureFlag_WIX", self.FEATUREFLAG_WIX))
+        w(Element("qFeatureFlag_Xerces", self.FEATUREFLAG_Xerces))
+        w(Element("qFeatureFlag_libxml2", self.FEATUREFLAG_libxml2))
+        w(Element("qFeatureFlag_ZLib", self.FEATUREFLAG_ZLib))
+        w(Element("qFeatureFlag_zstd", self.FEATUREFLAG_zstd))
         if self.gAssertionsEnabled != DEFAULT_BOOL_OPTIONS:
-            w("    <AssertionsEnabled>" + S(self.gAssertionsEnabled) + "</AssertionsEnabled>\n")
-        w("    <SanitizerFlags>" + "".join(S(v) + " " for v in self.sanitizerFlags) + "</SanitizerFlags>\n")
+            w(Element("AssertionsEnabled", self.gAssertionsEnabled))
+        w(Element("SanitizerFlags", "".join(S(v) + " " for v in self.sanitizerFlags)))
 
         w("\n    <!--MISC-->\n")
-        w("    <CrossCompiling>" + S(self.CrossCompiling) + "</CrossCompiling>\n")
+        w(Element("CrossCompiling", self.CrossCompiling))
         w("    <ExtraMakeDefines>\n")
         for var in self.useExtraMakeDefines:
-            w("       <MakeDefine>" + S(var) + "</MakeDefine>\n")
+            w("       <MakeDefine>" + XMLText(var) + "</MakeDefine>\n")
         w("    </ExtraMakeDefines>\n")
-        w("    <Foundation_PkgConfigNames>" + " ".join(self.foundationPackageCfgNames) + "</Foundation_PkgConfigNames>\n")
+        w(Element("Foundation_PkgConfigNames", " ".join(self.foundationPackageCfgNames)))
 
         w("\n    <!--Platform Settings-->\n")
         for name in ("VSVARS_WindowsSdkDir", "VSVARS_WindowsSDKVersion", "VSVARS_VSINSTALLDIR", "VSVARS_VCToolsInstallDir",
                      "VSVARS_MSVC_RUNTIME_LIBRARY"):
             if getattr(self, name) is not None:
-                w("    <" + name + ">" + getattr(self, name) + "</" + name + ">\n")
+                w(Element(name, getattr(self, name)))
         if S(self.MACOSX_DEPLOYMENT_TARGET) != "":
-            w("    <MACOSX_DEPLOYMENT_TARGET>" + self.MACOSX_DEPLOYMENT_TARGET + "</MACOSX_DEPLOYMENT_TARGET>\n")
+            w(Element("MACOSX_DEPLOYMENT_TARGET", self.MACOSX_DEPLOYMENT_TARGET))
         if self.TOOLS_PATH_ADDITIONS is not None:
-            w("    <TOOLS_PATH_ADDITIONS>" + self.TOOLS_PATH_ADDITIONS + "</TOOLS_PATH_ADDITIONS>\n")
+            w(Element("TOOLS_PATH_ADDITIONS", self.TOOLS_PATH_ADDITIONS))
         if len(self.VC_PLATFORM_INCLUDES_PATH) != 0:
-            w("    <VSVARS_PLATFORM_INCLUDES_PATH>" + self.PATH_SEPERATOR.join(S(p) for p in self.VC_PLATFORM_INCLUDES_PATH) + "</VSVARS_PLATFORM_INCLUDES_PATH>\n")
+            w(Element("VSVARS_PLATFORM_INCLUDES_PATH", self.PATH_SEPERATOR.join(S(p) for p in self.VC_PLATFORM_INCLUDES_PATH)))
 
         w("\n    <!--Compiling-->\n")
-        w("    <PLATFORM_CPPFLAGS_NOTINCLUDES>" + " ".join(S(v) for v in self.Platform_CPPFLAGS_B4Includes) + "</PLATFORM_CPPFLAGS_NOTINCLUDES>\n")
-        w("    <PLATFORM_INCLUDES_PATH>" + self.PATH_SEPERATOR.join(S(p) for p in self.PLATFORM_INCLUDES_PATH) + "</PLATFORM_INCLUDES_PATH>\n")
-        w("    <PLATFORM_CFLAGS>" + " ".join(S(v) for v in self.CFLAGS) + "</PLATFORM_CFLAGS>\n")
-        w("    <PLATFORM_CXXFLAGS>" + " ".join(S(v) for v in self.CXXFLAGS) + "</PLATFORM_CXXFLAGS>\n")
-        w("    <FOUNDATION_CPPFLAGS_NOTINCLUDES>" + " ".join(S(v) for v in self.StroikaFoundation_CPPFLAGS_B4Includes) + "</FOUNDATION_CPPFLAGS_NOTINCLUDES>\n")
-        w("    <FOUNDATION_INCLUDES_PATH>" + self.PATH_SEPERATOR.join(S(p) for p in self.FOUNDATION_INCLUDES_PATH) + "</FOUNDATION_INCLUDES_PATH>\n")
+        w(Element("PLATFORM_CPPFLAGS_NOTINCLUDES", " ".join(S(v) for v in self.Platform_CPPFLAGS_B4Includes)))
+        w(Element("PLATFORM_INCLUDES_PATH", self.PATH_SEPERATOR.join(S(p) for p in self.PLATFORM_INCLUDES_PATH)))
+        w(Element("PLATFORM_CFLAGS", " ".join(S(v) for v in self.CFLAGS)))
+        w(Element("PLATFORM_CXXFLAGS", " ".join(S(v) for v in self.CXXFLAGS)))
+        w(Element("FOUNDATION_CPPFLAGS_NOTINCLUDES", " ".join(S(v) for v in self.StroikaFoundation_CPPFLAGS_B4Includes)))
+        w(Element("FOUNDATION_INCLUDES_PATH", self.PATH_SEPERATOR.join(S(p) for p in self.FOUNDATION_INCLUDES_PATH)))
 
         w("\n    <!--Linking-->\n")
-        w("    <IncludeDebugSymbolsInLibraries>" + S(self.INCLUDE_SYMBOLS_LIB) + "</IncludeDebugSymbolsInLibraries>\n")
-        w("    <IncludeDebugSymbolsInExecutables>" + S(self.INCLUDE_SYMBOLS_EXE) + "</IncludeDebugSymbolsInExecutables>\n")
-        w("    <Platform_LinkerArgs_LibPath>" + LinkerArgs_LibPathString + "</Platform_LinkerArgs_LibPath>\n")
-        w("    <Platform_LinkerArgs_LibDependencies>" + S(self.LinkerArgs_LibDependencies) + "</Platform_LinkerArgs_LibDependencies>\n")
-        w("    <Platform_LinkerArgs_ExtraPrefix>" + S(self.LinkerArgs_ExtraPrefix) + "</Platform_LinkerArgs_ExtraPrefix>\n")
-        w("    <Platform_LinkerArgs_ExtraSuffix>" + S(self.LinkerArgs_ExtraSuffix) + "</Platform_LinkerArgs_ExtraSuffix>\n")
+        w(Element("IncludeDebugSymbolsInLibraries", self.INCLUDE_SYMBOLS_LIB))
+        w(Element("IncludeDebugSymbolsInExecutables", self.INCLUDE_SYMBOLS_EXE))
+        w(Element("Platform_LinkerArgs_LibPath", LinkerArgs_LibPathString))
+        w(Element("Platform_LinkerArgs_LibDependencies", self.LinkerArgs_LibDependencies))
+        w(Element("Platform_LinkerArgs_ExtraPrefix", self.LinkerArgs_ExtraPrefix))
+        w(Element("Platform_LinkerArgs_ExtraSuffix", self.LinkerArgs_ExtraSuffix))
 
         # todo fix/wrong - only works for case of zero or one file
         # ';' separated list of files to be copied into same directory as we link to, as part of linking operations.
         # ORIGINAL inspiration was ASAN on Windows - but this basic mechanism could also be used on unix for example, for dlls with linker flags to use bin relative DLLS/so file etc
-        w("    <LinkTime_CopyFilesToEXEDir>" + " ".join('"' + S(v) + '"' for v in self.LinkTime_CopyFilesToEXEDir) + "</LinkTime_CopyFilesToEXEDir>\n")
+        w(Element("LinkTime_CopyFilesToEXEDir", " ".join('"' + S(v) + '"' for v in self.LinkTime_CopyFilesToEXEDir)))
 
         w("\n    <!--Runtime/Testing-->\n")
-        w("    <RunPrefix>" + S(self.RunPrefix) + "</RunPrefix>\n")
+        w(Element("RunPrefix", self.RunPrefix))
 
         w("\n    <!--Compiler/Tool Bug Workarounds/Defines-->\n")
         if self.qCompiler_HasNoMisleadingIndentation_Flag is not None:
-            w("    <qCompiler_HasNoMisleadingIndentation_Flag>" + S(self.qCompiler_HasNoMisleadingIndentation_Flag) + "</qCompiler_HasNoMisleadingIndentation_Flag>\n")
+            w(Element("qCompiler_HasNoMisleadingIndentation_Flag", self.qCompiler_HasNoMisleadingIndentation_Flag))
 
         w("\n    <!--VERSIONS-->\n")
         if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
-            w("        <!--g++ version: " + S(self.GetGCCVersion_(self.COMPILER_DRIVER_CPlusPlus, true)) + "-->\n")
+            w("        <!--" + XMLComment("g++ version: " + S(self.GetGCCVersion_(self.COMPILER_DRIVER_CPlusPlus, true))) + "-->\n")
         if self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
-            w("        <!--clang++ version: " + S(self.GetClangVersion_(self.COMPILER_DRIVER_CPlusPlus, true)) + "-->\n")
+            w("        <!--" + XMLComment("clang++ version: " + S(self.GetClangVersion_(self.COMPILER_DRIVER_CPlusPlus, true))) + "-->\n")
         if self.IsMSVCCompiler_(self.COMPILER_DRIVER_CPlusPlus):
-            w("        <!--MSVC++ version: " + S(self.Get_MSVC_CL_Version_(self.COMPILER_DRIVER_CPlusPlus)) + "-->\n")
+            w("        <!--" + XMLComment("MSVC++ version: " + S(self.Get_MSVC_CL_Version_(self.COMPILER_DRIVER_CPlusPlus))) + "-->\n")
         ubuntuVersion = self.getUbuntuVersion()
         if ubuntuVersion != 0:
-            w("        <!--Ubuntu: " + S(ubuntuVersion) + "-->\n")
+            w("        <!--" + XMLComment("Ubuntu: " + S(ubuntuVersion)) + "-->\n")
         if PERL_OS == "darwin":
-            w("        <!--MacOS: " + self.getMacOSVersion_() + "-->\n")
-            w("        <!--XCode: " + S(self.getXCodeVersion_()) + " ; selected: " + self.getXCodeSelect_() + "-->\n")
+            w("        <!--" + XMLComment("MacOS: " + self.getMacOSVersion_()) + "-->\n")
+            w("        <!--" + XMLComment("XCode: " + S(self.getXCodeVersion_()) + " ; selected: " + self.getXCodeSelect_()) + "-->\n")
 
         w("</Configuration>\n")
         return "".join(o)
@@ -2538,25 +2552,12 @@ class Configure:
             self.ValidateConfigurationAndEmitNeededWarnings_()
             masterXMLConfigFile = self.configurationFiles + self.configurationName + ".xml"
             self.Print(self.PrintLevelLeader(self.MAKE_INDENT_LEVEL) + 'Writing "' + masterXMLConfigFile + '" ... ')
-            try:
-                text = self.ConfigFileText_()
-            except PartialWrite as e:
-                e.fileName = masterXMLConfigFile
-                raise
+            text = self.ConfigFileText_()
             self.Print("done\n")
             return masterXMLConfigFile, text
         self.Print(self.PrintLevelLeader(self.MAKE_INDENT_LEVEL) + "Skipping configuration " + self.configurationName + " because "
                    + generateBecause + " and configuration invoked with --only-if-has-compiler\n")
         return None, None
-
-
-class PartialWrite(PerlDie):
-    """A die part way through writing the configuration file, which is left holding what was written by then (a PERL QUIRK)"""
-
-    def __init__(self, text, msg):
-        PerlDie.__init__(self, msg)
-        self.text = text
-        self.fileName = None
 
 
 HELP_TEXT_ = (
@@ -2652,28 +2653,21 @@ HELP_TEXT_ = (
 
 def Main(argv):
     c = Configure(argv)
-    fileName = text = None
     try:
         fileName, text = c.Run()
-        status = 0
     except PerlExit as e:
-        status = e.status
-    except PartialWrite as e:
-        c.PrintErr(str(e) + "\n")
-        fileName, text = e.fileName, e.text
-        status = 255
+        return e.status
     except PerlDie as e:
         c.PrintErr(str(e) + ("" if str(e).endswith("\n") else "\n"))
-        status = 255
-    if fileName is not None and text is not None:
+        return 255
+    if fileName is not None:
         with open(fileName, "wb") as f:
             f.write(text.encode(ENC))
-        if status == 0:
-            try:
-                os.remove("IntermediateFiles/APPLIED_CONFIGURATIONS")
-            except OSError:
-                pass
-    return status
+        try:
+            os.remove("IntermediateFiles/APPLIED_CONFIGURATIONS")
+        except OSError:
+            pass
+    return 0
 
 
 if __name__ == "__main__":
