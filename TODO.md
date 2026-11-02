@@ -8,6 +8,15 @@ Generally will track stuff here between releases
 
 ## Open
 
+- AGENTS.md probably should NOT include TODO (clause.md) czu jjust for LGP it should - or anyone developinig it. Is thatwhat agents.md for or also peopletrying to understand it?>
+
+- document or reconsider the practice of #include Stroika-Frameowkrs-Precome
+  Stroika-Foundation-Precompe.h on every cpp and .h file.
+  
+- delete Stroika's TODO.md entry about AppVersion.h (now #1252);
+- fix the stale GetConfigurations path in Stroika's ThirdPartyComponents/openssl/Makefile:190 and Xerces/Makefile:130.
+
+
 - **plato: finish its Remote-SSH client setup, as `lewis`** (2026-09-19; the `stroika-dev` account it was to log in as
   was deleted 2026-10-20). Its key and shared ssh files are prepared; what is left - test from plato - is in the shared
   notes' ssh-cleanup checklist. protagoras is already done.
@@ -31,6 +40,9 @@ Generally will track stuff here between releases
      a Skel app's root VERSION file for <version>), and nothing gives IntelliSense that directory instead. Only a
      c_cpp_properties.json with no myDefaultIncludePath gets the new default. IntelliSense only: every 3.0d25 release run
      built the samples.
+   - **IO::Network::Transfer::Cache: a quick review, and docs for its Ptr** (LGP 2026-10-24) -
+     Library/Sources/Stroika/Foundation/IO/Network/Transfer/Cache.h: `struct Ptr : shared_ptr<Cache::IRep> {};` has an
+     empty doc comment.
 
 ## Watching
 
