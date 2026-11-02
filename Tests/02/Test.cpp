@@ -1719,6 +1719,12 @@ namespace {
             EXPECT_EQ (tt[1], "b");
             EXPECT_EQ (tt[2], " c");
         }
+        {
+            // separators at either end, and several in a row, make no empty tokens - with each kind of separator
+            EXPECT_EQ (String{"|a||b|"}.Tokenize ("\\|"_RegEx), (Sequence<String>{"a", "b"}));
+            EXPECT_EQ (String{"|a||b|"}.Tokenize ({'|'}), (Sequence<String>{"a", "b"}));
+            EXPECT_EQ (String{" a  b "}.Tokenize (), (Sequence<String>{"a", "b"}));
+        }
     }
 }
 

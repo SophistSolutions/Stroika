@@ -918,16 +918,22 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Break this String into constituent parts. This is a simplistic API but at least handy as is.
+         *  \brief Break this String into its tokens: the runs of characters between separators. The separators themselves
+         *         never appear in the result.
          *
-         *  The caller can specify the token separators by set, by lambda. This defaults to the lambda "isWhitespace".
+         *  The separators are given by a set of characters, by a predicate (true for a separator), or by a regular expression
+         *  (each match is one separator). With no argument, they are the whitespace characters (Character::IsWhitespace).
          *
-         *  This is often called 'Split' in other APIs. This is NOT (as is now) a replacement for flex, but just for
-         *  simple, but common string splitting needs (though if I had a regexp param, it may approach the power of flex).
+         *  Each token is a longest run of characters that are not separators, so:
+         *      o   No token is empty: separators at the start or end of the string, or several in a row, make no token. An
+         *          empty string gives no tokens, and a string with no separators gives one: itself.
+         *      o   Everything that is not a separator stays in its token, at either end - Tokenize ({'='}) keeps the spaces
+         *          around the '='. Name ' ' as a separator too, or Trim () each token, to drop them.
          *
-         *  \note If this->length () == 0, this method returns a list of length 0;
-         *  \note Its fine for the split character/characters to be missing, in which case this
-         *        returns a list of length 1
+         *  This is often called 'Split' in other APIs. It is not a replacement for flex, but for simple, common string
+         *  splitting needs.
+         *
+         *  A regular expression that matches the empty string throws (runtime_error) - it would make a separator of nothing.
          *
          *  \par Example Usage
          *      \code
@@ -940,17 +946,25 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          String  t { "foo=   7" };
          *          auto    tt = t.Tokenize ({ '=' });
-         *          Assert (t.length () == 2);
-         *          Assert (t[1] == "   7");
-         *          Assert (t[1].Trim () == "7");
+         *          Assert (tt.length () == 2);
+         *          Assert (tt[1] == "   7");
+         *          Assert (tt[1].Trim () == "7");
          *      \endcode
          *
          *  \par Example Usage
          *      \code
          *          String  t { "foo=   7" };
          *          auto    tt = t.Tokenize ({ '=', ' ' });
-         *          Assert (t.length () == 2);
-         *          Assert (t[1] == "7");
+         *          Assert (tt.length () == 2);
+         *          Assert (tt[1] == "7");
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          String  t { "|a||b|" };
+         *          auto    tt = t.Tokenize ("\\|"_RegEx);
+         *          Assert (tt.length () == 2);     // no empty tokens, and no '|'
+         *          Assert (tt[0] == "a" and tt[1] == "b");
          *      \endcode
          *
          *  @see Find
@@ -968,9 +982,9 @@ namespace Stroika::Foundation::Characters {
          *              Add something like the above to the String String demo app (when it exists)
          */
         nonvirtual Containers::Sequence<String> Tokenize () const;
-        nonvirtual Containers::Sequence<String> Tokenize (const function<bool (Character)>& isTokenSeperator) const;
-        nonvirtual Containers::Sequence<String> Tokenize (const RegularExpression& isSeparator) const;
-        nonvirtual Containers::Sequence<String> Tokenize (const Containers::Set<Character>& delimiters) const;
+        nonvirtual Containers::Sequence<String> Tokenize (const function<bool (Character)>& isTokenSeparator) const; ///< \brief The tokens between the characters isTokenSeparator says are separators
+        nonvirtual Containers::Sequence<String> Tokenize (const RegularExpression& isSeparator) const; ///< \brief The tokens between the matches of isSeparator
+        nonvirtual Containers::Sequence<String> Tokenize (const Containers::Set<Character>& delimiters) const; ///< \brief The tokens between the characters in delimiters
 
     public:
         /**

@@ -1341,9 +1341,7 @@ Sequence<String> String::Tokenize (const RegularExpression& isSeparator) const
             if (ofi->first > startAt) {
                 r += SubString (startAt, ofi->first);
             }
-            else {
-                Assert (startAt == 0); // special case - start of string
-            }
+            // else a separator at the start, or right after another: no (empty) token
             startAt = ofi->second;
             Assert (startAt <= len);
         }
