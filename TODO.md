@@ -57,8 +57,8 @@ never appear in a list of what to do next.
   26, retry `npm run build` once at that Makefile line. Drop this entry if CI stays clean to the 3.0d26 release. Once
   26 is LTS (expected late 2026-10), Windows-Cygwin's Dockerfile goes back to its commented-out nodejs-lts line.
 
-- **WATCH: does Windows-VS2k22/Dockerfile still need its Edge ResiliencyLinks delete? - once a month** (LGP 2026-11-03)
-  Since Edge WebView 156.0.4314.58, docker could not save the VS install layer with that folder in it
-  (hcsshim::ImportLayer (0x3)); a fix in Edge or in Windows' container layer code would make the delete dead weight. On
-  medusa-windows-dev, build that image with the delete taken out (`docker build --pull --no-cache`, ~20 min); when it
-  builds, drop the delete and this entry.
+- **WATCH: the VS 2022 docker image's intermittent save failure - each Windows image run** (LGP 2026-11-03) When a
+  vs2k22 job fails with hcsshim::ImportLayer (0x3) saving the VS install layer, read the Edge WebView2 state its install
+  step logs (Windows-VS2k22/Dockerfile): was the updater still downloading or installing (a `[Running installer]` with no
+  `[InstallerResult]`, an Edge installer in the TASKLIST)? Each failure so far ended with WebView2 still at 131.0.2903.86
+  (2026-11-02, 11-03). Once the cause is clear, fix it and drop the logging.

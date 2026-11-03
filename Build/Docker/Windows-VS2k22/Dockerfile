@@ -96,15 +96,15 @@ ARG USE_UniversalBuildTools=""
 
 # del stuff to minimize space left in the filesystem layer
 #
-# The VS installer brings in Edge WebView. Its ResiliencyLinks folder is deleted in this same RUN, because docker
-# fails saving the layer with it, since WebView 156.0.4314.58 (dated 2026-10-29; 155.0.4283.62 saved fine):
-#       hcsshim::ImportLayer failed in Win32: The system cannot find the path specified. (0x3)
-# Intermittent on GitHub, as Edge rolls a version out to some runners first. Nothing here uses Edge.
-# Drop the delete once the image builds without it - the WATCH in TODO.md.
-#
 # vs_buildtools.exe's 3010 is success needing a reboot (none in a container), so it is made 0; any other nonzero code
 # fails the RUN with that code. Not "%ERRORLEVEL%"=="3010": cmd fills %ERRORLEVEL% in when it reads the line, before
 # the installer runs, and a false IF counts as success - IF ERRORLEVEL n (code >= n) is tested as it runs.
+#
+# The VS installer brings in Edge WebView2 131.0.2903.86, and Edge's updater then updates it in the background, which
+# may still be running when this RUN ends. Saving this layer fails now and then (more often on GitHub) with
+#       hcsshim::ImportLayer failed in Win32: The system cannot find the path specified. (0x3)
+# each time seen with WebView2 still at 131. So the RUN ends by logging WebView2's versions, its updater's downloads and
+# installs, and the processes still running - for the next failure; the WATCH in TODO.md.
 SHELL ["cmd", "/S", "/C"]
 # RUN  (wmic logicaldisk get deviceid, freespace, size, description)
 RUN %TEMP%\vs_buildtools.exe \
@@ -123,7 +123,11 @@ RUN %TEMP%\vs_buildtools.exe \
     --quiet --wait --norestart --noUpdateInstaller \
     & (IF ERRORLEVEL 3010 IF NOT ERRORLEVEL 3011 cmd /c exit 0) \
     & (IF ERRORLEVEL 1 EXIT) & (IF NOT ERRORLEVEL 0 EXIT) \
-    & FOR /D %V IN ("%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application\*") DO IF EXIST "%V\ResiliencyLinks" RMDIR /S /Q "%V\ResiliencyLinks"
+    & ECHO ==== Edge WebView2 at the end of the VS install: \
+    & DIR /B "%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application" \
+    & TYPE "%ProgramData%\Microsoft\EdgeUpdate\Log\MicrosoftEdgeUpdate.log" | FINDSTR /L /C:"[DllEntry]" /C:"DoDownloadPackage" /C:"[Running installer]" /C:"[InstallerResult]" \
+    & TASKLIST \
+    & cmd /c exit 0
 
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygin-vs2k22
