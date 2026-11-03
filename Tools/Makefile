@@ -18,7 +18,7 @@ help:
 
 all:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i || exit $$?;\
 	done
 else

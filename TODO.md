@@ -14,7 +14,6 @@ Generally will track stuff here between releases
   Stroika-Foundation-Precompe.h on every cpp and .h file.
   
 - delete Stroika's TODO.md entry about AppVersion.h (now #1252);
-- fix the stale GetConfigurations path in Stroika's ThirdPartyComponents/openssl/Makefile:190 and Xerces/Makefile:130.
 
 
 - **plato: finish its Remote-SSH client setup, as `lewis`** (2026-09-19; the `stroika-dev` account it was to log in as
