@@ -45,6 +45,7 @@ jobs:
     needs: LinuxMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
+      fail-fast: false
       matrix: ${{fromJson(needs.LinuxMatrixPrep.outputs.matrix)}}
     env:
       "BUILD_DEV_IMAGES": "0" 
@@ -77,6 +78,7 @@ jobs:
     needs: WindowsMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
+      fail-fast: false
       matrix: ${{fromJson(needs.WindowsMatrixPrep.outputs.matrix)}}
     defaults:
       run:
