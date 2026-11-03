@@ -254,12 +254,12 @@ CXXFLAGS       :=
 else
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 # use $(shell instead of $$() for windows else fails - probably due to my not knowing how to fully enuf disable path covnersions
-CPPFLAGS       =       $$(${StroikaRoot_MIXED}Build/Scripts/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --msvc --cflags-only-I ${PackageDependencies})
+CPPFLAGS       =       $$(${StroikaRoot}Build/Scripts/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --msvc --cflags-only-I ${PackageDependencies})
 else
-CPPFLAGS       =       $$(${StroikaRoot_MIXED}Build/Scripts/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-I ${PackageDependencies})
+CPPFLAGS       =       $$(${StroikaRoot}Build/Scripts/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-I ${PackageDependencies})
 endif
-CFLAGS         =       $$(${StroikaRoot_MIXED}Build/Scripts/SplitCFLAGS --type=CFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
-CXXFLAGS       =       $$(${StroikaRoot_MIXED}Build/Scripts/SplitCFLAGS --type=CXXFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
+CFLAGS         =       $$(${StroikaRoot}Build/Scripts/SplitCFLAGS --type=CFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
+CXXFLAGS       =       $$(${StroikaRoot}Build/Scripts/SplitCFLAGS --type=CXXFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
 endif
 
 
@@ -413,7 +413,7 @@ DEFAULT_LINK_LINE=\
 		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot_MIXED}Build/Scripts/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
+		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}Build/Scripts/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
 		$4 \
 		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_, $1)
 else

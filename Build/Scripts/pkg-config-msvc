@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 #
 # pkg-config-msvc - just like pkg-config --msvc-syntax but fixes up a few cases apparently not handled by pkg-config --msvc-syntax
@@ -10,11 +10,7 @@ import sys
 import subprocess
 
 def isWindowsSystem_() -> bool:
-    if os.name == 'nt':
-        return True
-    if sys.platform=='cygwin':
-        return True
-    return False
+    return sys.platform == 'msys' or sys.platform.startswith('cygwin')  # MSYS2's or Cygwin's python
 
 if __name__ == "__main__":
     args = sys.argv

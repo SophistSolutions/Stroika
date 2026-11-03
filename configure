@@ -1,19 +1,4 @@
-#!/bin/sh
-# (sh, then Python: python3 runs this file by a path it can open. A native Windows python3.exe cannot open a /c/... path -
-# under MSYS2's make, which exports MSYS2_ARG_CONV_EXCL=*, it arrives unconverted - so it gets the C:/... form. Cygwin's and
-# MSYS2's own python3 are POSIX programs, and take the path as it is: that is /usr/bin/python3, however PATH spells it
-# (-ef: /cygdrive/c/cygwin/bin/python3 is the same file, and a POSIX python takes a C:/... path as relative). With no fork
-# but the exec: this runs often. The bash-only expansions are in eval, so the sh of Linux (dash) never parses them)
-''':'
-case "$0:$OSTYPE" in /*:msys* | /*:cygwin*)
-	hash python3 2> /dev/null; eval 'p=${BASH_CMDS[python3]}'
-	if [ -n "$p" ] && ! [ "$p" -ef /usr/bin/python3 ]; then
-		case "$0" in /[A-Za-z]/*) eval 'd=${0:1:1}; exec python3 "${d^^}:${0:2}" "$@"' ;; esac
-		exec python3 "$(cygpath -m "$0")" "$@"
-	fi ;;
-esac
-exec python3 "$0" "$@"
-'''
+#!/usr/bin/python3
 #
 #   configure CONFIGURATION-NAME [OPTIONS]*         (configure --help lists the options)
 #
@@ -47,7 +32,9 @@ LIBFEATUREFLAG_UseStaticTPP_ = "use"
 LIBFEATUREFLAG_UseSystem_ = "use-system"
 LIBFEATUREFLAG_No_ = "no"
 
-IS_WINDOWS_HOST_ = sys.platform in ("win32", "msys") or sys.platform.startswith("cygwin")  # a native Windows, MSYS2 or Cygwin python
+if sys.platform == "win32":  # (run as python3 configure, say - the #! line names a POSIX one)
+    sys.exit("configure needs a POSIX python3 - on Windows, MSYS2's (pacman -S python) or Cygwin's - not a native Windows one")
+IS_WINDOWS_HOST_ = sys.platform == "msys" or sys.platform.startswith("cygwin")  # MSYS2's or Cygwin's python
 IS_LINUX_HOST_ = sys.platform.startswith("linux")
 IS_MACOS_HOST_ = sys.platform == "darwin"
 
@@ -94,58 +81,13 @@ def SplitList_(s, sep):
     return [i for i in s.split(sep) if i != ""]
 
 
-def Env_(name):
-    """The environment variable name, or None: case-sensitive - a native Windows Python's os.environ upper-cases every name, so
-    would take Visual Studio's Platform for PLATFORM, say"""
-    if sys.platform == "win32":
-        import nt
-        return nt.environ.get(name)
-    return os.environ.get(name)
-
-
-def ChildEnv_(drop=()):
-    """The environment, with its names' case kept (see Env_), less the names in drop, for a child process"""
-    if sys.platform == "win32":
-        import nt
-        env = dict(nt.environ)
-        for k, v in os.environ.items():  # what this process has set since it started
-            if not any(k == e.upper() for e in env):
-                env[k] = v
-    else:
-        env = dict(os.environ)
-    for d in drop:
-        env.pop(d, None)
-    return env
-
-
-def ToPosixPathForTest_(p):
-    """A POSIX path (/c/..., /usr/...), as a native Windows Python must spell it to look at the file"""
-    if sys.platform == "win32" and p.startswith("/"):
-        r = subprocess.run(["cygpath", "--mixed", p], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        return Decode_(r.stdout).strip()
-    return p
-
-
 def PathExists_(p):
-    return p is not None and p != "" and os.path.exists(ToPosixPathForTest_(p))
+    return p is not None and p != "" and os.path.exists(p)
 
 
 def Glob_(pattern):
-    """
-    The matches of a POSIX path pattern, sorted case-insensitively, each spelled as the pattern spells its directories. A
-    native Windows Python globs the C:/ form of the pattern, and gives back that.
-    """
-    native = pattern
-    if sys.platform == "win32":
-        # only the part before the first wildcard goes through cygpath, which would make a * a private-use character
-        parts = pattern.split("/")
-        k = next((i for i, p in enumerate(parts) if any(ch in p for ch in "*?[")), len(parts))
-        rest = "/".join(parts[k:])
-        native = ToPosixPathForTest_("/".join(parts[:k]) or "/").rstrip("/") + ("/" + rest if rest else "")
-    results = glob.glob(native)
-    if sys.platform == "win32":
-        results = [r.replace("\\", "/") for r in results]
-    return sorted(results, key=lambda r: (r.lower(), r))
+    """The matches of the path pattern, sorted case-insensitively"""
+    return sorted(glob.glob(pattern), key=lambda r: (r.lower(), r))
 
 
 class Configure_:
@@ -154,7 +96,7 @@ class Configure_:
         self.cache_ = {}
         self.configurationFiles = "ConfigurationFiles/"
         self.configurationName = None
-        indentLevel = Env_("MAKE_INDENT_LEVEL") or ""
+        indentLevel = os.environ.get("MAKE_INDENT_LEVEL") or ""
         self.MAKE_INDENT_LEVEL = int(indentLevel) if indentLevel.isdigit() else 0
         self.PATH_SEPERATOR = ";" if IS_WINDOWS_HOST_ else ":"
         self.EXTRA_ARGS = []
@@ -485,7 +427,7 @@ class Configure_:
         """
         compilerDriver = compilerDriver.strip()
         lld = self.CachedBacktick(compilerDriver + " -print-prog-name=ld.lld 2>/dev/null").strip()
-        return lld if (lld.startswith("/") and os.access(ToPosixPathForTest_(lld), os.X_OK)) else None
+        return lld if (lld.startswith("/") and os.access(lld, os.X_OK)) else None
 
     def GetLibStdCXXStacktraceLib_(self, compilerDriver, flags):
         """
@@ -640,7 +582,7 @@ class Configure_:
         if IS_LINUX_HOST_ or IS_MACOS_HOST_:
             self.BuildPlatform = "Unix"
         if IS_WINDOWS_HOST_:
-            PROGRAMFILESDIR, PROGRAMFILESDIR2 = self.Cygpath([], [Env_("PROGRAMFILES") or "", Env_("ProgramFiles(x86)") or ""])
+            PROGRAMFILESDIR, PROGRAMFILESDIR2 = self.Cygpath([], [os.environ.get("PROGRAMFILES") or "", os.environ.get("ProgramFiles(x86)") or ""])
             # Try vs2k26
             if self.BuildPlatform == "":
                 if Glob_(PROGRAMFILESDIR + "/Microsoft Visual Studio/18/*/VC"):
@@ -1014,26 +956,26 @@ class Configure_:
             self.COMPILER_DRIVER = "gcc"
 
     def ParseEnvVarsToSetupInfluencedVariables_(self):
-        if Env_("ARCH") is not None:
-            self.EXTRA_ARGS += ["--arch", Env_("ARCH")]
-        if Env_("PLATFORM") is not None:
-            self.EXTRA_ARGS += ["--build-platform", Env_("PLATFORM")]
-        if Env_("CC") is not None:
-            self.EXTRA_ARGS += ["--compiler-driver", Env_("CC")]
-            self.COMPILER_DRIVER_C = Env_("CC")
-        if Env_("CXX") is not None:
-            self.EXTRA_ARGS += ["--compiler-driver", Env_("CXX")]
-            self.COMPILER_DRIVER_CPlusPlus = Env_("CXX")
-        if Env_("AR") is not None:
-            self.EXTRA_ARGS += ["--ar", Env_("AR")]
-        if Env_("AS") is not None:
-            self.EXTRA_ARGS += ["--as", Env_("AS")]
-        if Env_("RANLIB") is not None:
-            self.EXTRA_ARGS += ["--ranlib", Env_("RANLIB")]
-        if Env_("STRIP") is not None:
-            self.EXTRA_ARGS += ["--strip", Env_("STRIP")]
-        if Env_("EXTRA_CONFIGURE_ARGS") is not None:
-            self.EXTRA_ARGS += Env_("EXTRA_CONFIGURE_ARGS").split()
+        if os.environ.get("ARCH") is not None:
+            self.EXTRA_ARGS += ["--arch", os.environ.get("ARCH")]
+        if os.environ.get("PLATFORM") is not None:
+            self.EXTRA_ARGS += ["--build-platform", os.environ.get("PLATFORM")]
+        if os.environ.get("CC") is not None:
+            self.EXTRA_ARGS += ["--compiler-driver", os.environ.get("CC")]
+            self.COMPILER_DRIVER_C = os.environ.get("CC")
+        if os.environ.get("CXX") is not None:
+            self.EXTRA_ARGS += ["--compiler-driver", os.environ.get("CXX")]
+            self.COMPILER_DRIVER_CPlusPlus = os.environ.get("CXX")
+        if os.environ.get("AR") is not None:
+            self.EXTRA_ARGS += ["--ar", os.environ.get("AR")]
+        if os.environ.get("AS") is not None:
+            self.EXTRA_ARGS += ["--as", os.environ.get("AS")]
+        if os.environ.get("RANLIB") is not None:
+            self.EXTRA_ARGS += ["--ranlib", os.environ.get("RANLIB")]
+        if os.environ.get("STRIP") is not None:
+            self.EXTRA_ARGS += ["--strip", os.environ.get("STRIP")]
+        if os.environ.get("EXTRA_CONFIGURE_ARGS") is not None:
+            self.EXTRA_ARGS += os.environ.get("EXTRA_CONFIGURE_ARGS").split()
 
     def GetAppArgs_(self):
         """merge 'extra' args (from environment variables) with those specified on the commandline"""
@@ -1076,6 +1018,10 @@ class Configure_:
                 o.apply(self, value)
 
     # ---------------------------------------------------------------- the options that do more than set one thing
+
+    def OptionBuildToolsRoot_(self, v):
+        # in the C:/ form on Windows, as the default is: a .bat calls the vcvarsall.bat path made from it
+        self.BuildToolsRoot = self.fromCygPath_(v) if IS_WINDOWS_HOST_ else v
 
     def OptionCompilerDriver_(self, v):
         self.COMPILER_DRIVER = v
@@ -1747,8 +1693,8 @@ class Configure_:
             GetDefaultToolsBuildDir ("VisualStudio.Net-2022")
             GetDefaultToolsBuildDir ("VisualStudio.Net")
         """
-        PROGRAMFILESDIR = Env_("PROGRAMFILES") or ""
-        PROGRAMFILESDIR86 = Env_("ProgramFiles(x86)") or ""
+        PROGRAMFILESDIR = os.environ.get("PROGRAMFILES") or ""
+        PROGRAMFILESDIR86 = os.environ.get("ProgramFiles(x86)") or ""
         names = ["18"]  # default to vs2k2026
         if PLATFORM == "VisualStudio.Net-2022":
             names = ["2022"]
@@ -1800,8 +1746,9 @@ class Configure_:
                 f.write(("@echo off\r\n" + self.GetString2InsertIntoBatchFileToInitCompiles_(ARCH, VSDIR) + cmd2Run + "\r\n").encode(ENCODING_, ENCODING_ERRORS_))
             # https://github.com/SophistSolutions/Stroika/issues/1073 /E:ON needed for this ticket
             # cmd finds the .bat by its bare name, in the current directory - which NoDefaultCurrentDirectoryInExePath turns off
-            p = subprocess.run(["cmd", "/E:ON/C", os.path.basename(tmpPath)], stdout=subprocess.PIPE,
-                               env=ChildEnv_(drop=["NoDefaultCurrentDirectoryInExePath"]))
+            env = dict(os.environ)
+            env.pop("NoDefaultCurrentDirectoryInExePath", None)
+            p = subprocess.run(["cmd", "/E:ON/C", os.path.basename(tmpPath)], stdout=subprocess.PIPE, env=env)
             return Decode_(p.stdout)
         finally:
             os.unlink(tmpPath)
@@ -1834,9 +1781,9 @@ class Configure_:
         for n, v in zip(names, values):
             resEnv[n] = v
 
-        myOrigFullPath = Env_("PATH") or ""
-        if sys.platform == "win32":  # a native Windows Python's PATH is in Windows form
-            myOrigFullPath = self.Cygpath(["--unix", "--path"], [myOrigFullPath])[0]
+        # this PATH by way of its Windows form, as vcvarsall's is: so each directory is spelled the same on both sides (a
+        # shell's PATH may hold /c/msys64/mingw64/bin, which cygpath gives back as /mingw64/bin)
+        myOrigFullPath = self.Cygpath(["--unix", "--path"], [self.Cygpath(["--windows", "--path"], [os.environ.get("PATH") or ""])[0]])[0]
         newFullPath = self.Cygpath(["--unix", "--path"], [resEnv.get("PATH", "")])[0]
         myOrigFullPathHash = set(SplitList_(myOrigFullPath, ":"))
         newFullPathHash = set(SplitList_(newFullPath, ":")) - myOrigFullPathHash
@@ -2205,7 +2152,7 @@ OPTIONS_ = [
     Option_("target-platforms", "{TargetPlatforms}", "Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected",
             Set_("TargetPlatforms")),
     Option_("build-tools-root", "{BuildToolsRoot}", "Specifies the BuildToolsRoot (makefile variable) - initially just for visual studio - usually auto-detected",
-            Set_("BuildToolsRoot")),
+            Configure_.OptionBuildToolsRoot_),
     Option_("assertions", ENABLE_DISABLE_DEFAULT_, "Enables/disable assertion feature (setting qStroika_Foundation_Debug_AssertionsChecked)",
             Set_("gAssertionsEnabled")),
     Option_("block-allocation", {"enable": "1", "disable": "0", "default": None}, "Enables/disable block-allocation (a feature that improves performance, but messes up valgrind)",

@@ -1,19 +1,4 @@
-#!/bin/sh
-# (sh, then Python: python3 runs this file by a path it can open. A native Windows python3.exe cannot open a /c/... path -
-# under MSYS2's make, which exports MSYS2_ARG_CONV_EXCL=*, it arrives unconverted - so it gets the C:/... form. Cygwin's and
-# MSYS2's own python3 are POSIX programs, and take the path as it is: that is /usr/bin/python3, however PATH spells it
-# (-ef: /cygdrive/c/cygwin/bin/python3 is the same file, and a POSIX python takes a C:/... path as relative). With no fork
-# but the exec: this runs often. The bash-only expansions are in eval, so the sh of Linux (dash) never parses them)
-''':'
-case "$0:$OSTYPE" in /*:msys* | /*:cygwin*)
-	hash python3 2> /dev/null; eval 'p=${BASH_CMDS[python3]}'
-	if [ -n "$p" ] && ! [ "$p" -ef /usr/bin/python3 ]; then
-		case "$0" in /[A-Za-z]/*) eval 'd=${0:1:1}; exec python3 "${d^^}:${0:2}" "$@"' ;; esac
-		exec python3 "$(cygpath -m "$0")" "$@"
-	fi ;;
-esac
-exec python3 "$0" "$@"
-'''
+#!/usr/bin/python3
 #
 #   ApplyConfiguration [OPTIONS] CONFIGURATION
 #
@@ -63,20 +48,13 @@ def Backtick_(args, env=None):
     return p.stdout.decode(ENC_), p.returncode
 
 
-IS_WINDOWS_HOST_ = sys.platform in ("win32", "msys") or sys.platform.startswith("cygwin")  # under MSYS2 or Cygwin
+IS_WINDOWS_HOST_ = sys.platform == "msys" or sys.platform.startswith("cygwin")  # MSYS2's or Cygwin's python
 IS_MACOS_HOST_ = sys.platform == "darwin"
 PATH_SEPERATOR_ = ";" if IS_WINDOWS_HOST_ else ":"
 # MSYS2 rather than Cygwin. A MINGW64/MINGW32/UCRT64 shell (which is what MSYSTEM=MINGW64 gives you, and what VSCode terminal
 # profiles commonly set) says "MINGW64_NT-..." - still MSYS2. Build/Scripts/DetectedHostOS maps MINGW -> MSYS for exactly
 # this reason; keep the two in agreement or they disagree about what host this is.
 IS_MSYS_HOST_ = IS_WINDOWS_HOST_ and re.match(r"MSYS|MINGW", Backtick_(["uname", "-s"])[0].strip()) is not None
-
-
-def PosixPathExists_(p):
-    """Whether p exists: for a native Windows Python, a POSIX path (/usr/bin) is first mapped through cygpath"""
-    if sys.platform == "win32" and p.startswith("/"):
-        p = Backtick_(["cygpath", "--windows", p])[0].strip()
-    return os.path.exists(p)
 
 
 def ConfigParam2BoolInt_(v):
@@ -248,8 +226,6 @@ def PkgConfigWords_(c, which):
     if c.Foundation_PkgConfigNames.strip() == "":
         return []
     pcDir = os.path.normpath(os.path.join(THIS_DIR_, "..", "..", "Builds", c.name, "lib", "pkgconfig"))
-    if sys.platform == "win32":  # pkg-config is MSYS2's or Cygwin's, which splits PKG_CONFIG_PATH on ':'
-        pcDir = Backtick_(["cygpath", "--unix", pcDir])[0].strip()
     out, _ = Backtick_(["pkg-config", which] + c.Foundation_PkgConfigNames.split(), env=dict(os.environ, PKG_CONFIG_PATH=pcDir))
     return out.split()
 
@@ -273,7 +249,7 @@ def AppendPkgConfigIncludes_(c, paths):
 def MapArraysOfFiles2Path_(conditionalPaths, backupPaths):
     """The Windows form of each of conditionalPaths that exists (or, if none does, of each of backupPaths), each once"""
     result = []
-    for f in [f for f in conditionalPaths if PosixPathExists_(f)] or backupPaths:
+    for f in [f for f in conditionalPaths if os.path.exists(f)] or backupPaths:
         w = Backtick_(["cygpath", "--windows", f])[0].strip()
         if w.lower() not in (r.lower() for r in result):
             result.append(w)
@@ -383,8 +359,9 @@ def MSVCLatestCppStandard_(compiler):
         with tempfile.TemporaryDirectory() as d:
             with open(os.path.join(d, "probe.cpp"), "w") as f:
                 f.write("_MSVC_LANG\n")
+            # MSYS2_ARG_CONV_EXCL, as make exports it: else MSYS2 makes /nologo a path, for a native program
             p = subprocess.run([compiler, "/nologo", "/std:c++latest", "/EP", "probe.cpp"], cwd=d, stdout=subprocess.PIPE,
-                               stderr=subprocess.DEVNULL, timeout=60)
+                               stderr=subprocess.DEVNULL, timeout=60, env=dict(os.environ, MSYS2_ARG_CONV_EXCL="*"))
         m = re.search(r"\b(\d{6})L\b", p.stdout.decode(ENC_, errors="replace"))
         if p.returncode == 0 and m:
             for value, name in ((202302, "c++23"), (202002, "c++20")):

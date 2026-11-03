@@ -91,6 +91,7 @@ Roughly:
   [Supported Platforms and Compilers](SupportedPlatformsAndCompilers.md)
 - bash (sh)
 - make (gnu make), patch, perl, pkg-config, realpath, sed, tar, tr, wget, unzip
+- python3, as `/usr/bin/python3` (on Windows, MSYS2's or Cygwin's own - not a native Windows one)
 - 7za, cmake (optionally - for building some optional components)
 
 

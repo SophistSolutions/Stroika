@@ -96,6 +96,14 @@ elif [ $TOOL == "jq" ] ; then
 	if [ $DistroBasedOn == "msys" ] ; then
 	echo -n ": try pacman -S jq" && echo && exit 0
 	fi
+elif [ $TOOL == "python3" ] ; then
+	# the build's Python scripts run /usr/bin/python3 (their #! line) - on Windows, MSYS2's or Cygwin's own
+	if [ $DistroBasedOn == "msys" ] ; then
+	echo -n ": /usr/bin/python3 - try pacman -S python (MSYS2's own: mingw-w64-x86_64-python is a native Windows one)" && echo && exit 0
+	elif [ $DistroBasedOn == "Darwin" ] ; then
+	echo -n ": /usr/bin/python3 - try xcode-select --install" && echo && exit 0
+	fi
+	echo -n " (/usr/bin/python3)"
 fi
 
 # Generic instructions based on your 'OS'/build environment

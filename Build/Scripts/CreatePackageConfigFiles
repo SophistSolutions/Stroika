@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 # Requirements:
 # xml
@@ -18,11 +18,7 @@ import argparse
 import xml.etree.ElementTree as ET
 
 def isWindowsSystem_() -> bool:
-    if os.name == 'nt':
-        return True
-    if sys.platform=='cygwin':
-        return True
-    return False
+    return sys.platform == 'msys' or sys.platform.startswith('cygwin')  # MSYS2's or Cygwin's python
     
 pathSep =  ';' if isWindowsSystem_() else  ':'
 

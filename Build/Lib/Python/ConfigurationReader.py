@@ -10,6 +10,9 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
+if sys.platform == "win32":  # (run as python3 SCRIPT, say - each script's #! line names a POSIX one)
+    sys.exit("Stroika's build scripts need a POSIX python3 - on Windows, MSYS2's (pacman -S python) or Cygwin's - not a native Windows one")
+
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _CONFIGURATION_FILES = os.path.normpath(os.path.join(_THIS_DIR, "..", "..", "..", "ConfigurationFiles"))
 
