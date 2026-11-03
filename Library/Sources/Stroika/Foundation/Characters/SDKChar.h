@@ -72,7 +72,17 @@ namespace Stroika::Foundation::Characters {
      *          See <https://stackoverflow.com/questions/3071377/saner-way-to-get-character-encoding-of-the-cli-in-mac-os-x>
      * 
      *      o   Linux
-     *          Same as 'Unix' above - default to assume locale{} based.
+     *          Same as 'Unix' above - default to assume locale{} based: the global locale's encoding. Except the classic
+     *          "C" (alias "POSIX") locale - every program's until it installs another, and what an unset LANG gives - which
+     *          means no encoding was chosen, so there an SDK string is UTF-8. ("C"'s own converter refuses anything but ASCII,
+     *          though POSIX requires that locale to accept every byte, and UTF-8 is what text and file names are in practice.)
+     *
+     *          This is the encoding of SDK2Wide, Wide2SDK, String::FromNarrowSDKString, String::AsSDKString and so of
+     *          Execution::CommandLine (argc, argv) - not of String::FromNarrowString/AsNarrowString given an explicit
+     *          locale, which use that locale's own encoding, "C" included.
+     *
+     *  \note   before Stroika v3.0d26, the "C" locale's SDK strings were ASCII: anything else threw, or with
+     *          eIgnoreErrors became U+FFFD (or '?').
      */
     using SDKChar = conditional_t<qStroika_Foundation_Characters_SDKUseswchar_t, wchar_t, char>;
 

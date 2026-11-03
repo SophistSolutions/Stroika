@@ -1615,54 +1615,66 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"SDKStringFollowsGlobalLocale_"};
 #if not qStroika_Foundation_Characters_SDKUseswchar_t && not qStroika_Platform_MacOS
-        // An SDKString is in the global locale's encoding, so every conversion must follow a change of global locale,
-        // back and forth - though SDK2Wide/Wide2SDK, and String's narrow conversions, keep their converters from call to call
-        optional<locale> utf8;
-        for (const char* name : {"C.UTF-8", "en_US.UTF-8", "en_US.utf8"}) {
-            try {
-                utf8 = locale{name};
-                break;
+        // An SDKString is in the global locale's encoding - UTF-8 in the classic "C" locale, which means no encoding was chosen
+        // (see SDKChar; #1266) - so every conversion must follow a change of global locale, back and forth, though
+        // SDK2Wide/Wide2SDK keep their converters from call to call
+        auto findLocale = [] (initializer_list<const char*> names) -> optional<locale> {
+            for (const char* name : names) {
+                try {
+                    return locale{name};
+                }
+                catch (const runtime_error&) {
+                }
             }
-            catch (const runtime_error&) {
-            }
-        }
-        if (not utf8) {
-            SkipTestPart ("no UTF-8 locale installed");
-            return;
-        }
-        const char    kEAcuteUTF8_[] = {'\xC3', '\xA9'}; // two bytes that are invalid in the "C" locale
-        const string  kEAcuteUTF8Str_{kEAcuteUTF8_, 2};
-        const wstring kEAcute_ (1, L'\xE9');
-        const String  kEAcuteString_{kEAcute_};
-        auto          checkC = [&] () {
-            Common::ScopedUseLocale useC{locale::classic ()};
-            EXPECT_EQ (SDK2Wide (span{kEAcuteUTF8_}, eIgnoreErrors), wstring (2, L'\xFFFD'));
-            EXPECT_THROW (SDK2Wide (span{kEAcuteUTF8_}), CharacterEncodingException);
-            EXPECT_EQ (Wide2SDK (kEAcute_, eIgnoreErrors), "?");
-            EXPECT_THROW (Wide2SDK (kEAcute_), CharacterEncodingException);
-            EXPECT_EQ (kEAcuteString_.AsSDKString (eIgnoreErrors), "?");
-            EXPECT_THROW (kEAcuteString_.AsSDKString (), runtime_error);
-            EXPECT_THROW (String::FromNarrowString (span{kEAcuteUTF8_}, locale{}), runtime_error);
+            return nullopt;
         };
-        checkC ();
-        {
-            Common::ScopedUseLocale useUTF8{*utf8};
-            EXPECT_EQ (SDK2Wide (span{kEAcuteUTF8_}, eIgnoreErrors), kEAcute_);
+        optional<locale> utf8           = findLocale ({"C.UTF-8", "en_US.UTF-8", "en_US.utf8"});
+        optional<locale> latin1         = findLocale ({"en_US.ISO-8859-1", "en_US.iso88591", "de_DE.ISO-8859-1", "de_DE.iso88591"});
+        const char       kEAcuteUTF8_[] = {'\xC3', '\xA9'};
+        const string     kEAcuteUTF8Str_{kEAcuteUTF8_, 2};
+        const char       kEAcuteLatin1_[] = {'\xE9'};
+        const char       kInvalidUTF8_[]  = {'a', '\xFF', 'b'}; // 0xFF is never valid in UTF-8
+        const wstring    kEAcute_ (1, L'\xE9');
+        const String     kEAcuteString_{kEAcute_};
+        auto             checkUTF8 = [&] (const locale& l) {
+            Common::ScopedUseLocale use{l};
             EXPECT_EQ (SDK2Wide (span{kEAcuteUTF8_}), kEAcute_);
-            EXPECT_EQ (Wide2SDK (kEAcute_, eIgnoreErrors), kEAcuteUTF8Str_);
+            EXPECT_EQ (SDK2Wide (span{kEAcuteUTF8_}, eIgnoreErrors), kEAcute_);
             EXPECT_EQ (Wide2SDK (kEAcute_), kEAcuteUTF8Str_);
-            EXPECT_EQ (kEAcuteString_.AsSDKString (eIgnoreErrors), kEAcuteUTF8Str_);
+            EXPECT_EQ (Wide2SDK (kEAcute_, eIgnoreErrors), kEAcuteUTF8Str_);
             EXPECT_EQ (kEAcuteString_.AsSDKString (), kEAcuteUTF8Str_);
-            EXPECT_EQ (String::FromNarrowString (span{kEAcuteUTF8_}, locale{}), kEAcuteString_);
+            EXPECT_EQ (kEAcuteString_.AsSDKString (eIgnoreErrors), kEAcuteUTF8Str_);
+            EXPECT_EQ (String::FromNarrowSDKString (kEAcuteUTF8Str_), kEAcuteString_);
+            EXPECT_EQ (SDK2Wide (span{kInvalidUTF8_}, eIgnoreErrors), (wstring{L'a', L'\xFFFD', L'b'}));
+            EXPECT_THROW (SDK2Wide (span{kInvalidUTF8_}), CharacterEncodingException);
+        };
+        checkUTF8 (locale::classic ());
+        if (utf8) {
+            checkUTF8 (*utf8);
+            checkUTF8 (locale::classic ());
         }
-        checkC ();
+        // Following a change of global locale shows only with a locale that is not UTF-8 - often none is installed (CI's
+        // containers), and then this goes unchecked rather than marking the whole test skipped
+        if (latin1) {
+            for (int i = 0; i < 2; ++i) {
+                {
+                    Common::ScopedUseLocale useLatin1{*latin1};
+                    EXPECT_EQ (SDK2Wide (span{kEAcuteLatin1_}), kEAcute_);
+                    EXPECT_EQ (Wide2SDK (kEAcute_), string (kEAcuteLatin1_, 1));
+                    EXPECT_EQ (kEAcuteString_.AsSDKString (), string (kEAcuteLatin1_, 1));
+                }
+                checkUTF8 (locale::classic ());
+            }
+        }
 
-        // and an explicit locale, whatever the global one - alternating
-        for (int i = 0; i < 2; ++i) {
-            EXPECT_EQ (kEAcuteString_.AsNarrowString (*utf8), kEAcuteUTF8Str_);
-            EXPECT_THROW (kEAcuteString_.AsNarrowString (locale::classic ()), runtime_error);
-            EXPECT_EQ (String::FromNarrowString (span{kEAcuteUTF8_}, *utf8), kEAcuteString_);
-            EXPECT_THROW (String::FromNarrowString (span{kEAcuteUTF8_}, locale::classic ()), runtime_error);
+        // An explicit locale is that locale's own encoding, whatever the global one - "C" included - alternating
+        if (utf8) {
+            for (int i = 0; i < 2; ++i) {
+                EXPECT_EQ (kEAcuteString_.AsNarrowString (*utf8), kEAcuteUTF8Str_);
+                EXPECT_THROW (kEAcuteString_.AsNarrowString (locale::classic ()), runtime_error);
+                EXPECT_EQ (String::FromNarrowString (span{kEAcuteUTF8_}, *utf8), kEAcuteString_);
+                EXPECT_THROW (String::FromNarrowString (span{kEAcuteUTF8_}, locale::classic ()), runtime_error);
+            }
         }
 #else
         SkipTestPart ("an SDKString's encoding does not depend on the locale here");

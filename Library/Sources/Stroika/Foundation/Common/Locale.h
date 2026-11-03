@@ -81,6 +81,10 @@ namespace Stroika::Foundation::Common {
      *
      *  \note   Where LANG and LC_* are unset (cron, systemd services, many docker images), the platform default locale is
      *          typically just "C" again.
+     *
+     *  \note   It is not needed just to read text from the system - arguments (Execution::CommandLine), file names, environment
+     *          variables: those are SDK strings, and in the "C" locale an SDK string is UTF-8 (see Characters::SDKChar). Call it
+     *          for the user's conventions - formatting, collation - or for a locale whose encoding is not UTF-8.
      */
     void UsePlatformDefaultLocaleAsDefaultLocale ();
 

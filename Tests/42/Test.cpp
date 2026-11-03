@@ -12,6 +12,7 @@
 #include <optional>
 #include <thread>
 
+#include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
@@ -139,6 +140,17 @@ namespace {
     GTEST_TEST (Foundation_Execution, CommandLine_)
     {
         Debug::TraceContextBumper ctx{"CommandLine_"};
+#if qStroika_Platform_POSIX
+        {
+            // argv in the "C" locale - every program's until it installs another - is UTF-8, as file names are (#1266: it
+            // threw on anything but ASCII, often on main's first line)
+            Common::ScopedUseLocale useC{locale::classic ()};
+            const char*             argv[] = {"prog", "/photos/Zo\xC3\xAB"};
+            Sequence<String>        l      = CommandLine{2, argv}.GetArguments ();
+            EXPECT_EQ (l.size (), 2u);
+            EXPECT_EQ (l[1], String{u"/photos/Zo\u00EB"});
+        }
+#endif
         {
             String           cmdLine = "/bin/sh -c \"a b c\"";
             Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();

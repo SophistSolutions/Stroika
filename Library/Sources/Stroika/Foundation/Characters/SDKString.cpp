@@ -42,6 +42,17 @@ namespace {
     };
     LocaleCodeCvts_ MakeLocaleCodeCvts_ (const locale& l)
     {
+#if qStroika_Platform_POSIX
+        // The classic "C" (alias "POSIX") locale - every program's until it installs another, and what an unset LANG gives -
+        // means no encoding was chosen: there an SDK string is UTF-8. Its own converter would refuse anything but ASCII, though
+        // POSIX requires that locale to accept every byte, and UTF-8 is what text and file names are in practice. A named
+        // locale - UTF-8 or not - keeps its own encoding.
+        if (l.name () == "C" or l.name () == "POSIX") {
+            return LocaleCodeCvts_{l, CodeCvt<wchar_t>{UnicodeExternalEncodings::eUTF8},
+                                   CodeCvt<wchar_t>{UnicodeExternalEncodings::eUTF8, kAllowMissing_},
+                                   CodeCvt<wchar_t>{UnicodeExternalEncodings::eUTF8, kAllowMissing_}};
+        }
+#endif
         auto toSDK = kAllowMissing_;
         if (not LocaleCanEncode_ (l, *toSDK.fInvalidCharacterReplacement)) {
             toSDK.fInvalidCharacterReplacement = '?';

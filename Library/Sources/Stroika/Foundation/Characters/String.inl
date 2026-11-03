@@ -812,7 +812,9 @@ namespace Stroika::Foundation::Characters {
         span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
         return SDKString{thisData.begin (), thisData.end ()}; // @todo DOCUMENT THAT MACOS USES UTF8 - SRC - LOGIC/RATIONALE
 #else
-        return AsNarrowString (locale{}); // @todo document why - linux one rationale - default - similar
+        Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+        span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
+        return Wide2SDK (thisData); // as SDK2Wide decodes - the global locale's encoding, UTF-8 in the "C" locale (see SDKChar)
 #endif
     }
     inline SDKString String::AsSDKString (AllowMissingCharacterErrorsFlag) const
@@ -826,7 +828,9 @@ namespace Stroika::Foundation::Characters {
         span<const char8_t> thisData = GetData (&maybeIgnoreBuf1); // Note this always works, since we can always map to UTF-8 any Stroika string
         return SDKString{thisData.begin (), thisData.end ()};      // @todo DOCUMENT THAT MACOS USES UTF8 - SRC - LOGIC/RATIONALE
 #else
-        return AsNarrowString (locale{}, eIgnoreErrors); // @todo document why - linux one rationale - default - similar
+        Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+        span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
+        return Wide2SDK (thisData, eIgnoreErrors); // as SDK2Wide decodes - see AsSDKString () above
 #endif
     }
     inline string String::AsNarrowSDKString () const

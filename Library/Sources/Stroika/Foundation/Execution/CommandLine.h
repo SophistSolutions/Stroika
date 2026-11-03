@@ -108,7 +108,10 @@ namespace Stroika::Foundation::Execution {
          *  CommandLine{Sequence<String>} just captures that sequence of arguments and does not processing/parsing.
          * 
          *  CommandLine{argc,argv} are meant for being called from main, and also do no processing (besides treating the
-         *  char* strings as SDKChar and mapping them from the OS codepage to UNICODE).
+         *  char* strings as SDKChar and mapping them from the OS codepage to UNICODE). What that encoding is differs by OS
+         *  (see SDKChar): on Linux it is the global locale's - UTF-8 in the "C" locale every program starts in, so a UTF-8
+         *  argument needs no locale set first; to read arguments in the encoding LANG/LC_* name instead, call
+         *  Common::UsePlatformDefaultLocaleAsDefaultLocale () before constructing the CommandLine.
          */
         CommandLine ()                   = delete;
         CommandLine (const CommandLine&) = default;
