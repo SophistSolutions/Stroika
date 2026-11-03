@@ -1,21 +1,9 @@
-#!/usr/bin/env perl
+#!/usr/bin/python3
+#
+#   PrintTestName NN - the name of regression test NN (no newline; nothing for a number not listed)
+#
+import sys
 
-BEGIN{ @INC = ( "./", @INC ); }
+from TestsList import ReadTests
 
-sub	GetThisScriptDir {
-	use File::Basename;
-	use Cwd 'abs_path';
-	my $p = __FILE__;
-	my $A = abs_path ($p);
-	my $dirname = dirname($A);
-	return $dirname;
-}
-my	$thisScriptDir	=	GetThisScriptDir ();
-
-my $testNumber = $ARGV[0];
-
-require "$thisScriptDir/TestsList.pl";
-
-my $testName = GetTestName ($testNumber);
-
-print "$testName"
+sys.stdout.write(dict(ReadTests()).get(sys.argv[1], ""))

@@ -47,7 +47,7 @@ CheckTool_ ()
 
 CheckTool_ sed
 CheckTool_ wget
-CheckTool_ perl
+#	(no perl: only OpenSSL's build needs it, and ThirdPartyComponents/openssl checks for it)
 #	/usr/bin/python3 itself: the build's Python scripts name it in their #! line - on Windows, MSYS2's or Cygwin's own, a POSIX
 #	program, not a native Windows python3 that PATH may find first
 CheckTool_ python3 /usr/bin/python3 -c ""

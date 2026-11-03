@@ -90,9 +90,10 @@ Roughly:
 - c++ compiler supporting C++20 or later - see
   [Supported Platforms and Compilers](SupportedPlatformsAndCompilers.md)
 - bash (sh)
-- make (gnu make), patch, perl, pkg-config, realpath, sed, tar, tr, wget, unzip
+- make (gnu make), patch, pkg-config, realpath, sed, tar, tr, wget, unzip
 - python3, as `/usr/bin/python3` (on Windows, MSYS2's or Cygwin's own - not a native Windows one)
 - 7za, cmake (optionally - for building some optional components)
+- perl, to build OpenSSL - but not on Windows, where Stroika fetches Strawberry Perl for it
 
 
 You may find it helpful to review the instructions in [Installing-Required-Tools.md](./Installing-Required-Tools.md) which layout details per development platform.

@@ -14,8 +14,9 @@ Or better yet, can be avoided entirely by just using the pre-built docker contai
 - c++ compiler supporting C++20 or later
 - make (gnu make)
 - patch
-- perl
+- perl (to build OpenSSL - but not on Windows, where Stroika fetches Strawberry Perl for it)
 - pkg-config
+- python3, as `/usr/bin/python3` (on Windows, MSYS2's or Cygwin's own - not a native Windows one)
 - realpath
 - sed
 - tar

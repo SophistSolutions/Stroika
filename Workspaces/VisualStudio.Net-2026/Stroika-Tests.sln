@@ -312,7 +312,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{15F1
 		..\..\Tests\Scripts\.gitattributes = ..\..\Tests\Scripts\.gitattributes
 		..\..\Tests\Scripts\PrintTestName = ..\..\Tests\Scripts\PrintTestName
 		..\..\Tests\Scripts\PrintTestsList = ..\..\Tests\Scripts\PrintTestsList
-		..\..\Tests\Scripts\TestsList.pl = ..\..\Tests\Scripts\TestsList.pl
+		..\..\Tests\Scripts\TestsList.py = ..\..\Tests\Scripts\TestsList.py
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test49", "..\..\Tests\Projects\VisualStudio.Net-2026\49\Test49.vcxproj", "{F32BB2E2-28C3-44A1-959B-C8CCFEC4A30C}"

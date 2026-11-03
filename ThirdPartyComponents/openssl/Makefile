@@ -238,7 +238,13 @@ endif
 
 
 check-prerequisite-tools:
-	@#nothing
+ifeq ($(qFeatureFlag_StrawberryPerl), use)
+	@#none: the build runs the StrawberryPerl component's perl
+else
+	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "openssl ${VERSION} - Checking Prerequisite tools ... "
+	@{ type perl > /dev/null 2>&1; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool perl && exit 1; }
+	@$(ECHO) "done";
+endif
 
 
 check:
