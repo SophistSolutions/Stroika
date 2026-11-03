@@ -57,8 +57,10 @@ never appear in a list of what to do next.
   26, retry `npm run build` once at that Makefile line. Drop this entry if CI stays clean to the 3.0d26 release. Once
   26 is LTS (expected late 2026-10), Windows-Cygwin's Dockerfile goes back to its commented-out nodejs-lts line.
 
-- **WATCH: the VS 2022 docker image's intermittent save failure - each Windows image run** (LGP 2026-11-03) When a
-  vs2k22 job fails with hcsshim::ImportLayer (0x3) saving the VS install layer, read the Edge WebView2 state its install
-  step logs (Windows-VS2k22/Dockerfile): was the updater still downloading or installing (a `[Running installer]` with no
-  `[InstallerResult]`, an Edge installer in the TASKLIST)? Each failure so far ended with WebView2 still at 131.0.2903.86
-  (2026-11-02, 11-03). Once the cause is clear, fix it and drop the logging.
+- **WATCH: does installing WebView2 first stop the VS 2022 docker image's intermittent save failure? - each Windows
+  image run** (LGP 2026-11-03) Windows-VS2k22/Dockerfile installs the current Edge WebView2 before VS, so the VS
+  installer's own 131.0.2903.86 - and the background update racing the end of the install step - never happens. In each
+  vs2k22 job's install step log, the updater lines should show no install. If the step still fails with
+  hcsshim::ImportLayer (0x3), read that log: was the updater still downloading or installing (a `[Running installer]`
+  with no `[InstallerResult]`, an Edge installer in the TASKLIST)? Drop the logging and this entry if CI stays clean to
+  the 3.0d26 release.
