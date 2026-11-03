@@ -52,8 +52,10 @@ SHELL ["powershell"]
 # command's, so one failed pacman line mid-RUN would be silently ignored. The first two bash calls are left
 # unchecked on purpose: on a fresh install the first -Syuu updates the MSYS2 core and exits, which is why it
 # runs twice.
+# $ProgressPreference = 'SilentlyContinue' (here and for node.msi): Windows PowerShell's progress display slows
+# Invoke-WebRequest many times over, and docker build never shows it.
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
-  $ErrorActionPreference = 'Stop'; \
+  $ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; \
   Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20251213" -OutFile msys2.exe; \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ;\
@@ -119,6 +121,7 @@ SHELL ["powershell"]
 # UV_HANDLE_CLOSING)", https://github.com/nodejs/node/issues/56645), failing the HTMLUI build after it succeeded.
 ARG MSYS_NODEJSURI='https://nodejs.org/dist/v26.12.0/node-v26.12.0-x64.msi'
 RUN IF ($env:INSTALL_QUASAR -eq 1) { \
+        $ProgressPreference = 'SilentlyContinue'; \
         Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_NODEJSURI" -OutFile node.msi; \
         Start-Process msiexec.exe -Wait -ArgumentList '/i "node.msi" /L*V ".\node.msi.log" /quiet /norestart'; \
         $env:PATH = $env:PATH + ';C:\Program Files\nodejs'; \

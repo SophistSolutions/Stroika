@@ -37,14 +37,16 @@ ARG VS_17_12_3=https://download.visualstudio.microsoft.com/download/pr/f2819554-
 ARG VS_17_13_6=https://download.visualstudio.microsoft.com/download/pr/8fada5c7-8417-4239-acc3-bd499af09222/353141457abcc59eb9c38b2f30084e7271c6bcfb4e185466d98161bada905759/vs_BuildTools.exe
 ARG VS_17_14_42=https://download.visualstudio.microsoft.com/download/pr/c95450be-0a45-4779-b142-33f567ccfd6e/68978bb28916156802e60e04c5ee50b94348d802fe151a3ca24433f27984187b/vs_BuildTools.exe
 
+# Each download sets $ProgressPreference = 'SilentlyContinue': Windows PowerShell's progress display slows
+# Invoke-WebRequest many times over, and docker build never shows it.
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_14_42" \
+RUN $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest "$env:VS_17_14_42" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 # The current Edge WebView2, installed in a step of its own before VS. Otherwise the VS installer installs the WebView2
 # it is pinned to (131.0.2903.86), and Edge's updater then updates that in the background, racing the end of the VS
 # install step - see that step's comment. With a newer WebView2 already installed, the VS installer installs none.
-RUN Invoke-WebRequest 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' \
+RUN $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' \
     -OutFile "$env:TEMP\MicrosoftEdgeWebview2Setup.exe" -UseBasicParsing; \
     $p = Start-Process -Wait -PassThru "$env:TEMP\MicrosoftEdgeWebview2Setup.exe" -ArgumentList '/silent', '/install'; \
     Remove-Item "$env:TEMP\MicrosoftEdgeWebview2Setup.exe"; \

@@ -24,8 +24,10 @@ ARG VS_18_9_1=https://download.visualstudio.microsoft.com/download/pr/7834fc97-5
 ARG VS_18_10_3=https://download.visualstudio.microsoft.com/download/pr/e5f740e0-92f9-49d7-ab3b-5d17b84108fd/283d526008bf3ac56ec2c6aeb3102b8ca68b9af75643c8f5d0ee58060a1886bb/vs_BuildTools.exe
 ARG VS_18_11_0=https://download.visualstudio.microsoft.com/download/pr/4ee8a2e7-bc71-435a-8180-6703ab4d2017/89341fb2edf12ef29977078fdc72a9e47767ce6895cc297f274bc4a379db4c71/vs_BuildTools.exe
 
+# $ProgressPreference = 'SilentlyContinue': Windows PowerShell's progress display slows Invoke-WebRequest many times
+# over, and docker build never shows it.
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_18_11_0" \
+RUN $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest "$env:VS_18_11_0" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 #
