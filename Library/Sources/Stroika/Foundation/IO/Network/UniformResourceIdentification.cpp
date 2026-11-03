@@ -436,11 +436,12 @@ u8string UniformResourceIdentification::PCTEncode (const u8string& s, const PCTE
         useOptions.allowSubDelims = true;
     }
 
-    for (char c : s) {
+    // char8_t, not char: a signed char makes each byte of a non-ASCII character negative - %ffffffc3, not %c3
+    for (char8_t c : s) {
         bool encode{true};
 
-        // unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
-        if (isalpha (c) or isdigit (c)) {
+        // unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~" - ASCII only, so not isalpha/isdigit, which depend on the locale
+        if ((c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z') or (c >= '0' and c <= '9')) {
             encode = false;
         }
         switch (c) {

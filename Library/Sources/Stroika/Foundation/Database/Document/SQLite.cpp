@@ -766,8 +766,10 @@ namespace {
                 }
                 Require (n == 1); // exactly one of fDBPath, fTemporaryDB, fInMemoryDB must be provided
             }
+            // sqlite3_open_v2 takes the name in UTF-8 - not generic_string () / AsNarrowSDKString (), which on Windows give the code page
             if (options.fDBPath) {
-                uriArg = options.fDBPath->generic_string ();
+                u8string u8Path = options.fDBPath->generic_u8string ();
+                uriArg          = string{u8Path.begin (), u8Path.end ()};
                 if (uriArg[0] == ':') {
                     uriArg = "./" + uriArg; // SQLite docs warn to do this, to avoid issues with :memory or other extensions
                 }
@@ -789,7 +791,7 @@ namespace {
                 flags |= SQLITE_OPEN_URI;
                 flags |= SQLITE_OPEN_SHAREDCACHE;
                 Require (options.fOpenMode == Options::OpenMode::eReadWriteCreate);
-                uriArg = options.fInMemoryDB->AsNarrowSDKString (); // often empty string
+                uriArg = options.fInMemoryDB->AsUTF8<string> (); // often empty string
                 if (uriArg.empty ()) {
                     uriArg = ":memory";
                 }

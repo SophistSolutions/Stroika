@@ -825,6 +825,42 @@ namespace {
             }
             (void)std::filesystem::remove (dbPath);
         }
+        GTEST_TEST (Foundation_Database, SQLite_NonASCIINames_)
+        {
+            // A database whose path, or in-memory name, is not ASCII (#1265: on Windows, a path outside the code page threw,
+            // and one inside it would not open)
+            TraceContextBumper ctx{"SQLite_NonASCIINames_"};
+            auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / std::filesystem::path{u"open-\u03A9-zo\u00EB-test.db"};
+            (void)std::filesystem::remove (dbPath);
+            {
+                using SQL::SQLite::Connection::New;
+                using Options      = SQL::SQLite::Connection::Options;
+                optional<String> e = Thrown_ ([&] () { New (Options{.fDBPath = dbPath}).Exec ("CREATE TABLE t (x INTEGER);"sv); });
+                EXPECT_FALSE (e) << Characters::ToString (e);
+                EXPECT_TRUE (std::filesystem::exists (dbPath));
+                e = Thrown_ ([&] () {
+                    New (Options{.fDBPath = dbPath, .fOpenMode = Options::OpenMode::eReadWrite}).Exec ("INSERT INTO t (x) VALUES (1);"sv);
+                });
+                EXPECT_FALSE (e) << Characters::ToString (e);
+                // two in-memory databases whose names differ only in characters that are not ASCII stay two
+                optional<SQL::SQLite::Connection::Ptr> first;
+                e = Thrown_ ([&] () {
+                    first = New (Options{.fInMemoryDB = String{u"\u6C34"}});
+                    first->Exec ("CREATE TABLE t (x INTEGER);"sv);
+                    New (Options{.fInMemoryDB = String{u"\u706B"}}).Exec ("CREATE TABLE t (x INTEGER);"sv);
+                });
+                EXPECT_FALSE (e) << Characters::ToString (e);
+            }
+            (void)std::filesystem::remove (dbPath);
+            {
+                using Document::SQLite::Connection::New;
+                using Options      = Document::SQLite::Connection::Options;
+                optional<String> e = Thrown_ ([&] () { (void)New (Options{.fDBPath = dbPath}); });
+                EXPECT_FALSE (e) << Characters::ToString (e);
+                EXPECT_TRUE (std::filesystem::exists (dbPath));
+            }
+            (void)std::filesystem::remove (dbPath);
+        }
     }
 }
 #endif

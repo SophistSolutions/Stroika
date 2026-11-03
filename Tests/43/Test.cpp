@@ -74,6 +74,9 @@ namespace {
                 EXPECT_EQ ((Host::Parse ("[fe80::44de:4247:5b76:ddc9]"sv).AsInternetAddress ()), (InternetAddress{"fe80::44de:4247:5b76:ddc9"sv}));
                 EXPECT_EQ ((Host{"www.sophists.com"}.As<String> (Host::ePCTEncoded)), "www.sophists.com"sv);
                 EXPECT_EQ ((Host{"hello mom"}.As<String> (Host::ePCTEncoded)), "hello%20mom"sv);
+                // each UTF-8 byte of a character that is not ASCII is one %xx
+                EXPECT_EQ ((Host{u"zo\u00EB"}.As<String> (Host::ePCTEncoded)), "zo%c3%ab"sv);
+                EXPECT_EQ ((Host::Parse ("zo%c3%ab")), (Host{u"zo\u00EB"}));
                 EXPECT_EQ ((Host::Parse ("hello%20mom")), (Host{"hello mom"}));
                 {
                     // negative tests - must throw
