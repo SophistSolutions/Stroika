@@ -42,13 +42,12 @@ not on someone else's servers is still the point. ~14.6MB on disk, 0.84MB of git
 
 There used to be a rendered `STK-NNNN.md` beside each `.json`. They were dropped once the migration
 finished: they existed to be readable/greppable history AND to be the GitHub issue bodies, and the second
-purpose is spent now that the issues are in GitHub. `Scripts/JIRANormalize.pl --md` still generates them
-if you want them - see the note under Scripts/ about needing them for `GitHubImport.pl`.
+purpose is spent now that the issues are in GitHub. `JIRANormalize.pl --md` generated them (see "The
+import scripts" below).
 
 ### Rules
 
-- **Never hand-edit anything in `Archive/`.** It is generated. Fix the source, or fix the scripts and
-  regenerate.
+- **Never hand-edit anything in `Archive/`.** It is generated - by the import scripts, from JIRA's export.
 - The `.json` is canonical (sorted keys, stable indent) with empty fields dropped, so a refresh produces a
   readable one-line diff per changed field rather than a reshuffle.
 
@@ -56,9 +55,9 @@ if you want them - see the note under Scripts/ about needing them for `GitHubImp
 
 - **`STK-1017` through `STK-1020` are absent.** Everything else in `STK-1`..`STK-1029` is present.
   Four consecutive numbers is a bulk delete or the tail of the data-loss incident, not attrition.
-- Attachments ARE included, in `Archive/attachments/STK-NNNN/`, and the `.md` links to them - but they
-  come from a SEPARATE pass (`Scripts/JIRAAttachments.pl`), because the search API returns attachment
-  metadata only. An export without that pass silently keeps the filenames and loses every byte. 16
+- Attachments ARE included, in `Archive/attachments/STK-NNNN/` - but they came from a SEPARATE pass
+  (`JIRAAttachments.pl`), because the search API returns attachment metadata only. An export without
+  that pass silently keeps the filenames and loses every byte. 16
   files, 7.3MB raw / 0.55MB compressed. Filenames on disk are sanitized
   (`[^A-Za-z0-9._-]` -> `_`) since the originals contain `#`, spaces and parens; the true name is in
   the JSON and is used as the link text.
@@ -71,19 +70,10 @@ The archive above is history; GitHub Issues is now the live tracker. JIRA had be
 practice - four issue updates across 2025-2026, and no outside reporter was going to create an Atlassian
 account to file a bug.
 
-> **THE IMPORT SCRIPTS ARE ONE-WAY, AND RE-RUNNING TWO OF THEM DESTROYS WORK.** They were written to load
-> an empty tracker. Now that GitHub is where work actually happens:
-> - `GitHubImport.pl --patch-bodies` overwrites an issue's body from the `.md`. Any edit made in GitHub is
->   lost. It requires `--i-know-this-overwrites` for that reason.
->
-> Plain `GitHubImport.pl --go` is always safe: it skips any key already in `STK-to-GitHub.tsv`.
-
-`Scripts/GitHubImport.pl` imports the archive into GitHub Issues: title `[STK-972] <summary>`, the
-`.md` rendering as the body, a machine-readable `<!-- jira-import: {...} -->` block for everything
-GitHub has no field for (notably `updated` - the last-modified date before import, since GitHub stamps
-its own), JIRA components/type/priority mapped to labels, and the 427 resolved issues created then
-closed. It is DRY RUN unless given `--go`, and resumable - `STK-to-GitHub.tsv` records every mapping as
-it goes and already-mapped keys are skipped.
+`GitHubImport.pl` imported the archive into GitHub Issues: title `[STK-972] <summary>`, the `.md`
+rendering as the body, a machine-readable `<!-- jira-import: {...} -->` block for everything GitHub has no
+field for (notably `updated` - the last-modified date before import, since GitHub stamps its own), JIRA
+components/type/priority mapped to labels, and the 427 resolved issues created then closed.
 
 `STK-to-GitHub.tsv` is the `STK-NNN` -> GitHub issue number map. In-source links no longer need it - they
 were rewritten to point at GitHub directly on 2026-08-26 - but it remains how you resolve an `STK-NNNN`
@@ -107,7 +97,7 @@ the migration. It was deleted afterwards: it only ever worked on JIRA-imported i
 help a new one, and it needed a credential deliberately revoked once the migration finished. Its
 hard-won API notes, which is the part worth keeping:
 
-- **Projects v2 is GraphQL-only** - there is no REST API for it. See `Scripts/gql.pl`.
+- **Projects v2 is GraphQL-only** - there is no REST API for it; `gh api graphql` reaches it.
 - **Its mutations need a CLASSIC PAT**, not a fine-grained one. (Reads are fine with a fine-grained token -
   verified 2026-08-19 - so a failure here is about writing, not about reaching the API at all.)
 - **The `project` scope alone is not enough for an ORG-owned project**; it also needs `read:org`. Without
@@ -120,35 +110,10 @@ hard-won API notes, which is the part worth keeping:
 So if you ever need to bulk-set fields again - backfilling Priority across many issues, say - expect to
 mint a fresh classic PAT with all three scopes, and revoke it when done.
 
-## Scripts/
+## The import scripts
 
-```bash
-Issues/Scripts/JIRAExport.sh      [PROJECT] [RAWDIR]   # fetch issues -> raw paged JSON
-perl Issues/Scripts/JIRAAttachments.pl [ARCHIVE] [OUTDIR]   # fetch attachment bytes (no token needed)
-perl Issues/Scripts/JIRANormalize.pl   <RAWDIR> Issues/Archive
-perl Issues/Scripts/GitHubImport.pl    --labels | --create-labels --go | --go [--limit N|--only KEY]
-echo '<graphql>' | perl Issues/Scripts/gql.pl                # Projects v2 has no REST API
-```
-
-`JIRAExport.sh` needs an Atlassian API token - self-service at
-<https://id.atlassian.com/manage-profile/security/api-tokens>, no support request involved. It reads
-`email:token` from `~/.stroika-jira-creds` (override with `JIRA_CREDS_FILE`), hands it to curl via a
-`--config` file so it never appears in the process list, and never echoes it. Keep that file outside
-the repo, mode 600.
-
-The raw paged JSON is scratch - it is not checked in. Only the normalized per-issue `.json` is.
-
-**`GitHubImport.pl` needs the `.md` renderings, which are no longer checked in.** It reads
-`STK-NNNN.md` beside `STK-NNNN.json` to build an issue body, so regenerate them into a scratch
-directory first and point it there:
-
-```bash
-perl Issues/Scripts/JIRANormalize.pl .claude/jira-archive /tmp/rendered --md
-```
-
-Without that, every body would be the metadata comment and nothing else. This only matters if you re-run
-the import or `--patch-bodies`; the migration itself is done.
-
-`JIRAExport.sh` auto-detects whether the site serves the newer `/rest/api/3/search/jql`
-(nextPageToken paging) or the older `/rest/api/3/search` (startAt paging); Atlassian has been
-retiring the latter.
+`Issues/Scripts/` held the migration's tooling - `JIRAExport.sh` (fetch the issues, as raw paged JSON),
+`JIRAAttachments.pl` (fetch the attachments), `JIRANormalize.pl` (raw JSON -> `Archive/`, and with `--md`
+the renderings), `GitHubImport.pl` (`Archive/` -> GitHub Issues) and `gql.pl` (a GraphQL helper). They
+were deleted in Stroika v3.0d26, the migration done: `git log --diff-filter=D -- Issues/Scripts` finds
+them, should a JIRA archive ever need refreshing or another import be wanted.
