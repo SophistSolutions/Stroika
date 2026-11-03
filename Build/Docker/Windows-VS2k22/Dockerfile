@@ -106,8 +106,10 @@ ARG USE_UniversalBuildTools=""
 # del stuff to minimize space left in the filesystem layer
 #
 # vs_buildtools.exe's 3010 is success needing a reboot (none in a container), so it is made 0; any other nonzero code
-# fails the RUN with that code. Not "%ERRORLEVEL%"=="3010": cmd fills %ERRORLEVEL% in when it reads the line, before
-# the installer runs, and a false IF counts as success - IF ERRORLEVEL n (code >= n) is tested as it runs.
+# prints the installer's own logs (bootstrapper, setup errors), which say why, and fails the RUN with that code. Not
+# "%ERRORLEVEL%"=="3010": cmd fills %ERRORLEVEL% in when it reads the line, before the installer runs, and a false IF
+# counts as success - IF ERRORLEVEL n (code >= n) is tested as it runs, and CALL ... %^ERRORLEVEL% passes the code as
+# it is when that CALL runs (the ^ stops cmd filling it in early).
 #
 # Left to itself, the VS installer installs Edge WebView2 131.0.2903.86, and Edge's updater then updates it in the
 # background, which may still be running when this RUN ends. Saving this layer then failed now and then (more often on
@@ -132,7 +134,7 @@ RUN %TEMP%\vs_buildtools.exe \
     %REMOVE_WINSDK% \
     --quiet --wait --norestart --noUpdateInstaller \
     & (IF ERRORLEVEL 3010 IF NOT ERRORLEVEL 3011 cmd /c exit 0) \
-    & (IF ERRORLEVEL 1 EXIT) & (IF NOT ERRORLEVEL 0 EXIT) \
+    & (CALL cmd /c exit %^ERRORLEVEL% || (CALL powershell -NoProfile -Command "& { param($rc) Get-Content $env:TEMP\dd_bootstrapper_*.log, $env:TEMP\dd_setup_*_errors.log -ErrorAction SilentlyContinue; exit $rc }" %^ERRORLEVEL% & EXIT)) \
     & ECHO ==== Edge WebView2 at the end of the VS install: \
     & DIR /B "%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application" \
     & TYPE "%ProgramData%\Microsoft\EdgeUpdate\Log\MicrosoftEdgeUpdate.log" | FINDSTR /L /C:"[DllEntry]" /C:"DoDownloadPackage" /C:"[Running installer]" /C:"[InstallerResult]" \

@@ -18,14 +18,21 @@ RUN icacls 'C:\ProgramData\chocolatey' /grant 'Everyone:(OI)(CI)F' /T
 # chocoInstall throws unless choco exits 0 AND every package named is then installed (choco list): choco can fail and
 # still exit 0, saying it installed everything - as of 2.7.4 a package whose metadata it could not fetch (a 504 from the
 # feed) is dropped with a warning, and no failed result. A failed RUN leaves no cached layer, so the next build retries.
+# On failure it prints what this install added to choco's log, then - last, so the end of a CI log says why - its ERROR
+# and connection-error lines (a mirror that cannot be reached shows only as the latter).
 RUN \
     function chocoInstall() { \
+        $log = 'C:\ProgramData\chocolatey\logs\chocolatey.log'; $from = @(Get-Content $log -ErrorAction SilentlyContinue).Count; \
         choco install -y @Args; $rc = $LASTEXITCODE; \
+        $new = @(Get-Content $log -ErrorAction SilentlyContinue | Select-Object -Skip $from); \
         $have = choco list --limit-output | ForEach-Object { ($_ -split '\|')[0] }; \
         $missing = $Args | Where-Object { $_ -notlike '-*' -and $_ -notin $have }; \
         if (($rc -notin @(0, 1641, 3010)) -or $missing) { \
-            type C:\ProgramData\chocolatey\logs\chocolatey.log; \
-            throw ('choco install failed (exit code ' + $rc + '), not installed: ' + $missing) \
+            $new; \
+            $why = @($new | Where-Object { $_ -cmatch 'ERROR|connection error' }); \
+            '==== why choco install failed - the ERROR and connection-error lines above:'; \
+            $why | Select-Object -Last 15; \
+            throw ('choco install failed (exit code ' + $rc + '), not installed: ' + $missing + $(if ($why) { ' - first error: ' + $why[0] })) \
         } \
     }; \
     chocoInstall cygwin cyg-get
@@ -59,12 +66,17 @@ ARG INSTALL_QUASAR=0
 #   if ($env:INSTALL_QUASAR -eq 1) { chocoInstall nodejs-lts --force }
 RUN \
     function chocoInstall() { \
+        $log = 'C:\ProgramData\chocolatey\logs\chocolatey.log'; $from = @(Get-Content $log -ErrorAction SilentlyContinue).Count; \
         choco install -y @Args; $rc = $LASTEXITCODE; \
+        $new = @(Get-Content $log -ErrorAction SilentlyContinue | Select-Object -Skip $from); \
         $have = choco list --limit-output | ForEach-Object { ($_ -split '\|')[0] }; \
         $missing = $Args | Where-Object { $_ -notlike '-*' -and $_ -notin $have }; \
         if (($rc -notin @(0, 1641, 3010)) -or $missing) { \
-            type C:\ProgramData\chocolatey\logs\chocolatey.log; \
-            throw ('choco install failed (exit code ' + $rc + '), not installed: ' + $missing) \
+            $new; \
+            $why = @($new | Where-Object { $_ -cmatch 'ERROR|connection error' }); \
+            '==== why choco install failed - the ERROR and connection-error lines above:'; \
+            $why | Select-Object -Last 15; \
+            throw ('choco install failed (exit code ' + $rc + '), not installed: ' + $missing + $(if ($why) { ' - first error: ' + $why[0] })) \
         } \
     }; \
     if ($env:INSTALL_QUASAR -eq 1) { chocoInstall nodejs --version=26.12.0 --force }
