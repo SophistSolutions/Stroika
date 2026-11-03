@@ -773,6 +773,59 @@ namespace {
             PRIVATE_::ThreadTest_ (Connection::Options{.fDBPath = dbPath, .fThreadingMode = Connection::Options::ThreadingMode::eMultiThread});
         }
     }
+
+    namespace SQLite_OpenModes_ {
+        // what f () threw, or nullopt if it threw nothing
+        template <typename F>
+        optional<String> Thrown_ (F&& f)
+        {
+            try {
+                (void)f ();
+                return nullopt;
+            }
+            catch (...) {
+                return Characters::ToString (current_exception ());
+            }
+        }
+        GTEST_TEST (Foundation_Database, SQLite_OpenModes_)
+        {
+            TraceContextBumper ctx{"SQLite_OpenModes_"};
+            auto               dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "open-modes-test.db";
+            (void)std::filesystem::remove (dbPath);
+            {
+                using SQL::SQLite::Connection::New;
+                using Options = SQL::SQLite::Connection::Options;
+                // A missing file: eReadOnly and eReadWrite fail saying they cannot open it, not SQLITE_MISUSE (#1262), and create nothing
+                for (Options::OpenMode m : {Options::OpenMode::eReadOnly, Options::OpenMode::eReadWrite}) {
+                    optional<String> e = Thrown_ ([&] () { return New (Options{.fDBPath = dbPath, .fOpenMode = m}); });
+                    EXPECT_TRUE (e and e->Contains ("unable to open database file"sv)) << Characters::ToString (e);
+                    EXPECT_FALSE (std::filesystem::exists (dbPath));
+                }
+                // eReadWriteCreate creates it; eReadWrite then writes to it; eReadOnly reads it, and cannot write
+                New (Options{.fDBPath = dbPath, .fOpenMode = Options::OpenMode::eReadWriteCreate}).Exec ("CREATE TABLE t (x INTEGER);"sv);
+                EXPECT_TRUE (std::filesystem::exists (dbPath));
+                New (Options{.fDBPath = dbPath, .fOpenMode = Options::OpenMode::eReadWrite}).Exec ("INSERT INTO t (x) VALUES (1);"sv);
+                auto readOnly = New (Options{.fDBPath = dbPath, .fOpenMode = Options::OpenMode::eReadOnly});
+                EXPECT_NO_THROW (readOnly.Exec ("SELECT x FROM t;"sv));
+                optional<String> e = Thrown_ ([&] () { readOnly.Exec ("INSERT INTO t (x) VALUES (2);"sv); });
+                EXPECT_TRUE (e and e->Contains ("readonly"sv, eCaseInsensitive)) << Characters::ToString (e);
+            }
+            (void)std::filesystem::remove (dbPath);
+            {
+                // The Document SQLite connection opens the same way
+                using Document::SQLite::Connection::New;
+                using Options = Document::SQLite::Connection::Options;
+                for (Options::OpenMode m : {Options::OpenMode::eReadOnly, Options::OpenMode::eReadWrite}) {
+                    optional<String> e = Thrown_ ([&] () { return New (Options{.fDBPath = dbPath, .fOpenMode = m}); });
+                    EXPECT_TRUE (e and e->Contains ("unable to open database file"sv)) << Characters::ToString (e);
+                    EXPECT_FALSE (std::filesystem::exists (dbPath));
+                }
+                EXPECT_NO_THROW (New (Options{.fDBPath = dbPath, .fOpenMode = Options::OpenMode::eReadWriteCreate}));
+                EXPECT_TRUE (std::filesystem::exists (dbPath));
+            }
+            (void)std::filesystem::remove (dbPath);
+        }
+    }
 }
 #endif
 

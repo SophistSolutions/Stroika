@@ -131,10 +131,49 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             optional<filesystem::path> fDBPath;
 
             /**
-             *  This option only applies if fDBPath is set. 
-             *  \pre fCreateDBPathIfDoesNotExist => not fReadOnly
+             *  How the database is opened: what it may do, and what happens if fDBPath names no file - one field, not
+             *  separate flags, so no combination that means nothing (read-only, yet create a missing file) can be asked for.
+             *
+             *  The sqlite3_open_v2 flags each mode passes:
+             *      eImmutable          SQLITE_OPEN_READONLY (plus the immutable=1 URI parameter, once implemented)
+             *      eReadOnly           SQLITE_OPEN_READONLY
+             *      eReadWrite          SQLITE_OPEN_READWRITE
+             *      eReadWriteCreate    SQLITE_OPEN_READWRITE - and on SQLITE_CANTOPEN, again with SQLITE_OPEN_CREATE added
+             *
+             *  \note before Stroika v3.0d26, this was the bools fImmutable, fReadOnly and fCreateDBPathIfDoesNotExist.
+             *        That API had some advantages (like more orthogonality), but has the big disadvantage that many
+             *        combinations of those options are nonsensical (like fImmutable and fCreateDBPathIfDoesNotExist), and with
+             *        defaulting, it was easy to make mistakes.
              */
-            bool fCreateDBPathIfDoesNotExist{true};
+            enum class OpenMode {
+                /**
+                 *  Read-only, and the file is on read-only media, so not even another process changes it - SQLite's
+                 *  "immutable" (https://www.sqlite.org/uri.html#uriimmutable). A missing file is an error.
+                 *
+                 *  \note NYI: opened as eReadOnly (immutable needs SQLite's URI syntax)
+                 */
+                eImmutable,
+
+                /**
+                 *  Updates fail, and a missing file is an error.
+                 */
+                eReadOnly,
+
+                /**
+                 *  A missing file is an error.
+                 */
+                eReadWrite,
+
+                /**
+                 *  A missing file is created, as an empty database.
+                 */
+                eReadWriteCreate,
+            };
+
+            /**
+             *  \pre fInMemoryDB => fOpenMode == OpenMode::eReadWriteCreate
+             */
+            OpenMode fOpenMode{OpenMode::eReadWriteCreate};
 
             /**
              *  fTemporaryDB is just like fInMemoryDB, except that it will be written to disk. But its like temporaryDB in that
@@ -208,19 +247,6 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             optional<String> fVFS;
 
             /**
-             *  If a database is opened readonly, updates will fail, and if the database doesn't exist, it will not be automatically created.
-             */
-            bool fReadOnly{false};
-
-            /**
-             *  The immutable query parameter is a boolean that signals to SQLite that the underlying database file is held on read-only media and
-             *  cannot be modified, even by another process with elevated privileges.
-             * 
-             *  \pre fImmutable ==> fReadOnly
-            */
-            bool fImmutable{false};
-
-            /**
              *  This is only useful if the database can be opened by multiple threads of control (multiple threads with connections
              *  within the same app, or multiple applications).
              * 
@@ -237,6 +263,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             optional<Duration> fBusyTimeout;
 
             /**
+             *  \see fBusyTimeout
              */
             static constexpr inline chrono::seconds kBusyTimeout_Default = 10s;
 

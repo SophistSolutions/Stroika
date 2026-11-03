@@ -187,12 +187,18 @@ namespace {
                     break;
             }
 
-            if (options.fImmutable) {
-                // NYI cuz requires uri syntax
-                WeakAssertNotImplemented ();
-                Require (options.fReadOnly);
+            switch (options.fOpenMode) {
+                case Options::OpenMode::eImmutable:
+                    WeakAssertNotImplemented (); // needs SQLite's URI syntax - so opened as eReadOnly
+                    [[fallthrough]];
+                case Options::OpenMode::eReadOnly:
+                    flags |= SQLITE_OPEN_READONLY;
+                    break;
+                case Options::OpenMode::eReadWrite:
+                case Options::OpenMode::eReadWriteCreate:
+                    flags |= SQLITE_OPEN_READWRITE;
+                    break;
             }
-            flags |= options.fReadOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE;
 
             string uriArg;
             if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
@@ -230,8 +236,7 @@ namespace {
                 flags |= SQLITE_OPEN_MEMORY;
                 flags |= SQLITE_OPEN_URI;
                 flags |= SQLITE_OPEN_SHAREDCACHE;
-                Require (not options.fReadOnly);
-                Require (options.fCreateDBPathIfDoesNotExist);
+                Require (options.fOpenMode == Options::OpenMode::eReadWriteCreate);
                 uriArg = options.fInMemoryDB->AsNarrowSDKString (); // often empty string
                 if (uriArg.empty ()) {
                     uriArg = ":memory";
@@ -245,7 +250,7 @@ namespace {
 
             int e;
             if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_CANTOPEN) {
-                if (options.fCreateDBPathIfDoesNotExist) {
+                if (options.fOpenMode == Options::OpenMode::eReadWriteCreate) {
                     if (fDB_ != nullptr) {
                         Verify (::sqlite3_close (fDB_) == SQLITE_OK);
                         fDB_ = nullptr;
