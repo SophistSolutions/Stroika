@@ -307,12 +307,7 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
     Thread::Ptr                                      t{fRep_->fProcessRunner};
     t.ThrowIfDoneWithException ();
     if (auto o = GetProcessResult ()) {
-        if (o->fExitStatus and o->fExitStatus != ExitStatusType{}) {
-            AssertNotReached (); // I don't think this can happen since it should have resulted in a propagated exception
-        }
-        if (o->fTerminatedByUncaughtSignalNumber) {
-            AssertNotReached (); // I don't think this can happen since it should have resulted in a propagated exception
-        }
+        o->ThrowIfFailed (); // a program that ran and failed does not make the thread throw
     }
 }
 
@@ -340,7 +335,7 @@ void ProcessRunner::BackgroundProcess::Join (Time::DurationSeconds timeout) cons
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Thread::Ptr                                      t{fRep_->fProcessRunner};
     t.Join (timeout);
-    // if he asserts in PropagateIfException () are wrong, I may need to call that here!
+    PropagateIfException ();
 }
 
 void ProcessRunner::BackgroundProcess::JoinUntil (Time::TimePointSeconds timeoutAt) const
@@ -348,7 +343,7 @@ void ProcessRunner::BackgroundProcess::JoinUntil (Time::TimePointSeconds timeout
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Thread::Ptr                                      t{fRep_->fProcessRunner};
     t.JoinUntil (timeoutAt);
-    // if he asserts in PropagateIfException () are wrong, I may need to call that here!
+    PropagateIfException ();
 }
 
 void ProcessRunner::BackgroundProcess::Terminate ()
@@ -449,10 +444,7 @@ void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::P
         // Use 'BackgroundProcess' to get a thread we can interrupt when time is up, for timeout
         BackgroundProcess       bp      = RunInBackground (in, out, error);
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { bp.Terminate (); });
-        bp.Join (timeout);
-        bp.PropagateIfException ();
-        // If we didn't timeout, then the process must have completed, so we must have a process result
-        bp.GetProcessResult ().value_or (ProcessResultType{}).ThrowIfFailed ();
+        bp.Join (timeout); // throws if it times out, or the process failed
     }
 }
 

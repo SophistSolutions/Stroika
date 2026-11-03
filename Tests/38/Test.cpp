@@ -314,6 +314,49 @@ namespace {
             ProcessRunner pr{"bash -c \"exit 0\""};
             EXPECT_NO_THROW (pr.Run (""sv));
         }
+        {
+            // a timed Run fails the same way (#1261: a Debug build asserted instead)
+            ProcessRunner pr{"bash -c \"echo some-error-text 1>&2; exit 3\""};
+            try {
+                (void)pr.Run (""sv, {}, Time::DurationSeconds{60});
+                ADD_FAILURE () << "a non-zero exit must throw";
+            }
+            catch (const ProcessRunner::Exception& e) {
+                EXPECT_TRUE (e.fExitStatus and static_cast<int> (*e.fExitStatus) == 3);
+                EXPECT_TRUE (e.fStderrFragment and e.fStderrFragment->Contains ("some-error-text"sv));
+            }
+        }
+        {
+            // BackgroundProcess::Join () of a program that fails throws, as Run () does, and GetProcessResult () still has
+            // the result; WaitForDone () then GetProcessResult () read it without throwing
+            ProcessRunner::BackgroundProcess bp = ProcessRunner{"bash -c \"exit 5\""}.RunInBackground ();
+            try {
+                bp.Join (Time::DurationSeconds{60});
+                ADD_FAILURE () << "Join () of a non-zero exit must throw";
+            }
+            catch (const ProcessRunner::Exception& e) {
+                EXPECT_TRUE (e.fExitStatus and static_cast<int> (*e.fExitStatus) == 5);
+            }
+            optional<ProcessRunner::ProcessResultType> r = bp.GetProcessResult ();
+            EXPECT_TRUE (r and r->fExitStatus and static_cast<int> (*r->fExitStatus) == 5);
+            ProcessRunner::BackgroundProcess bp2 = ProcessRunner{"bash -c \"exit 6\""}.RunInBackground ();
+            EXPECT_NO_THROW (bp2.WaitForDone (Time::DurationSeconds{60}));
+            r = bp2.GetProcessResult ();
+            EXPECT_TRUE (r and r->fExitStatus and static_cast<int> (*r->fExitStatus) == 6);
+        }
+#if qStroika_Platform_POSIX
+        {
+            // ... as does a timed Run of a program killed by a signal
+            ProcessRunner pr{"bash -c \"kill -TERM $$\""};
+            try {
+                (void)pr.Run (""sv, {}, Time::DurationSeconds{60});
+                ADD_FAILURE () << "death by a signal must throw";
+            }
+            catch (const ProcessRunner::Exception& e) {
+                EXPECT_TRUE (e.fTermSignal == SIGTERM);
+            }
+        }
+#endif
     }
 }
 

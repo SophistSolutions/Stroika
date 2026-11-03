@@ -300,7 +300,7 @@ namespace Stroika::Foundation::Execution {
          *        something going wrong before the process starts, a non-zero exit (Exception::fExitStatus),
          *        or death by an uncaught signal (Exception::fTermSignal). The string overload also captures
          *        the child's stderr into Exception::fStderrFragment, usually the only thing that says WHY.
-         *        To read an exit status instead of catching it, use RunInBackground ().
+         *        To read an exit status instead of catching it, use RunInBackground () and BackgroundProcess::WaitForDone ().
          *
          *  \note if this is called with a timeout, and it times out, the child is killed immediately upon timeout.
          *        To avoid this behavior, use RunInBackground
@@ -555,6 +555,9 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief wait until the process has finished - throwing if it times out (or this thread is aborted), never for how the process ended
+         *
+         *  So WaitForDone () and then GetProcessResult () read a failed program's exit status without catching anything.
          *
          *  @see Join ()
          *  @see JoinUntil ()
@@ -563,10 +566,15 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief Join () does WaitForDone () and throw exception if there was any error (see PropagateIfException).
+         *  \brief Join () does WaitForDone (), then throws if the process failed (see PropagateIfException) - as Run () does
+         *
+         *  GetProcessResult () still has the result after Join () throws.
          *
          *  \note   Aliases - this used to be called WaitForDoneAndPropagateErrors; but used the name Join () to mimic the name used with Threads - NOT
          *          because that's used in the implementation, but because its essentially logically the same thing.
+         *
+         *  \note   before Stroika v3.0d26, Join (), JoinUntil () and PropagateIfException () threw only when the process could not
+         *          be run - not for a program that exited non-zero or died of a signal (a Debug build asserted instead).
          *
          *  @see JoinUntil ()
          *  @see WaitForDone ()
@@ -575,7 +583,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief WaitForDoneUntil () and throw exception if there was any error (see PropagateIfException).
+         *  \brief JoinUntil () is Join () with a deadline instead of a timeout: it throws if the process failed (see PropagateIfException).
          *
          *  @see Join ()
          *  @see WaitForDone ()
@@ -584,7 +592,9 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  If the process has completed with an error, throw exception reflecting that failure.
+         *  If the process has completed with an error, throw an exception reflecting that failure: whatever stopped it being
+         *  run, or ProcessRunner::Exception if it exited non-zero (Exception::fExitStatus) or died of an uncaught signal
+         *  (Exception::fTermSignal).
          *
          *  \note if the process has not completed, this likely does nothing.
          */
