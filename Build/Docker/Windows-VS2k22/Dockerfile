@@ -136,7 +136,7 @@ RUN %TEMP%\vs_buildtools.exe \
     & ECHO ==== Edge WebView2 at the end of the VS install: \
     & DIR /B "%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application" \
     & TYPE "%ProgramData%\Microsoft\EdgeUpdate\Log\MicrosoftEdgeUpdate.log" | FINDSTR /L /C:"[DllEntry]" /C:"DoDownloadPackage" /C:"[Running installer]" /C:"[InstallerResult]" \
-    & TASKLIST \
+    & powershell -NoProfile -Command "Get-CimInstance Win32_Process | Sort-Object ProcessId | Format-Table -AutoSize -Wrap ProcessId, Name, @{n='MB';e={[int]($_.WorkingSetSize / 1MB)}}, CommandLine | Out-String -Width 250" \
     & cmd /c exit 0
 
 # ### NOTE TO RUN

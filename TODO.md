@@ -62,5 +62,6 @@ never appear in a list of what to do next.
   installer's own 131.0.2903.86 - and the background update racing the end of the install step - never happens. In each
   vs2k22 job's install step log, the updater lines should show no install. If the step still fails with
   hcsshim::ImportLayer (0x3), read that log: was the updater still downloading or installing (a `[Running installer]`
-  with no `[InstallerResult]`, an Edge installer in the TASKLIST)? Drop the logging and this entry if CI stays clean to
-  the 3.0d26 release.
+  with no `[InstallerResult]`, an Edge installer in the process list)? Also whose is any setup.exe or msiexec.exe still
+  running there (both were, in a build that saved, 2026-11-03)? Drop the logging and this entry if CI stays clean to the
+  3.0d26 release.
