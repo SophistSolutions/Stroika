@@ -58,9 +58,9 @@ never appear in a list of what to do next.
 
 - **WATCH: does installing WebView2 first stop the VS 2022 docker image's intermittent save failure? - each Windows
   image run** (LGP 2026-11-03) Windows-VS2k22/Dockerfile installs the current Edge WebView2 before VS, so the VS
-  installer's own 131.0.2903.86 - and the background update racing the end of the install step - never happens. In each
-  vs2k22 job's install step log, the updater lines should show no install. If the step still fails with
-  hcsshim::ImportLayer (0x3), read that log: was the updater still downloading or installing (a `[Running installer]`
-  with no `[InstallerResult]`, an Edge installer in the process list)? Also whose is any setup.exe or msiexec.exe still
-  running there (both were, in a build that saved, 2026-11-03)? Drop the logging and this entry if CI stays clean to the
-  3.0d26 release.
+  installer's own 131.0.2903.86 - and the background update whose download, if the install step ends during it, leaves
+  a layer docker cannot save - never happens. In each vs2k22 job's install step log, the updater lines should show no
+  install. If the step still fails with hcsshim::ImportLayer (0x3), read that log: was the updater still downloading (a
+  `DoDownloadPackage` with no `[Running installer]` after it)? Now and then, check the two Microsoft reports linked in
+  that WebView2 step's comment for replies: once either is fixed, try the build without the step. Drop the logging and
+  this entry if CI stays clean to the 3.0d26 release.

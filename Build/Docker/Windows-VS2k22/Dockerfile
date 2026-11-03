@@ -44,8 +44,11 @@ RUN $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest "$env:VS_17_14_4
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 # The current Edge WebView2, installed in a step of its own before VS. Otherwise the VS installer installs the WebView2
-# it is pinned to (131.0.2903.86), and Edge's updater then updates that in the background, racing the end of the VS
-# install step - see that step's comment. With a newer WebView2 already installed, the VS installer installs none.
+# it is pinned to (131.0.2903.86), and Edge's updater then updates that in the background - and a RUN that ends while
+# the updater is still downloading leaves a layer docker cannot save (see the VS install step's comment). With a newer
+# WebView2 already installed, the VS installer installs none. This step can go once either is fixed:
+#       https://github.com/microsoft/Windows-Containers/issues/665 (saving such a layer)
+#       https://developercommunity.visualstudio.com/t/Build-Tools-installs-a-two-year-old-WebV/11177864 (WebView2 131)
 RUN $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' \
     -OutFile "$env:TEMP\MicrosoftEdgeWebview2Setup.exe" -UseBasicParsing; \
     $p = Start-Process -Wait -PassThru "$env:TEMP\MicrosoftEdgeWebview2Setup.exe" -ArgumentList '/silent', '/install'; \
@@ -117,8 +120,9 @@ ARG USE_UniversalBuildTools=""
 # background, which may still be running when this RUN ends. Saving this layer then failed now and then (more often on
 # GitHub) with
 #       hcsshim::ImportLayer failed in Win32: The system cannot find the path specified. (0x3)
-# each time with WebView2 still at 131 - hence the WebView2 step above. The RUN ends by logging WebView2's versions, its
-# updater's downloads and installs, and the processes still running, in case it recurs; the WATCH in TODO.md.
+# each time with WebView2 still at 131: the RUN had ended during the update's download - hence the WebView2 step above.
+# The RUN ends by logging WebView2's versions, its updater's downloads and installs, and the processes still running, in
+# case it recurs; the WATCH in TODO.md.
 SHELL ["cmd", "/S", "/C"]
 # RUN  (wmic logicaldisk get deviceid, freespace, size, description)
 RUN %TEMP%\vs_buildtools.exe \
