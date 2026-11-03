@@ -138,12 +138,13 @@ jobs:
           del /F /Q %TEMP%\*
           rd /S /Q %TEMP%
           docker system prune -af
-      - name: Build Windows Container Images (sophistsolutionsinc/stroika-buildvm-windows-vs2k22)
+      - name: "Build Windows Container Images (${{ matrix.base_image }})"
         # Done as separate step since takes so long, and can see the time for this step more clearly... (could be omitted)
+        # base_image is the Visual Studio image this job's container_images is built FROM (Build/Docker/Makefile's dependency)
         run: |
           # # just to avoid running out of space add WINDOWS_BASE_IMAGE ltsc2022
-          # make --directory Build/Docker --no-print-directory WINDOWS_BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 sophistsolutionsinc/stroika-buildvm-windows-vs2k22
-          make --directory Build/Docker --no-print-directory sophistsolutionsinc/stroika-buildvm-windows-vs2k22
+          # make --directory Build/Docker --no-print-directory WINDOWS_BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 ${{ matrix.base_image }}
+          make --directory Build/Docker --no-print-directory ${{ matrix.base_image }}
       - name: "Build Windows Container Images (${{ matrix.container_images }})"
         run: |
           make --directory Build/Docker --no-print-directory IMAGES="${{ matrix.container_images }}" build-images
