@@ -67,9 +67,14 @@ endif
 
 
 
-# intentionally export just as a performance hack (avoid call to getdefaultshellvariable)
+# intentionally export just as a performance hack (a sub-make inherits it, so does not call GetDefaultShellVariable again).
+# And simple (:=): that runs the script once even in a make that never uses ECHO, where a recursive (=) one would not run it
+# at all - but would run it every time it is expanded, and make expands each exported variable for every shell it starts
+# (each recipe line, and since make 4.4 each $(shell ...)): many times a compile, slow on Windows. Every build uses ECHO.
 # nb we need to define ECHO at all (instead of using echo) because of some braindead default echo implementations, like AIX
-export ECHO?=	$(shell $(StroikaRoot)Build/Scripts/GetDefaultShellVariable ECHO)
+ifndef ECHO
+export ECHO:=	$(shell $(StroikaRoot)Build/Scripts/GetDefaultShellVariable ECHO)
+endif
 
 FUNCTION_CAPITALIZE_WORD=$(shell $(ECHO) $1 | tr '[:lower:]' '[:upper:]' | cut -c 1-1)$(shell $(ECHO) $1 | cut -c 2-99)
 
