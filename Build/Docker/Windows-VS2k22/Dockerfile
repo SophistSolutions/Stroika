@@ -95,6 +95,12 @@ ARG USE_UniversalBuildTools=""
 
 
 # del stuff to minimize space left in the filesystem layer
+#
+# The VS installer brings in Edge WebView. Its ResiliencyLinks folder is deleted in this same RUN, because docker
+# fails saving the layer with it, since WebView 156.0.4314.58 (dated 2026-10-29; 155.0.4283.62 saved fine):
+#       hcsshim::ImportLayer failed in Win32: The system cannot find the path specified. (0x3)
+# Intermittent on GitHub, as Edge rolls a version out to some runners first. Nothing here uses Edge.
+# Drop the delete once the image builds without it - the WATCH in TODO.md.
 SHELL ["cmd", "/S", "/C"]
 # RUN  (wmic logicaldisk get deviceid, freespace, size, description)
 RUN (%TEMP%\vs_buildtools.exe \
@@ -111,8 +117,9 @@ RUN (%TEMP%\vs_buildtools.exe \
     %USE_WINSDK% \
     %REMOVE_WINSDK% \
     --quiet --wait --norestart --noUpdateInstaller \
-    || IF "%ERRORLEVEL%"=="3010" EXIT 0)
-    
+    || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
+    && FOR /D %V IN ("%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application\*") DO IF EXIST "%V\ResiliencyLinks" RMDIR /S /Q "%V\ResiliencyLinks"
+
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygin-vs2k22
 # ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
