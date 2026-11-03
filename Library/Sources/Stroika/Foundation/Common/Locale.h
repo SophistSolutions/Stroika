@@ -72,6 +72,15 @@ namespace Stroika::Foundation::Common {
      *  Its not hard to get/set the one from the OS, but I've found it not well documented,
      *  so this is intended to make it a little easier/more readable.
      *
+     *  \note   This changes every locale category - not just the character encoding - in the C library too: locale::global ()
+     *          of a named locale does setlocale (LC_ALL, ...) (C++ [locale.statics]). So LC_NUMERIC follows the user's locale
+     *          as well: under a German or French one, C's printf ("%f") writes 3,14 and strtod no longer reads 3.14, and
+     *          iostreams created afterwards format numbers that way too. That can quietly corrupt machine-readable output
+     *          (JSON, CSV, configuration files) from code - third-party code included - that does not name its locale; code
+     *          writing such formats should use locale::classic () explicitly.
+     *
+     *  \note   Where LANG and LC_* are unset (cron, systemd services, many docker images), the platform default locale is
+     *          typically just "C" again.
      */
     void UsePlatformDefaultLocaleAsDefaultLocale ();
 
