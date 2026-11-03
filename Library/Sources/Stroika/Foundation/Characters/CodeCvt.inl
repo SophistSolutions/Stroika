@@ -484,6 +484,22 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 Require (_Mid1 == _Last1);
+                if (not mbsinit (&ignoredMBState)) [[unlikely]] {
+                    // Some codecvts (libstdc++'s) report ok for a character the input ends inside of, keeping its first
+                    // bytes in the mbstate_t - which this converter does not keep from call to call. So give them back,
+                    // as partial does: they are the shortest tail whose removal lets the conversion end in the initial state
+                    const extern_type* restartAt = _First1 + bytesDone;
+                    for (ptrdiff_t tail = 1; tail <= _Last1 - restartAt and tail <= fCodeCvt_->max_length (); ++tail) {
+                        mbstate_t          retryMBState{};
+                        const extern_type* retryMid1 = restartAt;
+                        CHAR_T*            retryMid2 = _First2 + charsDone;
+                        if (fCodeCvt_->in (retryMBState, restartAt, _Last1 - tail, retryMid1, _First2 + charsDone, _Last2, retryMid2) == STD_CODE_CVT_T::ok and
+                            retryMid1 == _Last1 - tail and mbsinit (&retryMBState)) {
+                            *from = from->subspan (static_cast<size_t> (retryMid1 - _First1));
+                            return to.subspan (0, retryMid2 - _First2);
+                        }
+                    }
+                }
                 *from = span<const byte>{}; // used all input
             }
             return to.subspan (0, _Mid2 - _First2); // point ACTUAL copied data

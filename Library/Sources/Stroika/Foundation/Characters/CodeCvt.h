@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <bit>
+#include <cwchar>
 #include <locale>
 #include <optional>
 #include <span>

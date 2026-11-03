@@ -1579,6 +1579,46 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Characters, LocaleUTF8DecodeTruncated_)
+    {
+        Debug::TraceContextBumper ctx{"LocaleUTF8DecodeTruncated_"};
+        // A UTF-8 LOCALE's converter - not Stroika's own UTF-8 one (UTF8DecodeReplacement_) - must not drop a character the
+        // input ends inside of: libstdc++'s codecvt reports ok, keeping its first bytes in the mbstate_t
+        optional<locale> utf8;
+        for (const char* name : {"C.UTF-8", "en_US.UTF-8", "en_US.utf8", ".UTF-8"}) {
+            try {
+                utf8 = locale{name};
+                break;
+            }
+            catch (const runtime_error&) {
+            }
+        }
+        if (not utf8) {
+            SkipTestPart ("no UTF-8 locale installed");
+            return;
+        }
+        const char             kTruncated_[]     = {'a', '\xE9'};         // input ends inside a 3-byte character
+        const char             kTruncated2_[]    = {'a', '\xE9', '\x80'}; // ... after 2 of its 3 bytes
+        const char             kOnlyTruncated_[] = {'\xC3'};              // ... and has nothing else
+        const CodeCvt<wchar_t> lenient{
+            *utf8, CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter}};
+        const CodeCvt<wchar_t> strict{*utf8};
+        EXPECT_EQ (lenient.Bytes2String<wstring> (as_bytes (span{kTruncated_})), (wstring{L'a', L'\xFFFD'}));
+        EXPECT_EQ (lenient.Bytes2String<wstring> (as_bytes (span{kTruncated2_})), (wstring{L'a', L'\xFFFD'}));
+        EXPECT_EQ (lenient.Bytes2String<wstring> (as_bytes (span{kOnlyTruncated_})), (wstring{L'\xFFFD'}));
+        EXPECT_THROW (strict.Bytes2String<wstring> (as_bytes (span{kTruncated_})), CharacterEncodingException);
+        EXPECT_THROW (strict.Bytes2String<wstring> (as_bytes (span{kTruncated2_})), CharacterEncodingException);
+        EXPECT_THROW (strict.Bytes2String<wstring> (as_bytes (span{kOnlyTruncated_})), CharacterEncodingException);
+        // and decoding piecewise - as a stream does - the bytes of a character split between calls are kept for the next one
+        span<const byte> from = as_bytes (span{kTruncated2_});
+        wchar_t          buf[8];
+        span<wchar_t>    got = strict.Bytes2Characters (&from, span{buf});
+        EXPECT_EQ (wstring (got.begin (), got.end ()), L"a");
+        EXPECT_EQ (from.size (), 2u); // the 2 bytes of the character the input ends inside of, unconsumed
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Characters, ConversionsDuringThreadExit_)
     {
         Debug::TraceContextBumper ctx{"ConversionsDuringThreadExit_"};
