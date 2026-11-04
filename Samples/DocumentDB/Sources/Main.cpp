@@ -53,11 +53,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
         if (not args) {
             cerr << "{}"_f(args.error ()) << endl;
-            cerr << CommandLine::GenerateUsage ("documentDB", kAllOptions_) << endl;
+            cerr << cmdLine.GenerateUsage (kAllOptions_);
             return EXIT_FAILURE;
         }
         if (args->Has (kHelp)) {
-            cerr << CommandLine::GenerateUsage ("documentDB", kAllOptions_);
+            cerr << cmdLine.GenerateUsage (kAllOptions_);
             return EXIT_SUCCESS;
         }
 #if qStroika_HasComponent_mongocxxdriver

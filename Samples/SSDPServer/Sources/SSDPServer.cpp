@@ -178,11 +178,11 @@ int main (int argc, const char* argv[])
     CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
     if (not args) {
         cerr << Characters::ToString (args.error ()) << endl;
-        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_FAILURE;
     }
     if (args->Has (StandardCommandLineOptions::kHelp)) {
-        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_SUCCESS;
     }
     if (optional<String> o = args->GetArgument (kPortO_)) {

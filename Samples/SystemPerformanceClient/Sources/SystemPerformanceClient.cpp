@@ -232,7 +232,7 @@ int main (int argc, const char* argv[])
     CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
     if (not args) {
         cerr << "Error encountered: " << Characters::ToString (args.error ()) << endl;
-        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_FAILURE;
     }
     if (args->Has (kHelp)) {

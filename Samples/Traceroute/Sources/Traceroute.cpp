@@ -64,7 +64,7 @@ int main (int argc, const char* argv[])
         if (extraArg) {
             cerr << *extraArg << endl;
         }
-        cerr << Execution::CommandLine::GenerateUsage ("traceroute"sv, kAllOptions_);
+        cerr << cmdLine.GenerateUsage (kAllOptions_);
     };
 
     Execution::CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
