@@ -53,6 +53,7 @@ namespace Stroika::Foundation::Characters {
     basic_string<TCHAR> NLToCRLF (const basic_string<TCHAR>& text);
 
     /**
+     *  \brief Convert the platform's line endings (kEOL) to NL
      */
     template <typename TCHAR>
     size_t NativeToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
@@ -60,6 +61,10 @@ namespace Stroika::Foundation::Characters {
     basic_string<TCHAR> NativeToNL (const basic_string<TCHAR>& text);
 
     /**
+     *  \brief Convert NL line endings to the platform's (kEOL): on Windows each \n becomes \r\n
+     *
+     *  A \n already preceded by \r is left as it is, so this is safe to call on text that already has CRLF line endings
+     *  (on Windows a no-op then; elsewhere always one).
      */
     template <typename TCHAR>
     size_t NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);

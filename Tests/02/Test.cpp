@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
@@ -2597,6 +2598,24 @@ namespace {
             String a = "a b   \n\t c";
             EXPECT_EQ (a.ReplaceAll (RegularExpression{"\\s+"sv}, " "sv), "a b c");
             EXPECT_EQ (a.ReplaceAll ("\\s+"_RegEx, " "sv), "a b c");
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Characters, LineEndings_)
+    {
+        Debug::TraceContextBumper ctx{"LineEndings_"};
+        // NLToCRLF and NLToNative: each \n becomes \r\n (NLToNative: kEOL) - but one already \r\n stays as it is, so either is
+        // safe to call on text that already has CRLF line endings
+        EXPECT_EQ (Characters::NLToCRLF ("a\nb\r\nc\n"s), "a\r\nb\r\nc\r\n"s);
+        EXPECT_EQ (Characters::NLToNative ("a\nb\r\nc\n"s), "a"s + Characters::kEOL<char> + "b\r\nc"s + Characters::kEOL<char>);
+        EXPECT_EQ (Characters::NativeToNL ("a"s + Characters::kEOL<char> + "b"s), "a\nb"s);
+        {
+            // the buffer overload too (before Stroika v3.0d26 it made an existing \r\n into \r\r\n)
+            const char kIn[] = "a\r\nb\n";
+            char       out[2 * sizeof (kIn)];
+            EXPECT_EQ ((string{out, Characters::NLToCRLF (kIn, sizeof (kIn) - 1, out, size (out))}), "a\r\nb\r\n"s);
         }
     }
 }

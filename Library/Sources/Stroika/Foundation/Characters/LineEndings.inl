@@ -118,8 +118,8 @@ namespace Stroika::Foundation::Characters {
                 *outPtr++ = '\r';
             }
             Assert (outPtr < outBuf + outBufSize);
-            *outPtr++ = *i;
-            prevCharWasCR == (*i == '\r');
+            *outPtr++     = *i;
+            prevCharWasCR = (*i == '\r');
         }
         size_t nBytes = outPtr - outBuf;
         Assert (nBytes <= outBufSize);
@@ -132,8 +132,7 @@ namespace Stroika::Foundation::Characters {
         Memory::StackBuffer<TCHAR> outBuf{Memory::eUninitialized, outBufSize};
         size_t                     newSize = NLToCRLF<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
         Assert (newSize < outBufSize);
-        outBuf[newSize] = '\0';
-        return basic_string<TCHAR> (outBuf);
+        return basic_string<TCHAR> (outBuf.begin (), newSize);
     }
 
     /*
@@ -175,8 +174,7 @@ namespace Stroika::Foundation::Characters {
         Memory::StackBuffer<TCHAR> outBuf{Memory::eUninitialized, outBufSize};
         size_t                     newSize = NativeToNL<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
         Assert (newSize < outBufSize);
-        outBuf[newSize] = '\0';
-        return basic_string<TCHAR> (outBuf);
+        return basic_string<TCHAR> (outBuf.begin (), newSize);
     }
 
     /*
@@ -196,7 +194,7 @@ namespace Stroika::Foundation::Characters {
             TCHAR c = (srcText[i - 1] == '\n') ? '\r' : srcText[i - 1];
 #elif qStroika_Platform_Windows
             TCHAR c = srcText[i - 1];
-            if (c == '\n') {
+            if (c == '\n' and not(i >= 2 and srcText[i - 2] == '\r')) { // unless it already WAS CRLF
                 *outPtr++ = '\r';
             }
 #else
@@ -216,8 +214,7 @@ namespace Stroika::Foundation::Characters {
         Memory::StackBuffer<TCHAR> outBuf{Memory::eUninitialized, outBufSize};
         size_t                     newSize = NLToNative<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
         Assert (newSize < outBufSize);
-        outBuf[newSize] = '\0';
-        return basic_string<TCHAR> (outBuf);
+        return basic_string<TCHAR> (outBuf.begin (), newSize);
     }
 
     /*
