@@ -187,17 +187,17 @@ int main (int argc, const char* argv[])
 
         Sequence<CommandLine::Option> allMyOptions =
             Sequence<CommandLine::Option>{Main::CommandOptions::kAll} + Sequence<CommandLine::Option>{kHelp, kVersion};
-        cmdLine.Validate (allMyOptions);
+        CommandLine::OptionValues args = cmdLine.ApplyOptions (allMyOptions); // throws InvalidCommandLineArgument, as m.Run () can
 
-        if (cmdLine.Has (Main::CommandOptions::kStatus)) {
+        if (args.Has (Main::CommandOptions::kStatus)) {
             cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
             return EXIT_SUCCESS;
         }
-        else if (cmdLine.Has (kHelp)) {
+        else if (args.Has (kHelp)) {
             ShowUsage_ (m);
             return EXIT_SUCCESS;
         }
-        else if (cmdLine.Has (kVersion)) {
+        else if (args.Has (kVersion)) {
             cout << m.GetServiceDescription ().fPrettyName << ": "sv << Characters::ToString (AppVersion::kVersion) << endl;
             return EXIT_SUCCESS;
         }
@@ -205,7 +205,7 @@ int main (int argc, const char* argv[])
             /*
              *  Run the commands, and capture/display exceptions
              */
-            m.Run (cmdLine);
+            m.Run (args);
         }
     }
     catch (const InvalidCommandLineArgument& e) {

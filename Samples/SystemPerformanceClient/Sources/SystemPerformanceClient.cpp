@@ -229,28 +229,31 @@ int main (int argc, const char* argv[])
     const initializer_list<CommandLine::Option> kAllOptions_ = {
         kHelp, kPrintNamesO_, kMostRecentO_, kOneLineModeO_, kRunInstrumentArg_, kRunForO_, kTimeBetweenCapturesO_};
 
-    bool                  printUsage            = cmdLine.Has (kHelp);
-    bool                  mostRecentCaptureMode = cmdLine.Has (kMostRecentO_);
-    bool                  printNames            = cmdLine.Has (kPrintNamesO_);
-    bool                  oneLineMode           = cmdLine.Has (kOneLineModeO_);
-    Time::DurationSeconds runFor                = 0s; // default to runfor 0, so we do each once.
-    if (auto o = cmdLine.GetArgument (kRunForO_)) {
-        runFor = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*o)};
+    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+    if (not args) {
+        cerr << "Error encountered: " << Characters::ToString (args.error ()) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+        return EXIT_FAILURE;
     }
-    Time::DurationSeconds captureInterval = 15s;
-    if (auto o = cmdLine.GetArgument (kTimeBetweenCapturesO_)) {
-        captureInterval = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*o)};
-    }
-    Set<InstrumentNameType> run =
-        cmdLine.GetArguments (kRunInstrumentArg_).Map<Set<InstrumentNameType>> ([] (const String& s) { return InstrumentNameType{s}; });
-
-    if (printUsage) {
+    if (args->Has (kHelp)) {
         cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_SUCCESS;
     }
+    bool                  mostRecentCaptureMode = args->Has (kMostRecentO_);
+    bool                  printNames            = args->Has (kPrintNamesO_);
+    bool                  oneLineMode           = args->Has (kOneLineModeO_);
+    Time::DurationSeconds runFor                = 0s; // default to runfor 0, so we do each once.
+    if (optional<String> o = args->GetArgument (kRunForO_)) {
+        runFor = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*o)};
+    }
+    Time::DurationSeconds captureInterval = 15s;
+    if (optional<String> o = args->GetArgument (kTimeBetweenCapturesO_)) {
+        captureInterval = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*o)};
+    }
+    Set<InstrumentNameType> run =
+        args->GetArguments (kRunInstrumentArg_).Map<Set<InstrumentNameType>> ([] (const String& s) { return InstrumentNameType{s}; });
 
     try {
-        cmdLine.Validate (kAllOptions_);
         if (printNames) {
             Demo_PrintInstruments_ ();
         }
@@ -263,11 +266,6 @@ int main (int argc, const char* argv[])
         else {
             Demo_Using_Direct_Capture_On_Instrument_ (run, oneLineMode, Duration{captureInterval});
         }
-    }
-    catch (const InvalidCommandLineArgument&) {
-        cerr << "Error encountered: " << Characters::ToString (current_exception ()) << endl;
-        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
-        return EXIT_SUCCESS;
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());

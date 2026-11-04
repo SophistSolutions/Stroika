@@ -205,25 +205,23 @@ int main (int argc, const char* argv[])
         .fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpOptionText = "automatically quit after <argument> seconds"sv};
     const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
 
-    try {
-        cmdLine.Validate (kAllOptions_);
-    }
-    catch (const InvalidCommandLineArgument&) {
-        cerr << Characters::ToString (current_exception ()) << endl;
+    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+    if (not args) {
+        cerr << Characters::ToString (args.error ()) << endl;
         cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
         return EXIT_FAILURE;
     }
-    if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
+    if (args->Has (StandardCommandLineOptions::kHelp)) {
         cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
         return EXIT_SUCCESS;
     }
 
     try {
         Time::DurationSeconds quitAfter = Time::kInfinity;
-        if (auto o = cmdLine.GetArgument (kPortO_)) {
+        if (optional<String> o = args->GetArgument (kPortO_)) {
             portNumber = Characters::String2Int<uint16_t> (*o);
         }
-        if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
+        if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
             quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
         }
         MyWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists

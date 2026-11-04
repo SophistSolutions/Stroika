@@ -3274,19 +3274,19 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         .fLongName       = "orderby-probe"sv,
         .fHelpOptionText = "Also run the OrderBy () implementation-strategy probe (slow; a design aid, not a regression test)"sv};
 
-    const CommandLine::Option kGTestBriefO_{.fLongName = "gtest_brief"sv};
-    const CommandLine::Option kGTestO_{.fLongName = "gtest"sv};
-
-    const Sequence<CommandLine::Option> kAllOptions_{
-        Execution::StandardCommandLineOptions::kHelp, kShowO_, kTimeMultiplierO_, kOrderByProbeO_, kGTestBriefO_, kGTestO_};
+    const Sequence<CommandLine::Option> kAllOptions_{Execution::StandardCommandLineOptions::kHelp, kShowO_, kTimeMultiplierO_, kOrderByProbeO_};
 
     // NOTE: run with --show or look for output in PERF-OUT.txt
-    CommandLine cmdLine{argc, argv};
+    Sequence<String> args; // main's, less googletest's own (which Setup takes out)
+    for (const string& a : Test::Setup (argc, argv)) {
+        args += String::FromNarrowSDKString (a);
+    }
+    CommandLine cmdLine{args};
     try {
-        cmdLine.Validate (kAllOptions_);
-        sShowOutput_      = cmdLine.Has (kShowO_);
-        sRunOrderByProbe_ = cmdLine.Has (kOrderByProbeO_);
-        if (auto o = cmdLine.GetArgument (kTimeMultiplierO_)) {
+        CommandLine::OptionValues options = cmdLine.ApplyOptions (kAllOptions_);
+        sShowOutput_                      = options.Has (kShowO_);
+        sRunOrderByProbe_                 = options.Has (kOrderByProbeO_);
+        if (optional<String> o = options.GetArgument (kTimeMultiplierO_)) {
             sTimeMultiplier_ = FloatConversion::ToFloat<double> (*o);
         }
     }
@@ -3310,7 +3310,6 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     }
 #endif
 
-    Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else

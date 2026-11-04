@@ -175,18 +175,24 @@ int main (int argc, const char* argv[])
     const CommandLine::Option           kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
     const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
 
-    if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
+    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+    if (not args) {
+        cerr << Characters::ToString (args.error ()) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+        return EXIT_FAILURE;
+    }
+    if (args->Has (StandardCommandLineOptions::kHelp)) {
         cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
         return EXIT_SUCCESS;
     }
-    if (auto o = cmdLine.GetArgument (kPortO_)) {
+    if (optional<String> o = args->GetArgument (kPortO_)) {
         portForOurWS = String2Int<uint16_t> (*o); // 0 if not a number
         if (portForOurWS == 0) {
             cerr << "--port takes a port number, 1 to 65535" << endl;
             return EXIT_FAILURE;
         }
     }
-    if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
+    if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
         quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
 

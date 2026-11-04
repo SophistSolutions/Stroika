@@ -58,6 +58,27 @@ using namespace Stroika::Frameworks::Service;
 namespace {
     // safe to declare here because we cannot start the threads before main...
     const String kServiceRunThreadName_ = "Service 'Run' thread"sv;
+
+    const Mapping<CommandLine::Option, Main::CommandArgs::MajorOperation>& Map2Major_ ()
+    {
+        using MajorOperation = Main::CommandArgs::MajorOperation;
+        using CommandOptions = Main::CommandOptions;
+        static const Mapping<CommandLine::Option, MajorOperation> kMap2Major_{
+            {CommandOptions::kInstall, MajorOperation::eInstall},
+            {CommandOptions::kUnInstall, MajorOperation::eUnInstall},
+            {CommandOptions::kRunAsService, MajorOperation::eRunServiceMain},
+            {CommandOptions::kRunDirectly, MajorOperation::eRunDirectly},
+            {CommandOptions::kStart, MajorOperation::eStart},
+            {CommandOptions::kStop, MajorOperation::eStop},
+            {CommandOptions::kForcedStop, MajorOperation::eForcedStop},
+            {CommandOptions::kRestart, MajorOperation::eRestart},
+            {CommandOptions::kForcedRestart, MajorOperation::eForcedRestart},
+            {CommandOptions::kReloadConfiguration, MajorOperation::eReloadConfiguration},
+            {CommandOptions::kPause, MajorOperation::ePause},
+            {CommandOptions::kContinue, MajorOperation::eContinue},
+        };
+        return kMap2Major_;
+    }
 }
 
 /*
@@ -65,29 +86,34 @@ namespace {
  *********************** Service::Main::CommandArgs *****************************
  ********************************************************************************
  */
-Main::CommandArgs::CommandArgs (const CommandLine& cmdLine)
+Main::CommandArgs::CommandArgs (const CommandLine::OptionValues& args)
 {
-    static const Mapping<CommandLine::Option, MajorOperation> kMap2Major_{
-        {CommandOptions::kInstall, MajorOperation::eInstall},
-        {CommandOptions::kUnInstall, MajorOperation::eUnInstall},
-        {CommandOptions::kRunAsService, MajorOperation::eRunServiceMain},
-        {CommandOptions::kRunDirectly, MajorOperation::eRunDirectly},
-        {CommandOptions::kStart, MajorOperation::eStart},
-        {CommandOptions::kStop, MajorOperation::eStop},
-        {CommandOptions::kForcedStop, MajorOperation::eForcedStop},
-        {CommandOptions::kRestart, MajorOperation::eRestart},
-        {CommandOptions::kForcedRestart, MajorOperation::eForcedRestart},
-        {CommandOptions::kReloadConfiguration, MajorOperation::eReloadConfiguration},
-        {CommandOptions::kPause, MajorOperation::ePause},
-        {CommandOptions::kContinue, MajorOperation::eContinue},
-    };
-
-    Iterable<CommandLine::Option> allMajorsSet = kMap2Major_.Keys ().Where ([&] (CommandLine::Option o) { return cmdLine.Has (o); });
+    Iterable<CommandLine::Option> allMajorsSet = Map2Major_ ().Keys ().Where ([&] (const CommandLine::Option& o) { return args.Has (o); });
     switch (allMajorsSet.size ()) {
         case 0:
             break; // current code doesn't throw here but maybe should?
         case 1:
-            fMajorOperation = kMap2Major_[Memory::ValueOf (allMajorsSet.First ())];
+            fMajorOperation = Map2Major_ ()[Memory::ValueOf (allMajorsSet.First ())];
+            break;
+        default:
+            Throw (InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
+    }
+    if (auto o = args.GetArgument (CommandOptions::kRunFor)) {
+        fRunFor = Time::Duration{FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
+    }
+}
+
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+Main::CommandArgs::CommandArgs (const CommandLine& cmdLine)
+{
+    Iterable<CommandLine::Option> allMajorsSet = Map2Major_ ().Keys ().Where ([&] (CommandLine::Option o) { return cmdLine.Has (o); });
+    switch (allMajorsSet.size ()) {
+        case 0:
+            break; // current code doesn't throw here but maybe should?
+        case 1:
+            fMajorOperation = Map2Major_ ()[Memory::ValueOf (allMajorsSet.First ())];
             break;
         default:
             Throw (InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
@@ -96,6 +122,9 @@ Main::CommandArgs::CommandArgs (const CommandLine& cmdLine)
         fRunFor = Time::Duration{FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 /*
  ********************************************************************************

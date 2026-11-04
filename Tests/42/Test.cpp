@@ -192,13 +192,106 @@ namespace {
 
         {
             const CommandLine::Option kMongoConnectionStringOpt_{.fLongName = "mongoConnectionString"sv, .fSupportsArgument = true};
-            CommandLine               cl{"test --mongoConnectionString b"};
-            EXPECT_EQ (cl.GetArgument (kMongoConnectionStringOpt_), "b"sv);
-            EXPECT_EQ ((cl.ValidateQuietly ({kMongoConnectionStringOpt_})), nullopt);
-            CommandLine clBadName{"test --mongoXXX b"};
-            EXPECT_EQ (clBadName.GetArgument (kMongoConnectionStringOpt_), nullopt);
-            CommandLine clBadName2{"test --mongoConnectionStringXXX b"};
-            EXPECT_EQ (clBadName2.GetArgument (kMongoConnectionStringOpt_), nullopt);
+            EXPECT_EQ (CommandLine{"test --mongoConnectionString b"}.ApplyOptions ({kMongoConnectionStringOpt_}).GetArgument (kMongoConnectionStringOpt_),
+                       "b"sv);
+            // a long name matches whole: neither a shorter nor a longer one is that option
+            EXPECT_FALSE (CommandLine{"test --mongoXXX b"}.ApplyOptionsQuietly ({kMongoConnectionStringOpt_}).has_value ());
+            EXPECT_FALSE (CommandLine{"test --mongoConnectionStringXXX b"}.ApplyOptionsQuietly ({kMongoConnectionStringOpt_}).has_value ());
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution, CommandLineApplyOptions_)
+    {
+        Debug::TraceContextBumper ctx{"CommandLineApplyOptions_"};
+        using StandardCommandLineOptions::kHelp;
+        using StandardCommandLineOptions::kVersion;
+        auto fails = [] (const String& cmdLine, const Iterable<CommandLine::Option>& options) {
+            return not CommandLine{cmdLine}.ApplyOptionsQuietly (options).has_value ();
+        };
+        {
+            // ArchiveUtility's options: an option's separate-word argument is not a positional word (before Stroika v3.0d26,
+            // GetArgument (kArchiveO) of this command line gave xdir)
+            const CommandLine::Option                   kOutDirO{.fLongName = "outputDirectory"sv, .fSupportsArgument = true};
+            const CommandLine::Option                   kListO{.fLongName = "list"sv};
+            const CommandLine::Option                   kArchiveO{.fRequired = true, .fHelpArgName = "ARCHIVE-FILE"sv};
+            const CommandLine::Option                   kFilesO{.fRepeatable = true, .fHelpArgName = "FILE"sv};
+            const initializer_list<CommandLine::Option> kAll{kHelp, kListO, kOutDirO, kArchiveO, kFilesO};
+            for (const String& cl : {"a --outputDirectory xdir --list foo.7z f1 f2"_k, "a --outputDirectory=xdir --list foo.7z f1 f2"_k,
+                                     "a foo.7z --list f1 --outputDirectory xdir f2"_k}) {
+                CommandLine::OptionValues args = CommandLine{cl}.ApplyOptions (kAll);
+                EXPECT_EQ (args.GetArgument (kOutDirO), "xdir"sv);
+                EXPECT_TRUE (args.Has (kListO));
+                EXPECT_FALSE (args.Has (kHelp));
+                EXPECT_EQ (args.GetArgument (kArchiveO), "foo.7z"sv);
+                EXPECT_EQ (args.GetArguments (kFilesO), (Sequence<String>{"f1"_k, "f2"_k}));
+                EXPECT_EQ (args.GetArgument (kFilesO), "f1"sv);
+            }
+            CommandLine::OptionValues noFiles = CommandLine{"a --list foo.7z"}.ApplyOptions (kAll);
+            EXPECT_FALSE (noFiles.Has (kFilesO));
+            EXPECT_EQ (noFiles.GetArguments (kFilesO), Sequence<String>{});
+            EXPECT_EQ (noFiles.GetArgument (kOutDirO), nullopt);
+            EXPECT_EQ (noFiles.GetArgument (kListO), nullopt); // given, but takes no argument
+        }
+        {
+            // HTMLViewCompiler's options: two required positional options (before Stroika v3.0d26, the second was never found)
+            const CommandLine::Option                   kNameO{.fSingleCharName = 'n', .fSupportsArgument = true};
+            const CommandLine::Option                   kInO{.fRequired = true, .fHelpArgName = "IN"sv};
+            const CommandLine::Option                   kOutO{.fRequired = true, .fHelpArgName = "OUT"sv};
+            const initializer_list<CommandLine::Option> kAll{kHelp, kVersion, kNameO, kInO, kOutO};
+            for (const String& cl : {"x in.swsp out.cpp"_k, "x -n G in.swsp out.cpp"_k, "x in.swsp -n G out.cpp"_k, "x in.swsp out.cpp -n G"_k}) {
+                CommandLine::OptionValues args = CommandLine{cl}.ApplyOptions (kAll);
+                EXPECT_EQ (args.GetArgument (kInO), "in.swsp"sv);
+                EXPECT_EQ (args.GetArgument (kOutO), "out.cpp"sv);
+            }
+            EXPECT_TRUE (fails ("x in.swsp", kAll));                   // OUT is required
+            EXPECT_TRUE (fails ("x in.swsp out.cpp more", kAll));      // a positional word with no positional option left to take it
+            EXPECT_TRUE (fails ("x in.swsp out.cpp -n", kAll));        // -n's argument missing
+            EXPECT_TRUE (fails ("x -n A -n B in.swsp out.cpp", kAll)); // -n is not repeatable
+            EXPECT_TRUE (fails ("x -q in.swsp out.cpp", kAll));        // no option -q
+            {
+                auto r = CommandLine{"x in.swsp"}.ApplyOptionsQuietly (kAll);
+                ASSERT_FALSE (r.has_value ());
+                EXPECT_TRUE (Characters::ToString (r.error ()).Contains ("OUT"sv)) << Characters::ToString (r.error ());
+            }
+
+            // --help and --version work with a required option missing (kHelp and kVersion fWaivesRequired) - but an argument
+            // naming no option is still an error
+            for (const String& cl : {"x --help"_k, "x -h"_k, "x in.swsp --help"_k}) {
+                CommandLine::OptionValues args = CommandLine{cl}.ApplyOptions (kAll);
+                EXPECT_TRUE (args.Has (kHelp));
+                EXPECT_FALSE (args.Has (kOutO));
+            }
+            EXPECT_TRUE (CommandLine{"x --version"}.ApplyOptions (kAll).Has (kVersion));
+            EXPECT_TRUE (fails ("x --help --bogus", kAll));
+        }
+        {
+            const CommandLine::Option kFlagO{.fLongName = "flag"sv};
+            const CommandLine::Option kRunO{.fSingleCharName = 'r', .fLongName = "run"sv, .fSupportsArgument = true, .fRepeatable = true};
+            const CommandLine::Option kMaybeO{.fLongName = "maybe"sv, .fSupportsArgument = true, .fIfSupportsArgumentThenRequired = false};
+            const initializer_list<CommandLine::Option> kAll{kFlagO, kRunO, kMaybeO};
+            CommandLine::OptionValues args = CommandLine{"x -r a --run=b --RUN c --flag"}.ApplyOptions (kAll); // long names: case-insensitive by default
+            EXPECT_EQ (args.GetArguments (kRunO), (Sequence<String>{"a"_k, "b"_k, "c"_k}));
+            EXPECT_TRUE (args.Has (kFlagO));
+            EXPECT_FALSE (args.Has (kMaybeO));
+            EXPECT_TRUE (fails ("x --flag=yes", kAll)); // --flag takes no argument
+            EXPECT_TRUE (fails ("x --flag --flag", kAll));
+            EXPECT_TRUE (fails ("x -r", kAll));
+            EXPECT_TRUE (fails ("x positional", kAll)); // no positional option at all
+            CommandLine::OptionValues maybe = CommandLine{"x --maybe"}.ApplyOptions (kAll);
+            EXPECT_TRUE (maybe.Has (kMaybeO));
+            EXPECT_EQ (maybe.GetArgument (kMaybeO), nullopt);
+        }
+        {
+            // a bare - is a positional word (eg stdin), and a word after an option that takes an argument is that argument,
+            // whatever it looks like
+            const CommandLine::Option                   kOutO{.fSingleCharName = 'o', .fSupportsArgument = true};
+            const CommandLine::Option                   kFileO{.fHelpArgName = "FILE"sv};
+            const initializer_list<CommandLine::Option> kAll{kOutO, kFileO};
+            CommandLine::OptionValues                   args = CommandLine{"x -o -weird -"}.ApplyOptions (kAll);
+            EXPECT_EQ (args.GetArgument (kOutO), "-weird"sv);
+            EXPECT_EQ (args.GetArgument (kFileO), "-"sv);
         }
     }
 }

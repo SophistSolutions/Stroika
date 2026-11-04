@@ -182,11 +182,31 @@ int main (int argc, const char* argv[])
                                         .fHelpOptionText   = "Switch each UPnP light found (each SwitchPower service) on or off"sv};
     const CommandLine::Option kWatchO_{.fLongName = "watch"sv, .fHelpOptionText = "Watch each service found: subscribe to its events, and print each"sv};
     const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
+    const initializer_list<CommandLine::Option> kAllOptions_{
+        StandardCommandLineOptions::kHelp, kListenO_, kSearchO_, kSwitchO_, kWatchO_, kQuitAfterO_};
 
-    listen    = cmdLine.Has (kListenO_);
-    searchFor = cmdLine.GetArgument (kSearchO_);
-    watch     = cmdLine.Has (kWatchO_);
-    if (auto o = cmdLine.GetArgument (kSwitchO_)) {
+    auto usage = [] () {
+        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR] [--switch on|off] [--watch] [--quit-after N]" << endl;
+        cerr << "   e.g. SSDPClient -l" << endl;
+        cerr << "   e.g. SSDPClient -s \"upnp:rootdevice\"" << endl;
+        cerr << "   e.g. SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> ()
+             << " --switch on      (switches on each UPnP light found)" << endl;
+        cerr << "   e.g. SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> () << " --watch      (prints each UPnP light's each change)" << endl;
+    };
+    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+    if (not args) {
+        cerr << Characters::ToString (args.error ()) << endl;
+        usage ();
+        return EXIT_FAILURE;
+    }
+    if (args->Has (StandardCommandLineOptions::kHelp)) {
+        usage ();
+        return EXIT_SUCCESS;
+    }
+    listen    = args->Has (kListenO_);
+    searchFor = args->GetArgument (kSearchO_);
+    watch     = args->Has (kWatchO_);
+    if (optional<String> o = args->GetArgument (kSwitchO_)) {
         if (*o == "on"sv or *o == "off"sv) {
             switchLightsTo = *o == "on"sv;
         }
@@ -195,17 +215,12 @@ int main (int argc, const char* argv[])
             return EXIT_FAILURE;
         }
     }
-    if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
+    if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
         quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
 
     if (not listen and not searchFor.has_value ()) {
-        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR] [--switch on|off] [--watch] [--quit-after N]" << endl;
-        cerr << "   e.g. SSDPClient -l" << endl;
-        cerr << "   e.g. SSDPClient -s \"upnp:rootdevice\"" << endl;
-        cerr << "   e.g. SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> ()
-             << " --switch on      (switches on each UPnP light found)" << endl;
-        cerr << "   e.g. SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> () << " --watch      (prints each UPnP light's each change)" << endl;
+        usage ();
         return EXIT_FAILURE;
     }
 

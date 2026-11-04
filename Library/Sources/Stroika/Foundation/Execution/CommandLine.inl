@@ -40,18 +40,24 @@ namespace Stroika::Foundation::Execution {
         }
         return false;
     }
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     inline optional<String> CommandLine::GetArgument (const Option& o) const
     {
         auto r = get<Sequence<String>> (Get (o));
         return r.empty () ? optional<String>{} : r[0];
     }
-    inline Sequence<String> CommandLine::GetArguments () const
-    {
-        return this->fArgs_;
-    }
     inline Sequence<String> CommandLine::GetArguments (const Option& o) const
     {
         return get<Sequence<String>> (Get (o));
+    }
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    inline Sequence<String> CommandLine::GetArguments () const
+    {
+        return this->fArgs_;
     }
     inline auto CommandLine::GetStringShellQuoting () const -> optional<StringShellQuoting>
     {

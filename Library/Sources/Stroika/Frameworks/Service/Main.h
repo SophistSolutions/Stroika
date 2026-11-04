@@ -483,13 +483,25 @@ namespace Stroika::Frameworks::Service {
 
     /**
      *  This is helpful to take command-line arguments and produce a set of things todo
-     *  for the service mgr. This constructor will throw if it sees something obviously wrong
-     *  but will ignore unrecognized arguments.
+     *  for the service mgr. This constructor will throw if it sees something obviously wrong.
      */
     struct Main::CommandArgs {
         /**
+         *  Throws InvalidCommandLineArgument if more than one major operation (kInstall, kStart, ...) is given.
+         *
+         *  \par Example Usage
+         *      \code
+         *          Sequence<CommandLine::Option> kAllOptions_ = Sequence<CommandLine::Option>{Main::CommandOptions::kAll} + Sequence<CommandLine::Option>{kHelp, ...};
+         *          CommandLine::OptionValues     args         = cmdLine.ApplyOptions (kAllOptions_);
+         *          ...
+         *          m.Run (args);       // Main::CommandArgs{args}
+         *      \endcode
+         *
+         *  \pre args is from ApplyOptions given every option in CommandOptions::kAll
          */
-        CommandArgs (const Execution::CommandLine& cmdLine);
+        CommandArgs (const Execution::CommandLine::OptionValues& args);
+        [[deprecated ("Since Stroika v3.0d26 use CommandArgs (cmdLine.ApplyOptions (options)) - options including "
+                      "CommandOptions::kAll")]] CommandArgs (const Execution::CommandLine& cmdLine);
 
         enum class MajorOperation {
             eInstall,

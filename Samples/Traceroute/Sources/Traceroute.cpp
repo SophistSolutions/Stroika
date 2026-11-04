@@ -67,31 +67,33 @@ int main (int argc, const char* argv[])
         cerr << Execution::CommandLine::GenerateUsage ("traceroute"sv, kAllOptions_);
     };
 
-    using namespace Execution::StandardCommandLineOptions;
-
-    if (cmdLine.Has (kPingO_)) {
-        majorOp = MajorOp::ePing;
+    Execution::CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+    if (not args) {
+        usage (Characters::ToString (args.error ()));
+        return EXIT_FAILURE;
     }
-    if (cmdLine.Has (kTraceRtO_)) {
-        majorOp = MajorOp::eTraceroute;
-    }
-    if (auto o = cmdLine.GetArgument (kPacketSizeO_)) {
-        packetSize = Characters::String2Int<unsigned int> (*o);
-    }
-    if (auto o = cmdLine.GetArgument (kMaxHopsO_)) {
-        maxHops = Characters::String2Int<unsigned int> (*o);
-    }
-    if (auto o = cmdLine.GetArgument (kSampleCntO_)) {
-        sampleCount = Characters::String2Int<unsigned int> (*o);
-    }
-    if (cmdLine.Has (kHelp)) {
+    if (args->Has (kHelp)) {
         usage ();
         return EXIT_SUCCESS;
     }
-    targetAddress = cmdLine.GetArgument (kTargetAddress_).value_or (String{});
+    if (args->Has (kPingO_)) {
+        majorOp = MajorOp::ePing;
+    }
+    if (args->Has (kTraceRtO_)) {
+        majorOp = MajorOp::eTraceroute;
+    }
+    if (optional<String> o = args->GetArgument (kPacketSizeO_)) {
+        packetSize = Characters::String2Int<unsigned int> (*o);
+    }
+    if (optional<String> o = args->GetArgument (kMaxHopsO_)) {
+        maxHops = Characters::String2Int<unsigned int> (*o);
+    }
+    if (optional<String> o = args->GetArgument (kSampleCntO_)) {
+        sampleCount = Characters::String2Int<unsigned int> (*o);
+    }
+    targetAddress = *args->GetArgument (kTargetAddress_); // fRequired, and no kHelp
 
     try {
-        cmdLine.Validate (kAllOptions_);
         Collection<InternetAddress> addrList = IO::Network::DNS::kThe.GetHostAddresses (targetAddress);
         if (addrList.empty ()) {
             Execution::Throw (Execution::Exception{"whoops no addrs"sv});

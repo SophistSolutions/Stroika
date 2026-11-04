@@ -93,26 +93,24 @@ namespace {
              *  Validate command-line arguments, handle some simple command line tasks, and parse the rest of the options
              *  into Options_ which will be used later.
              */
-            try {
-                cmdLine.Validate (kAllOptions_);
-            }
-            catch (const InvalidCommandLineArgument&) {
-                cerr << Characters::ToString (current_exception ()) << endl;
+            CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+            if (not args) {
+                cerr << Characters::ToString (args.error ()) << endl;
                 cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
                 return EXIT_FAILURE;
             }
 
-            if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
+            if (args->Has (StandardCommandLineOptions::kHelp)) {
                 cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
                 return EXIT_SUCCESS;
             }
-            else if (cmdLine.Has (Main::CommandOptions::kStatus)) {
+            else if (args->Has (Main::CommandOptions::kStatus)) {
                 // no need to wrap in logger, and load options for this
                 Main m{MakeSharedPtr<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
                 cout << m.GetServiceStatusMessage ();
                 return EXIT_SUCCESS;
             }
-            else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
+            else if (args->Has (StandardCommandLineOptions::kVersion)) {
                 // no need to wrap in logger, and load options for this
                 Main m{MakeSharedPtr<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
                 cout << m.GetServiceDescription ().fPrettyName << ": "sv << Characters::ToString (AppVersion::kVersion) << endl;
@@ -145,7 +143,7 @@ namespace {
             Logger::sThe.Log (Logger::eInfo, "Debugging Log2TraceFile: {}"_f, Debug::GetTraceFileName ());
 #endif
 
-            Options_ options{cmdLine};
+            Options_ options{*args};
 
             /*
              *  Create the service manager objects
@@ -173,10 +171,10 @@ namespace {
             optional<uint16_t> fPortNumberOverride;
             Main::CommandArgs  fServiceArgs;
 
-            Options_ (const CommandLine& cmdLine)
-                : fServiceArgs{cmdLine}
+            Options_ (const CommandLine::OptionValues& args)
+                : fServiceArgs{args}
             {
-                if (auto o = cmdLine.GetArgument (kPortO_)) {
+                if (optional<String> o = args.GetArgument (kPortO_)) {
                     fPortNumberOverride = Characters::String2Int<uint16_t> (*o);
                 }
             }

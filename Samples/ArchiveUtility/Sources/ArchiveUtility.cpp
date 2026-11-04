@@ -69,9 +69,8 @@ namespace {
         .fHelpOptionText = "ARCHIVE-FILE can be the single character - to designate stdin"sv // NYI stdin part...
     };
     const CommandLine::Option kOtherFilenamesO_{
-        .fRepeatable          = true,
-        .fSkipFirstNArguments = 1,
-        .fHelpArgName         = "FILE"sv,
+        .fRepeatable  = true,
+        .fHelpArgName = "FILE"sv,
     };
     const CommandLine::Option kOutputDirO_{.fLongName = "outputDirectory"sv, .fSupportsArgument = true, .fHelpOptionText = "(defaulting to .)"sv};
 
@@ -80,33 +79,19 @@ namespace {
     };
 
     // Emits errors to stderr, and Usage, etc, if needed, and not Optional<> has_value()
-    optional<Options_> ParseOptions_ (const CommandLine& cmdLine)
+    optional<Options_> ParseOptions_ (const CommandLine& cmdLine, const CommandLine::OptionValues& args)
     {
         Options_ result{};
-
-        try {
-            cmdLine.Validate (kAllOptions_);
-        }
-        catch (...) {
-            cerr << ToString (current_exception ()) << endl;
-            cerr << cmdLine.GenerateUsage (kAllOptions_);
-            return optional<Options_>{};
-        }
-        if (cmdLine.Has (kHelp)) {
-            cerr << cmdLine.GenerateUsage (kAllOptions_);
-            return optional<Options_>{};
-        }
-
-        if (cmdLine.Has (kListO_)) {
+        if (args.Has (kListO_)) {
             result.fOperation = Options_::Operation::eList;
         }
-        else if (cmdLine.Has (kCreateO_)) {
+        else if (args.Has (kCreateO_)) {
             result.fOperation = Options_::Operation::eCreate;
         }
-        else if (cmdLine.Has (kExtractO_)) {
+        else if (args.Has (kExtractO_)) {
             result.fOperation = Options_::Operation::eExtract;
         }
-        else if (cmdLine.Has (kUpdateO_)) {
+        else if (args.Has (kUpdateO_)) {
             result.fOperation = Options_::Operation::eUpdate;
         }
         else {
@@ -114,13 +99,13 @@ namespace {
             cerr << cmdLine.GenerateUsage (kAllOptions_);
             return optional<Options_>{};
         }
-        result.fArchiveFileName = Memory::ValueOf (cmdLine.GetArgument (kArchiveFileO_)).As<filesystem::path> ();
-        result.fFiles2Add       = cmdLine.GetArguments (kOtherFilenamesO_);
-        if (auto o = cmdLine.GetArgument (kOutputDirO_)) {
+        result.fArchiveFileName = Memory::ValueOf (args.GetArgument (kArchiveFileO_)).As<filesystem::path> ();
+        result.fFiles2Add       = args.GetArguments (kOtherFilenamesO_);
+        if (optional<String> o = args.GetArgument (kOutputDirO_)) {
             result.fOutputDirectory = o->As<filesystem::path> ();
         }
         // @todo add more.. - update support etc...
-        result.fNoFailOnMissingLibrary = cmdLine.Has (kNoFailOnMissingO_);
+        result.fNoFailOnMissingLibrary = args.Has (kNoFailOnMissingO_);
         return result;
     }
 }
@@ -192,7 +177,19 @@ int main (int argc, const char* argv[])
 {
     CommandLine               cmdLine{argc, argv};
     Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
-    if (optional<Options_> o = ParseOptions_ (cmdLine)) {
+
+    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+    if (not args) {
+        cerr << ToString (args.error ()) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_);
+        return EXIT_FAILURE;
+    }
+    if (args->Has (kHelp)) {
+        cerr << cmdLine.GenerateUsage (kAllOptions_);
+        return EXIT_SUCCESS;
+    }
+
+    if (optional<Options_> o = ParseOptions_ (cmdLine, *args)) {
         try {
             switch (o->fOperation) {
                 case Options_::Operation::eList:

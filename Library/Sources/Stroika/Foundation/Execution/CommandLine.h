@@ -68,17 +68,19 @@ namespace Stroika::Foundation::Execution {
      *              .fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpOptionText = "automatically quit after <argument> seconds"sv};
      *          const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
      *
-     *          try {
-     *              cmdLine.Validate (kAllOptions_);
-     *          }
-     *          catch (const InvalidCommandLineArgument&) {
-     *              cerr << Characters::ToString (current_exception ()) << endl;
+     *          CommandLine cmdLine{argc, argv};
+     *          CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+     *          if (not args) {
+     *              cerr << Characters::ToString (args.error ()) << endl;
      *              cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
      *              return EXIT_FAILURE;
      *          }
-     *          if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
+     *          if (args->Has (StandardCommandLineOptions::kHelp)) {
      *              cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
      *              return EXIT_SUCCESS;
+     *          }
+     *          if (optional<String> p = args->GetArgument (kPortO_)) {
+     *              portNumber = Characters::String2Int<uint16_t> (*p);
      *          }
      *      \endcode
      * 
@@ -199,10 +201,11 @@ namespace Stroika::Foundation::Execution {
          *          const CommandLine::Option   kDashO = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true };
          *      \endcode
          * 
-         *  \note fSingleCharName is optional, and fLongName is also optional. Meaning its totally legal to supply no short name and no long-name (in which case its required to support fSupportsArgument)
-         * 
-         *  \pre fSingleCharName or fLongName or fSupportsArgument
-         *  \pre not fRepeatable or fSupportsArgument
+         *  An Option with neither fSingleCharName nor fLongName is positional (IsPositionArgument ()): it names no option, but
+         *  takes a word of the command line that is not an option, its place given by the order of the options passed to
+         *  ApplyOptions. Its argument is that word, so fSupportsArgument and fIfSupportsArgumentThenRequired do not apply to it.
+         *
+         *  \pre not fRepeatable or fSupportsArgument or IsPositionArgument ()
          * 
          *  \todo figure out if I can make this a literal type, so can be defined constexpr when not using fLongName (or maybe even with using stringview)
          */
@@ -232,23 +235,29 @@ namespace Stroika::Foundation::Execution {
             bool fIfSupportsArgumentThenRequired{true};
 
             /**
-             *  If you can have the same option repeated multiple times. The only point of this would be for
-             *  things to gather multiple arguments. Note that this can be used with no fSingleCharName and no fLongName, meaning it captures
-             *  un-dash-decorated arguments.
+             *  If the same option can be given more than once - to gather several arguments (ApplyOptions fails when an option
+             *  that is not repeatable is given twice). A repeatable positional option takes every positional word left, so it
+             *  must be the last positional option passed to ApplyOptions.
              */
             bool fRepeatable{false};
 
             /**
-             * If true, then Get (o) (and GetArgument (i)) will throw if this option isn't found in the commandline; though Has () will not throw.
+             *  If true, ApplyOptions fails when this option is not given - unless an option with fWaivesRequired is.
              */
             bool fRequired{false};
 
             /**
-             *  used for positional arguments, where its known what number position (not including -/-- arguments) to find these arguments.
-             * 
-             *  Causes GetArguments () to skip the given number of file arguments if provided.
-             * 
-             *      \req IsPositionArgument()
+             *  If true, and this option is given, ApplyOptions does not require the fRequired options - so --help and --version
+             *  (StandardCommandLineOptions::kHelp and kVersion set it) work with a required option missing. It waives only
+             *  that: an unrecognized argument is still an error.
+             */
+            bool fWaivesRequired{false};
+
+            /**
+             *  DEPRECATED since Stroika v3.0d26 - ApplyOptions ignores it, placing positional options in the order passed.
+             *
+             *  Not marked [[deprecated]]: on a field of an aggregate, g++ (13-15) and clang (18-21) warn wherever an Option is
+             *  initialized or compared, not only where this field is named.
              */
             optional<size_t> fSkipFirstNArguments;
 
@@ -285,31 +294,78 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Throw InvalidCommandLineArgument if arguments not fit with options.
-         *  This checks for unrecognized arguments.
-         * 
-         *  \par Example Usage
-         *      \code
-         *          const initializer_list<Execution::CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, ...others...};
-         *          cmdLine.Validate (kAllOptions_);        // throws InvalidCommandLineArgument if bad args so catch/report usage
-         *      \endcode
+         *  Defined after CommandLine, for qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy: it
+         *  holds Options, whose default member initializers cannot be used before CommandLine is complete.
          */
-        nonvirtual void Validate (const Iterable<Option>& options) const;
+        class OptionValues;
 
     public:
         /**
-         *  \brief like Validate - but return optional<InvalidCommandLineArgument> instead of throwing
-         * 
+         *  \brief Read the command line against options - all of them, as what a word means can depend on any option - and check it
+         *
+         *  One pass over the words after argv[0], left to right:
+         *      o   -x, --long and --long=VALUE name an option (--long matched as its fLongNameCaseSensitive says). If it
+         *          fSupportsArgument, its argument is the text after = or else the next word, whatever that word is.
+         *      o   any other word - a bare - too - is positional: each positional option takes one, in the order they appear in
+         *          options; a repeatable one takes all those left.
+         *
+         *  Throws InvalidCommandLineArgument if:
+         *      o   a word starting with - names no option
+         *      o   an option given --long=VALUE does not fSupportsArgument
+         *      o   an option that fSupportsArgument and fIfSupportsArgumentThenRequired is the last word, so has no argument
+         *      o   an option that is not fRepeatable is given twice
+         *      o   a positional word is left with no positional option to take it
+         *      o   an fRequired option is not given - unless an option with fWaivesRequired is
+         *
+         *  So --help works with a required option missing (kHelp has fWaivesRequired): check for it after ApplyOptions.
+         *
          *  \par Example Usage
          *      \code
-         *          const initializer_list<Execution::CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, ...others...};
-         *          if (auto error = cmdLine.ValidateQuietly (kAllOptions_)) {
-         *              cerr << "{}"_f (*error) << endl;
-         *              cerr << CommandLine::GenerateUsage ("myApp", kAllOptions_) << endl;
+         *          const initializer_list<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, ...others...};
+         *          try {
+         *              CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
+         *              if (args.Has (StandardCommandLineOptions::kHelp)) {
+         *                  cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+         *                  return EXIT_SUCCESS;
+         *              }
+         *              ...     // the rest of the program, using args (OptionValues has no default constructor, so args lives in the try)
+         *          }
+         *          catch (const InvalidCommandLineArgument& e) {
+         *              cerr << Characters::ToString (e) << endl;
+         *              cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+         *              return EXIT_FAILURE;
          *          }
          *      \endcode
+         *
+         *  \pre options holds no option twice, and at most one fRepeatable positional option, which is the last positional one
+         *
+         *  \see ApplyOptionsQuietly
          */
-        nonvirtual optional<InvalidCommandLineArgument> ValidateQuietly (const Iterable<Option>& options) const;
+        [[nodiscard]] nonvirtual OptionValues ApplyOptions (const Iterable<Option>& options) const;
+
+    public:
+        /**
+         *  \brief what ApplyOptionsQuietly returns: the OptionValues, or the InvalidCommandLineArgument ApplyOptions would have thrown
+         */
+        using ExpectedOptionValues = Common::StdCompat::expected<OptionValues, InvalidCommandLineArgument>;
+
+    public:
+        /**
+         *  \brief ApplyOptions, but returning the InvalidCommandLineArgument instead of throwing it
+         *
+         *  \par Example Usage
+         *      \code
+         *          CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+         *          if (not args) {
+         *              cerr << Characters::ToString (args.error ()) << endl;
+         *              cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+         *              return EXIT_FAILURE;
+         *          }
+         *          if (args->Has (StandardCommandLineOptions::kHelp)) {
+         *              ...
+         *      \endcode
+         */
+        [[nodiscard]] nonvirtual ExpectedOptionValues ApplyOptionsQuietly (const Iterable<Option>& options) const;
 
     public:
         /**
@@ -326,41 +382,22 @@ namespace Stroika::Foundation::Execution {
         nonvirtual String GetAppName (bool onlyBaseName = true) const;
 
     public:
-        /*
-         * return get<bool> true iff arg is present in command line.
-         * Either way, get<Sequence<String>>> returns same as GetArguments ();
-         *
-         *  \see often simpler GetArgument ()
-         */
-        nonvirtual tuple<bool, Sequence<String>> Get (const Option& o) const;
-
-    public:
-        /*
-         * Return true iff arguments (in this object) have that option set. Note this will not throw just because option is required and missing (but may if ill formed).
-         */
-        nonvirtual bool Has (const Option& o) const;
-
-    public:
         /**
-         *  if the option o.fSupportsArgument, this returns the NAMED argument --name=X for example.
-         *  if the option not o.fSupportsArgument, then this returns the first (if any) unnamed argument (positional argument)
-         * 
-         *  \par Example Usage
-         *      \code
-         *          constexpr CommandLine::Option   kOutFileOption_ = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true };
-         *          CommandLine cmdLine {argc, argv};
-         *          String file2Use = cmdLine.GetArgument (kOutFileOption_).value_or ("default-file-name.xml");
-         *      \endcode
-         */
-        nonvirtual optional<String> GetArgument (const Option& o) const;
-
-    public:
-        /**
-         *  overload with no arguments /0 - returns all commandline arguments.
-         *  \pre o.fSupportsArgument
+         *  \brief all the command line's words, argv[0] first, as given - the command line as a list, not read against any options
          */
         nonvirtual Sequence<String> GetArguments () const;
-        nonvirtual Sequence<String> GetArguments (const Option& o) const;
+
+    public:
+        [[deprecated (
+            "Since Stroika v3.0d26 use ApplyOptions (options) - which validates, and returns what the options say")]] nonvirtual void
+        Validate (const Iterable<Option>& options) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptionsQuietly (options)")]] nonvirtual optional<InvalidCommandLineArgument>
+        ValidateQuietly (const Iterable<Option>& options) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).Has (o) / .GetArguments (o)")]] nonvirtual tuple<bool, Sequence<String>>
+                                                                                                    Get (const Option& o) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).Has (o)")]] nonvirtual bool Has (const Option& o) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).GetArgument (o)")]] nonvirtual optional<String> GetArgument (const Option& o) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).GetArguments (o)")]] nonvirtual Sequence<String> GetArguments (const Option& o) const;
 
     public:
         /**
@@ -424,9 +461,77 @@ namespace Stroika::Foundation::Execution {
     template <>
     String CommandLine::As<String> (optional<CommandLine::StringShellQuoting> shellStyle) const;
 
+    /**
+     *  \brief The command line's words as ApplyOptions read them: which options were given, with their arguments
+     *
+     *  Made only by ApplyOptions (and ApplyOptionsQuietly), and only from a command line that satisfied the options - so
+     *  nothing here throws, and a required option is always there (unless an fWaivesRequired option was given).
+     *
+     *  \par Example Usage
+     *      \code
+     *          CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
+     *          bool                      list = args.Has (kListO_);
+     *          filesystem::path          in   = args.GetArgument (kInputFileO_)->As<filesystem::path> ();   // kInputFileO_ fRequired
+     *      \endcode
+     */
+    class CommandLine::OptionValues {
+    public:
+        OptionValues ()                    = delete;
+        OptionValues (const OptionValues&) = default;
+
+    public:
+        /**
+         *  \brief true iff o was given at least once (a positional option: iff a word was left for it)
+         *
+         *  \pre o is one of the options ApplyOptions was given
+         */
+        nonvirtual bool Has (const Option& o) const;
+
+    public:
+        /**
+         *  \brief o's argument (the first, if o is repeatable); nullopt if o was not given, or was given with no argument
+         *
+         *  A positional option's argument is its word.
+         *
+         *  \pre o is one of the options ApplyOptions was given
+         */
+        nonvirtual optional<String> GetArgument (const Option& o) const;
+
+    public:
+        /**
+         *  \brief all of o's arguments, in command-line order (empty if o was not given)
+         *
+         *  \pre o is one of the options ApplyOptions was given
+         */
+        nonvirtual Sequence<String> GetArguments (const Option& o) const;
+
+    public:
+        /**
+         */
+        nonvirtual String ToString () const;
+
+    private:
+        struct Given_ {
+            Option           fOption;
+            optional<String> fArgument;
+        };
+
+    private:
+        OptionValues (const Iterable<Option>& options, const Sequence<Given_>& given);
+
+    private:
+        Sequence<Option> fOptions_; // the options ApplyOptions was given
+        Sequence<Given_> fGiven_;   // each option given, in command-line order
+
+    private:
+        friend class CommandLine;
+    };
+
     namespace StandardCommandLineOptions {
-        static inline const CommandLine::Option kHelp{.fSingleCharName = 'h', .fLongName = "help"sv, .fHelpOptionText = "Print out this help."sv};
-        static inline const CommandLine::Option kVersion{.fSingleCharName = 'v', .fLongName = "version"sv, .fHelpOptionText = "Print this application's version."sv};
+        static inline const CommandLine::Option kHelp{
+            .fSingleCharName = 'h', .fLongName = "help"sv, .fWaivesRequired = true, .fHelpOptionText = "Print out this help."sv};
+        static inline const CommandLine::Option kVersion{
+            .fSingleCharName = 'v', .fLongName = "version"sv, .fWaivesRequired = true, .fHelpOptionText = "Print this application's version."sv};
     }
 
 }

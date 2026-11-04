@@ -43,16 +43,28 @@ int main (int argc, const char* argv[])
     uint16_t              portNumber = 8080;
     Time::DurationSeconds quitAfter  = Time::kInfinity;
 
-    const CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
-    const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+    const CommandLine::Option kPortO_{
+        .fLongName = "port"sv, .fSupportsArgument = true, .fHelpOptionText = "specify webservice listen port (default {})"_f(portNumber)};
+    const CommandLine::Option kQuitAfterO_{
+        .fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpOptionText = "automatically quit after <argument> seconds"sv};
+    const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
+
+    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+    if (not args) {
+        cerr << Characters::ToString (args.error ()) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+        return EXIT_FAILURE;
+    }
+    if (args->Has (StandardCommandLineOptions::kHelp)) {
+        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+        return EXIT_SUCCESS;
+    }
 
     try {
-        cmdLine.Validate ({kPortO_, kQuitAfterO_});
-
-        if (auto o = cmdLine.GetArgument (kPortO_)) {
+        if (optional<String> o = args->GetArgument (kPortO_)) {
             portNumber = Characters::String2Int<uint16_t> (*o);
         }
-        if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
+        if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
             quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
         }
 

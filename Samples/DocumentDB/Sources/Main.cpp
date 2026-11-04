@@ -49,17 +49,19 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #endif
         };
 
-        CommandLine cmdLine{argc, argv};
-        if (cmdLine.Has (kHelp)) {
+        CommandLine                       cmdLine{argc, argv};
+        CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+        if (not args) {
+            cerr << "{}"_f(args.error ()) << endl;
+            cerr << CommandLine::GenerateUsage ("documentDB", kAllOptions_) << endl;
+            return EXIT_FAILURE;
+        }
+        if (args->Has (kHelp)) {
             cerr << CommandLine::GenerateUsage ("documentDB", kAllOptions_);
             return EXIT_SUCCESS;
         }
-        if (auto error = cmdLine.ValidateQuietly (kAllOptions_)) {
-            cerr << "{}"_f(*error) << endl;
-            cerr << CommandLine::GenerateUsage ("myApp", kAllOptions_) << endl;
-        }
 #if qStroika_HasComponent_mongocxxdriver
-        mongoConnectionString = Memory::Or_Else (cmdLine.GetArgument (kMongoConnectionStringOption_),
+        mongoConnectionString = Memory::Or_Else (args->GetArgument (kMongoConnectionStringOption_),
                                                  [] () { return kEnvironment->Lookup ("MONGO_CONNECTION_STRING"sv); });
 #endif
     }

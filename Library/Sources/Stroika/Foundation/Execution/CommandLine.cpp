@@ -178,6 +178,10 @@ String CommandLine::Option::ToString () const
         sb << "ifSupportsArgumentThenRequired: "sv << fIfSupportsArgumentThenRequired << ","sv;
     }
     sb << "repeatable: "sv << fRepeatable << ","sv;
+    sb << "required: "sv << fRequired << ","sv;
+    if (fWaivesRequired) {
+        sb << "waivesRequired: "sv << fWaivesRequired << ","sv;
+    }
     if (fSkipFirstNArguments) {
         sb << "skipFirstNArguments: "sv << fSkipFirstNArguments << ","sv;
     }
@@ -188,6 +192,63 @@ String CommandLine::Option::ToString () const
         sb << "helpOptionText: "sv << *fHelpOptionText << ","sv;
     }
     sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
+ ************************* CommandLine::OptionValues ****************************
+ ********************************************************************************
+ */
+CommandLine::OptionValues::OptionValues (const Iterable<Option>& options, const Sequence<Given_>& given)
+    : fOptions_{options}
+    , fGiven_{given}
+{
+}
+
+bool CommandLine::OptionValues::Has (const Option& o) const
+{
+    Require (fOptions_.Contains (o));
+    return fGiven_.Any ([&] (const Given_& g) { return g.fOption == o; });
+}
+
+optional<String> CommandLine::OptionValues::GetArgument (const Option& o) const
+{
+    Require (fOptions_.Contains (o));
+    if (optional<Given_> found = fGiven_.First ([&] (const Given_& g) { return g.fOption == o and g.fArgument.has_value (); })) {
+        return found->fArgument;
+    }
+    return nullopt;
+}
+
+Sequence<String> CommandLine::OptionValues::GetArguments (const Option& o) const
+{
+    Require (fOptions_.Contains (o));
+    Sequence<String> result;
+    for (const Given_& g : fGiven_) {
+        if (g.fOption == o and g.fArgument) {
+            result += *g.fArgument;
+        }
+    }
+    return result;
+}
+
+String CommandLine::OptionValues::ToString () const
+{
+    StringBuilder sb;
+    sb << "["sv;
+    bool first = true;
+    for (const Given_& g : fGiven_) {
+        if (not first) {
+            sb << ", "sv;
+        }
+        first = false;
+        sb << g.fOption.GetArgumentDescription (g.fOption.IsPositionArgument ());
+        if (g.fArgument) {
+            sb << ": "sv << Characters::ToString (*g.fArgument);
+        }
+    }
+    sb << "]"sv;
     return sb;
 }
 
@@ -411,12 +472,97 @@ String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>
     return sb;
 }
 
+auto CommandLine::ApplyOptions (const Iterable<Option>& options) const -> OptionValues
+{
+    return ThrowIfFailed (ApplyOptionsQuietly (options));
+}
+
+auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const -> ExpectedOptionValues
+{
+    using Given                  = OptionValues::Given_;
+    using ERRT                   = StdCompat::unexpected<InvalidCommandLineArgument>;
+    Sequence<Option> positionals = options.Where<Sequence<Option>> ([] (const Option& o) { return o.IsPositionArgument (); });
+    Require (Set<Option>{options}.size () == options.size ());
+    Require (positionals.size () < 2 or not positionals.Take (positionals.size () - 1).Any ([] (const Option& o) { return o.fRepeatable; }));
+
+    Sequence<Given> given; // each option given, in command-line order
+    auto            wasGiven       = [&] (const Option& o) { return given.Any ([&] (const Given& g) { return g.fOption == o; }); };
+    size_t          nextPositional = 0;
+    for (size_t i = 1; i < fArgs_.size (); ++i) {
+        String ai = fArgs_[i];
+        if (ai.size () >= 2 and ai[0] == '-') {
+            // -x, --long or --long=VALUE
+            optional<Option> o;
+            optional<String> afterEquals;
+            if (ai[1] == '-') {
+                String name = ai.SubString (2);
+                if (optional<size_t> eq = name.Find ('=')) {
+                    afterEquals = name.SubString (*eq + 1);
+                    name        = name.SubString (0, *eq);
+                }
+                o = options.First ([&] (const Option& oi) {
+                    return oi.fLongName and String::EqualsComparer{oi.fLongNameCaseSensitive}(name, *oi.fLongName);
+                });
+            }
+            else if (ai.size () == 2) {
+                o = options.First ([&] (const Option& oi) { return oi.fSingleCharName and ai[1] == *oi.fSingleCharName; });
+            }
+            if (not o) {
+                return ERRT{InvalidCommandLineArgument{"Unrecognized argument: "sv + ai, ai}};
+            }
+            if (not o->fRepeatable and wasGiven (*o)) {
+                return ERRT{InvalidCommandLineArgument{"Command line argument {} given more than once"_f(o->GetArgumentDescription ()), ai}};
+            }
+            optional<String> argument;
+            if (afterEquals) {
+                if (not o->fSupportsArgument) {
+                    return ERRT{InvalidCommandLineArgument{"Command line argument {} takes no argument"_f(o->GetArgumentDescription ()), ai}};
+                }
+                argument = afterEquals;
+            }
+            else if (o->fSupportsArgument) {
+                if (i + 1 < fArgs_.size ()) {
+                    argument = fArgs_[++i];
+                }
+                else if (o->fIfSupportsArgumentThenRequired) {
+                    return ERRT{InvalidCommandLineArgument{
+                        "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
+                }
+            }
+            given += Given{*o, argument};
+        }
+        else {
+            // a positional word: the next positional option takes it (a repeatable one, the last, takes all those left)
+            if (nextPositional == positionals.size ()) {
+                return ERRT{InvalidCommandLineArgument{"Unrecognized argument: "sv + ai, ai}};
+            }
+            Option p = positionals[nextPositional];
+            given += Given{p, ai};
+            if (not p.fRepeatable) {
+                ++nextPositional;
+            }
+        }
+    }
+    if (not given.Any ([] (const Given& g) { return g.fOption.fWaivesRequired; })) {
+        if (optional<Option> missing = options.First ([&] (const Option& o) { return o.fRequired and not wasGiven (o); })) {
+            return ERRT{InvalidCommandLineArgument{"Required command line argument "sv + missing->GetArgumentDescription (true) + " was not provided"sv}};
+        }
+    }
+    return OptionValues{options, given};
+}
+
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 void CommandLine::Validate (const Iterable<Option>& options) const
 {
     if (auto oe = ValidateQuietly (options)) {
         Throw (*oe);
     }
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 nonvirtual optional<InvalidCommandLineArgument> CommandLine::ValidateQuietly (const Iterable<Option>& options) const
 {

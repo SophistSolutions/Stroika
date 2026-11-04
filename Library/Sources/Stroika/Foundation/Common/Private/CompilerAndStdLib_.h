@@ -478,6 +478,11 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
  *      probe.cpp:5:39: error: could not convert '<brace-enclosed initializer list>()' from '<brace-enclosed initializer list>' to 'const Writer::Options&'
  *  clang++-22:
  *      probe.cpp:5:39: error: default member initializer for 'fPrettyPrint' needed within definition of enclosing class 'Writer' outside of member functions
+ *
+ *  Not only default arguments: a class nested beside such a type, holding a container of it (whose concept checks ask whether
+ *  it is constructible), fails the same way - so CommandLine::OptionValues, which holds Options, is defined after CommandLine.
+ *  g++-15:
+ *      type_traits:3558:46: error: default member initializer for 'Stroika::Foundation::Execution::CommandLine::Option::fRequired' required before the end of its enclosing class
  */
 #ifndef qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
 

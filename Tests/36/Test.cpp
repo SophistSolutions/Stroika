@@ -1366,9 +1366,13 @@ int main (int argc, const char* argv[])
 {
     const CommandLine::Option kMongoConnectionStringOpt_{.fLongName = "mongoConnectionString"sv, .fSupportsArgument = true};
 
+    Sequence<String> args; // main's, less googletest's own (which Setup takes out)
+    for (const string& a : Test::Setup (argc, argv)) {
+        args += String::FromNarrowSDKString (a);
+    }
     try {
-        CommandLine cmdLine{argc, argv};
-        if (auto o = cmdLine.GetArgument (kMongoConnectionStringOpt_)) {
+        CommandLine::OptionValues options = CommandLine{args}.ApplyOptions ({kMongoConnectionStringOpt_});
+        if (optional<String> o = options.GetArgument (kMongoConnectionStringOpt_)) {
             sMongoConnectionString_ = *o;
         }
         sMongoConnectionString_ = Or_Else (sMongoConnectionString_, [] () { return kEnvironment->Lookup ("MONGO_CONNECTION_STRING"sv); });
@@ -1379,7 +1383,6 @@ int main (int argc, const char* argv[])
         exit (EXIT_FAILURE);
     }
 
-    Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
