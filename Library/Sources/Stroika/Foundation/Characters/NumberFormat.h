@@ -436,6 +436,37 @@ namespace Stroika::Foundation::Characters {
         optional<FloatFormatType>    fFloatFormat_;
     };
 
+    /**
+     *  \brief How ToString writes an integer: by default in base 10 - what ParseInteger reads by default
+     *
+     *  Writing says exactly what to produce, so the matching ParseIntegerOptions (ParseNumber.h) reads it back: the same fRadix,
+     *  and fAcceptRadixPrefix for fEmitRadixPrefix.
+     *
+     *  \par Example Usage
+     *      \code
+     *          ToString (255, IntegerToStringOptions{.fRadix = 16});                                                  // "ff"
+     *          ToString (-26, IntegerToStringOptions{.fRadix = 16, .fEmitRadixPrefix = true, .fUpperCase = true});   // "-0X1A"
+     *      \endcode
+     *
+     *  \note Not here yet - to add when a caller needs one: a minimum width or zero padding; digit grouping or separators (1,000).
+     */
+    struct IntegerToStringOptions {
+        /**
+         *  2 to 36; for a radix over 10, letters for the digits past 9.
+         */
+        unsigned int fRadix{10};
+
+        /**
+         *  Write the radix's usual prefix, after any sign: 0x for 16, 0o for 8, 0b for 2 (other radixes have none).
+         */
+        bool fEmitRadixPrefix{false};
+
+        /**
+         *  The letters - digits past 9, and the prefix's x, o or b - in upper case: FF and 0X, not ff and 0x.
+         */
+        bool fUpperCase{false};
+    };
+
 }
 
 /*

@@ -43,7 +43,8 @@ namespace Stroika::Foundation::Characters {
         unsigned int fRadix{10};
 
         /**
-         *  Also accept the radix's usual prefix, after any sign, in either case: 0x for 16, 0o for 8, 0b for 2 (other radixes have none).
+         *  Also accept the radix's usual prefix, after any sign, in either case: 0x for 16, 0o for 8, 0b for 2 (other radixes have none) -
+         *  as IntegerToStringOptions::fEmitRadixPrefix writes it (NumberFormat.h).
          *
          *  Off by default: the radix is the caller's, so a prefix could only repeat or contradict it, and text formats differ on which
          *  they use (0x, #, $, &H...). Even on, the radix is never guessed from the text, as C's strtol (base 0) guesses it - a leading

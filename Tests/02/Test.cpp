@@ -2612,6 +2612,35 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Characters, IntegerToString_)
+    {
+        Debug::TraceContextBumper ctx{"IntegerToString_"};
+        EXPECT_EQ (Characters::ToString (255, IntegerToStringOptions{}), "255"sv);
+        EXPECT_EQ (Characters::ToString (255, IntegerToStringOptions{.fRadix = 16}), "ff"sv);
+        EXPECT_EQ (Characters::ToString (255, IntegerToStringOptions{.fRadix = 16, .fUpperCase = true}), "FF"sv);
+        EXPECT_EQ (Characters::ToString (-26, IntegerToStringOptions{.fRadix = 16, .fEmitRadixPrefix = true}), "-0x1a"sv);
+        EXPECT_EQ (Characters::ToString (26u, IntegerToStringOptions{.fRadix = 16, .fEmitRadixPrefix = true, .fUpperCase = true}), "0X1A"sv);
+        EXPECT_EQ (Characters::ToString (5, IntegerToStringOptions{.fRadix = 2, .fEmitRadixPrefix = true}), "0b101"sv);
+        EXPECT_EQ (Characters::ToString (15, IntegerToStringOptions{.fRadix = 8, .fEmitRadixPrefix = true}), "0o17"sv);
+        EXPECT_EQ (Characters::ToString (35, IntegerToStringOptions{.fRadix = 36, .fEmitRadixPrefix = true}), "z"sv); // no prefix but for 2, 8, 16
+        EXPECT_EQ (Characters::ToString (numeric_limits<int8_t>::min (), IntegerToStringOptions{.fRadix = 16}), "-80"sv);
+        EXPECT_EQ (Characters::ToString (numeric_limits<uint64_t>::max (), IntegerToStringOptions{.fRadix = 2}), String{string (64, '1')});
+        // what ToString writes, ParseInteger reads back - each radix, with and without the prefix, either case
+        for (unsigned int radix = 2; radix <= 36; ++radix) {
+            for (bool prefix : {false, true}) {
+                for (bool upper : {false, true}) {
+                    for (int64_t n : {int64_t{0}, int64_t{1}, int64_t{-1}, int64_t{35}, int64_t{-123456789},
+                                      numeric_limits<int64_t>::min (), numeric_limits<int64_t>::max ()}) {
+                        String s = Characters::ToString (n, IntegerToStringOptions{.fRadix = radix, .fEmitRadixPrefix = prefix, .fUpperCase = upper});
+                        EXPECT_EQ (ParseInteger<int64_t> (s, {.fRadix = radix, .fAcceptRadixPrefix = prefix}).value_or (42), n) << s;
+                    }
+                }
+            }
+        }
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Characters, ParseNumber_)
     {
         Debug::TraceContextBumper ctx{"ParseNumber_"};

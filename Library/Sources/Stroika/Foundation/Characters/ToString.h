@@ -94,6 +94,7 @@ namespace Stroika::Foundation::Characters {
      *      o   ToString (float, FloatConversion::ToStringOptions)      // any floating point argument
      *      o   ToString (float, FloatConversion::SignificantFigures)            // ''
      *      o   ToString (integral T, ios_base::fmtflags flags);        // flags may be std::dec, std::oct, or std::hex
+     *      o   ToString (integral T, IntegerToStringOptions)          // any radix 2-36, with its prefix, in either case (NumberFormat.h)
      *                                                                  // @see https://en.cppreference.com/w/cpp/io/ios_base/fmtflags
      *      o   ToString (Duration, FloatConversion::SignificantFigures)         // forwards to Duration::As<String> (SignificantFigures)
      *

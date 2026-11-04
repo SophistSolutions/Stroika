@@ -1,6 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include <cctype>
+#include <charconv>
 #include <chrono>
 #include <exception>
 #include <filesystem>
@@ -14,6 +16,7 @@
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/NumberFormat.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
@@ -367,6 +370,31 @@ namespace Stroika::Foundation::Characters {
             else if constexpr (sizeof (T) == sizeof (long long int)) {
                 return num2Strll_ (t, flags);
             }
+        }
+        template <integral T>
+        String ToString (T t, const IntegerToStringOptions& o)
+            requires (not same_as<T, bool>)
+        {
+            Require (2 <= o.fRadix and o.fRadix <= 36);
+            char digits[numeric_limits<T>::digits + 2]; // enough for base 2, and a sign
+            auto [ptr, ec] = to_chars (std::begin (digits), std::end (digits), t, static_cast<int> (o.fRadix));
+            Assert (ec == errc{});
+            const char* d = digits;
+            string      r;
+            if (*d == '-') {
+                r += *d++; // the prefix comes after the sign, as ParseInteger reads it
+            }
+            if (o.fEmitRadixPrefix and (o.fRadix == 16 or o.fRadix == 8 or o.fRadix == 2)) {
+                r += '0';
+                r += o.fRadix == 16 ? 'x' : (o.fRadix == 8 ? 'o' : 'b');
+            }
+            r.append (d, static_cast<size_t> (ptr - d));
+            if (o.fUpperCase) {
+                for (char& c : r) {
+                    c = static_cast<char> (toupper (static_cast<unsigned char> (c)));
+                }
+            }
+            return String{r};
         }
         // A template, so nothing converts to bool to get here: an int, a pointer or a class with an operator bool must
         // find its own overload, or not compile - never print as true/false
