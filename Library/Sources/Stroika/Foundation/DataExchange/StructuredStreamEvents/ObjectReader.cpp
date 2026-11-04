@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
@@ -67,61 +68,61 @@ void Registry::SimpleReader_<String>::Deactivating ()
 template <>
 void Registry::SimpleReader_<char>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<char> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<char> (fBuf_.str ()).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned char>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<unsigned char> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<unsigned char> (fBuf_.str ()).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<short>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<short> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<short> (fBuf_.str ()).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned short>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<unsigned short> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<unsigned short> (fBuf_.str ()).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<int>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<int> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<int> (fBuf_.str ()).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned int>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<unsigned int> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<unsigned int> (fBuf_.str ()).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<long int>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<long int> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<long int> (fBuf_.str ()).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned long int>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<unsigned long int> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<unsigned long int> (fBuf_.str ()).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<long long int>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<long long int> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<long long int> (fBuf_.str ()).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned long long int>::Deactivating ()
 {
-    *fValue_ = Characters::String2Int<unsigned long long int> (fBuf_.str ());
+    *fValue_ = Characters::ParseInteger<unsigned long long int> (fBuf_.str ()).value_or (0);
 }
 
 template <>
@@ -133,19 +134,19 @@ void Registry::SimpleReader_<bool>::Deactivating ()
 template <>
 void Registry::SimpleReader_<float>::Deactivating ()
 {
-    (*fValue_) = Characters::FloatConversion::ToFloat<float> (fBuf_.str ());
+    (*fValue_) = Characters::ParseFloat<float> (fBuf_.str ()).value_or (NAN);
 }
 
 template <>
 void Registry::SimpleReader_<double>::Deactivating ()
 {
-    (*fValue_) = Characters::FloatConversion::ToFloat<double> (fBuf_.str ());
+    (*fValue_) = Characters::ParseFloat<double> (fBuf_.str ()).value_or (NAN);
 }
 
 template <>
 void Registry::SimpleReader_<long double>::Deactivating ()
 {
-    (*fValue_) = Characters::FloatConversion::ToFloat<long double> (fBuf_.str ());
+    (*fValue_) = Characters::ParseFloat<long double> (fBuf_.str ()).value_or (NAN);
 }
 
 template <>

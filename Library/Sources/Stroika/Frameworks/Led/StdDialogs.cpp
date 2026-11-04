@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Frameworks/Led/GDI.h"
 
 #include "StdDialogs.h"
@@ -35,7 +36,7 @@ namespace {
         // get rid of this function - COULD do better API - but this is fine for how we currently use it...
         // -- LGP 2012-09-19
         RequireNotNull (t);
-        *t = Characters::CString::String2Int<int> (s);
+        *t = Characters::ParseInteger<int> (Characters::String::FromSDKString (s), {.fIgnoreSurroundingWhitespace = true}).value_or (0);
         return true;
 #else
         int l = 0;

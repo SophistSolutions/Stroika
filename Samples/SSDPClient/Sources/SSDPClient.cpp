@@ -7,6 +7,7 @@
 #include <mutex>
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
@@ -216,7 +217,7 @@ int main (int argc, const char* argv[])
         }
     }
     if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
-        quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
+        quitAfter = Time::DurationSeconds{Characters::ParseFloat<Time::DurationSeconds::rep> (*o).value_or (NAN)};
     }
 
     if (not listen and not searchFor.has_value ()) {

@@ -844,85 +844,110 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *************************** FloatConversion::ToFloat ***************************
      ********************************************************************************
      */
-    template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-    T ToFloat (span<const CHAR_T> s)
-    {
-        if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
-            Require (Character::IsASCII (s));
-        }
-        /*
+    namespace Private_ {
+        // ToFloat's implementation - and ParseFloat's, so not deprecated with ToFloat
+        template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        T ToFloat_ (span<const CHAR_T> s)
+        {
+            if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
+                Require (Character::IsASCII (s));
+            }
+            /*
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
          *  Else, fallback on algorithm that understands full unicode character set, and locales
          */
-        Memory::StackBuffer<char> asciiS;
-        if (Character::AsASCIIQuietly (s, &asciiS)) {
-            Stroika_ATTRIBUTE_INDETERMINATE T result;
+            Memory::StackBuffer<char> asciiS;
+            if (Character::AsASCIIQuietly (s, &asciiS)) {
+                Stroika_ATTRIBUTE_INDETERMINATE T result;
 #if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
 #if qCompilerAndStdLib_from_chars_reads_past_end_Buggy
-            asciiS.push_back (0);
+                asciiS.push_back (0);
 #endif
-            auto b = asciiS.begin ();
-            auto e = asciiS.end ();
+                auto b = asciiS.begin ();
+                auto e = asciiS.end ();
 #if qCompilerAndStdLib_from_chars_reads_past_end_Buggy
-            e--;
+                e--;
 #endif
-            if (b != e and *b == '+') [[unlikely]] {
-                ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
-            }
-            auto [ptr, ec] = from_chars (b, e, result);
-            if (ec == errc::result_out_of_range) [[unlikely]] {
-                result = *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
-            }
-            else if (ec != std::errc{} or ptr != e) [[unlikely]] {
-                //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
-                // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
-                result = Private_::ToFloat_RespectingLocale_<T> (s, nullptr);
-            }
+                if (b != e and *b == '+') [[unlikely]] {
+                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+                }
+                auto [ptr, ec] = from_chars (b, e, result);
+                if (ec == errc::result_out_of_range) [[unlikely]] {
+                    result = *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+                }
+                else if (ec != std::errc{} or ptr != e) [[unlikely]] {
+                    //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
+                    // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
+                    result = Private_::ToFloat_RespectingLocale_<T> (s, nullptr);
+                }
 #else
-            result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
+                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
 #endif
-            return result;
+                return result;
+            }
+            return Private_::ToFloat_RespectingLocale_<T> (s, nullptr); // fallback for non-ascii strings to old code
         }
-        return Private_::ToFloat_RespectingLocale_<T> (s, nullptr); // fallback for non-ascii strings to old code
-    }
-    template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-    T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
-    {
-        RequireNotNull (remainder); // use other overload if 'null'
-        if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
-            Require (Character::IsASCII (s));
-        }
-        /*
+        template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        T ToFloat_ (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
+        {
+            RequireNotNull (remainder); // use other overload if 'null'
+            if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
+                Require (Character::IsASCII (s));
+            }
+            /*
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
          *  Else, fallback on algorithm that understands full unicode character set.
          */
 #if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
-        Memory::StackBuffer<char> asciiS;
-        if (Character::AsASCIIQuietly (s, &asciiS)) {
-            Stroika_ATTRIBUTE_INDETERMINATE T result;
-            char*                             b = asciiS.begin ();
-            char*                             e = asciiS.end ();
-            if (b != e and *b == '+') [[unlikely]] {
-                ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+            Memory::StackBuffer<char> asciiS;
+            if (Character::AsASCIIQuietly (s, &asciiS)) {
+                Stroika_ATTRIBUTE_INDETERMINATE T result;
+                char*                             b = asciiS.begin ();
+                char*                             e = asciiS.end ();
+                if (b != e and *b == '+') [[unlikely]] {
+                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+                }
+                auto [ptr, ec] = from_chars (b, e, result);
+                if (ec == errc::result_out_of_range) [[unlikely]] {
+                    result = *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+                }
+                else if (ec != std::errc{} or ptr != e) [[unlikely]] {
+                    //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
+                    // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
+                    typename span<const CHAR_T>::iterator tmpI;
+                    result = Private_::ToFloat_RespectingLocale_<T> (s, &tmpI);
+                    ptr    = tmpI - s.begin () + b;
+                }
+                *remainder = s.begin () + UTFConvert::kThe.ConvertOffset<CHAR_T> (
+                                              span{reinterpret_cast<const char8_t*> (b), reinterpret_cast<const char8_t*> (e)}, ptr - b);
+                Assert (*remainder <= s.end ());
+                return result;
             }
-            auto [ptr, ec] = from_chars (b, e, result);
-            if (ec == errc::result_out_of_range) [[unlikely]] {
-                result = *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
-            }
-            else if (ec != std::errc{} or ptr != e) [[unlikely]] {
-                //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
-                // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
-                typename span<const CHAR_T>::iterator tmpI;
-                result = Private_::ToFloat_RespectingLocale_<T> (s, &tmpI);
-                ptr    = tmpI - s.begin () + b;
-            }
-            *remainder = s.begin () + UTFConvert::kThe.ConvertOffset<CHAR_T> (
-                                          span{reinterpret_cast<const char8_t*> (b), reinterpret_cast<const char8_t*> (e)}, ptr - b);
-            Assert (*remainder <= s.end ());
+#endif
+            return Private_::ToFloat_RespectingLocale_<T> (s, remainder); // fallback for non-ascii strings to strtod etc code
+        }
+        template <floating_point T>
+        T ToFloat_ (const String& s, String* remainder)
+        {
+            RequireNotNull (remainder);
+            Memory::StackBuffer<wchar_t>  ignored;
+            span<const wchar_t>           srcSpan = s.GetData (&ignored);
+            span<const wchar_t>::iterator tmpRemainder;
+            auto                          result = ToFloat_<T> (srcSpan, &tmpRemainder);
+            *remainder                           = String{srcSpan.subspan (tmpRemainder - srcSpan.begin ())};
             return result;
         }
-#endif
-        return Private_::ToFloat_RespectingLocale_<T> (s, remainder); // fallback for non-ascii strings to strtod etc code
+
+    }
+    template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    inline T ToFloat (span<const CHAR_T> s)
+    {
+        return Private_::ToFloat_<T> (s);
+    }
+    template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    inline T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
+    {
+        return Private_::ToFloat_<T> (s, remainder);
     }
     template <floating_point T, typename STRINGISH_ARG>
     inline T ToFloat (STRINGISH_ARG&& s)
@@ -932,31 +957,27 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         if constexpr (same_as<DecayedStringishArg, const char*> or same_as<DecayedStringishArg, const char8_t*> or
                       same_as<DecayedStringishArg, const char16_t*> or same_as<DecayedStringishArg, const char32_t*> or
                       same_as<DecayedStringishArg, const wchar_t*>) {
-            return ToFloat<T> (span{s, CString::Length (s)});
+            return Private_::ToFloat_<T> (span{s, CString::Length (s)});
         }
         else if constexpr (same_as<DecayedStringishArg, String>) {
             Memory::StackBuffer<wchar_t> ignored; // todo optimize for keep ascii case
             auto                         sp = s.template GetData<wchar_t> (&ignored);
-            return ToFloat<T> (sp);
+            return Private_::ToFloat_<T> (sp);
         }
         else if constexpr (is_convertible_v<DecayedStringishArg, std::string>) {
             string ss = s;
-            return ToFloat<T> (span{ss.data (), ss.size ()});
+            return Private_::ToFloat_<T> (span<const char>{ss.data (), ss.size ()});
         }
         else {
-            return ToFloat<T> (String{forward<STRINGISH_ARG> (s)});
+            String                       ss{forward<STRINGISH_ARG> (s)};
+            Memory::StackBuffer<wchar_t> ignored;
+            return Private_::ToFloat_<T> (ss.GetData<wchar_t> (&ignored));
         }
     }
     template <floating_point T>
     inline T ToFloat (const String& s, String* remainder)
     {
-        RequireNotNull (remainder);
-        Memory::StackBuffer<wchar_t>  ignored;
-        span<const wchar_t>           srcSpan = s.GetData (&ignored);
-        span<const wchar_t>::iterator tmpRemainder;
-        auto                          result = ToFloat<T> (srcSpan, &tmpRemainder);
-        *remainder                           = String{srcSpan.subspan (tmpRemainder - srcSpan.begin ())};
-        return result;
+        return Private_::ToFloat_<T> (s, remainder);
     }
 
     //////////////// DEPRECATED STUFF BELOW
@@ -1017,12 +1038,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <typename T = double>
     [[deprecated ("Since Stroika v3.0d1 - use span overload")]] inline T ToFloat (const char* start, const char* end)
     {
-        return ToFloat<T> (span{start, end});
+        return Private_::ToFloat_<T> (span{start, end});
     }
     template <typename T = double>
     [[deprecated ("Since Stroika v3.0d1 - use span overload")]] inline T ToFloat (const wchar_t* start, const wchar_t* end)
     {
-        return ToFloat<T> (span{start, end});
+        return Private_::ToFloat_<T> (span{start, end});
     }
 
 }

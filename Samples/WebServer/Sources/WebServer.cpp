@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
@@ -219,10 +220,10 @@ int main (int argc, const char* argv[])
     try {
         Time::DurationSeconds quitAfter = Time::kInfinity;
         if (optional<String> o = args->GetArgument (kPortO_)) {
-            portNumber = Characters::String2Int<uint16_t> (*o);
+            portNumber = Characters::ParseInteger<uint16_t> (*o).value_or (0);
         }
         if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
-            quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
+            quitAfter = Time::DurationSeconds{Characters::ParseFloat<Time::DurationSeconds::rep> (*o).value_or (NAN)};
         }
         MyWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists
         WaitableEvent{}.Wait (quitAfter);     // wait quitAfter seconds, or til user hits ctrl-c

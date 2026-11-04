@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
@@ -28,7 +29,7 @@ CacheControl CacheControl::Parse (const String& headerValue)
     CacheControl r;
     auto         parseInt = [] (const String& i) -> optional<uint32_t> {
         // @todo validate/tweak/keep in range
-        auto v = String2Int<int32_t> (i);
+        auto v = ParseInteger<int32_t> (i).value_or (0);
         return v < 0 ? optional<uint32_t>{} : static_cast<uint32_t> (v);
     };
     for (const String& v : headerValue.Tokenize ({',', ' '})) {

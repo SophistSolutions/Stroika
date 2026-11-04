@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <charconv>
@@ -112,7 +113,7 @@ namespace {
                 }
                 break;
             case VariantValue::eFloat: {
-                long double d = FloatConversion::ToFloat<long double> (trimmed); // nan where it is not a number at all
+                long double d = ParseFloat<long double> (trimmed).value_or (NAN); // nan where it is not a number at all
                 if (not isnan (d) or trimmed.ToLowerCase ().Find ("nan"sv)) {
                     return VariantValue{d};
                 }

@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String2Int.h"
@@ -84,7 +85,7 @@ void Cookie::AddAttribute (const String& key, const String& value)
         fExpires = DateTime::Parse (value, DateTime::kHTTPDateFormat);
     }
     else if (key == kMaxAgeAttributeLabel) {
-        fMaxAge = String2Int<int> (value);
+        fMaxAge = ParseInteger<int> (value).value_or (0);
     }
     else if (key == kSecureAttributeLabel) {
         fSecure = true;

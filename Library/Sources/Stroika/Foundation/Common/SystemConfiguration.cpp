@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cctype>
@@ -219,13 +220,13 @@ SystemConfiguration::BootInformation Common::GetSystemConfiguration_BootInformat
              *  From https://www.centos.org/docs/5/html/5.1/Deployment_Guide/s2-proc-uptime.html
              *      "The first number is the total number of seconds the system has been up"
              */
-                using Characters::String2Int;
+                using Characters::ParseInteger;
                 for (const String& line :
                      BinaryToText::Reader::New (IO::FileSystem::FileInputStream::New (kProcUptimeFileName_, IO::FileSystem::FileInputStream::eNotSeekable))
                          .ReadLines ()) {
                     Sequence<String> t = line.Tokenize ();
                     if (t.size () >= 2) {
-                        result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::FloatConversion::ToFloat<double> (t[0]));
+                        result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::ParseFloat<double> (t[0]).value_or (NAN));
                         succeeded        = true;
                     }
                     break;
@@ -280,7 +281,7 @@ SystemConfiguration::CPU Common::GetSystemConfiguration_CPU ()
     CPU result;
 #if qStroika_Platform_Linux
     {
-        using Characters::String2Int;
+        using Characters::ParseInteger;
         static const filesystem::path kProcCPUInfoFileName_{"/proc/cpuinfo"sv};
         /*
          * Example 1:
@@ -386,13 +387,13 @@ SystemConfiguration::CPU Common::GetSystemConfiguration_CPU ()
                         foundProcessor = line.SubString (afterColon).Trim ();
                     }
                     else if (firstTrimedToken == kProcessorIDLabel_) {
-                        currentProcessorID = String2Int<unsigned int> (line.SubString (afterColon).Trim ());
+                        currentProcessorID = ParseInteger<unsigned int> (line.SubString (afterColon).Trim ()).value_or (0);
                     }
                     else if (firstTrimedToken == kModelNameLabel_) {
                         currentModelName = line.SubString (afterColon).Trim ();
                     }
                     else if (firstTrimedToken == kSocketIDLabel_) {
-                        currentSocketID = String2Int<unsigned int> (line.SubString (afterColon).Trim ());
+                        currentSocketID = ParseInteger<unsigned int> (line.SubString (afterColon).Trim ()).value_or (0);
                     }
                 }
 
@@ -746,7 +747,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
         }
 
         // https://stackoverflow.com/questions/74645458/how-to-detect-windows-11-programmatically
-        if (currentVersion == "10.0"sv and Characters::FloatConversion::ToFloat<double> (kernelOSBuildVersion) >= 21996.0) {
+        if (currentVersion == "10.0"sv and Characters::ParseFloat<double> (kernelOSBuildVersion).value_or (NAN) >= 21996.0) {
             currentVersion = "11.0"sv;
             if (productName and productName->StartsWith ("Windows 10"sv)) {
                 productName = "Windows 11"sv + productName->SubString (10); // not sure this is best way to fix? --LGP 2024-07-24

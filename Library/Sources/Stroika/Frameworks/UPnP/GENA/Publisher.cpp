@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Common/GUID.h"
@@ -71,7 +72,7 @@ namespace {
     optional<Time::DurationSeconds> Timeout_ (const optional<String>& timeout)
     {
         if (timeout and timeout->StartsWith ("Second-"sv, eCaseInsensitive)) {
-            if (int64_t seconds = String2Int<int64_t> (timeout->SubString (7)); seconds > 0) { // 0: not a number
+            if (int64_t seconds = ParseInteger<int64_t> (timeout->SubString (7)).value_or (0); seconds > 0) { // 0: not a number
                 return Time::DurationSeconds{static_cast<double> (seconds)};
             }
         }

@@ -493,8 +493,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      *      This means it ALLOWS leading whitespace (skipped). And it allows junk at the end (remainder parameter filled in with what).
      * 
-     *  \note For strict parsing - an error, not NaN or infinity, for text that is not a number or is too large - see ParseFloat
-     *        (ParseNumber.h).
+     *  DEPRECATED since Stroika v3.0d26: use ParseFloat (ParseNumber.h) - strict: an error, not NaN or infinity, for text that
+     *  is not a number or is too large; ParseFloat<T> (s).value_or (NAN) for this lenient behavior.
      *
      *  \note SEE https://github.com/SophistSolutions/Stroika/issues/882 (STK-748)
      *        We will PROBABLY change this API to take a ToFloatOptions parameter to handle proper locale/conversions of strings to numbers
@@ -509,14 +509,17 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * \note when called with CHAR_T=char, we REQUIRE the argument string is ALL ASCII
      */
     template <floating_point T = double, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-    T ToFloat (span<const CHAR_T> s);
+    [[deprecated ("Since Stroika v3.0d26 use ParseFloat<T> (s) (ParseNumber.h) - .value_or (NAN) for this lenient behavior")]] T
+    ToFloat (span<const CHAR_T> s);
     template <floating_point T = double, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-    T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder);
+    [[deprecated ("Since Stroika v3.0d26 use ParseFloat<T> (s) (ParseNumber.h) - .value_or (NAN) for this lenient behavior")]] T
+    ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder);
     template <floating_point T = double, typename STRINGISH_ARG>
-    T ToFloat (STRINGISH_ARG&& s)
+    [[deprecated ("Since Stroika v3.0d26 use ParseFloat<T> (s) (ParseNumber.h) - .value_or (NAN) for this lenient behavior")]] T ToFloat (STRINGISH_ARG&& s)
         requires (IConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>);
     template <floating_point T = double>
-    T ToFloat (const String& s, String* remainder);
+    [[deprecated ("Since Stroika v3.0d26 use ParseFloat<T> (s) (ParseNumber.h) - .value_or (NAN) for this lenient behavior")]] T
+    ToFloat (const String& s, String* remainder);
 
 }
 

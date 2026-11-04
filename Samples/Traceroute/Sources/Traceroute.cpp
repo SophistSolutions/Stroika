@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
@@ -83,13 +84,13 @@ int main (int argc, const char* argv[])
         majorOp = MajorOp::eTraceroute;
     }
     if (optional<String> o = args->GetArgument (kPacketSizeO_)) {
-        packetSize = Characters::String2Int<unsigned int> (*o);
+        packetSize = Characters::ParseInteger<unsigned int> (*o).value_or (0);
     }
     if (optional<String> o = args->GetArgument (kMaxHopsO_)) {
-        maxHops = Characters::String2Int<unsigned int> (*o);
+        maxHops = Characters::ParseInteger<unsigned int> (*o).value_or (0);
     }
     if (optional<String> o = args->GetArgument (kSampleCntO_)) {
-        sampleCount = Characters::String2Int<unsigned int> (*o);
+        sampleCount = Characters::ParseInteger<unsigned int> (*o).value_or (0);
     }
     targetAddress = *args->GetArgument (kTargetAddress_); // fRequired, and no kHelp
 

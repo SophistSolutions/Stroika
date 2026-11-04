@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 
@@ -64,7 +65,7 @@ namespace {
                 return ParseInteger_<T> (s);
             }
             else if constexpr (floating_point<T>) {
-                T v = FloatConversion::ToFloat<T> (s); // NaN if it is not a number
+                T v = ParseFloat<T> (s).value_or (NAN); // NaN if it is not a number
                 return std::isfinite (v) ? optional<T>{v} : nullopt;
             }
             else if constexpr (same_as<T, Time::Date>) {

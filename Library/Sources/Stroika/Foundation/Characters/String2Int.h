@@ -54,13 +54,15 @@ namespace Stroika::Foundation::Characters {
      *          int         n3      =   String2Int ("33aaa");  // invalid parse, so returns zero!
      *      \endcode
      * 
-     *  \note For strict parsing - an error, not 0, for text that is not an integer or is out of range - see ParseInteger
-     *        (ParseNumber.h); ParseInteger<T> (s).value_or (0) is this, except an out-of-range value gives 0, not min or max.
+     *  DEPRECATED since Stroika v3.0d26: use ParseInteger (ParseNumber.h) - strict: an error, not 0, for text that is not an
+     *  integer or is out of range; ParseInteger<T> (s).value_or (0) for this lenient behavior (but 0, not min or max, out of range).
      */
     template <integral T = int, IUNICODECodePoint CHAR_T>
-    T String2Int (span<const CHAR_T> s);
+    [[deprecated ("Since Stroika v3.0d26 use ParseInteger<T> (s) (ParseNumber.h) - .value_or (0) for this lenient behavior")]] T
+    String2Int (span<const CHAR_T> s);
     template <integral T = int, IConvertibleToString STRINGISH_ARG>
-    T String2Int (STRINGISH_ARG&& s);
+    [[deprecated ("Since Stroika v3.0d26 use ParseInteger<T> (s) (ParseNumber.h) - .value_or (0) for this lenient behavior")]] T
+    String2Int (STRINGISH_ARG&& s);
 
     /**
      *  Convert the given hex-format string to an unsigned integer.
@@ -70,9 +72,11 @@ namespace Stroika::Foundation::Characters {
      *  strtoul() etc are more flexible. This is merely meant to be an often convenient wrapper.
      *  Use strtoul etc directly to see if the string parsed properly.
      *
-     *  \note For strict parsing, see ParseInteger (s, 16) (ParseNumber.h) - which takes no 0x prefix.
+     *  DEPRECATED since Stroika v3.0d26: use ParseInteger<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) (ParseNumber.h).
      */
-    unsigned int HexString2Int (const String& s);
+    [[deprecated ("Since Stroika v3.0d26 use ParseInteger<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
+                  "(ParseNumber.h)")]] unsigned int
+    HexString2Int (const String& s);
 
 }
 

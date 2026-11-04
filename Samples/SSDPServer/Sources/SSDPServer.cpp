@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
@@ -186,14 +187,14 @@ int main (int argc, const char* argv[])
         return EXIT_SUCCESS;
     }
     if (optional<String> o = args->GetArgument (kPortO_)) {
-        portForOurWS = String2Int<uint16_t> (*o); // 0 if not a number
+        portForOurWS = ParseInteger<uint16_t> (*o).value_or (0); // 0 if not a number
         if (portForOurWS == 0) {
             cerr << "--port takes a port number, 1 to 65535" << endl;
             return EXIT_FAILURE;
         }
     }
     if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
-        quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
+        quitAfter = Time::DurationSeconds{Characters::ParseFloat<Time::DurationSeconds::rep> (*o).value_or (NAN)};
     }
 
     IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by UPnP::BasicServer

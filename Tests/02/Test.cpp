@@ -1056,6 +1056,11 @@ namespace {
     }
 }
 
+// tests of the deprecated String2Int, HexString2Int and ToFloat - kept until they are removed (ParseNumber_ tests ParseInteger and
+// ParseFloat, which replace them)
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 namespace {
     namespace Test21_StringNumericConversions_Helper_ {
         template <typename FLOAT_TYPE>
@@ -1264,6 +1269,9 @@ namespace {
         }
     }
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 namespace {
     GTEST_TEST (Foundation_Characters, StartsWithEndsWithMatch_)
@@ -2617,13 +2625,35 @@ namespace {
             EXPECT_EQ (*ParseInteger<int> (String{"42"}), 42);
             EXPECT_EQ (*ParseInteger<uint16_t> ("65535"), 65535);
             EXPECT_EQ (*ParseInteger<int8_t> ("-128"), -128);
-            EXPECT_EQ (*ParseInteger<unsigned int> ("ff", 16), 255u);
-            EXPECT_EQ (*ParseInteger<unsigned int> ("FF", 16), 255u);
+            EXPECT_EQ (*ParseInteger<unsigned int> ("ff", {.fRadix = 16}), 255u);
+            EXPECT_EQ (*ParseInteger<unsigned int> ("FF", {.fRadix = 16}), 255u);
             EXPECT_EQ (*ParseInteger<unsigned int> ("-0"), 0u);
             for (const char* bad : {"", "abc", "33aaa", " 33", "33 ", "+-3", "--3", "0x1A", "3.5", "\xd7\xa9"}) {
                 EXPECT_TRUE (errorText (ParseInteger<int> (bad)).Contains ("is not an integer"sv)) << bad;
             }
-            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("fg", 16)).Contains ("is not a base-16 integer"sv));
+            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("fg", {.fRadix = 16})).Contains ("is not a base-16 integer"sv));
+            // no radix prefix unless fAcceptRadixPrefix - and then only the radix's own, after any sign; a leading 0 is just a digit
+            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("0x1A", {.fRadix = 16})).Contains ("is not a base-16 integer"sv));
+            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("0b101", {.fRadix = 2})).Contains ("is not a base-2 integer"sv));
+            EXPECT_EQ (*ParseInteger<int> ("017"), 17);
+            EXPECT_EQ (*ParseInteger<int> ("017", {.fRadix = 8}), 15);
+            constexpr ParseIntegerOptions kHex{.fRadix = 16, .fAcceptRadixPrefix = true};
+            EXPECT_EQ (*ParseInteger<unsigned int> ("0x1A", kHex), 26u);
+            EXPECT_EQ (*ParseInteger<unsigned int> ("0X1a", kHex), 26u);
+            EXPECT_EQ (*ParseInteger<unsigned int> ("1A", kHex), 26u); // the prefix is optional
+            EXPECT_EQ (*ParseInteger<int> ("-0x1A", kHex), -26);
+            EXPECT_EQ (*ParseInteger<int> ("0b101", {.fRadix = 2, .fAcceptRadixPrefix = true}), 5);
+            EXPECT_EQ (*ParseInteger<int> ("0o17", {.fRadix = 8, .fAcceptRadixPrefix = true}), 15);
+            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("0x", kHex)).Contains ("is not a base-16 integer"sv));
+            EXPECT_TRUE (errorText (ParseInteger<int> ("0x1A", {.fAcceptRadixPrefix = true})).Contains ("is not an integer"sv)); // 0x is base 16's
+            // fIgnoreSurroundingWhitespace
+            EXPECT_EQ (*ParseInteger<int> (" \t42 ", {.fIgnoreSurroundingWhitespace = true}), 42);
+            EXPECT_EQ (*ParseInteger<unsigned int> (" 0x1A ", {.fRadix = 16, .fAcceptRadixPrefix = true, .fIgnoreSurroundingWhitespace = true}), 26u);
+            EXPECT_TRUE (errorText (ParseInteger<int> (" 4 2 ", {.fIgnoreSurroundingWhitespace = true})).Contains ("is not an integer"sv));
+            // the sign and the type's range: the most negative value, and -0
+            EXPECT_EQ (*ParseInteger<int64_t> ("-9223372036854775808"), numeric_limits<int64_t>::min ());
+            EXPECT_TRUE (errorText (ParseInteger<int64_t> ("9223372036854775808")).Contains ("is out of range"sv));
+            EXPECT_EQ (*ParseInteger<int> ("-0"), 0);
             EXPECT_TRUE (errorText (ParseInteger<uint16_t> ("70000")).Contains ("\"70000\" is out of range (0 to 65535)"sv));
             EXPECT_TRUE (errorText (ParseInteger<uint16_t> ("-1")).Contains ("is out of range"sv));
             EXPECT_TRUE (errorText (ParseInteger<int8_t> ("128")).Contains ("is out of range (-128 to 127)"sv));
@@ -2636,6 +2666,7 @@ namespace {
             EXPECT_EQ (*ParseFloat<double> ("-1e3"), -1000.0);
             EXPECT_EQ (*ParseFloat<double> ("+1.5"), 1.5);
             EXPECT_EQ (*ParseFloat<float> (L"0.25"), 0.25f);
+            EXPECT_EQ (*ParseFloat<double> (" 2.5\n", {.fIgnoreSurroundingWhitespace = true}), 2.5);
             EXPECT_TRUE (isnan (*ParseFloat<double> ("nan")));
             EXPECT_TRUE (isnan (*ParseFloat<double> ("NaN")));
             EXPECT_EQ (*ParseFloat<double> ("-inf"), -numeric_limits<double>::infinity ());
@@ -2651,6 +2682,10 @@ namespace {
             EXPECT_EQ (*ParseFloat<double> (" 3.5 apples"_k, &rest), 3.5);
             EXPECT_EQ (rest, " apples"sv);
             EXPECT_TRUE (errorText (ParseFloat<double> ("apples"_k, &rest)).Contains ("does not start with a number"sv));
+            String t = "2.5 3.5"_k; // the text and the remainder the same String, to read one number after another
+            EXPECT_EQ (*ParseFloat<double> (t, &t), 2.5);
+            EXPECT_EQ (*ParseFloat<double> (t, &t), 3.5);
+            EXPECT_EQ (t, ""sv);
         }
     }
 }

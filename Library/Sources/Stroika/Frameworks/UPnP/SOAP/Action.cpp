@@ -4,6 +4,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -167,7 +168,7 @@ optional<ActionError> ActionError::FromFault ([[maybe_unused]] const GenericSOAP
                 }
             }
             if (code) {
-                result.fErrorCode = String2Int<unsigned int> (*code);
+                result.fErrorCode = ParseInteger<unsigned int> (*code).value_or (0);
                 return result;
             }
         }

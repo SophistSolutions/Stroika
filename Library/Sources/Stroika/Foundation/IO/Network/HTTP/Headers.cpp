@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
@@ -628,7 +629,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         if (nRemovals != nullptr) {
             *nRemovals = (value == nullopt and fContentLength_ != nullopt) ? 1 : 0;
         }
-        this->contentLength = value ? String2Int<uint64_t> (*value) : optional<uint64_t>{};
+        this->contentLength = value ? ParseInteger<uint64_t> (*value).value_or (0) : optional<uint64_t>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentType)) {

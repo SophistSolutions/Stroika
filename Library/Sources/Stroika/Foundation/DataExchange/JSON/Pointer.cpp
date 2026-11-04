@@ -3,6 +3,7 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 
@@ -167,7 +168,7 @@ auto JSON::PointerType::ApplyWithContext (const VariantValue& v, Context* contex
         switch (curNode.GetType ()) {
             case VariantValue::eArray: {
                 Sequence<VariantValue> sv = curNode.As<Sequence<VariantValue>> ();
-                size_t                 i  = component == "-"sv ? sv.size () : Characters::String2Int<size_t> (component);
+                size_t                 i  = component == "-"sv ? sv.size () : Characters::ParseInteger<size_t> (component).value_or (0);
                 if (i > sv.size ()) {
                     return nullopt;
                 }

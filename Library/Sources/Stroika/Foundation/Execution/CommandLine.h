@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Execution {
      *              return EXIT_SUCCESS;
      *          }
      *          if (optional<String> p = args->GetArgument (kPortO_)) {
-     *              portNumber = Characters::String2Int<uint16_t> (*p);
+     *              portNumber = ThrowIfFailed (Characters::ParseInteger<uint16_t> (*p));
      *          }
      *      \endcode
      * 

@@ -20,6 +20,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/SDKString.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Common.h"
@@ -99,7 +100,7 @@ Main::CommandArgs::CommandArgs (const CommandLine::OptionValues& args)
             Throw (InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
     }
     if (auto o = args.GetArgument (CommandOptions::kRunFor)) {
-        fRunFor = Time::Duration{FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
+        fRunFor = Time::Duration{ParseFloat<Time::DurationSeconds::rep> (*o).value_or (NAN)};
     }
 }
 
@@ -119,7 +120,7 @@ Main::CommandArgs::CommandArgs (const CommandLine& cmdLine)
             Throw (InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
     }
     if (auto o = cmdLine.GetArgument (CommandOptions::kRunFor)) {
-        fRunFor = Time::Duration{FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
+        fRunFor = Time::Duration{ParseFloat<Time::DurationSeconds::rep> (*o).value_or (NAN)};
     }
 }
 DISABLE_COMPILER_MSC_WARNING_END (4996);

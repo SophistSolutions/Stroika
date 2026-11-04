@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String2Int.h"
@@ -27,11 +28,11 @@ KeepAlive KeepAlive::Parse (const String& headerValue)
         if (kvp.length () == 2) {
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
             if (kvp[0] == "timeout"sv) {
-                r.fTimeout = Time::DurationSeconds{Characters::FloatConversion::ToFloat<> (kvp[1])};
+                r.fTimeout = Time::DurationSeconds{Characters::ParseFloat<> (kvp[1]).value_or (NAN)};
                 return r;
             }
             else if (kvp[0] == "max"sv) {
-                unsigned int maxMsg = Characters::String2Int<unsigned int> (kvp[1]);
+                unsigned int maxMsg = Characters::ParseInteger<unsigned int> (kvp[1]).value_or (0);
                 r.fMessages         = maxMsg;
                 return r;
             }

@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
@@ -139,7 +140,7 @@ void Exception::ThrowIfError (const String& status, const String& reason)
     if (ss.length () > 3) {
         ss = ss.substr (0, 3);
     }
-    unsigned int s = String2Int<unsigned int> (ss);
+    unsigned int s = ParseInteger<unsigned int> (ss).value_or (0);
     if (s == 0) {
         ThrowIfError (599, "Status: " + status + "; " + reason);
     }

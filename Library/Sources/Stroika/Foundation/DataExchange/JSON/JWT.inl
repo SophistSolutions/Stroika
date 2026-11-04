@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 
 namespace Stroika::Foundation::DataExchange::JSON {
@@ -34,14 +35,14 @@ namespace Stroika::Foundation::DataExchange::JSON {
     inline optional<DateTime> JWT::GetExpirationTime () const
     {
         if (auto i = fPayloadClaims_.Lookup (JWTRegisteredClaims::kExpirationTime)) {
-            return DateTime{Characters::String2Int<time_t> (*i)};
+            return DateTime{Characters::ParseInteger<time_t> (*i).value_or (0)};
         }
         return nullopt;
     }
     inline optional<DateTime> JWT::GetNotBefore () const
     {
         if (auto i = fPayloadClaims_.Lookup (JWTRegisteredClaims::kNotBefore)) {
-            return DateTime{Characters::String2Int<time_t> (*i)};
+            return DateTime{Characters::ParseInteger<time_t> (*i).value_or (0)};
         }
         return nullopt;
     }
@@ -52,7 +53,7 @@ namespace Stroika::Foundation::DataExchange::JSON {
     inline optional<DateTime> JWT::GetIssuedAt () const
     {
         if (auto i = fPayloadClaims_.Lookup (JWTRegisteredClaims::kIssuedAt)) {
-            return DateTime{Characters::String2Int<time_t> (*i)};
+            return DateTime{Characters::ParseInteger<time_t> (*i).value_or (0)};
         }
         return nullopt;
     }

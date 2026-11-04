@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String2Int.h"
@@ -32,7 +33,7 @@ namespace {
     {
         if (auto i = cidrNotation.RFind ('/')) {
             InternetAddress ia{cidrNotation.SubString (0, *i), addressFamily};
-            unsigned int    nBits = Characters::String2Int<unsigned int> (cidrNotation.SubString (*i + 1));
+            unsigned int    nBits = Characters::ParseInteger<unsigned int> (cidrNotation.SubString (*i + 1)).value_or (0);
             if (not ia.GetAddressSize ().has_value ()) [[unlikely]] {
                 static const Execution::Exception<runtime_error> k_ =
                     Execution::Exception<runtime_error>{"CIDR format exception: cannot use CIDR notation with that type of internet address"sv};

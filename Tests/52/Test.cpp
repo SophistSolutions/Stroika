@@ -3,6 +3,7 @@
  */
 //  TEST    Foundation::PERFORMANCE
 
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <array>
@@ -3287,7 +3288,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         sShowOutput_                      = options.Has (kShowO_);
         sRunOrderByProbe_                 = options.Has (kOrderByProbeO_);
         if (optional<String> o = options.GetArgument (kTimeMultiplierO_)) {
-            sTimeMultiplier_ = FloatConversion::ToFloat<double> (*o);
+            sTimeMultiplier_ = ParseFloat<double> (*o).value_or (NAN);
         }
     }
     catch (const InvalidCommandLineArgument&) {

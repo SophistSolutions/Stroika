@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -244,11 +245,11 @@ int main (int argc, const char* argv[])
     bool                  oneLineMode           = args->Has (kOneLineModeO_);
     Time::DurationSeconds runFor                = 0s; // default to runfor 0, so we do each once.
     if (optional<String> o = args->GetArgument (kRunForO_)) {
-        runFor = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*o)};
+        runFor = Duration{Characters::ParseFloat<Duration::rep> (*o).value_or (NAN)};
     }
     Time::DurationSeconds captureInterval = 15s;
     if (optional<String> o = args->GetArgument (kTimeBetweenCapturesO_)) {
-        captureInterval = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*o)};
+        captureInterval = Duration{Characters::ParseFloat<Duration::rep> (*o).value_or (NAN)};
     }
     Set<InstrumentNameType> run =
         args->GetArguments (kRunInstrumentArg_).Map<Set<InstrumentNameType>> ([] (const String& s) { return InstrumentNameType{s}; });

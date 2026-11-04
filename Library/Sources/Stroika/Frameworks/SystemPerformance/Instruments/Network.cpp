@@ -10,6 +10,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
@@ -245,14 +246,14 @@ namespace {
                         ii.fInterface.fInterfaceID  = line[0];
                         ii.fInterface.fFriendlyName = line[0];
                     }
-                    ii.fIOStatistics.fTotalBytesReceived   = Characters::String2Int<uint64_t> (line[1]);
-                    ii.fIOStatistics.fTotalBytesSent       = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
-                    ii.fIOStatistics.fTotalPacketsReceived = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
-                    ii.fIOStatistics.fTotalPacketsSent     = Characters::String2Int<uint64_t> (line[2]);
-                    ii.fIOStatistics.fTotalErrors =
-                        Characters::String2Int<uint64_t> (line[3]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 3]);
-                    ii.fIOStatistics.fTotalPacketsDropped =
-                        Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
+                    ii.fIOStatistics.fTotalBytesReceived   = Characters::ParseInteger<uint64_t> (line[1]).value_or (0);
+                    ii.fIOStatistics.fTotalBytesSent       = Characters::ParseInteger<uint64_t> (line[kOffset2XMit_ + 1]).value_or (0);
+                    ii.fIOStatistics.fTotalPacketsReceived = Characters::ParseInteger<uint64_t> (line[kOffset2XMit_ + 2]).value_or (0);
+                    ii.fIOStatistics.fTotalPacketsSent     = Characters::ParseInteger<uint64_t> (line[2]).value_or (0);
+                    ii.fIOStatistics.fTotalErrors          = Characters::ParseInteger<uint64_t> (line[3]).value_or (0) +
+                                                             Characters::ParseInteger<uint64_t> (line[kOffset2XMit_ + 3]).value_or (0);
+                    ii.fIOStatistics.fTotalPacketsDropped  = Characters::ParseInteger<uint64_t> (line[4]).value_or (0) +
+                                                             Characters::ParseInteger<uint64_t> (line[kOffset2XMit_ + 4]).value_or (0);
 
                     TimePointSeconds now = Time::GetTickCount ();
                     if (auto o = _fContext.cget ().cref ()->fLast.Lookup (ii.fInterface.fInterfaceID)) {
@@ -305,7 +306,7 @@ namespace {
                         // @todo must sum several fields - NYI
                         if (auto oTCPSynRetransIdx = labelMap.Lookup ("TCPSynRetrans"sv)) {
                             if (*oTCPSynRetransIdx < line.length ()) {
-                                uint64_t TCPSynRetrans                       = Characters::String2Int<uint64_t> (line[*oTCPSynRetransIdx]);
+                                uint64_t TCPSynRetrans = Characters::ParseInteger<uint64_t> (line[*oTCPSynRetransIdx]).value_or (0);
                                 accumSummary->fTotalTCPRetransmittedSegments = TCPSynRetrans;
                             }
                         }
@@ -341,17 +342,17 @@ namespace {
                         static const String kRetransSegs_{"RetransSegs"sv};
                         if (auto idx = labelMap.Lookup (kInSegs_)) {
                             if (*idx < line.length ()) {
-                                Memory::AccumulateIf (&totalTCPSegments, Characters::String2Int<uint64_t> (line[*idx]));
+                                Memory::AccumulateIf (&totalTCPSegments, Characters::ParseInteger<uint64_t> (line[*idx]).value_or (0));
                             }
                         }
                         if (auto idx = labelMap.Lookup (kOutSegs_)) {
                             if (*idx < line.length ()) {
-                                Memory::AccumulateIf (&totalTCPSegments, Characters::String2Int<uint64_t> (line[*idx]));
+                                Memory::AccumulateIf (&totalTCPSegments, Characters::ParseInteger<uint64_t> (line[*idx]).value_or (0));
                             }
                         }
                         if (auto idx = labelMap.Lookup (kRetransSegs_)) {
                             if (*idx < line.length ()) {
-                                accumSummary->fTotalTCPRetransmittedSegments = Characters::String2Int<uint64_t> (line[*idx]);
+                                accumSummary->fTotalTCPRetransmittedSegments = Characters::ParseInteger<uint64_t> (line[*idx]).value_or (0);
                             }
                         }
                     }

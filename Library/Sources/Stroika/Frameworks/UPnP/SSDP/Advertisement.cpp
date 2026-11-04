@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -200,7 +201,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
                     }
                     if (nDigits != 0) {
                         advertisement->fMaxAge =
-                            Time::Duration{static_cast<double> (Characters::String2Int<long long> (rest.SubString (0, nDigits)))};
+                            Time::Duration{static_cast<double> (Characters::ParseInteger<long long> (rest.SubString (0, nDigits)).value_or (0))};
                     }
                 }
             }

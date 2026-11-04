@@ -4,6 +4,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
@@ -76,7 +77,7 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
                 else if (remainingNumber2Parse.StartsWith ("-i"_k)) {
                     remainingNumber2Parse = "-1i"_k + remainingNumber2Parse.Skip (2);
                 }
-                Number::value_type d = Characters::FloatConversion::ToFloat<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse);
+                Number::value_type d = Characters::ParseFloat<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse).value_or (NAN);
                 if (remainingNumber2Parse.StartsWith ("i"_k)) {
                     accum += Number{0, d};
                     remainingNumber2Parse = remainingNumber2Parse.Skip (1);

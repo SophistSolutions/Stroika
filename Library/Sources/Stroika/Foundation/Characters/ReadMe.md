@@ -22,7 +22,7 @@ Also, generic ToString () support - to convert objects to a string format.
   - [SDKChar.h](SDKChar.h)
   - [SDKString.h](SDKString.h)
   - [String.h](String.h) - class **String**
-  - [String2Int.h](String2Int.h)
+  - [String2Int.h](String2Int.h) - DEPRECATED: use ParseNumber.h
   - [StringBuilder.h](StringBuilder.h) - class **StringBuilder**
   - [TextConvert.h](TextConvert.h) - Byte Order Mark (BOM)
   - [ToString.h](ToString.h) - function **ToString()**
