@@ -23,10 +23,10 @@ using namespace Stroika::Foundation::Memory;
 using namespace StroikaSample;
 using namespace StroikaSample::AppSettings;
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
+    CommandLine               cmdLine{argc, argv};
+    Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 
     Logger::Activator logMgrActivator; // OptionsFile uses this by default...'
 

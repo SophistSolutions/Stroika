@@ -129,7 +129,7 @@ namespace Stroika::Frameworks::Service {
      *          what the --start command does
      *
      *  \par Example Usage
-     *      @see Samples/SimpleService project
+     *      @see Samples/Service project
      *      \code
      *      struct   AppRep_ : Main::IApplicationRep {
      *          AppRep_ () = default;
@@ -141,9 +141,9 @@ namespace Stroika::Frameworks::Service {
      *
      *      };
      *      ...
-     *      Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
+     *      Execution::CommandLine  cmdLine{argc, argv};
      *      Main    m (MakeSharedPtr<AppRep_> ());
-     *      m.Run (args);
+     *      m.Run (cmdLine);
      *      \endcode
      */
     class Main final {

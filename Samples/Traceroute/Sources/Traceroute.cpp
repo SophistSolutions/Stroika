@@ -30,9 +30,9 @@ using Containers::Sequence;
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
-    String targetAddress;
+    Execution::CommandLine    cmdLine{argc, argv};
+    Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
+    String                    targetAddress;
     enum class MajorOp {
         ePing,
         eTraceroute,
@@ -67,7 +67,6 @@ int main (int argc, const char* argv[])
         cerr << Execution::CommandLine::GenerateUsage ("traceroute"sv, kAllOptions_);
     };
 
-    Execution::CommandLine cmdLine{argc, argv};
     using namespace Execution::StandardCommandLineOptions;
 
     if (cmdLine.Has (kPingO_)) {

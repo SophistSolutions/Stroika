@@ -156,11 +156,10 @@ namespace {
     };
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    CommandLine cmdLine{argc, argv};
-
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, cmdLine)};
+    CommandLine               cmdLine{argc, argv};
+    Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 
 #if qStroika_Platform_POSIX
     SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);

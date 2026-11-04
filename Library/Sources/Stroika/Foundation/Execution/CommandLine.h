@@ -17,6 +17,18 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
+/**
+ *  \brief qStroika_Foundation_Execution_CommandLine_SupportsThisProcess - CommandLine::ThisProcess () is there: the platform has
+ *         a way to read a program's arguments outside main (glibc on Linux, MacOS, Windows)
+ */
+#ifndef qStroika_Foundation_Execution_CommandLine_SupportsThisProcess
+#if (qStroika_Platform_Linux and defined(__GLIBC__)) or qStroika_Platform_MacOS or qStroika_Platform_Windows
+#define qStroika_Foundation_Execution_CommandLine_SupportsThisProcess 1
+#else
+#define qStroika_Foundation_Execution_CommandLine_SupportsThisProcess 0
+#endif
+#endif
+
 namespace Stroika::Foundation::Execution {
 
     using Characters::String;
@@ -112,6 +124,34 @@ namespace Stroika::Foundation::Execution {
          *  (see SDKChar): on Linux it is the global locale's - UTF-8 in the "C" locale every program starts in, so a UTF-8
          *  argument needs no locale set first; to read arguments in the encoding LANG/LC_* name instead, call
          *  Common::UsePlatformDefaultLocaleAsDefaultLocale () before constructing the CommandLine.
+         *
+         *  On Windows, main's narrow argv holds each argument converted to the code page, which loses any character the code
+         *  page lacks. So given main's own argv - argc and argv are the C runtime's __argc and __argv - CommandLine{argc, argv}
+         *  takes the arguments from the UTF-16 command line instead (GetCommandLineW (), split by CommandLineToArgvW), if it
+         *  splits into arguments that each convert to just what argv holds; otherwise argv's, as given (setargv.obj expands
+         *  wildcards, and CommandLineToArgvW's quoting rules differ from the C runtime's in rare cases). So the result is always
+         *  argv's arguments - with any characters the code page lost given back.
+         *
+         *  \par Example Usage (main's arguments - on Windows whole too, by the __argc/__argv rule above)
+         *      \code
+         *          int main (int argc, const char* argv[])
+         *          {
+         *              CommandLine cmdLine{argc, argv};      // Windows: read from the UTF-16 command line instead (so sneaky, but it works)
+         *                                                    // Linux: the locale's encoding (UTF-8 in "C"); MacOS: UTF-8
+         *              ...
+         *      \endcode
+         *
+         *  \par Example Usage (wmain on Windows: argv itself whole, in UTF-16 - for code that also reads or copies argv)
+         *      \code
+         *          #if qStroika_Platform_Windows
+         *          int wmain (int argc, const wchar_t* argv[])   // unambiguous UTF-16
+         *          #else
+         *          int main (int argc, const char* argv[])       // Linux: the locale's encoding (UTF-8 in "C"); MacOS: UTF-8
+         *          #endif
+         *          {
+         *              CommandLine cmdLine{argc, argv};
+         *              ...
+         *      \endcode
          */
         CommandLine ()                   = delete;
         CommandLine (const CommandLine&) = default;
@@ -122,6 +162,35 @@ namespace Stroika::Foundation::Execution {
         CommandLine (int argc, const char* argv[]);
         CommandLine (int argc, wchar_t* argv[]);
         CommandLine (int argc, const wchar_t* argv[]);
+
+#if qStroika_Foundation_Execution_CommandLine_SupportsThisProcess
+    public:
+        /**
+         *  \brief This program's own arguments - main's, with no argc and argv to pass along - and on Windows never converted to the code page
+         *
+         *  Each platform's own source - none of them POSIX, which hands a program its arguments only through main:
+         *      o   Linux (glibc): the argc and argv glibc passes each .init_array function, before main
+         *      o   MacOS: _NSGetArgc () and _NSGetArgv ()
+         *      o   Windows: a wmain program's arguments (the C runtime's __wargv); in any other, GetCommandLineW (), split by
+         *          CommandLineToArgvW - whose quoting rules differ from the C runtime's in rare cases
+         *
+         *  Where there is no such source (a Linux C library other than glibc, other POSIX systems), there is no ThisProcess ():
+         *  test qStroika_Foundation_Execution_CommandLine_SupportsThisProcess, with CommandLine{argc, argv} in its #else. Not
+         *  /proc, which a system need not mount.
+         *
+         *  Narrow arguments (Linux, MacOS) are decoded as CommandLine{argc, argv} decodes them; and a program that rewrites its
+         *  argv strings in place (as setproctitle does) gets what they hold now.
+         *
+         *  \par Example Usage
+         *      \code
+         *          int main ()
+         *          {
+         *              CommandLine cmdLine = CommandLine::ThisProcess ();
+         *              ...
+         *      \endcode
+         */
+        static CommandLine ThisProcess ();
+#endif
 
     public:
         /**

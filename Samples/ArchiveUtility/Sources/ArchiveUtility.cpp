@@ -80,10 +80,9 @@ namespace {
     };
 
     // Emits errors to stderr, and Usage, etc, if needed, and not Optional<> has_value()
-    optional<Options_> ParseOptions_ (int argc, const char* argv[])
+    optional<Options_> ParseOptions_ (const CommandLine& cmdLine)
     {
-        Options_    result{};
-        CommandLine cmdLine{argc, argv};
+        Options_ result{};
 
         try {
             cmdLine.Validate (kAllOptions_);
@@ -191,8 +190,9 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, CommandLine{argc, argv})};
-    if (optional<Options_> o = ParseOptions_ (argc, argv)) {
+    CommandLine               cmdLine{argc, argv};
+    Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
+    if (optional<Options_> o = ParseOptions_ (cmdLine)) {
         try {
             switch (o->fOperation) {
                 case Options_::Operation::eList:

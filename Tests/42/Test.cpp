@@ -30,6 +30,7 @@
 #include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
@@ -47,6 +48,13 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
+
+namespace {
+    // given kArgumentsChild_ then kNotInCodePage_, main runs as CommandLineFromMain_'s child (ArgumentsChild_). No narrow
+    // code page but UTF-8 holds that argument whole - and Windows gives main its arguments converted to the code page
+    constexpr string_view kArgumentsChild_ = "--Stroika-Tests-CommandLine-Child"sv;
+    const String          kNotInCodePage_{u"Zo\u00EB-\u03A9-\U0001F600"};
+}
 
 #if qStroika_HasComponent_googletest
 // must be tested before main, so cannot call directly below
@@ -192,6 +200,17 @@ namespace {
             CommandLine clBadName2{"test --mongoConnectionStringXXX b"};
             EXPECT_EQ (clBadName2.GetArgument (kMongoConnectionStringOpt_), nullopt);
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution, CommandLineFromMain_)
+    {
+        Debug::TraceContextBumper ctx{"CommandLineFromMain_"};
+        // main's own arguments reach a CommandLine whole (#1267): so run this program again, with an argument no narrow code
+        // page holds - its child exits 0 only if it got that argument
+        ProcessRunner pr{CommandLine{Sequence<String>{String{GetEXEPath ()}, String{kArgumentsChild_}, kNotInCodePage_}}};
+        EXPECT_NO_THROW (pr.Run ());
     }
 }
 
@@ -810,8 +829,32 @@ namespace {
 }
 #endif
 
+namespace {
+    // CommandLineFromMain_'s child: exits 0 only if this program's arguments come through whole
+    int ArgumentsChild_ (int argc, const char* argv[])
+    {
+        if (CommandLine{argc, argv}.GetArguments ()[2] != kNotInCodePage_) {
+            return 1;
+        }
+        // any other argv is taken as given
+        vector<const char*> copy{argv, argv + argc};
+        if (CommandLine{argc, copy.data ()}.GetArguments ()[2] != String::FromNarrowSDKString (argv[2])) {
+            return 2;
+        }
+#if qStroika_Foundation_Execution_CommandLine_SupportsThisProcess
+        if (CommandLine::ThisProcess ().GetArguments () != CommandLine{argc, argv}.GetArguments ()) {
+            return 3;
+        }
+#endif
+        return 0;
+    }
+}
+
 int main (int argc, const char* argv[])
 {
+    if (argc == 3 and argv[1] == kArgumentsChild_) {
+        return ArgumentsChild_ (argc, argv);
+    }
     Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();

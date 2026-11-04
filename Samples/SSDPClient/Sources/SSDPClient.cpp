@@ -160,8 +160,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
+    CommandLine               cmdLine{argc, argv};
+    Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 #if qStroika_Platform_POSIX
     SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
@@ -183,7 +183,6 @@ int main (int argc, const char* argv[])
     const CommandLine::Option kWatchO_{.fLongName = "watch"sv, .fHelpOptionText = "Watch each service found: subscribe to its events, and print each"sv};
     const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
 
-    CommandLine cmdLine{argc, argv};
     listen    = cmdLine.Has (kListenO_);
     searchFor = cmdLine.GetArgument (kSearchO_);
     watch     = cmdLine.Has (kWatchO_);

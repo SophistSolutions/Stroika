@@ -3,11 +3,21 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#if qStroika_Platform_MacOS
+#include <crt_externs.h>
+#endif
+#if qStroika_Platform_Windows
+#include <windows.h>
+
+#include <shellapi.h>
+#endif
+
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/SDKString.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/IO/FileSystem/Exception.h"
 
@@ -226,6 +236,40 @@ namespace {
         return args;
     }
 }
+#if qStroika_Platform_Linux and qStroika_Foundation_Execution_CommandLine_SupportsThisProcess
+namespace {
+    // glibc passes main's argc and argv to each .init_array function (an extension Rust's standard library relies on too).
+    // Priority 101, the first not reserved for the implementation, so this runs before any static object's constructor
+    int          sArgc_;
+    const char** sArgv_;
+    void         CaptureArguments_ (int argc, char** argv, char**)
+    {
+        sArgc_ = argc;
+        sArgv_ = const_cast<const char**> (argv);
+    }
+    [[gnu::section (".init_array.00101"), gnu::used]] void (*sCaptureArguments_) (int, char**, char**) = &CaptureArguments_;
+}
+#endif
+#if qStroika_Platform_Windows
+#pragma comment(lib, "Shell32.lib") // CommandLineToArgvW ()
+namespace {
+    // this program's command line as Windows keeps it - UTF-16, so whole - split by CommandLineToArgvW
+    Sequence<String> GetWideArguments_ ()
+    {
+        int       argc = 0;
+        wchar_t** argv = ::CommandLineToArgvW (::GetCommandLineW (), &argc);
+        if (argv == nullptr) [[unlikely]] {
+            ThrowSystemErrNo ();
+        }
+        [[maybe_unused]] auto&& cleanup = Finally ([argv] () noexcept { ::LocalFree (argv); });
+        Sequence<String>        result;
+        for (int i = 0; i < argc; ++i) {
+            result.push_back (String{argv[i]});
+        }
+        return result;
+    }
+}
+#endif
 CommandLine::CommandLine (const String& cmdLine)
     : fArgs_{ParseArgs_ (cmdLine)}
 {
@@ -281,6 +325,22 @@ CommandLine::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
 
 CommandLine::CommandLine (int argc, const char* argv[])
 {
+#if qStroika_Platform_Windows
+    // main's own argv holds each argument converted to the code page, losing what it lacks - so take the UTF-16 command
+    // line's arguments instead, if each converts to just what argv holds (setargv.obj expands wildcards; CommandLineToArgvW
+    // splits a rare quoting otherwise)
+    if (argc == __argc and argv == const_cast<const char**> (__argv)) {
+        Sequence<String> wideArgs = GetWideArguments_ ();
+        bool             same     = wideArgs.size () == static_cast<size_t> (argc);
+        for (int i = 0; same and i < argc; ++i) {
+            same = SDK2Narrow (wideArgs[i].AsSDKString (), eIgnoreErrors) == argv[i];
+        }
+        if (same) {
+            fArgs_ = wideArgs;
+            return;
+        }
+    }
+#endif
     for (int i = 0; i < argc; ++i) {
         fArgs_.push_back (String::FromNarrowSDKString (argv[i]));
     }
@@ -292,6 +352,23 @@ CommandLine::CommandLine (int argc, const wchar_t* argv[])
         fArgs_.push_back (argv[i]);
     }
 }
+
+#if qStroika_Foundation_Execution_CommandLine_SupportsThisProcess
+CommandLine CommandLine::ThisProcess ()
+{
+#if qStroika_Platform_Linux
+    AssertNotNull (sArgv_); // glibc calls CaptureArguments_ before any static object's constructor
+    return CommandLine{sArgc_, sArgv_};
+#elif qStroika_Platform_MacOS
+    return CommandLine{*::_NSGetArgc (), const_cast<const char**> (*::_NSGetArgv ())};
+#elif qStroika_Platform_Windows
+    if (__wargv != nullptr) {
+        return CommandLine{__argc, const_cast<const wchar_t**> (__wargv)}; // a wmain program: the C runtime's own split
+    }
+    return CommandLine{GetWideArguments_ ()};
+#endif
+}
+#endif
 
 String CommandLine::GenerateUsage (const Iterable<Option>& options) const
 {

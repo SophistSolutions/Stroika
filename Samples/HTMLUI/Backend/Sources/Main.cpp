@@ -185,11 +185,11 @@ namespace {
 
 }
 
-int main (int argc, char* argv[])
+int main (int argc, const char* argv[])
 {
     try {
         CommandLine               cmdLine{argc, argv};
-        Debug::TraceContextBumper ctx{"main", "args={}"_f, cmdLine};
+        Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
         MyApp_                    myApp;
         return myApp.Run (cmdLine);
     }
