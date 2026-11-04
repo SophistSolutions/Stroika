@@ -455,8 +455,12 @@ namespace Stroika::Foundation::Characters {
             size_t             charsDone = 0;
         continueWith:
             auto r = fCodeCvt_->in (ignoredMBState, _First1 + bytesDone, _Last1, _Mid1, _First2 + charsDone, _Last2, _Mid2);
-            // An invalid byte is 'error' to most codecvts, but 'partial' to some (libc++) - and only fewer than max_length ()
-            // bytes can be a character that the input ends inside of
+#if qCompilerAndStdLib_codecvt_in_partial_for_invalid_Buggy
+            if (r == STD_CODE_CVT_T::partial) {
+                r = STD_CODE_CVT_T::error;
+            }
+#endif
+            // only fewer than max_length () bytes can be a character that the input ends inside of
             if (r == STD_CODE_CVT_T::partial and _Last1 - _Mid1 >= fCodeCvt_->max_length ()) {
                 r = STD_CODE_CVT_T::error;
             }
@@ -484,17 +488,24 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 Require (_Mid1 == _Last1);
-                if (not mbsinit (&ignoredMBState)) [[unlikely]] {
-                    // Some codecvts (libstdc++'s) report ok for a character the input ends inside of, keeping its first
+                // Not mbsinit (), which answers for the global C locale's encoding, not this facet's (on macOS, always 'initial'
+                // in the "C" locale); a state holding some bytes of a character is never all zero bytes
+                auto isInitialState = [] (const mbstate_t& s) {
+                    const mbstate_t kInitial{};
+                    return memcmp (&s, &kInitial, sizeof (mbstate_t)) == 0;
+                };
+                if (not isInitialState (ignoredMBState)) [[unlikely]] {
+                    // Some codecvts (libstdc++'s, libc++'s) report ok for a character the input ends inside of, keeping its first
                     // bytes in the mbstate_t - which this converter does not keep from call to call. So give them back,
-                    // as partial does: they are the shortest tail whose removal lets the conversion end in the initial state
+                    // as partial does: they are the shortest tail whose removal loses no character and lets the conversion
+                    // end in the initial state
                     const extern_type* restartAt = _First1 + bytesDone;
                     for (ptrdiff_t tail = 1; tail <= _Last1 - restartAt and tail <= fCodeCvt_->max_length (); ++tail) {
                         mbstate_t          retryMBState{};
                         const extern_type* retryMid1 = restartAt;
                         CHAR_T*            retryMid2 = _First2 + charsDone;
                         if (fCodeCvt_->in (retryMBState, restartAt, _Last1 - tail, retryMid1, _First2 + charsDone, _Last2, retryMid2) == STD_CODE_CVT_T::ok and
-                            retryMid1 == _Last1 - tail and mbsinit (&retryMBState)) {
+                            retryMid1 == _Last1 - tail and retryMid2 == _Mid2 and isInitialState (retryMBState)) {
                             *from = from->subspan (static_cast<size_t> (retryMid1 - _First1));
                             return to.subspan (0, retryMid2 - _First2);
                         }

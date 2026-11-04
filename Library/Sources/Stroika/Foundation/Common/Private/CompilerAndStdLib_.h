@@ -2429,6 +2429,27 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 #endif
 
 /*
+ *  libc++'s codecvt<wchar_t, char, mbstate_t>::in reports an invalid byte as partial, not error - its recovery loop stops
+ *  just before the invalid byte, and so did not reach the end. In a UTF-8 locale:
+ *
+ *      in ({'a', '\xFF', 'b'})     returns partial, 1 of 3 bytes consumed       (libstdc++: error)
+ *
+ *  It never means a character the input ends inside of: that is ok, its first bytes kept in the mbstate_t.
+ *  Tests/02 SDKStringFollowsGlobalLocale_: SDK2Wide ({'a', '\xFF', 'b'}, eIgnoreErrors) gave L"a\xFFFD", losing the 'b'.
+ */
+#ifndef qCompilerAndStdLib_codecvt_in_partial_for_invalid_Buggy
+
+#if defined(_LIBCPP_VERSION)
+// broken in 15007 (clang++-15, Ubuntu 22.04), 180100 (Ubuntu 24.04), 220102 (Ubuntu 26.04)
+// broken in Apple's 180100 (XCode 16), 200100 (XCode 26.3)
+#define qCompilerAndStdLib_codecvt_in_partial_for_invalid_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 220102)
+#else
+#define qCompilerAndStdLib_codecvt_in_partial_for_invalid_Buggy 0
+#endif
+
+#endif
+
+/*
     https://github.com/llvm/llvm-project/issues/62141   ("Class Template Argument Deduction ignores requires clause")
 
     Given a class template with TWO constructors taking the same argument types but mutually-exclusive

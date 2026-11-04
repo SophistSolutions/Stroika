@@ -1579,11 +1579,12 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Characters, LocaleUTF8DecodeTruncated_)
+    GTEST_TEST (Foundation_Characters, LocaleUTF8DecodeReplacement_)
     {
-        Debug::TraceContextBumper ctx{"LocaleUTF8DecodeTruncated_"};
-        // A UTF-8 LOCALE's converter - not Stroika's own UTF-8 one (UTF8DecodeReplacement_) - must not drop a character the
-        // input ends inside of: libstdc++'s codecvt reports ok, keeping its first bytes in the mbstate_t
+        Debug::TraceContextBumper ctx{"LocaleUTF8DecodeReplacement_"};
+        // A UTF-8 LOCALE's converter - not Stroika's own UTF-8 one (UTF8DecodeReplacement_) - replaces (or throws for) an invalid
+        // byte, and a character the input ends inside of, losing nothing else - though codecvts report these oddly: libc++ an
+        // invalid byte as partial, libstdc++ and libc++ a cut-off character as ok, keeping its first bytes in the mbstate_t
         optional<locale> utf8;
         for (const char* name : {"C.UTF-8", "en_US.UTF-8", "en_US.utf8", ".UTF-8"}) {
             try {
@@ -1597,12 +1598,17 @@ namespace {
             SkipTestPart ("no UTF-8 locale installed");
             return;
         }
+        const char             kBadByte_[]       = {'a', '\xFF', 'b'};    // 0xFF is never valid in UTF-8
+        const char             kComplete_[]      = {'a', '\xC3', '\xA9'}; // ends with a whole 2-byte character
         const char             kTruncated_[]     = {'a', '\xE9'};         // input ends inside a 3-byte character
         const char             kTruncated2_[]    = {'a', '\xE9', '\x80'}; // ... after 2 of its 3 bytes
         const char             kOnlyTruncated_[] = {'\xC3'};              // ... and has nothing else
         const CodeCvt<wchar_t> lenient{
             *utf8, CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter}};
         const CodeCvt<wchar_t> strict{*utf8};
+        EXPECT_EQ (lenient.Bytes2String<wstring> (as_bytes (span{kBadByte_})), (wstring{L'a', L'\xFFFD', L'b'}));
+        EXPECT_THROW (strict.Bytes2String<wstring> (as_bytes (span{kBadByte_})), CharacterEncodingException);
+        EXPECT_EQ (strict.Bytes2String<wstring> (as_bytes (span{kComplete_})), (wstring{L'a', L'\xE9'}));
         EXPECT_EQ (lenient.Bytes2String<wstring> (as_bytes (span{kTruncated_})), (wstring{L'a', L'\xFFFD'}));
         EXPECT_EQ (lenient.Bytes2String<wstring> (as_bytes (span{kTruncated2_})), (wstring{L'a', L'\xFFFD'}));
         EXPECT_EQ (lenient.Bytes2String<wstring> (as_bytes (span{kOnlyTruncated_})), (wstring{L'\xFFFD'}));
