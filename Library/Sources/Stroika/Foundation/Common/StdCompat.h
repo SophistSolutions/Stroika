@@ -441,6 +441,26 @@ namespace Stroika::Foundation::Common::StdCompat {
         {
             return std::move (get<E> (fData_));
         }
+        template <typename U = remove_cv_t<T>>
+        constexpr T value_or (U&& defaultValue) const&
+        {
+            return has_value () ? get<T> (fData_) : static_cast<T> (forward<U> (defaultValue));
+        }
+        template <typename U = remove_cv_t<T>>
+        constexpr T value_or (U&& defaultValue) &&
+        {
+            return has_value () ? std::move (get<T> (fData_)) : static_cast<T> (forward<U> (defaultValue));
+        }
+        template <typename G = E>
+        constexpr E error_or (G&& defaultValue) const&
+        {
+            return has_value () ? static_cast<E> (forward<G> (defaultValue)) : get<E> (fData_);
+        }
+        template <typename G = E>
+        constexpr E error_or (G&& defaultValue) &&
+        {
+            return has_value () ? static_cast<E> (forward<G> (defaultValue)) : std::move (get<E> (fData_));
+        }
 
     private:
         variant<T, E> fData_;

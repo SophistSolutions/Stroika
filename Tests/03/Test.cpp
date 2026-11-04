@@ -602,6 +602,27 @@ namespace {
         }
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Common, StdCompatExpected_)
+    {
+        Debug::TraceContextBumper ctx{"StdCompatExpected_"};
+        // std::expected where the library has it, else (C++20) Stroika's stand-in - the same API either way
+        using E = StdCompat::expected<int, Characters::String>;
+        const E good{3};
+        const E bad{StdCompat::unexpected<Characters::String>{"oops"_k}};
+        EXPECT_TRUE (good.has_value ());
+        EXPECT_FALSE (bad.has_value ());
+        EXPECT_EQ (*good, 3);
+        EXPECT_EQ (bad.error (), "oops"sv);
+        EXPECT_EQ (good.value_or (7), 3);
+        EXPECT_EQ (bad.value_or (7), 7);
+        EXPECT_EQ (good.error_or ("none"_k), "none"sv);
+        EXPECT_EQ (bad.error_or ("none"_k), "oops"sv);
+        EXPECT_EQ (E{bad}.value_or (7), 7); // the && overloads
+        EXPECT_EQ (E{bad}.error_or ("none"_k), "oops"sv);
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])
