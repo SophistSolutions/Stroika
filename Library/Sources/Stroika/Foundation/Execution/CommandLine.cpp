@@ -488,9 +488,13 @@ auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const ->
     Sequence<Given> given; // each option given, in command-line order
     auto            wasGiven       = [&] (const Option& o) { return given.Any ([&] (const Given& g) { return g.fOption == o; }); };
     size_t          nextPositional = 0;
+    bool            optionsEnded   = false; // after a bare --, every word is positional
     for (size_t i = 1; i < fArgs_.size (); ++i) {
         String ai = fArgs_[i];
-        if (ai.size () >= 2 and ai[0] == '-') {
+        if (ai == "--"sv and not optionsEnded) {
+            optionsEnded = true;
+        }
+        else if (ai.size () >= 2 and ai[0] == '-' and not optionsEnded) {
             // -x, --long or --long=VALUE
             optional<Option> o;
             optional<String> afterEquals;

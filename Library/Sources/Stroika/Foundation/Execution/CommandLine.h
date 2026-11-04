@@ -306,6 +306,7 @@ namespace Stroika::Foundation::Execution {
          *  One pass over the words after argv[0], left to right:
          *      o   -x, --long and --long=VALUE name an option (--long matched as its fLongNameCaseSensitive says). If it
          *          fSupportsArgument, its argument is the text after = or else the next word, whatever that word is.
+         *      o   a bare -- ends the options: every word after it is positional (so a file can be named -x)
          *      o   any other word - a bare - too - is positional: each positional option takes one, in the order they appear in
          *          options; a repeatable one takes all those left.
          *

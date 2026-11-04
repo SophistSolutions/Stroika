@@ -284,6 +284,17 @@ namespace {
             EXPECT_EQ (maybe.GetArgument (kMaybeO), nullopt);
         }
         {
+            // a bare -- ends the options: every word after it is positional (a second -- too), so a file can be named -f
+            const CommandLine::Option                   kFlagO{.fSingleCharName = 'f'};
+            const CommandLine::Option                   kFilesO{.fRepeatable = true, .fHelpArgName = "FILE"sv};
+            const initializer_list<CommandLine::Option> kAll{kFlagO, kFilesO};
+            CommandLine::OptionValues                   args = CommandLine{"x -f a -- -f -- b"}.ApplyOptions (kAll);
+            EXPECT_TRUE (args.Has (kFlagO));
+            EXPECT_EQ (args.GetArguments (kFilesO), (Sequence<String>{"a"_k, "-f"_k, "--"_k, "b"_k}));
+            EXPECT_FALSE (CommandLine{"x --"}.ApplyOptions (kAll).Has (kFilesO));
+            EXPECT_TRUE (fails ("x -- -f", {kFlagO})); // -f after -- is positional, and there is no positional option
+        }
+        {
             // a bare - is a positional word (eg stdin), and a word after an option that takes an argument is that argument,
             // whatever it looks like
             const CommandLine::Option                   kOutO{.fSingleCharName = 'o', .fSupportsArgument = true};
@@ -292,6 +303,7 @@ namespace {
             CommandLine::OptionValues                   args = CommandLine{"x -o -weird -"}.ApplyOptions (kAll);
             EXPECT_EQ (args.GetArgument (kOutO), "-weird"sv);
             EXPECT_EQ (args.GetArgument (kFileO), "-"sv);
+            EXPECT_EQ (CommandLine{"x -o -- f"}.ApplyOptions (kAll).GetArgument (kOutO), "--"sv); // an option's argument, even --
         }
     }
 }
