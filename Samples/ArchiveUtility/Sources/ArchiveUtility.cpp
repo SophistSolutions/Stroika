@@ -59,10 +59,9 @@ namespace {
     const CommandLine::Option kListO_{.fLongName = "list"sv, .fHelpOptionText = "prints all the files in the argument archive"sv};
     const CommandLine::Option kCreateO_{.fLongName = "create"sv, .fHelpOptionText = "creates the argument ARCHIVE-FILE and adds the argument FILE(s) to it"sv};
     const CommandLine::Option kExtractO_{
-        .fLongName = "extract"sv,
-        .fHelpOptionText = "extracts all the files from the argument ARCHIVE-FILE and to the output directory specified by --ouptutDirectory "sv};
-    const CommandLine::Option kUpdateO_{.fLongName       = "update"sv,
-                                        .fHelpOptionText = "adds to the argument ARCHIVE-FILE and adds the argument FILE(s) to it "sv};
+        .fLongName = "extract"sv, .fHelpOptionText = "extracts all the files from the argument ARCHIVE-FILE to the directory given by --outputDirectory"sv};
+    const CommandLine::Option kUpdateO_{.fLongName = "update"sv,
+                                        .fHelpOptionText = "adds the argument FILE(s) to the argument ARCHIVE-FILE (not yet implemented)"sv};
     const CommandLine::Option kArchiveFileO_{
         .fRequired       = true,
         .fHelpArgName    = "ARCHIVE-FILE"sv,
@@ -82,6 +81,13 @@ namespace {
     optional<Options_> ParseOptions_ (const CommandLine& cmdLine, const CommandLine::OptionValues& args)
     {
         Options_ result{};
+        if (Sequence<CommandLine::Option>{kListO_, kCreateO_, kExtractO_, kUpdateO_}
+                .Where ([&] (const CommandLine::Option& o) { return args.Has (o); })
+                .size () > 1) {
+            cerr << "Only one operation at a time: --list, --create, --extract or --update" << endl;
+            cerr << cmdLine.GenerateUsage (kAllOptions_);
+            return optional<Options_>{};
+        }
         if (args.Has (kListO_)) {
             result.fOperation = Options_::Operation::eList;
         }
@@ -203,7 +209,7 @@ int main (int argc, const char* argv[])
                     break;
                 default:
                     cerr << "that option NYI" << endl;
-                    break;
+                    return EXIT_FAILURE;
             }
         }
         catch (const InvalidCommandLineArgument&) {
