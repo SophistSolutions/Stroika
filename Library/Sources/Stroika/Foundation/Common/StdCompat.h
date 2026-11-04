@@ -389,21 +389,57 @@ namespace Stroika::Foundation::Common::StdCompat {
                 fData_ = e.error ();
             }
         }
-        explicit operator bool () const noexcept
+        constexpr bool has_value () const noexcept
         {
-            return std::get_if<T> (&fData_) != nullptr;
+            return holds_alternative<T> (fData_);
         }
-        T operator* () const
+        constexpr explicit operator bool () const noexcept
         {
-            return value ();
+            return has_value ();
         }
-        T value () const
+        constexpr const T* operator->() const
+        {
+            return &get<T> (fData_);
+        }
+        constexpr T* operator->()
+        {
+            return &get<T> (fData_);
+        }
+        constexpr const T& operator* () const&
         {
             return get<T> (fData_);
         }
-        E error () const
+        constexpr T& operator* () &
+        {
+            return get<T> (fData_);
+        }
+        constexpr T operator* () &&
+        {
+            return std::move (get<T> (fData_));
+        }
+        constexpr const T& value () const&
+        {
+            return get<T> (fData_);
+        }
+        constexpr T& value () &
+        {
+            return get<T> (fData_);
+        }
+        constexpr T value () &&
+        {
+            return std::move (get<T> (fData_));
+        }
+        constexpr const E& error () const&
         {
             return get<E> (fData_);
+        }
+        constexpr E& error () &
+        {
+            return get<E> (fData_);
+        }
+        constexpr E error () &&
+        {
+            return std::move (get<E> (fData_));
         }
 
     private:
