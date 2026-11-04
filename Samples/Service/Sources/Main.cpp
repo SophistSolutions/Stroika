@@ -58,46 +58,6 @@ using Memory::MakeSharedPtr;
 #include "Stroika/Foundation/Execution/Logger.h"
 #endif
 
-namespace {
-    void ShowUsage_ (const Main& m, const InvalidCommandLineArgument& e = {})
-    {
-        if (not e.As<String> ().empty ()) {
-            cerr << "Error: " << e.As<String> () << endl;
-            cerr << endl;
-        }
-        cerr << "Usage: " << m.GetServiceDescription ().fRegistrationName << " [options] where options can be :\n ";
-        if (m.GetServiceIntegrationFeatures ().Contains (Main::ServiceIntegrationFeatures::eInstall)) {
-            cerr << "\t--" << String{Main::CommandNames::kInstall}
-                 << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kUnInstall}
-                 << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
-        }
-        cerr << "\t--" << String{Main::CommandNames::kRunAsService}
-             << "        /* Run this process as a service (doesn't exit until the service is done ...) */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kRunDirectly} << "          /* Run this process as a directly (doesn't exit until the service is done or ARGUMENT TIMEOUT seconds elapsed ...) but not using service infrastructure */"
-             << endl;
-        cerr << "\t--" << String{Main::CommandNames::kStart} << "                 /* Service/Control Function: Start the service */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kStop} << "                  /* Service/Control Function: Stop the service */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kForcedStop}
-             << "            /* Service/Control Function: Forced stop the service (after trying to normally stop) */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kRestart}
-             << "               /* Service/Control Function: Stop and then re-start the service (ok if already stopped) */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kForcedRestart}
-             << "         /* Service/Control Function: Stop (force if needed) and then re-start the service (ok if already stopped) */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kReloadConfiguration} << "  /* Reload service configuration */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kPause} << "                 /* Service/Control Function: Pause the service */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kContinue} << "              /* Service/Control Function: Continue the paused service */" << endl;
-        cerr << "\t--Status                /* Service/Control Function: Print status of running service */ " << endl;
-        cerr << "\t--Version               /* print this application version */ " << endl;
-        cerr << "\t--help                  /* Print this help. */ " << endl;
-        cerr << endl
-             << "\tExtra unrecognized parameters for start/restart, and forced restart operations will be passed along to the actual "
-                "service process"
-             << endl;
-        cerr << endl;
-    }
-}
-
 int main (int argc, const char* argv[])
 {
     CommandLine               cmdLine{argc, argv};
@@ -181,12 +141,11 @@ int main (int argc, const char* argv[])
     /*
      *  Run request.
      */
+    using StandardCommandLineOptions::kHelp;
+    using StandardCommandLineOptions::kVersion;
+    Sequence<CommandLine::Option> allMyOptions =
+        Sequence<CommandLine::Option>{Main::CommandOptions::kAll} + Sequence<CommandLine::Option>{kHelp, kVersion};
     try {
-        using StandardCommandLineOptions::kHelp;
-        using StandardCommandLineOptions::kVersion;
-
-        Sequence<CommandLine::Option> allMyOptions =
-            Sequence<CommandLine::Option>{Main::CommandOptions::kAll} + Sequence<CommandLine::Option>{kHelp, kVersion};
         CommandLine::OptionValues args = cmdLine.ApplyOptions (allMyOptions); // throws InvalidCommandLineArgument, as m.Run () can
 
         if (args.Has (Main::CommandOptions::kStatus)) {
@@ -194,7 +153,7 @@ int main (int argc, const char* argv[])
             return EXIT_SUCCESS;
         }
         else if (args.Has (kHelp)) {
-            ShowUsage_ (m);
+            cerr << cmdLine.GenerateUsage (allMyOptions);
             return EXIT_SUCCESS;
         }
         else if (args.Has (kVersion)) {
@@ -209,7 +168,9 @@ int main (int argc, const char* argv[])
         }
     }
     catch (const InvalidCommandLineArgument& e) {
-        ShowUsage_ (m, e);
+        cerr << Characters::ToString (e) << endl;
+        cerr << cmdLine.GenerateUsage (allMyOptions);
+        return EXIT_FAILURE;
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());

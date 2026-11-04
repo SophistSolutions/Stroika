@@ -450,7 +450,9 @@ namespace Stroika::Frameworks::Service {
                                                                       .fHelpOptionText = "Unregister the service installation"sv};
         static inline const Execution::CommandLine::Option kRunAsService{
             .fLongName = CommandNames::kRunAsService, .fHelpOptionText = "Run as a service daemon - as of run by OS service manager"sv};
-        static inline const Execution::CommandLine::Option kRunDirectly{.fLongName = CommandNames::kRunDirectly};
+        static inline const Execution::CommandLine::Option kRunDirectly{
+            .fLongName = CommandNames::kRunDirectly,
+            .fHelpOptionText = "Run the service in this process, not under the OS service manager - until stopped, or for --runFor seconds."sv};
         // static inline const Execution::CommandLine::Option kRunDirectlyFor{.fLongName = CommandNames::kRunDirectlyFor, .fSupportsArgument = true};
         static inline const Execution::CommandLine::Option kStart{.fLongName       = CommandNames::kStart,
                                                                   .fHelpOptionText = "Request OS service manager start the service."sv};
