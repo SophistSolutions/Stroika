@@ -441,18 +441,18 @@ String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>
     static const String kIndent_ = "    "sv;
     StringBuilder       sb;
     sb << "Usage: "sv << exeName;
+    // the usual notation: [X] optional, X required, X... repeatable
     options.Apply ([&] (const Option& o) {
-        sb << " [" << o.GetArgumentDescription (true) << "]"sv;
-        if (o.fRepeatable) {
-            if (o.fRequired) {
-                sb << "+"sv;
+        String d = o.GetArgumentDescription (true);
+        if (not o.fRequired) {
+            if (o.fSingleCharName and o.fLongName) {
+                d = d.SubString (1, d.size () - 1); // (-x|--long) needs no parentheses inside [...]
             }
-            else {
-                sb << "*"sv;
-            }
+            d = "["sv + d + "]"sv;
         }
-        else if (not o.fRequired) {
-            sb << "?"sv;
+        sb << " "sv << d;
+        if (o.fRepeatable) {
+            sb << "..."sv;
         }
     });
     sb << "\n"sv;

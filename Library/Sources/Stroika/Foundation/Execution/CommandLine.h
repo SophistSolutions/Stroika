@@ -370,6 +370,10 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief A usage line in the usual notation - [X] optional, X required, X... repeatable - then a line for each option
+         *  with fHelpOptionText
+         *
+         *  For example: Usage: ArchiveUtility [-h|--help] [--list] [--outputDirectory=ARG] ARCHIVE-FILE [FILE]...
          */
         nonvirtual String GenerateUsage (const Iterable<Option>& options) const;
         static String     GenerateUsage (const String& exeName, const Iterable<Option>& options);

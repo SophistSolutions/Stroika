@@ -233,6 +233,10 @@ namespace {
             EXPECT_EQ (noFiles.GetArguments (kFilesO), Sequence<String>{});
             EXPECT_EQ (noFiles.GetArgument (kOutDirO), nullopt);
             EXPECT_EQ (noFiles.GetArgument (kListO), nullopt); // given, but takes no argument
+
+            // the usage line: [X] optional, X required, ... repeatable
+            String usage = CommandLine::GenerateUsage ("a"sv, kAll);
+            EXPECT_TRUE (usage.StartsWith ("Usage: a [-h|--help] [--list] [--outputDirectory=ARG] ARCHIVE-FILE [FILE]...\n"sv)) << usage;
         }
         {
             // HTMLViewCompiler's options: two required positional options (before Stroika v3.0d26, the second was never found)
@@ -282,6 +286,8 @@ namespace {
             CommandLine::OptionValues maybe = CommandLine{"x --maybe"}.ApplyOptions (kAll);
             EXPECT_TRUE (maybe.Has (kMaybeO));
             EXPECT_EQ (maybe.GetArgument (kMaybeO), nullopt);
+            String usage = CommandLine::GenerateUsage ("x"sv, kAll);
+            EXPECT_TRUE (usage.StartsWith ("Usage: x [--flag] [-r ARG|--run=ARG]... [--maybe=ARG]\n"sv)) << usage;
         }
         {
             // a bare -- ends the options: every word after it is positional (a second -- too), so a file can be named -f
