@@ -125,6 +125,10 @@ String CommandLine::Option::GetArgumentDescription (bool includeArgName) const
         includeArgName = false;
     }
     String argName = this->fHelpArgName.value_or ("ARG"sv);
+    if (includeArgName and fSupportsArgument and not fIfSupportsArgumentThenRequired and fLongName) {
+        // an optional argument is given only as --long=VALUE
+        return fSingleCharName ? "(-{}|--{}[={}])"_f(*fSingleCharName, *fLongName, argName) : "--{}[={}]"_f(*fLongName, argName);
+    }
     if (fSingleCharName and fLongName) {
         if (includeArgName) {
             return "(-{} {}|--{}={})"_f(*fSingleCharName, argName, *fLongName, argName);
@@ -484,6 +488,7 @@ auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const ->
     Sequence<Option> positionals = options.Where<Sequence<Option>> ([] (const Option& o) { return o.IsPositionArgument (); });
     Require (Set<Option>{options}.size () == options.size ());
     Require (positionals.size () < 2 or not positionals.Take (positionals.size () - 1).Any ([] (const Option& o) { return o.fRepeatable; }));
+    Require (options.All ([] (const Option& o) { return not o.fSupportsArgument or o.fIfSupportsArgumentThenRequired or o.fLongName; }));
 
     Sequence<Given> given; // each option given, in command-line order
     auto            wasGiven       = [&] (const Option& o) { return given.Any ([&] (const Given& g) { return g.fOption == o; }); };
@@ -524,14 +529,13 @@ auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const ->
                 }
                 argument = afterEquals;
             }
-            else if (o->fSupportsArgument) {
-                if (i + 1 < fArgs_.size ()) {
-                    argument = fArgs_[++i];
-                }
-                else if (o->fIfSupportsArgumentThenRequired) {
+            else if (o->fSupportsArgument and o->fIfSupportsArgumentThenRequired) {
+                // the next word, whatever it is; an optional argument is given only after = - as getopt - so one is never taken
+                if (i + 1 == fArgs_.size ()) {
                     return ERRT{InvalidCommandLineArgument{
                         "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
                 }
+                argument = fArgs_[++i];
             }
             given += Given{*o, argument};
         }

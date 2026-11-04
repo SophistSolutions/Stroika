@@ -206,6 +206,7 @@ namespace Stroika::Foundation::Execution {
          *  ApplyOptions. Its argument is that word, so fSupportsArgument and fIfSupportsArgumentThenRequired do not apply to it.
          *
          *  \pre not fRepeatable or fSupportsArgument or IsPositionArgument ()
+         *  \pre not fSupportsArgument or fIfSupportsArgumentThenRequired or fLongName (an optional argument is given only as --long=VALUE)
          * 
          *  \todo figure out if I can make this a literal type, so can be defined constexpr when not using fLongName (or maybe even with using stringview)
          */
@@ -222,7 +223,8 @@ namespace Stroika::Foundation::Execution {
              *  Look for argument after option (note this refers to named arguments, NOT positional arguments - see IsPositionalArgument ())
              * 
              *  if true, and long-form option, look for -OPT=XXX and copy out XXX as the argument
-             *  if true, and either form option given, if no =, look for next argi, and if there, use that as argument.
+             *  if true, and either form option given, if no =, look for next argi, and if there, use that as argument (unless
+             *  the argument is optional - see fIfSupportsArgumentThenRequired).
              * 
              *  But either way, this refers to supporting NAMED arguments, not POSITIONAL arguments.
              */
@@ -231,6 +233,9 @@ namespace Stroika::Foundation::Execution {
             /**
              *  Typically, an option that takes an argument, that argument is required. But rarely - you might want an option that takes
              *  an argument that is optional.
+             *
+             *  An optional argument is given only as --long=VALUE, as getopt: the next word is never taken as it, since it may
+             *  just as well be the next option or a positional argument. So such an option needs an fLongName.
              */
             bool fIfSupportsArgumentThenRequired{true};
 
@@ -305,7 +310,8 @@ namespace Stroika::Foundation::Execution {
          *
          *  One pass over the words after argv[0], left to right:
          *      o   -x, --long and --long=VALUE name an option (--long matched as its fLongNameCaseSensitive says). If it
-         *          fSupportsArgument, its argument is the text after = or else the next word, whatever that word is.
+         *          fSupportsArgument, its argument is the text after = or else the next word, whatever that word is - but an
+         *          optional argument (not fIfSupportsArgumentThenRequired) only the text after =, as getopt.
          *      o   a bare -- ends the options: every word after it is positional (so a file can be named -x)
          *      o   any other word - a bare - too - is positional: each positional option takes one, in the order they appear in
          *          options; a repeatable one takes all those left.

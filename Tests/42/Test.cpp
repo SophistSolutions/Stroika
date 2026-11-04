@@ -286,8 +286,12 @@ namespace {
             CommandLine::OptionValues maybe = CommandLine{"x --maybe"}.ApplyOptions (kAll);
             EXPECT_TRUE (maybe.Has (kMaybeO));
             EXPECT_EQ (maybe.GetArgument (kMaybeO), nullopt);
+            EXPECT_EQ (CommandLine{"x --maybe=v"}.ApplyOptions (kAll).GetArgument (kMaybeO), "v"sv);
+            // an optional argument is given only after = (as getopt): the next word is never taken as it
+            EXPECT_TRUE (fails ("x --maybe v", kAll)); // v is positional, and there is no positional option
+            EXPECT_TRUE (CommandLine{"x --maybe --flag"}.ApplyOptions (kAll).Has (kFlagO));
             String usage = CommandLine::GenerateUsage ("x"sv, kAll);
-            EXPECT_TRUE (usage.StartsWith ("Usage: x [--flag] [-r ARG|--run=ARG]... [--maybe=ARG]\n"sv)) << usage;
+            EXPECT_TRUE (usage.StartsWith ("Usage: x [--flag] [-r ARG|--run=ARG]... [--maybe[=ARG]]\n"sv)) << usage;
         }
         {
             // a bare -- ends the options: every word after it is positional (a second -- too), so a file can be named -f
