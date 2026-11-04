@@ -259,6 +259,11 @@ namespace {
                 ASSERT_FALSE (r.has_value ());
                 EXPECT_TRUE (Characters::ToString (r.error ()).Contains ("OUT"sv)) << Characters::ToString (r.error ());
             }
+            {
+                auto r = CommandLine{"x in.swsp out.cpp -n"}.ApplyOptionsQuietly (kAll);
+                ASSERT_FALSE (r.has_value ());
+                EXPECT_TRUE (Characters::ToString (r.error ()).Contains (" -n "sv)) << Characters::ToString (r.error ()); // names the option
+            }
 
             // --help and --version work with a required option missing (kHelp and kVersion fWaivesRequired) - but an argument
             // naming no option is still an error
@@ -292,6 +297,24 @@ namespace {
             EXPECT_TRUE (CommandLine{"x --maybe --flag"}.ApplyOptions (kAll).Has (kFlagO));
             String usage = CommandLine::GenerateUsage ("x"sv, kAll);
             EXPECT_TRUE (usage.StartsWith ("Usage: x [--flag] [-r ARG|--run=ARG]... [--maybe[=ARG]]\n"sv)) << usage;
+        }
+        {
+            // GenerateUsage: the usage line, then a line for each option with help text - its names and argument, as GNU and
+            // argparse show them - the text aligned
+            const CommandLine::Option kNameO{
+                .fSingleCharName = 'n', .fLongName = "name"sv, .fSupportsArgument = true, .fHelpArgName = "NAME"sv, .fHelpOptionText = "the name"sv};
+            const CommandLine::Option kRunO{.fSingleCharName = 'r', .fSupportsArgument = true, .fRepeatable = true, .fHelpOptionText = "run it"sv};
+            const CommandLine::Option kMaybeO{
+                .fLongName = "maybe"sv, .fSupportsArgument = true, .fIfSupportsArgumentThenRequired = false, .fHelpOptionText = "perhaps"sv};
+            const CommandLine::Option kQuietO{.fLongName = "quiet"sv};
+            const CommandLine::Option kFileO{.fRequired = true, .fHelpArgName = "FILE"sv, .fHelpOptionText = "the file"sv};
+            EXPECT_EQ (CommandLine::GenerateUsage ("x"sv, {kHelp, kNameO, kRunO, kMaybeO, kQuietO, kFileO}),
+                       "Usage: x [-h|--help] [-n NAME|--name=NAME] [-r ARG]... [--maybe[=ARG]] [--quiet] FILE\n"
+                       "  -h, --help         Print out this help.\n"
+                       "  -n, --name=NAME    the name\n"
+                       "  -r ARG             run it\n"
+                       "  --maybe[=ARG]      perhaps\n"
+                       "  FILE               the file\n"sv);
         }
         {
             // a bare -- ends the options: every word after it is positional (a second -- too), so a file can be named -f

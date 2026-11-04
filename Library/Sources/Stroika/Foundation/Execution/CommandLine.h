@@ -53,8 +53,8 @@ namespace Stroika::Foundation::Execution {
      *  and define 'Option' objects and lookup if given arguments
      *  are 'present' in the commandline (and grab associated arguments).
      * 
-     *  Supports repeated option elements. Supports -o and --output-file formats
-     *  Supports -o ARG and -o=ARG formats
+     *  Supports -o and --output-file options, repeated options, an option's argument as -o ARG, --output-file ARG or
+     *  --output-file=ARG (not -o=ARG), positional arguments, and -- to end the options.
      *
      *  inspired partly by https://man7.org/linux/man-pages/man3/getopt.3.html
      * 
@@ -345,6 +345,8 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          *
          *  \pre options holds no option twice, and at most one fRepeatable positional option, which is the last positional one
+         *  \pre no two options share an fSingleCharName, or an fLongName (as matched: ignoring case if either option does)
+         *  \pre each option meets Option's preconditions
          *
          *  \see ApplyOptionsQuietly
          */
@@ -377,9 +379,13 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \brief A usage line in the usual notation - [X] optional, X required, X... repeatable - then a line for each option
-         *  with fHelpOptionText
+         *  with fHelpOptionText: its names and argument, as GNU and argparse show them, then that text
          *
-         *  For example: Usage: ArchiveUtility [-h|--help] [--list] [--outputDirectory=ARG] ARCHIVE-FILE [FILE]...
+         *  For example:
+         *      Usage: ArchiveUtility [-h|--help] [--list] [--outputDirectory=ARG] ARCHIVE-FILE [FILE]...
+         *        -h, --help               Print out this help.
+         *        --outputDirectory=ARG    (defaulting to .)
+         *        ARCHIVE-FILE             ARCHIVE-FILE can be the single character - to designate stdin
          */
         nonvirtual String GenerateUsage (const Iterable<Option>& options) const;
         static String     GenerateUsage (const String& exeName, const Iterable<Option>& options);

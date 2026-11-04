@@ -442,8 +442,7 @@ String CommandLine::GenerateUsage (const Iterable<Option>& options) const
 
 String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>& options)
 {
-    static const String kIndent_ = "    "sv;
-    StringBuilder       sb;
+    StringBuilder sb;
     sb << "Usage: "sv << exeName;
     // the usual notation: [X] optional, X required, X... repeatable
     options.Apply ([&] (const Option& o) {
@@ -460,17 +459,38 @@ String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>
         }
     });
     sb << "\n"sv;
-    size_t maxArgDescLen{0}; // used to tab-out descriptions so they align
+    // then a line for each option with help text: its names and argument, as GNU and argparse show them (-n, --name=NAME), the
+    // text aligned
+    auto helpName = [] (const Option& o) -> String {
+        String argName = o.fHelpArgName.value_or ("ARG"sv);
+        if (o.IsPositionArgument ()) {
+            return argName;
+        }
+        String longName;
+        if (o.fLongName) {
+            longName = "--"sv + *o.fLongName;
+            if (o.fSupportsArgument) {
+                longName = longName + (o.fIfSupportsArgumentThenRequired ? "="sv + argName : "[="sv + argName + "]"sv);
+            }
+        }
+        if (o.fSingleCharName) {
+            if (o.fLongName) {
+                return "-{}, {}"_f(*o.fSingleCharName, longName);
+            }
+            return o.fSupportsArgument ? "-{} {}"_f(*o.fSingleCharName, argName) : "-{}"_f(*o.fSingleCharName);
+        }
+        return longName;
+    };
+    size_t maxNameLen{0};
     options.Apply ([&] (const Option& o) {
         if (o.fHelpOptionText) {
-            maxArgDescLen = max (maxArgDescLen, o.GetArgumentDescription ().length ());
+            maxNameLen = max (maxNameLen, helpName (o).length ());
         }
     });
     options.Apply ([&] (const Option& o) {
         if (o.fHelpOptionText) {
-            String argDesc = o.GetArgumentDescription ();
-            sb << kIndent_ << argDesc << " "_k.Repeat (static_cast<unsigned int> (kIndent_.length () + maxArgDescLen - argDesc.size ()))
-               << "/* " << *o.fHelpOptionText << " */\n";
+            String name = helpName (o);
+            sb << "  "sv << name << " "_k.Repeat (static_cast<unsigned int> (4 + maxNameLen - name.size ())) << *o.fHelpOptionText << "\n"sv;
         }
     });
     return sb;
@@ -489,6 +509,15 @@ auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const ->
     Require (Set<Option>{options}.size () == options.size ());
     Require (positionals.size () < 2 or not positionals.Take (positionals.size () - 1).Any ([] (const Option& o) { return o.fRepeatable; }));
     Require (options.All ([] (const Option& o) { return not o.fSupportsArgument or o.fIfSupportsArgumentThenRequired or o.fLongName; }));
+    Require (options.All ([] (const Option& o) { return not o.fRepeatable or o.fSupportsArgument or o.IsPositionArgument (); }));
+    Require (not options.Any ([&] (const Option& a) {
+        // no word may name two options: a long name matches case-insensitively if either option says so
+        return options.Any ([&] (const Option& b) {
+            CompareOptions co = a.fLongNameCaseSensitive == eWithCase and b.fLongNameCaseSensitive == eWithCase ? eWithCase : eCaseInsensitive;
+            return a != b and ((a.fSingleCharName and a.fSingleCharName == b.fSingleCharName) or
+                               (a.fLongName and b.fLongName and String::EqualsComparer{co}(*a.fLongName, *b.fLongName)));
+        });
+    }));
 
     Sequence<Given> given; // each option given, in command-line order
     auto            wasGiven       = [&] (const Option& o) { return given.Any ([&] (const Given& g) { return g.fOption == o; }); };
@@ -532,8 +561,7 @@ auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const ->
             else if (o->fSupportsArgument and o->fIfSupportsArgumentThenRequired) {
                 // the next word, whatever it is; an optional argument is given only after = - as getopt - so one is never taken
                 if (i + 1 == fArgs_.size ()) {
-                    return ERRT{InvalidCommandLineArgument{
-                        "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
+                    return ERRT{InvalidCommandLineArgument{"Command line argument {} requires an argument, but none was given"_f(ai), ai}};
                 }
                 argument = fArgs_[++i];
             }
