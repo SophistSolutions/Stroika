@@ -2617,6 +2617,13 @@ namespace {
             char       out[2 * sizeof (kIn)];
             EXPECT_EQ ((string{out, Characters::NLToCRLF (kIn, sizeof (kIn) - 1, out, size (out))}), "a\r\nb\r\n"s);
         }
+        {
+            // String::NLToNative: the same - safe on text that already has CRLF line endings; NormalizeTextToNL undoes it
+            String native = String{"a\nb\r\nc\n"sv}.NLToNative ();
+            EXPECT_EQ (native, "a"_k + String{Characters::kEOL<char>} + "b\r\nc"_k + String{Characters::kEOL<char>});
+            EXPECT_EQ (native.NLToNative (), native);
+            EXPECT_EQ (native.NormalizeTextToNL (), "a\nb\nc\n"sv);
+        }
     }
 }
 

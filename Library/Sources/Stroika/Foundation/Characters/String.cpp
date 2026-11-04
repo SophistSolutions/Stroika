@@ -1285,6 +1285,28 @@ String String::NormalizeTextToNL () const
     }
 }
 
+String String::NLToNative () const
+{
+#if qStroika_Platform_Windows
+    PeekSpanData                   pds = GetPeekSpanData<ASCII> ();
+    Memory::StackBuffer<Character> maybeIgnoreBuf;
+    span<const Character>          charSpan = GetData (pds, &maybeIgnoreBuf);
+    StringBuilder                  sb;
+    bool                           everChanged{false};
+    for (auto ci = charSpan.begin (); ci != charSpan.end (); ++ci) {
+        if (*ci == '\n' and (ci == charSpan.begin () or *(ci - 1) != '\r')) { // unless it already WAS CRLF
+            sb << "\r"sv;
+            everChanged = true;
+        }
+        sb << *ci;
+    }
+    if (everChanged) {
+        return sb;
+    }
+#endif
+    return *this; // elsewhere NL is the native line ending
+}
+
 String String::NormalizeSpace (Character useSpaceCharacter) const
 {
     return ReplaceAll ("\\s+"_RegEx, String{useSpaceCharacter});

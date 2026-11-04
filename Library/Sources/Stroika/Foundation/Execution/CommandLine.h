@@ -381,6 +381,8 @@ namespace Stroika::Foundation::Execution {
          *  \brief A usage line in the usual notation - [X] optional, X required, X... repeatable - then a line for each option
          *  with fHelpOptionText: its names and argument, as GNU and argparse show them, then that text
          *
+         *  Lines end in \n - right for cerr or cout (see Characters::kEOL; String::NLToNative () converts it for a raw write).
+         *
          *  For example:
          *      Usage: ArchiveUtility [-h|--help] [--list] [--outputDirectory=ARG] ARCHIVE-FILE [FILE]...
          *        -h, --help               Print out this help.

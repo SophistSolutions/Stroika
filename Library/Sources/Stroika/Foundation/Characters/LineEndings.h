@@ -14,7 +14,12 @@
 namespace Stroika::Foundation::Characters {
 
     /**
-     *  \brief null-terminated String constant for current compiled platform - Windows (CRLF) or POSIX (NL) - macos I dont think any longer uses \r??
+     *  \brief null-terminated String constant for current compiled platform - Windows (CRLF) or POSIX, macOS included (NL)
+     *
+     *  Text Stroika makes (ToString, CommandLine::GenerateUsage...) generally ends lines in \n, which is right for a text-mode
+     *  stream - cout, cerr, an fstream opened without ios::binary - as it writes the platform's line ending itself (on Windows,
+     *  given kEOL it would write \r\r\n). kEOL is for text written where nothing converts: a binary stream, a socket,
+     *  OutputDebugString. To convert \n text for such a place, String::NLToNative ().
      */
     template <IPossibleCharacterRepresentation T>
     static constexpr T kEOL[] = {

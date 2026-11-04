@@ -909,6 +909,16 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief Replace each NL with the platform's line ending (kEOL) - for text written where nothing converts it (a file
+         *  opened in binary, a socket); not for cerr or cout, whose text mode already does (see kEOL)
+         *
+         *  A \n already preceded by \r is left as it is, so this is safe to call on text that already has CRLF line endings
+         *  (on Windows a no-op then; elsewhere always one). NormalizeTextToNL () undoes it.
+         */
+        nonvirtual String NLToNative () const;
+
+    public:
+        /**
          *  \brief Replace sequences of whitespace characters (space, tab, newline etc) with a single space (or argument space character).
          * 
          *  \note  see Qt 'QString::simplify()'.Idea is Trim () (right and left) - plus replace contiguous substrings with* Character::IsSpace () with a
