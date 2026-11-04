@@ -54,9 +54,8 @@ namespace Stroika::Foundation::Characters {
      *          int         n3      =   String2Int ("33aaa");  // invalid parse, so returns zero!
      *      \endcode
      * 
-     *  TODO:
-     *      @todo MAYBE replace this with String2IntQuietly () - just always mapping to a default (and maybe make that default a parameter).
-     *            and otherwise THROW on invalid.
+     *  \note For strict parsing - an error, not 0, for text that is not an integer or is out of range - see ParseInteger
+     *        (ParseNumber.h); ParseInteger<T> (s).value_or (0) is this, except an out-of-range value gives 0, not min or max.
      */
     template <integral T = int, IUNICODECodePoint CHAR_T>
     T String2Int (span<const CHAR_T> s);
@@ -70,6 +69,8 @@ namespace Stroika::Foundation::Characters {
      *  @see strtoul(), or @see wcstol (). This is a simple wrapper on strtoul() or wcstoul().
      *  strtoul() etc are more flexible. This is merely meant to be an often convenient wrapper.
      *  Use strtoul etc directly to see if the string parsed properly.
+     *
+     *  \note For strict parsing, see ParseInteger (s, 16) (ParseNumber.h) - which takes no 0x prefix.
      */
     unsigned int HexString2Int (const String& s);
 

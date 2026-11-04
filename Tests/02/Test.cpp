@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
@@ -2598,6 +2599,58 @@ namespace {
             String a = "a b   \n\t c";
             EXPECT_EQ (a.ReplaceAll (RegularExpression{"\\s+"sv}, " "sv), "a b c");
             EXPECT_EQ (a.ReplaceAll ("\\s+"_RegEx, " "sv), "a b c");
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Characters, ParseNumber_)
+    {
+        Debug::TraceContextBumper ctx{"ParseNumber_"};
+        auto                      errorText = [] (const auto& r) { return r.has_value () ? String{} : Characters::ToString (r.error ()); };
+        {
+            // ParseInteger: the whole text, in T's range - else an error saying which, never a default value
+            EXPECT_EQ (*ParseInteger<int> ("33"), 33);
+            EXPECT_EQ (*ParseInteger<int> ("-33"), -33);
+            EXPECT_EQ (*ParseInteger<int> ("+33"), 33);
+            EXPECT_EQ (*ParseInteger<int> (L"42"), 42);
+            EXPECT_EQ (*ParseInteger<int> (String{"42"}), 42);
+            EXPECT_EQ (*ParseInteger<uint16_t> ("65535"), 65535);
+            EXPECT_EQ (*ParseInteger<int8_t> ("-128"), -128);
+            EXPECT_EQ (*ParseInteger<unsigned int> ("ff", 16), 255u);
+            EXPECT_EQ (*ParseInteger<unsigned int> ("FF", 16), 255u);
+            EXPECT_EQ (*ParseInteger<unsigned int> ("-0"), 0u);
+            for (const char* bad : {"", "abc", "33aaa", " 33", "33 ", "+-3", "--3", "0x1A", "3.5", "\xd7\xa9"}) {
+                EXPECT_TRUE (errorText (ParseInteger<int> (bad)).Contains ("is not an integer"sv)) << bad;
+            }
+            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("fg", 16)).Contains ("is not a base-16 integer"sv));
+            EXPECT_TRUE (errorText (ParseInteger<uint16_t> ("70000")).Contains ("\"70000\" is out of range (0 to 65535)"sv));
+            EXPECT_TRUE (errorText (ParseInteger<uint16_t> ("-1")).Contains ("is out of range"sv));
+            EXPECT_TRUE (errorText (ParseInteger<int8_t> ("128")).Contains ("is out of range (-128 to 127)"sv));
+            EXPECT_EQ (ParseInteger<int> ("x").value_or (0), 0); // String2Int's lenient behavior, if wanted
+            EXPECT_THROW ((void)Execution::ThrowIfFailed (ParseInteger<int> ("x")), DataExchange::BadFormatException);
+        }
+        {
+            // ParseFloat: the same - nan, inf and infinity as such, but text that is not a number, or too large, is an error
+            EXPECT_EQ (*ParseFloat<double> ("2.5"), 2.5);
+            EXPECT_EQ (*ParseFloat<double> ("-1e3"), -1000.0);
+            EXPECT_EQ (*ParseFloat<double> ("+1.5"), 1.5);
+            EXPECT_EQ (*ParseFloat<float> (L"0.25"), 0.25f);
+            EXPECT_TRUE (isnan (*ParseFloat<double> ("nan")));
+            EXPECT_TRUE (isnan (*ParseFloat<double> ("NaN")));
+            EXPECT_EQ (*ParseFloat<double> ("-inf"), -numeric_limits<double>::infinity ());
+            EXPECT_EQ (*ParseFloat<double> ("Infinity"), numeric_limits<double>::infinity ());
+            for (const char* bad : {"", "abc", "2.5x", " 2.5", "2.5 ", "nanx", "infx", "\xd7\xa9"}) {
+                EXPECT_TRUE (errorText (ParseFloat<double> (bad)).Contains ("is not a number"sv)) << bad;
+            }
+            EXPECT_TRUE (errorText (ParseFloat<double> ("1e400")).Contains ("\"1e400\" is out of range"sv));
+            EXPECT_TRUE (errorText (ParseFloat<float> ("-1e39")).Contains ("is out of range"sv));
+            EXPECT_TRUE (isnan (ParseFloat<double> ("x").value_or (numeric_limits<double>::quiet_NaN ()))); // ToFloat's, if wanted
+            // with a remainder: the number at the start (after any whitespace), and what follows it
+            String rest;
+            EXPECT_EQ (*ParseFloat<double> (" 3.5 apples"_k, &rest), 3.5);
+            EXPECT_EQ (rest, " apples"sv);
+            EXPECT_TRUE (errorText (ParseFloat<double> ("apples"_k, &rest)).Contains ("does not start with a number"sv));
         }
     }
 }

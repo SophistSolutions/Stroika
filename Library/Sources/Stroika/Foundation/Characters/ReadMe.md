@@ -16,6 +16,7 @@ Also, generic ToString () support - to convert objects to a string format.
   - [FloatConversion.h](FloatConversion.h)
   - [Format.h](Format.h) - function **Format()**
   - [LineEndings.h](LineEndings.h)
+  - [ParseNumber.h](ParseNumber.h) - functions **ParseInteger()**, **ParseFloat()** - strict text-to-number conversion
   - [Platform/ReadMe.md](Platform/)
   - [RegularExpression.h](RegularExpression.h) - class **RegularExpression**
   - [SDKChar.h](SDKChar.h)

@@ -493,6 +493,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      *      This means it ALLOWS leading whitespace (skipped). And it allows junk at the end (remainder parameter filled in with what).
      * 
+     *  \note For strict parsing - an error, not NaN or infinity, for text that is not a number or is too large - see ParseFloat
+     *        (ParseNumber.h).
+     *
      *  \note SEE https://github.com/SophistSolutions/Stroika/issues/882 (STK-748)
      *        We will PROBABLY change this API to take a ToFloatOptions parameter to handle proper locale/conversions of strings to numbers
      *        but so far I've not been able to get any of that working, so ignore for now...
