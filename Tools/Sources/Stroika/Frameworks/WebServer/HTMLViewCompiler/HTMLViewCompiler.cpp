@@ -8,123 +8,72 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
 constexpr wchar_t kOpenCodeTag[]  = L"<%";
 constexpr wchar_t kCloseCodeTag[] = L"%>";
 constexpr wchar_t kMagicWriteChar = '='; // if first char after open tag - treat as synonym for fResponse.write ()
 
+namespace {
+    using StandardCommandLineOptions::kHelp;
+    const CommandLine::Option kFormGeneratorNameO_{.fSingleCharName   = 'n',
+                                                   .fSupportsArgument = true,
+                                                   .fHelpArgName      = "NAME"sv,
+                                                   .fHelpOptionText   = "names the generated function (default Form_Generator)"sv};
+    const CommandLine::Option kInputFileO_{.fRequired = true, .fHelpArgName = "INPUT-HTML-FILE"sv};
+    const CommandLine::Option kOutputFileO_{.fRequired = true, .fHelpArgName = "OUTPUT-CPP-FILE"sv};
+    const initializer_list<CommandLine::Option> kAllOptions_{kHelp, kFormGeneratorNameO_, kInputFileO_, kOutputFileO_};
+}
+
 class CompilerApp {
 public:
-    CompilerApp ()
-        : fFormGeneratorName{SDKSTR ("Form_Generator")}
+    CompilerApp (const filesystem::path& inputFile, const filesystem::path& outputFile, const String& formGeneratorName)
+        : fInputFile{inputFile}
+        , fOutputFile{outputFile}
+        , fFormGeneratorName{formGeneratorName}
     {
     }
 
 public:
-    nonvirtual void Run (int argc, const SDKChar* argv[])
+    /**
+     *  false if it wrote no complete output: a file it could not open, or HTML whose code tags do not pair up
+     */
+    nonvirtual bool Run ()
     {
-        if (ParseArgs_ (argc, argv)) {
-            fstream in;
-            in.open (fInputFile.c_str (), ios_base::in);
-            if (!in) {
-                cerr << "Error opening input file- aborting" << endl;
-                return;
-            }
-            fstream out;
-            out.open (fOutputFile.c_str (), ios_base::out);
-            if (!out) {
-                cerr << "Error opening output file- aborting" << endl;
-                return;
-            }
-            ProcessFile_ (in, out);
-        }
-    }
-
-private:
-    nonvirtual void Usage_ ()
-    {
-        cerr << "Usage: HTMLViewCompiler [options]? InputHTMLFile OutputCFile\n";
-        cerr << "\twhere [options]can be:\n";
-        cerr << "\t\t-help to print out this message\n";
-        cerr << "\t\t-n X set FormGenerator functioname to X\n";
-    }
-
-private:
-    nonvirtual bool ParseArgs_ (int argc, const SDKChar* argv[])
-    {
-        int  fileCount   = 0;
-        bool gettingName = false;
-        for (int i = 1; i < argc; ++i) {
-            const SDKChar* argi = argv[i];
-            if (argi != NULL) {
-                if (argi[0] == '-' or argi[0] == '/') {
-                    size_t  optCharIdx = 1;
-                    SDKChar optChar    = argi[optCharIdx];
-                    if (optChar == '-' and argi[0] == '-') {
-                        optCharIdx++;
-                        optChar = argi[optCharIdx];
-                    }
-                    switch (optChar) {
-                        case 'h':
-                        case '?': {
-                            Usage_ ();
-                            return false;
-                        } break;
-                        case 'n':
-                            gettingName = true;
-                            break;
-                        default: {
-                            cerr << "Unknown argument '" << String::FromSDKString (argi) << "'\n";
-                            Usage_ ();
-                            return false;
-                        } break;
-                    }
-                }
-                else if (gettingName) {
-                    fFormGeneratorName = argi;
-                    gettingName        = false;
-                    break;
-                }
-                else {
-                    switch (fileCount) {
-                        case 0:
-                            fInputFile = argi;
-                            break;
-                        case 1:
-                            fOutputFile = argi;
-                            break;
-                        default:
-                            cerr << "Too many files" << endl;
-                            Usage_ ();
-                            return false;
-                    }
-                    fileCount++;
-                }
-            }
-        }
-        if (fileCount < 2) {
-            cerr << "Not enuf files specified." << endl;
-            Usage_ ();
+        fstream in;
+        in.open (fInputFile, ios_base::in);
+        if (!in) {
+            cerr << "Error opening input file- aborting" << endl;
             return false;
         }
-        return true;
+        fstream out;
+        out.open (fOutputFile, ios_base::out);
+        if (!out) {
+            cerr << "Error opening output file- aborting" << endl;
+            return false;
+        }
+        return ProcessFile_ (in, out);
     }
 
 private:
-    nonvirtual void ProcessFile_ (istream& in, ostream& out)
+    nonvirtual bool ProcessFile_ (istream& in, ostream& out)
     {
         wstring orig =
             Streams::BinaryToText::Reader::New (Streams::iostream::InputStreamFromStdIStream::New<std::byte> (in)).ReadAll ().As<wstring> ();
 
-        out << "/*Auto-Generated C++ file from the Source HTML file '" << String::FromSDKString (fInputFile) << "'*/" << endl;
-        out << "void    " << String::FromSDKString (fFormGeneratorName) << " ()" << endl;
+        out << "/*Auto-Generated C++ file from the Source HTML file '" << String{fInputFile} << "'*/" << endl;
+        out << "void    " << fFormGeneratorName << " ()" << endl;
         out << "{" << endl;
         {
             bool inCode           = false;
@@ -134,7 +83,7 @@ private:
                 if (static_cast<size_t> (orig.end () - i) >= ::wcslen (kOpenCodeTag) and wstring (i, i + ::wcslen (kOpenCodeTag)) == kOpenCodeTag) {
                     if (inCode) {
                         cerr << "ERROR: Open inside context of open" << endl;
-                        return;
+                        return false;
                     }
                     inCode = true;
                     i += ::wcslen (kOpenCodeTag);
@@ -150,7 +99,7 @@ private:
                 else if (static_cast<size_t> (orig.end () - i) >= ::wcslen (kCloseCodeTag) and wstring (i, i + ::wcslen (kCloseCodeTag)) == kCloseCodeTag) {
                     if (not inCode) {
                         cerr << "ERROR: Close CODE inside context of closed" << endl;
-                        return;
+                        return false;
                     }
                     i += ::wcslen (kCloseCodeTag);
                     if (inMagicWriteMode) {
@@ -195,6 +144,7 @@ private:
             }
         }
         out << "}" << endl;
+        return true;
     }
 
 private:
@@ -262,18 +212,27 @@ private:
     }
 
 private:
-    SDKString fInputFile;
-    SDKString fOutputFile;
-    SDKString fFormGeneratorName;
+    filesystem::path fInputFile;
+    filesystem::path fOutputFile;
+    String           fFormGeneratorName;
 };
 
-#if defined(__TCHAR_DEFINED)
-int _tmain (int argc, const _TCHAR* argv[])
-#else
 int main (int argc, const char* argv[])
-#endif
 {
-    CompilerApp app;
-    app.Run (argc, argv);
-    return 0;
+    CommandLine                       cmdLine{argc, argv};
+    Debug::TraceContextBumper         ctx{"main", "argv={}"_f, cmdLine};
+    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
+    if (not args) {
+        cerr << Characters::ToString (args.error ()) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_);
+        return EXIT_FAILURE;
+    }
+    if (args->Has (kHelp)) {
+        cerr << cmdLine.GenerateUsage (kAllOptions_);
+        return EXIT_SUCCESS;
+    }
+    CompilerApp app{ValueOf (args->GetArgument (kInputFileO_)).As<filesystem::path> (),
+                    ValueOf (args->GetArgument (kOutputFileO_)).As<filesystem::path> (),
+                    args->GetArgument (kFormGeneratorNameO_).value_or ("Form_Generator"sv)};
+    return app.Run () ? EXIT_SUCCESS : EXIT_FAILURE;
 }
