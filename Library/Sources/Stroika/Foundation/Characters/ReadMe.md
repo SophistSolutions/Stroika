@@ -6,6 +6,12 @@ Code to manage Strings, formatting of strings, RegularExpressions, LineEndings, 
 
 Also, generic ToString () support - to convert objects to a string format.
 
+Numbers and text, in both directions:
+
+- number -> text: **ToString()** ([ToString.h](ToString.h)) - for a floating point number with **FloatToStringOptions**
+- text -> number: **ParseInteger()** and **ParseFloat()** ([ParseNumber.h](ParseNumber.h)), each with its own options
+- the types both directions share - a locale, significant figures, float formats: [NumberFormat.h](NumberFormat.h)
+
 - Modules
 
   - [Character.h](Character.h)
@@ -16,6 +22,7 @@ Also, generic ToString () support - to convert objects to a string format.
   - [FloatConversion.h](FloatConversion.h)
   - [Format.h](Format.h) - function **Format()**
   - [LineEndings.h](LineEndings.h)
+  - [NumberFormat.h](NumberFormat.h) - the types describing numbers as text, shared by ToString () and ParseNumber.h
   - [ParseNumber.h](ParseNumber.h) - functions **ParseInteger()**, **ParseFloat()** - strict text-to-number conversion
   - [Platform/ReadMe.md](Platform/)
   - [RegularExpression.h](RegularExpression.h) - class **RegularExpression**

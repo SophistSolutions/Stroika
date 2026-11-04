@@ -25,10 +25,10 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- ********************* FloatConversion::SignificantFigures **********************
+ ****************************** SignificantFigures ******************************
  ********************************************************************************
  */
-String FloatConversion::SignificantFigures::ToString () const
+String Characters::SignificantFigures::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
@@ -44,10 +44,10 @@ String FloatConversion::SignificantFigures::ToString () const
 
 /*
  ********************************************************************************
- ******************** FloatConversion::ToStringOptions **************************
+ ***************************** FloatToStringOptions *****************************
  ********************************************************************************
  */
-String FloatConversion::ToStringOptions::ToString () const
+String Characters::FloatToStringOptions::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
