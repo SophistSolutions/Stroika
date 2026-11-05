@@ -452,7 +452,7 @@ struct Options {
 So the declaration is the default and its documentation in one place, and code reads a field as it is.
 
 A field is `optional<T>` only where unset means something no value of T can say:
-  - options merged, one set overlaid on another (`FloatConversion::ToStringOptions (b1, b2)`), where "not given" must differ
+  - options merged, one set overlaid on another (`FloatToStringOptions (b1, b2)`), where "not given" must differ
     from "given, as the default"
   - a default computed from other fields, or at run time (not a constant expression), or inherited from elsewhere
 

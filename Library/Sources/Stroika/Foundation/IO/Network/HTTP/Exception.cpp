@@ -6,7 +6,6 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 
 #include "Exception.h"
 

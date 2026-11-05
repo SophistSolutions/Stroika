@@ -3,7 +3,6 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -28,13 +27,13 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
     // Read/Write real/complex numbers
     mapper.Add<Number> (
         [] (const ObjectVariantMapper& mapper [[maybe_unused]], const Number* obj) -> VariantValue {
-            static const FloatConversion::ToStringOptions kFloat2StringOptions_{};
-            StringBuilder                                 sb;
+            static const FloatToStringOptions kFloat2StringOptions_{};
+            StringBuilder                     sb;
             if (obj->real () != 0) {
                 if (obj->imag () == 0) {
                     return obj->real (); // return a number in this case, not a string
                 }
-                sb << FloatConversion::ToString (obj->real (), kFloat2StringOptions_);
+                sb << Characters::ToString (obj->real (), kFloat2StringOptions_);
             }
             if (obj->imag () != 0) {
                 if (not sb.empty ()) {
@@ -50,7 +49,7 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
                     sb << "- "sv;
                 }
                 else {
-                    sb << FloatConversion::ToString (obj->imag (), kFloat2StringOptions_);
+                    sb << Characters::ToString (obj->imag (), kFloat2StringOptions_);
                 }
                 sb << "i"sv;
             }

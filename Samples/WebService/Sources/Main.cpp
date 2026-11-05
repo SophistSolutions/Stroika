@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/ParseNumber.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"

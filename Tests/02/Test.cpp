@@ -13,13 +13,11 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/CharacterEncodingException.h"
 #include "Stroika/Foundation/Characters/CodeCvt.h"
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Locale.h"
@@ -34,6 +32,12 @@
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Time/Realtime.h"
+
+// deprecated, and included only to test what they still offer - so their deprecated-file messages are not wanted here
+#undef _DeprecatedFile_
+#define _DeprecatedFile_(MESSAGE)
+#include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/String2Int.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
@@ -939,7 +943,6 @@ namespace {
     GTEST_TEST (Foundation_Characters, CalculateSignificantFigures_)
     {
         Debug::TraceContextBumper ctx{"CalculateSignificantFigures_"};
-        using namespace FloatConversion;
         EXPECT_EQ (SignificantFigures::Calculate (span{"3.01"sv}), 3u);
         EXPECT_EQ (SignificantFigures::Calculate (span{"03.01"sv}), 3u);
         EXPECT_EQ (SignificantFigures::Calculate (span{"-44.21"sv}), 4u);
@@ -955,103 +958,102 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Characters, Basic_FloatConversion_ToString_)
+    GTEST_TEST (Foundation_Characters, Basic_Float_ToString_)
     {
-        Debug::TraceContextBumper ctx{"Basic_FloatConversion_ToString_"};
-        using namespace FloatConversion;
+        Debug::TraceContextBumper ctx{"Basic_Float_ToString_"};
         {
-            // From FloatConversion.h docs
-            static const auto kOptions_ = ToStringOptions{eDefaultFloat};
-            EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0");
-            EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.01");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "1e-05");
-            EXPECT_TRUE (FloatConversion::ToString (3.12e12, kOptions_) == "3.12e+12" or FloatConversion::ToString (3.12e12, kOptions_) == "3.12000e+12");
-            EXPECT_EQ (FloatConversion::ToString (3.12, kOptions_), "3.12");
-            EXPECT_EQ (FloatConversion::ToString (212312345.0, kOptions_), "2.12312e+08");
-            EXPECT_EQ (FloatConversion::ToString (-44.2, kOptions_), "-44.2");
+            // From NumberFormat.h docs (FloatFormatType)
+            static const auto kOptions_ = FloatToStringOptions{eDefaultFloat};
+            EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
+            EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
+            EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "1e-05");
+            EXPECT_TRUE (Characters::ToString (3.12e12, kOptions_) == "3.12e+12" or
+                         Characters::ToString (3.12e12, kOptions_) == "3.12000e+12");
+            EXPECT_EQ (Characters::ToString (3.12, kOptions_), "3.12");
+            EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "2.12312e+08");
+            EXPECT_EQ (Characters::ToString (-44.2, kOptions_), "-44.2");
             // XCode 13/14 return 0 here? --LGP 2026-02-15
-            EXPECT_TRUE (FloatConversion::ToString (0.0000001234567, kOptions_) == "1.23457e-07" or
-                         FloatConversion::ToString (0.0000001234567, kOptions_) == "0");
+            EXPECT_TRUE (Characters::ToString (0.0000001234567, kOptions_) == "1.23457e-07" or Characters::ToString (0.0000001234567, kOptions_) == "0");
             // EXTRA TESTS
-            EXPECT_EQ (FloatConversion::ToString (1.4, kOptions_), "1.4");
-            EXPECT_EQ (FloatConversion::ToString (1.6, kOptions_), "1.6");
+            EXPECT_EQ (Characters::ToString (1.4, kOptions_), "1.4");
+            EXPECT_EQ (Characters::ToString (1.6, kOptions_), "1.6");
         }
         {
-            // From FloatConversion.h docs
-            static const auto kOptions_ = ToStringOptions{eFixedPoint};
-            EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0.000000");
-            EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.010000");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "0.000010");
-            EXPECT_EQ (FloatConversion::ToString (3.12e12, kOptions_), "3120000000000.000000");
-            EXPECT_EQ (FloatConversion::ToString (3.12, kOptions_), "3.120000");
-            EXPECT_EQ (FloatConversion::ToString (212312345.0, kOptions_), "212312345.000000");
-            EXPECT_EQ (FloatConversion::ToString (-44.2, kOptions_), "-44.200000");
-            EXPECT_EQ (FloatConversion::ToString (0.0000001234567, kOptions_), "0.000000");
+            // From NumberFormat.h docs (FloatFormatType)
+            static const auto kOptions_ = FloatToStringOptions{eFixedPoint};
+            EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0.000000");
+            EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.010000");
+            EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "0.000010");
+            EXPECT_EQ (Characters::ToString (3.12e12, kOptions_), "3120000000000.000000");
+            EXPECT_EQ (Characters::ToString (3.12, kOptions_), "3.120000");
+            EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "212312345.000000");
+            EXPECT_EQ (Characters::ToString (-44.2, kOptions_), "-44.200000");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "0.000000");
         }
         {
-            // From FloatConversion.h docs
-            static const auto kOptions_ = ToStringOptions{eFixedPointWithWhitespaceTrimmed};
-            EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0");
-            EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.01");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "0.00001");
-            EXPECT_EQ (FloatConversion::ToString (3.12e12, kOptions_), "3120000000000");
-            EXPECT_EQ (FloatConversion::ToString (3.12, kOptions_), "3.12");
-            EXPECT_EQ (FloatConversion::ToString (212312345.0, kOptions_), "212312345");
-            EXPECT_EQ (FloatConversion::ToString (-44.2, kOptions_), "-44.2");
-            EXPECT_EQ (FloatConversion::ToString (0.0000001234567, kOptions_), "0");
+            // From NumberFormat.h docs (FloatFormatType)
+            static const auto kOptions_ = FloatToStringOptions{eFixedPointWithWhitespaceTrimmed};
+            EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
+            EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
+            EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "0.00001");
+            EXPECT_EQ (Characters::ToString (3.12e12, kOptions_), "3120000000000");
+            EXPECT_EQ (Characters::ToString (3.12, kOptions_), "3.12");
+            EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "212312345");
+            EXPECT_EQ (Characters::ToString (-44.2, kOptions_), "-44.2");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "0");
         }
         {
-            // From FloatConversion.h docs
-            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eScientific}), "0.00000e+00");
-            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eScientific}), "1.00000e-02");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eScientific}), "1.00000e-05");
-            EXPECT_EQ (FloatConversion::ToString (3.12e12, ToStringOptions{eScientific}), "3.12000e+12");
-            EXPECT_EQ (FloatConversion::ToString (3.12, ToStringOptions{eScientific}), "3.12000e+00");
-            EXPECT_EQ (FloatConversion::ToString (212312345.0, ToStringOptions{eScientific}), "2.12312e+08");
-            EXPECT_EQ (FloatConversion::ToString (-44.2, ToStringOptions{eScientific}), "-4.42000e+01");
-            EXPECT_EQ (FloatConversion::ToString (0.0000001234567, ToStringOptions{eScientific}), "1.23457e-07");
+            // From NumberFormat.h docs (FloatFormatType)
+            EXPECT_EQ (Characters::ToString (0.0, FloatToStringOptions{eScientific}), "0.00000e+00");
+            EXPECT_EQ (Characters::ToString (0.01, FloatToStringOptions{eScientific}), "1.00000e-02");
+            EXPECT_EQ (Characters::ToString (0.00001, FloatToStringOptions{eScientific}), "1.00000e-05");
+            EXPECT_EQ (Characters::ToString (3.12e12, FloatToStringOptions{eScientific}), "3.12000e+12");
+            EXPECT_EQ (Characters::ToString (3.12, FloatToStringOptions{eScientific}), "3.12000e+00");
+            EXPECT_EQ (Characters::ToString (212312345.0, FloatToStringOptions{eScientific}), "2.12312e+08");
+            EXPECT_EQ (Characters::ToString (-44.2, FloatToStringOptions{eScientific}), "-4.42000e+01");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, FloatToStringOptions{eScientific}), "1.23457e-07");
         }
         {
-            // From FloatConversion.h docs
-            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eScientificWithWhitespaceTrimmed}), "0.0e+00");
-            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eScientificWithWhitespaceTrimmed}), "1.0e-02");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eScientificWithWhitespaceTrimmed}), "1.0e-05");
-            EXPECT_EQ (FloatConversion::ToString (3.12e12, ToStringOptions{eScientificWithWhitespaceTrimmed}), "3.12e+12");
-            EXPECT_EQ (FloatConversion::ToString (3.12, ToStringOptions{eScientificWithWhitespaceTrimmed}), "3.12e+00");
-            EXPECT_EQ (FloatConversion::ToString (212312345.0, ToStringOptions{eScientificWithWhitespaceTrimmed}), "2.12312e+08");
-            EXPECT_EQ (FloatConversion::ToString (-44.2, ToStringOptions{eScientificWithWhitespaceTrimmed}), "-4.42e+01");
-            EXPECT_EQ (FloatConversion::ToString (0.0000001234567, ToStringOptions{eScientificWithWhitespaceTrimmed}), "1.23457e-07");
+            // From NumberFormat.h docs (FloatFormatType)
+            EXPECT_EQ (Characters::ToString (0.0, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "0.0e+00");
+            EXPECT_EQ (Characters::ToString (0.01, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.0e-02");
+            EXPECT_EQ (Characters::ToString (0.00001, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.0e-05");
+            EXPECT_EQ (Characters::ToString (3.12e12, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "3.12e+12");
+            EXPECT_EQ (Characters::ToString (3.12, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "3.12e+00");
+            EXPECT_EQ (Characters::ToString (212312345.0, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "2.12312e+08");
+            EXPECT_EQ (Characters::ToString (-44.2, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "-4.42e+01");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.23457e-07");
         }
         {
-            // From FloatConversion.h docs
-            static const auto kOptions_ = ToStringOptions{eStandard};
-            EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0");
-            EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.01");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "0.00001");
-            EXPECT_EQ (FloatConversion::ToString (3.12e12, kOptions_), "3120000000000");
-            EXPECT_EQ (FloatConversion::ToString (3.12, kOptions_), "3.12");
-            EXPECT_EQ (FloatConversion::ToString (212312345.0, kOptions_), "212312345");
-            EXPECT_EQ (FloatConversion::ToString (-44.2, kOptions_), "-44.2");
-            EXPECT_EQ (FloatConversion::ToString (0.0000001234567, kOptions_), "0.000000123457");
+            // From NumberFormat.h docs (FloatFormatType)
+            static const auto kOptions_ = FloatToStringOptions{eStandard};
+            EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
+            EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
+            EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "0.00001");
+            EXPECT_EQ (Characters::ToString (3.12e12, kOptions_), "3120000000000");
+            EXPECT_EQ (Characters::ToString (3.12, kOptions_), "3.12");
+            EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "212312345");
+            EXPECT_EQ (Characters::ToString (-44.2, kOptions_), "-44.2");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "0.000000123457");
 
             // and a few more
-            EXPECT_EQ (FloatConversion::ToString (1.4, ToStringOptions{SignificantFigures{1}, kOptions_}), "1");
-            EXPECT_EQ (FloatConversion::ToString (1.6, ToStringOptions{SignificantFigures{1}, kOptions_}), "2");
+            EXPECT_EQ (Characters::ToString (1.4, FloatToStringOptions{SignificantFigures{1}, kOptions_}), "1");
+            EXPECT_EQ (Characters::ToString (1.6, FloatToStringOptions{SignificantFigures{1}, kOptions_}), "2");
         }
         // more tests...
         {
-            static const ToStringOptions kFixedPt3_ = ToStringOptions{SignificantFigures{3}, eFixedPoint};
-            EXPECT_EQ (FloatConversion::ToString (3.0, kFixedPt3_), "3.000");
-            EXPECT_EQ (FloatConversion::ToString (3.1, kFixedPt3_), "3.100");
-            EXPECT_EQ (FloatConversion::ToString (3.1241, kFixedPt3_), "3.124");
-            EXPECT_EQ (FloatConversion::ToString (.00331241, kFixedPt3_), "0.003");
-            EXPECT_EQ (FloatConversion::ToString (.000331241, kFixedPt3_), "0.000");
-            static const ToStringOptions kFixedPt3WithTrim_ = ToStringOptions{SignificantFigures{3}, eFixedPointWithWhitespaceTrimmed};
-            EXPECT_EQ (FloatConversion::ToString (3.0, kFixedPt3WithTrim_), "3");
-            EXPECT_EQ (FloatConversion::ToString (3.1, kFixedPt3WithTrim_), "3.1");
-            EXPECT_EQ (FloatConversion::ToString (3.1241, kFixedPt3WithTrim_), "3.124");
-            EXPECT_EQ (FloatConversion::ToString (.00331241, kFixedPt3WithTrim_), "0.003");
-            EXPECT_EQ (FloatConversion::ToString (.000331241, kFixedPt3WithTrim_), "0");
+            static const FloatToStringOptions kFixedPt3_ = FloatToStringOptions{SignificantFigures{3}, eFixedPoint};
+            EXPECT_EQ (Characters::ToString (3.0, kFixedPt3_), "3.000");
+            EXPECT_EQ (Characters::ToString (3.1, kFixedPt3_), "3.100");
+            EXPECT_EQ (Characters::ToString (3.1241, kFixedPt3_), "3.124");
+            EXPECT_EQ (Characters::ToString (.00331241, kFixedPt3_), "0.003");
+            EXPECT_EQ (Characters::ToString (.000331241, kFixedPt3_), "0.000");
+            static const FloatToStringOptions kFixedPt3WithTrim_ = FloatToStringOptions{SignificantFigures{3}, eFixedPointWithWhitespaceTrimmed};
+            EXPECT_EQ (Characters::ToString (3.0, kFixedPt3WithTrim_), "3");
+            EXPECT_EQ (Characters::ToString (3.1, kFixedPt3WithTrim_), "3.1");
+            EXPECT_EQ (Characters::ToString (3.1241, kFixedPt3WithTrim_), "3.124");
+            EXPECT_EQ (Characters::ToString (.00331241, kFixedPt3WithTrim_), "0.003");
+            EXPECT_EQ (Characters::ToString (.000331241, kFixedPt3WithTrim_), "0");
         }
     }
 }
@@ -1067,7 +1069,7 @@ namespace {
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             {
-                auto f = FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::SignificantFigures::kFullPrecision));
+                auto f = FloatConversion::ToFloat<FLOAT_TYPE> (Characters::ToString (l, SignificantFigures::kFullPrecision));
                 if (not Math::NearlyEquals (l, f)) {
                     if (Debug::IsRunningUnderValgrind ()) {
                         Stroika::Frameworks::Test::WarnTestIssue (
@@ -1081,8 +1083,7 @@ namespace {
                     }
                 }
             }
-            EXPECT_TRUE (Math::NearlyEquals (
-                l, FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::SignificantFigures::kFullPrecision))));
+            EXPECT_TRUE (Math::NearlyEquals (l, FloatConversion::ToFloat<FLOAT_TYPE> (Characters::ToString (l, SignificantFigures::kFullPrecision))));
         }
     }
     GTEST_TEST (Foundation_Characters, StringNumericConversions_)
@@ -1247,8 +1248,8 @@ namespace {
             EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (String{L"44.4333"}), 44.4333));
         }
         [[maybe_unused]] auto runLocaleIndepTest = [] () {
-            EXPECT_EQ (FloatConversion::ToString (3000.5), "3000.5");
-            EXPECT_EQ (FloatConversion::ToString (30000.5), "30000.5");
+            EXPECT_EQ (Characters::ToString (3000.5), "3000.5");
+            EXPECT_EQ (Characters::ToString (30000.5), "30000.5");
         };
         {
             // Verify change of locale has no effect on results
@@ -1318,43 +1319,43 @@ namespace {
     GTEST_TEST (Foundation_Characters, Float2String)
     {
         Debug::TraceContextBumper ctx{"Float2String"};
-        EXPECT_EQ (FloatConversion::ToString (0.0), "0");
-        EXPECT_EQ (FloatConversion::ToString (3000.5), "3000.5");
-        EXPECT_EQ (FloatConversion::ToString (3000.500), "3000.5");
-        EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::SignificantFigures{2}), "3.1");
-        EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::SignificantFigures{3}), "3.12");
-        EXPECT_EQ (FloatConversion::ToString (31.234, FloatConversion::SignificantFigures{3}), "31.2");
+        EXPECT_EQ (Characters::ToString (0.0), "0");
+        EXPECT_EQ (Characters::ToString (3000.5), "3000.5");
+        EXPECT_EQ (Characters::ToString (3000.500), "3000.5");
+        EXPECT_EQ (Characters::ToString (3.1234, SignificantFigures{2}), "3.1");
+        EXPECT_EQ (Characters::ToString (3.1234, SignificantFigures{3}), "3.12");
+        EXPECT_EQ (Characters::ToString (31.234, SignificantFigures{3}), "31.2");
 
         // And note Characters::ToString also supports SignificantFigures arg
-        EXPECT_EQ (Characters::ToString (3.1234, FloatConversion::SignificantFigures{2}), "3.1");
+        EXPECT_EQ (Characters::ToString (3.1234, SignificantFigures{2}), "3.1");
 
         {
             // if exceeds precision, (is that the rule, or smallest rep?) then scientific notation
-            EXPECT_EQ (FloatConversion::ToString (30707548160.0), "3.07075e+10");
+            EXPECT_EQ (Characters::ToString (30707548160.0), "3.07075e+10");
 #if defined(__cpp_lib_to_chars)
-            EXPECT_EQ (FloatConversion::ToString (3724089.418996166), "3.72409e+06");
-            EXPECT_EQ (FloatConversion::ToString (44905.3, FloatConversion::SignificantFigures{6}), "44905.3");
+            EXPECT_EQ (Characters::ToString (3724089.418996166), "3.72409e+06");
+            EXPECT_EQ (Characters::ToString (44905.3, SignificantFigures{6}), "44905.3");
 #else
-            String t = FloatConversion::ToString (3724089.418996166);
+            String t = Characters::ToString (3724089.418996166);
             //EXPECT_EQ (t.length (), 11); // 6 digits of precision, plus '.' and 'e+06'
             EXPECT_TRUE (t.StartsWith ("3.724"));
             EXPECT_TRUE (t.EndsWith ("e+06"));
-            t = FloatConversion::ToString (44905.3);
+            t = Characters::ToString (44905.3);
             DbgTrace ("t={}"_f, t);
 #endif
         }
 
         {
-            // 3.141592653589793  (but really about rounding policy on FloatConversion::ToString)
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{2}), "3.1");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{3}), "3.14");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{4}), "3.142");  // 15... rounded up to 2
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{5}), "3.1416"); // 5 rounded to 6!
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{6}), "3.14159");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{7}), "3.141593");     // rounded != trunc
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{8}), "3.1415927");    // rounded != trunc
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{9}), "3.14159265");   // trunc fine
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{10}), "3.141592654"); // 3 rounded up to 4
+            // 3.141592653589793  (but really about rounding policy on Characters::ToString)
+            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{2}), "3.1");
+            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{3}), "3.14");
+            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{4}), "3.142");  // 15... rounded up to 2
+            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{5}), "3.1416"); // 5 rounded to 6!
+            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{6}), "3.14159");
+            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{7}), "3.141593");     // rounded != trunc
+            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{8}), "3.1415927");    // rounded != trunc
+            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{9}), "3.14159265");   // trunc fine
+            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{10}), "3.141592654"); // 3 rounded up to 4
         }
     }
 }

@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Characters/UTFConvert.h"
 #include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Containers/Common.h"
@@ -14,76 +15,6 @@
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters::FloatConversion {
-
-    namespace Private_ {
-        inline void TrimTrailingZeros_NotSci_ (String* strResult)
-        {
-            // @todo THIS could be more efficient: use StringBuilder and Peek()/Character::AsASCIIQuietly
-            RequireNotNull (strResult);
-            // strip trailing zeros (after decimal point - before they may indicate magnatude)
-            // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
-            Require (not strResult->Find ('e', eCaseInsensitive).has_value ());
-            size_t pastDot = strResult->find ('.');
-            if (pastDot != String::npos) {
-                ++pastDot;
-                size_t len           = strResult->length ();
-                size_t pPastLastZero = len;
-                for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                    if ((*strResult)[pPastLastZero - 1] != '0') {
-                        break;
-                    }
-                }
-                if (pPastLastZero == pastDot + 1 and (*strResult)[pPastLastZero - 1] == '0') {
-                    pPastLastZero -= 2; // dont map 3.000 to 3.0, map it to 3
-                }
-                if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
-                    *strResult = strResult->SubString (0, pPastLastZero);
-                }
-            }
-        }
-        inline void TrimTrailingZeros_MaybeSci_ (String* strResult)
-        {
-            // @todo THIS could be more efficient: use StringBuilder and Peek()/Character::AsASCIIQuietly
-            RequireNotNull (strResult);
-            // strip trailing zeros (after decimal point - before they may indicate magnatude)
-            // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
-            if (optional<size_t> whereIsE = strResult->Find ('e', eCaseInsensitive)) {
-                size_t pastDot = strResult->find ('.');
-                if (pastDot != String::npos) {
-                    ++pastDot;
-                    size_t len           = *whereIsE - 1;
-                    size_t pPastLastZero = len;
-                    for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                        if ((*strResult)[pPastLastZero - 1] != '0') {
-                            break;
-                        }
-                    }
-                    if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
-                        *strResult = strResult->SubString (0, pPastLastZero) + strResult->SubString (*whereIsE);
-                    }
-                }
-            }
-            else {
-                size_t pastDot = strResult->find ('.');
-                if (pastDot != String::npos) {
-                    ++pastDot;
-                    size_t len           = strResult->length ();
-                    size_t pPastLastZero = len;
-                    for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                        if ((*strResult)[pPastLastZero - 1] != '0') {
-                            break;
-                        }
-                    }
-                    if (pPastLastZero == pastDot + 1 and (*strResult)[pPastLastZero - 1] == '0') {
-                        pPastLastZero -= 2; // dont map 3.000 to 3.0, map it to 3
-                    }
-                    if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
-                        *strResult = strResult->SubString (0, pPastLastZero);
-                    }
-                }
-            }
-        }
-    }
 
     namespace Private_ {
         // TEMPLATE version of wcstof(etc) - to make easier to call from generic algorithm
@@ -215,299 +146,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
-#if qStroika_Foundation_Debug_AssertionsChecked || not defined(__cpp_lib_to_chars)
-        inline size_t CalcSignificantFigures_ (const String& numStr, bool countZerosAtEndAfterDecPoint = false)
-        {
-            bool   leading    = true;
-            bool   ignoreRest = false;
-            bool   seenDot    = false;
-            size_t n{};
-            size_t nTrailingZeros{};
-            numStr.Apply ([&] (Character c) {
-                if (ignoreRest) {
-                    return;
-                }
-                if (c == '.') {
-                    seenDot = true;
-                }
-                if (c == '+' or c == '-' or c == '.') {
-                    return;
-                }
-                if (leading and c == '0') {
-                    return;
-                }
-                leading = false;
-                if (c == 'e') {
-                    ignoreRest = true;
-                    return;
-                }
-                if (countZerosAtEndAfterDecPoint and seenDot) {
-                    if (c == '0') {
-                        ++nTrailingZeros;
-                    }
-                    else {
-                        nTrailingZeros = 0;
-                    }
-                }
-                ++n;
-            });
-            return countZerosAtEndAfterDecPoint ? n : n - nTrailingZeros;
-        }
-#endif
-        template <floating_point FLOAT_TYPE>
-        String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, SignificantFigures precision)
-        {
-            using namespace Memory;
-            size_t sz = numeric_limits<FLOAT_TYPE>::max_digits10 + numeric_limits<FLOAT_TYPE>::max_exponent10 + 5; // source? "-1.##e+##\0"
-            StackBuffer<char> buf{Memory::eUninitialized, sz};
-            ptrdiff_t         resultStrLen;
-            unsigned int      effectivePrecision = precision.GetEffectiveSignificantFigures<FLOAT_TYPE> ();
-
-            // XCode 15 still doesn't define __cpp_lib_to_chars, as well as _LIBCPP_VERSION < 190000, I believe --LGP 2024-07-13
-#if defined(__cpp_lib_to_chars)
-            // empirically, on MSVC, to_chars() is much faster than snprintf (appears 3x apx faster) -- LGP 2021-11-04
-            if (precision == SignificantFigures::kFullPrecision) {
-                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
-            }
-            else {
-                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, effectivePrecision).ptr - buf.begin ();
-            }
-#else
-            auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec, bool forceScientific) -> char* {
-                char* fmtPtr = formatBufferStart;
-                *fmtPtr++    = '%';
-                // include precision arg
-                *fmtPtr++ = '.';
-                *fmtPtr++ = '*';
-                if (_Spec != '\0') {
-                    *fmtPtr++ = _Spec; // e.g. 'L' qualifier
-                }
-                *fmtPtr++ = forceScientific ? 'e' : 'g'; // format specifier
-                *fmtPtr   = '\0';
-                Require (fmtPtr < formatBufferEnd);
-                return formatBufferStart;
-            };
-
-            FLOAT_TYPE useRoundedFloat = Math::Round<FLOAT_TYPE> (f, effectivePrecision);
-            if (precision != SignificantFigures::kFullPrecision) {
-                f = useRoundedFloat;
-            }
-
-            bool                                 forceScientific = fabs (f) >= std::pow (10, effectivePrecision);
-            Stroika_ATTRIBUTE_INDETERMINATE char format[100]; // filled in with mkFmtWithPrecisionArg_
-            resultStrLen            = ::snprintf (buf.data (), buf.size (),
-                                                  mkFmtWithPrecisionArg_ (std::begin (format), std::end (format),
-                                                                          same_as<FLOAT_TYPE, long double> ? 'L' : '\0', forceScientific),
-                                                  (int)effectivePrecision + 1, f);
-            auto actualPrecIncZeros = CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}, true);
-            if (actualPrecIncZeros > effectivePrecision) {
-                ptrdiff_t nBytes    = static_cast<ptrdiff_t> (actualPrecIncZeros) - static_cast<ptrdiff_t> (effectivePrecision);
-                auto      numberEnd = buf.data () + resultStrLen;
-                auto      ePtr      = std::find (buf.data (), numberEnd, 'e');
-                if (ePtr != numberEnd) {
-                    Assert (buf.data () <= ePtr - nBytes);
-                    memmove (ePtr - nBytes, ePtr, (buf.data () + resultStrLen - ePtr)); // slide 'e+22' back over the lost precision bytes of number
-                }
-                resultStrLen -= nBytes;
-            }
-#endif
-
-            // [[maybe_unused]] auto oo1 = String{span{buf.data (), static_cast<size_t> (resultStrLen)}}.As<wstring> ();
-            // [[maybe_unused]] auto ooo = CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
-            Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
-#if qStroika_Foundation_Debug_AssertionsChecked
-            Assert (precision == SignificantFigures::kFullPrecision or
-                    CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}) <= effectivePrecision);
-#endif
-            return String{span{buf.data (), static_cast<size_t> (resultStrLen)}};
-        }
-    }
-
-    namespace Private_ {
-        // format "{:.{}f}" - val in fixed notation, with precision digits after the decimal point
-        template <floating_point T>
-        inline string formatFixed_ (T val, unsigned int precision)
-        {
-#if qCompilerAndStdLib_format_dynamic_spec_Buggy
-            return Common::StdCompat::vformat ("{:.{}f}", Common::StdCompat::make_format_args (val, precision));
-#else
-            return Common::StdCompat::format ("{:.{}f}", val, precision);
-#endif
-        }
-        template <floating_point T>
-        inline wstring formatFixed_ (const locale& l, T val, unsigned int precision)
-        {
-#if qCompilerAndStdLib_format_dynamic_spec_Buggy
-            return Common::StdCompat::vformat (l, L"{:.{}f}", Common::StdCompat::make_wformat_args (val, precision));
-#else
-            return Common::StdCompat::format (l, L"{:.{}f}", val, precision);
-#endif
-        }
-        template <floating_point T>
-        inline String formatNonScientific_ (T val, unsigned int nSignificantFigures)
-        {
-            auto compute = [&] () {
-                if (val == 0.0) {
-                    // special case for zero cuz cannot compute log10(0)
-                    return String{formatFixed_ (0.0, nSignificantFigures)};
-                }
-                else {
-                    // Calculate digits before the decimal point
-                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
-
-                    // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-                    unsigned int precision = static_cast<unsigned int> (max (0, static_cast<int> (nSignificantFigures) - digits_before));
-
-                    return String{formatFixed_ (val, precision)};
-                }
-            };
-            String r = compute ();
-            // @todo RECONSIDER
-            // for example, there is no way for 31200000 to be represented with 6 significant digits (in standard form, you can with scientific)
-            // 212312345.0 with 6 significant digits is 212312000, but we need the extra digits for magnatitude, so not
-            // sure worth losing the action digits we have? CONSIDER!!!!
-            // but for now no ensures --Ensure (SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) <= nSignificantFigures);
-            return r;
-        }
-        template <floating_point T>
-        inline String formatNonScientific_ (const locale& l, T val, unsigned int nSignificantFigures)
-        {
-            auto compute = [&] () {
-                if (val == 0.0) {
-                    // special case for zero cuz cannot compute log10(0)
-                    return formatFixed_ (l, 0.0, nSignificantFigures);
-                }
-                else {
-                    // Calculate digits before the decimal point
-                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
-
-                    // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-                    unsigned int precision = static_cast<unsigned int> (max (0, static_cast<int> (nSignificantFigures) - digits_before));
-
-                    return formatFixed_ (l, val, precision);
-                }
-            };
-            String r = compute ();
-            Ensure (SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
-            return r;
-        }
-    }
-
-    namespace Private_ {
-        template <floating_point FLOAT_TYPE>
-        String ToString_GeneralCase_ (FLOAT_TYPE f, const ToStringOptions& options)
-        {
-            unsigned int usePrecision =
-                options.GetSignificantFigures ().value_or (SignificantFigures{}).GetEffectiveSignificantFigures<FLOAT_TYPE> ();
-            FloatFormatType usingFormat = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
-
-            // if no locale, can use this...
-            // (see if I can use formatNonScientific_) logic for other cases...
-            if (usingFormat == FloatFormatType::eStandard) {
-                Assert (options.GetIOSFmtFlags () == nullopt); // doable in principle, looking/mapping each feature, but not trivial, and probably not needed anytime soon
-                                                               // --LGP 2026-02-10
-                if (options.GetUsingLocaleClassic ()) {
-                    return formatNonScientific_ (f, usePrecision);
-                }
-                else {
-                    return formatNonScientific_ (options.GetUseLocale (), f, usePrecision);
-                }
-            }
-
-            // expensive to construct, and slightly cheaper to just use thread_local version of
-            // the same stringstream each time (only one per thread can be in use)
-            static thread_local stringstream s;
-            static const ios_base::fmtflags  kDefaultIOSFmtFlags_ = s.flags (); // Just copy out of the first constructed stringstream
-
-            s.str (string{});
-            s.clear ();
-
-            s.imbue (options.GetUseLocale ());
-
-            //  must set explicitly (even if defaulted)  because of the thread_local thing
-            s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
-
-            {
-                switch (usingFormat) {
-                    case FloatFormatType::eScientific:
-                    case FloatFormatType::eScientificWithWhitespaceTrimmed:
-                        s.setf (ios_base::scientific, ios_base::floatfield);
-                        Assert (usePrecision >= 2);
-                        s.precision (usePrecision - 1); // scientific format is n.mmm with m digits of 'precision' - so 1 + m is # of significat digits
-                        break;
-                    case FloatFormatType::eDefaultFloat:
-                        s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
-                        /*
-                         * Precision Field: The stream's precision setting (managed by std::setprecision or std::ios_base::precision()) 
-                         * specifies the maximum number of meaningful digits to display in total (both before and after the decimal point),
-                         * not a fixed number of digits after the decimal point (so same as SignificantFigures)
-                         */
-                        s.precision (usePrecision);
-                        break;
-                    case FloatFormatType::eFixedPoint:
-                    case FloatFormatType::eFixedPointWithWhitespaceTrimmed:
-                        s.setf (ios_base::fixed, ios_base::floatfield);
-                        s.precision (usePrecision); // I think wrong but test -
-                        break;
-                    case FloatFormatType::eStandard:
-                        AssertNotReached (); // handled above
-                        break;
-                        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-                        DISABLE_COMPILER_MSC_WARNING_START (4996)
-                    case FloatFormatType::eAutomaticScientific: {
-                        s.precision (usePrecision);
-                        bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or
-                                                     (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
-                        if (useScientificNotation) {
-                            s.setf (ios_base::scientific, ios_base::floatfield);
-                        }
-                        else {
-                            s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
-                            s.precision (usePrecision);
-                        }
-                    } break;
-                        DISABLE_COMPILER_MSC_WARNING_END (4996)
-                        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-                        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                    default:
-                        RequireNotReached ();
-                        break;
-                }
-            }
-
-            s << f;
-            string ss = s.str ();
-
-            return options.GetUsingLocaleClassic () ? String{ss} : String::FromNarrowString (ss, options.GetUseLocale ());
-        }
-    }
-
-    namespace Private_ {
-        template <floating_point FLOAT_TYPE>
-        String ToString_String_Implementation_ (FLOAT_TYPE f, const ToStringOptions& options)
-        {
-            auto floatFormat = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
-            auto result =
-                (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and floatFormat == FloatFormatType::eDefaultFloat)
-                    ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetSignificantFigures ().value_or (SignificantFigures{}))
-                    : Private_::ToString_GeneralCase_ (f, options);
-            if (floatFormat == FloatFormatType::eFixedPointWithWhitespaceTrimmed or floatFormat == FloatFormatType::eStandard) {
-                TrimTrailingZeros_NotSci_ (&result);
-            }
-            if (floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed) {
-                TrimTrailingZeros_MaybeSci_ (&result);
-            }
-#if qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
-            if (floatFormat == FloatFormatType::eDefaultFloat) {
-                TrimTrailingZeros_MaybeSci_ (&result);
-            }
-#endif
-            return result;
-        }
-    }
-
-    namespace Private_ {
         //
         // This RESPECTS THE CURRENT LOCALE
         // this private function allows nullptr remainder, and behaves somewhat differently if null or not (unlike PUBLIC API)
@@ -622,20 +260,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      ********************************************************************************
      */
     template <Common::IAnyOf<String, string, wstring> STRING_TYPE, floating_point FLOAT_TYPE>
-    inline STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options)
+    inline STRING_TYPE ToString (FLOAT_TYPE f, const Characters::FloatToStringOptions& options)
     {
         if constexpr (same_as<STRING_TYPE, String>) {
-            return Private_::ToString_String_Implementation_ (f, options);
+            return Characters::ToString (f, options);
         }
         else if constexpr (same_as<STRING_TYPE, string>) {
-            // @todo improve performance for this case
             Require (options.GetUsingLocaleClassic ());
-            return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
+            return Characters::ToString (f, options).AsASCII ();
         }
         else if constexpr (same_as<STRING_TYPE, wstring>) {
-            // @todo improve performance for this case
             Require (options.GetUsingLocaleClassic ());
-            return Private_::ToString_String_Implementation_ (f, options).template As<wstring> ();
+            return Characters::ToString (f, options).template As<wstring> ();
         }
     }
 

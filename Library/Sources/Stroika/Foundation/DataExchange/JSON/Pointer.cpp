@@ -4,7 +4,6 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/ParseNumber.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 
 #include "Pointer.h"

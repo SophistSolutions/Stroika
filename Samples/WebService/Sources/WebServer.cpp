@@ -3,8 +3,6 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"

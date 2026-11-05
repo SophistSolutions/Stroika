@@ -5,7 +5,6 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ParseNumber.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"

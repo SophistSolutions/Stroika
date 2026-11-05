@@ -4,7 +4,6 @@
 #include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 

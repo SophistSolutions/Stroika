@@ -17,11 +17,13 @@
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 
 /**
- *  Strict text-to-number conversion: ParseInteger and ParseFloat. Text that is not a number of the type asked for - or is out of
- *  its range - is an error, reported in the expected<> returned, never a default value (String2Int's 0, ToFloat's NaN or infinity).
+ *  Text-to-number conversion: ParseInteger and ParseFloat. Text that is not a number of the type asked for - or is out of its
+ *  range - is an error, reported in the expected<> returned, never a default value (String2Int's 0, ToFloat's NaN or infinity).
+ *  By default the text must be just the number; options accept more (whitespace, digit separators, a radix prefix, a locale's
+ *  decimal point).
  *
- *  \note A header of its own - not part of String2Int.h or FloatConversion.h - because DataExchange::BadFormatException's header
- *        reaches FloatConversion.h (through Execution/Exceptions.h, Format.h and ToString.h); nothing else in Characters includes it.
+ *  \note A header of its own - not part of NumberFormat.h - because DataExchange::BadFormatException's header reaches ToString.h
+ *        (through Execution/Exceptions.h and Format.h), which includes NumberFormat.h.
  *
  *  \see NumberFormat.h for the other direction, and the types both share
  */

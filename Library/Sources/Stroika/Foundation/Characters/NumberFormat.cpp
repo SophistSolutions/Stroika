@@ -3,25 +3,13 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <charconv>
-#include <cstdarg>
-#include <cstdlib>
-#include <iomanip>
-#include <limits>
-#include <sstream>
-
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/Common.h"
-#include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Math/Common.h"
 
-#include "FloatConversion.h"
+#include "NumberFormat.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************

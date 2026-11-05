@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Time {
                 case eString_:
                     return String{fStringRep_};
                 case eNumeric_:
-                    return UnParseTime_ (count (), Characters::FloatConversion::SignificantFigures::kDefault); // new behavior as of v3.0d12 - default precision instead of full (see overload that lets you specify precision)
+                    return UnParseTime_ (count (), Characters::SignificantFigures::kDefault); // new behavior as of v3.0d12 - default precision instead of full (see overload that lets you specify precision)
             }
             AssertNotReached ();
             return String{};
@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Time {
         }
     }
     template <typename T>
-    inline T Duration::As (Characters::FloatConversion::SignificantFigures p) const
+    inline T Duration::As (Characters::SignificantFigures p) const
         requires (Common::IAnyOf<T, Characters::String>)
     {
         if constexpr (same_as<T, Characters::String>) {

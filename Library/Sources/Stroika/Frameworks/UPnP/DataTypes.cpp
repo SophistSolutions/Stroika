@@ -6,10 +6,10 @@
 #include <charconv>
 #include <cmath>
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 
 #include "DataTypes.h"

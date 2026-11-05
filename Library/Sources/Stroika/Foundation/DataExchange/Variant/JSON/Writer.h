@@ -6,8 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Characters/NumberFormat.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/DataExchange/Variant/Writer.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
 
             /**
              */
-            Characters::FloatConversion::ToStringOptions fFloatOptions{};
+            Characters::FloatToStringOptions fFloatOptions{};
 
             /**
              *  Ignored where fPrettyPrint is false.

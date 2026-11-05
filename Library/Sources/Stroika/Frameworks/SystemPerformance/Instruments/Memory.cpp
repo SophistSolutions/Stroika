@@ -3,9 +3,8 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/ParseNumber.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"

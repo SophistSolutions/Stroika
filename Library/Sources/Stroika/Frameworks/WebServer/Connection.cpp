@@ -6,9 +6,7 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"

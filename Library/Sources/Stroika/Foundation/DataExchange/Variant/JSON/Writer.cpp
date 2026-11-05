@@ -3,8 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
@@ -96,7 +96,7 @@ namespace {
     void PrettyPrint_ (const OptionValues_& options, const String& v, const OutputStream::Ptr<Character>& out);
     void PrettyPrint_ (const OptionValues_& options, long double v, const OutputStream::Ptr<Character>& out)
     {
-        String tmp{Characters::FloatConversion::ToString (v, options.fFloatOptions)};
+        String tmp{Characters::ToString (v, options.fFloatOptions)};
         if (isnan (v) or isinf (v)) {
             Require (options.fAllowNANInf);
             PrettyPrint_ (options, tmp, out);

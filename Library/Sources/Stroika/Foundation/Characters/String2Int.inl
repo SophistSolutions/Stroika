@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #include <charconv>
+#include <cstdlib>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Common/Common.h"
@@ -21,8 +22,20 @@ namespace Stroika::Foundation::Characters {
     }
 
     namespace Private_ {
-        unsigned long long int String2UInt_ (const String& s);
-        long long int          String2Int_ (const String& s);
+        inline long long int String2Int_ (const String& s)
+        {
+            Memory::StackBuffer<wchar_t> possibleBackingStore;
+            wchar_t*                     endptr = nullptr;
+            unsigned long long int       l      = wcstoll (get<0> (s.c_str (&possibleBackingStore)), &endptr, 10);
+            return *endptr == '\0' ? l : 0; // weird but I document default is zero if failed to fully parse
+        }
+        inline unsigned long long int String2UInt_ (const String& s)
+        {
+            Memory::StackBuffer<wchar_t> possibleBackingStore;
+            wchar_t*                     endptr = nullptr;
+            long long int                l      = wcstoull (get<0> (s.c_str (&possibleBackingStore)), &endptr, 10);
+            return *endptr == '\0' ? l : 0; // weird but I document default is zero if failed to fully parse
+        }
         DISABLE_COMPILER_MSC_WARNING_START (4018)
         template <integral T>
         T String2IntOrUInt_ (const String& s)
@@ -121,6 +134,21 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<wchar_t> ignored;
             return Private_::String2IntSpan_<T> (ss.GetData<wchar_t> (&ignored));
         }
+    }
+
+    /*
+     ********************************************************************************
+     ********************************* HexString2Int ********************************
+     ********************************************************************************
+     */
+    inline unsigned int HexString2Int (const String& s)
+    {
+        Memory::StackBuffer<wchar_t> sPossibleBackingStore;
+        unsigned long                l = wcstoul (get<0> (s.c_str (&sPossibleBackingStore)), nullptr, 16);
+        if (l >= numeric_limits<unsigned int>::max ()) {
+            return numeric_limits<unsigned int>::max ();
+        }
+        return l;
     }
 
 }

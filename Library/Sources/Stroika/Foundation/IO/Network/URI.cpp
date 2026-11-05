@@ -6,7 +6,6 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/RegularExpression.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/CheckedConverter.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"

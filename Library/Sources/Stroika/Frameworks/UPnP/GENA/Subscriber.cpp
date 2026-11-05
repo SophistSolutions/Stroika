@@ -10,7 +10,6 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ParseNumber.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
 #if qStroika_Foundation_DataExchange_XML_SupportDOM

@@ -2414,7 +2414,7 @@ namespace {
         {
             using namespace Characters;
             Variant::JSON::Writer w{
-                Variant::JSON::Writer::Options{.fFloatOptions = FloatConversion::ToStringOptions{FloatConversion::SignificantFigures{10}}}};
+                Variant::JSON::Writer::Options{.fFloatOptions = Characters::FloatToStringOptions{Characters::SignificantFigures{10}}}};
             EXPECT_EQ (w.WriteAsString (VariantValue{numbers::pi}), "3.141592654"); // so try 10 digits (not tricky case cuz number is 3.14159265 then 358 so not truncate but round))
         }
     }

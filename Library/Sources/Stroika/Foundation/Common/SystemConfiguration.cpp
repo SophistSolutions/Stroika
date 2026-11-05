@@ -23,10 +23,8 @@
 #include <intrin.h>
 #endif
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/SDKString.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #if qStroika_Platform_Windows

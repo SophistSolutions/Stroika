@@ -12,10 +12,9 @@
 #include <boost/json/basic_parser_impl.hpp>
 #endif
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_HashTable.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"

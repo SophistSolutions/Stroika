@@ -72,13 +72,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\NumberFormat.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\GUID.cpp" />
@@ -323,6 +322,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\NumberFormat.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ParseNumber.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\SmartBSTR.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.h" />
@@ -823,6 +824,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\NumberFormat.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\ParseNumber.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ReadMe.md" />

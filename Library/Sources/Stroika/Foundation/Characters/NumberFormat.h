@@ -22,7 +22,7 @@
  *  Each direction has its own Options - writing says exactly what to produce, reading what to accept - but where both describe the
  *  same thing (a locale, say), they use the one type defined here, as std::chars_format serves both std::to_chars and std::from_chars.
  *
- *  \note Kept light - it includes no ToString.h and no exception headers - since ToString.h and FloatConversion.h include it.
+ *  \note Kept light - it includes no ToString.h and no exception headers - since ToString.h includes it.
  *
  *  \note Before Stroika v3.0d26 these were in Characters::FloatConversion.
  */
@@ -49,6 +49,9 @@ namespace Stroika::Foundation::Characters {
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
+    /**
+     *  Predefined locale designations for use with number formatting.
+     */
     enum class PredefinedLocale {
         /**
          *  Use the hardwired 'C' locale (not exactly a real locale in the sense of localization. But a good choice

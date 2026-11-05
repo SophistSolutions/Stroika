@@ -7,7 +7,6 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ParseNumber.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"

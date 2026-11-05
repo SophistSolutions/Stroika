@@ -7,8 +7,8 @@
 #include <cstdio>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Linguistics/MessageUtilities.h"
@@ -198,7 +198,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         if (timeLeft > 0) {
             // DO nano, micro, milliseconds here
 
-            static const FloatConversion::ToStringOptions kFinalFloatOptions_{FloatConversion::eDefaultFloat};
+            static const FloatToStringOptions kFinalFloatOptions_{eDefaultFloat};
 
             static constexpr bool kFirstSubSecondUnitDoDecimalPlaceImmediately_{true};
 
@@ -210,7 +210,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result << kCommaSpace_;
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
-                    result << FloatConversion::ToString (timeLeft * 1.0e3, kFinalFloatOptions_) << kSpaceBeforeUnit_
+                    result << Characters::ToString (timeLeft * 1.0e3, kFinalFloatOptions_) << kSpaceBeforeUnit_
                            << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
                     timeLeft = 0;
                 }
@@ -226,7 +226,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result << kCommaSpace_;
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
-                    result << FloatConversion::ToString (timeLeft * 1.0e6, kFinalFloatOptions_) << kSpaceBeforeUnit_
+                    result << Characters::ToString (timeLeft * 1.0e6, kFinalFloatOptions_) << kSpaceBeforeUnit_
                            << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
                     timeLeft = 0;
                 }
@@ -242,7 +242,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result << kCommaSpace_;
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
-                    result << FloatConversion::ToString (timeLeft * 1.0e9, kFinalFloatOptions_) << kSpaceBeforeUnit_
+                    result << Characters::ToString (timeLeft * 1.0e9, kFinalFloatOptions_) << kSpaceBeforeUnit_
                            << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
                     timeLeft = 0;
                 }
@@ -405,7 +405,7 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
     return isNeg ? -curVal : curVal;
 }
 
-String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::SignificantFigures p)
+String Duration::UnParseTime_ (InternalNumericFormatType_ t, SignificantFigures p)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}, p={}"_f, t, p};
@@ -478,8 +478,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Si
         }
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
-            using namespace FloatConversion;
-            result += FloatConversion::ToString (timeLeft, ToStringOptions{p, eStandard});
+            result += Characters::ToString (timeLeft, FloatToStringOptions{p, eStandard});
             result += "S"sv;
         }
     }

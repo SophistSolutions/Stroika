@@ -3,7 +3,6 @@
  */
 
 #include "Stroika/Foundation/Characters/ParseNumber.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 
 namespace Stroika::Foundation::DataExchange::JSON {
 

@@ -12,8 +12,8 @@
 #endif
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/Debug/Assertions.h"

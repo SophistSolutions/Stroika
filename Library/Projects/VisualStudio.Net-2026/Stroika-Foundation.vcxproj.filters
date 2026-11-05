@@ -297,6 +297,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\NumberFormat.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
@@ -408,9 +411,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
@@ -473,9 +473,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp">
-      <Filter>Sources\Characters</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.cpp">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
@@ -1036,6 +1033,12 @@
       <Filter>Sources\Linguistics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\NumberFormat.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ParseNumber.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Date.h">
@@ -2496,6 +2499,12 @@
       <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\NumberFormat.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\ParseNumber.inl">
       <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl">

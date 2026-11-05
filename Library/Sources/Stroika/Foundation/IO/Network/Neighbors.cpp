@@ -7,7 +7,6 @@
 #include <filesystem>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"

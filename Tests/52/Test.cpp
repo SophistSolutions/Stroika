@@ -17,7 +17,6 @@
 
 #include "Stroika/Foundation/Common/StroikaVersion.h"
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
@@ -190,8 +189,8 @@ namespace {
         double         performanceScore = (baselineTime == 0s) ? 1000000 : compareWithTime.count () / baselineTime.count ();
         constexpr char kOneTab_[]       = "\t";
         {
-            FloatConversion::ToStringOptions fo = FloatConversion::ToStringOptions{FloatConversion::SignificantFigures{2}};
-            outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << FloatConversion::ToString (performanceScore, fo) << endl;
+            FloatToStringOptions fo{SignificantFigures{2}};
+            outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << Characters::ToString (performanceScore, fo) << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
         outTo << "[baseline test " << baselineTime.count () << " secs, and comparison " << compareWithTime.count ()

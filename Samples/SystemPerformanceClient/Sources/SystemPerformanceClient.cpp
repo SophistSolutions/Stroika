@@ -5,7 +5,6 @@
 
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"

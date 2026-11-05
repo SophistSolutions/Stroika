@@ -7,9 +7,9 @@
 #include <charconv>
 #include <cmath>
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"

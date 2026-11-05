@@ -4,9 +4,7 @@
 #include "Stroika/Foundation/Characters/ParseNumber.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_HashTable.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
@@ -420,7 +418,7 @@ VariantValue VariantValue::Normalize () const
             // and so when are read back, they are read back as strings.
             FloatType_ f = As<FloatType_> ();
             if (std::isnan (f) or std::isinf (f)) {
-                return Characters::FloatConversion::ToString (f);
+                return Characters::ToString (f);
             }
             return *this;
         }
@@ -730,7 +728,7 @@ String VariantValue::AsString_ () const
             auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
             using namespace Characters;
-            return FloatConversion::ToString (v->fVal, FloatConversion::SignificantFigures::kFullPrecision);
+            return Characters::ToString (v->fVal, SignificantFigures::kFullPrecision);
         }
         case Type::eDate: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Date>*> (fVal_.get ());

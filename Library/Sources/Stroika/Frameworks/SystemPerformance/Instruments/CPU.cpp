@@ -10,8 +10,8 @@
 #include <Windows.h>
 #endif
 
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"

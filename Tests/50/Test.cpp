@@ -959,7 +959,7 @@ namespace {
         }
         {
             // Support precision of duration reps
-            using Characters::FloatConversion::SignificantFigures;
+            using Characters::SignificantFigures;
             {
                 const Duration d1 = Duration{"PT1.4S"};
                 EXPECT_EQ (d1.As<String> (), "PT1.4S");
