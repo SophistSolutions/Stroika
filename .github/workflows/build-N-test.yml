@@ -118,6 +118,21 @@ jobs:
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
           df -h
+      # GitHub's ubuntu-latest runners do not all have the same disk. On 2026-11-05 a Release job failed - "No space left on device",
+      # archiving libstroika-frameworks.a (run 41957252631) - on a runner with a 72G disk, 5.5G free at the start; the same job on a
+      # 145G runner (75G free) passed, using about 8G. Removing packages in this container ("Save space (Before Start of Builds)")
+      # frees nothing on the runner's disk: the image's layers keep them. But the runner's tool cache - /opt/hostedtoolcache: CodeQL,
+      # Go, Python, Java ... - is mounted here at /__t, on that same disk, and nothing in this job used it (2026-11): actions run their
+      # node from /__e, and a setup-* action fetches its tool if missing. Each job gets a fresh runner VM, so this deletes only this
+      # job's copy - codeql-analyze, doxygen etc. have their own. So if a later step of THIS job goes missing a tool, or gets slow
+      # fetching one, look here first. The du says how much this frees.
+      - name: Save space (the runner's tool cache)
+        shell: "bash"
+        run: |
+          df -h /__t
+          du -sh /__t || true
+          rm -rf /__t/* || true
+          df -h /__t
       - name: Due to insufficient disk space error on ubuntu-latest github actions, use smaller initial base container and add stuff needed
         shell: "bash"
         if: matrix.extra_apt_add_packages != null
