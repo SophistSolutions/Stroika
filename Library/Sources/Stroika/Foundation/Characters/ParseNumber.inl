@@ -26,6 +26,57 @@ namespace Stroika::Foundation::Characters {
             }
             return "\""sv + String{s}.LimitLength (50) + "\""sv;
         }
+        // s without the whitespace (Character::IsWhitespace) at either end - in place
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        span<const CHAR_T> TrimWhitespace_ (span<const CHAR_T> s)
+        {
+            auto isWhitespace = [&] (size_t i) {
+                return Character{static_cast<char32_t> (static_cast<make_unsigned_t<CHAR_T>> (s[i]))}.IsWhitespace ();
+            };
+            size_t b = 0;
+            size_t e = s.size ();
+            if constexpr (not same_as<CHAR_T, char8_t>) {
+                // each whitespace character is one code unit - in UTF-16 too: none is past U+FFFF, so none is a surrogate pair
+                while (b < e and isWhitespace (b)) {
+                    ++b;
+                }
+                while (b < e and isWhitespace (e - 1)) {
+                    --e;
+                }
+            }
+            else {
+                // UTF-8: past ASCII, whitespace (U+1680, U+2000 to U+3000) is 3 bytes - 1110xxxx 10xxxxxx 10xxxxxx - so each end is
+                // checked for one of those as well
+                auto whitespace3At = [&] (size_t i) {
+                    auto u = [&] (size_t k) { return static_cast<char32_t> (s[k]); };
+                    return (u (i) & 0xF0) == 0xE0 and (u (i + 1) & 0xC0) == 0x80 and (u (i + 2) & 0xC0) == 0x80 and
+                           Character{static_cast<char32_t> (((u (i) & 0x0F) << 12) | ((u (i + 1) & 0x3F) << 6) | (u (i + 2) & 0x3F))}.IsWhitespace ();
+                };
+                while (b < e) {
+                    if (isWhitespace (b)) {
+                        ++b;
+                    }
+                    else if (e - b >= 3 and whitespace3At (b)) {
+                        b += 3;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                while (b < e) {
+                    if (isWhitespace (e - 1)) {
+                        --e;
+                    }
+                    else if (e - b >= 3 and whitespace3At (e - 3)) {
+                        e -= 3;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            return s.subspan (b, e - b);
+        }
         // s, as ASCII, with each separator between two ASCII letters or digits removed, and decimalPoint (if given) made '.' - nullopt
         // if s has anything else that is not ASCII, a separator anywhere else, or a '.' that is not the decimal point
         inline optional<string> ToCNumberText_ (const String& s, optional<Character> decimalPoint, optional<Character> separator)
@@ -166,18 +217,13 @@ namespace Stroika::Foundation::Characters {
                 (radix == 10 ? String{" is not an integer"sv} : " is not a base-"sv + String{to_string (radix)} + " integer"sv)}};
         };
         if (options.fIgnoreSurroundingWhitespace) {
-            if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
-                if (not Character::IsASCII (s)) {
-                    return notAnInteger ();
-                }
-            }
             ParseIntegerOptions o          = options;
             o.fIgnoreSurroundingWhitespace = false;
-            String                       t = String{s}.Trim ();
-            Memory::StackBuffer<wchar_t> buf;
-            return ParseInteger<T> (t.GetData<wchar_t> (&buf), o);
+            return ParseInteger<T> (Private_::TrimWhitespace_ (s), o);
         }
         if (options.fDigitSeparator) {
+            // slow - it copies the text twice (into a String, then a string without the separators): a candidate to optimize, if a
+            // separator is used where speed matters
             if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
                 if (not Character::IsASCII (s)) {
                     return notAnInteger ();
@@ -273,9 +319,7 @@ namespace Stroika::Foundation::Characters {
         if (options.fIgnoreSurroundingWhitespace) {
             ParseFloatOptions o            = options;
             o.fIgnoreSurroundingWhitespace = false;
-            String                       t = String{s}.Trim ();
-            Memory::StackBuffer<wchar_t> buf;
-            return ParseFloat<T> (t.GetData<wchar_t> (&buf), o);
+            return ParseFloat<T> (Private_::TrimWhitespace_ (s), o);
         }
         Character decimalPoint = Private_::DecimalPoint_ (options.fLocale);
         Require (not options.fDigitSeparator or *options.fDigitSeparator != decimalPoint);

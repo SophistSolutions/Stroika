@@ -2679,6 +2679,25 @@ namespace {
             EXPECT_EQ (*ParseInteger<int> (" \t42 ", {.fIgnoreSurroundingWhitespace = true}), 42);
             EXPECT_EQ (*ParseInteger<unsigned int> (" 0x1A ", {.fRadix = 16, .fAcceptRadixPrefix = true, .fIgnoreSurroundingWhitespace = true}), 26u);
             EXPECT_TRUE (errorText (ParseInteger<int> (" 4 2 ", {.fIgnoreSurroundingWhitespace = true})).Contains ("is not an integer"sv));
+            EXPECT_TRUE (errorText (ParseInteger<int> (" \xd7\xa9 ", {.fIgnoreSurroundingWhitespace = true})).Contains ("is not an integer"sv));
+            {
+                // in each encoding, and past ASCII too: U+3000 and U+2009 are whitespace - 3 bytes each in UTF-8, one unit in UTF-16
+                const ParseIntegerOptions kWS{.fIgnoreSurroundingWhitespace = true};
+                const ParseFloatOptions   kFWS{.fIgnoreSurroundingWhitespace = true};
+                auto                      sp8  = [] (u8string_view v) { return span{v.data (), v.size ()}; };
+                auto                      sp16 = [] (u16string_view v) { return span{v.data (), v.size ()}; };
+                auto                      sp32 = [] (u32string_view v) { return span{v.data (), v.size ()}; };
+                auto                      spW  = [] (wstring_view v) { return span{v.data (), v.size ()}; };
+                EXPECT_EQ (ParseInteger<int> (sp8 (u8"\u3000\t42\u2009\u3000"), kWS).value_or (-1), 42);
+                EXPECT_EQ (ParseInteger<int> (sp16 (u"\u3000 42\u2009"), kWS).value_or (-1), 42);
+                EXPECT_EQ (ParseInteger<int> (sp32 (U"\u3000 42\u2009"), kWS).value_or (-1), 42);
+                EXPECT_EQ (ParseInteger<int> (spW (L"\u3000 42\u2009"), kWS).value_or (-1), 42);
+                EXPECT_EQ (ParseInteger<int> (sp8 (u8"\u4e00 42"), kWS).value_or (-1), -1); // a 3-byte character that is not whitespace
+                EXPECT_EQ (ParseInteger<int> (sp8 (u8"42\u00e9"), kWS).value_or (-1), -1);  // nor a 2-byte one
+                EXPECT_EQ (ParseInteger<int> (sp8 (u8" \u3000 "), kWS).value_or (-1), -1);  // nothing but whitespace
+                EXPECT_EQ (ParseFloat<double> (sp8 (u8"\u3000 2.5\u3000"), kFWS).value_or (-1), 2.5);
+                EXPECT_EQ (ParseFloat<double> (sp16 (u"\u3000 2.5\n"), kFWS).value_or (-1), 2.5);
+            }
             // the sign and the type's range: the most negative value, and -0
             EXPECT_EQ (*ParseInteger<int64_t> ("-9223372036854775808"), numeric_limits<int64_t>::min ());
             EXPECT_TRUE (errorText (ParseInteger<int64_t> ("9223372036854775808")).Contains ("is out of range"sv));
