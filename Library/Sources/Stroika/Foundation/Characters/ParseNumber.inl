@@ -94,11 +94,32 @@ namespace Stroika::Foundation::Characters {
                     return i + w.size ();
                 }
             }
-            if (i == s.size () or not(isdigit (static_cast<unsigned char> (s[i])) or s[i] == '.')) {
-                return 0; // a sign at most once, then a digit or the decimal point
+            // the number's extent, in from_chars' decimal syntax (chars_format::general): digits with an optional '.' - at least one
+            // digit - then an optional exponent; found here so that what reads it below is given just the number
+            auto   isDigit = [&] (size_t k) { return k < s.size () and isdigit (static_cast<unsigned char> (s[k])); };
+            size_t end     = i;
+            size_t nDigits = 0;
+            for (; isDigit (end); ++end, ++nDigits) {
             }
-            string digits{s.substr (i)}; // a NUL after it, as some from_chars read past the end (qCompilerAndStdLib_from_chars_reads_past_end_Buggy)
-            size_t used = 0;
+            if (end < s.size () and s[end] == '.') {
+                for (++end; isDigit (end); ++end, ++nDigits) {
+                }
+            }
+            if (nDigits == 0) {
+                return 0;
+            }
+            if (end < s.size () and (s[end] == 'e' or s[end] == 'E')) {
+                size_t k = end + 1;
+                if (k < s.size () and (s[k] == '+' or s[k] == '-')) {
+                    ++k;
+                }
+                if (isDigit (k)) {
+                    for (end = k; isDigit (end); ++end) {
+                    }
+                }
+            }
+            string digits{s.substr (i, end - i)}; // a NUL after it, as some from_chars read past the end (qCompilerAndStdLib_from_chars_reads_past_end_Buggy)
+            size_t used = digits.size ();
 #if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
             auto [ptr, ec] = from_chars (digits.data (), digits.data () + digits.size (), *result);
             if (ec == errc::invalid_argument) {
@@ -107,19 +128,19 @@ namespace Stroika::Foundation::Characters {
             *outOfRange = ec == errc::result_out_of_range;
             used        = static_cast<size_t> (ptr - digits.data ());
 #else
-            // this standard library's from_chars cannot read floating point numbers: a stream in the "C" locale does instead
+            // this standard library's from_chars cannot read floating point numbers: a stream in the "C" locale does instead. Given
+            // just the number (libc++'s would read hex too), it fails only over range - on overflow, with the largest value
+            // (libstdc++) or infinity (libc++). Underflow to zero is out of range too, though not every library fails for it.
             istringstream in{digits};
             in.imbue (locale::classic ());
             in >> *result;
-            if (in.fail ()) {
-                if (abs (*result) != numeric_limits<T>::max ()) { // on overflow num_get sets the largest value, and fails
-                    return 0;
-                }
-                *outOfRange = true;
-            }
-            in.clear ();
-            streampos pos = in.tellg ();
-            used          = pos < 0 ? digits.size () : static_cast<size_t> (pos);
+            T    magnitude = abs (*result);
+            bool nonZero   = string_view{digits}.substr (0, digits.find_first_of ("eE")).find_first_not_of ("0."sv) != string_view::npos;
+#if qCompilerAndStdLib_num_get_subnormal_failbit_Buggy
+            *outOfRange = (in.fail () and (isinf (magnitude) or magnitude == numeric_limits<T>::max ())) or (magnitude == 0 and nonZero);
+#else
+            *outOfRange = in.fail () or (magnitude == 0 and nonZero);
+#endif
 #endif
             if (negative) {
                 *result = -*result;

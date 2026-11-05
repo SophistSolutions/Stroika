@@ -1694,6 +1694,27 @@ int main ()
 #endif
 #endif
 
+/*
+ *  libc++'s num_get - so a stream's >> - sets failbit reading a subnormal number, though it is representable (the value is kept):
+ *  it reads with strtod, and takes strtod's ERANGE, which a subnormal result gets too, as out of range. LLVM bug 39012,
+ *  "ostream writes a double that istream can't read" (https://bugs.llvm.org/show_bug.cgi?id=39012). In the "C" locale:
+ *
+ *      istringstream{"4.9406564584124654e-324"} >> d      failbit, d == denorm_min        (libstdc++, MSVC: no failbit)
+ *
+ *  Tests/02 StdLib_num_get_subnormal_ checks the library itself: with this define 0, it says whether the bug is still there.
+ */
+#ifndef qCompilerAndStdLib_num_get_subnormal_failbit_Buggy
+
+#if defined(_LIBCPP_VERSION)
+// broken in 15007 (clang++-15, Ubuntu 22.04), 220102 (Ubuntu 26.04)
+// broken in Apple's - XCode 16.4 and 26.3 (CI, 2026-11-05)
+#define qCompilerAndStdLib_num_get_subnormal_failbit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 220102)
+#else
+#define qCompilerAndStdLib_num_get_subnormal_failbit_Buggy 0
+#endif
+
+#endif
+
 /**
  *  clang with libstdc++ 15 or later in C++26 cannot check, at compile time, a format string with a dynamic width or precision:
  *

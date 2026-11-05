@@ -2718,6 +2718,19 @@ namespace {
             // only nan, inf and infinity as words: not nan(chars), nor a hex float
             EXPECT_TRUE (errorText (ParseFloat<double> ("nan(1)")).Contains ("is not a number"sv));
             EXPECT_TRUE (errorText (ParseFloat<double> ("0x1p3")).Contains ("is not a number"sv));
+            // the number in from_chars' decimal syntax, and no more of the text, whatever reads it on this platform
+            EXPECT_EQ (ParseFloat<double> ("2.5x"_k, &rest).value_or (-1), 2.5);
+            EXPECT_EQ (rest, "x"sv);
+            EXPECT_EQ (ParseFloat<double> ("1e5e"_k, &rest).value_or (-1), 1e5);
+            EXPECT_EQ (rest, "e"sv);
+            EXPECT_EQ (ParseFloat<double> ("1ex"_k, &rest).value_or (-1), 1);
+            EXPECT_EQ (rest, "ex"sv);
+            EXPECT_EQ (ParseFloat<double> ("0x1p3"_k, &rest).value_or (-1), 0);
+            EXPECT_EQ (rest, "x1p3"sv);
+            // a subnormal number is a number; one too small even for that is out of range, as one too large is
+            EXPECT_EQ (ParseFloat<double> ("4.9406564584124654e-324").value_or (-1), numeric_limits<double>::denorm_min ());
+            EXPECT_EQ (ParseFloat<float> ("1.40129846e-45").value_or (-1), numeric_limits<float>::denorm_min ());
+            EXPECT_TRUE (errorText (ParseFloat<double> ("1e-400")).Contains ("is out of range"sv));
         }
         {
             // fDigitSeparator - only between two digits (or a radix's letters), and only when asked for
@@ -2778,6 +2791,29 @@ namespace {
                 DbgTrace ("no named locale with a decimal comma here - so only the facet-made one is tested"_f);
             }
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Characters, StdLib_num_get_subnormal_)
+    {
+        // the standard library itself, as qCompilerAndStdLib_num_get_subnormal_failbit_Buggy says it reads a subnormal number with a
+        // stream: with the define 0, this says whether the library still has the bug; with it 1, it warns once the library is fixed
+        istringstream in{"4.9406564584124654e-324"};
+        in.imbue (locale::classic ());
+        double d = 0;
+        in >> d;
+        if (qCompilerAndStdLib_num_get_subnormal_failbit_Buggy) {
+            if (not in.fail ()) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "qCompilerAndStdLib_num_get_subnormal_failbit_Buggy: this library reads a subnormal "
+                    "number right - update that define's version guard");
+            }
+        }
+        else {
+            EXPECT_FALSE (in.fail ());
+        }
+        EXPECT_EQ (d, numeric_limits<double>::denorm_min ()); // the value kept even with the bug - which ParseFloat's workaround needs
     }
 }
 
