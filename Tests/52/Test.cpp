@@ -3,10 +3,10 @@
  */
 //  TEST    Foundation::PERFORMANCE
 
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <array>
+#include <charconv>
 #include <codecvt>
 #include <filesystem>
 #include <fstream>
@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/Common/StroikaVersion.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -1033,6 +1034,177 @@ namespace {
             EXPECT_TRUE (swprintf (buf, std::size (buf), L"0x%x", 0x20) == 4);
             EXPECT_TRUE (wstring (buf) == L"0x20");
         }
+    }
+}
+
+namespace {
+    // numbers as text, the "C" case: Number::Parse and Characters::ToString, against the standard library's from_chars, to_string and
+    // to_chars - each side reading or writing the same text
+    namespace Test_Number_DETAILS_ {
+        constexpr string_view kIntText_[] = {"0", "7", "-42", "1234", "65535", "-2147483647", "123456789", "99"};
+        constexpr int         kInts_[]    = {0, 7, -42, 1234, 65535, -2147483647, 123456789, 99};
+        // no number under 1e-6: where the standard library cannot write a float with to_chars, ToString writes those as 0 (Tests/02 allows it)
+        constexpr string_view kFloatText_[] = {"0", "1.5", "-2.25", "3.14159", "6.02214e+23", "0.0001", "123457", "-0.001"};
+        constexpr double      kFloats_[]    = {0, 1.5, -2.25, 3.14159, 6.02214e+23, 0.0001, 123457, -0.001};
+        constexpr long long   kIntSum_      = [] () {
+            long long s = 0;
+            for (int i : kInts_) {
+                s += i;
+            }
+            return s;
+        }();
+        constexpr double kFloatSum_ = [] () {
+            double s = 0;
+            for (double d : kFloats_) {
+                s += d;
+            }
+            return s;
+        }();
+        constexpr size_t kChars_ (span<const string_view> texts)
+        {
+            size_t n = 0;
+            for (string_view s : texts) {
+                n += s.size ();
+            }
+            return n;
+        }
+    }
+    void Test_ParseInt_FromChars_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        long long sum = 0;
+        for (string_view s : kIntText_) {
+            int i{};
+            from_chars (s.data (), s.data () + s.size (), i);
+            sum += i;
+        }
+        EXPECT_EQ (sum, kIntSum_);
+    }
+    void Test_ParseInt_Number_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        long long sum = 0;
+        for (string_view s : kIntText_) {
+            sum += Characters::Number::Parse<int> (s).value_or (0);
+        }
+        EXPECT_EQ (sum, kIntSum_);
+    }
+    void Test_ParseFloat_FromChars_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        double sum = 0;
+        for (string_view s : kFloatText_) {
+#if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
+            double d{};
+            from_chars (s.data (), s.data () + s.size (), d);
+#else
+            double d = strtod (s.data (), nullptr); // this library cannot read a floating point number with from_chars; a literal ends s
+#endif
+            sum += d;
+        }
+        EXPECT_EQ (sum, kFloatSum_);
+    }
+    void Test_ParseFloat_Number_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        double sum = 0;
+        for (string_view s : kFloatText_) {
+            sum += Characters::Number::Parse<double> (s).value_or (0);
+        }
+        EXPECT_EQ (sum, kFloatSum_);
+    }
+    void Test_IntToString_StdToString_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (int i : kInts_) {
+            n += std::to_string (i).size ();
+        }
+        EXPECT_EQ (n, kChars_ (kIntText_));
+    }
+    void Test_IntToString_ToString_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (int i : kInts_) {
+            n += Characters::ToString (i).size ();
+        }
+        EXPECT_EQ (n, kChars_ (kIntText_));
+    }
+    void Test_FloatToString_ToChars_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFloats_) {
+            char buf[64];
+#if defined(__cpp_lib_to_chars)
+            char* end = to_chars (std::begin (buf), std::end (buf), d, chars_format::general, 6).ptr; // as ToString's default: 6 significant figures
+#else
+            char* end = buf + snprintf (buf, sizeof (buf), "%.6g", d);
+#endif
+            n += string{buf, end}.size ();
+        }
+        EXPECT_EQ (n, kChars_ (kFloatText_));
+    }
+    void Test_FloatToString_ToString_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFloats_) {
+            n += Characters::ToString (d).size ();
+        }
+        EXPECT_EQ (n, kChars_ (kFloatText_));
+    }
+    // and as most code does it: a stream per conversion, in the "C" locale (the same text as the "C" punctuation)
+    void Test_ParseInt_Stream_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        long long sum = 0;
+        for (string_view s : kIntText_) {
+            istringstream in{string{s}};
+            in.imbue (locale::classic ());
+            int i{};
+            in >> i;
+            sum += i;
+        }
+        EXPECT_EQ (sum, kIntSum_);
+    }
+    void Test_ParseFloat_Stream_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        double sum = 0;
+        for (string_view s : kFloatText_) {
+            istringstream in{string{s}};
+            in.imbue (locale::classic ());
+            double d{};
+            in >> d;
+            sum += d;
+        }
+        EXPECT_EQ (sum, kFloatSum_);
+    }
+    void Test_IntToString_Stream_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (int i : kInts_) {
+            ostringstream out;
+            out.imbue (locale::classic ());
+            out << i;
+            n += out.str ().size ();
+        }
+        EXPECT_EQ (n, kChars_ (kIntText_));
+    }
+    void Test_FloatToString_Stream_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFloats_) {
+            ostringstream out; // a stream's default: 6 significant figures, as ToString's
+            out.imbue (locale::classic ());
+            out << d;
+            n += out.str ().size ();
+        }
+        EXPECT_EQ (n, kChars_ (kFloatText_));
     }
 }
 
@@ -3104,6 +3276,19 @@ namespace {
         Tester ("std::set<int> vs Set<int>", Test_SetvsSet_<set<int>>, "set<int>", Test_SetvsSet_<Set<int>>, "Set<int>", 13000, 0.31, &failedTests);
         Tester ("String Characters::Format ()", Test_String_Format_<wstring>, "sprintf", Test_String_Format_<String>,
                 "String Characters::Format", 2100000, 4.8, &failedTests);
+        Tester ("Parse an int", Test_ParseInt_FromChars_, "from_chars", Test_ParseInt_Number_, "Number::Parse<int>", 10000000, 5.5, &failedTests);
+        Tester ("Parse a double", Test_ParseFloat_FromChars_, "from_chars", Test_ParseFloat_Number_, "Number::Parse<double>", 3000000, 4.6, &failedTests);
+        Tester ("int to text", Test_IntToString_StdToString_, "std::to_string", Test_IntToString_ToString_, "Characters::ToString", 3000000,
+                10, &failedTests);
+        Tester ("double to text", Test_FloatToString_ToChars_, "to_chars+string", Test_FloatToString_ToString_, "Characters::ToString",
+                1500000, 3.4, &failedTests);
+        Tester ("Parse an int (stream)", Test_ParseInt_Stream_, "istringstream", Test_ParseInt_Number_, "Number::Parse<int>", 500000, 0.2, &failedTests);
+        Tester ("Parse a double (stream)", Test_ParseFloat_Stream_, "istringstream", Test_ParseFloat_Number_, "Number::Parse<double>",
+                500000, 0.25, &failedTests);
+        Tester ("int to text (stream)", Test_IntToString_Stream_, "ostringstream", Test_IntToString_ToString_, "Characters::ToString",
+                500000, 0.5, &failedTests);
+        Tester ("double to text (stream)", Test_FloatToString_Stream_, "ostringstream", Test_FloatToString_ToString_,
+                "Characters::ToString", 500000, 0.6, &failedTests);
         Tester ("BLOB versus vector<byte>", Test_BLOB_Versus_Vector_Byte<vector<byte>>, "vector<byte>",
                 Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, "BLOB", 13000, 1.6, &failedTests);
         Tester ("BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, "vector<byte>",

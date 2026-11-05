@@ -65,65 +65,32 @@ namespace Stroika::Foundation::Characters {
             t.fCount;
         };
 
-        template <typename T>
-        inline String num2Str_ (T t, ios_base::fmtflags flags)
+        // t as printf's %d, %o or 0x%x writes it - a negative value in octal or hexadecimal as its two's complement
+        template <integral T>
+        inline String IntegerToString_ (T t, ios_base::fmtflags flags)
         {
-            static_assert (sizeof (t) <= sizeof (int));
-            wchar_t buf[1024];
-            switch (flags) {
-                case ios_base::oct:
-                    (void)::swprintf (buf, std::size (buf), L"%o", t);
-                    break;
-                case ios_base::dec:
-                    (void)::swprintf (buf, std::size (buf), L"%d", t);
-                    break;
-                case ios_base::hex:
-                    (void)::swprintf (buf, std::size (buf), L"0x%x", t);
-                    break;
-                default:
-                    AssertNotReached (); // @todo support octal
+            if constexpr (same_as<T, bool>) {
+                return IntegerToString_ (static_cast<int> (t), flags);
             }
-            return buf;
-        }
-        template <typename T>
-        inline String num2Strl_ (T t, ios_base::fmtflags flags)
-        {
-            wchar_t buf[1024];
-            static_assert (sizeof (t) == sizeof (long int));
-            switch (flags) {
-                case ios_base::oct:
-                    (void)::swprintf (buf, std::size (buf), L"%lo", t);
-                    break;
-                case ios_base::dec:
-                    (void)::swprintf (buf, std::size (buf), L"%ld", t);
-                    break;
-                case ios_base::hex:
-                    (void)::swprintf (buf, std::size (buf), L"0x%lx", t);
-                    break;
-                default:
-                    AssertNotReached (); // @todo support octal
+            else {
+                char  buf[numeric_limits<T>::digits + 4]; // enough for octal, a sign or the 0x
+                char* p = std::begin (buf);
+                switch (flags) {
+                    case ios_base::dec:
+                        return String{span<const char>{std::begin (buf), to_chars (p, std::end (buf), t).ptr}};
+                    case ios_base::oct:
+                        return String{
+                            span<const char>{std::begin (buf), to_chars (p, std::end (buf), static_cast<make_unsigned_t<T>> (t), 8).ptr}};
+                    case ios_base::hex:
+                        *p++ = '0';
+                        *p++ = 'x';
+                        return String{
+                            span<const char>{std::begin (buf), to_chars (p, std::end (buf), static_cast<make_unsigned_t<T>> (t), 16).ptr}};
+                    default:
+                        AssertNotReached ();
+                        return String{};
+                }
             }
-            return buf;
-        }
-        template <typename T>
-        inline String num2Strll_ (T t, ios_base::fmtflags flags)
-        {
-            wchar_t buf[1024];
-            static_assert (sizeof (t) == sizeof (long long int));
-            switch (flags) {
-                case ios_base::oct:
-                    (void)::swprintf (buf, std::size (buf), L"%llo", t);
-                    break;
-                case ios_base::dec:
-                    (void)::swprintf (buf, std::size (buf), L"%lld", t);
-                    break;
-                case ios_base::hex:
-                    (void)::swprintf (buf, std::size (buf), L"0x%llx", t);
-                    break;
-                default:
-                    AssertNotReached (); // @todo support octal
-            }
-            return buf;
         }
 
     }
@@ -746,16 +713,7 @@ namespace Stroika::Foundation::Characters {
         template <integral T>
         inline String ToString (T t, ios_base::fmtflags flags)
         {
-            using namespace Private_;
-            if constexpr (sizeof (T) < sizeof (long)) {
-                return num2Str_ (t, flags);
-            }
-            else if constexpr (sizeof (T) == sizeof (long)) {
-                return num2Strl_ (t, flags);
-            }
-            else if constexpr (sizeof (T) == sizeof (long long int)) {
-                return num2Strll_ (t, flags);
-            }
+            return Private_::IntegerToString_ (t, flags);
         }
         template <integral T>
         String ToString (T t, const Number::IntegerToStringOptions& o)

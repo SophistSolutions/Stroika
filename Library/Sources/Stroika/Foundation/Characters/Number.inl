@@ -496,9 +496,14 @@ namespace Stroika::Foundation::Characters::Number {
                     }
                 }
             }
-            string digits{s.substr (i, end - i)}; // a NUL after it, as some from_chars read past the end (qCompilerAndStdLib_from_chars_reads_past_end_Buggy)
-            size_t used = digits.size ();
 #if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
+#if qCompilerAndStdLib_from_chars_reads_past_end_Buggy
+            string      copy{s.substr (i, end - i)}; // a NUL after it
+            string_view digits{copy};
+#else
+            string_view digits = s.substr (i, end - i);
+#endif
+            size_t used    = digits.size ();
             auto [ptr, ec] = from_chars (digits.data (), digits.data () + digits.size (), *result);
             if (ec == errc::invalid_argument) {
                 return 0;
@@ -506,6 +511,8 @@ namespace Stroika::Foundation::Characters::Number {
             *outOfRange = ec == errc::result_out_of_range;
             used        = static_cast<size_t> (ptr - digits.data ());
 #else
+            string digits{s.substr (i, end - i)};
+            size_t used = digits.size ();
             // this standard library's from_chars cannot read floating point numbers: a stream in the "C" locale does instead. Given
             // just the number (libc++'s would read hex too), it fails only over range - on overflow, with the largest value
             // (libstdc++) or infinity (libc++). Underflow to zero is out of range too, though not every library fails for it.
@@ -566,9 +573,19 @@ namespace Stroika::Foundation::Characters::Number {
             return Parse<T> (span<const char>{c->data (), c->size ()}, o);
         }
         Memory::StackBuffer<char> ascii;
-        if (Character::AsASCIIQuietly (s, &ascii)) {
-            const char* b        = ascii.begin ();
-            const char* e        = ascii.end ();
+        span<const char>          text;
+        if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
+            text = s; // read where it is: a byte past ASCII is no digit, so fails as any other non-digit does
+        }
+        else if (Character::AsASCIIQuietly (s, &ascii)) {
+            text = span<const char>{ascii.data (), ascii.size ()};
+        }
+        else {
+            return notAnInteger ();
+        }
+        {
+            const char* b        = text.data ();
+            const char* e        = text.data () + text.size ();
             bool        negative = b != e and *b == '-';
             if (b != e and (*b == '+' or *b == '-')) {
                 ++b; // the sign is read here, so a prefix can follow it (and from_chars takes no +, nor - for an unsigned type)
@@ -652,16 +669,23 @@ namespace Stroika::Foundation::Characters::Number {
         Punctuation punctuation  = ResolvePunctuation (options.fPunctuation);
         Character   decimalPoint = punctuation.fDecimalPoint;
         Require (not punctuation.fDigitSeparator or *punctuation.fDigitSeparator != decimalPoint);
-        string text; // in the "C" locale's format
+        Memory::StackBuffer<char> ascii;
+        string                    punctuated;
+        string_view               text; // in the "C" locale's format
         if (decimalPoint == '.' and not punctuation.fDigitSeparator) {
-            Memory::StackBuffer<char> ascii;
-            if (not Character::AsASCIIQuietly (s, &ascii)) {
-                return error (" is not a number"sv);
+            if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
+                text = string_view{s.data (), s.size ()}; // read where it is: ASCII, as checked above
             }
-            text.assign (ascii.begin (), ascii.end ());
+            else {
+                if (not Character::AsASCIIQuietly (s, &ascii)) {
+                    return error (" is not a number"sv);
+                }
+                text = string_view{ascii.data (), ascii.size ()};
+            }
         }
         else if (optional<string> c = Private_::ToCNumberText_ (String{s}, punctuation, true, false)) {
-            text = move (*c);
+            punctuated = move (*c);
+            text       = punctuated;
         }
         else {
             return error (" is not a number"sv);
