@@ -2754,21 +2754,62 @@ namespace {
             EXPECT_TRUE (errorText (Number::Parse<double> ("1e-400")).Contains ("is out of range"sv));
         }
         {
-            // fDigitSeparator - only between two digits (or a radix's letters), and only when asked for
-            EXPECT_EQ (*Number::Parse<int> ("1_000", {.fDigitSeparator = '_'}), 1000);
-            EXPECT_EQ (*Number::Parse<int> ("-1'000'000", {.fDigitSeparator = '\''}), -1000000);
-            EXPECT_EQ (*Number::Parse<uint32_t> ("dead_beef", {.fRadix = 16, .fDigitSeparator = '_'}), 0xdeadbeefu);
+            // a digit separator with no group size - only between two digits (or a radix's letters), and only when asked for
+            auto sep = [] (char c) { return Number::Punctuation{.fDigitSeparator = c}; };
+            EXPECT_EQ (*Number::Parse<int> ("1_000", {.fPunctuation = sep ('_')}), 1000);
+            EXPECT_EQ (*Number::Parse<int> ("-1'000'000", {.fPunctuation = sep ('\'')}), -1000000);
+            EXPECT_EQ (*Number::Parse<uint32_t> ("dead_beef", {.fRadix = 16, .fPunctuation = sep ('_')}), 0xdeadbeefu);
             EXPECT_TRUE (errorText (Number::Parse<int> ("1_000")).Contains ("is not an integer"sv));
             for (const char* bad : {"_1000", "1000_", "1__000"}) {
-                EXPECT_TRUE (errorText (Number::Parse<int> (bad, {.fDigitSeparator = '_'})).Contains ("is not an integer"sv)) << bad;
+                EXPECT_TRUE (errorText (Number::Parse<int> (bad, {.fPunctuation = sep ('_')})).Contains ("is not an integer"sv)) << bad;
             }
-            EXPECT_EQ (*Number::Parse<double> ("1_000.5", {.fDigitSeparator = '_'}), 1000.5);
-            EXPECT_EQ (*Number::Parse<double> ("1,000.25", {.fDigitSeparator = ','}), 1000.25);
-            EXPECT_TRUE (errorText (Number::Parse<double> ("1_.5", {.fDigitSeparator = '_'})).Contains ("is not a number"sv));
+            EXPECT_EQ (*Number::Parse<double> ("1_000.5", {.fPunctuation = sep ('_')}), 1000.5);
+            EXPECT_EQ (*Number::Parse<double> ("1,000.25", {.fPunctuation = sep (',')}), 1000.25);
+            EXPECT_TRUE (errorText (Number::Parse<double> ("1_.5", {.fPunctuation = sep ('_')})).Contains ("is not a number"sv));
         }
         {
-            // fLocale: the text's decimal point - here a locale whose decimal point is a comma (and grouping a dot), made so it is on
-            // every platform
+            // grouped: digits in groups as given - or not grouped at all - and never a separator out of place
+            const Number::Punctuation kEnglish{.fDigitSeparator = ',', .fGroupSize = 3};
+            const Number::Punctuation kGerman{.fDecimalPoint = ',', .fDigitSeparator = '.', .fGroupSize = 3};
+            const Number::Punctuation kIndian{.fDigitSeparator = ',', .fGroupSize = 3, .fSecondaryGroupSize = 2};
+            EXPECT_EQ (Number::Parse<int> ("1,234,567", {.fPunctuation = kEnglish}).value_or (-1), 1234567);
+            EXPECT_EQ (Number::Parse<int> ("-1,234", {.fPunctuation = kEnglish}).value_or (-1), -1234);
+            EXPECT_EQ (Number::Parse<int> ("1234567", {.fPunctuation = kEnglish}).value_or (-1), 1234567); // not grouped at all
+            for (const char* bad : {"1,23", "12,3456", "1,234,56", "1234,567", "1,234,567,8", ",123", "123,"}) {
+                EXPECT_TRUE (errorText (Number::Parse<int> (bad, {.fPunctuation = kEnglish})).Contains ("is not an integer"sv)) << bad;
+            }
+            EXPECT_EQ (Number::Parse<double> ("1.234.567,5", {.fPunctuation = kGerman}).value_or (-1), 1234567.5);
+            EXPECT_TRUE (errorText (Number::Parse<double> ("1.5", {.fPunctuation = kGerman})).Contains ("is not a number"sv)); // not 15
+            EXPECT_TRUE (errorText (Number::Parse<double> ("1,000.5", {.fPunctuation = kGerman})).Contains ("is not a number"sv)); // grouped only before the decimal point
+            EXPECT_EQ (Number::Parse<int> ("12,34,56,789", {.fPunctuation = kIndian}).value_or (-1), 123456789);
+            EXPECT_TRUE (errorText (Number::Parse<int> ("123,456,789", {.fPunctuation = kIndian})).Contains ("is not an integer"sv));
+            EXPECT_EQ (Number::Parse<unsigned int> ("0xdead_beef", {.fRadix             = 16,
+                                                                    .fAcceptRadixPrefix = true,
+                                                                    .fPunctuation = Number::Punctuation{.fDigitSeparator = '_', .fGroupSize = 4}})
+                           .value_or (0),
+                       0xdeadbeefu); // the prefix is not part of the first group
+            // and ToString writes them so - which reads back
+            EXPECT_EQ (Characters::ToString (1234567, IntegerToStringOptions{.fPunctuation = kEnglish}), "1,234,567");
+            EXPECT_EQ (Characters::ToString (-1234567, IntegerToStringOptions{.fPunctuation = kEnglish}), "-1,234,567");
+            EXPECT_EQ (Characters::ToString (123, IntegerToStringOptions{.fPunctuation = kEnglish}), "123");
+            EXPECT_EQ (Characters::ToString (123456789, IntegerToStringOptions{.fPunctuation = kIndian}), "12,34,56,789");
+            EXPECT_EQ (Characters::ToString (
+                           0xdeadbeefu, IntegerToStringOptions{.fRadix           = 16,
+                                                               .fEmitRadixPrefix = true,
+                                                               .fPunctuation = Number::Punctuation{.fDigitSeparator = '_', .fGroupSize = 4}}),
+                       "0xdead_beef");
+            EXPECT_EQ (Characters::ToString (1.5, FloatToStringOptions{kGerman}), "1,5");
+            EXPECT_EQ (Characters::ToString (1234567.5, FloatToStringOptions{FloatToStringOptions{kGerman}, eFixedPoint}),
+                       "1.234.567,500000");
+            EXPECT_EQ (Characters::ToString (1234.5, FloatToStringOptions{FloatToStringOptions{kGerman}, eStandard}), "1.234,5");
+            for (double d : {0.0, -2.5, 1234567.5, 1e-7, 1.5e20}) {
+                String written = Characters::ToString (d, FloatToStringOptions{FloatToStringOptions{kGerman}, SignificantFigures::kFullPrecision});
+                EXPECT_EQ (Number::Parse<double> (written, {.fPunctuation = kGerman}).value_or (-1), d);
+            }
+        }
+        {
+            // Punctuation::FromLocale - a locale's numpunct, a separator only where it groups digits - here locales made so on every
+            // platform: a decimal comma; and that, grouping by 3 with a dot
             struct CommaDecimal_ : numpunct<wchar_t> {
                 wchar_t do_decimal_point () const override
                 {
@@ -2780,10 +2821,41 @@ namespace {
                 }
             };
             const locale kComma{locale::classic (), new CommaDecimal_};
-            EXPECT_EQ (*Number::Parse<double> ("1,5", {.fLocale = kComma}), 1.5);
-            EXPECT_TRUE (errorText (Number::Parse<double> ("1.5", {.fLocale = kComma})).Contains ("is not a number"sv)); // not its decimal point
-            EXPECT_EQ (*Number::Parse<double> ("1.000,5", {.fLocale = kComma, .fDigitSeparator = '.'}), 1000.5);
+            struct GroupsBy3_ : CommaDecimal_ {
+                string do_grouping () const override
+                {
+                    return string (1, static_cast<char> (3));
+                }
+            };
+            const locale              kGrouped{locale::classic (), new GroupsBy3_};
+            const Number::Punctuation kGermanPunctuation{.fDecimalPoint = ',', .fDigitSeparator = '.', .fGroupSize = 3};
+            EXPECT_EQ (Number::Punctuation::FromLocale (locale::classic ()), Number::Punctuation{}); // "C" groups nothing, though its thousands_sep () is ','
+            EXPECT_EQ (Number::Punctuation::FromLocale (kComma), (Number::Punctuation{.fDecimalPoint = ','})); // nor kComma: its grouping () is empty
+            EXPECT_EQ (Number::Punctuation::FromLocale (kGrouped), kGermanPunctuation);
+            EXPECT_EQ (*Number::Parse<double> ("1,5", {.fPunctuation = Number::Punctuation::FromLocale (kComma)}), 1.5);
+            EXPECT_TRUE (errorText (Number::Parse<double> ("1.5", {.fPunctuation = Number::Punctuation::FromLocale (kComma)})).Contains ("is not a number"sv)); // not its decimal point
+            EXPECT_EQ (Number::Parse<double> ("1.000,5", {.fPunctuation = Number::Punctuation::FromLocale (kGrouped)}).value_or (-1), 1000.5);
             EXPECT_TRUE (errorText (Number::Parse<double> ("1,5")).Contains ("is not a number"sv)); // the "C" locale's format by default
+            EXPECT_EQ (Characters::ToString (1.5, FloatToStringOptions{kComma}), "1,5"); // a locale given to FloatToStringOptions
+            // ToLocale: a locale with that punctuation - FromLocale reads it back, and a stream writes it
+            EXPECT_EQ (Number::Punctuation::FromLocale (kGermanPunctuation.ToLocale ()), kGermanPunctuation);
+            {
+                stringstream s;
+                s.imbue (kGermanPunctuation.ToLocale ());
+                s.setf (ios_base::fixed, ios_base::floatfield);
+                s.precision (1);
+                s << 1234567.5;
+                EXPECT_EQ (s.str (), "1.234.567,5");
+            }
+            // late: Common::eUseCurrentLocale is the global locale's punctuation when the options are used - not when made
+            const FloatParseOptions kCurrent{.fPunctuation = Common::eUseCurrentLocale};
+            locale                  saved  = locale::global (locale::classic ());
+            bool                    before = Number::Parse<double> ("1,5", kCurrent).has_value ();
+            locale::global (kGrouped); // unnamed, so the C++ global locale only, not the C library's
+            double after = Number::Parse<double> ("1.000,5", kCurrent).value_or (-1);
+            locale::global (saved);
+            EXPECT_FALSE (before);
+            EXPECT_EQ (after, 1000.5);
             // and the global locale changes nothing unless asked for - checked with a real one, if this platform has one with a comma
             optional<locale> named;
             for (const char* name : {"de_DE.UTF-8", "de_DE.utf8", "de_DE", "de-DE", "German_Germany.1252"}) {
@@ -2795,18 +2867,21 @@ namespace {
                 }
             }
             if (named and use_facet<numpunct<wchar_t>> (*named).decimal_point () == L',') {
-                locale saved = locale::global (*named); // a named locale, so the C library's too (setlocale), which strtod follows
-                double dot   = Number::Parse<double> ("1.5").value_or (-1);
-                bool   comma = Number::Parse<double> ("1,5").has_value ();
-                double cur   = Number::Parse<double> ("1,5", {.fLocale = Common::PredefinedLocale::eUseCurrentLocale}).value_or (-1);
+                locale saved2 = locale::global (*named); // a named locale, so the C library's too (setlocale), which strtod follows
+                double dot    = Number::Parse<double> ("1.5").value_or (-1);
+                bool   comma  = Number::Parse<double> ("1,5").has_value ();
+                double cur    = Number::Parse<double> ("1,5", {.fPunctuation = Common::eUseCurrentLocale}).value_or (-1);
                 String rest;
                 double rem = Number::Parse<double> ("2.5x"_k, &rest).value_or (-1);
-                locale::global (saved);
+                locale::global (saved2);
                 EXPECT_EQ (dot, 1.5);
                 EXPECT_FALSE (comma);
                 EXPECT_EQ (cur, 1.5);
                 EXPECT_EQ (rem, 2.5);
                 EXPECT_EQ (rest, "x"sv);
+                // a round trip: written with the locale's punctuation - its grouping included - and read back with it
+                String written = Characters::ToString (1234567.5, FloatToStringOptions{FloatToStringOptions{*named}, eFixedPoint});
+                EXPECT_EQ (Number::Parse<double> (written, {.fPunctuation = Number::Punctuation::FromLocale (*named)}).value_or (-1), 1234567.5);
             }
             else {
                 DbgTrace ("no named locale with a decimal comma here - so only the facet-made one is tested"_f);

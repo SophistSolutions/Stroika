@@ -266,11 +266,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             return Characters::ToString (f, options);
         }
         else if constexpr (same_as<STRING_TYPE, string>) {
-            Require (options.GetUsingLocaleClassic ());
+            Require (options.GetPunctuation () == Characters::Number::Punctuation{});
             return Characters::ToString (f, options).AsASCII ();
         }
         else if constexpr (same_as<STRING_TYPE, wstring>) {
-            Require (options.GetUsingLocaleClassic ());
+            Require (options.GetPunctuation () == Characters::Number::Punctuation{});
             return Characters::ToString (f, options).template As<wstring> ();
         }
     }

@@ -24,14 +24,23 @@
  *      o   number -> text:     Characters::ToString (n, options) (ToString.h) - with the options types here
  *
  *  Each direction has its own Options - writing says exactly what to produce, reading what to accept - but where both describe the
- *  same thing (significant figures, say), they use the one type defined here, as std::chars_format serves both std::to_chars and
- *  std::from_chars.
+ *  same thing (significant figures, punctuation), they use the one type defined here, as std::chars_format serves both std::to_chars
+ *  and std::from_chars.
+ *
+ *  Punctuation - a number's decimal point, and how its digits are grouped: 1,234,567.5 or 1.234.567,5 - is all a locale changes in
+ *  how a number is written (its digits are 0 to 9 in every locale). Every options type here holds it as a Punctuation:
+ *      o   by default the "C" locale's - '.', and no grouping - whatever the program's global locale: text one program writes for
+ *          another (JSON, XML, configuration files, command lines) must read the same in every program, and most number text is that;
+ *      o   Punctuation::FromLocale (l) gives a locale's, taken when called - for text written for people;
+ *      o   Common::eUseCurrentLocale gives the global locale's at the time the options are used - late, where that matters.
+ *  So each part of it has the one source: no options type holds a std::locale (Punctuation::ToLocale makes one, for code needing one).
  *
  *  Parse: text that is not a number of the type asked for - or is out of its range - is an error, reported in the expected<>
  *  returned, never a default value (String2Int's 0, ToFloat's NaN or infinity). By default the text must be just the number; options
- *  accept more (whitespace, digit separators, a radix prefix, a locale's decimal point).
+ *  accept more (whitespace, a radix prefix, punctuation other than the "C" locale's). Digit grouping is checked as the punctuation
+ *  gives it, so a separator cannot pass unnoticed: with German punctuation "1.000" is 1000, and "1.5" an error - not 15.
  *
- *  \note Before Stroika v3.0d26 the types here were in Characters::FloatConversion.
+ *  \note Before Stroika v3.0d26 the types here were in Characters::FloatConversion, and FloatToStringOptions held a std::locale.
  */
 
 namespace Stroika::Foundation::Characters {
@@ -346,9 +355,79 @@ namespace Stroika::Foundation::Characters::Number {
     using FloatFormatType::eStandard;
 
     /**
+     *  \brief How a number's text is punctuated: its decimal point, and how its digits are grouped
+     *
+     *  The default - '.', and no grouping - is the "C" locale's. Parse accepts digits grouped as given, or not grouped at all, and
+     *  never a separator out of place; ToString groups them as given.
+     *
+     *  \par Example Usage
+     *      \code
+     *          Number::Punctuation{}                                                                    // 1234567.5 - the "C" locale's
+     *          Number::Punctuation::FromLocale (locale{"de_DE.UTF-8"})                                   // 1.234.567,5
+     *          Number::Punctuation{.fDigitSeparator = ',', .fGroupSize = 3}                             // 1,234,567.5
+     *          Number::Punctuation{.fDigitSeparator = ',', .fGroupSize = 3, .fSecondaryGroupSize = 2}   // 12,34,567.5 - as India groups
+     *          Number::Punctuation{.fDigitSeparator = '_'}                                              // 1_234_567.5 read, sizes unchecked
+     *      \endcode
+     */
+    struct Punctuation {
+        /**
+         *  Between a floating point number's whole and fractional parts (an integer has none).
+         */
+        Character fDecimalPoint{'.'};
+
+        /**
+         *  Between groups of digits - nullopt: digits are not grouped.
+         */
+        optional<Character> fDigitSeparator;
+
+        /**
+         *  The digits in the rightmost group (3 in most locales); Parse requires each group so, ToString writes them so. 0: no size -
+         *  Parse accepts fDigitSeparator anywhere between two digits (1_000_000, as C++, Python and Rust write literals), and
+         *  ToString groups nothing.
+         */
+        unsigned int fGroupSize{0};
+
+        /**
+         *  The digits in each group left of the rightmost - 0: fGroupSize. India groups 12,34,56,789: 3, then 2.
+         */
+        unsigned int fSecondaryGroupSize{0};
+
+        /**
+         *  l's punctuation (its numpunct<wchar_t>) - taken now: a later change to l, or to the global locale, does not change it. A
+         *  locale whose numpunct::grouping () is empty groups nothing - the "C" locale, though its thousands_sep () is ','.
+         */
+        static Punctuation FromLocale (const locale& l);
+
+        /**
+         *  A locale - base, with this punctuation (its numpunct facets replaced) - for code that needs a std::locale, as a stream
+         *  imbued with one. Its numpunct<char> keeps base's separator and grouping where fDigitSeparator is not ASCII, and its decimal
+         *  point where fDecimalPoint is not.
+         */
+        nonvirtual locale ToLocale (const locale& base = locale::classic ()) const;
+
+        /**
+         *  \see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+
+        constexpr bool operator== (const Punctuation&) const = default;
+    };
+
+    /**
+     *  The punctuation options give: a Punctuation - Punctuation{}, the "C" locale's, by default - or Common::eUseCurrentLocale: the
+     *  global locale's at the time the options are used (Common::eUseCLocale is Punctuation{}).
+     */
+    using PunctuationSpecifier = variant<Punctuation, Common::PredefinedLocale>;
+
+    /**
+     *  \brief The Punctuation p gives - for Common::eUseCurrentLocale, the global locale's now
+     */
+    Punctuation ResolvePunctuation (const PunctuationSpecifier& p);
+
+    /**
      *  These are options for ToString (floating point) - Characters::ToString (f, options)
      *
-     *  ToString uses the locale specified by FloatToStringOptions, but defaults to the "C" locale.
+     *  ToString punctuates the number as GetPunctuation () says - by default as the "C" locale does, whatever the global locale.
      *
      *  By default (eDefaultFloat) it writes no needless trailing zeros; see FloatFormatType.
      *
@@ -363,8 +442,9 @@ namespace Stroika::Foundation::Characters::Number {
          *          basic ios flags
          */
         constexpr FloatToStringOptions () = default;
-        constexpr FloatToStringOptions (Common::PredefinedLocale p);
-        FloatToStringOptions (const locale& l);
+        constexpr FloatToStringOptions (Common::PredefinedLocale p); ///< Common::eUseCurrentLocale: the global locale's punctuation, when used
+        FloatToStringOptions (const locale& l);                      ///< l's punctuation (Punctuation::FromLocale), taken now
+        constexpr FloatToStringOptions (const Punctuation& p);
         constexpr FloatToStringOptions (ios_base::fmtflags fmtFlags);
         constexpr FloatToStringOptions (SignificantFigures precision);
         constexpr FloatToStringOptions (FloatFormatType floatFormat);
@@ -388,17 +468,15 @@ namespace Stroika::Foundation::Characters::Number {
 
     public:
         /**
-         *  \brief return the selected locale object
-         * 
-         *  \note before Stroika v3.0d1, this returned optional, and for the case of locale::classic, it retuned none
+         *  \brief The punctuation ToString writes with - for Common::eUseCurrentLocale, the global locale's now
          */
-        nonvirtual locale GetUseLocale () const;
+        nonvirtual Punctuation GetPunctuation () const;
 
     public:
-        /**
-         *  \brief return true if locale used is locale::classic() - the 'C' locale; mostly used as optimization/special case
-         */
-        nonvirtual bool GetUsingLocaleClassic () const;
+        [[deprecated ("Since Stroika v3.0d26 use GetPunctuation () - or GetPunctuation ().ToLocale ()")]] nonvirtual locale GetUseLocale () const;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d26 use GetPunctuation () == Punctuation{}")]] nonvirtual bool GetUsingLocaleClassic () const;
 
     public:
         constexpr optional<FloatFormatType> GetFloatFormat () const;
@@ -417,27 +495,27 @@ namespace Stroika::Foundation::Characters::Number {
         nonvirtual String ToString () const;
 
     private:
-        optional<SignificantFigures> fSignificantFigures_;
-        optional<ios_base::fmtflags> fFmtFlags_;
-        bool                         fUseCurrentLocale_{false}; // dynamically calculated current locale
-        optional<locale>             fUseLocale_;               // if missing, use locale::classic (unless fUseCurrentLocale_)
-        optional<bool>               fTrimTrailingZeros_;       // keep while deprecated
-        optional<FloatFormatType>    fFloatFormat_;
+        optional<SignificantFigures>   fSignificantFigures_;
+        optional<ios_base::fmtflags>   fFmtFlags_;
+        optional<PunctuationSpecifier> fPunctuation_;       // missing: Punctuation{}
+        optional<bool>                 fTrimTrailingZeros_; // keep while deprecated
+        optional<FloatFormatType>      fFloatFormat_;
     };
 
     /**
      *  \brief How ToString writes an integer: by default in base 10 - what ParseInteger reads by default
      *
-     *  Writing says exactly what to produce, so the matching IntegerParseOptions reads it back: the same fRadix,
+     *  Writing says exactly what to produce, so the matching IntegerParseOptions reads it back: the same fRadix and fPunctuation,
      *  and fAcceptRadixPrefix for fEmitRadixPrefix.
      *
      *  \par Example Usage
      *      \code
      *          ToString (255, IntegerToStringOptions{.fRadix = 16});                                                  // "ff"
      *          ToString (-26, IntegerToStringOptions{.fRadix = 16, .fEmitRadixPrefix = true, .fUpperCase = true});   // "-0X1A"
+     *          ToString (1234567, IntegerToStringOptions{.fPunctuation = Punctuation{.fDigitSeparator = ',', .fGroupSize = 3}}); // "1,234,567"
      *      \endcode
      *
-     *  \note Not here yet - to add when a caller needs one: a minimum width or zero padding; digit grouping or separators (1,000).
+     *  \note Not here yet - to add when a caller needs one: a minimum width or zero padding.
      */
     struct IntegerToStringOptions {
         /**
@@ -454,6 +532,11 @@ namespace Stroika::Foundation::Characters::Number {
          *  The letters - digits past 9, and the prefix's x, o or b - in upper case: FF and 0X, not ff and 0x.
          */
         bool fUpperCase{false};
+
+        /**
+         *  How to group the digits (an integer has no decimal point) - by default not at all, as the "C" locale.
+         */
+        PunctuationSpecifier fPunctuation;
     };
 
     /**
@@ -471,6 +554,7 @@ namespace Stroika::Foundation::Characters::Number {
      *      \code
      *          Number::Parse<unsigned int> ("0x1A", {.fRadix = 16, .fAcceptRadixPrefix = true});     // 26
      *          Number::Parse<int> (" 42 ", {.fIgnoreSurroundingWhitespace = true});                  // 42
+     *          Number::Parse<int> ("1,234,567", {.fPunctuation = Number::Punctuation{.fDigitSeparator = ',', .fGroupSize = 3}});  // 1234567
      *      \endcode
      *
      *  \note Not here yet - to add when a caller needs one: a remainder overload of Parse for an integer, reading the number at the start
@@ -493,12 +577,10 @@ namespace Stroika::Foundation::Characters::Number {
         bool fAcceptRadixPrefix{false};
 
         /**
-         *  Also accept this character between two digits - a separator people use to make long numbers readable: 1'000'000 (C++),
-         *  1_000_000 (Python, Rust), or a locale's grouping, 1,000,000 (its thousands separator: use_facet<numpunct<wchar_t>> (l).thousands_sep ()).
-         *
-         *  Only between two digits - not first, last, or twice together; the sizes of the groups are not checked.
+         *  How the digits may be grouped (an integer has no decimal point) - by default not at all, as the "C" locale. Parse accepts
+         *  digits grouped as given, or not grouped at all.
          */
-        optional<Character> fDigitSeparator;
+        PunctuationSpecifier fPunctuation;
 
         /**
          *  Ignore whitespace before and after the number.
@@ -541,26 +623,22 @@ namespace Stroika::Foundation::Characters::Number {
      *
      *  \par Example Usage
      *      \code
-     *          Number::Parse<double> ("1,5", {.fLocale = locale{"de_DE.UTF-8"}});                              // 1.5 - its decimal point is a comma
-     *          Number::Parse<double> ("1.000,5", {.fLocale = locale{"de_DE.UTF-8"}, .fDigitSeparator = '.'});  // 1000.5 - and its grouping a dot
-     *          Number::Parse<double> ("1_000.5", {.fDigitSeparator = '_'});                                    // 1000.5
+     *          auto de = Number::Punctuation::FromLocale (locale{"de_DE.UTF-8"});
+     *          Number::Parse<double> ("1,5", {.fPunctuation = de});                                              // 1.5 - its decimal point is a comma
+     *          Number::Parse<double> ("1.000,5", {.fPunctuation = de});                                          // 1000.5 - grouped by 3, with a dot
+     *          Number::Parse<double> ("1.5", {.fPunctuation = de});                                              // an error - not 15
+     *          Number::Parse<double> ("1_000.5", {.fPunctuation = Number::Punctuation{.fDigitSeparator = '_'}}); // 1000.5
      *      \endcode
      *
      *  \note Not here yet - to add when a caller needs one: refusing nan and inf as text (accepted now, as ToFloat accepted them).
      */
     struct FloatParseOptions {
         /**
-         *  The locale whose decimal point the text uses - the "C" locale ('.') by default, so the same text parses the same in every
-         *  program, whatever its global locale. Common::eUseCurrentLocale means the global locale when Parse is called. A '.' is not
-         *  the decimal point in a locale whose decimal point is something else (it may be fDigitSeparator).
+         *  The decimal point, and how the digits may be grouped - by default the "C" locale's: '.', and no grouping, so the same text
+         *  parses the same in every program, whatever its global locale. Parse accepts digits grouped as given, or not grouped at all;
+         *  a '.' is not the decimal point where the decimal point is something else.
          */
-        Common::LocaleSpecifier fLocale{Common::PredefinedLocale::eUseCLocale};
-
-        /**
-         *  Also accept this character between two digits - as IntegerParseOptions::fDigitSeparator: 1_000.5, or a locale's grouping,
-         *  1,000.5 (its thousands separator: use_facet<numpunct<wchar_t>> (l).thousands_sep ()).
-         */
-        optional<Character> fDigitSeparator;
+        PunctuationSpecifier fPunctuation;
 
         /**
          *  Ignore whitespace before and after the number.

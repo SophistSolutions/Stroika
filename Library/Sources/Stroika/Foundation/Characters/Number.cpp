@@ -32,6 +32,25 @@ String Characters::Number::SignificantFigures::ToString () const
 
 /*
  ********************************************************************************
+ ****************************** Number::Punctuation *****************************
+ ********************************************************************************
+ */
+String Characters::Number::Punctuation::ToString () const
+{
+    StringBuilder sb;
+    sb << "{Decimal-Point: '"sv << fDecimalPoint << "'"sv;
+    if (fDigitSeparator) {
+        sb << ", Digit-Separator: '"sv << *fDigitSeparator << "', Group-Size: "sv << fGroupSize;
+        if (fSecondaryGroupSize != 0) {
+            sb << ", Secondary-Group-Size: "sv << fSecondaryGroupSize;
+        }
+    }
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
  ************************* Number::FloatToStringOptions *************************
  ********************************************************************************
  */
@@ -45,8 +64,14 @@ String Characters::Number::FloatToStringOptions::ToString () const
     if (fFmtFlags_) {
         sb << "Fmt-Flags:"sv << Characters::ToString ((int)*fFmtFlags_, ios_base::hex) << ","sv;
     }
-    if (fUseLocale_) {
-        sb << "Use-Locale"sv << String::FromNarrowSDKString (fUseLocale_->name ()) << ","sv;
+    if (fPunctuation_) {
+        if (const Punctuation* p = get_if<Punctuation> (&*fPunctuation_)) {
+            sb << "Punctuation:"sv << p->ToString () << ","sv;
+        }
+        else {
+            sb << "Punctuation: "sv
+               << (get<Common::PredefinedLocale> (*fPunctuation_) == Common::eUseCurrentLocale ? "current locale's"sv : "C"sv) << ","sv;
+        }
     }
     if (fTrimTrailingZeros_) {
         sb << "Trim-Trailing-Zeros: "sv << *fTrimTrailingZeros_ << ","sv;

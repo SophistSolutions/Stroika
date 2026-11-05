@@ -332,15 +332,6 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
         template <floating_point T>
-        inline wstring formatFixed_ (const locale& l, T val, unsigned int precision)
-        {
-#if qCompilerAndStdLib_format_dynamic_spec_Buggy
-            return Common::StdCompat::vformat (l, L"{:.{}f}", Common::StdCompat::make_wformat_args (val, precision));
-#else
-            return Common::StdCompat::format (l, L"{:.{}f}", val, precision);
-#endif
-        }
-        template <floating_point T>
         inline String formatNonScientific_ (T val, unsigned int nSignificantFigures)
         {
             auto compute = [&] () {
@@ -366,28 +357,6 @@ namespace Stroika::Foundation::Characters {
             // but for now no ensures --Ensure (Number::SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) <= nSignificantFigures);
             return r;
         }
-        template <floating_point T>
-        inline String formatNonScientific_ (const locale& l, T val, unsigned int nSignificantFigures)
-        {
-            auto compute = [&] () {
-                if (val == 0.0) {
-                    // special case for zero cuz cannot compute log10(0)
-                    return formatFixed_ (l, 0.0, nSignificantFigures);
-                }
-                else {
-                    // Calculate digits before the decimal point
-                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
-
-                    // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-                    unsigned int precision = static_cast<unsigned int> (max (0, static_cast<int> (nSignificantFigures) - digits_before));
-
-                    return formatFixed_ (l, val, precision);
-                }
-            };
-            String r = compute ();
-            Ensure (Number::SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
-            return r;
-        }
     }
 
     namespace Private_ {
@@ -398,17 +367,10 @@ namespace Stroika::Foundation::Characters {
                 options.GetSignificantFigures ().value_or (Number::SignificantFigures{}).GetEffectiveSignificantFigures<FLOAT_TYPE> ();
             Number::FloatFormatType usingFormat = options.GetFloatFormat ().value_or (Number::FloatFormatType::eDEFAULT);
 
-            // if no locale, can use this...
-            // (see if I can use formatNonScientific_) logic for other cases...
             if (usingFormat == Number::FloatFormatType::eStandard) {
                 Assert (options.GetIOSFmtFlags () == nullopt); // doable in principle, looking/mapping each feature, but not trivial, and probably not needed anytime soon
                                                                // --LGP 2026-02-10
-                if (options.GetUsingLocaleClassic ()) {
-                    return formatNonScientific_ (f, usePrecision);
-                }
-                else {
-                    return formatNonScientific_ (options.GetUseLocale (), f, usePrecision);
-                }
+                return formatNonScientific_ (f, usePrecision);
             }
 
             // expensive to construct, and slightly cheaper to just use thread_local version of
@@ -419,7 +381,7 @@ namespace Stroika::Foundation::Characters {
             s.str (string{});
             s.clear ();
 
-            s.imbue (options.GetUseLocale ());
+            s.imbue (locale::classic ()); // the "C" locale's text: FloatToString_ punctuates it
 
             //  must set explicitly (even if defaulted)  because of the thread_local thing
             s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
@@ -476,16 +438,61 @@ namespace Stroika::Foundation::Characters {
             s << f;
             string ss = s.str ();
 
-            return options.GetUsingLocaleClassic () ? String{ss} : String::FromNarrowString (ss, options.GetUseLocale ());
+            return String{ss};
         }
     }
 
     namespace Private_ {
+        // digits, with p's digit separator between their groups (p.fGroupSize digits at the right, p.fSecondaryGroupSize - or
+        // fGroupSize - in each further left) - or as they are, where p gives no group size
+        inline void AppendGrouped_ (StringBuilder<>& sb, string_view digits, const Number::Punctuation& p)
+        {
+            size_t n = digits.size ();
+            if (not p.fDigitSeparator or p.fGroupSize == 0 or n <= p.fGroupSize) {
+                sb << digits;
+                return;
+            }
+            size_t secondary = p.fSecondaryGroupSize != 0 ? p.fSecondaryGroupSize : p.fGroupSize;
+            size_t left      = n - p.fGroupSize; // the digits left of the rightmost group
+            size_t first     = left % secondary == 0 ? secondary : left % secondary;
+            sb << digits.substr (0, first);
+            for (size_t i = first; i < left; i += secondary) {
+                sb << *p.fDigitSeparator << digits.substr (i, secondary);
+            }
+            sb << *p.fDigitSeparator << digits.substr (left);
+        }
+        // text - a number in the "C" locale's format (ASCII: a sign, digits, '.', an exponent; or nan or inf) - punctuated as p says:
+        // its whole part's digits grouped, and its '.' made p.fDecimalPoint
+        inline String Punctuate_ (const String& text, const Number::Punctuation& p)
+        {
+            if (p == Number::Punctuation{}) {
+                return text;
+            }
+            string t = text.AsASCII ();
+            size_t b = not t.empty () and (t[0] == '-' or t[0] == '+') ? 1 : 0;
+            size_t e = b;
+            while (e < t.size () and isdigit (static_cast<unsigned char> (t[e]))) {
+                ++e;
+            }
+            StringBuilder<> sb;
+            sb << string_view{t}.substr (0, b);
+            AppendGrouped_ (sb, string_view{t}.substr (b, e - b), p);
+            for (size_t i = e; i < t.size (); ++i) {
+                if (t[i] == '.') {
+                    sb << p.fDecimalPoint;
+                }
+                else {
+                    sb << t[i];
+                }
+            }
+            return sb.str ();
+        }
         template <floating_point FLOAT_TYPE>
         String FloatToString_ (FLOAT_TYPE f, const Number::FloatToStringOptions& options)
         {
             auto floatFormat = options.GetFloatFormat ().value_or (Number::FloatFormatType::eDEFAULT);
-            auto result = (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and floatFormat == Number::FloatFormatType::eDefaultFloat)
+            // written as the "C" locale writes it, and punctuated as the options say at the end
+            auto result = (not options.GetIOSFmtFlags () and floatFormat == Number::FloatFormatType::eDefaultFloat)
                               ? Private_::FloatToString_OptimizedForCLocaleAndNoStreamFlags_ (
                                     f, options.GetSignificantFigures ().value_or (Number::SignificantFigures{}))
                               : Private_::FloatToString_GeneralCase_ (f, options);
@@ -500,7 +507,7 @@ namespace Stroika::Foundation::Characters {
                 TrimTrailingZeros_MaybeSci_ (&result);
             }
 #endif
-            return result;
+            return Punctuate_ (result, options.GetPunctuation ());
         }
     }
 
@@ -773,7 +780,15 @@ namespace Stroika::Foundation::Characters {
                     c = static_cast<char> (toupper (static_cast<unsigned char> (c)));
                 }
             }
-            return String{r};
+            Number::Punctuation p = Number::ResolvePunctuation (o.fPunctuation);
+            if (not p.fDigitSeparator or p.fGroupSize == 0) {
+                return String{r};
+            }
+            size_t          head = r.size () - static_cast<size_t> (ptr - d); // the sign and prefix, before the digits
+            StringBuilder<> sb;
+            sb << string_view{r}.substr (0, head);
+            Private_::AppendGrouped_ (sb, string_view{r}.substr (head), p);
+            return sb.str ();
         }
         // A template, so nothing converts to bool to get here: an int, a pointer or a class with an operator bool must
         // find its own overload, or not compile - never print as true/false

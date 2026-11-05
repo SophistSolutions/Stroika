@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Memory/Optional.h"
@@ -131,15 +132,107 @@ namespace Stroika::Foundation::Characters::Number {
 
     /*
      ********************************************************************************
+     ****************************** Number::Punctuation *****************************
+     ********************************************************************************
+     */
+    namespace Private_ {
+        // a numpunct with the given punctuation - and the words for true and false of the locale it is made from
+        template <typename CHAR_T>
+        struct NumPunct_ : numpunct<CHAR_T> {
+            NumPunct_ (const locale& base, CHAR_T decimalPoint, CHAR_T separator, const string& grouping)
+                : fDecimalPoint_{decimalPoint}
+                , fSeparator_{separator}
+                , fGrouping_{grouping}
+                , fTrue_{use_facet<numpunct<CHAR_T>> (base).truename ()}
+                , fFalse_{use_facet<numpunct<CHAR_T>> (base).falsename ()}
+            {
+            }
+            CHAR_T do_decimal_point () const override
+            {
+                return fDecimalPoint_;
+            }
+            CHAR_T do_thousands_sep () const override
+            {
+                return fSeparator_;
+            }
+            string do_grouping () const override
+            {
+                return fGrouping_;
+            }
+            basic_string<CHAR_T> do_truename () const override
+            {
+                return fTrue_;
+            }
+            basic_string<CHAR_T> do_falsename () const override
+            {
+                return fFalse_;
+            }
+            CHAR_T               fDecimalPoint_;
+            CHAR_T               fSeparator_;
+            string               fGrouping_;
+            basic_string<CHAR_T> fTrue_;
+            basic_string<CHAR_T> fFalse_;
+        };
+    }
+    inline Punctuation Punctuation::FromLocale (const locale& l)
+    {
+        const numpunct<wchar_t>& np = use_facet<numpunct<wchar_t>> (l);
+        string                   g  = np.grouping ();
+        // numpunct::grouping (): a size per group, from the right, the last repeating - 0, a negative or CHAR_MAX ending it
+        auto groupSize = [&] (size_t k) -> unsigned int {
+            return k < g.size () and g[k] > 0 and g[k] != numeric_limits<char>::max () ? static_cast<unsigned int> (g[k]) : 0;
+        };
+        Punctuation r{.fDecimalPoint = Character{np.decimal_point ()}};
+        if (unsigned int first = groupSize (0)) {
+            r.fDigitSeparator     = Character{np.thousands_sep ()};
+            r.fGroupSize          = first;
+            unsigned int second   = groupSize (1);
+            r.fSecondaryGroupSize = second == first ? 0 : second;
+        }
+        return r;
+    }
+    inline locale Punctuation::ToLocale (const locale& base) const
+    {
+        string grouping;
+        if (fDigitSeparator and fGroupSize != 0) {
+            grouping += static_cast<char> (fGroupSize);
+            if (fSecondaryGroupSize != 0) {
+                grouping += static_cast<char> (fSecondaryGroupSize);
+            }
+        }
+        const numpunct<char>& narrow             = use_facet<numpunct<char>> (base);
+        bool                  asciiSeparator     = not fDigitSeparator or fDigitSeparator->IsASCII ();
+        char                  narrowDecimalPoint = fDecimalPoint.IsASCII () ? fDecimalPoint.GetAsciiCode () : narrow.decimal_point ();
+        char narrowSeparator = fDigitSeparator and asciiSeparator ? fDigitSeparator->GetAsciiCode () : narrow.thousands_sep ();
+        auto wide            = [] (Character c) { return static_cast<wchar_t> (c.GetCharacterCode ()); };
+        locale r{base, new Private_::NumPunct_<char>{base, narrowDecimalPoint, narrowSeparator, asciiSeparator ? grouping : narrow.grouping ()}};
+        return locale{r, new Private_::NumPunct_<wchar_t>{
+                             base, wide (fDecimalPoint),
+                             fDigitSeparator ? wide (*fDigitSeparator) : use_facet<numpunct<wchar_t>> (base).thousands_sep (), grouping}};
+    }
+    inline Punctuation ResolvePunctuation (const PunctuationSpecifier& p)
+    {
+        if (const Punctuation* given = get_if<Punctuation> (&p)) {
+            return *given;
+        }
+        return get<Common::PredefinedLocale> (p) == Common::PredefinedLocale::eUseCurrentLocale ? Punctuation::FromLocale (locale{}) : Punctuation{};
+    }
+
+    /*
+     ********************************************************************************
      ***************************** FloatToStringOptions *****************************
      ********************************************************************************
      */
     inline FloatToStringOptions::FloatToStringOptions (const locale& l)
-        : fUseLocale_{l}
+        : fPunctuation_{Punctuation::FromLocale (l)}
     {
     }
     constexpr FloatToStringOptions::FloatToStringOptions (Common::PredefinedLocale p)
-        : fUseCurrentLocale_{p == Common::PredefinedLocale::eUseCurrentLocale}
+        : fPunctuation_{PunctuationSpecifier{p}}
+    {
+    }
+    constexpr FloatToStringOptions::FloatToStringOptions (const Punctuation& p)
+        : fPunctuation_{PunctuationSpecifier{p}}
     {
     }
     constexpr FloatToStringOptions::FloatToStringOptions (ios_base::fmtflags fmtFlags)
@@ -170,8 +263,7 @@ namespace Stroika::Foundation::Characters::Number {
     {
         Memory::CopyToIf (&fSignificantFigures_, b2.fSignificantFigures_);
         Memory::CopyToIf (&fFmtFlags_, b2.fFmtFlags_);
-        fUseCurrentLocale_ = b2.fUseCurrentLocale_;
-        Memory::CopyToIf (&fUseLocale_, b2.fUseLocale_);
+        Memory::CopyToIf (&fPunctuation_, b2.fPunctuation_);
         Memory::CopyToIf (&fTrimTrailingZeros_, b2.fTrimTrailingZeros_);
         Memory::CopyToIf (&fFloatFormat_, b2.fFloatFormat_);
     }
@@ -188,23 +280,17 @@ namespace Stroika::Foundation::Characters::Number {
     {
         return fTrimTrailingZeros_;
     }
+    inline Punctuation FloatToStringOptions::GetPunctuation () const
+    {
+        return fPunctuation_ ? ResolvePunctuation (*fPunctuation_) : Punctuation{};
+    }
     inline locale FloatToStringOptions::GetUseLocale () const
     {
-        if (fUseCurrentLocale_) {
-            return locale{};
-        }
-        if (fUseLocale_) {
-            return *fUseLocale_;
-        }
-        static const locale kCLocale_ = locale::classic ();
-        return kCLocale_;
+        return GetPunctuation ().ToLocale ();
     }
     inline bool FloatToStringOptions::GetUsingLocaleClassic () const
     {
-        if (not fUseLocale_ and not fUseCurrentLocale_) {
-            return true; // very common case
-        }
-        return GetUseLocale () == locale::classic ();
+        return GetPunctuation () == Punctuation{};
     }
     constexpr optional<FloatFormatType> FloatToStringOptions::GetFloatFormat () const
     {
@@ -278,12 +364,59 @@ namespace Stroika::Foundation::Characters::Number {
             }
             return s.subspan (b, e - b);
         }
-        // s, as ASCII, with each separator between two ASCII letters or digits removed, and decimalPoint (if given) made '.' - nullopt
-        // if s has anything else that is not ASCII, a separator anywhere else, or a '.' that is not the decimal point
-        inline optional<string> ToCNumberText_ (const String& s, optional<Character> decimalPoint, optional<Character> separator)
+        // s in the "C" locale's format (ASCII), read as p punctuates it: its decimal point (if floating) made '.', and its digit
+        // separators removed. nullopt if s has anything else that is not ASCII, a '.' that is not the decimal point, or a separator out
+        // of place: not between two letters or digits - or, where p gives group sizes, not grouping the whole part (the digits before
+        // any decimal point or exponent, after any sign, and any radix prefix if radixPrefix) as p says
+        inline optional<string> ToCNumberText_ (const String& s, const Punctuation& p, bool floating, bool radixPrefix)
         {
-            auto   isAlnum = [] (Character c) { return c.IsASCII () and isalnum (static_cast<unsigned char> (c.GetAsciiCode ())); };
-            size_t n       = s.size ();
+            auto isAlnum = [] (Character c) { return c.IsASCII () and isalnum (static_cast<unsigned char> (c.GetAsciiCode ())); };
+            auto isDigit = [] (Character c) { return c.IsASCII () and isdigit (static_cast<unsigned char> (c.GetAsciiCode ())); };
+            optional<Character> decimalPoint = floating ? optional<Character>{p.fDecimalPoint} : nullopt;
+            optional<Character> separator    = p.fDigitSeparator;
+            size_t              n            = s.size ();
+            if (separator and p.fGroupSize != 0) {
+                size_t b = 0;
+                if (b < n and (s[b] == '+' or s[b] == '-')) {
+                    ++b;
+                }
+                if (radixPrefix and b + 1 < n and s[b] == '0') {
+                    Character x = s[b + 1].ToLowerCase ();
+                    if (x == 'x' or x == 'o' or x == 'b') {
+                        b += 2;
+                    }
+                }
+                size_t e = b;
+                while (e < n and (s[e] == *separator or (floating ? isDigit (s[e]) : isAlnum (s[e])))) {
+                    ++e;
+                }
+                // the lengths of the whole part's groups, left to right: one group if no separator at all
+                vector<size_t> groups{0};
+                for (size_t k = b; k < e; ++k) {
+                    if (s[k] == *separator) {
+                        groups.push_back (0);
+                    }
+                    else {
+                        ++groups.back ();
+                    }
+                }
+                if (groups.size () > 1) {
+                    size_t secondary = p.fSecondaryGroupSize != 0 ? p.fSecondaryGroupSize : p.fGroupSize;
+                    if (groups.back () != p.fGroupSize or groups.front () == 0 or groups.front () > secondary) {
+                        return nullopt;
+                    }
+                    for (size_t g = 1; g + 1 < groups.size (); ++g) {
+                        if (groups[g] != secondary) {
+                            return nullopt;
+                        }
+                    }
+                }
+                for (size_t k = e; k < n; ++k) {
+                    if (s[k] == *separator) {
+                        return nullopt; // grouping only in the whole part
+                    }
+                }
+            }
             string r;
             r.reserve (n);
             for (size_t i = 0; i < n; ++i) {
@@ -304,13 +437,6 @@ namespace Stroika::Foundation::Characters::Number {
                 }
             }
             return r;
-        }
-        inline Character DecimalPoint_ (const Common::LocaleSpecifier& l)
-        {
-            if (const Common::PredefinedLocale* p = get_if<Common::PredefinedLocale> (&l); p != nullptr and *p == Common::PredefinedLocale::eUseCLocale) {
-                return Character{'.'};
-            }
-            return Character{use_facet<numpunct<wchar_t>> (Common::ResolveLocale (l)).decimal_point ()};
         }
         // the number at the start of s, in the "C" locale's format - whatever the global locale: its length (0 if s does not start with
         // one), its value in *result, and *outOfRange if it is too large for T. nan, inf and infinity - in any case, with an optional
@@ -422,7 +548,7 @@ namespace Stroika::Foundation::Characters::Number {
             o.fIgnoreSurroundingWhitespace = false;
             return Parse<T> (Private_::TrimWhitespace_ (s), o);
         }
-        if (options.fDigitSeparator) {
+        if (Punctuation punctuation = ResolvePunctuation (options.fPunctuation); punctuation.fDigitSeparator) {
             // slow - it copies the text twice (into a String, then a string without the separators): a candidate to optimize, if a
             // separator is used where speed matters
             if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
@@ -430,12 +556,13 @@ namespace Stroika::Foundation::Characters::Number {
                     return notAnInteger ();
                 }
             }
-            optional<string> c = Private_::ToCNumberText_ (String{s}, nullopt, options.fDigitSeparator);
+            bool             prefix = options.fAcceptRadixPrefix and (radix == 16 or radix == 8 or radix == 2);
+            optional<string> c      = Private_::ToCNumberText_ (String{s}, punctuation, false, prefix);
             if (not c) {
                 return notAnInteger ();
             }
             IntegerParseOptions o = options;
-            o.fDigitSeparator     = nullopt;
+            o.fPunctuation        = Punctuation{};
             return Parse<T> (span<const char>{c->data (), c->size ()}, o);
         }
         Memory::StackBuffer<char> ascii;
@@ -522,17 +649,18 @@ namespace Stroika::Foundation::Characters::Number {
             o.fIgnoreSurroundingWhitespace = false;
             return Parse<T> (Private_::TrimWhitespace_ (s), o);
         }
-        Character decimalPoint = Private_::DecimalPoint_ (options.fLocale);
-        Require (not options.fDigitSeparator or *options.fDigitSeparator != decimalPoint);
+        Punctuation punctuation  = ResolvePunctuation (options.fPunctuation);
+        Character   decimalPoint = punctuation.fDecimalPoint;
+        Require (not punctuation.fDigitSeparator or *punctuation.fDigitSeparator != decimalPoint);
         string text; // in the "C" locale's format
-        if (decimalPoint == '.' and not options.fDigitSeparator) {
+        if (decimalPoint == '.' and not punctuation.fDigitSeparator) {
             Memory::StackBuffer<char> ascii;
             if (not Character::AsASCIIQuietly (s, &ascii)) {
                 return error (" is not a number"sv);
             }
             text.assign (ascii.begin (), ascii.end ());
         }
-        else if (optional<string> c = Private_::ToCNumberText_ (String{s}, decimalPoint, options.fDigitSeparator)) {
+        else if (optional<string> c = Private_::ToCNumberText_ (String{s}, punctuation, true, false)) {
             text = move (*c);
         }
         else {
