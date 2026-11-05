@@ -2715,6 +2715,68 @@ namespace {
             EXPECT_EQ (*ParseFloat<double> (t, &t), 2.5);
             EXPECT_EQ (*ParseFloat<double> (t, &t), 3.5);
             EXPECT_EQ (t, ""sv);
+            // only nan, inf and infinity as words: not nan(chars), nor a hex float
+            EXPECT_TRUE (errorText (ParseFloat<double> ("nan(1)")).Contains ("is not a number"sv));
+            EXPECT_TRUE (errorText (ParseFloat<double> ("0x1p3")).Contains ("is not a number"sv));
+        }
+        {
+            // fDigitSeparator - only between two digits (or a radix's letters), and only when asked for
+            EXPECT_EQ (*ParseInteger<int> ("1_000", {.fDigitSeparator = '_'}), 1000);
+            EXPECT_EQ (*ParseInteger<int> ("-1'000'000", {.fDigitSeparator = '\''}), -1000000);
+            EXPECT_EQ (*ParseInteger<uint32_t> ("dead_beef", {.fRadix = 16, .fDigitSeparator = '_'}), 0xdeadbeefu);
+            EXPECT_TRUE (errorText (ParseInteger<int> ("1_000")).Contains ("is not an integer"sv));
+            for (const char* bad : {"_1000", "1000_", "1__000"}) {
+                EXPECT_TRUE (errorText (ParseInteger<int> (bad, {.fDigitSeparator = '_'})).Contains ("is not an integer"sv)) << bad;
+            }
+            EXPECT_EQ (*ParseFloat<double> ("1_000.5", {.fDigitSeparator = '_'}), 1000.5);
+            EXPECT_EQ (*ParseFloat<double> ("1,000.25", {.fDigitSeparator = ','}), 1000.25);
+            EXPECT_TRUE (errorText (ParseFloat<double> ("1_.5", {.fDigitSeparator = '_'})).Contains ("is not a number"sv));
+        }
+        {
+            // fLocale: the text's decimal point - here a locale whose decimal point is a comma (and grouping a dot), made so it is on
+            // every platform
+            struct CommaDecimal_ : numpunct<wchar_t> {
+                wchar_t do_decimal_point () const override
+                {
+                    return L',';
+                }
+                wchar_t do_thousands_sep () const override
+                {
+                    return L'.';
+                }
+            };
+            const locale kComma{locale::classic (), new CommaDecimal_};
+            EXPECT_EQ (*ParseFloat<double> ("1,5", {.fLocale = kComma}), 1.5);
+            EXPECT_TRUE (errorText (ParseFloat<double> ("1.5", {.fLocale = kComma})).Contains ("is not a number"sv)); // not its decimal point
+            EXPECT_EQ (*ParseFloat<double> ("1.000,5", {.fLocale = kComma, .fDigitSeparator = '.'}), 1000.5);
+            EXPECT_TRUE (errorText (ParseFloat<double> ("1,5")).Contains ("is not a number"sv)); // the "C" locale's format by default
+            // and the global locale changes nothing unless asked for - checked with a real one, if this platform has one with a comma
+            optional<locale> named;
+            for (const char* name : {"de_DE.UTF-8", "de_DE.utf8", "de_DE", "de-DE", "German_Germany.1252"}) {
+                try {
+                    named = locale{name};
+                    break;
+                }
+                catch (...) {
+                }
+            }
+            if (named and use_facet<numpunct<wchar_t>> (*named).decimal_point () == L',') {
+                locale saved = locale::global (*named); // a named locale, so the C library's too (setlocale), which strtod follows
+                double dot   = ParseFloat<double> ("1.5").value_or (-1);
+                bool   comma = ParseFloat<double> ("1,5").has_value ();
+                double cur   = ParseFloat<double> ("1,5", {.fLocale = PredefinedLocale::eUseCurrentLocale}).value_or (-1);
+                String rest;
+                double rem = ParseFloat<double> ("2.5x"_k, &rest).value_or (-1);
+                locale::global (saved);
+                EXPECT_EQ (dot, 1.5);
+                EXPECT_FALSE (comma);
+                EXPECT_EQ (cur, 1.5);
+                EXPECT_EQ (rem, 2.5);
+                EXPECT_EQ (rest, "x"sv);
+            }
+            else {
+                DbgTrace ("no named locale with a decimal comma here - so only the facet-made one is tested"_f);
+            }
         }
     }
 }

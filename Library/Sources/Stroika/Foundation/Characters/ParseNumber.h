@@ -6,8 +6,12 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <locale>
+#include <optional>
 #include <span>
+#include <variant>
 
+#include "Stroika/Foundation/Characters/NumberFormat.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
@@ -18,6 +22,8 @@
  *
  *  \note A header of its own - not part of String2Int.h or FloatConversion.h - because DataExchange::BadFormatException's header
  *        reaches FloatConversion.h (through Execution/Exceptions.h, Format.h and ToString.h); nothing else in Characters includes it.
+ *
+ *  \see NumberFormat.h for the other direction, and the types both share
  */
 
 namespace Stroika::Foundation::Characters {
@@ -33,8 +39,8 @@ namespace Stroika::Foundation::Characters {
      *          ParseInteger<int> (" 42 ", {.fIgnoreSurroundingWhitespace = true});                  // 42
      *      \endcode
      *
-     *  \note Not here yet - to add when a caller needs one: a digit separator or grouping (1'000, 1_000, 1,000); a remainder overload
-     *        of ParseInteger, reading the number at the start of longer text (as ParseFloat's) - say "0 kB".
+     *  \note Not here yet - to add when a caller needs one: a remainder overload of ParseInteger, reading the number at the start of
+     *        longer text (as ParseFloat's) - say "0 kB".
      */
     struct ParseIntegerOptions {
         /**
@@ -51,6 +57,14 @@ namespace Stroika::Foundation::Characters {
          *  0 meaning octal, so "010" is 8, is a known source of bugs; a leading 0 is always just a digit.
          */
         bool fAcceptRadixPrefix{false};
+
+        /**
+         *  Also accept this character between two digits - a separator people use to make long numbers readable: 1'000'000 (C++),
+         *  1_000_000 (Python, Rust), or a locale's grouping, 1,000,000 (its thousands separator: use_facet<numpunct<wchar_t>> (l).thousands_sep ()).
+         *
+         *  Only between two digits - not first, last, or twice together; the sizes of the groups are not checked.
+         */
+        optional<Character> fDigitSeparator;
 
         /**
          *  Ignore whitespace before and after the number.
@@ -88,12 +102,31 @@ namespace Stroika::Foundation::Characters {
     Common::StdCompat::expected<T, DataExchange::BadFormatException> ParseInteger (STRINGISH_ARG&& s, const ParseIntegerOptions& options = {});
 
     /**
-     *  \brief How ParseFloat reads its text: by default strictly - just the number
+     *  \brief How ParseFloat reads its text: by default strictly - just the number, in the "C" locale's format
      *
-     *  \note Not here yet - to add when a caller needs one: a locale (a decimal comma); a digit separator or grouping (1,000.5);
-     *        refusing nan and inf as text (accepted now, as ToFloat accepted them).
+     *  \par Example Usage
+     *      \code
+     *          ParseFloat ("1,5", {.fLocale = locale{"de_DE.UTF-8"}});                              // 1.5 - its decimal point is a comma
+     *          ParseFloat ("1.000,5", {.fLocale = locale{"de_DE.UTF-8"}, .fDigitSeparator = '.'});  // 1000.5 - and its grouping a dot
+     *          ParseFloat ("1_000.5", {.fDigitSeparator = '_'});                                    // 1000.5
+     *      \endcode
+     *
+     *  \note Not here yet - to add when a caller needs one: refusing nan and inf as text (accepted now, as ToFloat accepted them).
      */
     struct ParseFloatOptions {
+        /**
+         *  The locale whose decimal point the text uses - the "C" locale ('.') by default, so the same text parses the same in every
+         *  program, whatever its global locale. eUseCurrentLocale means the global locale when ParseFloat is called. A '.' is not
+         *  the decimal point in a locale whose decimal point is something else (it may be fDigitSeparator).
+         */
+        variant<PredefinedLocale, locale> fLocale{PredefinedLocale::eUseCLocale};
+
+        /**
+         *  Also accept this character between two digits - as ParseIntegerOptions::fDigitSeparator: 1_000.5, or a locale's grouping,
+         *  1,000.5 (its thousands separator: use_facet<numpunct<wchar_t>> (l).thousands_sep ()).
+         */
+        optional<Character> fDigitSeparator;
+
         /**
          *  Ignore whitespace before and after the number.
          */
@@ -104,16 +137,17 @@ namespace Stroika::Foundation::Characters {
      *  \brief The whole of s as a floating-point number of type T: text that is not entirely a number, or is too large for T, is an
      *  error
      *
-     *  s is just the number, as ToFloat reads it - an optional sign, digits with an optional decimal point and exponent - or nan, inf
-     *  or infinity (in any case, with an optional sign), which give NaN or infinity as such. No whitespace, nothing after (unless
-     *  options say otherwise).
+     *  s is just the number: an optional sign, digits with an optional decimal point and exponent (1.5, -2e10, .5) - or nan, inf or
+     *  infinity (in any case, with an optional sign), which give NaN or infinity as such. No whitespace, nothing after (unless
+     *  options say otherwise). By default the "C" locale's format, whatever the global locale - so the same text parses the same
+     *  in every program (this uses std::from_chars).
      *
      *  The error, as ParseInteger's: "is not a number" or "is out of range". value_or (NAN) gives ToFloat's lenient behavior for
      *  text that is not a number.
      *
-     *  The overload with a remainder reads the number at the start of s (after any whitespace) and puts what follows it in
-     *  *remainder - for a number within longer text; its error is that s "does not start with a number". s may be *remainder, to
-     *  read one number after another.
+     *  The overload with a remainder reads the number at the start of s (after any whitespace), in the "C" locale's format, and puts
+     *  what follows it in *remainder - for a number within longer text; its error is that s "does not start with a number". s may be
+     *  *remainder, to read one number after another.
      *
      *  \par Example Usage
      *      \code

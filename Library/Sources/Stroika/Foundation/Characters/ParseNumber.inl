@@ -1,14 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include <cctype>
 #include <charconv>
 #include <cmath>
 #include <limits>
+#include <sstream>
 #include <string>
 #include <string_view>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
-#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {
@@ -25,11 +26,105 @@ namespace Stroika::Foundation::Characters {
             }
             return "\""sv + String{s}.LimitLength (50) + "\""sv;
         }
-        // nan, inf or infinity - in any case, with an optional sign - which ToFloat reads as NaN or infinity on purpose
-        inline bool IsNamedFloat_ (const String& s, string_view name)
+        // s, as ASCII, with each separator between two ASCII letters or digits removed, and decimalPoint (if given) made '.' - nullopt
+        // if s has anything else that is not ASCII, a separator anywhere else, or a '.' that is not the decimal point
+        inline optional<string> ToCNumberText_ (const String& s, optional<Character> decimalPoint, optional<Character> separator)
         {
-            String t = (s.StartsWith ("+"sv) or s.StartsWith ("-"sv)) ? s.SubString (1) : s;
-            return String::EqualsComparer{eCaseInsensitive}(t, String{name});
+            auto   isAlnum = [] (Character c) { return c.IsASCII () and isalnum (static_cast<unsigned char> (c.GetAsciiCode ())); };
+            size_t n       = s.size ();
+            string r;
+            r.reserve (n);
+            for (size_t i = 0; i < n; ++i) {
+                Character c = s[i];
+                if (separator and c == *separator) {
+                    if (i == 0 or i + 1 == n or not isAlnum (s[i - 1]) or not isAlnum (s[i + 1])) {
+                        return nullopt;
+                    }
+                }
+                else if (decimalPoint and c == *decimalPoint) {
+                    r += '.';
+                }
+                else if ((decimalPoint and c == '.') or not c.IsASCII ()) {
+                    return nullopt;
+                }
+                else {
+                    r += c.GetAsciiCode ();
+                }
+            }
+            return r;
+        }
+        inline Character DecimalPoint_ (const variant<PredefinedLocale, locale>& l)
+        {
+            if (const PredefinedLocale* p = get_if<PredefinedLocale> (&l)) {
+                return *p == PredefinedLocale::eUseCLocale ? Character{'.'} : Character{use_facet<numpunct<wchar_t>> (locale{}).decimal_point ()};
+            }
+            return Character{use_facet<numpunct<wchar_t>> (get<locale> (l)).decimal_point ()};
+        }
+        // the number at the start of s, in the "C" locale's format - whatever the global locale: its length (0 if s does not start with
+        // one), its value in *result, and *outOfRange if it is too large for T. nan, inf and infinity - in any case, with an optional
+        // sign - are read here, as whole words (from_chars would also take nan(chars))
+        template <floating_point T>
+        size_t ParseFloatPrefix_ (string_view s, T* result, bool* outOfRange)
+        {
+            *outOfRange     = false;
+            size_t i        = 0;
+            bool   negative = false;
+            if (i < s.size () and (s[i] == '+' or s[i] == '-')) {
+                negative = s[i] == '-';
+                ++i;
+            }
+            auto isWord = [&] (string_view w) {
+                if (s.size () - i < w.size ()) {
+                    return false;
+                }
+                for (size_t k = 0; k < w.size (); ++k) {
+                    if (tolower (static_cast<unsigned char> (s[i + k])) != w[k]) {
+                        return false;
+                    }
+                }
+                return i + w.size () == s.size () or not isalnum (static_cast<unsigned char> (s[i + w.size ()]));
+            };
+            if (isWord ("nan"sv)) {
+                *result = numeric_limits<T>::quiet_NaN ();
+                return i + 3;
+            }
+            for (string_view w : {"infinity"sv, "inf"sv}) {
+                if (isWord (w)) {
+                    *result = negative ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+                    return i + w.size ();
+                }
+            }
+            if (i == s.size () or not(isdigit (static_cast<unsigned char> (s[i])) or s[i] == '.')) {
+                return 0; // a sign at most once, then a digit or the decimal point
+            }
+            string digits{s.substr (i)}; // a NUL after it, as some from_chars read past the end (qCompilerAndStdLib_from_chars_reads_past_end_Buggy)
+            size_t used = 0;
+#if defined(__cpp_lib_to_chars) and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
+            auto [ptr, ec] = from_chars (digits.data (), digits.data () + digits.size (), *result);
+            if (ec == errc::invalid_argument) {
+                return 0;
+            }
+            *outOfRange = ec == errc::result_out_of_range;
+            used        = static_cast<size_t> (ptr - digits.data ());
+#else
+            // this standard library's from_chars cannot read floating point numbers: a stream in the "C" locale does instead
+            istringstream in{digits};
+            in.imbue (locale::classic ());
+            in >> *result;
+            if (in.fail ()) {
+                if (abs (*result) != numeric_limits<T>::max ()) { // on overflow num_get sets the largest value, and fails
+                    return 0;
+                }
+                *outOfRange = true;
+            }
+            in.clear ();
+            streampos pos = in.tellg ();
+            used          = pos < 0 ? digits.size () : static_cast<size_t> (pos);
+#endif
+            if (negative) {
+                *result = -*result;
+            }
+            return i + used;
         }
     }
 
@@ -60,6 +155,20 @@ namespace Stroika::Foundation::Characters {
             String                       t = String{s}.Trim ();
             Memory::StackBuffer<wchar_t> buf;
             return ParseInteger<T> (t.GetData<wchar_t> (&buf), o);
+        }
+        if (options.fDigitSeparator) {
+            if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
+                if (not Character::IsASCII (s)) {
+                    return notAnInteger ();
+                }
+            }
+            optional<string> c = Private_::ToCNumberText_ (String{s}, nullopt, options.fDigitSeparator);
+            if (not c) {
+                return notAnInteger ();
+            }
+            ParseIntegerOptions o = options;
+            o.fDigitSeparator     = nullopt;
+            return ParseInteger<T> (span<const char>{c->data (), c->size ()}, o);
         }
         Memory::StackBuffer<char> ascii;
         if (Character::AsASCIIQuietly (s, &ascii)) {
@@ -134,9 +243,10 @@ namespace Stroika::Foundation::Characters {
     Common::StdCompat::expected<T, DataExchange::BadFormatException> ParseFloat (span<const CHAR_T> s, const ParseFloatOptions& options)
     {
         using ERRT = Common::StdCompat::unexpected<DataExchange::BadFormatException>;
+        auto error = [&] (string_view why) { return ERRT{DataExchange::BadFormatException{Private_::QuoteForParseError_ (s) + why}}; };
         if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
-            if (not Character::IsASCII (s)) { // ToFloat requires ASCII char text
-                return ERRT{DataExchange::BadFormatException{Private_::QuoteForParseError_ (s) + " is not a number"sv}};
+            if (not Character::IsASCII (s)) {
+                return error (" is not a number"sv);
             }
         }
         if (options.fIgnoreSurroundingWhitespace) {
@@ -146,12 +256,29 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<wchar_t> buf;
             return ParseFloat<T> (t.GetData<wchar_t> (&buf), o);
         }
-        T r = FloatConversion::Private_::ToFloat_<T> (s); // NaN if not a number, infinity if too large
-        if (isnan (r) and not Private_::IsNamedFloat_ (String{s}, "nan"sv)) {
-            return ERRT{DataExchange::BadFormatException{Private_::QuoteForParseError_ (s) + " is not a number"sv}};
+        Character decimalPoint = Private_::DecimalPoint_ (options.fLocale);
+        Require (not options.fDigitSeparator or *options.fDigitSeparator != decimalPoint);
+        string text; // in the "C" locale's format
+        if (decimalPoint == '.' and not options.fDigitSeparator) {
+            Memory::StackBuffer<char> ascii;
+            if (not Character::AsASCIIQuietly (s, &ascii)) {
+                return error (" is not a number"sv);
+            }
+            text.assign (ascii.begin (), ascii.end ());
         }
-        if (isinf (r) and not Private_::IsNamedFloat_ (String{s}, "inf"sv) and not Private_::IsNamedFloat_ (String{s}, "infinity"sv)) {
-            return ERRT{DataExchange::BadFormatException{Private_::QuoteForParseError_ (s) + " is out of range"sv}};
+        else if (optional<string> c = Private_::ToCNumberText_ (String{s}, decimalPoint, options.fDigitSeparator)) {
+            text = move (*c);
+        }
+        else {
+            return error (" is not a number"sv);
+        }
+        T    r{};
+        bool outOfRange = false;
+        if (text.empty () or Private_::ParseFloatPrefix_ (text, &r, &outOfRange) != text.size ()) {
+            return error (" is not a number"sv);
+        }
+        if (outOfRange) {
+            return error (" is out of range"sv);
         }
         return r;
     }
@@ -179,15 +306,26 @@ namespace Stroika::Foundation::Characters {
     Common::StdCompat::expected<T, DataExchange::BadFormatException> ParseFloat (const String& s, String* remainder)
     {
         RequireNotNull (remainder);
-        using ERRT    = Common::StdCompat::unexpected<DataExchange::BadFormatException>;
-        String text   = s; // s may be *remainder - as in ParseFloat (t, &t) - so changed by the call below
-        T      r      = FloatConversion::Private_::ToFloat_<T> (text, remainder); // skips leading whitespace; what follows in *remainder
-        String number = text.SubString (0, text.size () - remainder->size ()).Trim ();
-        if (number.empty () or (isnan (r) and not Private_::IsNamedFloat_ (number, "nan"sv))) {
+        using ERRT   = Common::StdCompat::unexpected<DataExchange::BadFormatException>;
+        String text  = s; // s may be *remainder - as in ParseFloat (t, &t) - so changed below
+        size_t start = 0;
+        while (start < text.size () and text[start].IsWhitespace ()) {
+            ++start;
+        }
+        string ascii; // a number is all ASCII, so the ASCII text from there is enough to read it
+        for (size_t i = start; i < text.size () and text[i].IsASCII (); ++i) {
+            ascii += text[i].GetAsciiCode ();
+        }
+        T      r{};
+        bool   outOfRange = false;
+        size_t used       = Private_::ParseFloatPrefix_ (ascii, &r, &outOfRange);
+        if (used == 0) {
+            *remainder = text;
             return ERRT{DataExchange::BadFormatException{"\""sv + text.LimitLength (50) + "\" does not start with a number"sv}};
         }
-        if (isinf (r) and not Private_::IsNamedFloat_ (number, "inf"sv) and not Private_::IsNamedFloat_ (number, "infinity"sv)) {
-            return ERRT{DataExchange::BadFormatException{"\""sv + number.LimitLength (50) + "\" is out of range"sv}};
+        *remainder = text.SubString (start + used);
+        if (outOfRange) {
+            return ERRT{DataExchange::BadFormatException{"\""sv + String{ascii.substr (0, used)}.LimitLength (50) + "\" is out of range"sv}};
         }
         return r;
     }
