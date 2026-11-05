@@ -2,8 +2,6 @@
 
 This file provides guidance to agents when working with code in this repository.
 
-@TODO.md
-
 ## What this is
 
 Stroika is a modern, portable C++20+ application framework (a layer over the standard library):
@@ -14,6 +12,19 @@ requires C++20+); `v2.1` (C++17+) and `v2.0` (C++14+) are older stable branches 
 
 Full narrative docs live in `Documentation/` (see especially `Design-Overview.md`, `Patterns.md`,
 `Thread-Safety.md`, `Building-Stroika.md`). This file only covers what's needed for day-to-day work.
+
+## Working ON Stroika, or WITH it?
+
+Most of this file is for developing Stroika itself - a session whose workspace is this Stroika checkout. An agent in a
+project built on Stroika (its copy usually at `ThirdPartyComponents/Stroika/StroikaRoot`, as Skel sets up a project) gets
+this file too, whenever it reads Stroika's sources. There:
+- Use "What this is", "Build system" (to build it), and "Architecture" with its "Design conventions" - how Stroika's
+  APIs work.
+- Do not edit Stroika's files: a fix belongs in Stroika, and a local edit is lost or conflicts at the next Stroika upgrade.
+- A Stroika bug: file an issue on SophistSolutions/Stroika with the analysis (a patch welcome; in the next release's
+  milestone, where you can set one), and work around it in the project meanwhile, citing the issue.
+- The rest - "Shared dev boxes", "Commits", "Issues", "Downstream projects", "Changing things", "Working with LGP", and
+  TODO.md (Stroika's own work list) - is for working ON Stroika.
 
 ## Build system
 
@@ -364,6 +375,7 @@ old staged versions of the commit's files.
 ## Issues
 
 - **A bug or small improvement gets fixed, not ticketed** (LGP, 2026-10-09): a ticket is for work planned for a later release.
+  Found while working on a project built on Stroika, it gets an issue instead ("Working ON Stroika, or WITH it?").
 - **Priority is a field, never a label** - create no labels (applying existing ones is fine). There are TWO priority
   fields, the "Stroika Issues" project's (#1) and the organization's issue field; setting one does not set the other, so
   set both (`gh api graphql`, from a POSIX shell - PowerShell mangles the quoting).

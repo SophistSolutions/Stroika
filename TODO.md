@@ -8,8 +8,6 @@ Generally will track stuff here between releases
 
 ## Open
 
-- AGENTS.md probably should NOT include TODO (clause.md) czu jjust for LGP it should - or anyone developinig it. Is thatwhat agents.md for or also peopletrying to understand it?>
-
 - document or reconsider the practice of #include Stroika-Frameowkrs-Precome
   Stroika-Foundation-Precompe.h on every cpp and .h file.
   
