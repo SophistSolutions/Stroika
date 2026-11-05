@@ -24,7 +24,7 @@
  *
  *  \note Kept light - it includes no ToString.h and no exception headers - since ToString.h and FloatConversion.h include it.
  *
- *  \note Before Stroika v3.0d26 these were in Characters::FloatConversion, which keeps aliases of them.
+ *  \note Before Stroika v3.0d26 these were in Characters::FloatConversion.
  */
 
 namespace Stroika::Foundation::Characters {
@@ -112,10 +112,6 @@ namespace Stroika::Foundation::Characters {
      *          Roughly:
      *              o   digits10 is the number of decimal digits guaranteed to survive text → float → text round-trip.
      *              o   max_digits10 is the number of decimal digits needed to guarantee correct float → text → float round-trip.
-     *
-     * TODO:
-     *      @todo   rewrite with  https://en.cppreference.com/w/cpp/utility/to_chars
-
      */
     struct SignificantFigures {
     public:
@@ -123,7 +119,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Flag indicating full precision (see Precision class docs for explanation) - max_digits10
+         *  Flag indicating full precision (see kFullPrecision) - max_digits10
          */
         enum FullFlag {
             eFull
@@ -145,7 +141,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Return the used precision. This will be the value specified in the Precision constructor, or
+         *  Return the used precision. This will be the value specified in the constructor, or
          *  if 'Full' precision given in the constructor, the desired floating point type will be used to compute
          *  the appropriate precision.
          * 
@@ -196,7 +192,7 @@ namespace Stroika::Foundation::Characters {
 
     private:
         /**
-         *  Internally treat fSignificantFigures_ as meaning kFullPrecision
+         *  nullopt means kFullPrecision
          */
         optional<RepType> fSignificantFigures_{6};
     };
@@ -359,17 +355,15 @@ namespace Stroika::Foundation::Characters {
      *
      *  ToString uses the locale specified by FloatToStringOptions, but defaults to the "C" locale.
      *
-     *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
-     *  by default.
+     *  By default (eDefaultFloat) it writes no needless trailing zeros; see FloatFormatType.
      *
-     *  Float2String () maps NAN values to the string "NAN", and negative infinite values to "-INF", and positive infinite
-     *  values to "INF" (ignoring case).
-     *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
+     *  NaN and infinity are written as the standard library writes them - by default "nan", "inf" or "-inf" (a NaN may be "-nan") -
+     *  which ParseFloat reads back.
      */
     struct FloatToStringOptions {
     public:
         /**
-         * Default is to use use C-locale
+         * Default is to use the C-locale
          *  \note - if ios_base::fmtflags are specified, these REPLACE - not merged - with
          *          basic ios flags
          */
