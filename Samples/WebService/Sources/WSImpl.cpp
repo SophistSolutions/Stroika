@@ -23,7 +23,7 @@ using IO ::Network::HTTP::ClientErrorException;
 using namespace StroikaSample::WebServices;
 
 namespace {
-    RWSynchronized<Mapping<String, Number>> sVariables_;
+    RWSynchronized<Mapping<String, Model::Number>> sVariables_;
 }
 
 /*
@@ -36,7 +36,7 @@ Collection<String> WSImpl::Variables_GET () const
     return sVariables_.cget ()->Keys ();
 }
 
-Number WSImpl::Variables_GET (const String& variable) const
+Model::Number WSImpl::Variables_GET (const String& variable) const
 {
     if (auto o = sVariables_.cget ()->Lookup (variable)) {
         return *o;
@@ -49,29 +49,29 @@ void WSImpl::Variables_DELETE (const String& variable) const
     sVariables_.rwget ()->Remove (variable);
 }
 
-void WSImpl::Variables_SET (const String& variable, const Number& value)
+void WSImpl::Variables_SET (const String& variable, const Model::Number& value)
 {
     sVariables_.rwget ()->Add (variable, value);
 }
 
-Number WSImpl::plus (Number lhs, Number rhs) const
+Model::Number WSImpl::plus (Model::Number lhs, Model::Number rhs) const
 {
     return lhs + rhs;
 }
 
-Number WSImpl::minus (Number lhs, Number rhs) const
+Model::Number WSImpl::minus (Model::Number lhs, Model::Number rhs) const
 {
     return lhs - rhs;
 }
 
-Number WSImpl::times (Number lhs, Number rhs) const
+Model::Number WSImpl::times (Model::Number lhs, Model::Number rhs) const
 {
     return lhs * rhs;
 }
 
-Number WSImpl::divide (Number lhs, Number rhs) const
+Model::Number WSImpl::divide (Model::Number lhs, Model::Number rhs) const
 {
-    if (rhs == Number{0}) {
+    if (rhs == Model::Number{0}) {
         // Note - important to use ClientErrorException so web-server returns HTTP status 400, instead of 500
         Execution::Throw (ClientErrorException{"divide by zero"sv});
     }

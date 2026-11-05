@@ -2,7 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 
-// Comment this in to turn on aggressive noisy DbgTrace in this module
+// Comment this in to turn on aggressive noisy DbgTrace in this module - though its Format.h include below then makes an include
+// cycle: Format.h includes ToString.h, which (through Number.h and DataExchange/BadFormatException.h) includes Exceptions.h
 //#define   Stroika_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 #if Stroika_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_

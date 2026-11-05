@@ -260,7 +260,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      ********************************************************************************
      */
     template <Common::IAnyOf<String, string, wstring> STRING_TYPE, floating_point FLOAT_TYPE>
-    inline STRING_TYPE ToString (FLOAT_TYPE f, const Characters::FloatToStringOptions& options)
+    inline STRING_TYPE ToString (FLOAT_TYPE f, const Characters::Number::FloatToStringOptions& options)
     {
         if constexpr (same_as<STRING_TYPE, String>) {
             return Characters::ToString (f, options);
@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      ********************************************************************************
      */
     namespace Private_ {
-        // ToFloat's implementation - and ParseFloat's, so not deprecated with ToFloat
+        // ToFloat's implementation - and Number::Parse's, so not deprecated with ToFloat
         template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         T ToFloat_ (span<const CHAR_T> s)
         {

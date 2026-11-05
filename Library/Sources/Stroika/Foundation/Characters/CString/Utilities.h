@@ -152,7 +152,7 @@ namespace Stroika::Foundation::Characters::CString {
     wstring StripTrailingCharIfAny (const wstring& s, wchar_t c);
 
     /**
-     *  DEPRECATED since Stroika v3.0d26: use Characters::ParseInteger<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) (ParseNumber.h).
+     *  DEPRECATED since Stroika v3.0d26: use Characters::Number::Parse<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) (Number.h).
      *
      *  Convert the given hex-format string to an unsigned integer.
      *  String2Int will return 0 if no valid parse, and UINT_MAX on overflow.
@@ -161,18 +161,18 @@ namespace Stroika::Foundation::Characters::CString {
      *  strtoul() etc are more flexible. This is merely meant to be an often convenient wrapper.
      *  Use strtoul etc directly to see if the string parsed properly.
      */
-    [[deprecated ("Since Stroika v3.0d26 use ParseInteger<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
-                  "(ParseNumber.h)")]] unsigned int
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
+                  "(Number.h)")]] unsigned int
     HexString2Int (const string& s);
-    [[deprecated ("Since Stroika v3.0d26 use ParseInteger<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
-                  "(ParseNumber.h)")]] unsigned int
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
+                  "(Number.h)")]] unsigned int
     HexString2Int (const wchar_t* s);
-    [[deprecated ("Since Stroika v3.0d26 use ParseInteger<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
-                  "(ParseNumber.h)")]] unsigned int
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
+                  "(Number.h)")]] unsigned int
     HexString2Int (const wstring& s);
 
     /**
-     *  DEPRECATED since Stroika v3.0d26: use Characters::ParseInteger<T> (s) (ParseNumber.h) - .value_or (0) for this lenient behavior.
+     *  DEPRECATED since Stroika v3.0d26: use Characters::Number::Parse<T> (s) (Number.h) - .value_or (0) for this lenient behavior.
      *
      *  Convert the given decimal-format integral string to any integer type
      *  ( e.g. signed char, unsigned short int, long long int, uint32_t etc).
@@ -189,14 +189,11 @@ namespace Stroika::Foundation::Characters::CString {
      *  Use strtoll etc directly to see if the string parsed properly.
      */
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d26 use ParseInteger<T> (s) (ParseNumber.h) - .value_or (0) for this lenient behavior")]] T
-    String2Int (const string& s);
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<T> (s) (Number.h) - .value_or (0) for this lenient behavior")]] T String2Int (const string& s);
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d26 use ParseInteger<T> (s) (ParseNumber.h) - .value_or (0) for this lenient behavior")]] T
-    String2Int (const wchar_t* s);
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<T> (s) (Number.h) - .value_or (0) for this lenient behavior")]] T String2Int (const wchar_t* s);
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d26 use ParseInteger<T> (s) (ParseNumber.h) - .value_or (0) for this lenient behavior")]] T
-    String2Int (const wstring& s);
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<T> (s) (Number.h) - .value_or (0) for this lenient behavior")]] T String2Int (const wstring& s);
 
 }
 

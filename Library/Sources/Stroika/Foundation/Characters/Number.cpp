@@ -6,17 +6,17 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 
-#include "NumberFormat.h"
+#include "Number.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
 /*
  ********************************************************************************
- ****************************** SignificantFigures ******************************
+ ************************** Number::SignificantFigures **************************
  ********************************************************************************
  */
-String Characters::SignificantFigures::ToString () const
+String Characters::Number::SignificantFigures::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
@@ -32,10 +32,10 @@ String Characters::SignificantFigures::ToString () const
 
 /*
  ********************************************************************************
- ***************************** FloatToStringOptions *****************************
+ ************************* Number::FloatToStringOptions *************************
  ********************************************************************************
  */
-String Characters::FloatToStringOptions::ToString () const
+String Characters::Number::FloatToStringOptions::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;

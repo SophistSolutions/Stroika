@@ -15,7 +15,7 @@
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
@@ -43,6 +43,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Characters::Number;
 using namespace Stroika::Foundation::Characters::Concrete;
 
 using namespace Stroika::Frameworks;
@@ -962,7 +963,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Basic_Float_ToString_"};
         {
-            // From NumberFormat.h docs (FloatFormatType)
+            // From Number.h docs (FloatFormatType)
             static const auto kOptions_ = FloatToStringOptions{eDefaultFloat};
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
@@ -979,7 +980,7 @@ namespace {
             EXPECT_EQ (Characters::ToString (1.6, kOptions_), "1.6");
         }
         {
-            // From NumberFormat.h docs (FloatFormatType)
+            // From Number.h docs (FloatFormatType)
             static const auto kOptions_ = FloatToStringOptions{eFixedPoint};
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0.000000");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.010000");
@@ -991,7 +992,7 @@ namespace {
             EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "0.000000");
         }
         {
-            // From NumberFormat.h docs (FloatFormatType)
+            // From Number.h docs (FloatFormatType)
             static const auto kOptions_ = FloatToStringOptions{eFixedPointWithWhitespaceTrimmed};
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
@@ -1003,7 +1004,7 @@ namespace {
             EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "0");
         }
         {
-            // From NumberFormat.h docs (FloatFormatType)
+            // From Number.h docs (FloatFormatType)
             EXPECT_EQ (Characters::ToString (0.0, FloatToStringOptions{eScientific}), "0.00000e+00");
             EXPECT_EQ (Characters::ToString (0.01, FloatToStringOptions{eScientific}), "1.00000e-02");
             EXPECT_EQ (Characters::ToString (0.00001, FloatToStringOptions{eScientific}), "1.00000e-05");
@@ -1014,7 +1015,7 @@ namespace {
             EXPECT_EQ (Characters::ToString (0.0000001234567, FloatToStringOptions{eScientific}), "1.23457e-07");
         }
         {
-            // From NumberFormat.h docs (FloatFormatType)
+            // From Number.h docs (FloatFormatType)
             EXPECT_EQ (Characters::ToString (0.0, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "0.0e+00");
             EXPECT_EQ (Characters::ToString (0.01, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.0e-02");
             EXPECT_EQ (Characters::ToString (0.00001, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.0e-05");
@@ -1025,7 +1026,7 @@ namespace {
             EXPECT_EQ (Characters::ToString (0.0000001234567, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.23457e-07");
         }
         {
-            // From NumberFormat.h docs (FloatFormatType)
+            // From Number.h docs (FloatFormatType)
             static const auto kOptions_ = FloatToStringOptions{eStandard};
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
@@ -1058,8 +1059,8 @@ namespace {
     }
 }
 
-// tests of the deprecated String2Int, HexString2Int and ToFloat - kept until they are removed (ParseNumber_ tests ParseInteger and
-// ParseFloat, which replace them)
+// tests of the deprecated String2Int, HexString2Int and ToFloat - kept until they are removed (Number_Parse_ tests Number::Parse and
+// Number::Parse, which replace them)
 DISABLE_COMPILER_MSC_WARNING_START (4996);
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
@@ -2626,14 +2627,14 @@ namespace {
         EXPECT_EQ (Characters::ToString (35, IntegerToStringOptions{.fRadix = 36, .fEmitRadixPrefix = true}), "z"sv); // no prefix but for 2, 8, 16
         EXPECT_EQ (Characters::ToString (numeric_limits<int8_t>::min (), IntegerToStringOptions{.fRadix = 16}), "-80"sv);
         EXPECT_EQ (Characters::ToString (numeric_limits<uint64_t>::max (), IntegerToStringOptions{.fRadix = 2}), String{string (64, '1')});
-        // what ToString writes, ParseInteger reads back - each radix, with and without the prefix, either case
+        // what ToString writes, Number::Parse reads back - each radix, with and without the prefix, either case
         for (unsigned int radix = 2; radix <= 36; ++radix) {
             for (bool prefix : {false, true}) {
                 for (bool upper : {false, true}) {
                     for (int64_t n : {int64_t{0}, int64_t{1}, int64_t{-1}, int64_t{35}, int64_t{-123456789},
                                       numeric_limits<int64_t>::min (), numeric_limits<int64_t>::max ()}) {
                         String s = Characters::ToString (n, IntegerToStringOptions{.fRadix = radix, .fEmitRadixPrefix = prefix, .fUpperCase = upper});
-                        EXPECT_EQ (ParseInteger<int64_t> (s, {.fRadix = radix, .fAcceptRadixPrefix = prefix}).value_or (42), n) << s;
+                        EXPECT_EQ (Number::Parse<int64_t> (s, {.fRadix = radix, .fAcceptRadixPrefix = prefix}).value_or (42), n) << s;
                     }
                 }
             }
@@ -2642,128 +2643,128 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Characters, ParseNumber_)
+    GTEST_TEST (Foundation_Characters, Number_Parse_)
     {
-        Debug::TraceContextBumper ctx{"ParseNumber_"};
+        Debug::TraceContextBumper ctx{"Number_Parse_"};
         auto                      errorText = [] (const auto& r) { return r.has_value () ? String{} : Characters::ToString (r.error ()); };
         {
-            // ParseInteger: the whole text, in T's range - else an error saying which, never a default value
-            EXPECT_EQ (*ParseInteger<int> ("33"), 33);
-            EXPECT_EQ (*ParseInteger<int> ("-33"), -33);
-            EXPECT_EQ (*ParseInteger<int> ("+33"), 33);
-            EXPECT_EQ (*ParseInteger<int> (L"42"), 42);
-            EXPECT_EQ (*ParseInteger<int> (String{"42"}), 42);
-            EXPECT_EQ (*ParseInteger<uint16_t> ("65535"), 65535);
-            EXPECT_EQ (*ParseInteger<int8_t> ("-128"), -128);
-            EXPECT_EQ (*ParseInteger<unsigned int> ("ff", {.fRadix = 16}), 255u);
-            EXPECT_EQ (*ParseInteger<unsigned int> ("FF", {.fRadix = 16}), 255u);
-            EXPECT_EQ (*ParseInteger<unsigned int> ("-0"), 0u);
+            // Number::Parse: the whole text, in T's range - else an error saying which, never a default value
+            EXPECT_EQ (*Number::Parse<int> ("33"), 33);
+            EXPECT_EQ (*Number::Parse<int> ("-33"), -33);
+            EXPECT_EQ (*Number::Parse<int> ("+33"), 33);
+            EXPECT_EQ (*Number::Parse<int> (L"42"), 42);
+            EXPECT_EQ (*Number::Parse<int> (String{"42"}), 42);
+            EXPECT_EQ (*Number::Parse<uint16_t> ("65535"), 65535);
+            EXPECT_EQ (*Number::Parse<int8_t> ("-128"), -128);
+            EXPECT_EQ (*Number::Parse<unsigned int> ("ff", {.fRadix = 16}), 255u);
+            EXPECT_EQ (*Number::Parse<unsigned int> ("FF", {.fRadix = 16}), 255u);
+            EXPECT_EQ (*Number::Parse<unsigned int> ("-0"), 0u);
             for (const char* bad : {"", "abc", "33aaa", " 33", "33 ", "+-3", "--3", "0x1A", "3.5", "\xd7\xa9"}) {
-                EXPECT_TRUE (errorText (ParseInteger<int> (bad)).Contains ("is not an integer"sv)) << bad;
+                EXPECT_TRUE (errorText (Number::Parse<int> (bad)).Contains ("is not an integer"sv)) << bad;
             }
-            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("fg", {.fRadix = 16})).Contains ("is not a base-16 integer"sv));
+            EXPECT_TRUE (errorText (Number::Parse<unsigned int> ("fg", {.fRadix = 16})).Contains ("is not a base-16 integer"sv));
             // no radix prefix unless fAcceptRadixPrefix - and then only the radix's own, after any sign; a leading 0 is just a digit
-            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("0x1A", {.fRadix = 16})).Contains ("is not a base-16 integer"sv));
-            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("0b101", {.fRadix = 2})).Contains ("is not a base-2 integer"sv));
-            EXPECT_EQ (*ParseInteger<int> ("017"), 17);
-            EXPECT_EQ (*ParseInteger<int> ("017", {.fRadix = 8}), 15);
-            constexpr ParseIntegerOptions kHex{.fRadix = 16, .fAcceptRadixPrefix = true};
-            EXPECT_EQ (*ParseInteger<unsigned int> ("0x1A", kHex), 26u);
-            EXPECT_EQ (*ParseInteger<unsigned int> ("0X1a", kHex), 26u);
-            EXPECT_EQ (*ParseInteger<unsigned int> ("1A", kHex), 26u); // the prefix is optional
-            EXPECT_EQ (*ParseInteger<int> ("-0x1A", kHex), -26);
-            EXPECT_EQ (*ParseInteger<int> ("0b101", {.fRadix = 2, .fAcceptRadixPrefix = true}), 5);
-            EXPECT_EQ (*ParseInteger<int> ("0o17", {.fRadix = 8, .fAcceptRadixPrefix = true}), 15);
-            EXPECT_TRUE (errorText (ParseInteger<unsigned int> ("0x", kHex)).Contains ("is not a base-16 integer"sv));
-            EXPECT_TRUE (errorText (ParseInteger<int> ("0x1A", {.fAcceptRadixPrefix = true})).Contains ("is not an integer"sv)); // 0x is base 16's
+            EXPECT_TRUE (errorText (Number::Parse<unsigned int> ("0x1A", {.fRadix = 16})).Contains ("is not a base-16 integer"sv));
+            EXPECT_TRUE (errorText (Number::Parse<unsigned int> ("0b101", {.fRadix = 2})).Contains ("is not a base-2 integer"sv));
+            EXPECT_EQ (*Number::Parse<int> ("017"), 17);
+            EXPECT_EQ (*Number::Parse<int> ("017", {.fRadix = 8}), 15);
+            constexpr Number::IntegerParseOptions kHex{.fRadix = 16, .fAcceptRadixPrefix = true};
+            EXPECT_EQ (*Number::Parse<unsigned int> ("0x1A", kHex), 26u);
+            EXPECT_EQ (*Number::Parse<unsigned int> ("0X1a", kHex), 26u);
+            EXPECT_EQ (*Number::Parse<unsigned int> ("1A", kHex), 26u); // the prefix is optional
+            EXPECT_EQ (*Number::Parse<int> ("-0x1A", kHex), -26);
+            EXPECT_EQ (*Number::Parse<int> ("0b101", {.fRadix = 2, .fAcceptRadixPrefix = true}), 5);
+            EXPECT_EQ (*Number::Parse<int> ("0o17", {.fRadix = 8, .fAcceptRadixPrefix = true}), 15);
+            EXPECT_TRUE (errorText (Number::Parse<unsigned int> ("0x", kHex)).Contains ("is not a base-16 integer"sv));
+            EXPECT_TRUE (errorText (Number::Parse<int> ("0x1A", {.fAcceptRadixPrefix = true})).Contains ("is not an integer"sv)); // 0x is base 16's
             // fIgnoreSurroundingWhitespace
-            EXPECT_EQ (*ParseInteger<int> (" \t42 ", {.fIgnoreSurroundingWhitespace = true}), 42);
-            EXPECT_EQ (*ParseInteger<unsigned int> (" 0x1A ", {.fRadix = 16, .fAcceptRadixPrefix = true, .fIgnoreSurroundingWhitespace = true}), 26u);
-            EXPECT_TRUE (errorText (ParseInteger<int> (" 4 2 ", {.fIgnoreSurroundingWhitespace = true})).Contains ("is not an integer"sv));
-            EXPECT_TRUE (errorText (ParseInteger<int> (" \xd7\xa9 ", {.fIgnoreSurroundingWhitespace = true})).Contains ("is not an integer"sv));
+            EXPECT_EQ (*Number::Parse<int> (" \t42 ", {.fIgnoreSurroundingWhitespace = true}), 42);
+            EXPECT_EQ (*Number::Parse<unsigned int> (" 0x1A ", {.fRadix = 16, .fAcceptRadixPrefix = true, .fIgnoreSurroundingWhitespace = true}), 26u);
+            EXPECT_TRUE (errorText (Number::Parse<int> (" 4 2 ", {.fIgnoreSurroundingWhitespace = true})).Contains ("is not an integer"sv));
+            EXPECT_TRUE (errorText (Number::Parse<int> (" \xd7\xa9 ", {.fIgnoreSurroundingWhitespace = true})).Contains ("is not an integer"sv));
             {
                 // in each encoding, and past ASCII too: U+3000 and U+2009 are whitespace - 3 bytes each in UTF-8, one unit in UTF-16
-                const ParseIntegerOptions kWS{.fIgnoreSurroundingWhitespace = true};
-                const ParseFloatOptions   kFWS{.fIgnoreSurroundingWhitespace = true};
-                auto                      sp8  = [] (u8string_view v) { return span{v.data (), v.size ()}; };
-                auto                      sp16 = [] (u16string_view v) { return span{v.data (), v.size ()}; };
-                auto                      sp32 = [] (u32string_view v) { return span{v.data (), v.size ()}; };
-                auto                      spW  = [] (wstring_view v) { return span{v.data (), v.size ()}; };
-                EXPECT_EQ (ParseInteger<int> (sp8 (u8"\u3000\t42\u2009\u3000"), kWS).value_or (-1), 42);
-                EXPECT_EQ (ParseInteger<int> (sp16 (u"\u3000 42\u2009"), kWS).value_or (-1), 42);
-                EXPECT_EQ (ParseInteger<int> (sp32 (U"\u3000 42\u2009"), kWS).value_or (-1), 42);
-                EXPECT_EQ (ParseInteger<int> (spW (L"\u3000 42\u2009"), kWS).value_or (-1), 42);
-                EXPECT_EQ (ParseInteger<int> (sp8 (u8"\u4e00 42"), kWS).value_or (-1), -1); // a 3-byte character that is not whitespace
-                EXPECT_EQ (ParseInteger<int> (sp8 (u8"42\u00e9"), kWS).value_or (-1), -1);  // nor a 2-byte one
-                EXPECT_EQ (ParseInteger<int> (sp8 (u8" \u3000 "), kWS).value_or (-1), -1);  // nothing but whitespace
-                EXPECT_EQ (ParseFloat<double> (sp8 (u8"\u3000 2.5\u3000"), kFWS).value_or (-1), 2.5);
-                EXPECT_EQ (ParseFloat<double> (sp16 (u"\u3000 2.5\n"), kFWS).value_or (-1), 2.5);
+                const Number::IntegerParseOptions kWS{.fIgnoreSurroundingWhitespace = true};
+                const Number::FloatParseOptions   kFWS{.fIgnoreSurroundingWhitespace = true};
+                auto                              sp8  = [] (u8string_view v) { return span{v.data (), v.size ()}; };
+                auto                              sp16 = [] (u16string_view v) { return span{v.data (), v.size ()}; };
+                auto                              sp32 = [] (u32string_view v) { return span{v.data (), v.size ()}; };
+                auto                              spW  = [] (wstring_view v) { return span{v.data (), v.size ()}; };
+                EXPECT_EQ (Number::Parse<int> (sp8 (u8"\u3000\t42\u2009\u3000"), kWS).value_or (-1), 42);
+                EXPECT_EQ (Number::Parse<int> (sp16 (u"\u3000 42\u2009"), kWS).value_or (-1), 42);
+                EXPECT_EQ (Number::Parse<int> (sp32 (U"\u3000 42\u2009"), kWS).value_or (-1), 42);
+                EXPECT_EQ (Number::Parse<int> (spW (L"\u3000 42\u2009"), kWS).value_or (-1), 42);
+                EXPECT_EQ (Number::Parse<int> (sp8 (u8"\u4e00 42"), kWS).value_or (-1), -1); // a 3-byte character that is not whitespace
+                EXPECT_EQ (Number::Parse<int> (sp8 (u8"42\u00e9"), kWS).value_or (-1), -1);  // nor a 2-byte one
+                EXPECT_EQ (Number::Parse<int> (sp8 (u8" \u3000 "), kWS).value_or (-1), -1);  // nothing but whitespace
+                EXPECT_EQ (Number::Parse<double> (sp8 (u8"\u3000 2.5\u3000"), kFWS).value_or (-1), 2.5);
+                EXPECT_EQ (Number::Parse<double> (sp16 (u"\u3000 2.5\n"), kFWS).value_or (-1), 2.5);
             }
             // the sign and the type's range: the most negative value, and -0
-            EXPECT_EQ (*ParseInteger<int64_t> ("-9223372036854775808"), numeric_limits<int64_t>::min ());
-            EXPECT_TRUE (errorText (ParseInteger<int64_t> ("9223372036854775808")).Contains ("is out of range"sv));
-            EXPECT_EQ (*ParseInteger<int> ("-0"), 0);
-            EXPECT_TRUE (errorText (ParseInteger<uint16_t> ("70000")).Contains ("\"70000\" is out of range (0 to 65535)"sv));
-            EXPECT_TRUE (errorText (ParseInteger<uint16_t> ("-1")).Contains ("is out of range"sv));
-            EXPECT_TRUE (errorText (ParseInteger<int8_t> ("128")).Contains ("is out of range (-128 to 127)"sv));
-            EXPECT_EQ (ParseInteger<int> ("x").value_or (0), 0); // String2Int's lenient behavior, if wanted
-            EXPECT_THROW ((void)Execution::ThrowIfFailed (ParseInteger<int> ("x")), DataExchange::BadFormatException);
+            EXPECT_EQ (*Number::Parse<int64_t> ("-9223372036854775808"), numeric_limits<int64_t>::min ());
+            EXPECT_TRUE (errorText (Number::Parse<int64_t> ("9223372036854775808")).Contains ("is out of range"sv));
+            EXPECT_EQ (*Number::Parse<int> ("-0"), 0);
+            EXPECT_TRUE (errorText (Number::Parse<uint16_t> ("70000")).Contains ("\"70000\" is out of range (0 to 65535)"sv));
+            EXPECT_TRUE (errorText (Number::Parse<uint16_t> ("-1")).Contains ("is out of range"sv));
+            EXPECT_TRUE (errorText (Number::Parse<int8_t> ("128")).Contains ("is out of range (-128 to 127)"sv));
+            EXPECT_EQ (Number::Parse<int> ("x").value_or (0), 0); // String2Int's lenient behavior, if wanted
+            EXPECT_THROW ((void)Execution::ThrowIfFailed (Number::Parse<int> ("x")), DataExchange::BadFormatException);
         }
         {
-            // ParseFloat: the same - nan, inf and infinity as such, but text that is not a number, or too large, is an error
-            EXPECT_EQ (*ParseFloat<double> ("2.5"), 2.5);
-            EXPECT_EQ (*ParseFloat<double> ("-1e3"), -1000.0);
-            EXPECT_EQ (*ParseFloat<double> ("+1.5"), 1.5);
-            EXPECT_EQ (*ParseFloat<float> (L"0.25"), 0.25f);
-            EXPECT_EQ (*ParseFloat<double> (" 2.5\n", {.fIgnoreSurroundingWhitespace = true}), 2.5);
-            EXPECT_TRUE (isnan (*ParseFloat<double> ("nan")));
-            EXPECT_TRUE (isnan (*ParseFloat<double> ("NaN")));
-            EXPECT_EQ (*ParseFloat<double> ("-inf"), -numeric_limits<double>::infinity ());
-            EXPECT_EQ (*ParseFloat<double> ("Infinity"), numeric_limits<double>::infinity ());
+            // Number::Parse: the same - nan, inf and infinity as such, but text that is not a number, or too large, is an error
+            EXPECT_EQ (*Number::Parse<double> ("2.5"), 2.5);
+            EXPECT_EQ (*Number::Parse<double> ("-1e3"), -1000.0);
+            EXPECT_EQ (*Number::Parse<double> ("+1.5"), 1.5);
+            EXPECT_EQ (*Number::Parse<float> (L"0.25"), 0.25f);
+            EXPECT_EQ (*Number::Parse<double> (" 2.5\n", {.fIgnoreSurroundingWhitespace = true}), 2.5);
+            EXPECT_TRUE (isnan (*Number::Parse<double> ("nan")));
+            EXPECT_TRUE (isnan (*Number::Parse<double> ("NaN")));
+            EXPECT_EQ (*Number::Parse<double> ("-inf"), -numeric_limits<double>::infinity ());
+            EXPECT_EQ (*Number::Parse<double> ("Infinity"), numeric_limits<double>::infinity ());
             for (const char* bad : {"", "abc", "2.5x", " 2.5", "2.5 ", "nanx", "infx", "\xd7\xa9"}) {
-                EXPECT_TRUE (errorText (ParseFloat<double> (bad)).Contains ("is not a number"sv)) << bad;
+                EXPECT_TRUE (errorText (Number::Parse<double> (bad)).Contains ("is not a number"sv)) << bad;
             }
-            EXPECT_TRUE (errorText (ParseFloat<double> ("1e400")).Contains ("\"1e400\" is out of range"sv));
-            EXPECT_TRUE (errorText (ParseFloat<float> ("-1e39")).Contains ("is out of range"sv));
-            EXPECT_TRUE (isnan (ParseFloat<double> ("x").value_or (numeric_limits<double>::quiet_NaN ()))); // ToFloat's, if wanted
+            EXPECT_TRUE (errorText (Number::Parse<double> ("1e400")).Contains ("\"1e400\" is out of range"sv));
+            EXPECT_TRUE (errorText (Number::Parse<float> ("-1e39")).Contains ("is out of range"sv));
+            EXPECT_TRUE (isnan (Number::Parse<double> ("x").value_or (numeric_limits<double>::quiet_NaN ()))); // ToFloat's, if wanted
             // with a remainder: the number at the start (after any whitespace), and what follows it
             String rest;
-            EXPECT_EQ (*ParseFloat<double> (" 3.5 apples"_k, &rest), 3.5);
+            EXPECT_EQ (*Number::Parse<double> (" 3.5 apples"_k, &rest), 3.5);
             EXPECT_EQ (rest, " apples"sv);
-            EXPECT_TRUE (errorText (ParseFloat<double> ("apples"_k, &rest)).Contains ("does not start with a number"sv));
+            EXPECT_TRUE (errorText (Number::Parse<double> ("apples"_k, &rest)).Contains ("does not start with a number"sv));
             String t = "2.5 3.5"_k; // the text and the remainder the same String, to read one number after another
-            EXPECT_EQ (*ParseFloat<double> (t, &t), 2.5);
-            EXPECT_EQ (*ParseFloat<double> (t, &t), 3.5);
+            EXPECT_EQ (*Number::Parse<double> (t, &t), 2.5);
+            EXPECT_EQ (*Number::Parse<double> (t, &t), 3.5);
             EXPECT_EQ (t, ""sv);
             // only nan, inf and infinity as words: not nan(chars), nor a hex float
-            EXPECT_TRUE (errorText (ParseFloat<double> ("nan(1)")).Contains ("is not a number"sv));
-            EXPECT_TRUE (errorText (ParseFloat<double> ("0x1p3")).Contains ("is not a number"sv));
+            EXPECT_TRUE (errorText (Number::Parse<double> ("nan(1)")).Contains ("is not a number"sv));
+            EXPECT_TRUE (errorText (Number::Parse<double> ("0x1p3")).Contains ("is not a number"sv));
             // the number in from_chars' decimal syntax, and no more of the text, whatever reads it on this platform
-            EXPECT_EQ (ParseFloat<double> ("2.5x"_k, &rest).value_or (-1), 2.5);
+            EXPECT_EQ (Number::Parse<double> ("2.5x"_k, &rest).value_or (-1), 2.5);
             EXPECT_EQ (rest, "x"sv);
-            EXPECT_EQ (ParseFloat<double> ("1e5e"_k, &rest).value_or (-1), 1e5);
+            EXPECT_EQ (Number::Parse<double> ("1e5e"_k, &rest).value_or (-1), 1e5);
             EXPECT_EQ (rest, "e"sv);
-            EXPECT_EQ (ParseFloat<double> ("1ex"_k, &rest).value_or (-1), 1);
+            EXPECT_EQ (Number::Parse<double> ("1ex"_k, &rest).value_or (-1), 1);
             EXPECT_EQ (rest, "ex"sv);
-            EXPECT_EQ (ParseFloat<double> ("0x1p3"_k, &rest).value_or (-1), 0);
+            EXPECT_EQ (Number::Parse<double> ("0x1p3"_k, &rest).value_or (-1), 0);
             EXPECT_EQ (rest, "x1p3"sv);
             // a subnormal number is a number; one too small even for that is out of range, as one too large is
-            EXPECT_EQ (ParseFloat<double> ("4.9406564584124654e-324").value_or (-1), numeric_limits<double>::denorm_min ());
-            EXPECT_EQ (ParseFloat<float> ("1.40129846e-45").value_or (-1), numeric_limits<float>::denorm_min ());
-            EXPECT_TRUE (errorText (ParseFloat<double> ("1e-400")).Contains ("is out of range"sv));
+            EXPECT_EQ (Number::Parse<double> ("4.9406564584124654e-324").value_or (-1), numeric_limits<double>::denorm_min ());
+            EXPECT_EQ (Number::Parse<float> ("1.40129846e-45").value_or (-1), numeric_limits<float>::denorm_min ());
+            EXPECT_TRUE (errorText (Number::Parse<double> ("1e-400")).Contains ("is out of range"sv));
         }
         {
             // fDigitSeparator - only between two digits (or a radix's letters), and only when asked for
-            EXPECT_EQ (*ParseInteger<int> ("1_000", {.fDigitSeparator = '_'}), 1000);
-            EXPECT_EQ (*ParseInteger<int> ("-1'000'000", {.fDigitSeparator = '\''}), -1000000);
-            EXPECT_EQ (*ParseInteger<uint32_t> ("dead_beef", {.fRadix = 16, .fDigitSeparator = '_'}), 0xdeadbeefu);
-            EXPECT_TRUE (errorText (ParseInteger<int> ("1_000")).Contains ("is not an integer"sv));
+            EXPECT_EQ (*Number::Parse<int> ("1_000", {.fDigitSeparator = '_'}), 1000);
+            EXPECT_EQ (*Number::Parse<int> ("-1'000'000", {.fDigitSeparator = '\''}), -1000000);
+            EXPECT_EQ (*Number::Parse<uint32_t> ("dead_beef", {.fRadix = 16, .fDigitSeparator = '_'}), 0xdeadbeefu);
+            EXPECT_TRUE (errorText (Number::Parse<int> ("1_000")).Contains ("is not an integer"sv));
             for (const char* bad : {"_1000", "1000_", "1__000"}) {
-                EXPECT_TRUE (errorText (ParseInteger<int> (bad, {.fDigitSeparator = '_'})).Contains ("is not an integer"sv)) << bad;
+                EXPECT_TRUE (errorText (Number::Parse<int> (bad, {.fDigitSeparator = '_'})).Contains ("is not an integer"sv)) << bad;
             }
-            EXPECT_EQ (*ParseFloat<double> ("1_000.5", {.fDigitSeparator = '_'}), 1000.5);
-            EXPECT_EQ (*ParseFloat<double> ("1,000.25", {.fDigitSeparator = ','}), 1000.25);
-            EXPECT_TRUE (errorText (ParseFloat<double> ("1_.5", {.fDigitSeparator = '_'})).Contains ("is not a number"sv));
+            EXPECT_EQ (*Number::Parse<double> ("1_000.5", {.fDigitSeparator = '_'}), 1000.5);
+            EXPECT_EQ (*Number::Parse<double> ("1,000.25", {.fDigitSeparator = ','}), 1000.25);
+            EXPECT_TRUE (errorText (Number::Parse<double> ("1_.5", {.fDigitSeparator = '_'})).Contains ("is not a number"sv));
         }
         {
             // fLocale: the text's decimal point - here a locale whose decimal point is a comma (and grouping a dot), made so it is on
@@ -2779,10 +2780,10 @@ namespace {
                 }
             };
             const locale kComma{locale::classic (), new CommaDecimal_};
-            EXPECT_EQ (*ParseFloat<double> ("1,5", {.fLocale = kComma}), 1.5);
-            EXPECT_TRUE (errorText (ParseFloat<double> ("1.5", {.fLocale = kComma})).Contains ("is not a number"sv)); // not its decimal point
-            EXPECT_EQ (*ParseFloat<double> ("1.000,5", {.fLocale = kComma, .fDigitSeparator = '.'}), 1000.5);
-            EXPECT_TRUE (errorText (ParseFloat<double> ("1,5")).Contains ("is not a number"sv)); // the "C" locale's format by default
+            EXPECT_EQ (*Number::Parse<double> ("1,5", {.fLocale = kComma}), 1.5);
+            EXPECT_TRUE (errorText (Number::Parse<double> ("1.5", {.fLocale = kComma})).Contains ("is not a number"sv)); // not its decimal point
+            EXPECT_EQ (*Number::Parse<double> ("1.000,5", {.fLocale = kComma, .fDigitSeparator = '.'}), 1000.5);
+            EXPECT_TRUE (errorText (Number::Parse<double> ("1,5")).Contains ("is not a number"sv)); // the "C" locale's format by default
             // and the global locale changes nothing unless asked for - checked with a real one, if this platform has one with a comma
             optional<locale> named;
             for (const char* name : {"de_DE.UTF-8", "de_DE.utf8", "de_DE", "de-DE", "German_Germany.1252"}) {
@@ -2795,11 +2796,11 @@ namespace {
             }
             if (named and use_facet<numpunct<wchar_t>> (*named).decimal_point () == L',') {
                 locale saved = locale::global (*named); // a named locale, so the C library's too (setlocale), which strtod follows
-                double dot   = ParseFloat<double> ("1.5").value_or (-1);
-                bool   comma = ParseFloat<double> ("1,5").has_value ();
-                double cur   = ParseFloat<double> ("1,5", {.fLocale = PredefinedLocale::eUseCurrentLocale}).value_or (-1);
+                double dot   = Number::Parse<double> ("1.5").value_or (-1);
+                bool   comma = Number::Parse<double> ("1,5").has_value ();
+                double cur   = Number::Parse<double> ("1,5", {.fLocale = Common::PredefinedLocale::eUseCurrentLocale}).value_or (-1);
                 String rest;
-                double rem = ParseFloat<double> ("2.5x"_k, &rest).value_or (-1);
+                double rem = Number::Parse<double> ("2.5x"_k, &rest).value_or (-1);
                 locale::global (saved);
                 EXPECT_EQ (dot, 1.5);
                 EXPECT_FALSE (comma);
@@ -2833,7 +2834,7 @@ namespace {
         else {
             EXPECT_FALSE (in.fail ());
         }
-        EXPECT_EQ (d, numeric_limits<double>::denorm_min ()); // the value kept even with the bug - which ParseFloat's workaround needs
+        EXPECT_EQ (d, numeric_limits<double>::denorm_min ()); // the value kept even with the bug - which Number::Parse's workaround needs
     }
 }
 

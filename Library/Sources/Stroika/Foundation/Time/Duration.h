@@ -16,7 +16,7 @@
 #include <Winsock2.h>
 #endif
 
-#include "Stroika/Foundation/Characters/NumberFormat.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Time {
          *  \note SignificantFigures - if given - refers to the precision of the seconds part of the ISO-8601 duration string.
          * 
          *  \note Change since before 3.0d12 - with Duration::As<String> () - used
-         *        to default to full precision, and now defaults to default precision (Characters::SignificantFigures{} == 6).
+         *        to default to full precision, and now defaults to default precision (Characters::Number::SignificantFigures{} == 6).
          *
          *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsPinned()
          * 
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Time {
             requires (Common::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or Common::IDuration<T> or
                       Common::ITimePoint<T>);
         template <typename T>
-        nonvirtual T As (Characters::SignificantFigures p) const
+        nonvirtual T As (Characters::Number::SignificantFigures p) const
             requires (Common::IAnyOf<T, Characters::String>);
 
     public:
@@ -323,7 +323,7 @@ namespace Stroika::Foundation::Time {
 
     private:
         static InternalNumericFormatType_ ParseTime_ (const string& s);
-        static Characters::String         UnParseTime_ (InternalNumericFormatType_ t, Characters::SignificantFigures p);
+        static Characters::String         UnParseTime_ (InternalNumericFormatType_ t, Characters::Number::SignificantFigures p);
 
     private:
         /**

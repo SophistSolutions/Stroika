@@ -10,7 +10,7 @@
 #include <Windows.h>
 #endif
 
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
@@ -185,8 +185,7 @@ namespace {
          */
         static POSIXSysTimeCaptureContext_ GetSysTimes_ ()
         {
-            POSIXSysTimeCaptureContext_ result{};
-            using Characters::ParseFloat;
+            POSIXSysTimeCaptureContext_                            result{};
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             static const filesystem::path                          kFileName_{"/proc/stat"sv};
             // Note - /procfs files always unseekable
@@ -197,21 +196,21 @@ namespace {
 #endif
                 size_t sz = line.size ();
                 if (sz >= 5 and line[0] == "cpu"sv) {
-                    result.user   = ParseFloat<double> (line[1]).value_or (NAN);
-                    result.nice   = ParseFloat<double> (line[2]).value_or (NAN);
-                    result.system = ParseFloat<double> (line[3]).value_or (NAN);
-                    result.idle   = ParseFloat<double> (line[4]).value_or (NAN);
+                    result.user   = Number::Parse<double> (line[1]).value_or (NAN);
+                    result.nice   = Number::Parse<double> (line[2]).value_or (NAN);
+                    result.system = Number::Parse<double> (line[3]).value_or (NAN);
+                    result.idle   = Number::Parse<double> (line[4]).value_or (NAN);
                     if (sz >= 6) {
-                        result.iowait = ParseFloat<double> (line[5]).value_or (NAN);
+                        result.iowait = Number::Parse<double> (line[5]).value_or (NAN);
                     }
                     if (sz >= 7) {
-                        result.irq = ParseFloat<double> (line[6]).value_or (NAN);
+                        result.irq = Number::Parse<double> (line[6]).value_or (NAN);
                     }
                     if (sz >= 8) {
-                        result.softirq = ParseFloat<double> (line[7]).value_or (NAN);
+                        result.softirq = Number::Parse<double> (line[7]).value_or (NAN);
                     }
                     if (sz >= 9) {
-                        result.steal = ParseFloat<double> (line[8]).value_or (NAN);
+                        result.steal = Number::Parse<double> (line[8]).value_or (NAN);
                     }
                     break; // once found no need to read the rest...
                 }

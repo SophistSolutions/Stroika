@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <locale>
+#include <variant>
 #include <vector>
 
 #include "Stroika/Foundation/Characters/String.h"
@@ -42,6 +43,35 @@
  */
 
 namespace Stroika::Foundation::Common {
+
+    /**
+     *  Predefined locale designations - for wherever a locale is chosen: formatting or parsing numbers, say.
+     */
+    enum class PredefinedLocale {
+        /**
+         *  Use the hardwired 'C' locale (not exactly a real locale in the sense of localization. But a good choice
+         *  for the 'locale' to use for non-localized code (e.g. much serverside code).
+         */
+        eUseCLocale,
+
+        /**
+         *  \note - this selects the current locale at the time the preference is used, whereas
+         *          in Stroika v2.1, it used the current locale at the time the preference object was created.
+         */
+        eUseCurrentLocale
+    };
+    using PredefinedLocale::eUseCLocale;
+    using PredefinedLocale::eUseCurrentLocale;
+
+    /**
+     *  A locale, as options give one: a predefined one, or a given std::locale.
+     */
+    using LocaleSpecifier = variant<PredefinedLocale, locale>;
+
+    /**
+     *  The locale l specifies - eUseCurrentLocale meaning the global locale at the time of the call.
+     */
+    locale ResolveLocale (const LocaleSpecifier& l);
 
     /**
      */

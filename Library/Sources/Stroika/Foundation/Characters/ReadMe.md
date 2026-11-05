@@ -17,8 +17,7 @@ Modules
   - [CString/](CString/)
   - [Format.h](Format.h) - function **Format()**
   - [LineEndings.h](LineEndings.h)
-  - [NumberFormat.h](NumberFormat.h) - the types describing numbers as text, shared by ToString () and ParseNumber.h
-  - [ParseNumber.h](ParseNumber.h) - functions **ParseInteger()**, **ParseFloat()** - text-to-number conversion
+  - [Number.h](Number.h) - **Number::Parse()**, and the options **ToString()** takes for a number
   - [Platform/ReadMe.md](Platform/)
   - [RegularExpression.h](RegularExpression.h) - class **RegularExpression**
   - [SDKChar.h](SDKChar.h)

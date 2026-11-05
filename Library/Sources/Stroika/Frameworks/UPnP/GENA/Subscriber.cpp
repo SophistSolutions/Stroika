@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
@@ -54,7 +54,7 @@ namespace {
     optional<Time::DurationSeconds> Timeout_ (const optional<String>& timeout)
     {
         if (timeout and timeout->StartsWith ("Second-"sv, eCaseInsensitive)) {
-            if (int64_t seconds = ParseInteger<int64_t> (timeout->SubString (7)).value_or (0); seconds > 0) { // 0: not a number
+            if (int64_t seconds = Number::Parse<int64_t> (timeout->SubString (7)).value_or (0); seconds > 0) { // 0: not a number
                 return Time::DurationSeconds{static_cast<double> (seconds)};
             }
         }
@@ -268,7 +268,7 @@ void Subscriber::HandleNotify (WebServer::Message& m)
         response.status = HTTP::StatusCodes::kPreconditionFailed;
         return;
     }
-    Event e{.fSEQ = ParseInteger<uint32_t> (request.headers ().LookupOne ("SEQ"sv).value_or (String{})).value_or (0)};
+    Event e{.fSEQ = Number::Parse<uint32_t> (request.headers ().LookupOne ("SEQ"sv).value_or (String{})).value_or (0)};
     try {
         e.fVariables = PropertySet_ (m.rwRequest ().GetBody (), fRep_->fOptions_.fXMLOptions);
     }

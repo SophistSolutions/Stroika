@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
@@ -488,7 +488,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
         case Type::eString: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
-            return Characters::ParseInteger<IntegerType_> (v->fVal).value_or (0);
+            return Characters::Number::Parse<IntegerType_> (v->fVal).value_or (0);
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -525,7 +525,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
             AssertNotNull (v);
             // not sure this is right for high order bit set for unsigned long long?
             // --LGP 2013-08-25
-            return Characters::ParseInteger<UnsignedIntegerType_> (v->fVal).value_or (0);
+            return Characters::Number::Parse<UnsignedIntegerType_> (v->fVal).value_or (0);
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -561,7 +561,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
             auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
             // NB. this may return NAN if string not a well-formed number (including empty string case)
-            return Characters::ParseFloat<FloatType_> (v->fVal).value_or (NAN);
+            return Characters::Number::Parse<FloatType_> (v->fVal).value_or (NAN);
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -728,7 +728,7 @@ String VariantValue::AsString_ () const
             auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
             using namespace Characters;
-            return Characters::ToString (v->fVal, SignificantFigures::kFullPrecision);
+            return Characters::ToString (v->fVal, Number::SignificantFigures::kFullPrecision);
         }
         case Type::eDate: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Date>*> (fVal_.get ());

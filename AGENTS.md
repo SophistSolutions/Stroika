@@ -490,7 +490,7 @@ still compile". Say which one you did.
   prefix, scope, the `qStroika_Platform_*` family, rc.exe's 31-character limit). Prefer prefix `++`/`--` over postfix. Prefer `using
   T = ...` over `typedef`. `New()` static methods return smart pointers, not raw allocations.
   `Parse()` static methods return `optional<T>` instead of throwing, for expected-failure parsing - or `expected<T, E>`
-  when the failure has more than one cause worth reporting (`Characters::ParseInteger`: not a number, or out of range); the
+  when the failure has more than one cause worth reporting (`Characters::Number::Parse`: not a number, or out of range); the
   caller throws with `ThrowIfFailed ()`, or falls back with `value_or ()`.
   A `Quietly` suffix variant returns `nullopt`/empty instead of throwing.
 - **`Memory::MakeSharedPtr`, not `make_shared`**: the same, except that it block-allocates a type annotated for it (a

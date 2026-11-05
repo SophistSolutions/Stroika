@@ -14,7 +14,7 @@ Objs	:=	\
 	$(ObjDir)CodeCvt${OBJ_SUFFIX}\
 	$(ObjDir)CodePage${OBJ_SUFFIX}\
 	$(ObjDir)Format${OBJ_SUFFIX}\
-	$(ObjDir)NumberFormat${OBJ_SUFFIX}\
+	$(ObjDir)Number${OBJ_SUFFIX}\
 	$(ObjDir)RegularExpression${OBJ_SUFFIX}\
 	$(ObjDir)SDKString${OBJ_SUFFIX}\
 	$(ObjDir)String${OBJ_SUFFIX}\

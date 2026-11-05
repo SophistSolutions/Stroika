@@ -3,7 +3,7 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
@@ -27,8 +27,8 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
     // Read/Write real/complex numbers
     mapper.Add<Number> (
         [] (const ObjectVariantMapper& mapper [[maybe_unused]], const Number* obj) -> VariantValue {
-            static const FloatToStringOptions kFloat2StringOptions_{};
-            StringBuilder                     sb;
+            static const Characters::Number::FloatToStringOptions kFloat2StringOptions_{};
+            StringBuilder                                         sb;
             if (obj->real () != 0) {
                 if (obj->imag () == 0) {
                     return obj->real (); // return a number in this case, not a string
@@ -76,7 +76,7 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
                 else if (remainingNumber2Parse.StartsWith ("-i"_k)) {
                     remainingNumber2Parse = "-1i"_k + remainingNumber2Parse.Skip (2);
                 }
-                Number::value_type d = Characters::ParseFloat<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse).value_or (NAN);
+                Number::value_type d = Characters::Number::Parse<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse).value_or (NAN);
                 if (remainingNumber2Parse.StartsWith ("i"_k)) {
                     accum += Number{0, d};
                     remainingNumber2Parse = remainingNumber2Parse.Skip (1);

@@ -16,7 +16,7 @@
 #include <filesystem>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
@@ -406,7 +406,7 @@ namespace {
                 DbgTrace (L"isAllNumeric=%d, dir= %s, is_dir=%d", isAllNumeric, ToString (dir).c_str (), p.is_directory ());
 #endif
                 if (isAllNumeric and p.is_directory ()) {
-                    pid_t            pid{ParseInteger<pid_t> (dirFileNameString).value_or (0)};
+                    pid_t            pid{Number::Parse<pid_t> (dirFileNameString).value_or (0)};
                     TimePointSeconds now{Time::GetTickCount ()};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
@@ -977,13 +977,13 @@ namespace {
                     constexpr char kReadLbl_[]  = "read_bytes:";
                     constexpr char kWriteLbl_[] = "write_bytes:";
                     if (::strncmp (buf, kReadLbl_, ::strlen (kReadLbl_)) == 0) {
-                        result.read_bytes = Characters::ParseInteger<decltype (result.read_bytes)> (buf + ::strlen (kReadLbl_),
-                                                                                                    {.fIgnoreSurroundingWhitespace = true})
+                        result.read_bytes = Characters::Number::Parse<decltype (result.read_bytes)> (buf + ::strlen (kReadLbl_),
+                                                                                                     {.fIgnoreSurroundingWhitespace = true})
                                                 .value_or (0);
                     }
                     else if (::strncmp (buf, kWriteLbl_, ::strlen (kWriteLbl_)) == 0) {
-                        result.write_bytes = Characters::ParseInteger<decltype (result.write_bytes)> (buf + ::strlen (kWriteLbl_),
-                                                                                                      {.fIgnoreSurroundingWhitespace = true})
+                        result.write_bytes = Characters::Number::Parse<decltype (result.write_bytes)> (buf + ::strlen (kWriteLbl_),
+                                                                                                       {.fIgnoreSurroundingWhitespace = true})
                                                  .value_or (0);
                     }
                 }
@@ -1018,7 +1018,7 @@ namespace {
                 }
                 Sequence<String> splits = i.Tokenize ({' '});
                 if (splits.size () >= 4) {
-                    int st = ParseInteger<unsigned int> (splits[3], {.fRadix = 16}).value_or (0);
+                    int st = Number::Parse<unsigned int> (splits[3], {.fRadix = 16}).value_or (0);
                     /*
                      *  The enum in ./include/net/tcp_states.h is hopefully (apparently) the same as that in netinet/tcp.h
                      */
@@ -1060,11 +1060,11 @@ namespace {
                     // @todo - SHOULD pay attention to the labelm after the number. It may not always be kB? BUt not sure what it can be
                     if (::strncmp (buf, kPrivate1Lbl_, ::strlen (kPrivate1Lbl_)) == 0) {
                         result +=
-                            Characters::ParseInteger<MemorySizeType> (String{buf + ::strlen (kPrivate1Lbl_)}.Tokenize ().FirstValue ()).value_or (0) * 1024;
+                            Characters::Number::Parse<MemorySizeType> (String{buf + ::strlen (kPrivate1Lbl_)}.Tokenize ().FirstValue ()).value_or (0) * 1024;
                     }
                     else if (::strncmp (buf, kPrivate2Lbl_, ::strlen (kPrivate2Lbl_)) == 0) {
                         result +=
-                            Characters::ParseInteger<MemorySizeType> (String{buf + ::strlen (kPrivate2Lbl_)}.Tokenize ().FirstValue ()).value_or (0) * 1024;
+                            Characters::Number::Parse<MemorySizeType> (String{buf + ::strlen (kPrivate2Lbl_)}.Tokenize ().FirstValue ()).value_or (0) * 1024;
                     }
                 }
             }
@@ -1151,8 +1151,8 @@ namespace {
                     continue;
                 }
                 ProcessType processDetails;
-                pid_t       pid                 = ParseInteger<int> (l[0].Trim ()).value_or (0);
-                processDetails.fParentProcessID = ParseInteger<int> (l[1].Trim ()).value_or (0);
+                pid_t       pid                 = Number::Parse<int> (l[0].Trim ()).value_or (0);
+                processDetails.fParentProcessID = Number::Parse<int> (l[1].Trim ()).value_or (0);
                 {
                     String s = l[2].Trim ();
                     if (s.length () == 1) {
@@ -1167,10 +1167,10 @@ namespace {
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
                     processDetails.fTotalCPUTimeEverUsed = DurationSeconds{hours * 60 * 60 + minutes * 60 + seconds};
                 }
-                processDetails.fResidentMemorySize = ParseInteger<int> (l[4].Trim ()).value_or (0) * 1024; // RSS in /proc/xx/stat is * pagesize but this is *1024
-                processDetails.fPrivateVirtualMemorySize = ParseInteger<int> (l[kVSZ_Idx_].Trim ()).value_or (0) * 1024;
+                processDetails.fResidentMemorySize = Number::Parse<int> (l[4].Trim ()).value_or (0) * 1024; // RSS in /proc/xx/stat is * pagesize but this is *1024
+                processDetails.fPrivateVirtualMemorySize = Number::Parse<int> (l[kVSZ_Idx_].Trim ()).value_or (0) * 1024;
                 processDetails.fUserName                 = l[kUser_Idx_].Trim ();
-                processDetails.fThreadCount              = ParseInteger<unsigned int> (l[kThreadCnt_Idx_].Trim ()).value_or (0);
+                processDetails.fThreadCount              = Number::Parse<unsigned int> (l[kThreadCnt_Idx_].Trim ()).value_or (0);
                 String cmdLine;
                 {
                     // wrong - must grab EVERYHTING from i past a certain point

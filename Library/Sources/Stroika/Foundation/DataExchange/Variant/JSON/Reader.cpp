@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <optional>
@@ -245,12 +245,12 @@ namespace {
         StackBuffer<char32_t> ignoreBuf;
         span<const char32_t>  tmpData = tmp.GetData (&ignoreBuf);
         if (containsDot) {
-            return VariantValue{ParseFloat<long double> (tmpData).value_or (NAN)};
+            return VariantValue{Number::Parse<long double> (tmpData).value_or (NAN)};
         }
         else {
             // if no - use unsigned since has wider range (if no -)
-            return (initialChar == kDash_) ? VariantValue{ParseInteger<long long int> (tmpData).value_or (0)}
-                                           : VariantValue{ParseInteger<unsigned long long int> (tmpData).value_or (0)};
+            return (initialChar == kDash_) ? VariantValue{Number::Parse<long long int> (tmpData).value_or (0)}
+                                           : VariantValue{Number::Parse<unsigned long long int> (tmpData).value_or (0)};
         }
     }
 

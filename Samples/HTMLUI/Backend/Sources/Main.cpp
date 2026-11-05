@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -175,7 +175,7 @@ namespace {
                 : fServiceArgs{args}
             {
                 if (optional<String> o = args.GetArgument (kPortO_)) {
-                    fPortNumberOverride = Characters::ParseInteger<uint16_t> (*o).value_or (0);
+                    fPortNumberOverride = Characters::Number::Parse<uint16_t> (*o).value_or (0);
                 }
             }
         };

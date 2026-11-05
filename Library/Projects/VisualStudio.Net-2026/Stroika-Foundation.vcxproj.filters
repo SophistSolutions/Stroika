@@ -297,7 +297,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\NumberFormat.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Number.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp">
@@ -1035,10 +1035,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\NumberFormat.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ParseNumber.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Number.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Date.h">
@@ -2501,10 +2498,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\NumberFormat.inl">
-      <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\ParseNumber.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Number.inl">
       <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl">

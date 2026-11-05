@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_NumberFormat_h_
-#define _Stroika_Foundation_Characters_NumberFormat_h_ 1
+#ifndef _Stroika_Foundation_Characters_Number_h_
+#define _Stroika_Foundation_Characters_Number_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -10,21 +10,28 @@
 #include <locale>
 #include <optional>
 #include <span>
+#include <variant>
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Locale.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 
 /**
- *  The types that describe how numbers are written as text - shared by both directions:
- *      o   number -> text:     ToString (ToString.h) - for a floating point number, ToString (f, FloatToStringOptions)
- *      o   text -> number:     ParseInteger and ParseFloat (ParseNumber.h)
+ *  Numbers as text, in both directions (namespace Characters::Number):
+ *      o   text -> number:     Number::Parse<T> (s, options) - T an integral or floating point type
+ *      o   number -> text:     Characters::ToString (n, options) (ToString.h) - with the options types here
  *
  *  Each direction has its own Options - writing says exactly what to produce, reading what to accept - but where both describe the
- *  same thing (a locale, say), they use the one type defined here, as std::chars_format serves both std::to_chars and std::from_chars.
+ *  same thing (significant figures, say), they use the one type defined here, as std::chars_format serves both std::to_chars and
+ *  std::from_chars.
  *
- *  \note Kept light - it includes no ToString.h and no exception headers - since ToString.h includes it.
+ *  Parse: text that is not a number of the type asked for - or is out of its range - is an error, reported in the expected<>
+ *  returned, never a default value (String2Int's 0, ToFloat's NaN or infinity). By default the text must be just the number; options
+ *  accept more (whitespace, digit separators, a radix prefix, a locale's decimal point).
  *
- *  \note Before Stroika v3.0d26 these were in Characters::FloatConversion.
+ *  \note Before Stroika v3.0d26 the types here were in Characters::FloatConversion.
  */
 
 namespace Stroika::Foundation::Characters {
@@ -49,24 +56,9 @@ namespace Stroika::Foundation::Characters {
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
-    /**
-     *  Predefined locale designations for use with number formatting.
-     */
-    enum class PredefinedLocale {
-        /**
-         *  Use the hardwired 'C' locale (not exactly a real locale in the sense of localization. But a good choice
-         *  for the 'locale' to use for non-localized code (e.g. much serverside code).
-         */
-        eUseCLocale,
+}
 
-        /**
-         *  \note - this selects the current locale at the time the preference is used, whereas
-         *          in Stroika v2.1, it used the current locale at the time the preference object was created.
-         */
-        eUseCurrentLocale
-    };
-    using PredefinedLocale::eUseCLocale;
-    using PredefinedLocale::eUseCurrentLocale;
+namespace Stroika::Foundation::Characters::Number {
 
     /**
      *  Significant figures are the digits in a measured or calculated value that carry reliable information
@@ -371,7 +363,7 @@ namespace Stroika::Foundation::Characters {
          *          basic ios flags
          */
         constexpr FloatToStringOptions () = default;
-        constexpr FloatToStringOptions (PredefinedLocale p);
+        constexpr FloatToStringOptions (Common::PredefinedLocale p);
         FloatToStringOptions (const locale& l);
         constexpr FloatToStringOptions (ios_base::fmtflags fmtFlags);
         constexpr FloatToStringOptions (SignificantFigures precision);
@@ -436,7 +428,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief How ToString writes an integer: by default in base 10 - what ParseInteger reads by default
      *
-     *  Writing says exactly what to produce, so the matching ParseIntegerOptions (ParseNumber.h) reads it back: the same fRadix,
+     *  Writing says exactly what to produce, so the matching IntegerParseOptions reads it back: the same fRadix,
      *  and fAcceptRadixPrefix for fEmitRadixPrefix.
      *
      *  \par Example Usage
@@ -464,6 +456,158 @@ namespace Stroika::Foundation::Characters {
         bool fUpperCase{false};
     };
 
+    /**
+     *  The options ToString takes for a T: FloatToStringOptions or IntegerToStringOptions - for generic code.
+     */
+    template <typename T>
+    using ToStringOptions = conditional_t<floating_point<T>, FloatToStringOptions, IntegerToStringOptions>;
+
+    /**
+     *  \brief How Parse reads an integer: by default strictly - just the number, in base 10
+     *
+     *  Each option makes it accept more; the default accepts the least, so a lenient read says so where it is called.
+     *
+     *  \par Example Usage
+     *      \code
+     *          Number::Parse<unsigned int> ("0x1A", {.fRadix = 16, .fAcceptRadixPrefix = true});     // 26
+     *          Number::Parse<int> (" 42 ", {.fIgnoreSurroundingWhitespace = true});                  // 42
+     *      \endcode
+     *
+     *  \note Not here yet - to add when a caller needs one: a remainder overload of Parse for an integer, reading the number at the start
+     *        of longer text (as a floating point number's) - say "0 kB".
+     */
+    struct IntegerParseOptions {
+        /**
+         *  2 to 36; for a radix over 10, letters for the digits past 9, in either case.
+         */
+        unsigned int fRadix{10};
+
+        /**
+         *  Also accept the radix's usual prefix, after any sign, in either case: 0x for 16, 0o for 8, 0b for 2 (other radixes have none) -
+         *  as IntegerToStringOptions::fEmitRadixPrefix writes it.
+         *
+         *  Off by default: the radix is the caller's, so a prefix could only repeat or contradict it, and text formats differ on which
+         *  they use (0x, #, $, &H...). Even on, the radix is never guessed from the text, as C's strtol (base 0) guesses it - a leading
+         *  0 meaning octal, so "010" is 8, is a known source of bugs; a leading 0 is always just a digit.
+         */
+        bool fAcceptRadixPrefix{false};
+
+        /**
+         *  Also accept this character between two digits - a separator people use to make long numbers readable: 1'000'000 (C++),
+         *  1_000_000 (Python, Rust), or a locale's grouping, 1,000,000 (its thousands separator: use_facet<numpunct<wchar_t>> (l).thousands_sep ()).
+         *
+         *  Only between two digits - not first, last, or twice together; the sizes of the groups are not checked.
+         */
+        optional<Character> fDigitSeparator;
+
+        /**
+         *  Ignore whitespace before and after the number.
+         */
+        bool fIgnoreSurroundingWhitespace{false};
+    };
+
+    /**
+     *  \brief s as an integer of type T - an error if it is not one, or is out of T's range (by default s must be just the
+     *  number; options say what else to accept)
+     *
+     *  s is just the number: an optional + or - sign, then digits in options.fRadix - no whitespace, no radix prefix, no digit
+     *  separators, nothing after (unless options say otherwise). The same text parses the same in any locale (this uses
+     *  std::from_chars).
+     *
+     *  The error - a DataExchange::BadFormatException, a runtime error: bad data, not a bad call - quotes s, and says whether it is
+     *  not an integer or out of T's range. ThrowIfFailed () throws it; value_or (0) gives String2Int's lenient behavior instead.
+     *
+     *  \par Example Usage
+     *      \code
+     *          uint16_t port = ThrowIfFailed (Number::Parse<uint16_t> (portText));   // throws if portText is not a port number
+     *          int      n    = Number::Parse<int> ("33aaa"sv).value_or (0);                // 0 - not an integer
+     *          if (auto p = Number::Parse<uint16_t> (portText)) {
+     *              use (*p);
+     *          }
+     *          else {
+     *              cerr << Characters::ToString (p.error ()) << endl;               // "70000" is out of range (0 to 65535)
+     *          }
+     *      \endcode
+     *
+     *  \pre 2 <= options.fRadix and options.fRadix <= 36
+     */
+    template <integral T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (span<const CHAR_T> s, const IntegerParseOptions& options = {});
+    template <integral T, IConvertibleToString STRINGISH_ARG>
+    Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (STRINGISH_ARG&& s, const IntegerParseOptions& options = {});
+
+    /**
+     *  \brief How Parse reads a floating point number: by default strictly - just the number, in the "C" locale's format
+     *
+     *  \par Example Usage
+     *      \code
+     *          Number::Parse<double> ("1,5", {.fLocale = locale{"de_DE.UTF-8"}});                              // 1.5 - its decimal point is a comma
+     *          Number::Parse<double> ("1.000,5", {.fLocale = locale{"de_DE.UTF-8"}, .fDigitSeparator = '.'});  // 1000.5 - and its grouping a dot
+     *          Number::Parse<double> ("1_000.5", {.fDigitSeparator = '_'});                                    // 1000.5
+     *      \endcode
+     *
+     *  \note Not here yet - to add when a caller needs one: refusing nan and inf as text (accepted now, as ToFloat accepted them).
+     */
+    struct FloatParseOptions {
+        /**
+         *  The locale whose decimal point the text uses - the "C" locale ('.') by default, so the same text parses the same in every
+         *  program, whatever its global locale. Common::eUseCurrentLocale means the global locale when Parse is called. A '.' is not
+         *  the decimal point in a locale whose decimal point is something else (it may be fDigitSeparator).
+         */
+        Common::LocaleSpecifier fLocale{Common::PredefinedLocale::eUseCLocale};
+
+        /**
+         *  Also accept this character between two digits - as IntegerParseOptions::fDigitSeparator: 1_000.5, or a locale's grouping,
+         *  1,000.5 (its thousands separator: use_facet<numpunct<wchar_t>> (l).thousands_sep ()).
+         */
+        optional<Character> fDigitSeparator;
+
+        /**
+         *  Ignore whitespace before and after the number.
+         */
+        bool fIgnoreSurroundingWhitespace{false};
+    };
+
+    /**
+     *  The options Parse<T> takes: IntegerParseOptions or FloatParseOptions - for generic code.
+     */
+    template <typename T>
+    using ParseOptions = conditional_t<floating_point<T>, FloatParseOptions, IntegerParseOptions>;
+
+    /**
+     *  \brief s as a floating-point number of type T - an error if it is not one, or is out of T's range (by default s must be
+     *  just the number; options say what else to accept)
+     *
+     *  s is just the number: an optional sign, digits with an optional decimal point and exponent (1.5, -2e10, .5) - or nan, inf or
+     *  infinity (in any case, with an optional sign), which give NaN or infinity as such. No whitespace, nothing after (unless
+     *  options say otherwise). By default the "C" locale's format, whatever the global locale - so the same text parses the same
+     *  in every program (this uses std::from_chars - or, where the standard library cannot read floating point numbers with it, a
+     *  stream in the "C" locale).
+     *
+     *  The error, as for an integer: "is not a number" or "is out of range" - too large for T, or so small it would be 0 (a
+     *  subnormal number is in range). value_or (NAN) gives ToFloat's lenient behavior for text that is not a number.
+     *
+     *  The overload with a remainder reads the number at the start of s (after any whitespace), in the "C" locale's format, and puts
+     *  what follows it in *remainder - for a number within longer text; its error is that s "does not start with a number". s may be
+     *  *remainder, to read one number after another.
+     *
+     *  \par Example Usage
+     *      \code
+     *          double d = ThrowIfFailed (Number::Parse<double> (text));
+     *          String rest;
+     *          double e = ThrowIfFailed (Number::Parse<double> ("3.5 apples"_k, &rest));     // 3.5, and rest is " apples"
+     *      \endcode
+     *
+     *  \pre remainder != nullptr
+     */
+    template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (span<const CHAR_T> s, const FloatParseOptions& options = {});
+    template <floating_point T, typename STRINGISH_ARG>
+    Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (STRINGISH_ARG&& s, const FloatParseOptions& options = {})
+        requires (IConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>);
+    template <floating_point T>
+    Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (const String& s, String* remainder);
+
 }
 
 /*
@@ -471,6 +615,6 @@ namespace Stroika::Foundation::Characters {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "NumberFormat.inl"
+#include "Number.inl"
 
-#endif /*_Stroika_Foundation_Characters_NumberFormat_h_*/
+#endif /*_Stroika_Foundation_Characters_Number_h_*/

@@ -3,7 +3,7 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
@@ -157,7 +157,7 @@ namespace {
                 if (line.size () >= 3 and line[0] == n) {
                     String unit   = line[2];
                     double factor = (unit == L"kB") ? 1024 : 1;
-                    *result       = Math::Round<uint64_t> (Characters::ParseFloat<double> (line[1]).value_or (NAN) * factor);
+                    *result       = Math::Round<uint64_t> (Characters::Number::Parse<double> (line[1]).value_or (NAN) * factor);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
 #endif
@@ -226,7 +226,7 @@ namespace {
 #endif
             auto readVMStatLine = [] (optional<uint64_t>* result, const String& n, const Sequence<String>& line) -> unsigned int {
                 if (line.size () >= 2 and line[0] == n) {
-                    *result = Characters::ParseInteger<uint64_t> (line[1]).value_or (0);
+                    *result = Characters::Number::Parse<uint64_t> (line[1]).value_or (0);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
 #endif

@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
@@ -817,7 +817,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             virtual void Deactivating () override
             {
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
-                SerializeAsType tmp   = Characters::ParseInteger<SerializeAsType> (fBuf_.str ()).value_or (0);
+                SerializeAsType tmp   = Characters::Number::Parse<SerializeAsType> (fBuf_.str ()).value_or (0);
                 if (Common::ToInt (ENUM_TYPE::eSTART) <= tmp and tmp < Common::ToInt (ENUM_TYPE::eEND)) [[likely]] {
                     *fValue_ = Common::ToEnum<ENUM_TYPE> (tmp);
                 }

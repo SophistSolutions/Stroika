@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
@@ -251,7 +251,7 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
     }
     optional<uint16_t> port;
     if (auto oPortColon = remainingString2Parse.Find (':')) {
-        port = Characters::ParseInteger<uint16_t> (remainingString2Parse.SubString (*oPortColon + 1)).value_or (0);
+        port = Characters::Number::Parse<uint16_t> (remainingString2Parse.SubString (*oPortColon + 1)).value_or (0);
     }
     return Authority{host, port, userInfo};
 }

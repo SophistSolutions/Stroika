@@ -3,7 +3,7 @@
  */
 //  TEST    Foundation::PERFORMANCE
 
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <array>
@@ -189,7 +189,7 @@ namespace {
         double         performanceScore = (baselineTime == 0s) ? 1000000 : compareWithTime.count () / baselineTime.count ();
         constexpr char kOneTab_[]       = "\t";
         {
-            FloatToStringOptions fo{SignificantFigures{2}};
+            Number::FloatToStringOptions fo{Number::SignificantFigures{2}};
             outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << Characters::ToString (performanceScore, fo) << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
@@ -3287,7 +3287,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         sShowOutput_                      = options.Has (kShowO_);
         sRunOrderByProbe_                 = options.Has (kOrderByProbeO_);
         if (optional<String> o = options.GetArgument (kTimeMultiplierO_)) {
-            sTimeMultiplier_ = ParseFloat<double> (*o).value_or (NAN);
+            sTimeMultiplier_ = Number::Parse<double> (*o).value_or (NAN);
         }
     }
     catch (const InvalidCommandLineArgument&) {

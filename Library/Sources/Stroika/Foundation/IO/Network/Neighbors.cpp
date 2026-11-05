@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <filesystem>
@@ -135,8 +135,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"{}ProcNetArp_", "includePurgedEntries={}"_f, includePurgedEntries};
 #endif
-        Collection<Neighbor> result;
-        using Characters::ParseInteger;
+        Collection<Neighbor>                                   result;
         DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
         static const filesystem::path                          kProcFileName_{"/proc/net/arp"sv};
         /*

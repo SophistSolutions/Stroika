@@ -4,7 +4,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -129,7 +129,7 @@ namespace {
         if (not mx or mx->empty () or not mx->All ([] (Character c) { return c.IsDigit (); })) {
             return nullopt;
         }
-        return Time::DurationSeconds{mx->size () > 9 ? 5 : min (Characters::ParseInteger<int> (*mx).value_or (0), 5)};
+        return Time::DurationSeconds{mx->size () > 9 ? 5 : min (Characters::Number::Parse<int> (*mx).value_or (0), 5)};
     }
 
     // whether an M-SEARCH was multicast: as where it arrived says (arrived); else, not known, unless its HOST names a unicast address
@@ -160,7 +160,7 @@ namespace {
         if (version.empty () or version.size () > 9 or not version.All ([] (Character c) { return c.IsDigit (); })) {
             return nullopt;
         }
-        return make_pair (target.SubString (0, *lastColon), Characters::ParseInteger<unsigned int> (version).value_or (0));
+        return make_pair (target.SubString (0, *lastColon), Characters::Number::Parse<unsigned int> (version).value_or (0));
     }
 
     // advertisement a, as it answers a search for searchTarget - or nullopt if it does not. Every advertisement answers ssdp:all;

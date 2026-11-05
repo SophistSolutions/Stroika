@@ -10,9 +10,210 @@
 #include <string_view>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
-namespace Stroika::Foundation::Characters {
+namespace Stroika::Foundation::Characters::Number {
+
+    /*
+     ********************************************************************************
+     ****************************** SignificantFigures ******************************
+     ********************************************************************************
+     */
+    constexpr SignificantFigures::SignificantFigures (unsigned int p)
+        : fSignificantFigures_{p}
+    {
+    }
+    constexpr SignificantFigures::SignificantFigures (FullFlag)
+        : fSignificantFigures_{} // kFullPrecision
+    {
+    }
+    template <floating_point T>
+    constexpr auto SignificantFigures::GetEffectiveSignificantFigures () const -> RepType
+    {
+        return fSignificantFigures_.value_or (numeric_limits<T>::max_digits10);
+    }
+    template <IStdBasicStringCompatibleCharacter CHAR>
+    constexpr auto SignificantFigures::Calculate (span<const CHAR> number) -> RepType
+    {
+        // two passes cuz eatLeadingZero depends on scientific, which we find at the end of the text
+        bool dotPresent = false;
+        bool scientific = false;
+        for (const CHAR c : number) {
+            switch (c) {
+                // Some locales use . (most), but europe uses , for same purpose (and used in ISO-8601)
+                case '.':
+                case ',':
+                    dotPresent = true;
+                    break;
+                case 'e':
+                case 'E':
+                    scientific = true;
+                    break;
+            }
+        }
+        RepType n{0};
+        RepType trailingZeros{0};
+        bool    eatLeadingZeros = not scientific;
+        bool    gotoDone        = false;
+        for (const CHAR c : number) {
+            switch (c) {
+                case '-':
+                case '+':
+                    break;
+                case '0':
+                    if (eatLeadingZeros) {
+                        // munch
+                    }
+                    else {
+                        ++n;
+                    }
+                    ++trailingZeros;
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    eatLeadingZeros = false;
+                    trailingZeros   = 0;
+                    ++n;
+                    break;
+                case '.':
+                case ',':
+                    trailingZeros = 0;
+                    break;
+                case 'e':
+                case 'E':
+                    gotoDone = true; // goto Done;   // FIX to use this when c++23
+                    break;
+            }
+            if (gotoDone) {
+                break;
+            }
+        }
+        //    Done:
+        if (dotPresent) {
+            if (eatLeadingZeros) {
+                // then the trailing zeros we counted were also leading 0, but wern't added to n so do so now
+                n += trailingZeros;
+            }
+        }
+        else {
+            n -= trailingZeros;
+        }
+        return n;
+    }
+
+    /**
+     *      From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
+     *      init (basic_streambuf...) initializes precision to 6
+     *      Stroika need not maintain that default here, but it seems a sensible one...
+     * 
+     *  \note defined here instead of header cuz needs to be after SignificantFigures::CTOR.
+     */
+    constexpr inline SignificantFigures SignificantFigures::kDefault{6};
+
+    /**
+     *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
+     *         you get the exact same answer.
+     * 
+     *  \see  // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
+     *        numeric_limits<T>::max_digits10
+     * 
+     *  \note defined here instead of header cuz needs to be after SignificantFigures::CTOR.
+     */
+    constexpr inline SignificantFigures SignificantFigures::kFullPrecision{SignificantFigures::FullFlag::eFull};
+
+    /*
+     ********************************************************************************
+     ***************************** FloatToStringOptions *****************************
+     ********************************************************************************
+     */
+    inline FloatToStringOptions::FloatToStringOptions (const locale& l)
+        : fUseLocale_{l}
+    {
+    }
+    constexpr FloatToStringOptions::FloatToStringOptions (Common::PredefinedLocale p)
+        : fUseCurrentLocale_{p == Common::PredefinedLocale::eUseCurrentLocale}
+    {
+    }
+    constexpr FloatToStringOptions::FloatToStringOptions (ios_base::fmtflags fmtFlags)
+        : fFmtFlags_{fmtFlags}
+    {
+    }
+    constexpr FloatToStringOptions::FloatToStringOptions (SignificantFigures precision)
+        : fSignificantFigures_{precision}
+    {
+    }
+    constexpr FloatToStringOptions::FloatToStringOptions (FloatFormatType scientificNotation)
+        : fFloatFormat_{scientificNotation}
+    {
+    }
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    constexpr FloatToStringOptions::FloatToStringOptions (TrimTrailingZerosType trimTrailingZeros)
+        : fTrimTrailingZeros_{trimTrailingZeros == TrimTrailingZerosType::eTrimZeros}
+    {
+    }
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+
+    constexpr FloatToStringOptions::FloatToStringOptions (const FloatToStringOptions& b1, const FloatToStringOptions& b2)
+        : FloatToStringOptions{b1}
+    {
+        Memory::CopyToIf (&fSignificantFigures_, b2.fSignificantFigures_);
+        Memory::CopyToIf (&fFmtFlags_, b2.fFmtFlags_);
+        fUseCurrentLocale_ = b2.fUseCurrentLocale_;
+        Memory::CopyToIf (&fUseLocale_, b2.fUseLocale_);
+        Memory::CopyToIf (&fTrimTrailingZeros_, b2.fTrimTrailingZeros_);
+        Memory::CopyToIf (&fFloatFormat_, b2.fFloatFormat_);
+    }
+    template <typename... ARGS>
+    constexpr FloatToStringOptions::FloatToStringOptions (const FloatToStringOptions& b1, const FloatToStringOptions& b2, ARGS&&... args)
+        : FloatToStringOptions{FloatToStringOptions{b1, b2}, forward<ARGS> (args)...}
+    {
+    }
+    constexpr optional<SignificantFigures> FloatToStringOptions::GetSignificantFigures () const
+    {
+        return fSignificantFigures_;
+    }
+    constexpr optional<bool> FloatToStringOptions::GetTrimTrailingZeros () const
+    {
+        return fTrimTrailingZeros_;
+    }
+    inline locale FloatToStringOptions::GetUseLocale () const
+    {
+        if (fUseCurrentLocale_) {
+            return locale{};
+        }
+        if (fUseLocale_) {
+            return *fUseLocale_;
+        }
+        static const locale kCLocale_ = locale::classic ();
+        return kCLocale_;
+    }
+    inline bool FloatToStringOptions::GetUsingLocaleClassic () const
+    {
+        if (not fUseLocale_ and not fUseCurrentLocale_) {
+            return true; // very common case
+        }
+        return GetUseLocale () == locale::classic ();
+    }
+    constexpr optional<FloatFormatType> FloatToStringOptions::GetFloatFormat () const
+    {
+        return fFloatFormat_;
+    }
+    constexpr optional<ios_base::fmtflags> FloatToStringOptions::GetIOSFmtFlags () const
+    {
+        return fFmtFlags_;
+    }
 
     namespace Private_ {
         // s, quoted, for an error message - shortened if long; char text that is not ASCII cannot be made a String, so is described
@@ -104,12 +305,12 @@ namespace Stroika::Foundation::Characters {
             }
             return r;
         }
-        inline Character DecimalPoint_ (const variant<PredefinedLocale, locale>& l)
+        inline Character DecimalPoint_ (const Common::LocaleSpecifier& l)
         {
-            if (const PredefinedLocale* p = get_if<PredefinedLocale> (&l)) {
-                return *p == PredefinedLocale::eUseCLocale ? Character{'.'} : Character{use_facet<numpunct<wchar_t>> (locale{}).decimal_point ()};
+            if (const Common::PredefinedLocale* p = get_if<Common::PredefinedLocale> (&l); p != nullptr and *p == Common::PredefinedLocale::eUseCLocale) {
+                return Character{'.'};
             }
-            return Character{use_facet<numpunct<wchar_t>> (get<locale> (l)).decimal_point ()};
+            return Character{use_facet<numpunct<wchar_t>> (Common::ResolveLocale (l)).decimal_point ()};
         }
         // the number at the start of s, in the "C" locale's format - whatever the global locale: its length (0 if s does not start with
         // one), its value in *result, and *outOfRange if it is too large for T. nan, inf and infinity - in any case, with an optional
@@ -202,11 +403,11 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     ********************************* ParseInteger *********************************
+     ************************** Number::Parse (integral T) **************************
      ********************************************************************************
      */
     template <integral T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-    Common::StdCompat::expected<T, DataExchange::BadFormatException> ParseInteger (span<const CHAR_T> s, const ParseIntegerOptions& options)
+    Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (span<const CHAR_T> s, const IntegerParseOptions& options)
     {
         const unsigned int radix = options.fRadix;
         Require (2 <= radix and radix <= 36);
@@ -217,9 +418,9 @@ namespace Stroika::Foundation::Characters {
                 (radix == 10 ? String{" is not an integer"sv} : " is not a base-"sv + String{to_string (radix)} + " integer"sv)}};
         };
         if (options.fIgnoreSurroundingWhitespace) {
-            ParseIntegerOptions o          = options;
+            IntegerParseOptions o          = options;
             o.fIgnoreSurroundingWhitespace = false;
-            return ParseInteger<T> (Private_::TrimWhitespace_ (s), o);
+            return Parse<T> (Private_::TrimWhitespace_ (s), o);
         }
         if (options.fDigitSeparator) {
             // slow - it copies the text twice (into a String, then a string without the separators): a candidate to optimize, if a
@@ -233,9 +434,9 @@ namespace Stroika::Foundation::Characters {
             if (not c) {
                 return notAnInteger ();
             }
-            ParseIntegerOptions o = options;
+            IntegerParseOptions o = options;
             o.fDigitSeparator     = nullopt;
-            return ParseInteger<T> (span<const char>{c->data (), c->size ()}, o);
+            return Parse<T> (span<const char>{c->data (), c->size ()}, o);
         }
         Memory::StackBuffer<char> ascii;
         if (Character::AsASCIIQuietly (s, &ascii)) {
@@ -282,32 +483,32 @@ namespace Stroika::Foundation::Characters {
         return notAnInteger ();
     }
     template <integral T, IConvertibleToString STRINGISH_ARG>
-    inline Common::StdCompat::expected<T, DataExchange::BadFormatException> ParseInteger (STRINGISH_ARG&& s, const ParseIntegerOptions& options)
+    inline Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (STRINGISH_ARG&& s, const IntegerParseOptions& options)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
         if constexpr (is_convertible_v<DecayedStringishArg, string_view>) {
             string_view sv = s; // char text: not ASCII is an error, not a throw from String's constructor
-            return ParseInteger<T> (span{sv.data (), sv.size ()}, options);
+            return Parse<T> (span{sv.data (), sv.size ()}, options);
         }
         else if constexpr (Common::IAnyOf<DecayedStringishArg, const char8_t*, const char16_t*, const char32_t*, const wchar_t*>) {
-            return ParseInteger<T> (span{s, CString::Length (s)}, options);
+            return Parse<T> (span{s, CString::Length (s)}, options);
         }
         else if constexpr (same_as<DecayedStringishArg, String>) {
             Memory::StackBuffer<wchar_t> ignored;
-            return ParseInteger<T> (s.template GetData<wchar_t> (&ignored), options);
+            return Parse<T> (s.template GetData<wchar_t> (&ignored), options);
         }
         else {
-            return ParseInteger<T> (String{forward<STRINGISH_ARG> (s)}, options);
+            return Parse<T> (String{forward<STRINGISH_ARG> (s)}, options);
         }
     }
 
     /*
      ********************************************************************************
-     ********************************** ParseFloat **********************************
+     *********************** Number::Parse (floating_point T) ***********************
      ********************************************************************************
      */
     template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-    Common::StdCompat::expected<T, DataExchange::BadFormatException> ParseFloat (span<const CHAR_T> s, const ParseFloatOptions& options)
+    Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (span<const CHAR_T> s, const FloatParseOptions& options)
     {
         using ERRT = Common::StdCompat::unexpected<DataExchange::BadFormatException>;
         auto error = [&] (string_view why) { return ERRT{DataExchange::BadFormatException{Private_::QuoteForParseError_ (s) + why}}; };
@@ -317,9 +518,9 @@ namespace Stroika::Foundation::Characters {
             }
         }
         if (options.fIgnoreSurroundingWhitespace) {
-            ParseFloatOptions o            = options;
+            FloatParseOptions o            = options;
             o.fIgnoreSurroundingWhitespace = false;
-            return ParseFloat<T> (Private_::TrimWhitespace_ (s), o);
+            return Parse<T> (Private_::TrimWhitespace_ (s), o);
         }
         Character decimalPoint = Private_::DecimalPoint_ (options.fLocale);
         Require (not options.fDigitSeparator or *options.fDigitSeparator != decimalPoint);
@@ -348,31 +549,31 @@ namespace Stroika::Foundation::Characters {
         return r;
     }
     template <floating_point T, typename STRINGISH_ARG>
-    inline Common::StdCompat::expected<T, DataExchange::BadFormatException> ParseFloat (STRINGISH_ARG&& s, const ParseFloatOptions& options)
+    inline Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (STRINGISH_ARG&& s, const FloatParseOptions& options)
         requires (IConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
         if constexpr (is_convertible_v<DecayedStringishArg, string_view>) {
             string_view sv = s; // char text: not ASCII is an error, not a throw from String's constructor
-            return ParseFloat<T> (span{sv.data (), sv.size ()}, options);
+            return Parse<T> (span{sv.data (), sv.size ()}, options);
         }
         else if constexpr (Common::IAnyOf<DecayedStringishArg, const char8_t*, const char16_t*, const char32_t*, const wchar_t*>) {
-            return ParseFloat<T> (span{s, CString::Length (s)}, options);
+            return Parse<T> (span{s, CString::Length (s)}, options);
         }
         else if constexpr (same_as<DecayedStringishArg, String>) {
             Memory::StackBuffer<wchar_t> ignored;
-            return ParseFloat<T> (s.template GetData<wchar_t> (&ignored), options);
+            return Parse<T> (s.template GetData<wchar_t> (&ignored), options);
         }
         else {
-            return ParseFloat<T> (String{forward<STRINGISH_ARG> (s)}, options);
+            return Parse<T> (String{forward<STRINGISH_ARG> (s)}, options);
         }
     }
     template <floating_point T>
-    Common::StdCompat::expected<T, DataExchange::BadFormatException> ParseFloat (const String& s, String* remainder)
+    Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (const String& s, String* remainder)
     {
         RequireNotNull (remainder);
         using ERRT   = Common::StdCompat::unexpected<DataExchange::BadFormatException>;
-        String text  = s; // s may be *remainder - as in ParseFloat (t, &t) - so changed below
+        String text  = s; // s may be *remainder - as in Parse<double> (t, &t) - so changed below
         size_t start = 0;
         while (start < text.size () and text[start].IsWhitespace ()) {
             ++start;

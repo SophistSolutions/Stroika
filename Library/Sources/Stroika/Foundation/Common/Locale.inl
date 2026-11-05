@@ -7,6 +7,19 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
+     ***************************** Common::ResolveLocale ****************************
+     ********************************************************************************
+     */
+    inline locale ResolveLocale (const LocaleSpecifier& l)
+    {
+        if (const PredefinedLocale* p = get_if<PredefinedLocale> (&l)) {
+            return *p == PredefinedLocale::eUseCLocale ? locale::classic () : locale{};
+        }
+        return get<locale> (l);
+    }
+
+    /*
+     ********************************************************************************
      *********************** Common::GetPlatformDefaultLocale ***********************
      ********************************************************************************
      */

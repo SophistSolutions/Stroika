@@ -17,7 +17,7 @@
 #include <wchar.h>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/NumberFormat.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Characters {
      *  ToStringDefaults namespace --LGP 2023-11-21.
      */
     /*
-     *  Writing a floating point number - ToString (f, FloatToStringOptions). Before Stroika v3.0d26 this was FloatConversion::ToString.
+     *  Writing a floating point number - ToString (f, Number::FloatToStringOptions). Before Stroika v3.0d26 this was FloatConversion::ToString.
      *
      *  @todo   REWRITE much of this, once 3.0 alpha or beta starts: the API is OK, but the implementation weak (and probably slow).
      *  @todo   Then maybe lose the ios_base::fmtflags option (perhaps keep it as an argument, but just grab those fields) - say an
@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Characters {
         }
 #endif
         template <floating_point FLOAT_TYPE>
-        String FloatToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, SignificantFigures precision)
+        String FloatToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, Number::SignificantFigures precision)
         {
             using namespace Memory;
             size_t sz = numeric_limits<FLOAT_TYPE>::max_digits10 + numeric_limits<FLOAT_TYPE>::max_exponent10 + 5; // source? "-1.##e+##\0"
@@ -263,7 +263,7 @@ namespace Stroika::Foundation::Characters {
             // XCode 15 still doesn't define __cpp_lib_to_chars, as well as _LIBCPP_VERSION < 190000, I believe --LGP 2024-07-13
 #if defined(__cpp_lib_to_chars)
             // empirically, on MSVC, to_chars() is much faster than snprintf (appears 3x apx faster) -- LGP 2021-11-04
-            if (precision == SignificantFigures::kFullPrecision) {
+            if (precision == Number::SignificantFigures::kFullPrecision) {
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
             }
             else {
@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Characters {
             };
 
             FLOAT_TYPE useRoundedFloat = Math::Round<FLOAT_TYPE> (f, effectivePrecision);
-            if (precision != SignificantFigures::kFullPrecision) {
+            if (precision != Number::SignificantFigures::kFullPrecision) {
                 f = useRoundedFloat;
             }
 
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Characters {
             // [[maybe_unused]] auto ooo = CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
 #if qStroika_Foundation_Debug_AssertionsChecked
-            Assert (precision == SignificantFigures::kFullPrecision or
+            Assert (precision == Number::SignificantFigures::kFullPrecision or
                     CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}) <= effectivePrecision);
 #endif
             return String{span{buf.data (), static_cast<size_t> (resultStrLen)}};
@@ -363,7 +363,7 @@ namespace Stroika::Foundation::Characters {
             // for example, there is no way for 31200000 to be represented with 6 significant digits (in standard form, you can with scientific)
             // 212312345.0 with 6 significant digits is 212312000, but we need the extra digits for magnatitude, so not
             // sure worth losing the action digits we have? CONSIDER!!!!
-            // but for now no ensures --Ensure (SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) <= nSignificantFigures);
+            // but for now no ensures --Ensure (Number::SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) <= nSignificantFigures);
             return r;
         }
         template <floating_point T>
@@ -385,22 +385,22 @@ namespace Stroika::Foundation::Characters {
                 }
             };
             String r = compute ();
-            Ensure (SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
+            Ensure (Number::SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
             return r;
         }
     }
 
     namespace Private_ {
         template <floating_point FLOAT_TYPE>
-        String FloatToString_GeneralCase_ (FLOAT_TYPE f, const FloatToStringOptions& options)
+        String FloatToString_GeneralCase_ (FLOAT_TYPE f, const Number::FloatToStringOptions& options)
         {
             unsigned int usePrecision =
-                options.GetSignificantFigures ().value_or (SignificantFigures{}).GetEffectiveSignificantFigures<FLOAT_TYPE> ();
-            FloatFormatType usingFormat = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
+                options.GetSignificantFigures ().value_or (Number::SignificantFigures{}).GetEffectiveSignificantFigures<FLOAT_TYPE> ();
+            Number::FloatFormatType usingFormat = options.GetFloatFormat ().value_or (Number::FloatFormatType::eDEFAULT);
 
             // if no locale, can use this...
             // (see if I can use formatNonScientific_) logic for other cases...
-            if (usingFormat == FloatFormatType::eStandard) {
+            if (usingFormat == Number::FloatFormatType::eStandard) {
                 Assert (options.GetIOSFmtFlags () == nullopt); // doable in principle, looking/mapping each feature, but not trivial, and probably not needed anytime soon
                                                                // --LGP 2026-02-10
                 if (options.GetUsingLocaleClassic ()) {
@@ -426,33 +426,33 @@ namespace Stroika::Foundation::Characters {
 
             {
                 switch (usingFormat) {
-                    case FloatFormatType::eScientific:
-                    case FloatFormatType::eScientificWithWhitespaceTrimmed:
+                    case Number::FloatFormatType::eScientific:
+                    case Number::FloatFormatType::eScientificWithWhitespaceTrimmed:
                         s.setf (ios_base::scientific, ios_base::floatfield);
                         Assert (usePrecision >= 2);
                         s.precision (usePrecision - 1); // scientific format is n.mmm with m digits of 'precision' - so 1 + m is # of significat digits
                         break;
-                    case FloatFormatType::eDefaultFloat:
+                    case Number::FloatFormatType::eDefaultFloat:
                         s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
                         /*
                          * Precision Field: The stream's precision setting (managed by std::setprecision or std::ios_base::precision()) 
                          * specifies the maximum number of meaningful digits to display in total (both before and after the decimal point),
-                         * not a fixed number of digits after the decimal point (so same as SignificantFigures)
+                         * not a fixed number of digits after the decimal point (so same as Number::SignificantFigures)
                          */
                         s.precision (usePrecision);
                         break;
-                    case FloatFormatType::eFixedPoint:
-                    case FloatFormatType::eFixedPointWithWhitespaceTrimmed:
+                    case Number::FloatFormatType::eFixedPoint:
+                    case Number::FloatFormatType::eFixedPointWithWhitespaceTrimmed:
                         s.setf (ios_base::fixed, ios_base::floatfield);
                         s.precision (usePrecision); // I think wrong but test -
                         break;
-                    case FloatFormatType::eStandard:
+                    case Number::FloatFormatType::eStandard:
                         AssertNotReached (); // handled above
                         break;
                         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
                         DISABLE_COMPILER_MSC_WARNING_START (4996)
-                    case FloatFormatType::eAutomaticScientific: {
+                    case Number::FloatFormatType::eAutomaticScientific: {
                         s.precision (usePrecision);
                         bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or
                                                      (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
@@ -482,21 +482,21 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
         template <floating_point FLOAT_TYPE>
-        String FloatToString_ (FLOAT_TYPE f, const FloatToStringOptions& options)
+        String FloatToString_ (FLOAT_TYPE f, const Number::FloatToStringOptions& options)
         {
-            auto floatFormat = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
-            auto result = (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and floatFormat == FloatFormatType::eDefaultFloat)
+            auto floatFormat = options.GetFloatFormat ().value_or (Number::FloatFormatType::eDEFAULT);
+            auto result = (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and floatFormat == Number::FloatFormatType::eDefaultFloat)
                               ? Private_::FloatToString_OptimizedForCLocaleAndNoStreamFlags_ (
-                                    f, options.GetSignificantFigures ().value_or (SignificantFigures{}))
+                                    f, options.GetSignificantFigures ().value_or (Number::SignificantFigures{}))
                               : Private_::FloatToString_GeneralCase_ (f, options);
-            if (floatFormat == FloatFormatType::eFixedPointWithWhitespaceTrimmed or floatFormat == FloatFormatType::eStandard) {
+            if (floatFormat == Number::FloatFormatType::eFixedPointWithWhitespaceTrimmed or floatFormat == Number::FloatFormatType::eStandard) {
                 TrimTrailingZeros_NotSci_ (&result);
             }
-            if (floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed) {
+            if (floatFormat == Number::FloatFormatType::eScientificWithWhitespaceTrimmed) {
                 TrimTrailingZeros_MaybeSci_ (&result);
             }
 #if qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
-            if (floatFormat == FloatFormatType::eDefaultFloat) {
+            if (floatFormat == Number::FloatFormatType::eDefaultFloat) {
                 TrimTrailingZeros_MaybeSci_ (&result);
             }
 #endif
@@ -649,17 +649,17 @@ namespace Stroika::Foundation::Characters {
         template <floating_point T>
         inline String ToString (T t)
         {
-            return Private_::FloatToString_ (t, FloatToStringOptions{});
+            return Private_::FloatToString_ (t, Number::FloatToStringOptions{});
         }
         template <floating_point T>
-        inline String ToString (T t, const FloatToStringOptions& o)
+        inline String ToString (T t, const Number::FloatToStringOptions& o)
         {
             return Private_::FloatToString_ (t, o);
         }
         template <floating_point T>
-        inline String ToString (T t, SignificantFigures sf)
+        inline String ToString (T t, Number::SignificantFigures sf)
         {
-            return Private_::FloatToString_ (t, FloatToStringOptions{sf});
+            return Private_::FloatToString_ (t, Number::FloatToStringOptions{sf});
         }
         template <typename T>
         inline String ToString (const Math::CommonStatistics<T>& t)
@@ -730,7 +730,7 @@ namespace Stroika::Foundation::Characters {
         {
             return Characters::ToString (t.count ()) + " seconds"sv;
         }
-        String ToString (const Time::Duration& t, SignificantFigures p);
+        String ToString (const Time::Duration& t, Number::SignificantFigures p);
         template <typename CLOCK_T>
         inline String ToString (const chrono::time_point<CLOCK_T, chrono::duration<double>>& t)
         {
@@ -751,7 +751,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
         template <integral T>
-        String ToString (T t, const IntegerToStringOptions& o)
+        String ToString (T t, const Number::IntegerToStringOptions& o)
             requires (not same_as<T, bool>)
         {
             Require (2 <= o.fRadix and o.fRadix <= 36);
@@ -761,7 +761,7 @@ namespace Stroika::Foundation::Characters {
             const char* d = digits;
             string      r;
             if (*d == '-') {
-                r += *d++; // the prefix comes after the sign, as ParseInteger reads it
+                r += *d++; // the prefix comes after the sign, as Number::Parse reads it
             }
             if (o.fEmitRadixPrefix and (o.fRadix == 16 or o.fRadix == 8 or o.fRadix == 2)) {
                 r += '0';

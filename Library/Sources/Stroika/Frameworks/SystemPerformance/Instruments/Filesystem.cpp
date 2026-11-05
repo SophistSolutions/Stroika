@@ -21,7 +21,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
@@ -55,8 +55,6 @@ using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
-
-using Characters::ParseInteger;
 
 using Instruments::Filesystem::BlockDeviceKind;
 using Instruments::Filesystem::DiskInfoType;
@@ -409,7 +407,7 @@ namespace {
                 if (optional<filesystem::path> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName)) {
                     filesystem::path fn = *blockDeviceInfoPath / "queue/hw_sector_size";
                     try {
-                        o = ParseInteger<uint32_t> (
+                        o = Number::Parse<uint32_t> (
                                 BinaryToText::Reader::New (IO::FileSystem::FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable))
                                     .ReadAll ()
                                     .Trim ())
@@ -460,13 +458,13 @@ namespace {
                     }
                 }
                 {
-                    double szInBytes = Characters::ParseFloat<double> (l[1]).value_or (NAN) * 1024;
+                    double szInBytes = Characters::Number::Parse<double> (l[1]).value_or (NAN) * 1024;
                     if (not std::isnan (szInBytes) and not std::isinf (szInBytes)) {
                         v.fSizeInBytes = szInBytes;
                     }
                 }
                 {
-                    double usedSizeInBytes = ParseFloat<double> (l[2]).value_or (NAN) * 1024;
+                    double usedSizeInBytes = Number::Parse<double> (l[2]).value_or (NAN) * 1024;
                     if (not std::isnan (usedSizeInBytes) and not std::isinf (usedSizeInBytes)) {
                         v.fUsedSizeInBytes = usedSizeInBytes;
                     }
@@ -523,8 +521,8 @@ namespace {
                         v.fDeviceOrVolumeName = d;
                     }
                 }
-                v.fSizeInBytes          = ParseFloat<double> (l[includeFSTypes ? 2 : 1]).value_or (NAN) * 1024;
-                v.fUsedSizeInBytes      = ParseFloat<double> (l[includeFSTypes ? 3 : 2]).value_or (NAN) * 1024;
+                v.fSizeInBytes          = Number::Parse<double> (l[includeFSTypes ? 2 : 1]).value_or (NAN) * 1024;
+                v.fUsedSizeInBytes      = Number::Parse<double> (l[includeFSTypes ? 3 : 2]).value_or (NAN) * 1024;
                 v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
                 result.Add (l[includeFSTypes ? 6 : 5].Trim ().As<filesystem::path> (), v);
             }
@@ -588,18 +586,18 @@ namespace {
                             for (const Sequence<String>& ll : reader.ReadMatrix (IO::FileSystem::FileInputStream::New (
                                      *sysBlockInfoPath / "stat", IO::FileSystem::FileInputStream::eNotSeekable))) {
                                 if (ll.size () >= 11) {
-                                    weightedTimeInQSeconds = ParseFloat (ll[11 - 1]).value_or (NAN) / 1000.0; // we record in seconds, but the value in file in milliseconds
+                                    weightedTimeInQSeconds = Number::Parse<double> (ll[11 - 1]).value_or (NAN) / 1000.0; // we record in seconds, but the value in file in milliseconds
                                     break;
                                 }
                             }
                         }
                     }
-                    result.Add (makedev (ParseInteger<unsigned int> (majorDevNumber).value_or (0),
-                                         ParseInteger<unsigned int> (minorDevNumber).value_or (0)),
-                                PerfStats_{ParseFloat (sectorsRead).value_or (NAN), ParseFloat (timeSpentReadingMS).value_or (NAN) / 1000,
-                                           ParseFloat (readsCompleted).value_or (NAN), ParseFloat (sectorsWritten).value_or (NAN),
-                                           ParseFloat (timeSpentWritingMS).value_or (NAN) / 1000,
-                                           ParseFloat (writesCompleted).value_or (NAN), NullCoalesce (weightedTimeInQSeconds)});
+                    result.Add (
+                        makedev (Number::Parse<unsigned int> (majorDevNumber).value_or (0), Number::Parse<unsigned int> (minorDevNumber).value_or (0)),
+                        PerfStats_{Number::Parse<double> (sectorsRead).value_or (NAN), Number::Parse<double> (timeSpentReadingMS).value_or (NAN) / 1000,
+                                   Number::Parse<double> (readsCompleted).value_or (NAN), Number::Parse<double> (sectorsWritten).value_or (NAN),
+                                   Number::Parse<double> (timeSpentWritingMS).value_or (NAN) / 1000,
+                                   Number::Parse<double> (writesCompleted).value_or (NAN), NullCoalesce (weightedTimeInQSeconds)});
                 }
             }
             return result;

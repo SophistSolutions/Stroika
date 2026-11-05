@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/ParseNumber.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Cache/LRUCache.h"
@@ -238,7 +238,7 @@ Transfer::Cache::Element::Element (const Response& response)
             static const String kMaxAgeEquals_{"max-age="sv};
             for (const String& cci : *fCacheControl) {
                 if (cci.StartsWith (kMaxAgeEquals_)) {
-                    fExpiresDueToMaxAge = DateTime::Now () + Duration{ParseFloat (cci.SubString (kMaxAgeEquals_.size ())).value_or (NAN)};
+                    fExpiresDueToMaxAge = DateTime::Now () + Duration{Number::Parse<double> (cci.SubString (kMaxAgeEquals_.size ())).value_or (NAN)};
                 }
             }
         }
