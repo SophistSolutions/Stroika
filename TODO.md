@@ -36,6 +36,14 @@ Generally will track stuff here between releases
    - **IO::Network::Transfer::Cache: a quick review, and docs for its Ptr** (LGP 2026-10-24) -
      Library/Sources/Stroika/Foundation/IO/Network/Transfer/Cache.h: `struct Ptr : shared_ptr<Cache::IRep> {};` has an
      empty doc comment.
+   - **Time::Duration: review, then probably deprecate PrettyPrint; rename PrettyPrintInfo to FormatOptions, and
+     AgePrettyPrintInfo to AgeFormatOptions** (LGP 2026-11-06) - the old names kept DEPRECATED. PrettyPrint's own comment
+     says "Consider deprecating, and using 'Format'", which takes the same PrettyPrintInfo. PrettyPrintAge might become a
+     Format overload taking the AgeFormatOptions explicitly - `Format (const AgeFormatOptions&, const FormatOptions& = {})`
+     - whose first argument cannot be defaulted, or `d.Format ()` would be ambiguous.
+   - **Time::Duration: `operator* (long double lhs, const Duration& rhs)` as `template <floating_point T>`?** (LGP
+     2026-11-06) - Duration.h; today a double or float is promoted to long double, then DurationSeconds (double) times
+     it. Check overload resolution against chrono::duration's own operator*, and an integer left-hand side (2 * d).
    - **After the float and Duration formatting redesign: which other Options want `With`** (LGP 2026-11-06) - scan
      Stroika's Options structs and option classes for constructors that merge option sets or convert from each field's
      type, and `optional<>` fields there only to overlay; convert those whose callers lay settings over a base
