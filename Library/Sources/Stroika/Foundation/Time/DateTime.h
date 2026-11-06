@@ -119,7 +119,10 @@ namespace Stroika::Foundation::Time {
          * 
          *  \note Since DateTime is only precise up to the nearest second, some constructions (like from time_point)
          *        will necessarily round/lose precision.
+         *
+         *  \note No default constructor: no date and time is a natural default. For no value, use optional<DateTime>.
          */
+        DateTime ()                                  = delete;
         constexpr DateTime (DateTime&& src) noexcept = default;
         constexpr DateTime (const DateTime& src)     = default;
         constexpr explicit DateTime (const Date& d) noexcept;

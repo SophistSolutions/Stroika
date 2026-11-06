@@ -429,7 +429,10 @@ namespace Stroika::Foundation::Time {
          *      \code
          *          Assert (1906y/May/12d == Date{1906y, May, 12d});
          *      \endcode
+         *
+         *  \note No default constructor: no date is a natural default. For no value, use optional<Date>.
          */
+        Date ()                                   = delete;
         constexpr Date (Date&& src) noexcept      = default;
         constexpr Date (const Date& src) noexcept = default;
         explicit constexpr Date (JulianDayNumber                  julianRep,
