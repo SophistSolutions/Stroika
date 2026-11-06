@@ -1364,7 +1364,8 @@ GTEST_TEST (Foundation_Database, MongoDB_)
 
 int main (int argc, const char* argv[])
 {
-    const CommandLine::Option kMongoConnectionStringOpt_{.fLongName = "mongoConnectionString"sv, .fSupportsArgument = true};
+    const CommandLine::Option kMongoConnectionStringOpt_{
+        .fLongName = "mongoConnectionString"sv, .fSupportsArgument = true, .fEnvironmentVariable = "MONGO_CONNECTION_STRING"sv};
 
     Sequence<String> args; // main's, less googletest's own (which Setup takes out)
     for (const string& a : Test::Setup (argc, argv)) {
@@ -1372,10 +1373,7 @@ int main (int argc, const char* argv[])
     }
     try {
         CommandLine::OptionValues options = CommandLine{args}.ApplyOptions ({kMongoConnectionStringOpt_});
-        if (optional<String> o = options.GetArgument (kMongoConnectionStringOpt_)) {
-            sMongoConnectionString_ = *o;
-        }
-        sMongoConnectionString_ = Or_Else (sMongoConnectionString_, [] () { return kEnvironment->Lookup ("MONGO_CONNECTION_STRING"sv); });
+        sMongoConnectionString_           = options.GetArgument (kMongoConnectionStringOpt_);
     }
     catch (...) {
         auto exc = current_exception ();

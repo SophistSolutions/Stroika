@@ -224,6 +224,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \pre not fRepeatable or fSupportsArgument or IsPositionArgument ()
          *  \pre not fSupportsArgument or fIfSupportsArgumentThenRequired or fLongName (an optional argument is given only as --long=VALUE)
+         *  \pre not fEnvironmentVariable or fSupportsArgument or IsPositionArgument ()
          * 
          *  \todo figure out if I can make this a literal type, so can be defined constexpr when not using fLongName (or maybe even with using stringview)
          */
@@ -274,6 +275,19 @@ namespace Stroika::Foundation::Execution {
              *  that: an unrecognized argument is still an error.
              */
             bool fWaivesRequired{false};
+
+            /**
+             *  If this option is not given, its argument is this environment variable's value - as Execution::kEnvironment holds
+             *  it - if that is set and not empty. So a setting can come from the environment instead, as a database password
+             *  the command line (which ps shows) should not carry. It then satisfies fRequired, and Has () is true; GenerateUsage
+             *  names the variable on the option's help line.
+             *
+             *  \par Example Usage
+             *      \code
+             *          const CommandLine::Option kDbO_{.fLongName = "db"sv, .fSupportsArgument = true, .fEnvironmentVariable = "MY_APP_DB"sv};
+             *      \endcode
+             */
+            optional<String> fEnvironmentVariable;
 
             /**
              *  DEPRECATED since Stroika v3.0d26 - ApplyOptions ignores it, placing positional options in the order passed.
@@ -332,6 +346,7 @@ namespace Stroika::Foundation::Execution {
          *      o   a bare -- ends the options: every word after it is positional (so a file can be named -x)
          *      o   any other word - a bare - too - is positional: each positional option takes one, in the order they appear in
          *          options; a repeatable one takes all those left.
+         *  Then an option not given, with an fEnvironmentVariable that is set, takes that variable's value as its argument.
          *
          *  Throws InvalidCommandLineArgument if:
          *      o   a word starting with - names no option
@@ -339,7 +354,7 @@ namespace Stroika::Foundation::Execution {
          *      o   an option that fSupportsArgument and fIfSupportsArgumentThenRequired is the last word, so has no argument
          *      o   an option that is not fRepeatable is given twice
          *      o   a positional word is left with no positional option to take it
-         *      o   an fRequired option is not given - unless an option with fWaivesRequired is
+         *      o   an fRequired option is not given (nor its fEnvironmentVariable set) - unless an option with fWaivesRequired is
          *
          *  So --help works with a required option missing (kHelp has fWaivesRequired): check for it after ApplyOptions.
          *
@@ -399,7 +414,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \brief A usage line in the usual notation - [X] optional, X required, X... repeatable - then a line for each option
-         *  with fHelpOptionText: its names and argument, as GNU and argparse show them, then that text
+         *  with fHelpOptionText or fEnvironmentVariable: its names and argument, as GNU and argparse show them, then that text,
+         *  then [env: VARIABLE] (as clap shows it)
          *
          *  Lines end in \n - right for cerr or cout (see Characters::kEOL; String::NLToNative () converts it for a raw write).
          *
@@ -522,7 +538,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief true iff o was given at least once (a positional option: iff a word was left for it)
+         *  \brief true iff o was given at least once (a positional option: iff a word was left for it), or its argument came
+         *  from its fEnvironmentVariable
          *
          *  \pre o is one of the options ApplyOptions was given
          */
@@ -535,7 +552,8 @@ namespace Stroika::Foundation::Execution {
          *  A positional option's argument is its word. T is String - the text as given - unless asked for otherwise; a
          *  Time::Duration is ISO-8601 (PT10S), so an argument counting seconds is GetArgument<double>.
          *
-         *  Throws InvalidCommandLineArgument, naming o, if the argument is not a T (so never for String).
+         *  Throws InvalidCommandLineArgument, naming o (and its fEnvironmentVariable, if the argument came from there), if the
+         *  argument is not a T (so never for String).
          *
          *  \pre o is one of the options ApplyOptions was given
          *
@@ -564,28 +582,39 @@ namespace Stroika::Foundation::Execution {
         nonvirtual String ToString () const;
 
     private:
+        /*
+         *  One option as ApplyOptions found it - made once there, never changed after: the option (one of the Options it was
+         *  given), its argument (if any), and whether that argument came from the option's fEnvironmentVariable rather than the
+         *  command line. Not const members, which would cost the copy assignment Sequence needs.
+         */
         struct Given_ {
             Option           fOption;
             optional<String> fArgument;
+            bool             fFromEnvironment{false};
         };
 
     private:
         OptionValues (const Iterable<Option>& options, const Sequence<Given_>& given);
 
     private:
-        // arg as a T, or throw InvalidCommandLineArgument naming o
+        // g's argument as a T, or throw InvalidCommandLineArgument naming where it came from
         template <ICommandLineArgumentType T>
-        static T Convert_ (const Option& o, const String& arg);
+        static T Convert_ (const Given_& g);
+
+    private:
+        // where g's argument came from, as an error message starts: "Command line argument --port", or "Environment variable
+        // PORT (for --port)"
+        static String Source_ (const Given_& g);
 
     private:
         Sequence<Option> fOptions_; // the options ApplyOptions was given
-        Sequence<Given_> fGiven_;   // each option given, in command-line order
+        Sequence<Given_> fGiven_;   // each option given, in command-line order - then those taken from their fEnvironmentVariable
 
     private:
         friend class CommandLine;
     };
     template <>
-    Time::Duration CommandLine::OptionValues::Convert_<Time::Duration> (const Option& o, const String& arg);
+    Time::Duration CommandLine::OptionValues::Convert_<Time::Duration> (const Given_& g);
 
     namespace StandardCommandLineOptions {
         static inline const CommandLine::Option kHelp{

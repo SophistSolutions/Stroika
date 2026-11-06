@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Execution {
     {
         Require (fOptions_.Contains (o));
         if (optional<Given_> found = fGiven_.First ([&] (const Given_& g) { return g.fOption == o and g.fArgument.has_value (); })) {
-            return Convert_<T> (o, *found->fArgument);
+            return Convert_<T> (*found);
         }
         return nullopt;
     }
@@ -89,26 +89,26 @@ namespace Stroika::Foundation::Execution {
         Sequence<T> result;
         for (const Given_& g : fGiven_) {
             if (g.fOption == o and g.fArgument) {
-                result += Convert_<T> (o, *g.fArgument);
+                result += Convert_<T> (g);
             }
         }
         return result;
     }
     template <ICommandLineArgumentType T>
-    T CommandLine::OptionValues::Convert_ (const Option& o, const String& arg)
+    T CommandLine::OptionValues::Convert_ (const Given_& g)
     {
+        Require (g.fArgument.has_value ());
         if constexpr (same_as<T, String>) {
-            return arg;
+            return *g.fArgument;
         }
         else if constexpr (same_as<T, filesystem::path>) {
-            return arg.As<filesystem::path> ();
+            return g.fArgument->As<filesystem::path> ();
         }
         else {
             // Time::Duration's is in CommandLine.cpp
-            Common::StdCompat::expected<T, DataExchange::BadFormatException> r = Characters::Number::Parse<T> (arg);
+            Common::StdCompat::expected<T, DataExchange::BadFormatException> r = Characters::Number::Parse<T> (*g.fArgument);
             if (not r) {
-                Execution::Throw (InvalidCommandLineArgument{
-                    "Command line argument "sv + o.GetArgumentDescription (o.IsPositionArgument ()) + ": "sv + r.error ().template As<String> (), arg});
+                Execution::Throw (InvalidCommandLineArgument{Source_ (g) + ": "sv + r.error ().template As<String> (), *g.fArgument});
             }
             return *r;
         }

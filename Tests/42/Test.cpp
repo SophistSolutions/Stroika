@@ -376,6 +376,37 @@ namespace {
             EXPECT_EQ (failure ("x 12z", [&] (const CommandLine::OptionValues& a) { a.GetArgument<int> (kFileO); }),
                        "Command line argument FILE: \"12z\" is not an integer|12z"sv);
         }
+        {
+            // an option not given takes its argument from its fEnvironmentVariable, if set - PATH is, wherever the tests run
+            const String              kUnset = "STROIKA_TEST42_SURELY_NOT_SET"sv;
+            const CommandLine::Option kPathO{.fLongName = "path"sv, .fSupportsArgument = true, .fEnvironmentVariable = "PATH"sv};
+            const CommandLine::Option kUnsetO{.fLongName = "unset"sv, .fSupportsArgument = true, .fEnvironmentVariable = kUnset};
+            const initializer_list<CommandLine::Option> kAll{kPathO, kUnsetO};
+            ASSERT_TRUE (kEnvironment->Lookup ("PATH"sv).has_value ());
+            ASSERT_FALSE (kEnvironment->Lookup (kUnset).has_value ());
+            CommandLine::OptionValues args = CommandLine{"x"}.ApplyOptions (kAll);
+            EXPECT_TRUE (args.Has (kPathO));
+            EXPECT_EQ (args.GetArgument (kPathO), kEnvironment->Lookup ("PATH"sv));
+            EXPECT_FALSE (args.Has (kUnsetO));
+            EXPECT_EQ (CommandLine{"x --path=here"}.ApplyOptions (kAll).GetArgument (kPathO), "here"sv); // the command line wins
+            // it satisfies fRequired; and when it is not set, the error names it
+            const CommandLine::Option kRequiredPathO{.fLongName = "path"sv, .fSupportsArgument = true, .fRequired = true, .fEnvironmentVariable = "PATH"sv};
+            EXPECT_TRUE (CommandLine{"x"}.ApplyOptionsQuietly ({kRequiredPathO}).has_value ());
+            const CommandLine::Option kRequiredUnsetO{.fLongName = "unset"sv, .fSupportsArgument = true, .fRequired = true, .fEnvironmentVariable = kUnset};
+            EXPECT_EQ (CommandLine{"x"}.ApplyOptionsQuietly ({kRequiredUnsetO}).error ().As<String> (),
+                       "Required command line argument --unset=ARG was not provided, nor environment variable STROIKA_TEST42_SURELY_NOT_SET set"sv);
+            // its value not a T: the error names the variable
+            try {
+                (void)args.GetArgument<int> (kPathO);
+                ADD_FAILURE () << "no exception";
+            }
+            catch (const InvalidCommandLineArgument& e) {
+                EXPECT_TRUE (e.As<String> ().StartsWith ("Environment variable PATH (for --path): "sv)) << e.As<String> ();
+            }
+            // and the help line shows the variable
+            EXPECT_TRUE (CommandLine::GenerateUsage ("x"sv, kAll).Contains ("  --unset=ARG    [env: STROIKA_TEST42_SURELY_NOT_SET]\n"sv))
+                << CommandLine::GenerateUsage ("x"sv, kAll);
+        }
     }
 }
 

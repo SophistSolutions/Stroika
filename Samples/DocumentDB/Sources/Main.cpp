@@ -39,9 +39,10 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     {
         using namespace StandardCommandLineOptions;
         const CommandLine::Option kMongoConnectionStringOption_{
-            .fLongName         = "mongoConnectionString"sv,
-            .fSupportsArgument = true,
-            .fHelpOptionText = "Connect to this mongo database for testing, eg: mongodb://admin:pass@localhost:27017; OR ENV VAR MONGO_CONNECTION_STRING"sv};
+            .fLongName            = "mongoConnectionString"sv,
+            .fSupportsArgument    = true,
+            .fEnvironmentVariable = "MONGO_CONNECTION_STRING"sv,
+            .fHelpOptionText      = "Connect to this mongo database for testing, eg: mongodb://admin:pass@localhost:27017"sv};
 
         const initializer_list<CommandLine::Option> kAllOptions_{kHelp,
 #if qStroika_HasComponent_mongocxxdriver
@@ -61,8 +62,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             return EXIT_SUCCESS;
         }
 #if qStroika_HasComponent_mongocxxdriver
-        mongoConnectionString = Memory::Or_Else (args->GetArgument (kMongoConnectionStringOption_),
-                                                 [] () { return kEnvironment->Lookup ("MONGO_CONNECTION_STRING"sv); });
+        mongoConnectionString = args->GetArgument (kMongoConnectionStringOption_);
 #endif
     }
 
