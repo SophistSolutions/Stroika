@@ -231,8 +231,7 @@ int main (int argc, const char* argv[])
         cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_SUCCESS;
     }
-    CompilerApp app{ValueOf (args->GetArgument (kInputFileO_)).As<filesystem::path> (),
-                    ValueOf (args->GetArgument (kOutputFileO_)).As<filesystem::path> (),
+    CompilerApp app{ValueOf (args->GetArgument<filesystem::path> (kInputFileO_)), ValueOf (args->GetArgument<filesystem::path> (kOutputFileO_)),
                     args->GetArgument (kFormGeneratorNameO_).value_or ("Form_Generator"sv)};
     return app.Run () ? EXIT_SUCCESS : EXIT_FAILURE;
 }

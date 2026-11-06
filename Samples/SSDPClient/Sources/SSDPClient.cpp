@@ -7,7 +7,6 @@
 #include <mutex>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
@@ -194,30 +193,29 @@ int main (int argc, const char* argv[])
              << " --switch on      (switches on each UPnP light found)" << endl;
         cerr << "   e.g. SSDPClient -s " << kSwitchPowerServiceType_.AsUTF8<string> () << " --watch      (prints each UPnP light's each change)" << endl;
     };
-    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
-    if (not args) {
-        cerr << Characters::ToString (args.error ()) << endl;
-        usage ();
-        return EXIT_FAILURE;
-    }
-    if (args->Has (StandardCommandLineOptions::kHelp)) {
-        usage ();
-        return EXIT_SUCCESS;
-    }
-    listen    = args->Has (kListenO_);
-    searchFor = args->GetArgument (kSearchO_);
-    watch     = args->Has (kWatchO_);
-    if (optional<String> o = args->GetArgument (kSwitchO_)) {
-        if (*o == "on"sv or *o == "off"sv) {
+    try {
+        CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
+        if (args.Has (StandardCommandLineOptions::kHelp)) {
+            usage ();
+            return EXIT_SUCCESS;
+        }
+        listen    = args.Has (kListenO_);
+        searchFor = args.GetArgument (kSearchO_);
+        watch     = args.Has (kWatchO_);
+        if (optional<String> o = args.GetArgument (kSwitchO_)) {
+            if (*o != "on"sv and *o != "off"sv) {
+                Execution::Throw (InvalidCommandLineArgument{"--switch takes on or off"sv, *o});
+            }
             switchLightsTo = *o == "on"sv;
         }
-        else {
-            cerr << "--switch takes on or off" << endl;
-            return EXIT_FAILURE;
+        if (optional<double> o = args.GetArgument<double> (kQuitAfterO_)) {
+            quitAfter = Time::DurationSeconds{*o};
         }
     }
-    if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
-        quitAfter = Time::DurationSeconds{Characters::Number::Parse<Time::DurationSeconds::rep> (*o).value_or (NAN)};
+    catch (const InvalidCommandLineArgument& e) {
+        cerr << Characters::ToString (e) << endl;
+        usage ();
+        return EXIT_FAILURE;
     }
 
     if (not listen and not searchFor.has_value ()) {

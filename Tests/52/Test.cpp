@@ -3471,9 +3471,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         CommandLine::OptionValues options = cmdLine.ApplyOptions (kAllOptions_);
         sShowOutput_                      = options.Has (kShowO_);
         sRunOrderByProbe_                 = options.Has (kOrderByProbeO_);
-        if (optional<String> o = options.GetArgument (kTimeMultiplierO_)) {
-            sTimeMultiplier_ = Number::Parse<double> (*o).value_or (NAN);
-        }
+        sTimeMultiplier_                  = options.GetArgument<double> (kTimeMultiplierO_).value_or (sTimeMultiplier_);
     }
     catch (const InvalidCommandLineArgument&) {
         cerr << Characters::ToString (current_exception ()) << endl;

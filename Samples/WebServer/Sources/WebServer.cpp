@@ -5,7 +5,6 @@
 
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -197,7 +196,8 @@ int main (int argc, const char* argv[])
     SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 
-    uint16_t portNumber = 8080;
+    uint16_t              portNumber = 8080;
+    Time::DurationSeconds quitAfter  = Time::kInfinity;
 
     const CommandLine::Option kPortO_{
         .fLongName = "port"sv, .fSupportsArgument = true, .fHelpOptionText = "specify webserver listen port (default {})"_f(portNumber)};
@@ -205,25 +205,24 @@ int main (int argc, const char* argv[])
         .fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpOptionText = "automatically quit after <argument> seconds"sv};
     const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
 
-    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
-    if (not args) {
-        cerr << Characters::ToString (args.error ()) << endl;
+    try {
+        CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
+        if (args.Has (StandardCommandLineOptions::kHelp)) {
+            cerr << cmdLine.GenerateUsage (kAllOptions_);
+            return EXIT_SUCCESS;
+        }
+        portNumber = args.GetArgument<uint16_t> (kPortO_).value_or (portNumber);
+        if (optional<double> o = args.GetArgument<double> (kQuitAfterO_)) {
+            quitAfter = Time::DurationSeconds{*o};
+        }
+    }
+    catch (const InvalidCommandLineArgument& e) {
+        cerr << Characters::ToString (e) << endl;
         cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_FAILURE;
     }
-    if (args->Has (StandardCommandLineOptions::kHelp)) {
-        cerr << cmdLine.GenerateUsage (kAllOptions_);
-        return EXIT_SUCCESS;
-    }
 
     try {
-        Time::DurationSeconds quitAfter = Time::kInfinity;
-        if (optional<String> o = args->GetArgument (kPortO_)) {
-            portNumber = Characters::Number::Parse<uint16_t> (*o).value_or (0);
-        }
-        if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
-            quitAfter = Time::DurationSeconds{Characters::Number::Parse<Time::DurationSeconds::rep> (*o).value_or (NAN)};
-        }
         MyWebServer_ myWebServer{portNumber}; // listen and dispatch while this object exists
         WaitableEvent{}.Wait (quitAfter);     // wait quitAfter seconds, or til user hits ctrl-c
     }

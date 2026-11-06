@@ -5,7 +5,6 @@
 
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -229,29 +228,34 @@ int main (int argc, const char* argv[])
     const initializer_list<CommandLine::Option> kAllOptions_ = {
         kHelp, kPrintNamesO_, kMostRecentO_, kOneLineModeO_, kRunInstrumentArg_, kRunForO_, kTimeBetweenCapturesO_};
 
-    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
-    if (not args) {
-        cerr << "Error encountered: " << Characters::ToString (args.error ()) << endl;
+    bool                    mostRecentCaptureMode = false;
+    bool                    printNames            = false;
+    bool                    oneLineMode           = false;
+    Time::DurationSeconds   runFor                = 0s; // default to runfor 0, so we do each once.
+    Time::DurationSeconds   captureInterval       = 15s;
+    Set<InstrumentNameType> run;
+    try {
+        CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
+        if (args.Has (kHelp)) {
+            cerr << cmdLine.GenerateUsage (kAllOptions_);
+            return EXIT_SUCCESS;
+        }
+        mostRecentCaptureMode = args.Has (kMostRecentO_);
+        printNames            = args.Has (kPrintNamesO_);
+        oneLineMode           = args.Has (kOneLineModeO_);
+        if (optional<double> o = args.GetArgument<double> (kRunForO_)) {
+            runFor = Duration{*o};
+        }
+        if (optional<double> o = args.GetArgument<double> (kTimeBetweenCapturesO_)) {
+            captureInterval = Duration{*o};
+        }
+        run = args.GetArguments (kRunInstrumentArg_).Map<Set<InstrumentNameType>> ([] (const String& s) { return InstrumentNameType{s}; });
+    }
+    catch (const InvalidCommandLineArgument& e) {
+        cerr << "Error encountered: " << Characters::ToString (e) << endl;
         cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_FAILURE;
     }
-    if (args->Has (kHelp)) {
-        cerr << cmdLine.GenerateUsage (kAllOptions_);
-        return EXIT_SUCCESS;
-    }
-    bool                  mostRecentCaptureMode = args->Has (kMostRecentO_);
-    bool                  printNames            = args->Has (kPrintNamesO_);
-    bool                  oneLineMode           = args->Has (kOneLineModeO_);
-    Time::DurationSeconds runFor                = 0s; // default to runfor 0, so we do each once.
-    if (optional<String> o = args->GetArgument (kRunForO_)) {
-        runFor = Duration{Characters::Number::Parse<Duration::rep> (*o).value_or (NAN)};
-    }
-    Time::DurationSeconds captureInterval = 15s;
-    if (optional<String> o = args->GetArgument (kTimeBetweenCapturesO_)) {
-        captureInterval = Duration{Characters::Number::Parse<Duration::rep> (*o).value_or (NAN)};
-    }
-    Set<InstrumentNameType> run =
-        args->GetArguments (kRunInstrumentArg_).Map<Set<InstrumentNameType>> ([] (const String& s) { return InstrumentNameType{s}; });
 
     try {
         if (printNames) {

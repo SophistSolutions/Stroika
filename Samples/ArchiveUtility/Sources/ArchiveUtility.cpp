@@ -105,11 +105,9 @@ namespace {
             cerr << cmdLine.GenerateUsage (kAllOptions_);
             return optional<Options_>{};
         }
-        result.fArchiveFileName = Memory::ValueOf (args.GetArgument (kArchiveFileO_)).As<filesystem::path> ();
+        result.fArchiveFileName = Memory::ValueOf (args.GetArgument<filesystem::path> (kArchiveFileO_));
         result.fFiles2Add       = args.GetArguments (kOtherFilenamesO_);
-        if (optional<String> o = args.GetArgument (kOutputDirO_)) {
-            result.fOutputDirectory = o->As<filesystem::path> ();
-        }
+        result.fOutputDirectory = args.GetArgument<filesystem::path> (kOutputDirO_);
         // @todo add more.. - update support etc...
         result.fNoFailOnMissingLibrary = args.Has (kNoFailOnMissingO_);
         return result;

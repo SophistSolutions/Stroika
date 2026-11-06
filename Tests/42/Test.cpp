@@ -338,6 +338,44 @@ namespace {
             EXPECT_EQ (args.GetArgument (kFileO), "-"sv);
             EXPECT_EQ (CommandLine{"x -o -- f"}.ApplyOptions (kAll).GetArgument (kOutO), "--"sv); // an option's argument, even --
         }
+        {
+            // GetArgument<T> reads the argument as a T - and throws InvalidCommandLineArgument, naming the option, if it is not one
+            const CommandLine::Option                   kPortO{.fSingleCharName = 'p', .fLongName = "port"sv, .fSupportsArgument = true};
+            const CommandLine::Option                   kRunForO{.fLongName = "run-for"sv, .fSupportsArgument = true};
+            const CommandLine::Option                   kScaleO{.fLongName = "scale"sv, .fSupportsArgument = true, .fRepeatable = true};
+            const CommandLine::Option                   kFileO{.fHelpArgName = "FILE"sv};
+            const initializer_list<CommandLine::Option> kAll{kPortO, kRunForO, kScaleO, kFileO};
+            CommandLine::OptionValues args = CommandLine{"x --port 8080 --run-for PT1M30S --scale 1.5 --scale=-2 a.txt"}.ApplyOptions (kAll);
+            EXPECT_EQ (args.GetArgument<uint16_t> (kPortO), 8080);
+            EXPECT_EQ (args.GetArgument<Time::Duration> (kRunForO), Time::Duration{90.0});
+            EXPECT_EQ (args.GetArguments<double> (kScaleO), (Sequence<double>{1.5, -2.0}));
+            EXPECT_EQ (args.GetArgument<filesystem::path> (kFileO), filesystem::path{"a.txt"});
+            EXPECT_EQ (args.GetArgument<String> (kFileO), "a.txt"sv);
+            EXPECT_EQ (CommandLine{"x"}.ApplyOptions (kAll).GetArgument<uint16_t> (kPortO), nullopt);
+            EXPECT_EQ (CommandLine{"x"}.ApplyOptions (kAll).GetArguments<double> (kScaleO), Sequence<double>{});
+            // what read throws, as "message|argument"
+            auto failure = [&] (const String& cmdLine, const function<void (const CommandLine::OptionValues&)>& read) -> String {
+                try {
+                    read (CommandLine{cmdLine}.ApplyOptions (kAll));
+                }
+                catch (const InvalidCommandLineArgument& e) {
+                    return e.As<String> () + "|"sv + e.fArgument;
+                }
+                return "(nothing thrown)"sv;
+            };
+            auto port = [&] (const CommandLine::OptionValues& a) { a.GetArgument<uint16_t> (kPortO); };
+            EXPECT_EQ (failure ("x --port abc", port), "Command line argument (-p|--port): \"abc\" is not an integer|abc"sv);
+            EXPECT_EQ (failure ("x -p 80x", port), "Command line argument (-p|--port): \"80x\" is not an integer|80x"sv); // the whole word
+            EXPECT_EQ (failure ("x --port 70000", port), "Command line argument (-p|--port): \"70000\" is out of range (0 to 65535)|70000"sv);
+            EXPECT_EQ (failure ("x --port -1", port), "Command line argument (-p|--port): \"-1\" is out of range (0 to 65535)|-1"sv);
+            auto runFor = [&] (const CommandLine::OptionValues& a) { a.GetArgument<Time::Duration> (kRunForO); };
+            EXPECT_EQ (failure ("x --run-for 10", runFor), "Command line argument --run-for: \"10\" is not an ISO-8601 duration (as PT10S)|10"sv);
+            EXPECT_EQ (failure ("x --run-for=", runFor), "Command line argument --run-for: \"\" is not an ISO-8601 duration (as PT10S)|"sv);
+            EXPECT_EQ (failure ("x --scale 1 --scale z", [&] (const CommandLine::OptionValues& a) { a.GetArguments<double> (kScaleO); }),
+                       "Command line argument --scale: \"z\" is not a number|z"sv);
+            EXPECT_EQ (failure ("x 12z", [&] (const CommandLine::OptionValues& a) { a.GetArgument<int> (kFileO); }),
+                       "Command line argument FILE: \"12z\" is not an integer|12z"sv);
+        }
     }
 }
 

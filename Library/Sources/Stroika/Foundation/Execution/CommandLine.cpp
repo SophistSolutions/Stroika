@@ -20,6 +20,7 @@
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/IO/FileSystem/Exception.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "CommandLine.h"
 
@@ -216,25 +217,19 @@ bool CommandLine::OptionValues::Has (const Option& o) const
     return fGiven_.Any ([&] (const Given_& g) { return g.fOption == o; });
 }
 
-optional<String> CommandLine::OptionValues::GetArgument (const Option& o) const
+template <>
+Time::Duration CommandLine::OptionValues::Convert_<Time::Duration> (const Option& o, const String& arg)
 {
-    Require (fOptions_.Contains (o));
-    if (optional<Given_> found = fGiven_.First ([&] (const Given_& g) { return g.fOption == o and g.fArgument.has_value (); })) {
-        return found->fArgument;
-    }
-    return nullopt;
-}
-
-Sequence<String> CommandLine::OptionValues::GetArguments (const Option& o) const
-{
-    Require (fOptions_.Contains (o));
-    Sequence<String> result;
-    for (const Given_& g : fGiven_) {
-        if (g.fOption == o and g.fArgument) {
-            result += *g.fArgument;
+    if (optional<string> ascii = arg.AsASCIIQuietly (); ascii and not ascii->empty ()) { // Duration reads "" as 0
+        try {
+            return Time::Duration{*ascii};
+        }
+        catch (const Time::Duration::FormatException&) {
         }
     }
-    return result;
+    Execution::Throw (InvalidCommandLineArgument{"Command line argument "sv + o.GetArgumentDescription (o.IsPositionArgument ()) +
+                                                     ": \""sv + arg.LimitLength (50) + "\" is not an ISO-8601 duration (as PT10S)"sv,
+                                                 arg});
 }
 
 String CommandLine::OptionValues::ToString () const

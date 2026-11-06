@@ -5,7 +5,6 @@
 
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -67,31 +66,27 @@ int main (int argc, const char* argv[])
         cerr << cmdLine.GenerateUsage (kAllOptions_);
     };
 
-    Execution::CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
-    if (not args) {
-        usage (Characters::ToString (args.error ()));
+    try {
+        Execution::CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
+        if (args.Has (kHelp)) {
+            usage ();
+            return EXIT_SUCCESS;
+        }
+        if (args.Has (kPingO_)) {
+            majorOp = MajorOp::ePing;
+        }
+        if (args.Has (kTraceRtO_)) {
+            majorOp = MajorOp::eTraceroute;
+        }
+        packetSize    = args.GetArgument<size_t> (kPacketSizeO_).value_or (packetSize);
+        maxHops       = args.GetArgument<unsigned int> (kMaxHopsO_).value_or (maxHops);
+        sampleCount   = args.GetArgument<unsigned int> (kSampleCntO_).value_or (sampleCount);
+        targetAddress = *args.GetArgument (kTargetAddress_); // fRequired, and no kHelp
+    }
+    catch (const Execution::InvalidCommandLineArgument& e) {
+        usage (Characters::ToString (e));
         return EXIT_FAILURE;
     }
-    if (args->Has (kHelp)) {
-        usage ();
-        return EXIT_SUCCESS;
-    }
-    if (args->Has (kPingO_)) {
-        majorOp = MajorOp::ePing;
-    }
-    if (args->Has (kTraceRtO_)) {
-        majorOp = MajorOp::eTraceroute;
-    }
-    if (optional<String> o = args->GetArgument (kPacketSizeO_)) {
-        packetSize = Characters::Number::Parse<unsigned int> (*o).value_or (0);
-    }
-    if (optional<String> o = args->GetArgument (kMaxHopsO_)) {
-        maxHops = Characters::Number::Parse<unsigned int> (*o).value_or (0);
-    }
-    if (optional<String> o = args->GetArgument (kSampleCntO_)) {
-        sampleCount = Characters::Number::Parse<unsigned int> (*o).value_or (0);
-    }
-    targetAddress = *args->GetArgument (kTargetAddress_); // fRequired, and no kHelp
 
     try {
         Collection<InternetAddress> addrList = IO::Network::DNS::kThe.GetHostAddresses (targetAddress);

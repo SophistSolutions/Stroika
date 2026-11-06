@@ -7,7 +7,6 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
@@ -175,25 +174,25 @@ int main (int argc, const char* argv[])
     const CommandLine::Option           kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
     const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
 
-    CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
-    if (not args) {
-        cerr << Characters::ToString (args.error ()) << endl;
+    try {
+        CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
+        if (args.Has (StandardCommandLineOptions::kHelp)) {
+            cerr << cmdLine.GenerateUsage (kAllOptions_);
+            return EXIT_SUCCESS;
+        }
+        portForOurWS = args.GetArgument<uint16_t> (kPortO_).value_or (portForOurWS);
+        if (optional<double> o = args.GetArgument<double> (kQuitAfterO_)) {
+            quitAfter = Time::DurationSeconds{*o};
+        }
+    }
+    catch (const InvalidCommandLineArgument& e) {
+        cerr << Characters::ToString (e) << endl;
         cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_FAILURE;
     }
-    if (args->Has (StandardCommandLineOptions::kHelp)) {
-        cerr << cmdLine.GenerateUsage (kAllOptions_);
-        return EXIT_SUCCESS;
-    }
-    if (optional<String> o = args->GetArgument (kPortO_)) {
-        portForOurWS = Number::Parse<uint16_t> (*o).value_or (0); // 0 if not a number
-        if (portForOurWS == 0) {
-            cerr << "--port takes a port number, 1 to 65535" << endl;
-            return EXIT_FAILURE;
-        }
-    }
-    if (optional<String> o = args->GetArgument (kQuitAfterO_)) {
-        quitAfter = Time::DurationSeconds{Characters::Number::Parse<Time::DurationSeconds::rep> (*o).value_or (NAN)};
+    if (portForOurWS == 0) {
+        cerr << "--port takes a port number, 1 to 65535" << endl;
+        return EXIT_FAILURE;
     }
 
     IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by UPnP::BasicServer

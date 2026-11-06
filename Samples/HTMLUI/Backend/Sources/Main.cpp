@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -89,80 +88,81 @@ namespace {
 
         int Run (const CommandLine& cmdLine)
         {
-            /**
-             *  Validate command-line arguments, handle some simple command line tasks, and parse the rest of the options
-             *  into Options_ which will be used later.
-             */
-            CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
-            if (not args) {
-                cerr << Characters::ToString (args.error ()) << endl;
+            try {
+                /**
+                 *  Validate command-line arguments, handle some simple command line tasks, and parse the rest of the options
+                 *  into Options_ which will be used later.
+                 */
+                CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
+                if (args.Has (StandardCommandLineOptions::kHelp)) {
+                    cerr << cmdLine.GenerateUsage (kAllOptions_);
+                    return EXIT_SUCCESS;
+                }
+                else if (args.Has (Main::CommandOptions::kStatus)) {
+                    // no need to wrap in logger, and load options for this
+                    Main m{MakeSharedPtr<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
+                    cout << m.GetServiceStatusMessage ();
+                    return EXIT_SUCCESS;
+                }
+                else if (args.Has (StandardCommandLineOptions::kVersion)) {
+                    // no need to wrap in logger, and load options for this
+                    Main m{MakeSharedPtr<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
+                    cout << m.GetServiceDescription ().fPrettyName << ": "sv << Characters::ToString (AppVersion::kVersion) << endl;
+                    return EXIT_SUCCESS;
+                }
+
+                // replace preliminary logging appenders, after we've read the configuration (gAppConfiguration)
+                Logger::sThe.SetAppenders ([] () {
+                    static const String kAppName_          = "Stroika-Sample-HTMLUI"sv;
+                    using LoggingConfigurationType         = AppConfigurationType::Logging;
+                    LoggingConfigurationType loggingConfig = gAppConfiguration->fLogging.value_or (LoggingConfigurationType{});
+                    Sequence<shared_ptr<Logger::IAppenderRep>> appenders;
+                    if (loggingConfig.ToStdOut.value_or (LoggingConfigurationType::kToStdOut_Default)) {
+                        appenders += MakeSharedPtr<Logger::StreamAppender> (IO::FileSystem::FileOutputStream::New (
+                            STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
+                    }
+#if qStroika_HasComponent_syslog
+                    if (loggingConfig.ToSysLog.value_or (LoggingConfigurationType::kToSysLog_Default)) {
+                        appenders += MakeSharedPtr<Logger::SysLogAppender> (kAppName_);
+                    }
+#elif qStroika_Platform_Windows
+                    if (loggingConfig.ToWindowsEventLog.value_or (LoggingConfigurationType::kToWindowsEventLog_Default)) {
+                        appenders += MakeSharedPtr<Logger::WindowsEventLogAppender> (kAppName_);
+                    }
+#endif
+                    return appenders;
+                }());
+
+#if qStroika_Foundation_Debug_TraceToFile
+                Logger::sThe.Log (Logger::eInfo, "Debugging Log2TraceFile: {}"_f, Debug::GetTraceFileName ());
+#endif
+
+                Options_ options{args};
+
+                /*
+                 *  Create the service manager objects
+                 */
+                shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep =
+                    MakeSharedPtr<Main::LoggerServiceWrapper> (Main::mkDefaultServiceIntegrationRep ());
+                Main m{MakeSharedPtr<Service::SampleAppServiceRep> (options.fPortNumberOverride), serviceIntegrationRep};
+
+                /*
+                 * Several components use interval timers, and this allows those modules to run (but have timer service started/shutdown in a controlled
+                 * fashion).
+                 */
+                IntervalTimer::Manager::Activator intervalTimerMgrActivator;
+
+                /*
+                 *  This handles the typical case, where the service is just run, or some service command is being issued to the service manager.
+                 */
+                m.Run (options.fServiceArgs);
+                return EXIT_SUCCESS;
+            }
+            catch (const InvalidCommandLineArgument& e) {
+                cerr << Characters::ToString (e) << endl;
                 cerr << cmdLine.GenerateUsage (kAllOptions_);
                 return EXIT_FAILURE;
             }
-
-            if (args->Has (StandardCommandLineOptions::kHelp)) {
-                cerr << cmdLine.GenerateUsage (kAllOptions_);
-                return EXIT_SUCCESS;
-            }
-            else if (args->Has (Main::CommandOptions::kStatus)) {
-                // no need to wrap in logger, and load options for this
-                Main m{MakeSharedPtr<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
-                cout << m.GetServiceStatusMessage ();
-                return EXIT_SUCCESS;
-            }
-            else if (args->Has (StandardCommandLineOptions::kVersion)) {
-                // no need to wrap in logger, and load options for this
-                Main m{MakeSharedPtr<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
-                cout << m.GetServiceDescription ().fPrettyName << ": "sv << Characters::ToString (AppVersion::kVersion) << endl;
-                return EXIT_SUCCESS;
-            }
-
-            // replace preliminary logging appenders, after we've read the configuration (gAppConfiguration)
-            Logger::sThe.SetAppenders ([] () {
-                static const String kAppName_          = "Stroika-Sample-HTMLUI"sv;
-                using LoggingConfigurationType         = AppConfigurationType::Logging;
-                LoggingConfigurationType loggingConfig = gAppConfiguration->fLogging.value_or (LoggingConfigurationType{});
-                Sequence<shared_ptr<Logger::IAppenderRep>> appenders;
-                if (loggingConfig.ToStdOut.value_or (LoggingConfigurationType::kToStdOut_Default)) {
-                    appenders += MakeSharedPtr<Logger::StreamAppender> (IO::FileSystem::FileOutputStream::New (
-                        STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
-                }
-#if qStroika_HasComponent_syslog
-                if (loggingConfig.ToSysLog.value_or (LoggingConfigurationType::kToSysLog_Default)) {
-                    appenders += MakeSharedPtr<Logger::SysLogAppender> (kAppName_);
-                }
-#elif qStroika_Platform_Windows
-                if (loggingConfig.ToWindowsEventLog.value_or (LoggingConfigurationType::kToWindowsEventLog_Default)) {
-                    appenders += MakeSharedPtr<Logger::WindowsEventLogAppender> (kAppName_);
-                }
-#endif
-                return appenders;
-            }());
-
-#if qStroika_Foundation_Debug_TraceToFile
-            Logger::sThe.Log (Logger::eInfo, "Debugging Log2TraceFile: {}"_f, Debug::GetTraceFileName ());
-#endif
-
-            Options_ options{*args};
-
-            /*
-             *  Create the service manager objects
-             */
-            shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep =
-                MakeSharedPtr<Main::LoggerServiceWrapper> (Main::mkDefaultServiceIntegrationRep ());
-            Main m{MakeSharedPtr<Service::SampleAppServiceRep> (options.fPortNumberOverride), serviceIntegrationRep};
-
-            /*
-             * Several components use interval timers, and this allows those modules to run (but have timer service started/shutdown in a controlled
-             * fashion).
-             */
-            IntervalTimer::Manager::Activator intervalTimerMgrActivator;
-
-            /*
-             *  This handles the typical case, where the service is just run, or some service command is being issued to the service manager.
-             */
-            m.Run (options.fServiceArgs);
-            return EXIT_SUCCESS;
         }
 
     private:
@@ -172,11 +172,9 @@ namespace {
             Main::CommandArgs  fServiceArgs;
 
             Options_ (const CommandLine::OptionValues& args)
-                : fServiceArgs{args}
+                : fPortNumberOverride{args.GetArgument<uint16_t> (kPortO_)}
+                , fServiceArgs{args}
             {
-                if (optional<String> o = args.GetArgument (kPortO_)) {
-                    fPortNumberOverride = Characters::Number::Parse<uint16_t> (*o).value_or (0);
-                }
             }
         };
     };

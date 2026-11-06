@@ -6,6 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <filesystem>
+
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/SDKChar.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
@@ -29,6 +32,10 @@
 #endif
 #endif
 
+namespace Stroika::Foundation::Time {
+    class Duration;
+}
+
 namespace Stroika::Foundation::Execution {
 
     using Characters::String;
@@ -47,6 +54,16 @@ namespace Stroika::Foundation::Execution {
     public:
         const String fArgument;
     };
+
+    /**
+     *  \brief a type CommandLine::OptionValues::GetArgument<T> reads an option's argument as
+     *
+     *  String (the text as given), a number (read by Characters::Number::Parse<T>: the whole word, in range), filesystem::path,
+     *  or Time::Duration (ISO-8601, as PT10S).
+     */
+    template <typename T>
+    concept ICommandLineArgumentType = Common::IAnyOf<T, String, filesystem::path, Time::Duration> or floating_point<T> or
+                                       (integral<T> and not Common::IAnyOf<T, bool, char, wchar_t, char8_t, char16_t, char32_t>);
 
     /**
      *  Take in a 'command line' specification (typically from main (argc,argv), but also used as arguments to ProcessRunner), 
@@ -69,18 +86,18 @@ namespace Stroika::Foundation::Execution {
      *          const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
      *
      *          CommandLine cmdLine{argc, argv};
-     *          CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
-     *          if (not args) {
-     *              cerr << Characters::ToString (args.error ()) << endl;
-     *              cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
+     *          try {
+     *              CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
+     *              if (args.Has (StandardCommandLineOptions::kHelp)) {
+     *                  cerr << cmdLine.GenerateUsage (kAllOptions_);
+     *                  return EXIT_SUCCESS;
+     *              }
+     *              portNumber = args.GetArgument<uint16_t> (kPortO_).value_or (portNumber); // throws if --port is not a uint16_t
+     *          }
+     *          catch (const InvalidCommandLineArgument& e) {
+     *              cerr << Characters::ToString (e) << endl;
+     *              cerr << cmdLine.GenerateUsage (kAllOptions_);
      *              return EXIT_FAILURE;
-     *          }
-     *          if (args->Has (StandardCommandLineOptions::kHelp)) {
-     *              cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
-     *              return EXIT_SUCCESS;
-     *          }
-     *          if (optional<String> p = args->GetArgument (kPortO_)) {
-     *              portNumber = ThrowIfFailed (Characters::Number::Parse<uint16_t> (*p));
      *          }
      *      \endcode
      * 
@@ -362,6 +379,9 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief ApplyOptions, but returning the InvalidCommandLineArgument instead of throwing it
          *
+         *  \note OptionValues' GetArgument<T> and GetArguments<T> still throw InvalidCommandLineArgument, for an argument that is
+         *        not a T.
+         *
          *  \par Example Usage
          *      \code
          *          CommandLine::ExpectedOptionValues args = cmdLine.ApplyOptionsQuietly (kAllOptions_);
@@ -483,14 +503,15 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief The command line's words as ApplyOptions read them: which options were given, with their arguments
      *
-     *  Made only by ApplyOptions (and ApplyOptionsQuietly), and only from a command line that satisfied the options - so
-     *  nothing here throws, and a required option is always there (unless an fWaivesRequired option was given).
+     *  Made only by ApplyOptions (and ApplyOptionsQuietly), and only from a command line that satisfied the options - so a
+     *  required option is always there (unless an fWaivesRequired option was given), and nothing here throws but GetArgument<T>
+     *  and GetArguments<T>, for an argument that is not a T.
      *
      *  \par Example Usage
      *      \code
      *          CommandLine::OptionValues args = cmdLine.ApplyOptions (kAllOptions_);
      *          bool                      list = args.Has (kListO_);
-     *          filesystem::path          in   = args.GetArgument (kInputFileO_)->As<filesystem::path> ();   // kInputFileO_ fRequired
+     *          filesystem::path          in   = *args.GetArgument<filesystem::path> (kInputFileO_);   // kInputFileO_ fRequired
      *      \endcode
      */
     class CommandLine::OptionValues {
@@ -508,21 +529,33 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief o's argument (the first, if o is repeatable); nullopt if o was not given, or was given with no argument
+         *  \brief o's argument (the first, if o is repeatable), as a T; nullopt if o was not given, or was given with no argument
          *
-         *  A positional option's argument is its word.
+         *  A positional option's argument is its word. T is String - the text as given - unless asked for otherwise; a
+         *  Time::Duration is ISO-8601 (PT10S), so an argument counting seconds is GetArgument<double>.
+         *
+         *  Throws InvalidCommandLineArgument, naming o, if the argument is not a T (so never for String).
          *
          *  \pre o is one of the options ApplyOptions was given
+         *
+         *  \par Example Usage
+         *      \code
+         *          uint16_t portNumber = args.GetArgument<uint16_t> (kPortO_).value_or (8080);
+         *      \endcode
          */
-        nonvirtual optional<String> GetArgument (const Option& o) const;
+        template <ICommandLineArgumentType T = String>
+        nonvirtual optional<T> GetArgument (const Option& o) const;
 
     public:
         /**
-         *  \brief all of o's arguments, in command-line order (empty if o was not given)
+         *  \brief all of o's arguments, in command-line order, each as a T (empty if o was not given)
+         *
+         *  Throws InvalidCommandLineArgument, naming o, if any argument is not a T (so never for String).
          *
          *  \pre o is one of the options ApplyOptions was given
          */
-        nonvirtual Sequence<String> GetArguments (const Option& o) const;
+        template <ICommandLineArgumentType T = String>
+        nonvirtual Sequence<T> GetArguments (const Option& o) const;
 
     public:
         /**
@@ -539,12 +572,19 @@ namespace Stroika::Foundation::Execution {
         OptionValues (const Iterable<Option>& options, const Sequence<Given_>& given);
 
     private:
+        // arg as a T, or throw InvalidCommandLineArgument naming o
+        template <ICommandLineArgumentType T>
+        static T Convert_ (const Option& o, const String& arg);
+
+    private:
         Sequence<Option> fOptions_; // the options ApplyOptions was given
         Sequence<Given_> fGiven_;   // each option given, in command-line order
 
     private:
         friend class CommandLine;
     };
+    template <>
+    Time::Duration CommandLine::OptionValues::Convert_<Time::Duration> (const Option& o, const String& arg);
 
     namespace StandardCommandLineOptions {
         static inline const CommandLine::Option kHelp{
