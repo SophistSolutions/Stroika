@@ -99,8 +99,14 @@ Main::CommandArgs::CommandArgs (const CommandLine::OptionValues& args)
         default:
             Throw (InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
     }
-    if (optional<double> o = args.GetArgument<double> (CommandOptions::kRunFor)) {
-        fRunFor = Time::Duration{*o};
+    if (optional<String> runFor = args.GetArgument (CommandOptions::kRunFor)) {
+        double seconds = *args.GetArgument<double> (CommandOptions::kRunFor); // throws InvalidCommandLineArgument if not a number
+        if (not(seconds >= 0)) {                                              // also catches nan, which Number::Parse reads
+            Throw (InvalidCommandLineArgument{"Command line argument {}: \"{}\" is not a number of seconds, 0 or more"_f(
+                                                  CommandOptions::kRunFor.GetArgumentDescription (), *runFor),
+                                              *runFor});
+        }
+        fRunFor = Time::Duration{seconds};
     }
 }
 

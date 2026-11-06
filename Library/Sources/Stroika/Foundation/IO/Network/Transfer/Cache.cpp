@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -233,14 +233,12 @@ Transfer::Cache::Element::Element (const Response& response)
             hi = headers.erase (hi);
         }
         else if (hi->fKey == HTTP::HeaderName::kCacheControl) {
-            fCacheControl = Set<String>{hi->fValue.Tokenize ({','})};
-            hi            = headers.erase (hi);
-            static const String kMaxAgeEquals_{"max-age="sv};
-            for (const String& cci : *fCacheControl) {
-                if (cci.StartsWith (kMaxAgeEquals_)) {
-                    fExpiresDueToMaxAge = DateTime::Now () + Duration{Number::Parse<double> (cci.SubString (kMaxAgeEquals_.size ())).value_or (NAN)};
-                }
+            fCacheControl = hi->fValue.Tokenize ({','}).Map<Set<String>> ([] (const String& d) { return d.Trim (); }); // "private, no-store"
+            // a max-age that is not a number reads as 0: stale, as RFC 9111 (4.2.1) encourages
+            if (optional<uint32_t> maxAge = HTTP::CacheControl::Parse (hi->fValue).fMaxAge) {
+                fExpiresDueToMaxAge = DateTime::Now () + Duration{chrono::seconds{*maxAge}};
             }
+            hi = headers.erase (hi);
         }
         else if (hi->fKey == HTTP::HeaderName::kContentType) {
             fContentType = DataExchange::InternetMediaType{hi->fValue};

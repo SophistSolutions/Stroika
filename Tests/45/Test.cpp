@@ -687,6 +687,32 @@ namespace {
         EXPECT_EQ (request.fOverrideHeaders.LookupValue (String{HTTP::HeaderName::kIfModifiedSince}), "Wed, 09 Jun 2021 10:18:14 GMT"sv);
         EXPECT_EQ (request.fOverrideHeaders.LookupValue (String{HTTP::HeaderName::kIfNoneMatch}), "\"v1\""sv);
     }
+
+    /*
+     *  A response's Cache-Control directives, each counted wherever it is in the list ("private, no-store"). max-age says how
+     *  long the response stays fresh; one that is not a number reads as 0 - stale, as RFC 9111 (4.2.1) encourages.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, Cache_ElementCacheControl_)
+    {
+        auto element = [] (const String& cacheControl) {
+            return Cache::Element{Response{Memory::BLOB{}, HTTP::StatusCodes::kOK,
+                                           Containers::Mapping<String, String>{{String{HTTP::HeaderName::kCacheControl}, cacheControl}}}};
+        };
+        Time::DateTime           before = Time::DateTime::Now ();
+        optional<Time::DateTime> fresh  = element ("public, max-age=60"sv).fExpiresDueToMaxAge;
+        Time::DateTime           after  = Time::DateTime::Now ();
+        ASSERT_TRUE (fresh.has_value ());
+        EXPECT_TRUE (before + Time::Duration{60} <= *fresh and *fresh <= after + Time::Duration{60});
+        optional<Time::DateTime> stale = element ("max-age=abc"sv).fExpiresDueToMaxAge;
+        ASSERT_TRUE (stale.has_value ());
+        EXPECT_TRUE (*stale <= Time::DateTime::Now ());
+        EXPECT_FALSE (element ("no-cache"sv).fExpiresDueToMaxAge.has_value ());
+        EXPECT_TRUE (element ("public, max-age=60"sv).IsCachable ());
+        EXPECT_FALSE (element ("private, no-store"sv).IsCachable ());
+        optional<Time::DateTime> noCache = element ("private, no-cache"sv).IsValidUntil ();
+        ASSERT_TRUE (noCache.has_value ());
+        EXPECT_TRUE (*noCache <= Time::DateTime::Now ());
+    }
 }
 
 namespace {
