@@ -253,12 +253,12 @@ namespace Stroika::Foundation::Characters::Number {
          *       -44.2              │   -44.2
          *       0.0000001234567    │   0.000000
          */
-        eFixedPointWithoutWhitespaceTrimmed,
+        eFixedPointWithoutTrailingZerosTrimmed,
 
         /**
-         * @brief eFixedPointWithoutWhitespaceTrimmed
+         * @brief eFixedPointWithoutTrailingZerosTrimmed
          */
-        eFixedPoint = eFixedPointWithoutWhitespaceTrimmed,
+        eFixedPoint = eFixedPointWithoutTrailingZerosTrimmed,
 
         /**
          *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Characters::Number {
          *       -44.2              │   -44.2
          *       0.0000001234567    │   0
          */
-        eFixedPointWithWhitespaceTrimmed,
+        eFixedPointWithTrailingZerosTrimmed,
 
         /**
          *  corresponds to ios_base::scientific
@@ -290,12 +290,12 @@ namespace Stroika::Foundation::Characters::Number {
          *       -44.2              │  -4.42000e+01
          *       0.0000001234567    │   1.23457e-07
          */
-        eScientificWithoutWhitespaceTrimmed,
+        eScientificWithoutTrailingZerosTrimmed,
 
         /**
-         * @brief eScientificWithoutWhitespaceTrimmed
+         * @brief eScientificWithoutTrailingZerosTrimmed
          */
-        eScientific = eScientificWithoutWhitespaceTrimmed,
+        eScientific = eScientificWithoutTrailingZerosTrimmed,
 
         /**
          *  For example (first 3 from https ://en.cppreference.com/w/cpp/io/manip/fixed.html)
@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Characters::Number {
          *       -44.2              │  -4.42e+01
          *       0.0000001234567    │   1.23457e-07
          */
-        eScientificWithWhitespaceTrimmed,
+        eScientificWithTrailingZerosTrimmed,
 
         /**
          *  \brief Somewhat like defaultfloat, but never uses scientific notation.
@@ -336,6 +336,15 @@ namespace Stroika::Foundation::Characters::Number {
 
         eAutomaticScientific [[deprecated ("Since Stroika v3.0d23 use eDefaultFloat instead")]],
 
+        eFixedPointWithoutWhitespaceTrimmed [[deprecated ("Since Stroika v3.0d26 use eFixedPointWithoutTrailingZerosTrimmed")]] =
+            eFixedPointWithoutTrailingZerosTrimmed,
+        eFixedPointWithWhitespaceTrimmed [[deprecated ("Since Stroika v3.0d26 use eFixedPointWithTrailingZerosTrimmed")]] =
+            eFixedPointWithTrailingZerosTrimmed,
+        eScientificWithoutWhitespaceTrimmed [[deprecated ("Since Stroika v3.0d26 use eScientificWithoutTrailingZerosTrimmed")]] =
+            eScientificWithoutTrailingZerosTrimmed,
+        eScientificWithWhitespaceTrimmed [[deprecated ("Since Stroika v3.0d26 use eScientificWithTrailingZerosTrimmed")]] =
+            eScientificWithTrailingZerosTrimmed,
+
         /**
          * If its good enuf for C, its good enuf for me ;-). Seriously - sensible default.
          */
@@ -349,9 +358,9 @@ namespace Stroika::Foundation::Characters::Number {
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     using FloatFormatType::eDefaultFloat;
     using FloatFormatType::eFixedPoint;
-    using FloatFormatType::eFixedPointWithWhitespaceTrimmed;
+    using FloatFormatType::eFixedPointWithTrailingZerosTrimmed;
     using FloatFormatType::eScientific;
-    using FloatFormatType::eScientificWithWhitespaceTrimmed;
+    using FloatFormatType::eScientificWithTrailingZerosTrimmed;
     using FloatFormatType::eStandard;
 
     /**

@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Characters {
             {
                 switch (usingFormat) {
                     case Number::FloatFormatType::eScientific:
-                    case Number::FloatFormatType::eScientificWithWhitespaceTrimmed:
+                    case Number::FloatFormatType::eScientificWithTrailingZerosTrimmed:
                         s.setf (ios_base::scientific, ios_base::floatfield);
                         Assert (usePrecision >= 2);
                         s.precision (usePrecision - 1); // scientific format is n.mmm with m digits of 'precision' - so 1 + m is # of significat digits
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Characters {
                         s.precision (usePrecision);
                         break;
                     case Number::FloatFormatType::eFixedPoint:
-                    case Number::FloatFormatType::eFixedPointWithWhitespaceTrimmed:
+                    case Number::FloatFormatType::eFixedPointWithTrailingZerosTrimmed:
                         s.setf (ios_base::fixed, ios_base::floatfield);
                         s.precision (usePrecision); // I think wrong but test -
                         break;
@@ -393,10 +393,10 @@ namespace Stroika::Foundation::Characters {
                               ? Private_::FloatToString_OptimizedForCLocaleAndNoStreamFlags_ (
                                     f, options.GetSignificantFigures ().value_or (Number::SignificantFigures{}))
                               : Private_::FloatToString_GeneralCase_ (f, options);
-            if (floatFormat == Number::FloatFormatType::eFixedPointWithWhitespaceTrimmed or floatFormat == Number::FloatFormatType::eStandard) {
+            if (floatFormat == Number::FloatFormatType::eFixedPointWithTrailingZerosTrimmed or floatFormat == Number::FloatFormatType::eStandard) {
                 TrimTrailingZeros_NotSci_ (&result);
             }
-            if (floatFormat == Number::FloatFormatType::eScientificWithWhitespaceTrimmed) {
+            if (floatFormat == Number::FloatFormatType::eScientificWithTrailingZerosTrimmed) {
                 TrimTrailingZeros_MaybeSci_ (&result);
             }
             return Punctuate_ (result, options.GetPunctuation ());

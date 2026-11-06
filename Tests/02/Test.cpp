@@ -994,7 +994,7 @@ namespace {
         }
         {
             // From Number.h docs (FloatFormatType)
-            static const auto kOptions_ = FloatToStringOptions{eFixedPointWithWhitespaceTrimmed};
+            static const auto kOptions_ = FloatToStringOptions{eFixedPointWithTrailingZerosTrimmed};
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
             EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "0.00001");
@@ -1017,16 +1017,16 @@ namespace {
         }
         {
             // From Number.h docs (FloatFormatType)
-            EXPECT_EQ (Characters::ToString (0.0, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "0.0e+00");
-            EXPECT_EQ (Characters::ToString (0.01, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.0e-02");
-            EXPECT_EQ (Characters::ToString (0.00001, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.0e-05");
-            EXPECT_EQ (Characters::ToString (3.12e12, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "3.12e+12");
-            EXPECT_EQ (Characters::ToString (3.12, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "3.12e+00");
-            EXPECT_EQ (Characters::ToString (212312345.0, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "2.12312e+08");
-            EXPECT_EQ (Characters::ToString (-44.2, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "-4.42e+01");
-            EXPECT_EQ (Characters::ToString (0.0000001234567, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.23457e-07");
-            EXPECT_EQ (Characters::ToString (3724089.418996166, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "3.72409e+06");
-            EXPECT_EQ (Characters::ToString (1.00001, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.00001e+00");
+            EXPECT_EQ (Characters::ToString (0.0, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "0.0e+00");
+            EXPECT_EQ (Characters::ToString (0.01, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "1.0e-02");
+            EXPECT_EQ (Characters::ToString (0.00001, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "1.0e-05");
+            EXPECT_EQ (Characters::ToString (3.12e12, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "3.12e+12");
+            EXPECT_EQ (Characters::ToString (3.12, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "3.12e+00");
+            EXPECT_EQ (Characters::ToString (212312345.0, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "2.12312e+08");
+            EXPECT_EQ (Characters::ToString (-44.2, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "-4.42e+01");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "1.23457e-07");
+            EXPECT_EQ (Characters::ToString (3724089.418996166, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "3.72409e+06");
+            EXPECT_EQ (Characters::ToString (1.00001, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "1.00001e+00");
         }
         {
             // From Number.h docs (FloatFormatType)
@@ -1052,7 +1052,7 @@ namespace {
             EXPECT_EQ (Characters::ToString (3.1241, kFixedPt3_), "3.124");
             EXPECT_EQ (Characters::ToString (.00331241, kFixedPt3_), "0.003");
             EXPECT_EQ (Characters::ToString (.000331241, kFixedPt3_), "0.000");
-            static const FloatToStringOptions kFixedPt3WithTrim_ = FloatToStringOptions{SignificantFigures{3}, eFixedPointWithWhitespaceTrimmed};
+            static const FloatToStringOptions kFixedPt3WithTrim_ = FloatToStringOptions{SignificantFigures{3}, eFixedPointWithTrailingZerosTrimmed};
             EXPECT_EQ (Characters::ToString (3.0, kFixedPt3WithTrim_), "3");
             EXPECT_EQ (Characters::ToString (3.1, kFixedPt3WithTrim_), "3.1");
             EXPECT_EQ (Characters::ToString (3.1241, kFixedPt3WithTrim_), "3.124");

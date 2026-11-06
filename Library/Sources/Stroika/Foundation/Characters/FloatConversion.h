@@ -43,13 +43,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     [[deprecated ("Since Stroika v3.0d26 use Characters::Number::eFixedPoint (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eFixedPoint =
         Characters::Number::eFixedPoint;
     [[deprecated (
-        "Since Stroika v3.0d26 use Characters::Number::eFixedPointWithWhitespaceTrimmed (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eFixedPointWithWhitespaceTrimmed =
-        Characters::Number::eFixedPointWithWhitespaceTrimmed;
+        "Since Stroika v3.0d26 use Characters::Number::eFixedPointWithTrailingZerosTrimmed (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eFixedPointWithWhitespaceTrimmed =
+        Characters::Number::eFixedPointWithTrailingZerosTrimmed;
     [[deprecated ("Since Stroika v3.0d26 use Characters::Number::eScientific (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eScientific =
         Characters::Number::eScientific;
     [[deprecated (
-        "Since Stroika v3.0d26 use Characters::Number::eScientificWithWhitespaceTrimmed (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eScientificWithWhitespaceTrimmed =
-        Characters::Number::eScientificWithWhitespaceTrimmed;
+        "Since Stroika v3.0d26 use Characters::Number::eScientificWithTrailingZerosTrimmed (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eScientificWithWhitespaceTrimmed =
+        Characters::Number::eScientificWithTrailingZerosTrimmed;
     [[deprecated ("Since Stroika v3.0d26 use Characters::Number::eStandard (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eStandard =
         Characters::Number::eStandard;
     using ToStringOptions [[deprecated ("Since Stroika v3.0d26 use Characters::Number::FloatToStringOptions (Number.h)")]] =
