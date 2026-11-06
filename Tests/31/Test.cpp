@@ -917,7 +917,7 @@ namespace {
         using Traversal::Range;
         Debug::TraceContextBumper ctx{"::SelfSignedCert"};
         DateTime                  now = DateTime::Now ();
-        Range<DateTime>           validDates{now, now + Time::Duration{"PT1Y"sv}};
+        Range<DateTime>           validDates{now, now + Time::Duration{"P1Y"sv}};
         auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
             .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
         DbgTrace ("pk={}"_f, pk);
@@ -944,7 +944,7 @@ namespace {
 
         {
             DateTime        now = DateTime::Now ();
-            Range<DateTime> validDates{now, now + Time::Duration{"PT1Y"sv}};
+            Range<DateTime> validDates{now, now + Time::Duration{"P1Y"sv}};
 
             String commonName = "localhost"sv;
             String company    = "MyCompany Inc."sv;

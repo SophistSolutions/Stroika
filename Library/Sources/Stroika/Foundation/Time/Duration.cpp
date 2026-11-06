@@ -3,11 +3,13 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -34,6 +36,11 @@ using namespace Time;
  */
 Duration::FormatException::FormatException ()
     : inherited{"Invalid Duration Format"sv}
+{
+}
+
+Duration::FormatException::FormatException (const String& details)
+    : inherited{"Invalid Duration Format: "sv + details}
 {
 }
 
@@ -75,23 +82,41 @@ Duration& Duration::operator-= (const Duration& rhs)
 }
 
 namespace {
-    string::const_iterator SkipWhitespace_ (string::const_iterator i, string::const_iterator end)
+    // ISO 8601's digits: '0' to '9'. Not std::isdigit: undefined for a negative char, and a std::string's bytes reach the
+    // parser unchecked for ASCII. Not Character::IsDigit: Character (char) throws on such a byte
+    constexpr bool IsDigit_ (char c)
     {
-        // GNU LIBC code (header) says that whitespace is allowed (though I've found no external docs to support this).
-        // Still - no harm in accepting this - so long as we don't ever generate it...
-        while (i != end and isspace (*i)) {
+        return '0' <= c and c <= '9';
+    }
+    // the end of a number's text: digits and decimal points, then any exponent - 'e' or 'E', a sign, digits (no designator
+    // is an E) - so an error names the whole number. What it holds is checked when it is read
+    string_view::const_iterator FindNumberEnd_ (string_view::const_iterator i, string_view::const_iterator end)
+    {
+        while (i != end and (IsDigit_ (*i) or *i == '.' or *i == ',')) {
             ++i;
         }
-        Ensure (i <= end);
+        if (i != end and (*i == 'e' or *i == 'E')) {
+            ++i;
+            if (i != end and (*i == '+' or *i == '-')) {
+                ++i;
+            }
+            while (i != end and IsDigit_ (*i)) {
+                ++i;
+            }
+        }
         return i;
     }
-    string::const_iterator FindFirstNonDigitOrDot_ (string::const_iterator i, string::const_iterator end)
+    // ISO 8601's number: digits, then optionally a decimal point ('.' or ',') and digits
+    bool IsISONumber_ (string_view n)
     {
-        while (i != end and (isdigit (*i) or *i == '.')) {
-            ++i;
+        auto i = ranges::find_if_not (n, IsDigit_);
+        if (i == n.begin ()) {
+            return false;
         }
-        Ensure (i <= end);
-        return i;
+        if (i == n.end ()) {
+            return true;
+        }
+        return (*i == '.' or *i == ',') and i + 1 != n.end () and all_of (i + 1, n.end (), IsDigit_);
     }
 
     constexpr time_t kSecondsPerMinute_ = 60;
@@ -106,7 +131,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
     auto                lingMgr = Linguistics::MessageUtilities::Manager::sThe.LookupHandler ();
     static const String kCommaSpace_{", "sv};
-    if (empty ()) {
+    if (fRepType_ == eEmpty_) {
         return String{};
     }
     /*
@@ -321,54 +346,103 @@ String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, c
 
 Duration Duration::operator- () const
 {
-    String tmp = As<String> ();
-    if (tmp.empty ()) {
-        return *this;
+    switch (fRepType_) {
+        case eEmpty_:
+            return *this;
+        case eNumeric_:
+            return Duration{-count ()};
+        case eString_: {
+            // the text negated, so As<String> still gives back the text read (which starts with a '-' or the 'P')
+            Duration result;
+            static_cast<inherited&> (result) = inherited{-count ()};
+            new (&result.fStringRep_) string{fStringRep_.starts_with ('-') ? fStringRep_.substr (fStringRep_.find ('P')) : "-" + fStringRep_};
+            result.fRepType_ = eString_;
+            return result;
+        }
     }
-    if (tmp[0] == '-') {
-        return Duration{tmp.substr (1)};
-    }
-    else {
-        return Duration{"-"sv + tmp};
-    }
+    AssertNotReached ();
+    return *this;
 }
 
-Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
+auto Duration::Parse (const String& text, const ParseOptions& options) -> Common::StdCompat::expected<Duration, FormatException>
+{
+    if (optional<string> ascii = text.AsASCIIQuietly ()) {
+        return Parse_ (*ascii, options);
+    }
+    return Common::StdCompat::unexpected<FormatException>{FormatException{"\"{}\" - not ASCII"_f(text)}};
+}
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
+auto Duration::Parse (const String& text) -> Common::StdCompat::expected<Duration, FormatException>
+{
+    return Parse (text, ParseOptions{});
+}
+#endif
+
+auto Duration::Parse_ (string_view text, const ParseOptions& options) -> Common::StdCompat::expected<Duration, FormatException>
+{
+    if (text.empty ()) {
+        return Duration{}; // the empty Duration
+    }
+    auto t = ParseTime_ (text, options);
+    if (not t) {
+        return Common::StdCompat::unexpected<FormatException>{t.error ()};
+    }
+    Duration result;
+    static_cast<inherited&> (result) = inherited{*t};
+    new (&result.fStringRep_) string{text};
+    result.fRepType_ = eString_;
+    return result;
+}
+
+auto Duration::ParseTime_ (string_view s, [[maybe_unused]] const ParseOptions& options)
+    -> Common::StdCompat::expected<InternalNumericFormatType_, FormatException>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Duration::ParseTime_", "s = {}"_f, s};
+    Debug::TraceContextBumper ctx{"Duration::ParseTime_", "s = {}"_f, String::FromLatin1 (span<const char>{s})};
 #endif
-    if (s.empty ()) {
-        return kValueWhenEmptyRenderedAsNumber_;
-    }
-    InternalNumericFormatType_ curVal = 0;
-    bool                       isNeg  = false;
-    // compute and throw if bad...
-    string::const_iterator i = SkipWhitespace_ (s.begin (), s.end ());
-    if (*i == '-') {
+    auto error = [&] (const String& why) {
+        return Common::StdCompat::unexpected<FormatException>{FormatException{"\"{}\" - {}"_f(String::FromLatin1 (span<const char>{s}), why)}};
+    };
+    auto i     = s.begin ();
+    bool isNeg = false;
+    if (i != s.end () and *i == '-') {
         isNeg = true;
-        i     = SkipWhitespace_ (i + 1, s.end ());
+        ++i;
     }
-    if (*i == 'P') [[likely]] {
-        i = SkipWhitespace_ (i + 1, s.end ());
+    if (i == s.end () or *i != 'P') {
+        return error ("does not start with P, or -P"sv);
     }
-    else {
-        Throw (FormatException::kThe);
-    }
-    bool timePart = false;
+    ++i;
+    /*
+     *  Each element's designator ranks: Y M W D, then after the T, H M S. Each element ranks after the one before it, on its
+     *  own side of the T; weeks stand alone; and only the last element's number has a fraction.
+     */
+    InternalNumericFormatType_ result          = 0;
+    bool                       timePart        = false;
+    bool                       partEmpty       = true; // no element yet after the P, or after the T
+    int                        lastRank        = -1;
+    bool                       weeks           = false;
+    bool                       lastHadFraction = false;
     while (i != s.end ()) {
         if (*i == 'T') {
-            timePart = true;
-            i        = SkipWhitespace_ (i + 1, s.end ());
+            if (timePart) {
+                return error ("a second T"sv);
+            }
+            timePart  = true;
+            partEmpty = true;
+            ++i;
             continue;
         }
-        string::const_iterator firstDigitI = i;
-        string::const_iterator lastDigitI  = FindFirstNonDigitOrDot_ (i, s.end ());
-        if (lastDigitI == s.end ()) [[unlikely]] {
-            Throw (FormatException::kThe);
+        auto        numberEnd = FindNumberEnd_ (i, s.end ());
+        string_view number{i, numberEnd};
+        if (number.empty ()) {
+            return error ("expected a number"sv);
         }
-        if (firstDigitI == lastDigitI) [[unlikely]] {
-            Throw (FormatException::kThe);
+        if (numberEnd == s.end ()) {
+            return error ("a number with no designator after it"sv);
+        }
+        if (not IsISONumber_ (number)) {
+            return error ("\"{}\" is not digits, with perhaps a decimal point and digits"_f(String{number}));
         }
         /*
          *  According to http://en.wikipedia.org/wiki/ISO_8601
@@ -376,33 +450,68 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
          *      half a year. This decimal fraction may be specified with either a comma or a full stop,
          *      as in "P0,5Y" or "P0.5Y"."
          *
-         *  @todo   See todo in header: the first/last digit range could use '.' or ',' and I'm not sure atof is as flexible
-         *  test/verify!!!
+         *  Read in the "C" locale, whatever the global one; one decimal point at most, so 1.2.3 is an error, not 1.2.
          */
-        InternalNumericFormatType_ n = ::atof (string{firstDigitI, lastDigitI}.c_str ());
-        switch (*lastDigitI) {
+        string n{number};
+        ranges::replace (n, ',', '.');
+        auto value = Number::Parse<InternalNumericFormatType_> (span<const char>{n});
+        if (not value) {
+            return error ("\"{}\" is not a number"_f(String{number}));
+        }
+        String designator = String::FromLatin1 (span<const char>{&*numberEnd, 1});
+        int    rank;
+        time_t unit; // seconds
+        switch (*numberEnd) {
             case 'Y':
-                curVal += n * kSecondsPerYear_;
+                rank = 0;
+                unit = kSecondsPerYear_;
                 break;
             case 'M':
-                curVal += n * (timePart ? kSecondsPerMinute_ : kSecondsPerMonth_);
+                rank = timePart ? 5 : 1;
+                unit = timePart ? kSecondsPerMinute_ : kSecondsPerMonth_;
                 break;
             case 'W':
-                curVal += n * kSecondsPerWeek_;
+                rank = 2;
+                unit = kSecondsPerWeek_;
                 break;
             case 'D':
-                curVal += n * kSecondsPerDay_;
+                rank = 3;
+                unit = kSecondsPerDay_;
                 break;
             case 'H':
-                curVal += n * kSecondsPerHour_;
+                rank = 4;
+                unit = kSecondsPerHour_;
                 break;
             case 'S':
-                curVal += n;
+                rank = 6;
+                unit = 1;
                 break;
+            default:
+                return error ("'{}' is not a designator"_f(designator));
         }
-        i = SkipWhitespace_ (lastDigitI + 1, s.end ());
+        if ((rank >= 4) != timePart) {
+            return error ("{} {} the T"_f(designator, timePart ? "after"sv : "before"sv));
+        }
+        if (rank <= lastRank) {
+            return error ("{} out of order, or repeated"_f(designator));
+        }
+        if (weeks or (rank == 2 and lastRank >= 0)) {
+            return error ("weeks with other elements"sv);
+        }
+        if (lastHadFraction) {
+            return error ("a fraction before the last element"sv);
+        }
+        result += *value * unit;
+        partEmpty       = false;
+        lastRank        = rank;
+        weeks           = weeks or rank == 2;
+        lastHadFraction = number.find_first_of (".,") != string_view::npos;
+        i               = numberEnd + 1;
     }
-    return isNeg ? -curVal : curVal;
+    if (partEmpty) {
+        return error (timePart ? "nothing after the T"sv : "nothing after the P"sv);
+    }
+    return isNeg ? -result : result;
 }
 
 String Duration::UnParseTime_ (InternalNumericFormatType_ t, Number::SignificantFigures p)

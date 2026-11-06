@@ -166,7 +166,9 @@ template <>
 void Registry::SimpleReader_<Time::Duration>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
-    IgnoreExceptionsForCall (*fValue_ = Time::Duration{fBuf_.str ()});
+    // XML strips whitespace (space, tab, CR, LF) from around an xs:duration; Duration itself reads none
+    auto isXMLWhitespace = [] (Characters::Character c) { return c == ' ' or c == '\t' or c == '\r' or c == '\n'; };
+    IgnoreExceptionsForCall (*fValue_ = Time::Duration{fBuf_.str ().Trim (isXMLWhitespace)});
 }
 
 /*

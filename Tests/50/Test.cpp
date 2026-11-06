@@ -896,8 +896,9 @@ namespace {
         }
         {
             // todo use constexpr
-            const Duration kD = Duration{};
-            EXPECT_TRUE (kD.empty ());
+            const Duration kD = Duration{}; // the empty Duration (deprecated, with empty ())
+            EXPECT_EQ (kD.As<String> (), "");
+            EXPECT_EQ (kD.As<double> (), 0);
         }
         {
             // todo use constexpr
@@ -915,11 +916,62 @@ namespace {
             EXPECT_TRUE ((-kD).PrettyPrint () == L"-45 \u00b5s");
             EXPECT_TRUE ((-kD).As<String> () == "-PT0.000045S");
         }
-        EXPECT_TRUE (Duration{"P30S"}.As<time_t> () == 30);
+        EXPECT_TRUE (Duration{"PT30S"}.As<time_t> () == 30);
         EXPECT_TRUE (Duration{"PT30S"}.As<time_t> () == 30);
         EXPECT_TRUE (Duration{60}.As<String> () == "PT1M");
         EXPECT_EQ (Duration{"-PT1H1S"}.As<time_t> (), -3601);
         EXPECT_EQ (-Duration{"-PT1H1S"}.As<time_t> (), 3601);
+        {
+            // What Parse reads: the number of seconds, or nullopt for a FormatException
+            struct Case {
+                const char*      fText;
+                optional<double> fSeconds;
+            };
+            const double kDay     = kSecondsPerDay;
+            const Case   kCases[] = {
+                // ISO 8601
+                {"PT0S", 0},
+                {"P1Y2M3DT4H5M6.5S", 365 * kDay + 60 * kDay + 3 * kDay + 4 * 3600 + 5 * 60 + 6.5},
+                {"-PT1H1S", -3601},
+                {"P2W", 14 * kDay},
+                {"P0,5D", kDay / 2},
+                // not read: what Stroika before v3.0d26 also read (ParseOptions)
+                {" PT1S ", nullopt},
+                {"\t PT1S\r\n", nullopt},
+                {"P30S", nullopt},
+                {"PT1D", nullopt},
+                {"PT1S1M", nullopt},
+                {"PT1S1S", nullopt},
+                {"P1W1D", nullopt},
+                {"P0.5DT1H", nullopt},
+                {"PT.5S", nullopt},
+                {"PT5.S", nullopt},
+                {"PT1e3S", nullopt},
+                {"- P 1D T 1S", nullopt},
+                // not read: malformed
+                {" ", nullopt},
+                {"P", nullopt},
+                {"P1DT", nullopt},
+                {"PT1HT1S", nullopt},
+                {"P5X", nullopt},
+                {"PT1", nullopt},
+                {"PT1.2.3S", nullopt},
+                {"PT-1S", nullopt}, // ISO 8601-2's negative element (ParseOptions)
+            };
+            auto seconds = [] (const auto& parsed) { return parsed ? optional<double>{parsed->template As<double> ()} : nullopt; };
+            for (const Case& c : kCases) {
+                EXPECT_EQ (seconds (Duration::Parse (String{c.fText})), c.fSeconds) << c.fText;
+            }
+            // the constructor (and so "..."_duration) reads as Parse does, throwing the FormatException - which says what is wrong
+            EXPECT_EQ ((Duration{"PT30S", {}}.As<time_t> ()), 30);
+            EXPECT_THROW ((void)Duration{"P30S"}, Duration::FormatException);
+            EXPECT_TRUE (String::FromNarrowSDKString (Duration::Parse ("P30S"sv).error ().what ()).Contains ("S before the T"sv));
+            EXPECT_THROW ((void)Duration{string{"PT1\xc3\xa9S"}}, Duration::FormatException); // a std::string is not checked for ASCII first
+            // negating keeps every digit, and the text
+            EXPECT_EQ ((-Duration{1.23456789}).As<double> (), -1.23456789);
+            EXPECT_EQ ((-Duration{"P1DT2H"}).As<String> (), "-P1DT2H");
+            EXPECT_EQ ((-Duration{"-P1DT2H"}).As<String> (), "P1DT2H");
+        }
 
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1;
@@ -935,7 +987,7 @@ namespace {
         }
         EXPECT_TRUE (Duration::min () < Duration::max ());
         EXPECT_TRUE (Duration::min () != Duration::max ());
-        EXPECT_TRUE (Duration::min () < Duration{"P30S"} and Duration{"P30S"} < Duration::max ());
+        EXPECT_TRUE (Duration::min () < Duration{"PT30S"} and Duration{"PT30S"} < Duration::max ());
         {
             Duration d = Duration{"PT0.1S"};
             EXPECT_EQ (d, "PT0.1S"_duration);
@@ -954,8 +1006,8 @@ namespace {
             EXPECT_EQ (Duration{"P2.6Y"}.PrettyPrintAge (), "3 years from now");
             EXPECT_EQ (Duration{"-P1M"}.PrettyPrintAge (), "1 month ago");
             EXPECT_EQ (Duration{"-P2M"}.PrettyPrintAge (), "2 months ago");
-            EXPECT_EQ (Duration{"-PT1Y"}.PrettyPrintAge (), "1 year ago");
-            EXPECT_EQ (Duration{"-PT2Y"}.PrettyPrintAge (), "2 years ago");
+            EXPECT_EQ (Duration{"-P1Y"}.PrettyPrintAge (), "1 year ago");
+            EXPECT_EQ (Duration{"-P2Y"}.PrettyPrintAge (), "2 years ago");
         }
         {
             // Support precision of duration reps
@@ -1178,7 +1230,7 @@ namespace {
         }
         {
             Range<DateTime> d1{DateTime{Date{2000y, April, DayOfMonth{20}}}, DateTime{Date{2000y, April, DayOfMonth{22}}}};
-            EXPECT_EQ (d1.GetDistanceSpanned () / 2, Duration{"PT1D"});
+            EXPECT_EQ (d1.GetDistanceSpanned () / 2, Duration{"P1D"});
             // SEE https://github.com/SophistSolutions/Stroika/issues/651 (STK-514) for accuracy of compare (sb .1 or less)
             EXPECT_TRUE (Math::NearlyEquals (d1.GetMidpoint (), DateTime{Date{2000y, April, DayOfMonth{21}}}, DurationSeconds{2}));
         }

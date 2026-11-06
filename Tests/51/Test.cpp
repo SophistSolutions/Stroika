@@ -936,14 +936,14 @@ namespace {
         using Traversal::Range;
 
         {
-            Range<Duration> a{Duration{"PT.5S"sv}, Duration{"PT2M"}};
+            Range<Duration> a{Duration{"PT0.5S"sv}, Duration{"PT2M"}};
             Range<Duration> b{Duration{"PT1S"}, Duration{"PT2M"}};
             EXPECT_EQ ((a ^ b), b);
         }
         {
-            Range<Duration> a{Duration{"PT.5S"}, Duration{"PT2M"}};
-            EXPECT_EQ (a.Pin (Duration{"PT.5S"}), Duration{"PT.5S"});
-            EXPECT_EQ (a.Pin (Duration{"PT0S"}), Duration{"PT.5S"});
+            Range<Duration> a{Duration{"PT0.5S"}, Duration{"PT2M"}};
+            EXPECT_EQ (a.Pin (Duration{"PT0.5S"}), Duration{"PT0.5S"});
+            EXPECT_EQ (a.Pin (Duration{"PT0S"}), Duration{"PT0.5S"});
             EXPECT_EQ (a.Pin (Duration{"PT5M"}), Duration{"PT2M"});
             EXPECT_EQ (a.Pin (Duration{"PT10S"}), Duration{"PT10S"});
         }

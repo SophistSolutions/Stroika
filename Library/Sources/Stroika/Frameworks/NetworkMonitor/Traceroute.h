@@ -97,8 +97,8 @@ namespace Stroika::Frameworks::NetworkMonitor::Traceroute {
     /**
      */
     struct Hop {
-        Duration        fTime;
-        InternetAddress fAddress;
+        optional<Duration> fTime; // nullopt: no answer (a timeout)
+        InternetAddress    fAddress;
 
         /**
          *  @see Characters::ToString ();

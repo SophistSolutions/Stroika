@@ -48,24 +48,23 @@ namespace Stroika::Foundation::Time {
         src.fRepType_ = eEmpty_;
     }
     template <Characters::IConvertibleToString STRINGISH_T>
-    inline Duration::Duration (STRINGISH_T&& durationStr)
-        : inherited{kValueWhenEmptyRenderedAsNumber_}
-        , fNonStringRep_{}
+    inline Duration::Duration (STRINGISH_T&& durationStr, const ParseOptions& options)
+        : Duration{}
     {
-        Assert (fRepType_ == eEmpty_);
-        string asciiRep;
-        if constexpr (same_as<STRINGISH_T, string>) {
-            asciiRep = durationStr;
+        if constexpr (same_as<remove_cvref_t<STRINGISH_T>, string>) {
+            *this = Execution::ThrowIfFailed (Parse_ (durationStr, options));
         }
         else {
-            asciiRep = Characters::String{durationStr}.AsASCII ();
-        }
-        if (not asciiRep.empty ()) {
-            (*(inherited*)this) = inherited{ParseTime_ (asciiRep)};
-            new (&fStringRep_) string{asciiRep};
-            fRepType_ = eString_;
+            *this = Execution::ThrowIfFailed (Parse (Characters::String{forward<STRINGISH_T> (durationStr)}, options));
         }
     }
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
+    template <Characters::IConvertibleToString STRINGISH_T>
+    inline Duration::Duration (STRINGISH_T&& durationStr)
+        : Duration{forward<STRINGISH_T> (durationStr), ParseOptions{}}
+    {
+    }
+#endif
     constexpr Duration::Duration (int durationInSeconds)
         : inherited{durationInSeconds}
         , fRepType_{eNumeric_}

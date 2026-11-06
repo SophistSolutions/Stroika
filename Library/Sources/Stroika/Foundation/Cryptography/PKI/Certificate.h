@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Cryptography::PKI::Certificate {
      */
     struct SelfSignedCertParams {
         // Not Before thru Not After
-        Range<DateTime>  fValidDates{Time::DateTime::Now (), Time::DateTime::Now () + Time::Duration{"PT1Y"sv}};
+        Range<DateTime>  fValidDates{Time::DateTime::Now (), Time::DateTime::Now () + Time::Duration{"P1Y"sv}};
         SubjectInfo      fSubject;
         optional<String> fSubjectAlternativeName; // SAN
     };

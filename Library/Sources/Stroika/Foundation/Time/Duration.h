@@ -98,10 +98,40 @@ namespace Stroika::Foundation::Time {
         using inherited = chrono::duration<double>;
 
     public:
+        class FormatException;
+
+    public:
         /**
-         *  The character set of the std::string CTOR is expected to be all ascii, or the code throws FormatException
+         *  How text is read as a Duration - by Parse, the string constructor, and "..."_duration.
          *
-         *  Throws (FormatException) if bad format
+         *  What is read is an ISO 8601 duration, in its usual format - what As<String> writes - and nothing else:
+         *      o   an optional '-' (ISO 8601-2's negative duration), then a 'P'
+         *      o   then elements, each a number and its designator: Y, M, D, then a T, then H, M, S - in that order, each at
+         *          most once; at least one in all, and at least one after a T. Or a number of weeks alone: "P2W"
+         *      o   a number is digits; the last element's may have a fraction - a '.' or ',' and digits ("PT0.5S", "P0,5D")
+         *  No whitespace, around the text or within it: XML strips it from around an xs:duration before the value is read, as
+         *  the XML ObjectReader does. Every xs:duration is read - its format is a subset of this one (no weeks, a '.' only, a
+         *  fraction on the seconds only). The empty string is the empty Duration (deprecated, as empty () is).
+         *
+         *  There are no options yet. Possible ones, should text that uses them need reading - each off by default:
+         *      o   an exponent: "PT1E-3S" - ISO 8601-2 (https://www.iso.org/standard/70908.html). Stroika v3.0d12 to v3.0d22
+         *          wrote one for a seconds part under 0.0001, with a lowercase 'e'
+         *      o   negative elements: "PT-1S", "P-1Y-2M3DT-4H-5M-6S" - ISO 8601-2; Java's Duration and Period write them
+         *          (https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html#toString()), as does
+         *          PostgreSQL's iso_8601 IntervalStyle (https://www.postgresql.org/docs/current/datatype-datetime.html)
+         *      o   ISO 8601's alternative format: "P0003-06-04T12:30:05"
+         *      o   what Stroika before v3.0d26 also read: designators out of place or repeated ("P30S", "PT1S1S"), weeks with
+         *          other elements, a fraction on any element, ".5" and "5.", whitespace around or within the text
+         */
+        struct ParseOptions {};
+
+    public:
+        /**
+         *  A string is read as Parse reads it (an ISO 8601 duration, as "P3DT2H" or "-PT0.5S"), throwing its
+         *  FormatException if it cannot. A std::string is not checked for ASCII first: a character that is not ASCII is a
+         *  FormatException too.
+         *
+         *  Duration{} (and Duration{""}) is the empty Duration - deprecated with empty (): use optional<Duration> for no value.
          *
          *  \note constexpr not really working (though declared) - see @todo above
          *
@@ -110,8 +140,15 @@ namespace Stroika::Foundation::Time {
         constexpr Duration ();
         Duration (Duration&& src) noexcept;
         Duration (const Duration& src);
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
         template <Characters::IConvertibleToString STRINGISH_T>
-        explicit Duration (STRINGISH_T&& durationStr);
+        explicit Duration (STRINGISH_T&& durationStr, const ParseOptions& options);
+        template <Characters::IConvertibleToString STRINGISH_T>
+        explicit Duration (STRINGISH_T&& durationStr); ///< \brief Same as Duration{durationStr, ParseOptions{}}
+#else
+        template <Characters::IConvertibleToString STRINGISH_T>
+        explicit Duration (STRINGISH_T&& durationStr, const ParseOptions& options = {});
+#endif
         constexpr Duration (int durationInSeconds);
         constexpr Duration (long durationInSeconds);
         constexpr Duration (long long durationInSeconds);
@@ -133,13 +170,33 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  \brief text as a Duration - an ISO 8601 duration, as ParseOptions describes - or a FormatException saying what is
+         *  wrong with it
+         *
+         *  \par Example Usage
+         *      \code
+         *          Duration d = Execution::ThrowIfFailed (Duration::Parse (text));
+         *          Duration e = Duration::Parse (text).value_or (Duration{0});
+         *      \endcode
          */
-        nonvirtual void clear ();
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
+        static Common::StdCompat::expected<Duration, FormatException> Parse (const Characters::String& text, const ParseOptions& options);
+        static Common::StdCompat::expected<Duration, FormatException> Parse (const Characters::String& text); ///< \brief Same as Parse (text, ParseOptions{})
+#else
+        static Common::StdCompat::expected<Duration, FormatException> Parse (const Characters::String& text, const ParseOptions& options = {});
+#endif
 
     public:
         /**
+         *  \brief Make this the empty Duration
          */
-        constexpr bool empty () const;
+        [[deprecated ("Since Stroika v3.0d26 - the empty Duration is going away: use optional<Duration> for no value")]] nonvirtual void clear ();
+
+    public:
+        /**
+         *  \brief Is this the empty Duration - Duration{} or Duration{""}, whose As<String> is "" and numeric value 0
+         */
+        [[deprecated ("Since Stroika v3.0d26 - the empty Duration is going away: use optional<Duration> for no value")]] constexpr bool empty () const;
 
     public:
         /**
@@ -178,7 +235,7 @@ namespace Stroika::Foundation::Time {
          * 
          *      \note Stroika v2.1 also supported wstring, which was (tentatively) de-supported in Stroika v3.0d5
          * 
-         *  \note No exponential numerical format is generated (though it is read). This IS supported in ISO 8601 in Part 2,
+         *  \note No exponential numerical format is generated (nor read - ParseOptions). This IS supported in ISO 8601 in Part 2,
          *        but not the original ISO 8601, and the luxon JS library (probably among others) doesn't support it.
          */
         template <typename T>
@@ -318,12 +375,10 @@ namespace Stroika::Foundation::Time {
          */
         nonvirtual Duration operator- () const;
 
-    public:
-        class FormatException;
-
     private:
-        static InternalNumericFormatType_ ParseTime_ (const string& s);
-        static Characters::String         UnParseTime_ (InternalNumericFormatType_ t, Characters::Number::SignificantFigures p);
+        static Common::StdCompat::expected<Duration, FormatException> Parse_ (string_view text, const ParseOptions& options);
+        static Common::StdCompat::expected<InternalNumericFormatType_, FormatException> ParseTime_ (string_view s, const ParseOptions& options);
+        static Characters::String UnParseTime_ (InternalNumericFormatType_ t, Characters::Number::SignificantFigures p);
 
     private:
         /**
@@ -354,6 +409,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         FormatException ();
+        FormatException (const Characters::String& details); ///< \brief "Invalid Duration Format: " and details
 
     public:
         static const FormatException kThe;

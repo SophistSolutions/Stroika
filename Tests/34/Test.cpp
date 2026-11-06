@@ -1181,6 +1181,39 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_DataExchange_XML, SAXObjectReader_DurationWithWhitespace_)
+    {
+        // XML strips whitespace from around a simple value; Duration itself reads none
+        struct Values_ {
+            optional<Time::Duration> fPlain;
+            optional<Time::Duration> fPadded;
+        };
+        auto mkdata_ = [] () {
+            wstring      newDocXML = L"<Values>\n"
+                                     L"  <Plain>PT30S</Plain>\n"
+                                     L"  <Padded>\n    -P1DT2H\t</Padded>\n"
+                                     L"</Values>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
+        };
+        ObjectReader::Registry registry;
+        registry.AddCommonType<Time::Duration> ();
+        registry.AddCommonType<optional<Time::Duration>> ();
+        registry.AddCommonReader_Class<Values_> ({
+            {Name{"Plain"}, &Values_::fPlain},
+            {Name{"Padded"}, &Values_::fPadded},
+        });
+        Values_                                  values{};
+        ObjectReader::IConsumerDelegateToContext ctx{
+            registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
+        XML::SAXParse (mkdata_ (), &ctx);
+        EXPECT_EQ (values.fPlain, Time::Duration{30});
+        EXPECT_EQ (values.fPadded, Time::Duration{"-P1DT2H"});
+    }
+}
+
+namespace {
     namespace T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_ {
         enum class TunerNumberType_ {
             eT1 = 1,

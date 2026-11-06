@@ -39,7 +39,7 @@ int main (int argc, const char* argv[])
     MajorOp               majorOp     = MajorOp::eTraceroute;
     unsigned int          maxHops     = Ping::Options::kDefaultMaxHops;
     unsigned int          sampleCount = 3;
-    static const Duration kInterSampleTime_{"PT.1S"}; // aka 1.5s
+    static const Duration kInterSampleTime_{"PT0.1S"}; // aka 1.5s
     size_t packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
     const Execution::CommandLine::Option kPingO_{.fLongName = "ping"sv, .fHelpOptionText = "Ping the target address"sv};
     const Execution::CommandLine::Option kTraceRtO_{.fLongName = "traceroute"sv, .fHelpOptionText = "Trace the route to the target address"sv};
@@ -130,7 +130,7 @@ int main (int argc, const char* argv[])
                             return addrStr;
                         }
                     }();
-                    String timeStr = h.fTime.empty () ? "timeout\t"_k : h.fTime.PrettyPrint ();
+                    String timeStr = h.fTime ? h.fTime->PrettyPrint () : "timeout\t"_k;
                     cout << hopIdx++ << "\t" << timeStr << "\t" << hopName << endl;
                 };
                 // can call without callback, and just get all the hops in a list, which is simpler. But using the callback allows you to see
